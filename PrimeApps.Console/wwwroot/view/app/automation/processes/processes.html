@@ -1,74 +1,69 @@
-<div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Nav.ApprovelProcess' | translate}}</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.ApprovelProcess.NewApprovelProcess' | translate}}</button>
+<div class="setup-title">
+    <h2>{{'Setup.Nav.ApprovelProcess' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.ApprovelProcess.NewApprovelProcess' | translate}}</button>
+</div>
+<div class="tab-content">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
+                <th>{{'Setup.Workflow.Module' | translate}}</th>
+                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                <th>{{'Common.Active' | translate}}</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="process in processes">
+                <td ng-click="showFormModal(process.id)" style="cursor:pointer;">{{process.name}}</td>
+                <td>{{process.module['label_'+language+'_plural']}}</td>
+                <td>{{process.operations}}</td>
+                <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
+                <td class="text-right">
+                    <button type="button" ng-click="showFormModal(process.id)" class="btn btn-xs btn-custom">
+                        {{'Common.Edit' | translate }}
+                    </button>
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(process.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row table-pagination">
+        <div class="col-sm-10">
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="tabelPagination.currentPage"
+                     page-size="tabelPagination.pageSize"
+                     total="tabelPagination.total"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
         </div>
-    </div>
-
-    <div class="tab-content">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
-                    <th>{{'Setup.Workflow.Module' | translate}}</th>
-                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                    <th>{{'Common.Active' | translate}}</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="process in processes">
-                    <td ng-click="showFormModal(process.id)" style="cursor:pointer;">{{process.name}}</td>
-                    <td>{{process.module['label_'+language+'_plural']}}</td>
-                    <td>{{process.operations}}</td>
-                    <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
-                    <td class="text-right">
-                        <button type="button" ng-click="showFormModal(process.id)" class="btn btn-xs btn-custom">
-                            {{'Common.Edit' | translate }}
-                        </button>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(process.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="row table-pagination">
-            <div class="col-sm-10">
-                <nav aria-label="Page navigation">
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="tabelPagination.currentPage"
-                         page-size="tabelPagination.pageSize"
-                         total="tabelPagination.total"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-chevron-right"
-                         text-prev-class="fas fa-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="fas fa-step-forward"
-                         paging-action="changePage(page)">
-                    </div>
-                </nav>
-            </div>
-            <div class="col-sm-2">
-                <span class="pagination-span">Items per page  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
+        <div class="col-sm-2">
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
         </div>
     </div>
 </div>

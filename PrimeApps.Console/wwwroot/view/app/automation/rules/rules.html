@@ -1,74 +1,70 @@
-<div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Workflow.Title' | translate}}</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.NewRule' | translate}}</button>
-        </div>
-    </div>
+<div class="setup-title">
+    <h2>{{'Setup.Workflow.Title' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.NewRule' | translate}}</button>
+</div>
 
-    <div class="tab-content">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{'Setup.Workflow.Name' | translate}}</th>
-                    <th>{{'Setup.Workflow.Module' | translate}}</th>
-                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                    <th>{{'Setup.Workflow.Status' | translate}}</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="rule in rules">
-                    <td ng-click="showFormModal(rule.id)" style="cursor:pointer;">{{rule.name}}</td>
-                    <td>{{rule.module['label_'+language+'_plural']}}</td>
-                    <td>{{rule.operations}}</td>
-                    <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
-                    <td class="text-right">
-                        <button type="button" ng-click="showFormModal(rule.id)" class="btn btn-xs btn-custom">
-                            {{'Common.Edit' | translate }}
-                        </button>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(rule.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="row table-pagination">
-            <div class="col-sm-10">
-                <nav aria-label="Page navigation">
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="tabelPagination.currentPage"
-                         page-size="tabelPagination.pageSize"
-                         total="tabelPagination.total"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-chevron-right"
-                         text-prev-class="fas fa-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="fas fa-step-forward"
-                         paging-action="changePage(page)">
-                    </div>
-                </nav>
-            </div>
-            <div class="col-sm-2">
-                <span class="pagination-span">Items per page  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
+<div class="tab-content">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{'Setup.Workflow.Name' | translate}}</th>
+                <th>{{'Setup.Workflow.Module' | translate}}</th>
+                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                <th>{{'Setup.Workflow.Status' | translate}}</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="rule in rules">
+                <td ng-click="showFormModal(rule.id)" style="cursor:pointer;">{{rule.name}}</td>
+                <td>{{rule.module['label_'+language+'_plural']}}</td>
+                <td>{{rule.operations}}</td>
+                <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
+                <td class="text-right">
+                    <button type="button" ng-click="showFormModal(rule.id)" class="btn btn-xs btn-custom">
+                        {{'Common.Edit' | translate }}
+                    </button>
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(rule.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row table-pagination">
+        <div class="col-sm-10">
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="tabelPagination.currentPage"
+                     page-size="tabelPagination.pageSize"
+                     total="tabelPagination.total"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div class="col-sm-2">
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
         </div>
     </div>
 </div>

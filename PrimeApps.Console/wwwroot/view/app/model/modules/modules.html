@@ -1,111 +1,99 @@
-<div class="col-sm-12" style="border: none ;">
-    <div ng-if="loading" class="page-loading">
-        <img width="500" height="500" src="images/primeapps/loading-animation.gif"/>
-    </div>
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New Modules</button>
+ <div class="setup-title">
+    <h2>Modules</h2>
+    <button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New Modules</button>
+</div>
+<div class="tab-content">
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center">Icon</th>
+            <th>{{'Setup.Modules.Name' | translate}}</th>
+            <th>{{'Setup.Modules.Type' | translate}}</th>
+            <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
+            <th>{{'Setup.Modules.Sharing' | translate}}</th>
+            <th style="min-width: 50px;"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
+            <td ui-sref="studio.app.moduledesigner({id:module.id})" class="text-center"><i class="{{module.menu_icon}}"></i></td>
+            <td ui-sref="studio.app.moduledesigner({id:module.id})">
+                <span>
+                    {{module['label_' + language + '_plural']}}
+                </span>
+                <span ng-if="user.isDemo && module.created_by_id!=user.ID">
+                        {{module['label_' + language + '_plural']}}
+                    </span>
+            </td>
+            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
+            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
+            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) :
+                ('Setup.Modules.SharingPublic' | translate)}}
+            </td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button id="actionButton-{{module.name}}" type="button" data-toggle="dropdown"
+                            ng-disabled="user.isDemo && module.created_by_id!=user.id"
+                            class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"
+                            placement="bottom-right"
+                            data-animation="am-flip-x"
+                            bs-dropdown
+                            aria-haspopup="true" aria-expanded="false" >
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#anotherAction">
+                                Edit
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#anotherAction">
+                                Delete
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
         </div>
-    </div>
-    <div>
-
-        <div class="tab-content">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th class="text-center">Icon</th>
-                    <th>{{'Setup.Modules.Name' | translate}}</th>
-                    <th>{{'Setup.Modules.Type' | translate}}</th>
-                    <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
-                    <th>{{'Setup.Modules.Sharing' | translate}}</th>
-                    <th style="min-width: 50px;"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
-                    ui-sref="studio.app.moduledesigner({id:module.id})">
-                    <td ui-sref="studio.app.moduledesigner({id:module.id})" class="text-center"><i class="{{module.menu_icon}}"></i></td>
-                    <td ui-sref="studio.app.moduledesigner({id:module.id})">
-                        <span>
-                            {{module['label_' + language + '_plural']}}
-                        </span>
-                        <span ng-if="user.isDemo && module.created_by_id!=user.ID">
-                                {{module['label_' + language + '_plural']}}
-                            </span>
-                    </td>
-                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
-                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
-                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) :
-                        ('Setup.Modules.SharingPublic' | translate)}}
-                    </td>
-                    <td class="text-center">
-                        <div class="action-buttons-block">
-                            <button id="actionButton-{{module.name}}" type="button" data-toggle="dropdown"
-                                    ng-disabled="user.isDemo && module.created_by_id!=user.id"
-                                    class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"
-                                    placement="bottom-right"
-                                    data-animation="am-flip-x"
-                                    bs-dropdown
-                                    aria-haspopup="true" aria-expanded="false" >
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a href="#anotherAction">
-                                        Edit
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#anotherAction">
-                                        Delete
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="table-pagination">
-                <div>
-                    <nav aria-label="Page navigation">
-                        <div paging
-                             text-first="&laquo;"
-                             ul-class="pagination"
-                             active-class="active"
-                             page="requestModel.offset"
-                             page-size="requestModel.limit"
-                             total="pageTotal"
-                             scroll-top="true"
-                             hide-if-empty="true"
-                             show-prev-next="true"
-                             show-first-last="true"
-                             text-next-class="fas fa-chevron-right"
-                             text-prev-class="fas fa-chevron-left"
-                             text-first-class="fas fa-step-backward"
-                             text-last-class="fas fa-step-forward"
-                             paging-action="changePage(page)">
-                        </div>
-                    </nav>
-                </div>
-                <div>
-                    1 - 10 of 86 items
-                </div>
-                <div>
-                    <span class="pagination-span">Items per page  </span>
-                    <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                        <option ng-selected="true" value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="150">150</option>
-                        <option value="200">200</option>
-                    </select>
-                </div>
-            </div>
+        <div>
+            1 - 10 of 86 items
         </div>
-
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
     </div>
 </div>

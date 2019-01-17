@@ -6,6 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
             //$scope.modules = $http.get(config.apiUrl + 'module/get_all');
+           
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
@@ -22,7 +23,13 @@ angular.module('primeapps')
             $scope.isChosenModule = true;
             $scope.users = [];// angular.copy($rootScope.workgroup.users);
             $scope.$parent.collapsed = true;
-            $scope.allowEdit = true;
+            $scope.allowEdit = true; 
+            $scope.workflowModel = {};
+            $scope.workflowModel.active = true;
+            $scope.workflowModel.frequency = 'continuous';
+            $scope.workflowModel.trigger_time = 'instant';
+            $scope.filteredModules = $scope.modules;
+
             var activityModule = $filter('filter')($scope.modules, { name: 'activities' }, true)[0];
 
             ModuleService.getModuleFields(activityModule.name)
@@ -105,87 +112,99 @@ angular.module('primeapps')
 
             setTaskFields();
 
-            ModuleService.getPickItemsLists(activityModule, false)
-                .then(function (picklistsActivity) {
-                    $scope.picklistsActivity = picklistsActivity;
+            $scope.selectProcess = function (id) {
+                ModuleService.getPickItemsLists(activityModule, false)
+                    .then(function (picklistsActivity) {
+                        $scope.picklistsActivity = picklistsActivity;
 
-                    if (!$scope.id) {
-                        $scope.workflowModel = {};
-                        $scope.workflowModel.active = true;
-                        $scope.workflowModel.frequency = 'continuous';
-                        $scope.workflowModel.trigger_time = 'instant';
-                        $scope.loading = false;
-                        $scope.filteredModules = $scope.modules;
+                        if (!$scope.id) {
+                            $scope.workflowModel = {};
+                            $scope.workflowModel.active = true;
+                            $scope.workflowModel.frequency = 'continuous';
+                            $scope.workflowModel.trigger_time = 'instant';
+                            $scope.loading = false;
+                            $scope.filteredModules = $scope.modules;
 
-                        ModuleService.getAllProcess()
-                            .then(function (response) {
-                                var processes = response.data;
+                            ModuleService.getAllProcess()
+                                .then(function (response) {
+                                    var processes = response.data;
 
-                                for (var i = 0; i < processes.length; i++) {
-                                    var process = processes[i];
-                                    var processName = $filter('filter')($scope.modules, { id: process.module_id }, true)[0].name;
-                                    if (processName && process.user_id === 0) {
-                                        $scope.filteredModules = $filter('filter')($scope.filteredModules, { name: '!' + processName }, true);
+                                    for (var i = 0; i < processes.length; i++) {
+                                        var process = processes[i];
+                                        var processName = $filter('filter')($scope.modules, { id: process.module_id }, true)[0].name;
+                                        if (processName && process.user_id === 0) {
+                                            $scope.filteredModules = $filter('filter')($scope.filteredModules, { name: '!' + processName }, true);
+                                        }
                                     }
-                                }
-                            });
+                                });
 
 
-                    }
-                    else {
-                        ProcessesService.get($scope.id)
-                            .then(function (workflow) {
-                                ProcessesService.getAllProcessRequests($scope.id)
-                                    .then(function (response) {
+                        }
+                        else {
+                            ProcessesService.get($scope.id)
+                                .then(function (workflow) {
+                                    ProcessesService.getAllProcessRequests($scope.id)
+                                        .then(function (response) {
 
-                                        if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
-                                            $scope.allowEdit = false;
-                                        }
-                                    });
-                                workflow = workflow.data;
-                                $scope.module = $filter('filter')($scope.modules, { id: workflow.module_id }, true)[0];
+                                            if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
+                                                $scope.allowEdit = false;
+                                            }
+                                        });
+                                    workflow = workflow.data;
+                                    $scope.module = $filter('filter')($scope.modules, { id: workflow.module_id }, true)[0];
 
-                                ModuleService.getPickItemsLists($scope.module)
-                                    .then(function (picklists) {
-                                        $scope.modulePicklists = picklists;
-                                        $scope.filters = [];
+                                    ModuleService.getPickItemsLists($scope.module)
+                                        .then(function (picklists) {
+                                            $scope.modulePicklists = picklists;
+                                            $scope.filters = [];
 
-                                        for (var i = 0; i < 5; i++) {
-                                            var filter = {};
-                                            filter.id = i;
-                                            filter.field = null;
-                                            filter.operator = null;
-                                            filter.value = null;
-                                            filter.no = i + 1;
+                                            for (var i = 0; i < 5; i++) {
+                                                var filter = {};
+                                                filter.id = i;
+                                                filter.field = null;
+                                                filter.operator = null;
+                                                filter.value = null;
+                                                filter.no = i + 1;
 
-                                            $scope.filters.push(filter);
-                                        }
-                                        $scope.filteredModules = $scope.modules;
-                                        $scope.picklistsModule = picklists;
-                                        $scope.getDynamicProcessModules($scope.module, workflow, true);
-                                        $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
-                                        $scope.getUpdatableModules();
-                                        $scope.generateHookModules(workflow);
-                                        $scope.firstApproverLookupChange(true, workflow);
-                                        $scope.secondApproverLookupChange(true, workflow);
-                                        $scope.prepareFilters();
-                                        $scope.isEdit = true;
-                                        $scope.lastStepClicked = true;
-                                        $scope.loading = false;
-                                    });
-                            });
-                    }
-                });
+                                                $scope.filters.push(filter);
+                                            }
+                                            $scope.filteredModules = $scope.modules;
+                                            $scope.picklistsModule = picklists;
+                                            $scope.getDynamicProcessModules($scope.module, workflow, true);
+                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
+                                            $scope.getUpdatableModules();
+                                            $scope.generateHookModules(workflow);
+                                            $scope.firstApproverLookupChange(true, workflow);
+                                            $scope.secondApproverLookupChange(true, workflow);
+                                            $scope.prepareFilters();
+                                            $scope.isEdit = true;
+                                            $scope.lastStepClicked = true;
+                                            $scope.loading = false;
+                                        });
+                                });
+                        }
+                    });
+            };
 
             $scope.selectModule = function (module) {
                 $scope.loadingFilter = true;
                 $scope.isChosenModule = false;
 
-                ModuleService.getModuleFields($scope.workflowModel.module.name)
+                ModuleService.getModuleFields(module.name)
                     .then(function (response) {
                         if (response.data) {
                             $scope.workflowModel.module.fields = response.data;
-                            var moduleWithField = ModuleService.getFieldsOperator($scope.workflowModel.module, $scope.modules);
+                            var moduleNameList = [];
+
+                            angular.forEach($scope.modules, function (module) {
+                                var item = {
+                                    name: module.name
+                                };
+
+                                moduleNameList.push(item);
+                            });
+
+                            var moduleWithField = ModuleService.getFieldsOperator(module, $scope.modules, 0);
 
                             $scope.module = angular.copy(moduleWithField);
                             $scope.workflowModel.module = angular.copy(moduleWithField);
@@ -452,18 +471,36 @@ angular.module('primeapps')
                     currentModule = $scope.workflowModel.module;
 
                 var id = 1;
+
                 angular.forEach(currentModule.fields, function (field) {
 
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted) {
                         var processObj = {};
+
                         if (field.lookup_type === currentModule.name) {
-                            processObj.module = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            var tempModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            processObj.module = tempModule;
+
+                            ModuleService.getModuleFields(tempModule.name)
+                                .then(function (response) {
+                                    if (response.data)
+                                        processObj.module.fields = response.data;
+                                });
+
                             processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             processObj.isSameModule = false;
                             processObj.systemName = field.name;
                             processObj.id = id;
                         } else {
-                            processObj.module = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            tempModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            processObj.module = tempModule;
+
+                            ModuleService.getModuleFields(tempModule.name)
+                                .then(function (response) {
+                                    if (response.data)
+                                        processObj.module.fields = response.data;
+                                });
+
                             processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             processObj.isSameModule = false;
                             processObj.systemName = field.name;
@@ -482,6 +519,11 @@ angular.module('primeapps')
                     return;
 
                 $scope.firstDynamicApproverFields = $filter('filter')($scope.modules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
+                ModuleService.getModuleFields($scope.firstDynamicApproverFields.name)
+                    .then(function (response) {
+                        if (response.data)
+                            $scope.firstDynamicApproverFields.fields = response.data;
+                    });
 
                 if (!isEdit) {
                     if ($scope.workflowModel.first_approver_field)
@@ -778,7 +820,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
                 if (id) {
                     $scope.id = id;
-                    //selectRule();
+                    selectProcess(id);
                 }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({
@@ -802,6 +844,11 @@ angular.module('primeapps')
 
                 $scope.processes = [];
                 $scope.id = null;
+                $scope.workflowModel = {};
+                $scope.workflowModel.active = true;
+                $scope.workflowModel.frequency = 'continuous';
+                $scope.workflowModel.trigger_time = 'instant';
+                $scope.filteredModules = $scope.modules;
                 $scope.prosessFormModal.hide();
             }
             //Modal End
