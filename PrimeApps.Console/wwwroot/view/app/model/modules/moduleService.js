@@ -368,6 +368,7 @@ angular.module('primeapps')
                 getPicklists: function () {
                     return $http.get(config.apiUrl + 'picklist/get_all');
                 },
+
                 getPickItemsLists: function (module, withRelatedPicklists) {
                     var deferred = $q.defer();
                     var fields = angular.copy(module.fields);
@@ -555,6 +556,7 @@ angular.module('primeapps')
 
                     return deferred.promise;
                 },
+
                 createPicklist: function (picklist) {
                     return $http.post(config.apiUrl + 'picklist/create', picklist);
                 },
@@ -591,6 +593,7 @@ angular.module('primeapps')
 
                     return picklist;
                 },
+
                 processModule2: function (module, modules) {
                     for (var i = 0; i < module.sections.length; i++) {
                         var section = module.sections[i];
@@ -1759,21 +1762,43 @@ angular.module('primeapps')
                     return newRecord;
                 },
 
-                getFieldsOperator: function (module, modules) {
-                    angular.forEach(module.fields, function (field) {
-                        field.dataType = dataTypes[field.data_type];
-                        field.operators = [];
-                        if (field.data_type === 'lookup') {
-                            if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
-                                var lookupModule = $filter('filter')(modules, { name: field.lookup_type }, true)[0];
-                                this.getModuleFields(lookupModule.name).then(function (response) {
-                                    if (response.data) {
-                                        var currentModule = response.data;
-                                        field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
+                getFieldsOperator: function (module, modules, counter) {
+                    if (counter >= module.fields.length)
+                        return module;
 
-                                        if (!field.lookupModulePrimaryField)
-                                            field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                    var field = module.fields[counter];
 
+                    if (!field)
+                        this.getFieldsOperator(module, modules, counter + 1);
+
+                    field.dataType = dataTypes[field.data_type];
+                    field.operators = [];
+
+                    if (field.data_type === 'lookup') {
+                        if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
+                            var lookupModule = $filter('filter')(modules, { name: field.lookup_type }, true)[0];
+
+                            if (!lookupModule) {
+                                module.fields[counter] = field;
+                                return this.getFieldsOperator(module, modules, counter + 1);
+                            }
+
+                            this.getModuleFields(lookupModule.name).then(function (response) {
+                                if (response.data) {
+                                    lookupModule.fields = response.data;
+                                    var tempPrimaryLookup = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true);
+
+                                    if (tempPrimaryLookup)
+                                        field.lookupModulePrimaryField = tempPrimaryLookup[0];
+                                    else//if (!field.lookupModulePrimaryField)
+                                    {
+                                        tempPrimaryLookup = $filter('filter')(lookupModule.fields, { primary: true }, true);
+
+                                        if (tempPrimaryLookup)
+                                            field.lookupModulePrimaryField = tempPrimaryLookup[0];
+                                    }
+
+                                    if (field.lookupModulePrimaryField) {
                                         var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
                                         for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
@@ -1782,48 +1807,44 @@ angular.module('primeapps')
                                             field.operators.push(operatorLookup);
                                         }
                                     }
-                                }).catch(function (reason) {
-                                    deferred.reject(reason.data);
-                                });
 
-                            }
-                            else {
-                                field.operators.push(operators.equals);
-                                field.operators.push(operators.not_equal);
-                                field.operators.push(operators.empty);
-                                field.operators.push(operators.not_empty);
-
-                                // if (field.lookup_type === 'users') {
-                                //     var lookupModule = $filter('filter')(modules, { name: 'users' }, true)[0];
-                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                // }
-                                // else if (field.lookup_type === 'profiles') {
-                                //     var lookupModule = $filter('filter')(modules, { name: 'profiles' }, true)[0];
-                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                // }
-                                // else if (field.lookup_type === 'roles') {
-                                //     var lookupModule = $filter('filter')(modules, { name: 'roles' }, true)[0];
-                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                // }
-                            }
-
+                                    module.fields[counter] = field;
+                                    return this.getFieldsOperator(module, modules, counter++);
+                                }
+                            }).catch(function (err) { console.log(err); });
                         }
                         else {
-                            for (var n = 0; n < field.dataType.operators.length; n++) {
-                                var operatorId = field.dataType.operators[n];
-                                var operator = operators[operatorId];
-                                field.operators.push(operator);
-                            }
+                            field.operators.push(operators.equals);
+                            field.operators.push(operators.not_equal);
+                            field.operators.push(operators.empty);
+                            field.operators.push(operators.not_empty);
+
+                            module.fields[counter] = field;
+                            return this.getFieldsOperator(module, modules, counter + 1);
                         }
 
-                    });
+                    }
+                    else {
+                        for (var n = 0; n < field.dataType.operators.length; n++) {
+                            var operatorId = field.dataType.operators[n];
+                            var operator = operators[operatorId];
+                            field.operators.push(operator);
+                        }
+
+                        module.fields[counter] = field;
+                        return this.getFieldsOperator(module, modules, counter + 1);
+                    }
+
                     return module;
                 },
 
                 getAllProcess: function (id) {
                     return $http.get(config.apiUrl + 'process/get_all');
-                } 
+                }
+
             };
+
+
         }
     ])
     ;
