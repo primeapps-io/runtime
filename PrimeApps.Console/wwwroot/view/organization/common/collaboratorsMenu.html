@@ -1,20 +1,18 @@
-<div class="menu collaborators-left-menu col-sm-3">
-    <h2 class="setup-title">Collaborators</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-repeat="item in collaboratorArray" ng-class="item.id === collaboratorId ? 'active' :''" ng-click="selectCollaborators(item.id)">
-            <div class="user-info">
-                <div class="user-image">
-                    <!--<image src="" />-->
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-text">
-                    <h2 class="ng-binding">{{item.full_name}}</h2>
-                    <h3 class="ng-binding">{{item.email}}</h3>
-                </div>
+<h2 class="setup-title">Collaborators</h2>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-repeat="item in collaboratorArray" ng-class="item.id === collaboratorId ? 'active' :''" ng-click="selectCollaborators(item.id)">
+        <div class="user-info">
+            <div class="user-image">
+                <!--<image src="" />-->
+                <i class="fas fa-user"></i>
             </div>
+            <div class="user-text">
+                <h2 class="ng-binding">{{item.full_name}}</h2>
+                <h3 class="ng-binding">{{item.email}}</h3>
+            </div>
+        </div>
 
 
-        </li>
+    </li>
 
-    </ul>
-</div>
+</ul>
