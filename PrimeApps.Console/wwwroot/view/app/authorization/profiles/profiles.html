@@ -19,13 +19,13 @@
                     <td class="profile-name">{{profile.name}}</td>
                     <td class="profile-description">{{profile.description}}</td>
                     <td class="text-right">
-                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
-                            translate}}</a>
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(profile,true)">Kopyala</button>
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(profile,false)">{{'Common.Edit' | translate}}</button>
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
+                                           action="delete(profile)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                           confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
                     </td>
                 </tr>
             </tbody>

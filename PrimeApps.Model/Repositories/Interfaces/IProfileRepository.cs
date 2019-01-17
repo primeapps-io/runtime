@@ -20,6 +20,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage);
         Task<Profile> GetDefaultAdministratorProfileAsync();
         Task<Profile> GetDefaultUserProfile();
+        Task<Profile> GetByIdBasic(int id);
+        Task<int> DeleteSoft(Profile profile);
+
 
     }
 }

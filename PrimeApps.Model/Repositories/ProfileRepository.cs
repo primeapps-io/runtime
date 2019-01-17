@@ -386,5 +386,21 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Profiles.Where(x => x.ParentId == parentId).ToListAsync();
         }
+
+        public async Task<Profile> GetByIdBasic(int id)
+        {
+            var profile = await DbContext.Profiles
+                .Where(x => !x.Deleted && x.Id == id)
+                .FirstOrDefaultAsync();
+
+            return profile;
+        }
+
+        public async Task<int> DeleteSoft(Profile profile)
+        {
+            profile.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
     }
 }

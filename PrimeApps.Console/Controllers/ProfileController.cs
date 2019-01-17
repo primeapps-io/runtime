@@ -127,5 +127,18 @@ namespace PrimeApps.Console.Controllers
             return Ok(profiles);
         }
 
+        [Route("delete/{id:int}"), HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var profileEntity = await _profileRepository.GetByIdBasic(id);
+
+            if (profileEntity == null)
+                return NotFound();
+
+            await _profileRepository.DeleteSoft(profileEntity);
+
+            return Ok();
+        }
+
     }
 }

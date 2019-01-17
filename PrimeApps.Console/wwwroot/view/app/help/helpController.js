@@ -38,7 +38,6 @@ angular.module('primeapps')
                 $scope.loading = false;
             });
 
-
             $scope.changePage = function (page) {
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
@@ -946,7 +945,6 @@ angular.module('primeapps')
                         ngToast.create({ content: $filter('translate')('Yardım içeriği başarılı bir şekilde silinmiştir.'), className: 'success' });
                     })
             };
-
         }
     ])
 ;
