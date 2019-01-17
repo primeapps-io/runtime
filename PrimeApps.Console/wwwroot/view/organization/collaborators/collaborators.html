@@ -1,132 +1,122 @@
-<div class="setup-liste-header row">
-    <div class="col-sm-6">
-        <h2 class="setup-title">
-            {{
+<div class="setup-title">
+    <h2>
+        {{
 selectedCollaborator ?
-        selectedCollaborator.full_name:'Collaborators'
-            }}
-        </h2>
+    selectedCollaborator.full_name:'Collaborators'
+        }}
+    </h2>
+</div>
+<form ng-submit="save()" ng-show="!selectedCollaborator">
+    <div class="search-input">
+        <div class="search-input-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <input ng-model="newUserEmail" placeholder="Invite collaborators by email"
+               class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched required-field"
+               type="email" style="" required>
     </div>
-    <div class="col-sm-6 list-right-menu">
-
+    <br />
+</form>
+<div class="tab-content" ng-show="!selectedCollaborator">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in collaboratorArray">
+                <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
+                    {{user.full_name}}
+                    <p class="small">{{user.email}}</p>
+                </td>
+                <td>{{user.role ? user.role:'-'}}</td>
+                <td class="text-right">
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row table-pagination">
+        <div class="col-sm-10">
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="tabelPagination.currentPage"
+                     page-size="tabelPagination.pageSize"
+                     total="tabelPagination.total"
+                     disabled="true"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-step-backward"
+                     text-prev-class="glyphicon glyphicon-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="glyphicon glyphicon-forward"
+                     paging-action="foo('bar', page)">
+                </div>
+            </nav>
+        </div>
+        <div class="col-sm-2">
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
     </div>
 </div>
-<div>
-    <form ng-submit="save()">
-        <div class="search-input" ng-show="!selectedCollaborator">
-            <div class="search-input-icon">
-                <i class="fas fa-user-plus"></i>
+
+
+<div ng-show="selectedCollaborator" class="col-sm-5 collaborator-info" style="background: #fff;
+padding: 100px;">
+    <div class="tab-content" ng-show="selectedCollaborator">
+        <div class="row">
+            <div class="col-sm-12 image-upload text-center">
+                <i class="fas fa-user-circle fa-9x"></i>
             </div>
-            <input ng-model="newUserEmail" placeholder="Invite collaborators by email"
-                   class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched required-field"
-                   type="email" style="" required>
+            <div class="col-sm-12 user-info text-center">
+                <h2> {{selectedCollaborator.email}}</h2>
+                <h3>Joined :{{selectedCollaborator.created_at}}</h3>
+            </div>
+
+            <div class="dropdown col-sm-12">
+                <div class="dropdown-input" data-animation="am-flip-x" bs-dropdown
+                     aria-haspopup="true" aria-expanded="false">
+                    <div class="dropdown-text ">
+                        <h4>Administrator</h4>
+                        <i class="fas fa-angle-down"></i>
+                    </div>
+                </div>
+                <ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
+                    <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
+                    <li>
+                        <a ng-click="$alert('Holy guacamole')">Collaborator</a>
+                    </li>
+
+                </ul>
+            </div>
 
         </div>
 
-
-    </form>
-    <br>
-    <div class="tab-content" ng-show="!selectedCollaborator">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="user in collaboratorArray">
-                    <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
-                        {{user.full_name}}
-                        <p class="small">{{user.email}}</p>
-                    </td>
-                    <td>{{user.role ? user.role:'-'}}</td>
-                    <td class="text-right">
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="row table-pagination">
-            <div class="col-sm-10">
-                <nav aria-label="Page navigation">
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="tabelPagination.currentPage"
-                         page-size="tabelPagination.pageSize"
-                         total="tabelPagination.total"
-                         disabled="true"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-step-backward"
-                         text-prev-class="glyphicon glyphicon-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="glyphicon glyphicon-forward"
-                         paging-action="foo('bar', page)">
-                    </div>
-                </nav>
-            </div>
-            <div class="col-sm-2">
-                <span class="pagination-span">Items per page  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
+        <div class="col-sm-12 text-center">
+            <br>
+            <button class="btn btn-red btn-radius">Remove from organization</button>
         </div>
     </div>
 
-
-    <div ng-show="selectedCollaborator" class="col-sm-5 collaborator-info" style="background: #fff;
-    padding: 100px;">
-        <div class="tab-content" ng-show="selectedCollaborator">
-            <div class="row">
-                <div class="col-sm-12 image-upload text-center">
-                    <i class="fas fa-user-circle fa-9x"></i>
-                </div>
-                <div class="col-sm-12 user-info text-center">
-                    <h2> {{selectedCollaborator.email}}</h2>
-                    <h3>Joined :{{selectedCollaborator.created_at}}</h3>
-                </div>
-
-                <div class="dropdown col-sm-12">
-                    <div class="dropdown-input" data-animation="am-flip-x" bs-dropdown
-                         aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-text ">
-                            <h4>Administrator</h4>
-                            <i class="fas fa-angle-down"></i>
-                        </div>
-                    </div>
-                    <ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
-                        <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
-                        <li>
-                            <a ng-click="$alert('Holy guacamole')">Collaborator</a>
-                        </li>
-
-                    </ul>
-                </div>
-
-            </div>
-
-            <div class="col-sm-12 text-center">
-                <br>
-                <button class="btn btn-red btn-radius">Remove from organization</button>
-            </div>
-        </div>
-
-    </div>
 </div>

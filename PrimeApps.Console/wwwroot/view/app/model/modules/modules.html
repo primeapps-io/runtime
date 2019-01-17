@@ -1,17 +1,25 @@
  <div class="setup-title">
     <h2>Modules</h2>
-    <button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New Modules</button>
+     <div>
+         <ul class="list-unstyled list-inline">
+             <li></li>
+             <li><button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New Modules</button></li>
+             
+         </ul>
+          
+     </div>
+    
 </div>
 <div class="tab-content">
     <table class="table">
         <thead>
         <tr>
-            <th class="text-center">Icon</th>
+            <th class="text-center" width="50">Icon</th>
             <th>{{'Setup.Modules.Name' | translate}}</th>
             <th>{{'Setup.Modules.Type' | translate}}</th>
             <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
             <th>{{'Setup.Modules.Sharing' | translate}}</th>
-            <th style="min-width: 50px;"></th>
+            <th width="50"></th>
         </tr>
         </thead>
         <tbody>
@@ -32,24 +40,32 @@
             </td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button id="actionButton-{{module.name}}" type="button" data-toggle="dropdown"
-                            ng-disabled="user.isDemo && module.created_by_id!=user.id"
-                            class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false" >
+                    <button type="button" class="action-buttons-delete" data-trigger="hover" data-type="info" data-title="Delete" bs-tooltip data-placement="top"
+                            placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true" aria-expanded="false" >
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="action-buttons-block">
+                    <button type="button" class="action-buttons-edit" data-trigger="hover" data-type="info" data-title="Edit" bs-tooltip data-placement="top"
+                            placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true" aria-expanded="false" >
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+                <div class="action-buttons-block">
+                    <button type="button" data-toggle="dropdown"
+                            class="btn btn-xs btn-default list-action-button"
+                            placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true" aria-expanded="false"  >
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="#anotherAction">
-                                Edit
+                            <a href="#" ng-click="showFormModal(relation)">
+                                {{'Common.Edit' | translate}}
                             </a>
                         </li>
                         <li>
-                            <a href="#anotherAction">
-                                Delete
+                            <a href="#" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                {{'Common.Remove' | translate}}
                             </a>
                         </li>
 
