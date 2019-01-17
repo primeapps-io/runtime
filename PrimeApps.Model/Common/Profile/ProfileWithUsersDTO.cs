@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public bool ExportData { get; set; }
         [DataMember]
-        public bool WordPdfDownload { get; set; }
+        public bool WordPdfDownload { get; set; }  
         [DataMember]
         public bool LeadConvert { get; set; }
         [DataMember]
@@ -58,5 +58,7 @@ namespace PrimeApps.Model.Common.Profile
         public IEnumerable<int> UserIds { get; set; }
         [DataMember]
         public IList<ProfilePermissionDTO> Permissions { get; set; }
+        [DataMember]
+        public bool Deleted { get; set; }
     }
 }
