@@ -1,4 +1,3 @@
-
 <div class="page-container padding0 ">
 
     <div class="row">
@@ -41,10 +40,13 @@
                 </button>
             </div>
         </div>
-        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-repeat="app in apps" ui-sref="studio.app.overview({appId:app.id})">
+        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-repeat="app in apps"
+             ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})">
             <div class="app-box">
                 <div class="oval">
-                    <span data-trigger="hover" data-type="success" data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
+                    <span data-trigger="hover" data-type="success"
+                          data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
+                          class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                 </div>
                 <div class="image">
                     <img ng-src="{{app.logo}}"/>

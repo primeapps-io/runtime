@@ -1,9 +1,9 @@
 <div class="modal setup-modal" tabindex="-1" role="dialog">
-    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menuForm)" autocomplete="off" novalidate>
+    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu)" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="col-sm-6"><h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4></div>
             <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray" ng-click="addNewMenuFormModal.hide(); wizardStep = 0;">{{'Common.Cancel' |translate }}
+                <button type="button" class="btn btn-radius btn-gray" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;">{{'Common.Cancel' |translate }}
                 </button>
                 <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ng-disabled="menuLists.length < 1" ladda="saving">
                     <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
@@ -28,26 +28,26 @@
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
                                         <label class="col-sm-4  control-label"><span class="required-field">*</span>{{'Menu.MenuName'|translate}}:</label>
-                                        <input name="name_menu" class="form-control col-sm-8" maxlength="50" required ng-model="menuName" />
+                                        <input name="name_menu" class="form-control col-sm-8" maxlength="50" required ng-model="menu.name" />
                                     </div>
 
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">{{'Menu.MenuDescription'|translate}}:</label>
-                                        <textarea rows="2" name="menu_description" class="form-control col-sm-8" maxlength="200" auto-grow ng-model="description"></textarea>
+                                        <textarea rows="2" name="menu_description" class="form-control col-sm-8" maxlength="200" auto-grow ng-model="menu.description"></textarea>
                                     </div>
 
                                     <div class=" form-group">
                                         <label class="col-sm-4 control-label">{{'Menu.DefaultMenu'|translate}}:</label>
-                                        <input type="checkbox" name="defaultMenu" ng-model="defaultMenu" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" />
+                                        <input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" />
                                     </div>
 
-                                    <div ng-show="!defaultMenu" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
+                                    <div ng-show="!menu.default" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
                                         <label class="col-sm-4  control-label"><span class="required-field">*</span>{{'Setup.Nav.Tabs.Profiles'|translate}}:</label>
                                         <select class="form-control col-sm-8"
                                                 name="profile_name"
-                                                ng-model="profileItem"
-                                                ng-required="!defaultMenu"
-                                                ng-options="o as o['Name'] for o in newProfiles | filter:{Deleted:'!true'} | orderNotZero | orderBy:'order'">
+                                                ng-model="menu.profile"
+                                                ng-required="!menu.default"
+                                                ng-options="o as o['name'] for o in newProfiles | filter:{deleted:'!true'}">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -72,45 +72,45 @@
 
                             <div class="section" id="section2" ng-show="wizardStep == 1">
                                 <h4>{{'Menu.MenuSummary'|translate}}</h4>
-                                <div class="panel">
-
+                                <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                <div ng-show="!loading" class="panel">
                                     <div class="form-group">
                                         <label class="control-label col-sm-4 ">{{'Menu.MenuElementType'|translate}}:</label>
                                         <label class="radio-inline">
-                                            <input type="radio" ng-change="radioChange(module.display)" ng-checked="true" ng-model="module.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}
+                                            <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" ng-change="radioChange(module.display)" ng-model="module.display" ng-value="true"> {{'Menu.CurrentMenu'|translate}}
+                                            <input type="radio" ng-change="radioChange()" ng-model="menu.display" ng-value="true"> {{'Menu.CurrentMenu'|translate}}
                                         </label>
                                     </div>
 
-                                    <div ng-show="module.display" class="form-group">
+                                    <div ng-show="menu.display" class="form-group">
                                         <label class="control-label col-sm-4">{{'Menu.Modules'|translate}}:</label>
                                         <select
                                                 class="form-control col-sm-8 ng-animate-disabled"
                                                 name="module_name"
-                                                ng-model="moduleItem"
-                                                ng-options="o as o['label_' + language + '_plural'] for o in $parent.modules | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                                ng-model="menu.moduleItem"
+                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
 
-                                    <div ng-show="!module.display" class="form-group">
+                                    <div ng-show="!menu.display" class="form-group">
                                         <label class="control-label col-sm-4">{{'Menu.CategoryName' | translate}}:</label>
-                                        <input name="name" class="form-control col-sm-8" maxlength="50" ng-model="menuItem" />
+                                        <input name="name" class="form-control col-sm-8" maxlength="50" ng-model="menu.menuItem" />
                                     </div>
 
-                                    <div ng-show="!module.display" class="form-group">
+                                    <div ng-show="!menu.display" class="form-group">
                                         <label class="control-label col-sm-4">{{'Menu.Icon' | translate}}:</label>
                                         <button type="button" data-container="form" class="form-control btn btn-default" name="icon"
-                                                data-placeholder="{{'Menu.Icon' | translate}}-" ng-model="menu_icon"
+                                                data-placeholder="{{'Menu.Icon' | translate}}-" ng-model="menu.menu_icon"
                                                 data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
                                                 bs-select><span class="caret"></span></button>
                                     </div>
 
                                     <div class=" form-group">
                                         <div class="col-sm-offset-3 col-sm-10">
-                                            <button type="submit" ng-click="addItem(moduleItem,menuItem,menu_icon )" ng-disabled=" !menuItem && !moduleItem " class="btn btn-primary btn-w-md"><i class="fa fa-plus pull-left"></i> {{'Common.Add' | translate}}</button>
+                                            <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn btn-primary btn-w-md"><i class="fa fa-plus pull-left"></i> {{'Common.Add' | translate}}</button>
                                         </div>
                                     </div>
                                     <legend />
@@ -118,7 +118,7 @@
                                     </div>
                                     <div ng-show="menuLists.length >0">
                                         <ol ng-model="menuLists" class="custom-menu">
-                                            <li style="margin-top: 10px; list-style-type: none;" ng-repeat="menuList in menuLists">
+                                            <li style="margin-top: 10px; list-style-type: none;" ng-repeat="menuList in $parent.menuLists">
                                                 <div class="row form-group menu-list">
                                                 <span class="action-buttons arrow">
                                                     <span ng-if="!$first" class="" ng-click="up($index,menuList.no)"> <i class="fa fa-angle-up" aria-hidden="true"></i></span>
@@ -137,7 +137,7 @@
                                                     </div>
                                                 </span>
                                                     <span class="action-buttons">
-                                                    <a style="color:#a3be8c; font-size: 10px !important; line-height: 14px !important;" href="#/app/setup/menu?id={{id}}" ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit" ng-click="addModule(menuList.no)" class="action-icon add-role-button" data-nodrag>
+                                                    <a style="color:#a3be8c; font-size: 10px !important; line-height: 14px !important;" ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit" ng-click="addModule(menuList.no)" class="action-icon add-role-button" data-nodrag>
                                                         {{'Common.Add' | translate}}
                                                     </a>
                                                     <span ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit"> | </span>

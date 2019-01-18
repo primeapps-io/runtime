@@ -6,10 +6,10 @@ angular.module('primeapps')
         function ($http, config, $filter) {
             return {
                 create: function (menu) {
-                    return $http.post(config.apiUrl + 'menu/create', { menu: menu });
+                    return $http.post(config.apiUrl + 'menu/create', menu);
                 },
                 update: function (id, menu) {
-                    return $http.put(config.apiUrl + 'menu/update/' + id, { menu: menu });
+                    return $http.put(config.apiUrl + 'menu/update/' + id, menu);
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'menu/delete/' + id);
@@ -18,7 +18,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'menu/create/menu_items', { module: module, profileId: profileId });
                 },
                 updateMenuItems: function (menuLabel) {
-                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel: menuLabel });
+                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel });
                 },
                 deleteMenuItems: function (ids) {
                     return $http({
@@ -37,6 +37,7 @@ angular.module('primeapps')
                 getMenuItem: function (profileId) {
                     return $http.get(config.apiUrl + 'menu/get/' + profileId);
                 },
+
                 getIcons: function () {
                     return icons.icons;
                 },

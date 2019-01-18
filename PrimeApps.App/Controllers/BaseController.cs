@@ -115,13 +115,13 @@ namespace PrimeApps.App.Controllers
 
                 //if (platformWarehouse == null)
                 //{
-                  var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                   var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+                  //var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                  // var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
                     //cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
                 //}
 
-                appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
+               // appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
             }
             else
             {

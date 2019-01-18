@@ -1,18 +1,18 @@
 <ul class="nav nav-pills nav-stacked setup-nav">
     <li ng-class="activeMenuItem ==='templatesEmail' ? 'active' :''">
-        <a href="/#/app/5/templatesEmail" data-trigger="hover" data-type="info" data-title="Email Templates" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesEmail" data-trigger="hover" data-type="info" data-title="Email Templates" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Email Templates</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='templatesWord' ? 'active' :''">
-        <a href="/#/app/5/templatesWord" data-trigger="hover" data-type="info" data-title="Word Templates" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesWord" data-trigger="hover" data-type="info" data-title="Word Templates" bs-tooltip data-placement="right">
             <i class="fas fa-code-branch"></i>
             <span>Word Templates</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='templatesExcel' ? 'active' :''">
-        <a href="/#/app/5/templatesExcel" data-trigger="hover" data-type="info" data-title="Excel Templates" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesExcel" data-trigger="hover" data-type="info" data-title="Excel Templates" bs-tooltip data-placement="right">
             <i class="fas fa-network-wired"></i>
             <span>Excel Templates</span>
         </a>

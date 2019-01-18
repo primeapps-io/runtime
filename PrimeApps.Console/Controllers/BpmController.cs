@@ -1,55 +1,43 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.App.Helpers;
-using PrimeApps.App.Models;
-using PrimeApps.Model.Common.Bpm;
-using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Model.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Console.Helpers;
+using PrimeApps.Console.Models;
+using PrimeApps.Model.Common;
+using PrimeApps.Model.Common.Bpm;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using WorkflowCore.Interface;
-using System.Linq;
+using PrimeApps.Model.Repositories.Interfaces;
 
-namespace PrimeApps.App.Controllers
+namespace PrimeApps.Console.Controllers
 {
-    [Route("api/bpm"), Authorize]
-    public class BpmController : ApiBaseController
+    [Route("api/bpm")]
+    public class BpmController : DraftBaseController
     {
         private IBpmRepository _bpmRepository;
         private IWorkflowCoreRepository _workflowCoreRepository;
-        private IWorkflowHost _workflowHost;
-        private IWorkflowRegistry _workflowRegistry;
-        private IPersistenceProvider _workflowStore;
-        private IDefinitionLoader _definitionLoader;
+        //private IWorkflowHost _workflowHost;
+        //private IWorkflowRegistry _workflowRegistry;
+        //private IPersistenceProvider _workflowStore;
+        //private IDefinitionLoader _definitionLoader;
         private IConfiguration _configuration;
 
         private IBpmHelper _bpmHelper;
 
-        public BpmController(IBpmRepository bpmRepository,
-            IWorkflowCoreRepository workflowCoreRepository,
-            IBpmHelper bpmHelper,
-            IWorkflowHost workflowHost,
-            IWorkflowRegistry workflowRegistry,
-            IPersistenceProvider workflowStore,
-            IDefinitionLoader definitionLoader,
-            IConfiguration configuration)
+        public BpmController(IConfiguration configuration, IBpmRepository bpmRepository, IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper)
         {
-            _bpmRepository = bpmRepository;
+            _configuration = configuration;
             _workflowCoreRepository = workflowCoreRepository;
             _bpmHelper = bpmHelper;
-            _configuration = configuration;
-            _workflowHost = workflowHost;
-            _workflowStore = workflowStore;
-            _workflowRegistry = workflowRegistry;
-            _definitionLoader = definitionLoader;
+
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -70,7 +58,6 @@ namespace PrimeApps.App.Controllers
 
             return Ok(bpmEntity);
         }
-
 
         [Route("get/{code}"), HttpGet]
         public async Task<IActionResult> Get(string code)
@@ -95,15 +82,15 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpGet]
-        public async Task<ICollection<BpmWorkflow>> Find([FromBody]BpmFindRequest request)
+        public async Task<ICollection<BpmWorkflow>> Find([FromBody]PaginationModel request)
         {
-            var bpmWorkflows = await _bpmRepository.Find(request);
+            var bpmWorkflows = await _bpmRepository.FindForStudio(request);
 
             return bpmWorkflows;
         }
 
         [Route("count"), HttpPost]
-        public async Task<int> Count([FromBody]BpmFindRequest request)
+        public async Task<int> Count()
         {
             return await _bpmRepository.Count();
         }
@@ -121,7 +108,7 @@ namespace PrimeApps.App.Controllers
             var response = await _bpmRepository.GetAll(bpmWorkflowEntity.Code, version);
 
             if (response.Count() > 0)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                throw new ApplicationException(HttpStatusCode.InternalServerError.ToString());
 
             var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
 
@@ -130,17 +117,18 @@ namespace PrimeApps.App.Controllers
 
             bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
-            //Load string JSON Data on WorkFlowEngine
-            var str = JsonConvert.SerializeObject(definitionJson);
-            var workflowDefinition = _definitionLoader.LoadDefinition(str);
+            //For Runtime
+            ////Load string JSON Data on WorkFlowEngine
+            //var str = JsonConvert.SerializeObject(definitionJson);
+            //var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            if (workflowDefinition == null)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //if (workflowDefinition == null)
+            //    throw new ApplicationException(HttpStatusCode.InternalServerError.ToString());
 
             var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
             if (result < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                throw new ApplicationException(HttpStatusCode.InternalServerError.ToString());
 
             //var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
             //await _workflowHost.StartWorkflow(bpmWorkflowEntity.Code.ToString(), reference: referance);
@@ -181,12 +169,13 @@ namespace PrimeApps.App.Controllers
             }
             //}
 
-            //Load string JSON Data on WorkFlowEngine
-            var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
-            var workflowDefinition = _definitionLoader.LoadDefinition(str);
+            //For Runtime
+            //////Load string JSON Data on WorkFlowEngine
+            ////var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
+            ////var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            if (workflowDefinition == null)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            ////if (workflowDefinition == null)
+            ////    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             var currentFiltersIds = bpmWorkflowEntity.Filters.Select(q => q.Id).ToList();
             await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity, AppUser.TenantLanguage);
@@ -204,80 +193,13 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
-            var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
+
+            //For Runtime
+            //var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
 
             //TODO We should be delete from Definition List?
 
             return Ok();
-        }
-
-        [HttpPost("start_workflow/{id}")]
-        [HttpPost("start_workflow/{id}/{version}")]
-        public async Task<IActionResult> StartWorkflow(string id, int? version, [FromBody]JObject data)
-        {
-            string workflowId;
-            var workflowDefinition = _workflowRegistry.GetDefinition(id, version);
-            var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
-
-            if (workflowDefinition == null)
-                return BadRequest(string.Format("Workflow definition {0} for version {1} not found", id, version));
-
-            if (!data.IsNullOrEmpty() && workflowDefinition.DataType != null)
-            {
-                var dataStr = JsonConvert.SerializeObject(data);
-                var dataObj = JsonConvert.DeserializeObject(dataStr, workflowDefinition.DataType);
-
-
-                workflowId = await _workflowHost.StartWorkflow(id, version, dataObj, referance);
-            }
-            else
-            {
-                workflowId = await _workflowHost.StartWorkflow(id, version, null, referance);
-            }
-
-            return Ok(workflowId);
-        }
-
-        [HttpPut("suspend_worflow/{id}")]
-        public Task<bool> SuspendWorkflow(string id)
-        {
-            return _workflowHost.SuspendWorkflow(id);
-        }
-
-        [HttpPut("resume_worflow/{id}")]
-        public Task<bool> ResumeWorkflow(string id)
-        {
-            return _workflowHost.ResumeWorkflow(id);
-        }
-
-        [HttpDelete("terminate_worflow/{id}")]
-        public Task<bool> TerminateWorkflow(string id)
-        {
-            return _workflowHost.TerminateWorkflow(id);
-        }
-
-        [HttpPost("publish_event/{eventName}/{eventKey}")]
-        public async Task<IActionResult> PublishEvent(string eventName, string eventKey, [FromBody]JObject eventData)
-        {
-            await _workflowHost.PublishEvent(eventName, eventKey, eventData);
-
-            return Ok();
-        }
-
-        [Route("get_workflow_instances/{code}"), HttpGet]
-        public IActionResult GetWorkflowInstances(string code)
-        {
-            var executionPointers = _workflowCoreRepository.GetWorkflowInstances(code);
-
-            return Ok(executionPointers);
-        }
-
-        [Route("get_execution_pointers/{workflowInstanceId:int}"), HttpGet]
-        public IActionResult GetExecutionPointers(int workflowInstanceId)
-        {
-            var executionPointers = _workflowCoreRepository.GetExecutionPointers(workflowInstanceId);
-
-            return Ok(executionPointers);
         }
     }
 }

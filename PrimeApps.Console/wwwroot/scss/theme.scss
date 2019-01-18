@@ -32,14 +32,18 @@ $primeapps-color: #0D6FAA;
 
   .add-new-section {
     padding: 15px;
-    border: 2px dashed #e2e2e2;
+    border: 1px dashed rgba(0, 0, 0, 0.28);
     border-radius: 5px;
     cursor: pointer;
-
+    @include hoverEffect();
+    &:hover{
+      border: 1px dashed rgba(0, 0, 0, 0.50);
+    }
     span {
       font-weight: bold;
       color: rgba(0, 0, 0, 0.5);
       font-size: 14px;
+
     }
   }
 
@@ -78,7 +82,7 @@ $primeapps-color: #0D6FAA;
           transform: translate(0%, -50%);
 
           .action-icon {
-            color: rgba(13, 111, 170, 0.5) !important;
+            color:rgba(6, 6, 6, 0.75) !important;
           }
         }
 
@@ -203,10 +207,13 @@ $primeapps-color: #0D6FAA;
 
   .module-designer {
     .new-field {
-      border: 2px dashed #e2e2e2;
+      border: 1px dashed rgba(0, 0, 0, 0.28);
       cursor: pointer;
       padding: 15px !important;
       background: none;
+      &:hover{
+        border: 1px dashed rgba(0, 0, 0, 0.50);
+      }
 
       span {
         font-weight: bold;
@@ -315,25 +322,28 @@ $primeapps-color: #0D6FAA;
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding-top: 20px;
-          padding-bottom: 20px;
+          padding-top: 10px;
+          padding-bottom: 10px;
           border-bottom: none;
 
           .user-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             h2 {
               font-size: 16px;
               color: rgba(0, 0, 0, 0.75);
               font-weight: bold;
               line-height: 18px;
               margin: 0;
-              padding-bottom: 7px;
+              padding: 0;
               font-weight: 400;
             }
 
             h3 {
               font-size: 12px;
               font-weight: bold;
-              color: rgba(0, 0, 0, 0.75);
+              color: rgba(0, 0, 0, 0.5);
               margin: 0;
               font-weight: 400;
             }
@@ -632,8 +642,9 @@ $primeapps-color: #0D6FAA;
 
       tr {
         td {
-          line-height: 20px;
-          padding: 20px !important;
+          line-height: 15px;
+          vertical-align: middle;
+          padding: 10px 20px  !important;
           color: rgba(0, 0, 0, 0.75) !important;
           font-weight: 400 !important;
           border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -648,13 +659,32 @@ $primeapps-color: #0D6FAA;
         }
 
         .action-buttons-block {
+          display: inline-block;
           button {
             background: transparent;
-            width: 40px;
-            height: 20px;
+            width: 30px;
+            font-size: 12px;
+            height: 30px;
+            line-height: 30px;
             text-align: center;
             border: none;
             color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            &.action-buttons-edit
+            {
+              background: rgba(0,0,0,0.05);
+            }
+            &.action-buttons-delete
+            {
+              background: rgba(206,4,4,0.5);
+              color: #FFF;
+            }
+            &:hover{
+              background: rgba(0,0,0,0.15);
+              color:rgba(0, 0, 0, 0.75);
+            }
+            
+            
           }
         }
       }
@@ -1310,7 +1340,7 @@ $primeapps-color: #0D6FAA;
 
       .open {
         background-color: #121212;
-
+        @include hoverEffect();
         ul {
           display: block;
         }
@@ -1737,41 +1767,19 @@ $primeapps-color: #0D6FAA;
           .tooltip {
             display: none !important;
           }
-
-          .active {
-            position: relative;
-
-            &:before {
-              margin-top: 0px;
-              right: -20px;
-              top: 50%;
-              content: " ";
-              position: absolute;
-              pointer-events: none;
-              transform: translate(0%, -50%);
-              left: auto;
-              width: 0;
-              height: 0;
-              border-style: solid;
-              border-width: 10px 0 10px 10px;
-              border-color: transparent transparent transparent #ffffff;
-            }
-          }
-
           li {
             border-bottom: solid 1px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
-            height: 40px;
-
+            margin:0;
             a {
               font-family: Nunito;
               font-size: 14px !important;
               font-weight: bold;
               width: 90%;
-              color: rgba(0, 0, 0, 0.5) !important;
+              color: rgba(0, 0, 0, 0.5);
               line-height: 20px;
-              padding: 5px 0px;
+              padding: 10px 0px;
               display: block;
               align-items: center;
               width: 100%;
@@ -1807,7 +1815,30 @@ $primeapps-color: #0D6FAA;
             &:last-child {
               border-color: transparent;
             }
+
+            &.active {
+              position: relative;
+              a {
+                color: $primeapps-color;
+              }
+              &:before {
+                margin-top: 0px;
+                right: -20px;
+                top: 50%;
+                content: " ";
+                position: absolute;
+                pointer-events: none;
+                transform: translate(0%, -50%);
+                left: auto;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 10px 0 10px 10px;
+                border-color: transparent transparent transparent #ffffff;
+              }
+            }
           }
+          
 
         }
 
@@ -1877,6 +1908,7 @@ $primeapps-color: #0D6FAA;
           li {
 
             a {
+              justify-content: center;
               i {
 
               }
@@ -1943,23 +1975,7 @@ $primeapps-color: #0D6FAA;
       align-items: center;
       height: 42px;
     }
-
-    .full-toggled2 {
-
-      .setup-nav {
-
-        li {
-          a {
-            justify-content: center;
-
-            span {
-              display: none;
-            }
-          }
-        }
-      }
-
-    }
+    
   }
 
   .tooltip {

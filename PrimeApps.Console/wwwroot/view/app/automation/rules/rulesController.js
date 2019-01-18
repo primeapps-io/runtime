@@ -118,7 +118,7 @@ angular.module('primeapps')
                             RulesService.get($scope.id)
                                 .then(function (workflow) {
                                     $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $scope.modules);
+                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $scope.modules, 0);
                                     $scope.workflowModel.operation = {};
 
                                     angular.forEach($scope.workflowModel.operations_array, function (value) {
@@ -205,7 +205,7 @@ angular.module('primeapps')
                     });
 
                 var module = angular.copy($scope.workflowModel.module);
-                $scope.module = ModuleService.getFieldsOperator(module, $scope.modules);
+                $scope.module = ModuleService.getFieldsOperator(module, $scope.modules, 0);
 
                 if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
                     $scope.showProcessFilter = true;
@@ -1669,24 +1669,6 @@ angular.module('primeapps')
                 });
 
                 $scope.dynamicfieldUpdateModules = angular.copy(dynamicfieldUpdateModules);
-            };
-
-            var setWebHookModules = function () {
-                $scope.hookParameters = [];
-
-                $scope.hookModules = [];
-
-                angular.forEach($scope.updatableModules, function (module) {
-                    $scope.hookModules.push(module);
-                });
-
-                var parameter = {};
-                parameter.parameterName = null;
-                parameter.selectedModules = $scope.hookModules;
-                parameter.selectedField = null;
-                parameter.selectedModule = $scope.workflowModel.module;
-
-                $scope.hookParameters.push(parameter);
             };
 
             $scope.operationUpdateChanged = function (status) {

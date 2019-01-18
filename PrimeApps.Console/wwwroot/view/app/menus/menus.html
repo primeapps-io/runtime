@@ -16,7 +16,7 @@
         <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <tbody ng-show="!loading">
             <tr ng-repeat="item in menuList | orderBy:'!default'">
-                <td class="profile-name"><a ng-click="showFormModal(item)">{{item.name}}</a></td>
+                <td class="profile-name"><a ng-click="showFormModal(item.id)">{{item.name}}</a></td>
                 <td><p>{{item.profile_name}}</p></td>
                 <td><p ng-show="item.default">{{'Menu.DefaultValueTrue'|translate}} </p>
                     <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>

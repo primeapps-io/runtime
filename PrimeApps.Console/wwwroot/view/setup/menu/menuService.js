@@ -2,11 +2,11 @@
 
 angular.module('primeapps')
 
-    .factory('MenuService', ['$rootScope', '$http', 'config',
-        function ($rootScope, $http, config) {
+    .factory('MenuService', ['$rootScope', '$http', 'config', '$q',
+        function ($rootScope, $http, config, $q) {
             return {
                 create: function (menu) {
-                    return $http.post(config.apiUrl + 'menu/create',  menu );
+                    return $http.post(config.apiUrl + 'menu/create', menu);
                 },
                 update: function (id, menu) {
                     return $http.put(config.apiUrl + 'menu/update/' + id, menu);
@@ -29,7 +29,13 @@ angular.module('primeapps')
                     });
                 },
                 getMenuById: function (id) {
-                    return $http.get(config.apiUrl + 'menu/get_menu/' + id);
+                    var deferred = $q.defer();
+                    return $http.get(config.apiUrl + 'menu/get_menu/' + id).then(function (response) {
+                        deferred.resolve(response.data);
+                    }).catch(function (response) {
+                        deferred.reject(response.data);
+                    });
+                    return deferred.promise;
                 },
                 getAllMenus: function () {
                     return $http.get(config.apiUrl + 'menu/get_all');

@@ -56,10 +56,10 @@ namespace PrimeApps.Console.Controllers
 			if (menuEntity == null)
 				return Ok();
 
-			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+			//var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 			var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
-			tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
-			var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
+			//tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
+			//var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
 			var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
 			//TODO Removed
 			//var instance = await Workgroup.Get(AppUser.InstanceId);
@@ -70,9 +70,9 @@ namespace PrimeApps.Console.Controllers
 
 			foreach (var menuItem in menuItemsData)
 			{
-				var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
+				//var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
-				if (hasPermission)
+				//if (hasPermission)
 					menuItems.Add(menuItem);
 			}
 
@@ -85,9 +85,9 @@ namespace PrimeApps.Console.Controllers
 
 				foreach (var menuItem in menuCategory.MenuItems)
 				{
-					var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
+					//var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
-					if (hasPermission)
+					//if (hasPermission)
 						menuCategoryItems.Add(menuItem);
 				}
 
@@ -457,6 +457,18 @@ namespace PrimeApps.Console.Controllers
 				return Ok(null);
 
 			return Ok(menus);
+		}
+
+
+		[Route("get_menu_items/{id:int}"), HttpGet]
+		public async Task<IActionResult> GetMenuItemsByMenuId([FromUri]int menuId)
+		{
+			var menuItems = await _menuRepository.GetMenuItemsByMenuId(menuId);
+
+			if (menuItems == null)
+				return Ok(null);
+
+			return Ok(menuItems);
 		}
 
 	}
