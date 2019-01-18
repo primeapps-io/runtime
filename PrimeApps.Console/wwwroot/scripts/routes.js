@@ -481,7 +481,9 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/workflows/workflowsController.js',
-                                cdnUrl + 'view/app/automation/workflows/workflowsService.js'
+                                cdnUrl + 'view/app/automation/workflows/workflowsService.js',
+                                cdnUrl + 'scripts/vendor/bpm/BPMN.js',
+                                cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'
                             ]);
                         }]
                     }

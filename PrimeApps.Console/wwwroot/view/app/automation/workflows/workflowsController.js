@@ -8,10 +8,33 @@ angular.module('primeapps')
             $scope.$parent.loadingFilter = false;
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.workflows = [];
+            $scope.editMode = true;
             $scope.$parent.workflows = [];
             $scope.$parent.menuTopTitle = "Automation";
             $scope.$parent.activeMenu = 'automation';
-            $scope.$parent.activeMenuItem = 'workflows'; 
+            $scope.$parent.activeMenuItem = 'workflows';
+
+            //BPM element menu loading start
+            angular.element(function () {
+                window.initFunc();
+                $rootScope.subtoggleClass = 'full-toggled2';
+            });
+            $scope.triggerBpm = function () {
+                angular.element(function () {
+                    jQuery("#accordion").accordion({
+                        activate: function (event, ui) {
+                            window.myPaletteLevel1.requestUpdate();
+                            window.myPaletteLevel2.requestUpdate();
+                        }
+                    });
+                    window.myDiagram.requestUpdate();
+                    window.myPaletteLevel1.requestUpdate();
+                });
+            };
+            $scope.triggerBpm();
+            //BPM element menu loading end
+
+
             //Pagening Start
             $scope.requestModel = { //default page value
                 limit: "10",
@@ -63,6 +86,17 @@ angular.module('primeapps')
                 return data;
             };
             //Pagening End
+            $scope.toogleSideMenu = function () {
+                if ($scope.currentObj.subject) {
+                    var node = $scope.currentObj.subject.part.data;
+                    $scope.SelectedNodeItem = node;
+
+                    if (node) {
+                        $scope.showFormModal();
+                    }
+                }
+            };
+            //
 
 
             //Modal Start
