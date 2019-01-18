@@ -29,26 +29,9 @@ angular.module('primeapps')
                 });
 
             $stateProvider
-                .state('studio.home', {
-                    url: '/home',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/home/home.html',
-                            controller: 'HomeController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/home/homeController.js',
-                                cdnUrl + 'view/directory/directoryDirective.js'
-                            ]);
-                        }]
-                    }
-                })
 
                 .state('studio.allApps', {
-                    url: 'allApps',
+                    url: 'all-apps',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/allapps/allApps.html',
@@ -282,11 +265,19 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        init: function (LayoutService, $stateParams, $rootScope, genericInterceptor) {
+                            // LayoutService.getOrg()
+                            $rootScope.appId = $stateParams.appId;
+                            $rootScope.organizationId = $stateParams.orgId;
+
+
+                        },
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
-                        }]
+                        }],
+
                     }
                 })
                 .state('studio.app.overview', {
@@ -977,5 +968,5 @@ angular.module('primeapps')
             //conti
 
 
-            $urlRouterProvider.otherwise('/allApps');
+            $urlRouterProvider.otherwise('/all-apps');
         }]);

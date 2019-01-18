@@ -8,6 +8,11 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'modules';
+
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
+            $rootScope.breadcrumblist[2].title = 'Modules';
+
             $scope.modules = [];
             $scope.loading = true;
             $scope.requestModel = {
@@ -15,11 +20,9 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            $scope.itemTitle = $scope.requestModel *
-
-                ModuleService.count().then(function (response) {
-                    $scope.pageTotal = response.data;
-                });
+            ModuleService.count().then(function (response) {
+                $scope.pageTotal = response.data;
+            });
 
             ModuleService.find($scope.requestModel).then(function (response) {
                 $scope.modules = response.data;
@@ -30,7 +33,6 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-
                 ModuleService.find(requestModel).then(function (response) {
                     $scope.modules = response.data;
                     $scope.loading = false;

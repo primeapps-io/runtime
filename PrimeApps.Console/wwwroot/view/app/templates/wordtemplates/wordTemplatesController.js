@@ -8,6 +8,11 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Templates";
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesWord';
+
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
+            $rootScope.breadcrumblist[2].title = 'Excel Templates';
+
             $scope.loading = true;
 
             $scope.requestModel = {
@@ -24,7 +29,7 @@ angular.module('primeapps')
             WordTemplatesService.find($scope.requestModel, 3).then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($scope.$parent.modules, {name: template.module}, true)[0];
                 });
                 $scope.templates = templates;
 
@@ -41,7 +46,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($scope.$parent.modules, {name: template.module}, true)[0];
                     });
                     $scope.templates = templates;
 
@@ -90,7 +95,7 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            { title: 'Template Files', extensions: 'doc,docx' }
+                            {title: 'Template Files', extensions: 'doc,docx'}
                         ],
                         max_file_size: '10mb'
                     }
@@ -131,7 +136,7 @@ angular.module('primeapps')
                         }
                     }
                 }
-            } ;
+            };
 
             $scope.save = function (uploadForm) {
 
@@ -262,12 +267,32 @@ angular.module('primeapps')
                 noteModule.label_en_plural = 'Notes';
                 noteModule.order = 9999;
                 noteModule.fields = [];
-                noteModule.fields.push({ id: 1, name: 'text', label_tr: 'Not', label_en: 'Note' });
-                noteModule.fields.push({ id: 2, name: 'first_name', label_tr: 'Oluşturan - Adı', label_en: 'First Name' });
-                noteModule.fields.push({ id: 3, name: 'last_name', label_tr: 'Oluşturan - Soyadı', label_en: 'Last Name' });
-                noteModule.fields.push({ id: 4, name: 'full_name', label_tr: 'Oluşturan - Adı Soyadı', label_en: 'Full Name' });
-                noteModule.fields.push({ id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email' });
-                noteModule.fields.push({ id: 6, name: 'created_at', label_tr: 'Oluşturulma Tarihi', label_en: 'Created at' });
+                noteModule.fields.push({id: 1, name: 'text', label_tr: 'Not', label_en: 'Note'});
+                noteModule.fields.push({
+                    id: 2,
+                    name: 'first_name',
+                    label_tr: 'Oluşturan - Adı',
+                    label_en: 'First Name'
+                });
+                noteModule.fields.push({
+                    id: 3,
+                    name: 'last_name',
+                    label_tr: 'Oluşturan - Soyadı',
+                    label_en: 'Last Name'
+                });
+                noteModule.fields.push({
+                    id: 4,
+                    name: 'full_name',
+                    label_tr: 'Oluşturan - Adı Soyadı',
+                    label_en: 'Full Name'
+                });
+                noteModule.fields.push({id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email'});
+                noteModule.fields.push({
+                    id: 6,
+                    name: 'created_at',
+                    label_tr: 'Oluşturulma Tarihi',
+                    label_en: 'Created at'
+                });
 
                 module.relatedModules.push(noteModule);
             };
@@ -285,19 +310,19 @@ angular.module('primeapps')
                 module.relatedModules = [];
 
                 if (module.name === 'quotes') {
-                    var quoteProductsModule = $filter('filter')($scope.modules, { name: 'quote_products' }, true)[0];
+                    var quoteProductsModule = $filter('filter')($scope.modules, {name: 'quote_products'}, true)[0];
                     getLookupModules(quoteProductsModule);
                     module.relatedModules.push(quoteProductsModule);
                 }
 
                 if (module.name === 'sales_orders') {
-                    var orderProductsModule = $filter('filter')($scope.modules, { name: 'order_products' }, true)[0];
+                    var orderProductsModule = $filter('filter')($scope.modules, {name: 'order_products'}, true)[0];
                     getLookupModules(orderProductsModule);
                     module.relatedModules.push(orderProductsModule);
                 }
 
                 angular.forEach(module.relations, function (relation) {
-                    var relatedModule = $filter('filter')($scope.modules, { name: relation.related_module }, true)[0];
+                    var relatedModule = $filter('filter')($scope.modules, {name: relation.related_module}, true)[0];
 
                     if (relation.deleted || !relatedModule || relatedModule.order === 0)
                         return;

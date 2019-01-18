@@ -4,10 +4,16 @@ angular.module('primeapps')
 
     .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
         function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
+
             $scope.templateModules = $filter('filter')($scope.$parent.modules, { deleted: false });
             $scope.$parent.menuTopTitle = "Templates";
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
+
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[2].title = 'Email Templates';
+
             $scope.loading = true;
             $scope.newtemplate = {};
             $scope.newtemplate.system_type = 'custom';

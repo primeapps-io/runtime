@@ -9,6 +9,10 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "dependencies";
 
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[2].title = 'Dependencies';
+
             $scope.loading = true;
             $scope.picklist = [];
             $scope.picklistsModule = {};

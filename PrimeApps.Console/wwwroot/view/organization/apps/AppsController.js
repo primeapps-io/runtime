@@ -5,7 +5,12 @@ angular.module('primeapps')
     .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$cookies',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $cookies) {
 
+
             var organizationId = $location.search().organizationId;
+
+            $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
+            $rootScope.breadcrumblist[1] = {};
+            $rootScope.breadcrumblist[2] = {};
 
             if (!organizationId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
@@ -15,12 +20,7 @@ angular.module('primeapps')
 
             $cookies.put('organization_id', organizationId);
 
-            $rootScope.breadcrumbListe[0] =
-                {
-                    title: 'First Organization',
-                    link: '#/allApps'
-                }
-            ;
+
 
             $scope.appsFilter = {
                 organization_id: $state.params.organizationId,
