@@ -1,4 +1,5 @@
-﻿﻿'use strict';
+﻿﻿
+'use strict';
 angular.module('primeapps')
 
     .config(['$stateProvider', '$urlRouterProvider',
@@ -631,7 +632,7 @@ angular.module('primeapps')
                     }
                 })
                 .state('studio.app.moduleprofilesettings', {
-                    url: '/moduleprofilesettings',
+                    url: '/moduleprofilesettings/:module',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/modules/moduleProfileSettings.html',

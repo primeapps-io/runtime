@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -16,10 +17,13 @@ namespace PrimeApps.Console.Controllers
 	public class ModuleProfileSettingController : DraftBaseController
     {
         private IModuleProfileSettingRepository _moduleProfileSettingRepository;
+        private IConfiguration _configuration;
 
-        public ModuleProfileSettingController(IModuleProfileSettingRepository moduleProfileSettingRepository)
+
+        public ModuleProfileSettingController(IModuleProfileSettingRepository moduleProfileSettingRepository, IConfiguration configuration)
         {
             _moduleProfileSettingRepository = moduleProfileSettingRepository;
+            _configuration = configuration;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)

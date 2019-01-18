@@ -1,34 +1,24 @@
 <div class="setup-title">
-    <h2>Workflows</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Workflows</button>
+    <h2>Module Profile Settings</h2>
+    <button class="btn add-button" ng-click="showFormModal(profileSetting)"><i class="fas fa-plus"></i> Modül Profil Ayarı Ekle</button>
 </div>
 <div class="tab-content">
     <table class="table">
         <thead>
             <tr>
-                <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                <th>{{'Setup.Modules.RelationType' | translate}}</th>
-                <th style="min-width: 110px;"></th>
+                <th>{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}</th>
+                <th>{{'Setup.UserCustomShares.CreatedDate' | translate}}</th>
             </tr>
         </thead>
         <tbody>
-            <!--<tr ng-repeat="workflow in workflows">-->
-                <!--<td>{{workflow.name}}</td>-->
-                <!--<td>{{workflow.moduleStr}}</td>-->
-                <!--<td>{{workflow.operationsStr}}</td>-->
-                <!--<td>{{workflow.statusStr}}</td>-->
-                <!--<td class="text-right">-->
-                    <!--<a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |-->
-                        <!--translate}}</a>-->
-                    <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"-->
-                            <!--action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"-->
-                            <!--confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">-->
-                        <!--{{'Common.Remove' | translate}}-->
-                    <!--</button>-->
-                <!--</td>-->
-            <!--</tr>-->
+            <tr ng-repeat="profileSetting in profileSettings">
+                <td>{{profileSetting.profileName}}</td>
+                <td>{{profileSetting.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                <td class="text-right">
+                    <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(profileSetting)">{{'Common.Edit' | translate}}</button>
+                    <button type="button" class="btn btn-xs btn-custom" href confirm-click action="delete(profileSetting)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</button>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="row table-pagination">
