@@ -268,7 +268,7 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            EmailTemplatesService.count(2).then(function (response) {
+            EmailTemplatesService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
 

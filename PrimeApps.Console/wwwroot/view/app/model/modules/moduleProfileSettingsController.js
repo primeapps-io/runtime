@@ -13,11 +13,60 @@ angular.module('primeapps')
                 return;
             }
 
+            $scope.requestModel = {
+                limit: '10',
+                offset: 0
+            };
+
+            ModuleService.profileSettingsCount(module.id).then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+            //2 templateType Module
+            ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
+                var templates = response.data;
+                angular.forEach(templates, function (template) {
+                    template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                });
+                $scope.templates = templates;
+
+            }).finally(function () {
+                $scope.loading = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+                ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
+                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
+                    for(var i = 0; i < data.length ; i++){
+                        for(var j=0; j<data[i].profile_list.length ; j++){
+                            var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            if(!data[i].profileName)
+                                data[i].profileName = profileName;
+                            else
+                                data[i].profileName += ', ' + profileName;
+                        }
+                    }
+                    $scope.profileSettings = data;
+                    $scope.profileSettingState = angular.copy($scope.profileSettings);
+                    $scope.loading = false;
+
+                }).finally(function () {
+                    $scope.loading = false;
+                });
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1);
+            };
+
             $scope.module = angular.copy(module);
 
             var getModuleProfileSettings = function () {
-                ModuleService.getAllModuleProfileSettings()
-                    .then(function (response) {
+                ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
                         var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
                         for(var i = 0; i < data.length ; i++){
                             for(var j=0; j<data[i].profile_list.length ; j++){

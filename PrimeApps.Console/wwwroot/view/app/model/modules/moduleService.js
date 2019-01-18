@@ -12,6 +12,12 @@ angular.module('primeapps')
                 find: function (data) {
                     return $http.post(config.apiUrl + 'module/find', data);
                 },
+                profileSettingsCount: function (id) {
+                    return $http.get(config.apiUrl + 'module_profile_settings/count/' + id);
+                },
+                profileSettingsFind: function (data) {
+                    return $http.post(config.apiUrl + 'module_profile_settings/find', data);
+                },
                 moduleCreate: function (module) {
                     return $http.post(config.apiUrl + 'module/create', module);
                 },

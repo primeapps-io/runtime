@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -88,6 +89,28 @@ namespace PrimeApps.Console.Controllers
             await _moduleProfileSettingRepository.DeleteSoft(moduleProfileSettingEntity);
 
             return Ok();
+        }
+
+        [Route("count/{id:int}"), HttpGet]
+        public async Task<IActionResult> Count(int id)
+        {
+            var count = await _moduleProfileSettingRepository.Count(id);
+
+            //if (count < 1)
+            //	return NotFound(count);
+
+            return Ok(count);
+        }
+
+        [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        {
+            var templates = await _moduleProfileSettingRepository.Find(paginationModel);
+
+            //if (templates == null)
+            //	return NotFound();
+
+            return Ok(templates);
         }
     }
 }
