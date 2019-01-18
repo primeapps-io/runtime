@@ -15,18 +15,18 @@ angular.module('primeapps')
 
             $cookies.put('app_id', $scope.appId);
 
-            if ($scope.appId != ($localStorage.get("currentApp") != null ? $localStorage.get("currentApp").id : false)) {
+            if ($scope.appId != ($localStorage.get("current_app") != null ? $localStorage.get("current_app").id : false)) {
                 $http.get(config.apiUrl + "app/get/" + $scope.appId).then(function (result) {
                     if (result.data) {
                         $scope.menuTopTitle = result.data.label;
-                        $localStorage.set("currentApp", result.data);
+                        $localStorage.set("current_app", result.data);
                         $rootScope.breadcrumbListe[1].title = result.data.label;
                         $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/overview';
                     }
                 });
             } else {
                 $scope.setTopTitle = function (link) {
-                    $scope.menuTopTitle = $localStorage.get("currentApp").label;
+                    $scope.menuTopTitle = $localStorage.get("current_app").label;
                     $rootScope.breadcrumbListe[1].title = $scope.menuTopTitle;
                     $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/' + link;
                 }

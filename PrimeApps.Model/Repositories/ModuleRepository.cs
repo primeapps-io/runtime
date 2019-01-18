@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Count()
         {
             var count = await DbContext.Modules
-               .Where(x => !x.Deleted).CountAsync();
+               .Where(x => !x.Deleted && x.Order != 0).CountAsync();
             return count;
         }
 
@@ -407,7 +407,8 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Module> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
             return DbContext.Modules
-                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
+                 .Where(x => !x.Deleted && x.Order != 0)
+                 .OrderByDescending(x => x.Id);
 
         }
 
@@ -420,5 +421,5 @@ namespace PrimeApps.Model.Repositories
             return module.Fields;
         }
     }
-    
+
 }
