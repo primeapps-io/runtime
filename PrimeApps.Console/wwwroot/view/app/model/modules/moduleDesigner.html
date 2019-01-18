@@ -40,7 +40,7 @@
                                         <span class="action-buttons pull-right">
                                 <a href ng-click="showSectionModal(row.section)" class="action-icon"
                                    title="{{'Common.Edit' | translate}}"><i class="fas fa-pen-alt"></i></a>
-                                <i class="action-icon fas fa-trash"
+                                <i class="fas fa-trash disabled"
                                    ng-if="!row.hasPrimaryField && !row.hasSystemRequiredField" confirm-click
                                    action="deleteSection(row.section.name)" placement="left"
                                    confirm-message="{{'Common.AreYouSure' | translate}}"
@@ -221,11 +221,13 @@
                                 </span>
                                                 </div>
                                             </div>
-                                            <div class="new-field" ng-click="showFieldModal(row, column)">
-                                                <span>
-                                                      <i class="fas fa-plus"></i>{{'Setup.Modules.NewField' |
-                                                    translate}}</span>
-                                            </div>
+
+                                            <!--<div class="new-field" ng-click="showFieldModal(row, column)">-->
+                                            <!--<span>-->
+                                            <!--<i class="fas fa-plus"></i>{{'Setup.Modules.NewField' |-->
+                                            <!--translate}}</span>-->
+                                            <!--</div>-->
+
                                         </div>
                                     </div>
                                 </div>

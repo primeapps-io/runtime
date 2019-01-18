@@ -34,7 +34,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             {}
         ];
 
-        
+
 
         LayoutService.me()
             .then(function (response) {
@@ -52,6 +52,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             });
 
         $scope.changeOrganization = function (organization) {
+            $scope.menuOpen = [];
             $rootScope.currentOrganization = organization;
         };
 
