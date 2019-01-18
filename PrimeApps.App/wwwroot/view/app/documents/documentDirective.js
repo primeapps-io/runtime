@@ -147,7 +147,7 @@ angular.module('primeapps')
                             DocumentService.getDocument(document.id)
                                 .then(function (doc) {
                                     if (doc.data) {
-                                        $window.open("/api/storage/download?fileId=" + document.id, "_blank");
+                                        $window.open("/api/storage/download?fileId=" + document.id, "_blank" + "document");
                                         //var downloadUrl = $scope.getDownloadUrl(document);
                                         //if(downloadUrl){
                                         //$window.location = downloadUrl;
@@ -219,13 +219,13 @@ angular.module('primeapps')
                         var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
-                            url: config.apiUrl + 'storage/upload_whole',
-                            headers: {
-                                'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                "Content-Type": "application/json", "Accept": "application/json",
-                                'X-Tenant-Id': $cookies.get('tenant_id')
-                            }
-                        });
+                                url: config.apiUrl + 'storage/upload_whole',
+                                headers: {
+                                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                                    "Content-Type": "application/json", "Accept": "application/json",
+                                    'X-Tenant-Id': $cookies.get('tenant_id')
+                                }
+                            });
 
                         uploader.onCompleteItem = function (fileItem, response, status, headers) {
                             if (status === 200) {

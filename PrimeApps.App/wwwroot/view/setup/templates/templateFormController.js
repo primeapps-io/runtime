@@ -87,13 +87,13 @@ angular.module('primeapps')
             $scope.fileUpload = {
                 settings: {
                     runtimes: 'html5',
-                    url: config.apiUrl + 'document/Upload',
+                    url: config.apiUrl + 'storage/upload_template',
                     chunk_size: '5mb',
                     multipart: true,
                     unique_names: true,
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json',
+                        "Content-Type": "application/json", "Accept": "application/json",
                         'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     filters: {
@@ -146,13 +146,13 @@ angular.module('primeapps')
             $scope.fileUploadExcel = {
                 settings: {
                     runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload_Excel',
+                    url: config.apiUrl + 'storage/upload_template',
                     chunk_size: '5mb',
                     multipart: true,
                     unique_names: true,
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json',
+                        "Content-Type": "application/json", "Accept": "application/json",
                         'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     filters: {

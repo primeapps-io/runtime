@@ -177,6 +177,45 @@ namespace PrimeApps.App.Controllers
             return NotFound();
         }
 
+        [HttpPost("upload_template")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadTemplate()
+        {
+            var parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("template", AppUser.TenantId);
+
+            //if it is successfully parsed continue.
+            if (parser.Success)
+            {
+                if (parser.FileContents.Length <= 0)
+                {
+                    //check the file size if it is 0 bytes then return client with that error code.
+                    return BadRequest();
+                }
+
+                var ext = Path.GetExtension(parser.Filename);
+                var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, uniqueName, stream);
+                }
+
+                var result = new DocumentUploadResult
+                {
+                    ContentType = parser.ContentType,
+                    UniqueName = uniqueName,
+                    Chunks = 0
+                };
+
+                //return content type of the file to the client
+                return Ok(result);
+            }
+
+            //this request invalid because there is no file, return fail code to the client.
+            return NotFound();
+        }
+
         [Route("download")]
         public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int FileId)
         {
@@ -184,6 +223,27 @@ namespace PrimeApps.App.Controllers
             if (doc != null)
             {
                 return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
+            }
+            else
+            {
+                //there is no such file, return
+                throw new Exception("Document does not exist in the storage!");
+            }
+        }
+
+        [Route("download_template")]
+        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int FileId, string tempType)
+        {
+            var type = "";
+            if (tempType == "excel")
+                type = ".xlsx";
+            else
+                type = ".docx";
+
+            var temp = await _templateRepository.GetById(FileId);
+            if (temp != null)
+            {
+                return await _storage.Download(UnifiedStorage.GetPath("template", AppUser.TenantId), temp.Content, temp.Name + type);
             }
             else
             {
@@ -380,6 +440,48 @@ namespace PrimeApps.App.Controllers
 
                 //return content type.
                 return Ok(user_image);
+            }
+            //this is not a valid request so return fail.
+            return Ok("Fail");
+        }
+
+        [Route("upload_logo"), HttpPost]
+        public async Task<IActionResult> UploadLogo()
+        {
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("logo", AppUser.TenantId);
+
+            if (parser.Success)
+            {
+                //if succesfully parsed, then continue to thread.
+                if (parser.FileContents.Length <= 0)
+                {
+                    //if file is invalid, then stop thread and return bad request status code.
+                    return BadRequest();
+                }
+
+                var uniqueName = string.Empty;
+                //get the file name from parser
+                if (parser.Parameters.ContainsKey("name"))
+                {
+                    uniqueName = parser.Parameters["name"];
+                }
+
+                if (string.IsNullOrEmpty(uniqueName))
+                {
+                    var ext = Path.GetExtension(parser.Filename);
+                    uniqueName = Guid.NewGuid() + ext;
+                }
+
+                var logo = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, logo, stream);
+                }
+
+                //return content type.
+                return Ok(logo);
             }
             //this is not a valid request so return fail.
             return Ok("Fail");
