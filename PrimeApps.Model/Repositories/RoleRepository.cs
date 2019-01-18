@@ -41,19 +41,19 @@ namespace PrimeApps.Model.Repositories
 			DbContext.Roles.Add(newRole);
 			var result = await DbContext.SaveChangesAsync();
 
-			if (result > 0)
-			{
-				//if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-				//	throw new Exception("Warehouse cannot be null during create/update/delete record.");
+			//if (result > 0)
+			//{
+			//	//if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+			//	//	throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-				if (_warehouse?.DatabaseName != "0")
-				{
-					BackgroundJob.Enqueue(() => _warehouse.CreateRole(newRole.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
-				}
-				return newRole.Id;
-			}
+			//	if (_warehouse?.DatabaseName != "0")
+			//	{
+			//		BackgroundJob.Enqueue(() => _warehouse.CreateRole(newRole.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
+			//	}
+			//	return newRole.Id;
+			//}
 
-			return -1;
+			return result;
 		}
 
 		public async Task<Role> GetWithCode(string code)
@@ -195,11 +195,11 @@ namespace PrimeApps.Model.Repositories
 			{
 				var result = await DbContext.SaveChangesAsync();
 
-				if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-				{
-					if (_warehouse?.DatabaseName != "0")
-						BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser));
-				}
+				//if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+				//{
+				//	if (_warehouse?.DatabaseName != "0")
+				//		BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser));
+				//}
 			}
 		}
 
@@ -408,16 +408,16 @@ namespace PrimeApps.Model.Repositories
 
 			var result = await DbContext.SaveChangesAsync();
 
-			if (result > 0)
-			{
-				if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-					throw new Exception("Warehouse cannot be null during create/update/delete record.");
+			//if (result > 0)
+			//{
+			//	if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+			//		throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-				if (_warehouse?.DatabaseName != "0")
-				{
-					BackgroundJob.Enqueue(() => _warehouse.UpdateRole(roleToUpdate.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
-				}
-			}
+			//	if (_warehouse?.DatabaseName != "0")
+			//	{
+			//		BackgroundJob.Enqueue(() => _warehouse.UpdateRole(roleToUpdate.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
+			//	}
+			//}
 		}
 	}
 }

@@ -84,15 +84,15 @@ namespace PrimeApps.Model.Repositories
             var sql = RecordHelper.GenerateRevertSql(import.Module.Name, import.Id);
             var result = await DbContext.Database.ExecuteSqlCommandAsync(sql);
 
-            if (result > 0)
-            {
-                // Create warehouse record
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    // Create warehouse record
+            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.ImportRevert(import.Id, _warehouse.DatabaseName, import.Module.Name, CurrentUser));
-            }
+            //    if (_warehouse.DatabaseName != "0")
+            //        BackgroundJob.Enqueue(() => _warehouse.ImportRevert(import.Id, _warehouse.DatabaseName, import.Module.Name, CurrentUser));
+            //}
 
             return result;
         }

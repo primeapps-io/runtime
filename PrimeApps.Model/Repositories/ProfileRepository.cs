@@ -96,16 +96,16 @@ namespace PrimeApps.Model.Repositories
             DbContext.Profiles.Add(newProfile);
             var result = await DbContext.SaveChangesAsync();
 
-            if (result > 0)
-            {
-                //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //    //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse?.DatabaseName != "0")
-                {
-                    BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
-                }
-            }
+            //    if (_warehouse?.DatabaseName != "0")
+            //    {
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+            //    }
+            //}
         }
 
         public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
@@ -178,16 +178,16 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.SaveChangesAsync();
 
-            if (result > 0)
-            {
-                //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //    //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse?.DatabaseName != "0")
-                {
-                    BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
-                }
-            }
+            //    if (_warehouse?.DatabaseName != "0")
+            //    {
+            //        BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+            //    }
+            //}
         }
 
         /// <summary>
