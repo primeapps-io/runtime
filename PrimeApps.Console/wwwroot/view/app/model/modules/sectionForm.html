@@ -1,12 +1,27 @@
 <div class="modal setup-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form name="sectionForm" class="form-horizontal form-custom" ng-submit="saveSection(sectionForm); showAdvancedOptionsSection = false;" autocomplete="off" novalidate>
-                <div class="modal-header">
-                    <h4 class="modal-title">{{'Setup.Modules.EditSection' | translate}}</h4>
-                </div>
+    <form name="sectionForm" class="form-horizontal form-custom"
+          ng-submit="saveSection(sectionForm); showAdvancedOptionsSection = false;" autocomplete="off" novalidate>
+
+        <div class="modal-header">
+            <div class="col-sm-8">
+                <h4 class="modal-title">{{'Setup.Modules.EditSection' | translate}}</h4>
+            </div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="button" class="btn btn-radius btn-gray"
+                        ng-click="cancelSection(); showAdvancedOptionsSection = false;">{{'Common.Cancel' |
+                    translate}}
+                </button>
+                <button type="submit" class="btn btn-radius btn-blue"><i class="fa fa-check-circle pull-left"></i>
+                    {{'Common.Save' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-dialog">
+            <div class="modal-content padding-0">
                 <div class="modal-body">
-                    <div class="form-group" ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">
+                    <div class="form-group"
+                         ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">
                         <label class="col-sm-4 required-field">* {{'Setup.Modules.SectionName' | translate}}:</label>
                         <input type="text"
                                name="label"
@@ -26,7 +41,8 @@
                                 ng-options="o for o in [1,2]">
                         </select>
                     </div>
-                    <a href class="advanced-options-link" ng-click="showAdvancedOptionsSection = !showAdvancedOptionsSection">
+                    <a href class="advanced-options-link"
+                       ng-click="showAdvancedOptionsSection = !showAdvancedOptionsSection">
                         {{'Setup.Modules.AdvancedOptions' | translate}}
                         <i class="fa fa-caret-right" ng-if="!showAdvancedOptionsSection"></i>
                         <i class="fa fa-caret-down" ng-if="showAdvancedOptionsSection"></i>
@@ -44,10 +60,12 @@
                             <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}:</label>
                             <div class="col-sm-8" style="padding-left: 0;">
                                 <label class="checkbox-inline">
-                                    <input type="checkbox" ng-model="currentSection.display_form"> {{'Setup.Modules.DisplayForm' | translate}}
+                                    <input type="checkbox" ng-model="currentSection.display_form">
+                                    {{'Setup.Modules.DisplayForm' | translate}}
                                 </label>
                                 <label class="checkbox-inline">
-                                    <input type="checkbox" ng-model="currentSection.display_detail"> {{'Setup.Modules.DisplayDetail' | translate}}
+                                    <input type="checkbox" ng-model="currentSection.display_detail">
+                                    {{'Setup.Modules.DisplayDetail' | translate}}
                                 </label>
                             </div>
                             <div class="col-sm-12">
@@ -98,16 +116,15 @@
                     <div class="form-group" ng-show="sectionForm.$submitted && sectionForm.$invalid">
                         <div class="col-sm-12">
                             <div class="callout callout-danger">
-                                <p ng-if="sectionForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}:</p>
+                                <p ng-if="sectionForm.$error.required">{{'Setup.Modules.RequiredError' |
+                                    translate}}:</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-custom" ng-click="cancelSection(); showAdvancedOptionsSection = false;">{{'Common.Cancel' | translate}}</button>
-                    <button type="submit" class="btn btn-w-md btn-primary"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
-                </div>
-            </form>
+
+            </div>
         </div>
-    </div>
+    </form>
+
 </div>
