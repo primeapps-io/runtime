@@ -48,6 +48,11 @@
                 </div>
             </nav>
         </div>
+
+        <div>
+            {{requestModel.limit}} of {{pageTotal}} items
+        </div>
+
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

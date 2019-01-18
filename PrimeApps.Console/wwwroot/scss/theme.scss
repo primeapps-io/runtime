@@ -34,6 +34,12 @@ button, select {
   align-items: center;
   z-index: 1;
   background: rgba(0,0,0,0.1);
+  .page-loading-table{
+    width: 25%;
+    i{
+      font-size: 30px;
+    }
+  }
 }
 .margin-right-10{
   margin-right: 10px;
@@ -889,6 +895,16 @@ $primeapps-color: #0D6FAA;
       .col-sm-rigth {
         justify-content: flex-end;
         padding: 0px;
+        .btn-gray{
+          &:hover{
+             background-color: rgba(0, 0, 0, 0.50);;
+          }
+        }
+        .btn-blue{
+          &:hover{
+             background-color:rgba(13, 111, 170, 0.90);
+          }
+        }
       }
 
       h4 {
@@ -1573,7 +1589,7 @@ $primeapps-color: #0D6FAA;
       margin-left: 0px;
       overflow-x: inherit; //scroll kapalı halı
       overflow-y: inherit;
-      z-index: 2000;
+      z-index: 1000;
       background: url("../images/primeapps/menu_background.png") !important;
       background-repeat: repeat !important;
 

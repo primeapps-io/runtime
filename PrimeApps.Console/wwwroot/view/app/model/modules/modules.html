@@ -12,9 +12,9 @@
     </div>
 </div>
 
-<div class="tab-content" >
-    <div class="loader-tab-out">
-        <div ng-show="!loading" class="page-loading-table"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+<div class="tab-content">
+    <div class="loader-tab-out" ng-show="loading">
+        <div class="page-loading-table"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
     </div>
 
 
@@ -54,11 +54,7 @@
             </td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" class="action-buttons-delete"
-                            data-trigger="hover" data-type="info"
-                            data-title="Delete" bs-tooltip data-placement="top"
-                            placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true"
-                            aria-expanded="false">
+                    <button ng-click="$event.stopPropagation(); delete(module)" type="button" class="action-buttons-delete" >
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -111,8 +107,9 @@
                                 {{'Setup.Modules.ActionButtons' | translate}}
                             </a>
                         </li>
-<li>
-                            <a ng-click="$event.stopPropagation();" href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{module.name}}">
+                        <li>
+                            <a ng-click="$event.stopPropagation();"
+                               href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{module.name}}">
                                 Modüle Profil Ayarları
                             </a>
                         </li>
@@ -145,7 +142,7 @@
             </nav>
         </div>
         <div>
-            {{requestModel.limit}} of {{pageTotal}} items
+            {{parseInt((requestModel.limit)) * parseInt(offset +1)}} of {{pageTotal}} items
         </div>
         <div>
             <span class="pagination-span">Items per page  </span>
