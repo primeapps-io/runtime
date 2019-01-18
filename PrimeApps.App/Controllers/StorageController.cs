@@ -122,10 +122,11 @@ namespace PrimeApps.App.Controllers
                     uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
 
                     response.Status = MultipartStatusEnum.Completed;
-                    if (objectType == ObjectType.NOTE) // Add here the types where publicURLs are required.
+                    if (objectType == ObjectType.NOTE || objectType == ObjectType.AVATAR || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
                         response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
                     }
+
                 }
             }
             catch (Exception)
@@ -341,6 +342,47 @@ namespace PrimeApps.App.Controllers
             return BadRequest("Couldn't Create Document!");
 
         }
+        [Route("upload_avatar"), HttpPost]
 
+        public async Task<IActionResult> UploadAvatar()
+        {
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("avatar", AppUser.TenantId);
+
+            if (parser.Success)
+            {
+                //if succesfully parsed, then continue to thread.
+                if (parser.FileContents.Length <= 0)
+                {
+                    //if file is invalid, then stop thread and return bad request status code.
+                    return BadRequest();
+                }
+
+                var uniqueName = string.Empty;
+                //get the file name from parser
+                if (parser.Parameters.ContainsKey("name"))
+                {
+                    uniqueName = parser.Parameters["name"];
+                }
+
+                if (string.IsNullOrEmpty(uniqueName))
+                {
+                    var ext = Path.GetExtension(parser.Filename);
+                    uniqueName = Guid.NewGuid() + ext;
+                }
+
+                var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, user_image, stream);
+                }
+
+                //return content type.
+                return Ok(user_image);
+            }
+            //this is not a valid request so return fail.
+            return Ok("Fail");
+        }
     }
 }
