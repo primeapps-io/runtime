@@ -105,7 +105,7 @@ namespace PrimeApps.App.Controllers
         [Route("count"), HttpPost]
         public async Task<int> Count([FromBody]BpmFindRequest request)
         {
-            return await _bpmRepository.Count(request);
+            return await _bpmRepository.Count();
         }
 
         [Route("create"), HttpPost]
