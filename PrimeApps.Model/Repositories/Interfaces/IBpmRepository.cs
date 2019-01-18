@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Bpm;
 using PrimeApps.Model.Entities.Tenant;
 
@@ -17,7 +18,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
 
         Task<ICollection<BpmWorkflow>> Find(BpmFindRequest request);
 
-        Task<int> Count(BpmFindRequest request);
+        Task<ICollection<BpmWorkflow>> FindForStudio(PaginationModel paginationModel);
+
+        Task<int> Count();
 
         Task<int> Create(BpmWorkflow note);
 
