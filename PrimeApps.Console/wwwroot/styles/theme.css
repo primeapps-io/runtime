@@ -5,8 +5,7 @@
   margin-left: -15px;
   margin-right: -15px;
   float: none;
-  clear: both;
-}
+  clear: both; }
 
 button, select {
   -webkit-transition: all 0.5s ease;
@@ -17,6 +16,19 @@ button, select {
 button:focus, select:focus {
   outline: none !important;
 }
+
+.loader-tab-out {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.1); }
+
+.margin-right-10 {
+  margin-right: 10px; }
 
 .primeapps .add-new-section {
   padding: 15px;
@@ -472,8 +484,7 @@ button:focus, select:focus {
 .primeapps .tab-content {
   border-radius: 5px;
   background: #FFF;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-}
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05); position: relative;}
 .primeapps .table {
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
