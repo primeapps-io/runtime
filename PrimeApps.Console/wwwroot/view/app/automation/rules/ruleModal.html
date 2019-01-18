@@ -4,10 +4,7 @@
         <div class="col-sm-6 col-sm-rigth">
             <button type="button" class="btn btn-radius btn-gray"
                     ng-click="cancel(); $parent.showAdvancedOptions = false;">
-                {{
-'Common.Cancel' |
-                translate
-                }}
+                {{'Common.Cancel' | translate}}
             </button>
             <button type="button" class="btn btn-radius btn-blue" ng-click="save();">
                 <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
@@ -1103,6 +1100,7 @@
                                                            class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
                                                     </span>
                                                 </div>
+
                                                 <!--<tags-input name="updateValue"-->
                                                 <!--ng-model="workflowModel.field_update.value"-->
                                                 <!--display-property="full_name"-->

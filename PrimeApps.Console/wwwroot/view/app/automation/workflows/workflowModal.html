@@ -1,0 +1,142 @@
+﻿<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+        <div class="col-sm-6"><h4 class="modal-title">{{'Setup.BpmWorkflow.NewRule' | translate}}</h4></div>
+        <div class="col-sm-6 col-sm-rigth">
+            <button type="button" class="btn btn-radius btn-gray"
+                    ng-click="cancel(); $parent.showAdvancedOptions = false;">
+                {{'Common.Cancel' | translate}}
+            </button>
+            <button type="button" class="btn btn-radius btn-blue" ng-click="save();">
+                <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
+            </button>
+        </div>
+
+    </div>
+    <div class="modal-dialog modal-900">
+        <div class="modal-content">
+            <div class="modal-contanier">
+                <div class="col-sm-2 modal-left-menu">
+                    <ul class="nav bs-sidenav" bs-scrollspy-list>
+                        <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.BpmWorkflow.RuleInformation' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.BpmWorkflow.FilterCriteria' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.BpmWorkflow.Actions' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? wizardStep = 3 : false); getSummary();">{{'Setup.BpmWorkflow.SummaryAndConfirmation' | translate}}</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-10">
+                    <form name="$parent.workflowForm" class="form-horizontal form-custom" ng-submit="saveField(workflowForm);"
+                          ng-if="!$parent.showPicklistForm" autocomplete="off" novalidate>
+                        <div class="section" ng-show="$parent.wizardStep == 0">
+                            <h4>{{'Setup.BpmWorkflow.RuleInformation' | translate}}</h4>
+                            <div class="panel">
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
+                                    <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
+                                    <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowModel.code" />
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
+                                    <select class="form-control"
+                                            name="module"
+                                            required
+                                            ng-model="workflowModel.module"
+                                            ng-change="selectModule()"
+                                            ng-disabled="id"
+                                            ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                        <option value="">{{'Common.Select' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                                    </label>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations()"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
+                                    </label><br>
+                                    <label class="checkbox-inline">
+                                        <input ng-change="operationUpdateChanged(workflowModel.operation.update)" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                                    </label><br>
+                                    <label class="checkbox-inline">
+                                        <input name="operation" type="checkbox" ng-model="workflowModel.operation.delete" ng-change="validateOperations()"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
+                                    </label>
+                                </div>
+                                <div ng-show="workflowModel.operation.update" class="form-group">
+                                    <label class="col-sm-3 control-label">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox">
+                                    </label>
+                                </div>
+                                <div ng-show="workflowModel.changed_field_checkbox && workflowModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
+                                    <label class="col-sm-4">
+                                        <span class="required-field">*</span> {{'Setup.BpmWorkflow.RelatedField' | translate}}:
+                                    </label>
+                                    <select class="form-control"
+                                            name="changed_field"
+                                            required
+                                            ng-model="workflowModel.changed_field"
+                                            ng-change=""
+                                            ng-disabled="!workflowModel.module"
+                                            ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                        <option value="">{{'Common.Select' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
+                                    <label class="radio-inline" ng-show="workflowModel.operation.update">
+                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation2" type="radio" ng-model="workflowModel.frequency" value="one_time">
+                                        {{'Setup.BpmWorkflow.ExecutionFrequencies.OneTime' | translate}}
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation2" type="radio" ng-model="workflowModel.frequency" value="continuous">
+                                        {{'Setup.BpmWorkflow.ExecutionFrequencies.Continuous' | translate}}
+                                    </label>
+                                </div>
+                                <div class="form-group" ng-show="id && workflowModel.frequency == 'one_time'">
+                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" ng-model="workflowModel.delete_logs">
+                                    </label>
+                                </div>
+                                <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                    <div class="col-sm-4">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            <p ng-if="workflowForm.$error.operations">{{'Setup.BpmWorkflow.OperationRequiredError' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wizard-buttons text-right">
+                                    <button type="button" class="btn btn-primary btn-w-sm"
+                                            ng-click="validate() ? wizardStep = 1 : false;">
+                                        <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                        {{'Common.Next' | translate}}
+                                    </button>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="section" ng-show="$parent.wizardStep == 1">
+                            <h4>{{'Setup.BpmWorkflow.RuleInformation' | translate}}</h4>
+                            <div class="panel">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>

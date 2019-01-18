@@ -2,17 +2,16 @@
 
 angular.module('primeapps')
 
-	.controller('WorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', '$http', 'config',
-		function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, $http, config) {
+    .controller('WorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, $http, config) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
-			//$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
+            //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.workflows = [];
             $scope.$parent.workflows = [];
-			$scope.$parent.menuTopTitle = "Automation";
-			$scope.$parent.activeMenu = 'automation';
-			$scope.$parent.activeMenuItem = 'workflows';
-
+            $scope.$parent.menuTopTitle = "Automation";
+            $scope.$parent.activeMenu = 'automation';
+            $scope.$parent.activeMenuItem = 'workflows'; 
             //Pagening Start
             $scope.requestModel = { //default page value
                 limit: "10",
@@ -20,15 +19,16 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
-            WorkflowsService.count(organitzationId).then(function (response) {
+            WorkflowsService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            WorkflowsService.find($scope.requestModel, organitzationId).then(function (response) {
+            WorkflowsService.find($scope.requestModel).then(function (response) {
                 if (response.data) {
                     var data = fillModule(response.data);
 
-                    $scope.processes = data;
+                    $scope.workflows = data;
+                    $scope.$parent.workflows = data;
                     $scope.loading = false;
                 }
             });
@@ -42,7 +42,8 @@ angular.module('primeapps')
                 WorkflowsService.find(requestModel, organitzationId).then(function (response) {
                     var data = fillModule(response.data);
 
-                    $scope.rules = data;
+                    $scope.workflows = data;
+                    $scope.$parent.workflows = data;
                     $scope.loading = false;
                 });
 
@@ -55,7 +56,7 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($scope.modules, { id: moduleId }, true)[0];
+                    var module = $filter('filter')($scope.$parent.modules, { id: moduleId }, true)[0];
                     data[i].module = angular.copy(module);
                 }
 
@@ -63,19 +64,19 @@ angular.module('primeapps')
             };
             //Pagening End
 
-			
+
             //Modal Start
             $scope.showFormModal = function (id) {
                 if (id) {
                     $scope.id = id;
 
-                    selectRule();
+                    //selectRule();
 
                 }
 
                 $scope.formModal = $scope.formModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/automation/workflow/workflowModal.html',
+                    templateUrl: 'view/app/automation/workflows/workflowModal.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
@@ -98,5 +99,5 @@ angular.module('primeapps')
             };
 
             //Modal End
-		}
-	]);
+        }
+    ]);

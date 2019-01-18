@@ -35,6 +35,7 @@ namespace PrimeApps.Console.Controllers
         public BpmController(IConfiguration configuration, IBpmRepository bpmRepository, IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper)
         {
             _configuration = configuration;
+            _bpmRepository = bpmRepository;
             _workflowCoreRepository = workflowCoreRepository;
             _bpmHelper = bpmHelper;
 
@@ -81,7 +82,7 @@ namespace PrimeApps.Console.Controllers
             return Ok(bpmEntity);
         }
 
-        [Route("find"), HttpGet]
+        [Route("find"), HttpPost]
         public async Task<ICollection<BpmWorkflow>> Find([FromBody]PaginationModel request)
         {
             var bpmWorkflows = await _bpmRepository.FindForStudio(request);
@@ -89,7 +90,7 @@ namespace PrimeApps.Console.Controllers
             return bpmWorkflows;
         }
 
-        [Route("count"), HttpPost]
+        [Route("count"), HttpGet]
         public async Task<int> Count()
         {
             return await _bpmRepository.Count();
