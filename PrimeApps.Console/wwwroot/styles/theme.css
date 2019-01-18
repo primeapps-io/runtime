@@ -820,7 +820,11 @@ button, select {
 .primeapps #sidebar-wrapper ul {
   width: 250px; }
   .primeapps #sidebar-wrapper ul .open {
-    background-color: #121212; }
+    background-color: #121212;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease; }
     .primeapps #sidebar-wrapper ul .open ul {
       display: block; }
   .primeapps #sidebar-wrapper ul li {

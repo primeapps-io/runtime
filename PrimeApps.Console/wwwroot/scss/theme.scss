@@ -1340,7 +1340,7 @@ $primeapps-color: #0D6FAA;
 
       .open {
         background-color: #121212;
-
+        @include hoverEffect();
         ul {
           display: block;
         }

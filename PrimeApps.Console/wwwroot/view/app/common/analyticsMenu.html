@@ -1,24 +1,24 @@
 <ul class="nav nav-pills nav-stacked setup-nav">
     <li ng-class="activeMenuItem ==='reports' ? 'active' :''">
-        <a href="/#/app/5/reports" data-trigger="hover" data-type="info" data-title="Reports" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId }}/reports" data-trigger="hover" data-type="info" data-title="Reports" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Reports</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='dashboards' ? 'active' :''">
-        <a href="/#/app/5/dashboards" data-trigger="hover" data-type="info" data-title="Dashboards" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/dashboards" data-trigger="hover" data-type="info" data-title="Dashboards" bs-tooltip data-placement="right">
             <i class="fas fa-code-branch"></i>
             <span>Dashboards</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='warehouse' ? 'active' :''">
-        <a href="/#/app/5/warehouse" data-trigger="hover" data-type="info" data-title="Warehouse" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/warehouse" data-trigger="hover" data-type="info" data-title="Warehouse" bs-tooltip data-placement="right">
             <i class="fas fa-network-wired"></i>
             <span>Warehouse</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='bi' ? 'active' :''">
-        <a href="/#/app/5/bi" data-trigger="hover" data-type="info" data-title="BI" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/bi" data-trigger="hover" data-type="info" data-title="BI" bs-tooltip data-placement="right">
             <i class="fas fa-sliders-h"></i>
             <span>BI</span>
         </a>

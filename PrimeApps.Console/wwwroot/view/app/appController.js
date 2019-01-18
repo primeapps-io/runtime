@@ -5,7 +5,9 @@ angular.module('primeapps')
     .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q',
         function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q) {
 
+
             $scope.appId = $state.params.appId;
+            $scope.orgId = $state.params.orgId;
 
             if (!$scope.appId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});

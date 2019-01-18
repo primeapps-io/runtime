@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -51,6 +52,44 @@ namespace PrimeApps.Model.Repositories
             moduleProfileSetting.Deleted = true;
 
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> Count(int id)
+        {
+            var count = DbContext.ModuleProfileSettings
+               .Where(x => !x.Deleted && x.ModuleId == id).Count();
+            return count;
+        }
+
+        public async Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel)
+        {
+            var moduleProfilesSettings = GetPaginationGQuery(paginationModel)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(ModuleProfileSetting).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    moduleProfilesSettings = moduleProfilesSettings.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+            
+            return moduleProfilesSettings;
+
+        }
+
+        private IQueryable<ModuleProfileSetting> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+        {
+            return DbContext.ModuleProfileSettings
+                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
         }
     }
 }

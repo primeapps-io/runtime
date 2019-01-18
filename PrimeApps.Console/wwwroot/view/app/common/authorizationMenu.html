@@ -1,12 +1,12 @@
 <ul class="nav nav-pills nav-stacked setup-nav">
     <li ng-class="activeMenuItem ==='profiles' ? 'active' :''">
-        <a href="/#/app/5/profiles" data-trigger="hover" data-type="info" data-title="Profiles" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/profiles" data-trigger="hover" data-type="info" data-title="Profiles" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Profiles</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='roles' ? 'active' :''">
-        <a href="/#/app/5/roles" data-trigger="hover" data-type="info" data-title="Roles" bs-tooltip data-placement="right">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/roles" data-trigger="hover" data-type="info" data-title="Roles" bs-tooltip data-placement="right">
             <i class="fas fa-code-branch"></i>
             <span>Roles</span>
         </a>
