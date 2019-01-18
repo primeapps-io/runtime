@@ -167,22 +167,22 @@ namespace PrimeApps.Model.Repositories
 
                 result = await command.ExecuteNonQueryAsync();
 
-                if (result > 0)
-                {
-                    record["id"] = int.Parse(returnValue.NpgsqlValue.ToString());
-                    record["created_by"] = currentUserId;
-                    record["updated_by"] = currentUserId;
-                    record["created_at"] = now;
-                    record["updated_at"] = now;
-                    record["deleted"] = false;
+                //if (result > 0)
+                //{
+                //    record["id"] = int.Parse(returnValue.NpgsqlValue.ToString());
+                //    record["created_by"] = currentUserId;
+                //    record["updated_by"] = currentUserId;
+                //    record["created_at"] = now;
+                //    record["updated_at"] = now;
+                //    record["deleted"] = false;
 
-                    // Create warehouse record
-                    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                        throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                //    // Create warehouse record
+                //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                    if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.CreateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser));
-                }
+                //    if (_warehouse.DatabaseName != "0")
+                //        BackgroundJob.Enqueue(() => _warehouse.CreateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser));
+                //}
             }
 
             return result;
@@ -216,18 +216,18 @@ namespace PrimeApps.Model.Repositories
 
                 result = await command.ExecuteNonQueryAsync();
 
-                if (result > 0)
-                {
-                    record["updated_by"] = currentUserId;
-                    record["updated_at"] = now;
+                //if (result > 0)
+                //{
+                //    record["updated_by"] = currentUserId;
+                //    record["updated_at"] = now;
 
-                    // Update warehouse record
-                    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                        throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                //    // Update warehouse record
+                //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                    if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.UpdateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser, delete));
-                }
+                //    if (_warehouse.DatabaseName != "0")
+                //        BackgroundJob.Enqueue(() => _warehouse.UpdateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser, delete));
+                //}
             }
 
             return result;
@@ -291,15 +291,15 @@ namespace PrimeApps.Model.Repositories
                     throw;
                 }
 
-                if (result > 0)
-                {
-                    // Update warehouse record
-                    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                        throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                //if (result > 0)
+                //{
+                //    // Update warehouse record
+                //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                    if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.AddRelations(records, moduleName, relatedModuleName, _warehouse.DatabaseName, relationId));
-                }
+                //    if (_warehouse.DatabaseName != "0")
+                //        BackgroundJob.Enqueue(() => _warehouse.AddRelations(records, moduleName, relatedModuleName, _warehouse.DatabaseName, relationId));
+                //}
             }
 
             return result;
@@ -344,15 +344,15 @@ namespace PrimeApps.Model.Repositories
                         throw;
                 }
 
-                if (result > 0)
-                {
-                    // Update warehouse record
-                    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                        throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                //if (result > 0)
+                //{
+                //    // Update warehouse record
+                //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                    if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.DeleteRelation(record, moduleName, relatedModuleName, _warehouse.DatabaseName, relationId));
-                }
+                //    if (_warehouse.DatabaseName != "0")
+                //        BackgroundJob.Enqueue(() => _warehouse.DeleteRelation(record, moduleName, relatedModuleName, _warehouse.DatabaseName, relationId));
+                //}
             }
 
             return result;
@@ -474,15 +474,15 @@ namespace PrimeApps.Model.Repositories
             var sql = RecordHelper.GenerateBulkInsertSql(records, module, currentUserId, now);
             var result = await DbContext.Database.ExecuteSqlCommandAsync(sql);
 
-            if (result > 0)
-            {
-                // Create warehouse record
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    // Create warehouse record
+            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.CreateRecordBulk((int)records[0]["import_id"], _warehouse.DatabaseName, module.Name, CurrentUser));
-            }
+            //    if (_warehouse.DatabaseName != "0")
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateRecordBulk((int)records[0]["import_id"], _warehouse.DatabaseName, module.Name, CurrentUser));
+            //}
 
             return result;
         }

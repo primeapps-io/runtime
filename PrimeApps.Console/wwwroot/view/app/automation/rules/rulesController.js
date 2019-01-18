@@ -1671,24 +1671,6 @@ angular.module('primeapps')
                 $scope.dynamicfieldUpdateModules = angular.copy(dynamicfieldUpdateModules);
             };
 
-            var setWebHookModules = function () {
-                $scope.hookParameters = [];
-
-                $scope.hookModules = [];
-
-                angular.forEach($scope.updatableModules, function (module) {
-                    $scope.hookModules.push(module);
-                });
-
-                var parameter = {};
-                parameter.parameterName = null;
-                parameter.selectedModules = $scope.hookModules;
-                parameter.selectedField = null;
-                parameter.selectedModule = $scope.workflowModel.module;
-
-                $scope.hookParameters.push(parameter);
-            };
-
             $scope.operationUpdateChanged = function (status) {
                 if (!status) {
                     $scope.workflowModel.frequency = 'continuous';

@@ -8,11 +8,8 @@
                     Modules
                 </button>
             </li>
-
         </ul>
-
     </div>
-
 </div>
 <div class="tab-content">
     <table class="table">
@@ -27,10 +24,10 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
-            <td ui-sref="studio.app.moduledesigner({id:module.id})" class="text-center"><i
+        <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']" ui-sref="studio.app.moduledesigner({id:module.id})">
+            <td class="text-center"><i
                     class="{{module.menu_icon}}"></i></td>
-            <td ui-sref="studio.app.moduledesigner({id:module.id})">
+            <td>
                 <span>
                     {{module['label_' + language + '_plural']}}
                 </span>
@@ -38,19 +35,19 @@
                         {{module['label_' + language + '_plural']}}
                     </span>
             </td>
-            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{'Setup.Modules.Type-' + module.system_type
+            <td>{{'Setup.Modules.Type-' + module.system_type
                 | translate}}
             </td>
-            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.display ? ('Common.Yes' |
+            <td>{{module.display ? ('Common.Yes' |
                 translate) : ('Common.No' | translate)}}
             </td>
-            <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.sharing === 'private' ?
+            <td>{{module.sharing === 'private' ?
                 ('Setup.Modules.SharingPrivate' | translate) :
                 ('Setup.Modules.SharingPublic' | translate)}}
             </td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button type="button" class="action-buttons-delete" data-trigger="hover" data-type="info"
+                    <button ng-click="$event.stopPropagation();" type="button" class="action-buttons-delete" data-trigger="hover" data-type="info"
                             data-title="Delete" bs-tooltip data-placement="top"
                             placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true"
                             aria-expanded="false">
@@ -58,7 +55,7 @@
                     </button>
                 </div>
                 <div class="action-buttons-block">
-                    <button type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
+                    <button ng-click="$event.stopPropagation();" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
                             data-title="Edit" bs-tooltip data-placement="top"
                             placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
                             aria-expanded="false">
@@ -66,7 +63,7 @@
                     </button>
                 </div>
                 <div class="action-buttons-block">
-                    <button type="button" data-toggle="dropdown"
+                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
                             class="btn btn-xs btn-default list-action-button"
                             placement="bottom-right"
                             data-animation="am-flip-x"

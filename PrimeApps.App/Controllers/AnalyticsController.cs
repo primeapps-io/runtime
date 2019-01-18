@@ -110,12 +110,12 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var warehouse = await _warehousePlatformRepository.GetByTenantId(AppUser.TenantId);
+            //var warehouse = await _warehousePlatformRepository.GetByTenantId(AppUser.TenantId);
 
-            if (warehouse == null)
-                return NotFound();
+            //if (warehouse == null)
+            //    return NotFound();
 
-            _warehouseHelper.ChangePassword(request, warehouse);
+            //_warehouseHelper.ChangePassword(request, warehouse);
 
             return Ok();
         }
