@@ -118,7 +118,7 @@ angular.module('primeapps')
                             RulesService.get($scope.id)
                                 .then(function (workflow) {
                                     $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $scope.modules);
+                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $scope.modules, 0);
                                     $scope.workflowModel.operation = {};
 
                                     angular.forEach($scope.workflowModel.operations_array, function (value) {
@@ -205,7 +205,7 @@ angular.module('primeapps')
                     });
 
                 var module = angular.copy($scope.workflowModel.module);
-                $scope.module = ModuleService.getFieldsOperator(module, $scope.modules);
+                $scope.module = ModuleService.getFieldsOperator(module, $scope.modules, 0);
 
                 if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
                     $scope.showProcessFilter = true;
