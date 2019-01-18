@@ -1558,7 +1558,7 @@ angular.module('primeapps')
                         else {
                             var templateWord = templateResponse.data;
                             $scope.quoteTemplates = $filter('filter')(templateWord, { active: true }, true);
-                            $scope.isShownWarning = true;
+                            // $scope.isShownWarning = true; Bakılacak ATAKAN
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
                                 if (quoteTemplate.permissions.length > 0) {

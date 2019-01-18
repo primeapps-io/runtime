@@ -1570,7 +1570,6 @@ namespace PrimeApps.App.Controllers
             var moduleEntity = await _moduleRepository.GetByName(module);
             var Module = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
-            var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
             var fields = Module.Fields.OrderBy(x => x.Id).ToList();
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
@@ -1676,9 +1675,8 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = new MemoryStream())
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
             {
-                await blob.DownloadToStreamAsync(temp);
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
                 Worksheet worksheetData = workbook.Worksheets[0];
@@ -1841,7 +1839,6 @@ namespace PrimeApps.App.Controllers
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
-            var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
@@ -1948,9 +1945,8 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = new MemoryStream())
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
             {
-                await blob.DownloadToStreamAsync(temp);
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
                 Worksheet worksheetData = workbook.Worksheets[0];

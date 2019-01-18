@@ -9,7 +9,8 @@
                         name="template"
                         ng-model="$parent.$parent.quoteTemplate"
                         ng-required="true"
-                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true, isShown : true} track by o.id">
+                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true} track by o.id">
+                        <!--ng-options="o as o.name for o in quoteTemplates | filter:{active: true, $isShown : true} track by o.id">-->
                 </select>
             </div>
             <div class="modal-footer clearfix">

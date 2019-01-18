@@ -710,7 +710,7 @@ angular.module('primeapps')
                         else {
                             var templateExcel = templateResponse.data;
                             $scope.quoteTemplates = $filter('filter')(templateExcel, { active: true }, true);
-                            $scope.isShownWarning = true;
+                            // $scope.isShownWarning = true; BAKILACAK ATAKAN
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
                                 var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
