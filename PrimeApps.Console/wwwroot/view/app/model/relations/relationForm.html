@@ -1,18 +1,26 @@
 <div class="modal setup-modal" tabindex="-1" role="dialog">
     <form name="relationForm" class="form-horizontal form-custom" ng-submit="save(relationForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6">
+            <div class="flex-between">
                 <h4 class="modal-title">{{currentRelation.isNew ? ('Setup.Modules.NewRelation' | translate) : ('Setup.Modules.EditRelation' | translate)}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewRelationsFormModal.hide();">
+                                <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn btn-radius btn-blue " ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
+                                <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewRelationsFormModal.hide();">
-                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
-                    <i class="fas fa-save"></i>{{'Common.Save' | translate}}
-                </button>
-            </div>
+            
         </div>
+
         <div class="modal-dialog modal-600">
             <div class="modal-content padding-0">
                 <div class="modal-contanier">
