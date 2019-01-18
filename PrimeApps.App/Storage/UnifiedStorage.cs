@@ -24,11 +24,15 @@ namespace PrimeApps.App.Storage
 
         public enum ObjectType
         {
+            MAIL,
             ATTACHMENT,
             RECORD,
             TEMPLATE,
             ANALYTIC,
             IMPORT,
+            NOTE,
+            LOGO,
+            AVATAR,
             NONE
         }
 
@@ -38,8 +42,11 @@ namespace PrimeApps.App.Storage
             {ObjectType.TEMPLATE,"/templates/"},
             {ObjectType.ANALYTIC,"/analytics/"},
             {ObjectType.IMPORT,"/imports/"},
+            {ObjectType.NOTE,"/note/"},
+            {ObjectType.LOGO,"/logo/"},
+            {ObjectType.MAIL,"/mail/"},
+            {ObjectType.AVATAR,"/user_images/"},
             {ObjectType.NONE,""}
-
         };
 
         public UnifiedStorage(IAmazonS3 client)
@@ -58,7 +65,7 @@ namespace PrimeApps.App.Storage
         public async Task Upload(string bucket, string key, Stream stream)
         {
             await CreateBucketIfNotExists(bucket);
-
+            
             using (TransferUtility transUtil = new TransferUtility(_client))
             {
                 await transUtil.UploadAsync(stream, bucket, key);
@@ -191,11 +198,19 @@ namespace PrimeApps.App.Storage
         /// <returns></returns>
         public async Task CreateBucketIfNotExists(string bucket)
         {
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
+            string[] paths = bucket.Split('/');
+            string checkPath = "";
+
+            foreach (string path in paths)
             {
-                await _client.PutBucketAsync(bucket);
+                checkPath += $"{path}/";
+                bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, checkPath);
+                if (!exists)
+                {
+                    await _client.PutBucketAsync(checkPath);
+                }
             }
+
         }
         /// <summary>
         /// Deletes a bucket with everything under it.
@@ -228,7 +243,6 @@ namespace PrimeApps.App.Storage
 
             return _client.GetPreSignedURL(request);
         }
-
 
         /// <summary>
         /// Copies objects from one bucket to another.
@@ -283,6 +297,27 @@ namespace PrimeApps.App.Storage
             };
 
             return await _client.PutLifecycleConfigurationAsync(request);
+        }
+
+        public async Task<GetObjectResponse> GetObject(string bucket, string key)
+        {
+            return await _client.GetObjectAsync(new GetObjectRequest()
+            {
+                BucketName = bucket,
+                Key = key
+            });
+        }
+
+        /// <summary>
+        /// Checks if file(object) exists
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<bool> ObjectExists(string bucket, string key)
+        {
+            var response = await _client.GetAllObjectKeysAsync(bucket, key, null);
+            return response.Count > 0;
         }
 
         public static string GetMimeType(string name)
@@ -352,10 +387,11 @@ namespace PrimeApps.App.Storage
         }
 
 
-        public static string GetPath(string type, int tenant)
+        public static string GetPath(string type, int tenant, string extraPath = "")
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
-            return $"tenant{tenant}{pathMap[objectType]}";
+
+            return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)

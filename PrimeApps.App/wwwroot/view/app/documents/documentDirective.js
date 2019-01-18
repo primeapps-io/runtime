@@ -147,7 +147,7 @@ angular.module('primeapps')
                             DocumentService.getDocument(document.id)
                                 .then(function (doc) {
                                     if (doc.data) {
-                                        $window.open("/attach/download?fileId=" + document.id, "_blank");
+                                        $window.open("/api/storage/download?fileId=" + document.id, "_blank");
                                         //var downloadUrl = $scope.getDownloadUrl(document);
                                         //if(downloadUrl){
                                         //$window.location = downloadUrl;
@@ -162,7 +162,7 @@ angular.module('primeapps')
                         };
 
                         $scope.getDownloadUrl = function (document) {
-                            return config.apiUrl + 'Document/Download?fileID=' + document.id + '&access_token=' + $localStorage.read('access_token');
+                            return config.apiUrl + 'storage/download?fileID=' + document.id + '&access_token=' + $localStorage.read('access_token');
                         };
 
                         $scope.showLightBox = function (fileData, Index) {

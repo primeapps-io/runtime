@@ -27,7 +27,7 @@ using static PrimeApps.App.Storage.UnifiedStorage;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/storage"), Authorize]
-    public class StorageController : ApiBaseController
+    public class StorageController : MvcBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -75,18 +75,25 @@ namespace PrimeApps.App.Controllers
         {
             IFormFile file = form.Files.First();
             StringValues bucketName = $"tenant{AppUser.TenantId}",
-                chunksStr, uploadId, chunkStr, fileName, responseList, type;
+                chunksStr, uploadId, chunkStr, fileName, responseList, type, container;
             form.TryGetValue("chunks", out chunksStr);
             form.TryGetValue("chunk", out chunkStr);
             form.TryGetValue("name", out fileName);
             form.TryGetValue("upload_id", out uploadId);
             form.TryGetValue("response_list", out responseList);
             form.TryGetValue("type", out type);
+            form.TryGetValue("container", out container);
             ObjectType objectType = UnifiedStorage.GetType(type);
 
 
-            bucketName = GetPath(type, AppUser.TenantId);
-
+            if (!string.IsNullOrWhiteSpace(container))
+            {
+                bucketName = GetPath(type, AppUser.TenantId, container);
+            }
+            else
+            {
+                bucketName = GetPath(type, AppUser.TenantId);
+            }
 
             int chunk = 0,
                 chunks = 1;
@@ -115,13 +122,13 @@ namespace PrimeApps.App.Controllers
                     uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
 
                     response.Status = MultipartStatusEnum.Completed;
-                    if (objectType == ObjectType.ATTACHMENT)
+                    if (objectType == ObjectType.NOTE) // Add here the types where publicURLs are required.
                     {
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddMonths(3), Amazon.S3.Protocol.HTTP);
+                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _storage.AbortMultipartUpload(bucketName, fileName, uploadId);
                 response.Status = MultipartStatusEnum.Aborted;
@@ -135,7 +142,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = $"tenant{AppUser.TenantId}";
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -149,7 +156,10 @@ namespace PrimeApps.App.Controllers
                 var ext = Path.GetExtension(parser.Filename);
                 var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-                await _storage.Upload(bucketName, uniqueName, Request.Body);
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, uniqueName, stream);
+                }
 
                 var result = new DocumentUploadResult
                 {
@@ -166,6 +176,20 @@ namespace PrimeApps.App.Controllers
             return NotFound();
         }
 
+        [Route("download")]
+        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int FileId)
+        {
+            var doc = await _documentRepository.GetById(FileId);
+            if (doc != null)
+            {
+                return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
+            }
+            else
+            {
+                //there is no such file, return
+                throw new Exception("Document does not exist in the storage!");
+            }
+        }
 
         [Route("upload_hex"), HttpPost]
         [DisableRequestSizeLimit]
@@ -255,9 +279,12 @@ namespace PrimeApps.App.Controllers
 
             uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
-            MemoryStream bytesToStream = new MemoryStream(fileBytes);
             string bucketPath = UnifiedStorage.GetPath("", AppUser.TenantId);
-            await _storage.Upload(bucketPath, uniqueName, bytesToStream);
+
+            using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
+            {
+                await _storage.Upload(bucketPath, uniqueName, bytesToStream);
+            }
 
             Document currentDoc = new Document()
             {
@@ -314,8 +341,6 @@ namespace PrimeApps.App.Controllers
             return BadRequest("Couldn't Create Document!");
 
         }
-
-
 
     }
 }
