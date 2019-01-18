@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
+
             if (!$scope.appId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.allApps');
@@ -22,15 +23,13 @@ angular.module('primeapps')
                     if (result.data) {
                         $scope.menuTopTitle = result.data.label;
                         $localStorage.set("current_app", result.data);
-                        $rootScope.breadcrumbListe[1].title = result.data.label;
-                        $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/overview';
+
                     }
                 });
             } else {
                 $scope.setTopTitle = function (link) {
                     $scope.menuTopTitle = $localStorage.get("current_app").label;
-                    $rootScope.breadcrumbListe[1].title = $scope.menuTopTitle;
-                    $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/' + link;
+
                 }
             }
 

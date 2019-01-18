@@ -17,7 +17,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         });
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
-        }
+        };
+
 
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
@@ -28,12 +29,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.organizations = [];
         $scope.menuOpen = [];
-        $rootScope.breadcrumbListe = [
+        $rootScope.breadcrumblist = [
             {},
             {},
             {}
         ];
-
 
 
         LayoutService.me()
