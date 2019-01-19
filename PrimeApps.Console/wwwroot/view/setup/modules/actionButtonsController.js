@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$scope', '$filter', 'ngToast', '$modal', 'helper', '$cache', 'ModuleService', '$location',
-        function ($scope, $filter, ngToast, $modal, helper, $cache, ModuleService, $location) {
+    .controller('ActionButtonsController', ['$scope', '$filter', 'ngToast', '$modal', 'helper', 'ModuleService', '$location',
+        function ($scope, $filter, ngToast, $modal, helper, ModuleService, $location) {
             $scope.actionButtons = [];
             $scope.loading = true;
             $scope.id = $location.search().id;

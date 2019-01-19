@@ -56,9 +56,9 @@ angular.module('primeapps')
                     var deferred = $q.defer();
 
                     $http.get(config.apiUrl + 'module/get_module_fields?moduleName=' + moduleName).then(function (response) {
-                        deferred.resolve(response.data);
+                        deferred.resolve(response);
                     }).catch(function (reason) {
-                        deferred.reject(reason.data);
+                        deferred.reject(reason);
                     });
                     
                     return deferred.promise;

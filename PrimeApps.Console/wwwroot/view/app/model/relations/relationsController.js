@@ -2,15 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService) {
+    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService) {
 
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "relations";
 
             $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Relations';
 
             $scope.loading = true;
@@ -66,31 +66,6 @@ angular.module('primeapps')
                 $scope.changePage(1)
             };
 
-            // var promiseResult = ModuleService.getModules().then(function (response) {
-            //     //.find($scope.requestModel).then(function (response) {
-            //     $rootScope.modules = response.data;
-            // });
-            //
-            // $scope.setRelations = function () {
-            //     $scope.relations = [];
-            //     for (var i = 0; i < $rootScope.modules.length; i++) {
-            //         var module = angular.copy($rootScope.modules[i]);
-            //         if (module.relations) {
-            //             for (var j = 0; j < module.relations.length; j++) { //
-            //                 module.relations[j].parent_module = module;
-            //             }
-            //             $scope.relations = $scope.relations.concat(module.relations);
-            //         }
-            //     }
-            //     $scope.relations = RelationsService.processRelations($scope.relations);
-            //     $scope.relationsState = angular.copy($scope.relations);
-            //     $rootScope.loading = false;
-            // };
-            //
-            // promiseResult.then(function onSuccess() {
-            //     $scope.setRelations();
-            // });
-
             $scope.showFormModal = function (relation) {
                 if (!relation) {
                     relation = {};
@@ -119,7 +94,6 @@ angular.module('primeapps')
                     filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
                 }
                 //Module relations list remove itself
-                //$scope.parentModuleLists = $scope.$parent.modules;
                 $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
@@ -137,7 +111,6 @@ angular.module('primeapps')
                     $scope.addNewRelationsFormModal.show();
                 });
             };
-
 
             var drakeAvailableFields;
             var drakeSelectedFields;
@@ -296,27 +269,10 @@ angular.module('primeapps')
                         createRelationManyToManyModule();
                     else {
                         $scope.loading = true;
-                        ngToast.create({
-                            content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
-                            className: 'success'
-                        });
+                        swal($filter('translate')('Setup.Modules.RelationSaveSuccess'), "", "success");
                         $scope.saving = false;
                         $scope.addNewRelationsFormModal.hide();
-                        RelationsService.find($scope.requestModel).then(function (response) {
-                            $scope.relations = response.data;
-                            angular.forEach($scope.relations, function (relation) {
-                                var relationField = $filter('filter')(relation.relation_module.fields, { name: relation.relation_field, deleted: false }, true)[0];
-                                if (!relationField && relation.relation_type === 'one_to_many') {
-                                    relation.deleted = true;
-                                    return;
-                                }
-                                if (relation.relation_type === 'one_to_many') {
-                                    relation.relationField = relationField;
-                                }
-                            });
-                            $scope.relationsState = angular.copy($scope.relations);
-                            $scope.loading = false;
-                        });
+                        $scope.changePage(1);
                     }
                 };
 
@@ -354,9 +310,11 @@ angular.module('primeapps')
             $scope.delete = function (relation) {
                 RelationsService.deleteModuleRelation(relation.id)
                     .then(function () {
-                        var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
-                        $scope.relations.splice(relationToDeleteIndex, 1);
-                        ngToast.create({ content: $filter('translate')('Setup.Modules.RelationDeleteSuccess'), className: 'success' });
+                        //var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
+                        // $scope.relations.splice(relationToDeleteIndex, 1);
+                        swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
+                        //$scope.addNewRelationsFormModal.hide();
+                        $scope.changePage(1);
                     })
                     .catch(function () {
                         $scope.relations = $scope.relationsState;

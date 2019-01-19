@@ -15,13 +15,36 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order'">
+            <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order' ">  <!--ng-click="showFormModal(relation)"-->
                 <td>{{relation['label_' + language + '_plural']}}</td>
                 <td>{{relation.parent_module['label_' + language + '_plural']}}</td>
                 <td>{{relation.relation_module['label_' + language + '_plural']}}</td>
                 <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
                 <td class="text-center">
-                    
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="showFormModal(relation)">
+                                    {{'Common.Edit' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" confirm-click ng-click="delete(relation)" placement="left"
+                                   confirm-message="{{'Common.AreYouSure' | translate}}"
+                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -48,11 +71,9 @@
                 </div>
             </nav>
         </div>
-
         <div>
-            {{requestModel.limit}} of {{pageTotal}} items
+            Total Relations {{pageTotal}}
         </div>
-
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
