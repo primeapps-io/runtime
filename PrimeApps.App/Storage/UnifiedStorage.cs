@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Storage
 {
@@ -19,8 +20,15 @@ namespace PrimeApps.App.Storage
     /// </summary>
     public class UnifiedStorage : IUnifiedStorage
     {
+        private IConfiguration _configuration;
         private IAmazonS3 _client;
+
         public IAmazonS3 Client { get { return _client; } }
+
+        public UnifiedStorage(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public enum ObjectType
         {
@@ -65,7 +73,7 @@ namespace PrimeApps.App.Storage
         public async Task Upload(string bucket, string key, Stream stream)
         {
             await CreateBucketIfNotExists(bucket);
-            
+
             using (TransferUtility transUtil = new TransferUtility(_client))
             {
                 await transUtil.UploadAsync(stream, bucket, key);
@@ -242,7 +250,11 @@ namespace PrimeApps.App.Storage
                    Protocol = protocol
                };
 
-            return _client.GetPreSignedURL(request);
+            var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            var preSignedUrl = _client.GetPreSignedURL(request);
+            preSignedUrl = preSignedUrl.Replace(blobUrl, "");
+
+            return preSignedUrl;
         }
 
         /// <summary>
