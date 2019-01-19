@@ -51,7 +51,7 @@
                             <td>{{importItem.module['label_' + language + '_plural']}}</td>
                             <td>{{importItem.created_by.full_name}}</td>
                             <td>{{importItem.total_count}}</td>
-                            <td><a href="{{importItem.excel_url}}" target="_blank">{{importItem.file_name}}</a></td>
+                            <td><a href="{{importItem.file_url}}" target="_blank">{{importItem.file_name}}</a></td>
                             <td>{{importItem.created_at | date:'short'}}</td>
                             <td class="text-right">
                                 <button type="button" class="btn btn-xs btn-custom"  confirm-click action="revert(importItem)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Setup.ImportHistory.Revert' | translate}}">{{'Setup.ImportHistory.Revert' | translate}}</button>

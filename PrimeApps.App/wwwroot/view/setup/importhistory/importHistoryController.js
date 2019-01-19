@@ -27,6 +27,7 @@ angular.module('primeapps')
                         angular.forEach(imports, function (impt) {
                             var excelUrl = decodeURIComponent(impt.excel_url);
                             impt.file_name = excelUrl.slice(excelUrl.indexOf('--') + 2);
+                            impt.file_url = impt.excel_url.slice(0, impt.excel_url.indexOf('--'));
                         });
 
                         if ($scope.currentPage === 1)

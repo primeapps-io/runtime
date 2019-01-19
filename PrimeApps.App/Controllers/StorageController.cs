@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.App.Extensions;
 using static PrimeApps.App.Storage.UnifiedStorage;
 
 namespace PrimeApps.App.Controllers
@@ -28,10 +29,11 @@ namespace PrimeApps.App.Controllers
         private ITemplateRepository _templateRepository;
         private INoteRepository _noteRepository;
         private ISettingRepository _settingRepository;
+        private IImportRepository _importRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage, IConfiguration configuration)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -39,6 +41,7 @@ namespace PrimeApps.App.Controllers
             _templateRepository = templateRepository;
             _noteRepository = noteRepository;
             _settingRepository = settingRepository;
+            _importRepository = importRepository;
             _storage = storage;
             _configuration = configuration;
         }
@@ -52,6 +55,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_noteRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_importRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
@@ -67,7 +71,13 @@ namespace PrimeApps.App.Controllers
         {
             IFormFile file = form.Files.First();
             StringValues bucketName = $"tenant{AppUser.TenantId}",
-                chunksStr, uploadId, chunkStr, fileName, responseList, type, container;
+                chunksStr,
+                uploadId,
+                chunkStr,
+                fileName,
+                responseList,
+                type,
+                container;
             form.TryGetValue("chunks", out chunksStr);
             form.TryGetValue("chunk", out chunkStr);
             form.TryGetValue("name", out fileName);
@@ -114,11 +124,13 @@ namespace PrimeApps.App.Controllers
                     uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
 
                     response.Status = MultipartStatusEnum.Completed;
+
                     if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-                    }
+                        var clearRoot = objectType == ObjectType.PROFILEPICTURE;
 
+                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, clearRoot);
+                    }
                 }
             }
             catch (Exception)
@@ -249,7 +261,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
+        public async Task<IActionResult> Create([FromBody] DocumentDTO document)
         {
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -275,7 +287,6 @@ namespace PrimeApps.App.Controllers
             }
 
             return BadRequest("Couldn't Create Document!");
-
         }
 
         [Route("upload_profile_picture"), HttpPost]
@@ -363,8 +374,51 @@ namespace PrimeApps.App.Controllers
                 //return content type.
                 return Ok(logo);
             }
+
             //this is not a valid request so return fail.
             return Ok("Fail");
+        }
+
+        [Route("upload_import_excel"), HttpPost]
+        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")] int importId)
+        {
+            var import = await _importRepository.GetById(importId);
+
+            if (import == null)
+                return NotFound();
+
+            var parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("import", AppUser.TenantId);
+
+            //if it is successfully parsed continue.
+            if (parser.Success)
+            {
+                if (parser.FileContents.Length <= 0)
+                {
+                    //check the file size if it is 0 bytes then return client with that error code.
+                    return BadRequest();
+                }
+
+                var ext = Path.GetExtension(parser.Filename);
+                var fileName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, fileName, stream);
+                }
+
+                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, false);
+                excelUrl = excelUrl + "--" + parser.Filename;
+
+                import.ExcelUrl = excelUrl;
+                await _importRepository.Update(import);
+
+                //return content type of the file to the client
+                return Ok(parser.Filename);
+            }
+
+            //this request invalid because there is no file, return fail code to the client.
+            return NotFound();
         }
     }
 }
