@@ -782,12 +782,7 @@ angular.module('primeapps')
             };
 
             $scope.uploader = new FileUploader({
-                url: config.apiUrl + 'Document/upload_large',
-                headers: {
-                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    "Content-Type": "application/json", "Accept": "application/json",
-                    'X-Tenant-Id': $cookies.get('tenant_id')
-                }
+                url: 'storage/upload_whole'
             });
 
             $scope.entityIdFunc = function () {
@@ -2449,13 +2444,8 @@ angular.module('primeapps')
 
             $scope.uploaderBasic = function (field) {
                 var uploader_basic = $scope.uploaderBasic[field.name] = new FileUploader({
-                    url: config.apiUrl + 'document/upload_document_file',
-                    headers: {
-                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
-                    },
+                    url: 'storage/upload_whole',
                     queueLimit: 1
-
                 });
 
                 uploader_basic.onAfterAddingFile = function (item) {
@@ -2512,13 +2502,8 @@ angular.module('primeapps')
             $scope.uploaderImage = function (field) {
                 $scope.image[field.name] = {};
                 var uploader_image = $scope.uploaderImage[field.name] = new FileUploader({
-                    url: config.apiUrl + 'document/upload_large',
-                    headers: {
-                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'X-Tenant-Id': $cookies.get('tenant_id'),
-                        'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
-                    },
-                    queueLimit: 1,
+                    url: 'storage/upload_whole',
+                    queueLimit: 1
                 });
 
                 uploader_image.onAfterAddingFile = function (item) {

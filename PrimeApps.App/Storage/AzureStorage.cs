@@ -218,7 +218,7 @@ namespace PrimeApps.App.Storage
 
             var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
-            return $"{blobUrl}/app-logo/{logo}";
+            return $"{blobUrl}/{logo}";
         }
 
         private static async Task MoveBlockBlobAsync(CloudBlockBlob sourceBlob, CloudBlockBlob destBlob)

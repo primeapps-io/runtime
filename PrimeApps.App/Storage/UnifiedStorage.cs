@@ -25,11 +25,6 @@ namespace PrimeApps.App.Storage
 
         public IAmazonS3 Client { get { return _client; } }
 
-        public UnifiedStorage(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         public enum ObjectType
         {
             MAIL,
@@ -57,10 +52,11 @@ namespace PrimeApps.App.Storage
             {ObjectType.NONE,""}
         };
 
-        public UnifiedStorage(IAmazonS3 client)
+        public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
             ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -241,6 +237,9 @@ namespace PrimeApps.App.Storage
         public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP)
         {
 
+            if (bucket.EndsWith('/'))
+                bucket = bucket.Remove(bucket.Length - 1, 1);
+
             GetPreSignedUrlRequest request =
                new GetPreSignedUrlRequest()
                {
@@ -252,7 +251,7 @@ namespace PrimeApps.App.Storage
 
             var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             var preSignedUrl = _client.GetPreSignedURL(request);
-            preSignedUrl = preSignedUrl.Replace(blobUrl, "");
+            preSignedUrl = preSignedUrl.Replace(blobUrl, "").Remove(0, 1);
 
             return preSignedUrl;
         }

@@ -243,7 +243,7 @@ namespace PrimeApps.App.Controllers
                 throw new Exception("Document does not exist in the storage!");
             }
         }
-        
+
         /// <summary>
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
@@ -315,7 +315,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-                
+
                 return Ok(profilePicture);
             }
 
@@ -351,12 +351,14 @@ namespace PrimeApps.App.Controllers
                     uniqueName = Guid.NewGuid() + ext;
                 }
 
-                var logo = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, logo, stream);
+                    await _storage.Upload(bucketName, fileName, stream);
                 }
+
+                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
                 //return content type.
                 return Ok(logo);
