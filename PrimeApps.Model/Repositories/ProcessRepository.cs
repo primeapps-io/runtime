@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -27,7 +28,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Process> GetAllById(int id)
         {
             var process = await GetProcessQueryForAll()
-                .FirstOrDefaultAsync(x =>  x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return process;
         }
@@ -71,6 +72,36 @@ namespace PrimeApps.Model.Repositories
             }
 
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> Count()
+        {
+            var count = await DbContext.Processes.CountAsync(x => !x.Deleted);
+
+            return count;
+        }
+
+        public async Task<ICollection<Process>> Find(PaginationModel paginationModel)
+        {
+            var processes = await DbContext.Processes.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToListAsync();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Process).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    processes = processes.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    processes = processes.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+            }
+
+            return processes;
         }
 
         public async Task<ICollection<Process>> GetAllBasic()
@@ -171,7 +202,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Approvers).Where(z => !z.Deleted)
                 .Include(x => x.Module)
                 .Include(x => x.Module.Fields)
-				.Include(x=> x.Module.Dependencies);
+                .Include(x => x.Module.Dependencies);
         }
 
         private IQueryable<Process> GetProcessQueryForAll()

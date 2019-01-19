@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Entities.Tenant;
+﻿using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ModuleProfileSetting> GetByIdBasic(int id);
         Task<int> Update(ModuleProfileSetting moduleProfileSetting);
         Task<int> DeleteSoft(ModuleProfileSetting moduleProfileSetting);
+        Task<int> Count(int id);
+        Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel);
     }
 }

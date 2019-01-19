@@ -5,92 +5,217 @@
   -ms-transition: all 0.5s ease;
 }
 
+.wrt:before,
+.wrt:after {
+  content: ' ';
+  display: table;
+  margin-left: -15px;
+  margin-right: -15px;
+  float: none;
+  clear: both;
+}
+
 //Reset
 button, select {
   @include hoverEffect;
+
   &:focus {
     outline: none !important;
-    
+
   }
 }
+.loader-tab-out
+{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background: rgba(0,0,0,0.1);
+  .page-loading-table{
+    width: 25%;
+    i{
+      font-size: 30px;
+    }
+  }
+}
+.margin-right-10{
+  margin-right: 10px;
+}
 
-$primeapps-color: #635fb3;
+$primeapps-color: #0D6FAA;
 .primeapps {
 
+
   //ModuleDesigner scss
-  .module-designer {
 
-    /**
-     * An element with .dndPlaceholder class will be added as child of the dnd-list
-     * while the user is dragging over it.
-     */
-
-    .container-element {
-      margin: 10px;
+  .add-new-section {
+    padding: 15px;
+    border: 1px dashed rgba(0, 0, 0, 0.28);
+    border-radius: 5px;
+    cursor: pointer;
+    @include hoverEffect();
+    &:hover {
+      border: 1px dashed rgba(0, 0, 0, 0.50);
     }
+    span {
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 14px;
 
-    ul {
-      list-style: none;
     }
-    .module-section {
-      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-      background: #fff;
-      border-radius: 5px;
-      margin-bottom: 30px;
-      min-height: 180px;
-      .dndPlaceholder {
-        background-color: #fff !important;
-        display: block;
-        min-height: 180px;
-        border: 1px dotted #0c6eaa;
-      }
+  }
 
-      .section-container {
-        min-height: 180px;
+  .subpanel-draggable {
+    box-shadow: none !important;
+  }
 
-      }
-      .section-header {
-        padding: 10px;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  .module-section {
+    .cell-container {
+      .form-group {
 
-        h4 {
-          font-size: 16px;
-          font-weight: bold;
-          padding: 0;
-          margin: 0;
+        display: flex;
+        align-items: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border: 1px dashed transparent;
+
+        .required-field {
+          color: #ce0404 !important;
+          position: relative;
         }
+
+        .field-area {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 20px;
+          background: rgba(0, 0, 0, 0.05);
+          color: rgba(0, 0, 0, 0.25);
+        }
+
+        .action-buttons {
+          padding: 0;
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translate(0%, -50%);
+
+          .action-icon {
+            color: rgba(6, 6, 6, 0.75) !important;
+          }
+        }
+
+        .control-label {
+          text-align: left;
+          padding-bottom: 0;
+        }
+
+        &:hover {
+          box-shadow: none;
+          background-color: rgba(13, 111, 170, 0.25);
+          border-color: rgba(0, 0, 0, 0.25);
+        }
+
+      }
+    }
+
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background: #fff;
+    border: none !important;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    min-height: 180px;
+
+    .action-buttons {
+      display: none;
+      width: auto !important;
+
+    }
+
+    .section-header {
+      border: none !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+      padding: 10px !important;
+
+      span {
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.75);
+        font-size: 16px;
+
+        i {
+          color: rgba(0, 0, 0, 0.5) !important;
+          margin-right: 15px;
+        }
+      }
+
+      &:hover {
+        background: rgba(13, 111, 170, 0.1);
+        border: none !important;
+
+        .action-buttons {
+          display: block;
+        }
+      }
+
+    }
+
+    .section-container {
+      min-height: 180px;
+
+    }
+
+    .section-header {
+      padding: 10px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+      cursor: move;
+
+      h4 {
+        i {
+          margin-right: 15px;
+          color: rgba(0, 0, 0, 0.5);
+
+        }
+
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
       }
     }
   }
+
   .template-field {
     background-color: #fff;
     padding-top: 15px;
     padding-bottom: 15px;
-    .dndDragging {
-      border: 1px dotted #0d6faa;
-      background: #fff !important;
-    }
+
     .template-field-box {
       border: 1px dotted #fff;
-
+      cursor: move;
       width: calc(50% - 10px);
       float: left;
       border-radius: 5px;
       background-color: rgba(0, 0, 0, 0.05);
       padding: 10px;
       margin: 5px;
+
       &:hover {
         border: 1px dotted #0d6faa;
         background: #fff !important;
       }
+
       .template-field-icon {
         span {
           font-size: 22px;
           color: rgba(0, 0, 0, 0.5);
         }
+
         h4 {
           font-size: 15px !important;
         }
+
         .template-field-text {
           h4 {
             font-size: 15px !important;
@@ -101,30 +226,64 @@ $primeapps-color: #635fb3;
     }
   }
 
+  .module-designer {
+    .new-field {
+      border: 1px dashed rgba(0, 0, 0, 0.28);
+      cursor: pointer;
+      padding: 15px !important;
+      background: none;
+      &:hover {
+        border: 1px dashed rgba(0, 0, 0, 0.50);
+      }
+
+      span {
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 14px;
+
+        i {
+          margin-right: 5px;
+        }
+
+      }
+    }
+
+    .panel-body {
+      padding-top: 0;
+    }
+  }
+
   //mix
-  
+
   //Global
   .margin-0 {
     margin: 0px;
   }
+
   .margin-5 {
     margin: 5px;
   }
+
   .margin-10 {
     margin: 10px;
   }
+
   .margin-15 {
     margin: 15px;
   }
+
   .padding-5 {
     padding: 5px;
   }
+
   .padding-0 {
     padding: 0px !important;
   }
+
   .padding-10 {
     padding: 10px;
   }
+
   .padding-20 {
     padding: 20px;
   }
@@ -136,15 +295,18 @@ $primeapps-color: #635fb3;
       border: solid 1px #cecece;
       padding-left: 10px;
       padding-right: 10px;
+
       .dropdown-text {
         display: flex;
         align-items: center;
+
         h4 {
           width: 95%;
         }
       }
 
     }
+
     .dropdown-menu {
       width: 95%;
       margin: 0 !important;
@@ -163,9 +325,11 @@ $primeapps-color: #635fb3;
         .user-image {
           background: #0d6faa !important;
         }
+
         h2 {
           color: #0d6faa !important;
         }
+
         h3 {
           color: #0d6faa !important;
         }
@@ -173,32 +337,39 @@ $primeapps-color: #635fb3;
 
       li {
         cursor: pointer;
+
         .user-info {
 
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding-top: 20px;
-          padding-bottom: 20px;
+          padding-top: 10px;
+          padding-bottom: 10px;
           border-bottom: none;
+
           .user-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             h2 {
               font-size: 16px;
               color: rgba(0, 0, 0, 0.75);
               font-weight: bold;
               line-height: 18px;
               margin: 0;
-              padding-bottom: 7px;
+              padding: 0;
               font-weight: 400;
             }
+
             h3 {
               font-size: 12px;
               font-weight: bold;
-              color: rgba(0, 0, 0, 0.75);
+              color: rgba(0, 0, 0, 0.5);
               margin: 0;
               font-weight: 400;
             }
           }
+
           .user-image {
             background-color: rgba(0, 0, 0, 0.25);
             width: 30px;
@@ -218,38 +389,48 @@ $primeapps-color: #635fb3;
     }
 
   }
+
   .collaborator-info {
     .user-info {
       font-weight: bold;
       color: rgba(0, 0, 0, 0.5);
+
       h2 {
         font-size: 16px;
 
       }
+
       h3 {
         font-size: 12px;
       }
     }
   }
+
   .page-loading {
-    position: absolute;
+    position: fixed;
+    left: 0px;
+    top: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 9999;
     align-self: center;
-    width: 100%;
-    color: #9e005d;
-    height: 50%;
+    width: 100vw;
+    color: #FFF;
+    height: 100vh;
+    background: #2DABE1;
+
     i {
       font-size: 50px;
     }
   }
+
   body {
     background-color: #f6f5f2 !important;
   }
+
   .sidebar-nav a.active i {
-    color: $primeapps-color;
+    color: #FFF;
   }
 
   .sidebar-nav a:hover:not(.sidebar-brand-logo) {
@@ -293,47 +474,13 @@ $primeapps-color: #635fb3;
     background-color: $primeapps-color;
     color: white;
   }
+
   .sidebar-nav {
     margin-left: 0;
     width: 100%;
   }
+
   #sidebar-wrapper {
-    background: url("../images/primeapps/menu_background.png") !important;
-    background-repeat: repeat !important;
-    .sidebar-nav {
-      .sidebar-brand {
-        padding: 20px 10px !important;
-        height: 80px !important;
-      }
-    }
-    .logo {
-
-      height: 40px;
-      padding: 0px;
-      svg {
-        height: 100%;
-        .st0 {
-          fill: #FFF;
-        }
-        .st1 {
-          fill: #FFF;
-        }
-        .st2 {
-          fill: #FCAD2D;
-        }
-        .st3 {
-          fill: #F06933;
-        }
-        .st4 {
-          fill: #E89728;
-        }
-        .st5 {
-          fill: #0D6FAA;
-        }
-      }
-
-    }
-
     .panel-body {
       a {
         background: none;
@@ -341,30 +488,28 @@ $primeapps-color: #635fb3;
         font-size: 10px !important;
         height: 36px;
       }
+
       .fa-sidebar-icon-background {
         background: none !important;
       }
     }
-    ul
-    {
+
+    ul {
       @include hoverEffect();
     }
-    
-    
-    
-    
-    
-    
+
   }
-;
+
   .sidebar-nav a.active {
     background-color: #121212 !important;
     border-radius: inherit;
   }
+
   .collapse-menu {
     .collapse.am-collapse {
       background-color: #121212;
     }
+
     a {
       line-height: 55px !important;
       font-family: Nunito;
@@ -372,6 +517,7 @@ $primeapps-color: #635fb3;
       font-weight: bold;
       font-style: normal;
       font-stretch: normal;
+
       .fa-sidebar-icon {
         color: #fff;
         font-size: 16px;
@@ -380,6 +526,7 @@ $primeapps-color: #635fb3;
     }
 
   }
+
   .fa-sidebar-icon-background {
     height: 30px;
     width: 30px;
@@ -408,22 +555,26 @@ $primeapps-color: #635fb3;
       font-size: 12px;
       color: #fff;
     }
+
     &:hover {
       background-color: #0d6faa;
     }
   }
+
   .navbar-right {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding-right: 50px;
+    padding-right: 20px;
     height: 80px;
   }
+
   .navbar {
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
     background-color: #ffffff !important;
     height: 80px !important;
   }
+
   .apps-first-screen-h1 {
     font-family: Nunito;
     font-size: 20px;
@@ -435,9 +586,11 @@ $primeapps-color: #635fb3;
     text-align: center;
     color: rgba(0, 0, 0, 0.5);
   }
+
   .dashboard {
     padding-top: 150px;
   }
+
   .apps-first-screen-span {
     font-family: Nunito;
     font-size: 16px;
@@ -449,6 +602,7 @@ $primeapps-color: #635fb3;
     text-align: center;
     color: rgba(0, 0, 0, 0.5);
   }
+
   .create-app-btn {
     font-family: Nunito;
     font-size: 16px;
@@ -467,6 +621,7 @@ $primeapps-color: #635fb3;
     margin-top: 30px;
     margin-bottom: 30px;
   }
+
   .new-app-content {
     display: flex;
     flex-direction: row;
@@ -474,158 +629,103 @@ $primeapps-color: #635fb3;
     justify-content: center;
     align-items: center;
   }
+
   .need-help-text {
     color: rgba(0, 0, 0, 0.5);
     font-family: Nunito;
     font-size: 15px;
   }
-  .setup-layout {
-    padding-top: 100px;
-    margin-bottom: 50px;
-    .setup-title {
-      font-family: Nunito;
-      font-size: 20px;
-      font-weight: bold;
-      color: #0d6faa;
-      margin-bottom: 16px;
-      margin: 10px 0px;
-    }
-    .setup-nav {
-      background: #fff;
-      padding-top: 20px;
-      padding-bottom: 20px;
-      padding-left: 10px;
-      padding-right: 10px;
-      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-      border-radius: 5px;
-      .active {
-        &:before {
-          left: 100%;
-          top: 50%;
-          border: solid transparent;
-          content: " ";
-          height: 0;
-          width: 0;
-          position: absolute;
-          pointer-events: none;
 
-          border-color: rgba(136, 183, 213, 0);
-          border-left-color: #fff;
-          border-width: 20px;
-          margin-top: -20px;
-        }
-        &:after {
-          border-color: rgba(194, 225, 245, 0);
-          border-left-color: #c2e1f5;
-          border-width: 26px;
-          margin-top: -26px;
-        }
-      }
-      li {
-        border-bottom: solid 1px rgba(0, 0, 0, 0.05);
-        display: flex;
-        align-items: center;
-        height: 40px;
-
-        a {
-          font-family: Nunito;
-          font-size: 14px !important;
-          font-weight: bold;
-          width: 90%;
-          color: rgba(0, 0, 0, 0.5) !important;
-          line-height: 20px;
-          padding: 5px 10px;
-          i {
-            font-size: 18px;
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-            
-          }
-        }
-        .costume-bage {
-          height: 20px;
-          width: 20px;
-          background: rgba(0, 0, 0, 0.25);
-          color: #fff;
-          border-radius: 50%;
-          font-size: 11px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        &:last-child
-        {
-          border-color: transparent;
-        }
-      }
-      
-    }
-    .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-      background: initial !important;
-      color: #0d6faa !important;
-    }
-    .nav > li > a:hover, .nav > li > a:focus {
-      background: initial !important;
-      color: #0d6faa !important;
-    }
-    .add-button {
-      @include hoverEffect;
-      border-radius: 30px;
-      background-color: rgba(13, 111, 170, 0.75);
-      font-weight: bold;
-      color: #fff !important;
-      padding: 5px 10px;
-      font-size: 12px;
-      &:hover
-      {
-        background-color: rgba(13, 111, 170, 1);
-      }
-    }
-    .list-right-menu {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-      height: 42px;
-    }
+  .tab-content {
+    border-radius: 5px;
+    background: #FFF;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    position: relative;
   }
+
   .table {
     border: none;
-    
-    
-    
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
+
     thead:first-child > tr:first-child > th {
-      line-height: 38px !important;
+      line-height: 15px !important;
+      font-size: 12px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
       font-weight: 400 !important;
       color: rgba(0, 0, 0, 0.5) !important;
-      padding-left: 20px !important;
+      padding: 20px !important;
+      text-align: inherit;
+      background: transparent;
     }
-    tr {
-      td {
-        line-height: 47px;
-        color: rgba(0, 0, 0, 0.75) !important;
-        font-weight: 400 !important;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        border-right: 1px solid rgba(0, 0, 0, 0.05);
 
+    tbody {
+
+      tr {
+        td {
+          line-height: 15px;
+          vertical-align: middle;
+          padding: 10px 20px !important;
+          color: rgba(0, 0, 0, 0.75) !important;
+          font-weight: 400 !important;
+          border-top: 1px solid rgba(0, 0, 0, 0.05);
+          border-right: 1px solid rgba(0, 0, 0, 0.05);
+          background: transparent;
+        }
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.03);
+          cursor: pointer;
+
+        }
+
+        .action-buttons-block {
+          display: inline-block;
+          button {
+            background: transparent;
+            width: 30px;
+            font-size: 12px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border: none;
+            color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            &.action-buttons-edit {
+              background: rgba(0, 0, 0, 0.05);
+            }
+            &.action-buttons-delete {
+              background: rgba(206, 4, 4, 0.5);
+              color: #FFF;
+            }
+            &:hover {
+              background: rgba(0, 0, 0, 0.15);
+              color: rgba(0, 0, 0, 0.75);
+            }
+
+          }
+        }
       }
     }
 
   }
+
   .table-pagination {
-    height: 66px;
-    background: #fff;
+    height: 60px;
+    padding: 0px 20px;
+    background: transparent;
     margin: 0px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 
     .pagination-span {
       color: rgba(0, 0, 0, 0.5);
       font-size: 12px;
     }
+
     .items-per-page-select {
       width: 55px;
       background-color: rgba(0, 0, 0, 0.05);
@@ -637,6 +737,7 @@ $primeapps-color: #635fb3;
       font-weight: bold;
       text-align-last: center;
     }
+
     nav {
       //.pagination > .active > a, .pagination > .active > a:hover {
       //  background-color: rgba(17, 87, 163, 0.75) !important;
@@ -662,10 +763,12 @@ $primeapps-color: #635fb3;
       //}
     }
   }
+
   .modal-header {
     background-color: #fff;
     color: #000;
   }
+
   .modal {
     left: auto;
   }
@@ -678,6 +781,7 @@ $primeapps-color: #635fb3;
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     overflow: hidden;
+
     .modal-dialog {
       height: 100%;
       overflow-x: auto;
@@ -690,6 +794,7 @@ $primeapps-color: #635fb3;
         top: 12px;
         left: -16px;
       }
+
       .form-group {
         label {
           text-align: left !important;
@@ -701,6 +806,7 @@ $primeapps-color: #635fb3;
         margin-right: 5px;
       }
     }
+
     .modal-body {
       max-height: 100% !important;
       margin: 0 auto !important;
@@ -708,30 +814,37 @@ $primeapps-color: #635fb3;
       padding-top: 5px;
 
     }
+
     .modal-content {
       padding-left: 40px;
       padding-right: 40px;
       border: none;
       height: 80vh;
+
       .form-custom {
         margin-bottom: 100px;
+
         .field-form-body {
           padding-top: 7px;
         }
       }
+
       .modal-left-menu {
 
         padding: 0px;
         margin: 0px;
+
         ul {
           border-right: 2px solid rgba(0, 0, 0, 0.05);
           width: 150px;
           position: fixed;
+
           li {
             a {
               font-size: 14px;
               color: rgba(0, 0, 0, 0.75);
               font-weight: 400;
+
               &:hover {
                 background: none;
                 color: #0d6faa !important;
@@ -739,6 +852,7 @@ $primeapps-color: #635fb3;
               }
 
             }
+
             .active {
               background: none;
               color: #0d6faa !important;
@@ -747,12 +861,14 @@ $primeapps-color: #635fb3;
           }
         }
       }
+
       .section {
         h4 {
           color: #0d6faa;
           padding-bottom: 10px;
           font-weight: bold;
         }
+
         .panel {
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
 
@@ -762,6 +878,7 @@ $primeapps-color: #635fb3;
       }
 
     }
+
     .modal-header {
       margin-bottom: 25px;
       padding-left: 0;
@@ -770,62 +887,103 @@ $primeapps-color: #635fb3;
       display: flex;
       padding-right: 0px;
       border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+
       .col-sm-6 {
         display: flex;
       }
+
       .col-sm-rigth {
         justify-content: flex-end;
         padding: 0px;
+        .btn-gray{
+          &:hover{
+             background-color: rgba(0, 0, 0, 0.50);;
+          }
+        }
+        .btn-blue{
+          &:hover{
+             background-color:rgba(13, 111, 170, 0.90);
+          }
+        }
       }
+
       h4 {
         font-size: 20px;
         font-weight: bold;
         color: #0d6faa;
       }
     }
+
     .modal-400 {
       width: 400px !important;
     }
+
     .modal-500 {
       width: 500px !important;
     }
+
     .modal-600 {
       width: 600px !important;
     }
+
     .modal-700 {
       width: 700px !important;
     }
+
     .modal-800 {
       width: 800px !important;
     }
+
     .modal-900 {
       width: 900px !important;
     }
   }
+
   .user-dropdown {
+    padding: 20px;
+
+    a {
+      padding: 0px 10px;
+      line-height: 15px;
+
+      i {
+        width: 20px;
+        text-align: center;
+        display: inline-block;
+      }
+    }
+
+    .user_divider {
+
+      height: 1px;
+      display: block;
+      background: rgba(0, 0, 0, 0.1);
+      margin: 10px 0px;
+    }
+
     .user-info {
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding-top: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
       .user-text {
         h2 {
-          font-size: 20px;
+          font-size: 16px;
           color: #0d6faa;
           font-weight: bold;
-          line-height: 18px;
+          line-height: 15px;
           margin: 0;
           padding-bottom: 7px;
         }
+
         h3 {
-          font-size: 14px;
+          font-size: 12px;
           font-weight: bold;
           color: rgba(0, 0, 0, 0.5);
           margin: 0;
         }
       }
+
       .user-image {
         background-color: rgba(0, 0, 0, 0.25);
         width: 50px;
@@ -841,39 +999,14 @@ $primeapps-color: #635fb3;
       }
     }
 
-    ul {
-      padding: 0;
-      padding-left: 20px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      padding-bottom: 10px;
-      padding-top: 10px;
-      li {
-        list-style: none;
-        line-height: 40px;
-        font-size: 16px;
-        font-weight: bold;
-        a {
-          color: rgba(0, 0, 0, 0.5);
-          i {
-            width: 20px;
-            padding-right: 20px;
-          }
-
-          &:hover {
-            text-decoration: none;
-            color: #0d6faa;
-
-          }
-        }
-      }
-    }
     .btn-logout {
-      width: 250px;
+      width: 100%;
       height: 30px;
-      margin-top: 26px;
-      margin-bottom: 26px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
   }
+
   .top-header {
     display: flex;
     align-items: center;
@@ -888,14 +1021,17 @@ $primeapps-color: #635fb3;
     background-color: inherit;
     padding-left: 30px;
     color: rgba(0, 0, 0, 0.5);
+
     li {
       font-size: 16px !important;
       color: rgba(0, 0, 0, 0.5) !important;
       font-weight: bold !important;
+
       a {
         color: rgba(0, 0, 0, 0.5) !important;
         font-size: 14px !important;
         font-weight: 400 !important;
+
         &:hover {
           color: #0d6faa;
         }
@@ -903,18 +1039,21 @@ $primeapps-color: #635fb3;
     }
 
   }
+
   //Pages
   .scratch-page {
     display: flex;
     justify-content: center;
     height: 100vh;
     align-items: center;
+
     .scratch-page-text {
       h1 {
         color: rgba(0, 0, 0, 0.75);
         font-size: 30px;
         font-weight: 400;
       }
+
       span {
         color: rgba(0, 0, 0, 0.5);
         font-size: 16px;
@@ -932,6 +1071,7 @@ $primeapps-color: #635fb3;
       font-size: 70px;
       line-height: 70px;
       color: rgba(0, 0, 0, 0.25);
+
       &:hover {
         cursor: pointer;
         box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
@@ -940,40 +1080,42 @@ $primeapps-color: #635fb3;
   }
 
   //Button
-  .btn {
-    i {
-      padding-right: 10px;
-    }
-  }
   .btn-bold {
     font-weight: bold;
   }
+
   .btn-radius {
     border-radius: 30px;
   }
+
   .btn-red {
     background-color: rgba(206, 4, 4, 0.5);
     color: #fff
   }
+
   .btn-blue {
     background-color: rgba(13, 111, 170, 0.75);
     color: #fff
   }
+
   .btn-gray {
     background-color: rgba(0, 0, 0, 0.25);
     color: #fff
   }
+
   //Input
   .form-group {
     margin-left: 0;
     margin-right: 0;
     margin-bottom: 20px !important;
+
     label {
       padding: 0;
       color: rgba(0, 0, 0, 0.75);
       font-size: 14px;
       font-weight: bold !important;
     }
+
     .form-control {
       border-radius: 2px;
       background-color: rgba(0, 0, 0, 0.05);
@@ -983,33 +1125,40 @@ $primeapps-color: #635fb3;
       font-weight: 400;
       height: 40px !important;
       max-width: none !important;
+
       &[disabled] {
         color: rgba(0, 0, 0, 0.25);
       }
     }
 
   }
+
   .checkbox-inline input[type="checkbox"] {
     position: relative !important;
     margin-left: 0px !important;
   }
+
   .radio-inline input[type="radio"] {
     position: relative !important;
     margin-left: 0px !important;
   }
+
   //End Input
   .callout {
     font-size: 12px;
     padding: 10px;
   }
+
   .page-container {
     margin-top: 160px !important;
     margin-left: 20px !important;
     margin-right: 20px;
+
     .search-select {
       display: flex;
       justify-content: flex-end;
       align-items: center;
+
       i {
         position: absolute;
         display: flex;
@@ -1019,9 +1168,11 @@ $primeapps-color: #635fb3;
         color: rgba(0, 0, 0, 0.5);
         font-size: 14px;
       }
+
       .select-status {
         box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
         border-radius: 5px;
+        background: #FFF;
         height: 60px;
         width: 100%;
         border: none !important;
@@ -1033,18 +1184,22 @@ $primeapps-color: #635fb3;
       }
 
     }
+
     .app-layout-box {
       cursor: pointer;
       margin-top: 5px;
       margin-bottom: 30px;
+
       .tooltip.tooltip-success .tooltip-inner {
         background-color: rgba(0, 0, 0, 0.75);
         border-color: rgba(0, 0, 0, 0.75);
         color: #fff;
       }
+
       .tooltip.tooltip-success.top .tooltip-arrow {
         border-top-color: rgba(0, 0, 0, 0.75);
       }
+
       .app-box {
         @include hoverEffect();
         height: 200px;
@@ -1053,18 +1208,22 @@ $primeapps-color: #635fb3;
         background-color: #ffffff;
         display: flex;
         flex-direction: column;
+
         .image {
           display: flex;
           justify-content: center;
           align-items: center;
+
           img {
             width: 200px;
             max-width: 100%;
           }
         }
+
         .oval {
           display: flex;
           justify-content: flex-end;
+
           span {
             width: 20px;
             height: 20px;
@@ -1073,33 +1232,40 @@ $primeapps-color: #635fb3;
             margin: 15px;
 
           }
+
           .oval-green {
             background-color: #92c549;
           }
+
           .oval-orange {
             background-color: #e08340;
           }
+
           .oval-gray {
             background-color: #bfbfbf;
           }
         }
+
         .icon-image {
           height: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
+
           i {
             font-size: 67px;
             color: rgba(0, 0, 0, 0.25);
           }
         }
       }
+
       .app-info {
 
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-top: 23px;
+
         h3 {
           line-height: 20px;
           font-size: 20px;
@@ -1108,6 +1274,7 @@ $primeapps-color: #635fb3;
           margin: 0px;
           padding: 0px;
         }
+
         h4 {
           margin: 0px;
           padding: 0px;
@@ -1117,10 +1284,12 @@ $primeapps-color: #635fb3;
           color: rgba(0, 0, 0, 0.5);
         }
       }
+
       &:hover {
         .app-box {
           box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
         }
+
         .app-info {
           h4, h3 {
             color: #0d6faa;
@@ -1130,21 +1299,26 @@ $primeapps-color: #635fb3;
     }
 
   }
+
   .page-container.padding0 {
     margin-top: 0px !important;
   }
+
   .search-input {
     display: flex;
     align-items: center;
+
     .search-input-icon {
       position: absolute;
       padding-left: 20px;
       font-size: 20px;
       color: rgba(0, 0, 0, 0.1);
     }
+
     input {
       padding-left: 50px !important;
       color: rgba(0, 0, 0, 0.75);
+
       ::placeholder {
         color: rgba(0, 0, 0, 0.25);
       }
@@ -1153,6 +1327,7 @@ $primeapps-color: #635fb3;
         color: rgba(0, 0, 0, 0.25);
       }
     }
+
     .app-search-input {
       height: 60px;
       box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -1161,6 +1336,7 @@ $primeapps-color: #635fb3;
       font-size: 16px;
     }
   }
+
   .scrollspy {
 
   }
@@ -1169,9 +1345,11 @@ $primeapps-color: #635fb3;
   .h4-title {
     font-size: 20px;
   }
+
   .blue-color {
     color: #0d6faa;
   }
+
   .font-bold {
     font-weight: bold;
   }
@@ -1188,8 +1366,10 @@ $primeapps-color: #635fb3;
 
     ul {
       width: 250px;
+
       .open {
         background-color: #121212;
+        @include hoverEffect();
         ul {
           display: block;
         }
@@ -1197,21 +1377,27 @@ $primeapps-color: #635fb3;
 
       li {
         cursor: pointer;
+
         ul {
           display: none;
           list-style: none;
+
           .active {
             color: #fff;
           }
+
           li {
             line-height: 20px;
+
             a {
               color: rgba(255, 255, 255, 0.5);
-              font-size: 14px;
+              font-size: 12px;
+
               i {
                 font-size: 14px;
                 background: none;
               }
+
               &:hover {
                 background: none;
                 color: #fff;
@@ -1219,13 +1405,15 @@ $primeapps-color: #635fb3;
             }
           }
         }
+
         a {
           font-weight: bold;
-          font-size: 15px;
+          font-size: 14px;
           padding-top: 5px;
           padding-bottom: 5px;
           display: flex;
           align-items: center;
+
           i {
             display: flex;
             justify-content: center;
@@ -1242,53 +1430,64 @@ $primeapps-color: #635fb3;
 
       }
     }
+
     .color-blue {
       color: #0d6faa
     }
+
     .background-white {
       background: #ffffff;
     }
-    
+
   }
+
   .dropdown-menu {
     border: none;
-    margin-top: 32px;
-    box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.05);
-    margin-top: 40px !important;
+    min-width: 50px;
+    top: 100%;
+    margin-top: 20px !important;
+    box-shadow: 0px 0px 50px 0 rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    &:before, &:after {
+    width: auto !important;
+
+    &:before {
       bottom: 100%;
-      left: 86%;
-      border: solid transparent;
+      left: 10px;
       content: " ";
-      height: 0;
-      width: 0;
       position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 10px 10px 10px;
+      border-color: transparent transparent #FFF transparent;
       pointer-events: none;
     }
-    &:after {
-      border-color: rgba(136, 183, 213, 0);
-      border-bottom-color: #ffffff;
-      border-width: 10px;
 
-    }
-    &:before {
+    &.bottom-right {
+      &:before {
+        left: auto;
+        right: 10px;
 
+      }
     }
+
     li {
 
       a {
         line-height: 40px;
+
         &:hover {
           background-color: rgba(17, 87, 163, 0.1);
           color: #000
         }
+
         i {
 
         }
       }
     }
   }
+
   .file-uploader {
     margin: 0px;
     background-color: rgba(0, 0, 0, 0.05);
@@ -1296,42 +1495,68 @@ $primeapps-color: #635fb3;
     display: flex;
     justify-content: center;
     align-items: center;
+
     .uploader-area {
       width: 100%;
       border: 2px dashed #c2c2c2;
       padding: 20px;
     }
+
     .uploader-over {
 
       border: 2px dashed #000 !important;
     }
+
     .drop-zone {
       div {
         display: flex;
         flex-direction: column;
         align-items: center;
+
         i {
           font-size: 50px;
           color: rgba(0, 0, 0, 0.2);
         }
+
         span {
           color: rgba(0, 0, 0, 0.5);
         }
       }
     }
   }
+
   .has-error {
     input {
       background-color: rgba(206, 4, 4, 0.15) !important;
     }
   }
+
   .pagination {
+    li {
+      font-size: 14px;
+
+      a {
+        margin: 0px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+
     .active {
       a {
-        border-radius: 50%;
         color: #fff;
         background-color: rgba(17, 87, 163, 0.75);
+
+        &:hover {
+          color: #fff;
+        }
       }
+
       .disabled {
         a {
           &:hover {
@@ -1341,65 +1566,130 @@ $primeapps-color: #635fb3;
         }
       }
     }
-    li {
-      font-size: 14px;
-      a {
-        margin: 5px;
-        border: none;
-        &:hover {
-          // color:#000;
-        }
-      }
-    }
+
   }
-  #wrapper
-  {
+
+  #wrapper {
     padding-left: 270px;
     padding-right: 20px;
-    
-    #navbar-wrapper
-    {
-      left:250px;
+
+    #navbar-wrapper {
+
+      left: 250px;
     }
-    #sidebar-wrapper
-    {
+
+    #page-content-wrapper {
+      position: relative;
+    }
+
+    #sidebar-wrapper {
+
       width: 250px;
       left: 0px;
       margin-left: 0px;
-      overflow-x: scroll;
+      overflow-x: inherit; //scroll kapalı halı
       overflow-y: inherit;
-      z-index: 2000;
-      
-      .tooltip
-      {
-        display: none !important;
+      z-index: 1000;
+      background: url("../images/primeapps/menu_background.png") !important;
+      background-repeat: repeat !important;
+
+      .sidebar-nav {
+        position: relative;
+
+        .sidebar-brand {
+          padding: 20px 10px !important;
+          height: 80px !important;
+        }
+
+        .tooltip {
+          display: none !important;
+        }
+
       }
-      
-      .sidebar-li
-      {
+
+      ul {
+        @include hoverEffect();
+      }
+
+      .logo {
+        height: 40px;
+        padding: 0px;
+        position: relative;
+
+        svg {
+          height: 100%;
+
+          .st0 {
+            fill: #FFF;
+          }
+
+          .st1 {
+            fill: rgba(255, 255, 255, 0.75);
+          }
+
+          .st2 {
+            fill: #FCAD2D;
+          }
+
+          .st3 {
+            fill: #F06933;
+          }
+
+          .st4 {
+            fill: #E89728;
+          }
+
+          .st5 {
+            fill: #0D6FAA;
+          }
+        }
+
+        .logo-icon {
+          position: absolute;
+          height: 100%;
+          left: 11%;
+        }
+      }
+
+      .sidebar-li {
         line-height: 30px;
         position: relative;
-        
-        ul
-        {
-          
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        ul {
+
           padding-left: 10px;
-          li{
-            a{
-              i{
+
+          li {
+            a {
+              padding: 5px 10px;
+
+              i {
                 margin-right: 0px;
               }
             }
+
+            &:last-child {
+              margin-bottom: 10px;
+            }
           }
         }
-        a
-        {
+
+        a {
           padding: 10px;
         }
       }
-      
+
       .footer {
         .menu-togle {
+          display: flex;
+          align-items: center;
+
           i {
             font-size: 20px;
             color: rgba(255, 255, 255, 0.5);
@@ -1408,70 +1698,363 @@ $primeapps-color: #635fb3;
             text-align: center;
             margin-left: 0px;
           }
+
+          .fa-long-arrow-alt-right {
+            display: none;
+          }
         }
       }
     }
-    &.toggled
-    {
+
+    &.toggled {
       padding-left: 70px;
-      #navbar-wrapper
-      {
-        left:50px;
+      padding-right: 20px;
+
+      .sidebar-brand {
+        a {
+          justify-content: center;
+        }
+      }
+
+      #navbar-wrapper {
+        left: 50px;
         padding-left: 0px;
       }
-      #sidebar-wrapper
-      {
-        width: 50px;
-        .tooltip
-        {
-          display:block !important;
-        }
-        .tooltip-inner
-        {
-          background: #0f1015;
-          color: #FFF;
-          padding: 5px 10px !important;
-          font-size: 14px !important;
-          font-weight: bold !important;
-          white-space: nowrap;
 
+      #page-content-wrapper {
+        margin-right: 0px;
+      }
+
+      #sidebar-wrapper {
+        width: 50px !important;
+
+        .logo {
+          .full-logo {
+            display: none;
+          }
         }
-        .tooltip-arrow
-        {
-          border-right-color:#0f1015;
+
+        .sidebar-nav {
+          .sidebar-brand {
+            padding: 20px 0px !important;
+            height: 80px !important;
+          }
         }
-        ul
-        {
+
+        .tooltip {
+          display: block !important;
+        }
+
+        ul {
           padding-left: 0px;
           width: 50px;
         }
-        .sidebar-li
-        {
-          &:hover
-          {
+
+        .sidebar-li {
+          &:hover {
             position: relative;
           }
-          a
-          {
-            span
-            {
+
+          a {
+            span {
+              display: none;
+            }
+          }
+        }
+
+        .footer {
+          .menu-togle {
+            .fa-long-arrow-alt-right {
+              display: block;
+            }
+
+            .fa-long-arrow-alt-left {
               display: none;
             }
           }
         }
       }
     }
+
+    .setup-layout {
+      padding-top: 100px;
+      margin-bottom: 50px;
+
+      .app-menu2 {
+        @include hoverEffect();
+        float: left;
+        width: 250px;
+        padding-left: 15px;
+        padding-right: 15px;
+
+        .setup-nav {
+          background: #fff;
+          padding: 20px 10px;
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+          border-radius: 5px;
+
+          .tooltip {
+            display: none !important;
+          }
+          li {
+            border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            margin: 0;
+            a {
+              font-family: Nunito;
+              font-size: 14px !important;
+              font-weight: bold;
+              width: 90%;
+              color: rgba(0, 0, 0, 0.5);
+              line-height: 20px;
+              padding: 10px 0px;
+              display: block;
+              align-items: center;
+              width: 100%;
+
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+
+              span {
+                margin-left: 10px;
+              }
+
+              i {
+                font-size: 18px;
+                width: 30px;
+                text-align: center;
+
+              }
+            }
+
+            .costume-bage {
+              height: 20px;
+              width: 20px;
+              background: rgba(0, 0, 0, 0.25);
+              color: #fff;
+              border-radius: 50%;
+              font-size: 11px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+
+            &:last-child {
+              border-color: transparent;
+            }
+
+            &.active {
+              position: relative;
+              a {
+                color: $primeapps-color;
+              }
+              &:before {
+                margin-top: 0px;
+                right: -20px;
+                top: 50%;
+                content: " ";
+                position: absolute;
+                pointer-events: none;
+                transform: translate(0%, -50%);
+                left: auto;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 10px 0 10px 10px;
+                border-color: transparent transparent transparent #ffffff;
+              }
+            }
+          }
+
+        }
+
+        .submenu-togle {
+          width: 50px;
+          padding: 20px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .fa-long-arrow-alt-right {
+            display: none;
+          }
+        }
+      }
+
+      .content-in2 {
+        float: left;
+        width: calc(100% - 250px);
+        padding-left: 15px;
+        padding-right: 15px;
+        @include hoverEffect();
+      }
+
+      .setup-title {
+
+        font-weight: bold;
+        color: #0d6faa;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 60px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        h2 {
+          font-size: 16px;
+          margin: 0px;
+          font-weight: bold;
+        }
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      &.full-toggled2 {
+        .content-in2 {
+          width: calc(100% - 80px);
+        }
+
+        .app-menu2 {
+          width: 80px;
+
+          .tooltip {
+            display: block !important;
+          }
+        }
+
+        .setup-nav {
+          li {
+
+            a {
+              justify-content: center;
+              i {
+
+              }
+
+              span {
+                display: none;
+                margin-left: 0px;
+              }
+            }
+          }
+        }
+
+        .submenu-togle {
+          .fa-long-arrow-alt-right {
+            display: block;
+          }
+
+          .fa-long-arrow-alt-left {
+            display: none;
+          }
+        }
+
+        .sidemenu {
+          button {
+            width: 100%;
+          }
+          span, h2 {
+            display: none;
+          }
+        }
+      }
+
+    }
+
+    .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+
+    .nav > li > a:hover, .nav > li > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+
+    .add-button {
+      @include hoverEffect;
+      border-radius: 30px;
+      background-color: rgba(13, 111, 170, 0.75);
+      font-weight: bold;
+      color: #fff !important;
+      padding: 5px 10px;
+      font-size: 12px;
+
+      &:hover {
+
+        background-color: rgba(13, 111, 170, 1);
+      }
+    }
+
+    .list-right-menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      height: 42px;
+    }
+
   }
-  
-  //logo close and open
-  
-  svg.logo-icon,.full-toggled svg.full-logo
-  {
-    display:none;
-  }
-  .full-toggled svg.logo-icon
-  {
-    display: block;
+
+  .tooltip {
+    &.tooltip-info {
+      .tooltip-inner {
+        background: #0f1015 !important;
+        color: #FFF;
+        padding: 5px 10px !important;
+        font-size: 12px !important;
+        font-weight: bold !important;
+        white-space: nowrap;
+
+      }
+
+      &.right {
+        .tooltip-arrow {
+          border-color: transparent !important;
+          border-right-color: #0f1015 !important;
+        }
+      }
+
+      &.top {
+        .tooltip-arrow {
+          border-color: transparent !important;
+          border-top-color: #0f1015 !important;
+        }
+      }
+    }
   }
 }
 
+.placeholder {
+  margin: 0 auto;
+  min-height: 50px;
+  background-color: #eee;
+}
+@keyframes placeHolderShimmer{
+  0%{
+    background-position: -468px 0
+  }
+  100%{
+    background-position: 468px 0
+  }
+}
+.animated-background {
+  animation-duration: 0.70s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: darkgray;
+  background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+  background-size: 800px 104px;
+  padding: 10px;
+  margin-bottom:5px;
+  position: relative;
+}

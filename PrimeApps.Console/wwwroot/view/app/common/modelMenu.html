@@ -1,29 +1,30 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
-            <a href="/#/app/5/modules">
-                <i class="fas fa-th-large"></i>
-                Modules
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='relations' ? 'active' :''">
-            <a href="/#/app/5/relations">
-                <i class="fas fa-code-branch"></i>
-                Relations
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
-            <a href="/#/app/5/dependencies">
-                <i class="fas fa-network-wired"></i>
-                Dependencies
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='filters' ? 'active' :''">
-            <a href="/#/app/5/filters">
-                <i class="fas fa-sliders-h"></i>
-                Filters
-            </a>
-        </li>
-    </ul>
-</div>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/modules" data-trigger="hover" data-type="info" data-title="Modules"
+           bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Modules</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='relations' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/relations" data-trigger="hover" data-type="info"
+           data-title="Relations" bs-tooltip data-placement="right">
+            <i class="fas fa-code-branch"></i>
+            <span>Relations</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/dependencies" data-trigger="hover" data-type="info"
+           data-title="Dependencies" bs-tooltip data-placement="right">
+            <i class="fas fa-network-wired"></i>
+            <span>Dependencies</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='filters' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/filters" data-trigger="hover" data-type="info" data-title="Filters"
+           bs-tooltip data-placement="right">
+            <i class="fas fa-sliders-h"></i>
+            <span>Filters</span>
+        </a>
+    </li>
+</ul>

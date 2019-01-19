@@ -851,7 +851,1342 @@ angular.module('primeapps')
             'related_timetracker'
         ]
     })
-
+    .constant('icons', {
+        icons: [
+            {
+                "value": "fa fa-adjust",
+                "label": "<i class=\"fa fa-adjust\"> Adjust"
+            },
+            {
+                "value": "fa fa-anchor",
+                "label": "<i class=\"fa fa-anchor\"> Anchor"
+            },
+            {
+                "value": "fa fa-archive",
+                "label": "<i class=\"fa fa-archive\"> Archive"
+            },
+            {
+                "value": "fa fa-area-chart",
+                "label": "<i class=\"fa fa-area-chart\"> Area-chart",
+                "chart": true
+            },
+            {
+                "value": "fa fa-arrows",
+                "label": "<i class=\"fa fa-arrows\"> Arrows"
+            },
+            {
+                "value": "fa fa-arrows-h",
+                "label": "<i class=\"fa fa-arrows-h\"> Arrows-h"
+            },
+            {
+                "value": "fa fa-arrows-v",
+                "label": "<i class=\"fa fa-arrows-v\"> Arrows-v"
+            },
+            {
+                "value": "fa fa-asterisk",
+                "label": "<i class=\"fa fa-asterisk\"> Asterisk"
+            },
+            {
+                "value": "fa fa-at",
+                "label": "<i class=\"fa fa-at\"> At"
+            },
+            {
+                "value": "fa fa-automobile",
+                "label": "<i class=\"fa fa-automobile\"> Automobile"
+            },
+            {
+                "value": "fa fa-ban",
+                "label": "<i class=\"fa fa-ban\"> Ban"
+            },
+            {
+                "value": "fa fa-bank",
+                "label": "<i class=\"fa fa-bank\"> Bank"
+            },
+            {
+                "value": "fa fa-bar-chart",
+                "label": "<i class=\"fa fa-bar-chart\"> Bar-chart",
+                "chart": true
+            },
+            {
+                "value": "fa fa-bar-chart-o",
+                "label": "<i class=\"fa fa-bar-chart-o\"> Bar-chart-o"
+            },
+            {
+                "value": "fa fa-barcode",
+                "label": "<i class=\"fa fa-barcode\"> Barcode"
+            },
+            {
+                "value": "fa fa-bars",
+                "label": "<i class=\"fa fa-bars\"> Bars"
+            },
+            {
+                "value": "fa fa-bed",
+                "label": "<i class=\"fa fa-bed\"> Bed"
+            },
+            {
+                "value": "fa fa-beer",
+                "label": "<i class=\"fa fa-beer\"> Beer"
+            },
+            {
+                "value": "fa fa-bell",
+                "label": "<i class=\"fa fa-bell\"> Bell"
+            },
+            {
+                "value": "fa fa-bell-o",
+                "label": "<i class=\"fa fa-bell-o\"> Bell-o"
+            },
+            {
+                "value": "fa fa-bell-slash",
+                "label": "<i class=\"fa fa-bell-slash\"> Bell-slash"
+            },
+            {
+                "value": "fa fa-bell-slash-o",
+                "label": "<i class=\"fa fa-bell-slash-o\"> Bell-slash-o"
+            },
+            {
+                "value": "fa fa-bicycle",
+                "label": "<i class=\"fa fa-bicycle\"> Bicycle"
+            },
+            {
+                "value": "fa fa-binoculars",
+                "label": "<i class=\"fa fa-binoculars\"> Binoculars"
+            },
+            {
+                "value": "fa fa-birthday-cake",
+                "label": "<i class=\"fa fa-birthday-cake\"> Birthday-cake"
+            },
+            {
+                "value": "fa fa-bolt",
+                "label": "<i class=\"fa fa-bolt\"> Bolt"
+            },
+            {
+                "value": "fa fa-bomb",
+                "label": "<i class=\"fa fa-bomb\"> Bomb"
+            },
+            {
+                "value": "fa fa-book",
+                "label": "<i class=\"fa fa-book\"> Book"
+            },
+            {
+                "value": "fa fa-bookmark",
+                "label": "<i class=\"fa fa-bookmark\"> Bookmark"
+            },
+            {
+                "value": "fa fa-bookmark-o",
+                "label": "<i class=\"fa fa-bookmark-o\"> Bookmark-o"
+            },
+            {
+                "value": "fa fa-briefcase",
+                "label": "<i class=\"fa fa-briefcase\"> Briefcase"
+            },
+            {
+                "value": "fa fa-bug",
+                "label": "<i class=\"fa fa-bug\"> Bug"
+            },
+            {
+                "value": "fa fa-building",
+                "label": "<i class=\"fa fa-building\"> Building"
+            },
+            {
+                "value": "fa fa-building-o",
+                "label": "<i class=\"fa fa-building-o\"> Building-o"
+            },
+            {
+                "value": "fa fa-bullhorn",
+                "label": "<i class=\"fa fa-bullhorn\"> Bullhorn"
+            },
+            {
+                "value": "fa fa-bullseye",
+                "label": "<i class=\"fa fa-bullseye\"> Bullseye"
+            },
+            {
+                "value": "fa fa-bus",
+                "label": "<i class=\"fa fa-bus\"> Bus"
+            },
+            {
+                "value": "fa fa-cab",
+                "label": "<i class=\"fa fa-cab\"> Cab"
+            },
+            {
+                "value": "fa fa-calculator",
+                "label": "<i class=\"fa fa-calculator\"> Calculator"
+            },
+            {
+                "value": "fa fa-calendar",
+                "label": "<i class=\"fa fa-calendar\"> Calendar"
+            },
+            {
+                "value": "fa fa-calendar-o",
+                "label": "<i class=\"fa fa-calendar-o\"> Calendar-o"
+            },
+            {
+                "value": "fa fa-camera",
+                "label": "<i class=\"fa fa-camera\"> Camera"
+            },
+            {
+                "value": "fa fa-camera-retro",
+                "label": "<i class=\"fa fa-camera-retro\"> Camera-retro"
+            },
+            {
+                "value": "fa fa-car",
+                "label": "<i class=\"fa fa-car\"> Car"
+            },
+            {
+                "value": "fa fa-caret-square-o-down",
+                "label": "<i class=\"fa fa-caret-square-o-down\"> Caret-square-o-down"
+            },
+            {
+                "value": "fa fa-caret-square-o-left",
+                "label": "<i class=\"fa fa-caret-square-o-left\"> Caret-square-o-left"
+            },
+            {
+                "value": "fa fa-caret-square-o-right",
+                "label": "<i class=\"fa fa-caret-square-o-right\"> Caret-square-o-right"
+            },
+            {
+                "value": "fa fa-caret-square-o-up",
+                "label": "<i class=\"fa fa-caret-square-o-up\"> Caret-square-o-up"
+            },
+            {
+                "value": "fa fa-cart-arrow-down",
+                "label": "<i class=\"fa fa-cart-arrow-down\"> Cart-arrow-down"
+            },
+            {
+                "value": "fa fa-cart-plus",
+                "label": "<i class=\"fa fa-cart-plus\"> Cart-plus"
+            },
+            {
+                "value": "fa fa-cc",
+                "label": "<i class=\"fa fa-cc\"> Cc"
+            },
+            {
+                "value": "fa fa-certificate",
+                "label": "<i class=\"fa fa-certificate\"> Certificate"
+            },
+            {
+                "value": "fa fa-check",
+                "label": "<i class=\"fa fa-check\"> Check"
+            },
+            {
+                "value": "fa fa-check-circle",
+                "label": "<i class=\"fa fa-check-circle\"> Check-circle"
+            },
+            {
+                "value": "fa fa-check-circle-o",
+                "label": "<i class=\"fa fa-check-circle-o\"> Check-circle-o"
+            },
+            {
+                "value": "fa fa-check-square",
+                "label": "<i class=\"fa fa-check-square\"> Check-square"
+            },
+            {
+                "value": "fa fa-check-square-o",
+                "label": "<i class=\"fa fa-check-square-o\"> Check-square-o"
+            },
+            {
+                "value": "fa fa-child",
+                "label": "<i class=\"fa fa-child\"> Child"
+            },
+            {
+                "value": "fa fa-circle",
+                "label": "<i class=\"fa fa-circle\"> Circle"
+            },
+            {
+                "value": "fa fa-circle-o",
+                "label": "<i class=\"fa fa-circle-o\"> Circle-o"
+            },
+            {
+                "value": "fa fa-circle-o-notch",
+                "label": "<i class=\"fa fa-circle-o-notch\"> Circle-o-notch"
+            },
+            {
+                "value": "fa fa-circle-thin",
+                "label": "<i class=\"fa fa-circle-thin\"> Circle-thin"
+            },
+            {
+                "value": "fa fa-clock-o",
+                "label": "<i class=\"fa fa-clock-o\"> Clock-o"
+            },
+            {
+                "value": "fa fa-close",
+                "label": "<i class=\"fa fa-close\"> Close"
+            },
+            {
+                "value": "fa fa-cloud",
+                "label": "<i class=\"fa fa-cloud\"> Cloud"
+            },
+            {
+                "value": "fa fa-cloud-download",
+                "label": "<i class=\"fa fa-cloud-download\"> Cloud-download"
+            },
+            {
+                "value": "fa fa-cloud-upload",
+                "label": "<i class=\"fa fa-cloud-upload\"> Cloud-upload"
+            },
+            {
+                "value": "fa fa-code",
+                "label": "<i class=\"fa fa-code\"> Code"
+            },
+            {
+                "value": "fa fa-code-fork",
+                "label": "<i class=\"fa fa-code-fork\"> Code-fork"
+            },
+            {
+                "value": "fa fa-coffee",
+                "label": "<i class=\"fa fa-coffee\"> Coffee"
+            },
+            {
+                "value": "fa fa-cog",
+                "label": "<i class=\"fa fa-cog\"> Cog"
+            },
+            {
+                "value": "fa fa-cogs",
+                "label": "<i class=\"fa fa-cogs\"> Cogs"
+            },
+            {
+                "value": "fa fa-comment",
+                "label": "<i class=\"fa fa-comment\"> Comment"
+            },
+            {
+                "value": "fa fa-comment-o",
+                "label": "<i class=\"fa fa-comment-o\"> Comment-o"
+            },
+            {
+                "value": "fa fa-comments",
+                "label": "<i class=\"fa fa-comments\"> Comments"
+            },
+            {
+                "value": "fa fa-comments-o",
+                "label": "<i class=\"fa fa-comments-o\"> Comments-o"
+            },
+            {
+                "value": "fa fa-compass",
+                "label": "<i class=\"fa fa-compass\"> Compass"
+            },
+            {
+                "value": "fa fa-copyright",
+                "label": "<i class=\"fa fa-copyright\"> Copyright"
+            },
+            {
+                "value": "fa fa-credit-card",
+                "label": "<i class=\"fa fa-credit-card\"> Credit-card"
+            },
+            {
+                "value": "fa fa-crop",
+                "label": "<i class=\"fa fa-crop\"> Crop"
+            },
+            {
+                "value": "fa fa-crosshairs",
+                "label": "<i class=\"fa fa-crosshairs\"> Crosshairs"
+            },
+            {
+                "value": "fa fa-cube",
+                "label": "<i class=\"fa fa-cube\"> Cube"
+            },
+            {
+                "value": "fa fa-cubes",
+                "label": "<i class=\"fa fa-cubes\"> Cubes"
+            },
+            {
+                "value": "fa fa-cutlery",
+                "label": "<i class=\"fa fa-cutlery\"> Cutlery"
+            },
+            {
+                "value": "fa fa-dashboard",
+                "label": "<i class=\"fa fa-dashboard\"> Dashboard"
+            },
+            {
+                "value": "fa fa-database",
+                "label": "<i class=\"fa fa-database\"> Database"
+            },
+            {
+                "value": "fa fa-desktop",
+                "label": "<i class=\"fa fa-desktop\"> Desktop"
+            },
+            {
+                "value": "fa fa-diamond",
+                "label": "<i class=\"fa fa-diamond\"> Diamond"
+            },
+            {
+                "value": "fa fa-dot-circle-o",
+                "label": "<i class=\"fa fa-dot-circle-o\"> Dot-circle-o"
+            },
+            {
+                "value": "fa fa-download",
+                "label": "<i class=\"fa fa-download\"> Download"
+            },
+            {
+                "value": "fa fa-edit",
+                "label": "<i class=\"fa fa-edit\"> Edit"
+            },
+            {
+                "value": "fa fa-ellipsis-h",
+                "label": "<i class=\"fa fa-ellipsis-h\"> Ellipsis-h"
+            },
+            {
+                "value": "fa fa-ellipsis-v",
+                "label": "<i class=\"fa fa-ellipsis-v\"> Ellipsis-v"
+            },
+            {
+                "value": "fa fa-envelope",
+                "label": "<i class=\"fa fa-envelope\"> Envelope"
+            },
+            {
+                "value": "fa fa-envelope-o",
+                "label": "<i class=\"fa fa-envelope-o\"> Envelope-o"
+            },
+            {
+                "value": "fa fa-envelope-square",
+                "label": "<i class=\"fa fa-envelope-square\"> Envelope-square"
+            },
+            {
+                "value": "fa fa-eraser",
+                "label": "<i class=\"fa fa-eraser\"> Eraser"
+            },
+            {
+                "value": "fa fa-exchange",
+                "label": "<i class=\"fa fa-exchange\"> Exchange"
+            },
+            {
+                "value": "fa fa-exclamation",
+                "label": "<i class=\"fa fa-exclamation\"> Exclamation"
+            },
+            {
+                "value": "fa fa-exclamation-circle",
+                "label": "<i class=\"fa fa-exclamation-circle\"> Exclamation-circle"
+            },
+            {
+                "value": "fa fa-exclamation-triangle",
+                "label": "<i class=\"fa fa-exclamation-triangle\"> Exclamation-triangle"
+            },
+            {
+                "value": "fa fa-external-link",
+                "label": "<i class=\"fa fa-external-link\"> External-link"
+            },
+            {
+                "value": "fa fa-external-link-square",
+                "label": "<i class=\"fa fa-external-link-square\"> External-link-square"
+            },
+            {
+                "value": "fa fa-eye",
+                "label": "<i class=\"fa fa-eye\"> Eye"
+            },
+            {
+                "value": "fa fa-eye-slash",
+                "label": "<i class=\"fa fa-eye-slash\"> Eye-slash"
+            },
+            {
+                "value": "fa fa-eyedropper",
+                "label": "<i class=\"fa fa-eyedropper\"> Eyedropper"
+            },
+            {
+                "value": "fa fa-fax",
+                "label": "<i class=\"fa fa-fax\"> Fax"
+            },
+            {
+                "value": "fa fa-female",
+                "label": "<i class=\"fa fa-female\"> Female"
+            },
+            {
+                "value": "fa fa-fighter-jet",
+                "label": "<i class=\"fa fa-fighter-jet\"> Fighter-jet"
+            },
+            {
+                "value": "fa fa-file-archive-o",
+                "label": "<i class=\"fa fa-file-archive-o\"> File-archive-o"
+            },
+            {
+                "value": "fa fa-file-audio-o",
+                "label": "<i class=\"fa fa-file-audio-o\"> File-audio-o"
+            },
+            {
+                "value": "fa fa-file-code-o",
+                "label": "<i class=\"fa fa-file-code-o\"> File-code-o"
+            },
+            {
+                "value": "fa fa-file-excel-o",
+                "label": "<i class=\"fa fa-file-excel-o\"> File-excel-o"
+            },
+            {
+                "value": "fa fa-file-image-o",
+                "label": "<i class=\"fa fa-file-image-o\"> File-image-o"
+            },
+            {
+                "value": "fa fa-file-movie-o",
+                "label": "<i class=\"fa fa-file-movie-o\"> File-movie-o"
+            },
+            {
+                "value": "fa fa-file-pdf-o",
+                "label": "<i class=\"fa fa-file-pdf-o\"> File-pdf-o"
+            },
+            {
+                "value": "fa fa-file-photo-o",
+                "label": "<i class=\"fa fa-file-photo-o\"> File-photo-o"
+            },
+            {
+                "value": "fa fa-file-picture-o",
+                "label": "<i class=\"fa fa-file-picture-o\"> File-picture-o"
+            },
+            {
+                "value": "fa fa-file-powerpoint-o",
+                "label": "<i class=\"fa fa-file-powerpoint-o\"> File-powerpoint-o"
+            },
+            {
+                "value": "fa fa-file-sound-o",
+                "label": "<i class=\"fa fa-file-sound-o\"> File-sound-o"
+            },
+            {
+                "value": "fa fa-file-video-o",
+                "label": "<i class=\"fa fa-file-video-o\"> File-video-o"
+            },
+            {
+                "value": "fa fa-file-word-o",
+                "label": "<i class=\"fa fa-file-word-o\"> File-word-o"
+            },
+            {
+                "value": "fa fa-file-zip-o",
+                "label": "<i class=\"fa fa-file-zip-o\"> File-zip-o"
+            },
+            {
+                "value": "fa fa-film",
+                "label": "<i class=\"fa fa-film\"> Film"
+            },
+            {
+                "value": "fa fa-filter",
+                "label": "<i class=\"fa fa-filter\"> Filter"
+            },
+            {
+                "value": "fa fa-fire",
+                "label": "<i class=\"fa fa-fire\"> Fire"
+            },
+            {
+                "value": "fa fa-fire-extinguisher",
+                "label": "<i class=\"fa fa-fire-extinguisher\"> Fire-extinguisher"
+            },
+            {
+                "value": "fa fa-flag",
+                "label": "<i class=\"fa fa-flag\"> Flag"
+            },
+            {
+                "value": "fa fa-flag-checkered",
+                "label": "<i class=\"fa fa-flag-checkered\"> Flag-checkered"
+            },
+            {
+                "value": "fa fa-flag-o",
+                "label": "<i class=\"fa fa-flag-o\"> Flag-o"
+            },
+            {
+                "value": "fa fa-flash",
+                "label": "<i class=\"fa fa-flash\"> Flash"
+            },
+            {
+                "value": "fa fa-flask",
+                "label": "<i class=\"fa fa-flask\"> Flask"
+            },
+            {
+                "value": "fa fa-folder",
+                "label": "<i class=\"fa fa-folder\"> Folder"
+            },
+            {
+                "value": "fa fa-folder-o",
+                "label": "<i class=\"fa fa-folder-o\"> Folder-o"
+            },
+            {
+                "value": "fa fa-folder-open",
+                "label": "<i class=\"fa fa-folder-open\"> Folder-open"
+            },
+            {
+                "value": "fa fa-folder-open-o",
+                "label": "<i class=\"fa fa-folder-open-o\"> Folder-open-o"
+            },
+            {
+                "value": "fa fa-frown-o",
+                "label": "<i class=\"fa fa-frown-o\"> Frown-o"
+            },
+            {
+                "value": "fa fa-futbol-o",
+                "label": "<i class=\"fa fa-futbol-o\"> Futbol-o"
+            },
+            {
+                "value": "fa fa-gamepad",
+                "label": "<i class=\"fa fa-gamepad\"> Gamepad"
+            },
+            {
+                "value": "fa fa-gavel",
+                "label": "<i class=\"fa fa-gavel\"> Gavel"
+            },
+            {
+                "value": "fa fa-gear",
+                "label": "<i class=\"fa fa-gear\"> Gear"
+            },
+            {
+                "value": "fa fa-gears",
+                "label": "<i class=\"fa fa-gears\"> Gears"
+            },
+            {
+                "value": "fa fa-gift",
+                "label": "<i class=\"fa fa-gift\"> Gift"
+            },
+            {
+                "value": "fa fa-glass",
+                "label": "<i class=\"fa fa-glass\"> Glass"
+            },
+            {
+                "value": "fa fa-globe",
+                "label": "<i class=\"fa fa-globe\"> Globe"
+            },
+            {
+                "value": "fa fa-graduation-cap",
+                "label": "<i class=\"fa fa-graduation-cap\"> Graduation-cap"
+            },
+            {
+                "value": "fa fa-group",
+                "label": "<i class=\"fa fa-group\"> Group"
+            },
+            {
+                "value": "fa fa-hdd-o",
+                "label": "<i class=\"fa fa-hdd-o\"> Hdd-o"
+            },
+            {
+                "value": "fa fa-headphones",
+                "label": "<i class=\"fa fa-headphones\"> Headphones"
+            },
+            {
+                "value": "fa fa-heart",
+                "label": "<i class=\"fa fa-heart\"> Heart"
+            },
+            {
+                "value": "fa fa-heart-o",
+                "label": "<i class=\"fa fa-heart-o\"> Heart-o"
+            },
+            {
+                "value": "fa fa-heartbeat",
+                "label": "<i class=\"fa fa-heartbeat\"> Heartbeat"
+            },
+            {
+                "value": "fa fa-history",
+                "label": "<i class=\"fa fa-history\"> History"
+            },
+            {
+                "value": "fa fa-home",
+                "label": "<i class=\"fa fa-home\"> Home"
+            },
+            {
+                "value": "fa fa-hotel",
+                "label": "<i class=\"fa fa-hotel\"> Hotel"
+            },
+            {
+                "value": "fa fa-image",
+                "label": "<i class=\"fa fa-image\"> Image"
+            },
+            {
+                "value": "fa fa-inbox",
+                "label": "<i class=\"fa fa-inbox\"> Inbox"
+            },
+            {
+                "value": "fa fa-info",
+                "label": "<i class=\"fa fa-info\"> Info"
+            },
+            {
+                "value": "fa fa-info-circle",
+                "label": "<i class=\"fa fa-info-circle\"> Info-circle"
+            },
+            {
+                "value": "fa fa-institution",
+                "label": "<i class=\"fa fa-institution\"> Institution"
+            },
+            {
+                "value": "fa fa-key",
+                "label": "<i class=\"fa fa-key\"> Key"
+            },
+            {
+                "value": "fa fa-keyboard-o",
+                "label": "<i class=\"fa fa-keyboard-o\"> Keyboard-o"
+            },
+            {
+                "value": "fa fa-language",
+                "label": "<i class=\"fa fa-language\"> Language"
+            },
+            {
+                "value": "fa fa-laptop",
+                "label": "<i class=\"fa fa-laptop\"> Laptop"
+            },
+            {
+                "value": "fa fa-leaf",
+                "label": "<i class=\"fa fa-leaf\"> Leaf"
+            },
+            {
+                "value": "fa fa-legal",
+                "label": "<i class=\"fa fa-legal\"> Legal"
+            },
+            {
+                "value": "fa fa-lemon-o",
+                "label": "<i class=\"fa fa-lemon-o\"> Lemon-o"
+            },
+            {
+                "value": "fa fa-level-down",
+                "label": "<i class=\"fa fa-level-down\"> Level-down"
+            },
+            {
+                "value": "fa fa-level-up",
+                "label": "<i class=\"fa fa-level-up\"> Level-up"
+            },
+            {
+                "value": "fa fa-life-bouy",
+                "label": "<i class=\"fa fa-life-bouy\"> Life-bouy"
+            },
+            {
+                "value": "fa fa-life-buoy",
+                "label": "<i class=\"fa fa-life-buoy\"> Life-buoy"
+            },
+            {
+                "value": "fa fa-life-ring",
+                "label": "<i class=\"fa fa-life-ring\"> Life-ring"
+            },
+            {
+                "value": "fa fa-life-saver",
+                "label": "<i class=\"fa fa-life-saver\"> Life-saver"
+            },
+            {
+                "value": "fa fa-lightbulb-o",
+                "label": "<i class=\"fa fa-lightbulb-o\"> Lightbulb-o"
+            },
+            {
+                "value": "fa fa-line-chart",
+                "label": "<i class=\"fa fa-line-chart\"> Line-chart",
+                "chart": true
+            },
+            {
+                "value": "fa fa-location-arrow",
+                "label": "<i class=\"fa fa-location-arrow\"> Location-arrow"
+            },
+            {
+                "value": "fa fa-lock",
+                "label": "<i class=\"fa fa-lock\"> Lock"
+            },
+            {
+                "value": "fa fa-magic",
+                "label": "<i class=\"fa fa-magic\"> Magic"
+            },
+            {
+                "value": "fa fa-magnet",
+                "label": "<i class=\"fa fa-magnet\"> Magnet"
+            },
+            {
+                "value": "fa fa-mail-forward",
+                "label": "<i class=\"fa fa-mail-forward\"> Mail-forward"
+            },
+            {
+                "value": "fa fa-mail-reply",
+                "label": "<i class=\"fa fa-mail-reply\"> Mail-reply"
+            },
+            {
+                "value": "fa fa-mail-reply-all",
+                "label": "<i class=\"fa fa-mail-reply-all\"> Mail-reply-all"
+            },
+            {
+                "value": "fa fa-male",
+                "label": "<i class=\"fa fa-male\"> Male"
+            },
+            {
+                "value": "fa fa-meh-o",
+                "label": "<i class=\"fa fa-meh-o\"> Meh-o"
+            },
+            {
+                "value": "fa fa-microphone",
+                "label": "<i class=\"fa fa-microphone\"> Microphone"
+            },
+            {
+                "value": "fa fa-microphone-slash",
+                "label": "<i class=\"fa fa-microphone-slash\"> Microphone-slash"
+            },
+            {
+                "value": "fa fa-minus",
+                "label": "<i class=\"fa fa-minus\"> Minus"
+            },
+            {
+                "value": "fa fa-minus-circle",
+                "label": "<i class=\"fa fa-minus-circle\"> Minus-circle"
+            },
+            {
+                "value": "fa fa-minus-square",
+                "label": "<i class=\"fa fa-minus-square\"> Minus-square"
+            },
+            {
+                "value": "fa fa-minus-square-o",
+                "label": "<i class=\"fa fa-minus-square-o\"> Minus-square-o"
+            },
+            {
+                "value": "fa fa-mobile",
+                "label": "<i class=\"fa fa-mobile\"> Mobile"
+            },
+            {
+                "value": "fa fa-mobile-phone",
+                "label": "<i class=\"fa fa-mobile-phone\"> Mobile-phone"
+            },
+            {
+                "value": "fa fa-money",
+                "label": "<i class=\"fa fa-money\"> Money"
+            },
+            {
+                "value": "fa fa-moon-o",
+                "label": "<i class=\"fa fa-moon-o\"> Moon-o"
+            },
+            {
+                "value": "fa fa-mortar-board",
+                "label": "<i class=\"fa fa-mortar-board\"> Mortar-board"
+            },
+            {
+                "value": "fa fa-motorcycle",
+                "label": "<i class=\"fa fa-motorcycle\"> Motorcycle"
+            },
+            {
+                "value": "fa fa-music",
+                "label": "<i class=\"fa fa-music\"> Music"
+            },
+            {
+                "value": "fa fa-navicon",
+                "label": "<i class=\"fa fa-navicon\"> Navicon"
+            },
+            {
+                "value": "fa fa-newspaper-o",
+                "label": "<i class=\"fa fa-newspaper-o\"> Newspaper-o"
+            },
+            {
+                "value": "fa fa-paint-brush",
+                "label": "<i class=\"fa fa-paint-brush\"> Paint-brush"
+            },
+            {
+                "value": "fa fa-paper-plane",
+                "label": "<i class=\"fa fa-paper-plane\"> Paper-plane"
+            },
+            {
+                "value": "fa fa-paper-plane-o",
+                "label": "<i class=\"fa fa-paper-plane-o\"> Paper-plane-o"
+            },
+            {
+                "value": "fa fa-paw",
+                "label": "<i class=\"fa fa-paw\"> Paw"
+            },
+            {
+                "value": "fa fa-pencil",
+                "label": "<i class=\"fa fa-pencil\"> Pencil"
+            },
+            {
+                "value": "fa fa-pencil-square",
+                "label": "<i class=\"fa fa-pencil-square\"> Pencil-square"
+            },
+            {
+                "value": "fa fa-pencil-square-o",
+                "label": "<i class=\"fa fa-pencil-square-o\"> Pencil-square-o"
+            },
+            {
+                "value": "fa fa-phone",
+                "label": "<i class=\"fa fa-phone\"> Phone"
+            },
+            {
+                "value": "fa fa-phone-square",
+                "label": "<i class=\"fa fa-phone-square\"> Phone-square"
+            },
+            {
+                "value": "fa fa-photo",
+                "label": "<i class=\"fa fa-photo\"> Photo"
+            },
+            {
+                "value": "fa fa-picture-o",
+                "label": "<i class=\"fa fa-picture-o\"> Picture-o"
+            },
+            {
+                "value": "fa fa-pie-chart",
+                "label": "<i class=\"fa fa-pie-chart\"> Pie-chart",
+                "chart": true
+            },
+            {
+                "value": "fa fa-plane",
+                "label": "<i class=\"fa fa-plane\"> Plane"
+            },
+            {
+                "value": "fa fa-plug",
+                "label": "<i class=\"fa fa-plug\"> Plug"
+            },
+            {
+                "value": "fa fa-plus",
+                "label": "<i class=\"fa fa-plus\"> Plus"
+            },
+            {
+                "value": "fa fa-plus-circle",
+                "label": "<i class=\"fa fa-plus-circle\"> Plus-circle"
+            },
+            {
+                "value": "fa fa-plus-square",
+                "label": "<i class=\"fa fa-plus-square\"> Plus-square"
+            },
+            {
+                "value": "fa fa-plus-square-o",
+                "label": "<i class=\"fa fa-plus-square-o\"> Plus-square-o"
+            },
+            {
+                "value": "fa fa-power-off",
+                "label": "<i class=\"fa fa-power-off\"> Power-off"
+            },
+            {
+                "value": "fa fa-print",
+                "label": "<i class=\"fa fa-print\"> Print"
+            },
+            {
+                "value": "fa fa-puzzle-piece",
+                "label": "<i class=\"fa fa-puzzle-piece\"> Puzzle-piece"
+            },
+            {
+                "value": "fa fa-qrcode",
+                "label": "<i class=\"fa fa-qrcode\"> Qrcode"
+            },
+            {
+                "value": "fa fa-question",
+                "label": "<i class=\"fa fa-question\"> Question"
+            },
+            {
+                "value": "fa fa-question-circle",
+                "label": "<i class=\"fa fa-question-circle\"> Question-circle"
+            },
+            {
+                "value": "fa fa-quote-left",
+                "label": "<i class=\"fa fa-quote-left\"> Quote-left"
+            },
+            {
+                "value": "fa fa-quote-right",
+                "label": "<i class=\"fa fa-quote-right\"> Quote-right"
+            },
+            {
+                "value": "fa fa-random",
+                "label": "<i class=\"fa fa-random\"> Random"
+            },
+            {
+                "value": "fa fa-recycle",
+                "label": "<i class=\"fa fa-recycle\"> Recycle"
+            },
+            {
+                "value": "fa fa-refresh",
+                "label": "<i class=\"fa fa-refresh\"> Refresh"
+            },
+            {
+                "value": "fa fa-remove",
+                "label": "<i class=\"fa fa-remove\"> Remove"
+            },
+            {
+                "value": "fa fa-reorder",
+                "label": "<i class=\"fa fa-reorder\"> Reorder"
+            },
+            {
+                "value": "fa fa-reply",
+                "label": "<i class=\"fa fa-reply\"> Reply"
+            },
+            {
+                "value": "fa fa-reply-all",
+                "label": "<i class=\"fa fa-reply-all\"> Reply-all"
+            },
+            {
+                "value": "fa fa-retweet",
+                "label": "<i class=\"fa fa-retweet\"> Retweet"
+            },
+            {
+                "value": "fa fa-road",
+                "label": "<i class=\"fa fa-road\"> Road"
+            },
+            {
+                "value": "fa fa-rocket",
+                "label": "<i class=\"fa fa-rocket\"> Rocket"
+            },
+            {
+                "value": "fa fa-rss",
+                "label": "<i class=\"fa fa-rss\"> Rss"
+            },
+            {
+                "value": "fa fa-rss-square",
+                "label": "<i class=\"fa fa-rss-square\"> Rss-square"
+            },
+            {
+                "value": "fa fa-search",
+                "label": "<i class=\"fa fa-search\"> Search"
+            },
+            {
+                "value": "fa fa-search-minus",
+                "label": "<i class=\"fa fa-search-minus\"> Search-minus"
+            },
+            {
+                "value": "fa fa-search-plus",
+                "label": "<i class=\"fa fa-search-plus\"> Search-plus"
+            },
+            {
+                "value": "fa fa-send",
+                "label": "<i class=\"fa fa-send\"> Send"
+            },
+            {
+                "value": "fa fa-send-o",
+                "label": "<i class=\"fa fa-send-o\"> Send-o"
+            },
+            {
+                "value": "fa fa-server",
+                "label": "<i class=\"fa fa-server\"> Server"
+            },
+            {
+                "value": "fa fa-share",
+                "label": "<i class=\"fa fa-share\"> Share"
+            },
+            {
+                "value": "fa fa-share-alt",
+                "label": "<i class=\"fa fa-share-alt\"> Share-alt"
+            },
+            {
+                "value": "fa fa-share-alt-square",
+                "label": "<i class=\"fa fa-share-alt-square\"> Share-alt-square"
+            },
+            {
+                "value": "fa fa-share-square",
+                "label": "<i class=\"fa fa-share-square\"> Share-square"
+            },
+            {
+                "value": "fa fa-share-square-o",
+                "label": "<i class=\"fa fa-share-square-o\"> Share-square-o"
+            },
+            {
+                "value": "fa fa-shield",
+                "label": "<i class=\"fa fa-shield\"> Shield"
+            },
+            {
+                "value": "fa fa-ship",
+                "label": "<i class=\"fa fa-ship\"> Ship"
+            },
+            {
+                "value": "fa fa-shopping-cart",
+                "label": "<i class=\"fa fa-shopping-cart\"> Shopping-cart"
+            },
+            {
+                "value": "fa fa-sign-in",
+                "label": "<i class=\"fa fa-sign-in\"> Sign-in"
+            },
+            {
+                "value": "fa fa-sign-out",
+                "label": "<i class=\"fa fa-sign-out\"> Sign-out"
+            },
+            {
+                "value": "fa fa-signal",
+                "label": "<i class=\"fa fa-signal\"> Signal"
+            },
+            {
+                "value": "fa fa-sitemap",
+                "label": "<i class=\"fa fa-sitemap\"> Sitemap"
+            },
+            {
+                "value": "fa fa-sliders",
+                "label": "<i class=\"fa fa-sliders\"> Sliders"
+            },
+            {
+                "value": "fa fa-smile-o",
+                "label": "<i class=\"fa fa-smile-o\"> Smile-o"
+            },
+            {
+                "value": "fa fa-soccer-ball-o",
+                "label": "<i class=\"fa fa-soccer-ball-o\"> Soccer-ball-o"
+            },
+            {
+                "value": "fa fa-sort",
+                "label": "<i class=\"fa fa-sort\"> Sort"
+            },
+            {
+                "value": "fa fa-sort-alpha-asc",
+                "label": "<i class=\"fa fa-sort-alpha-asc\"> Sort-alpha-asc"
+            },
+            {
+                "value": "fa fa-sort-alpha-desc",
+                "label": "<i class=\"fa fa-sort-alpha-desc\"> Sort-alpha-desc"
+            },
+            {
+                "value": "fa fa-sort-amount-asc",
+                "label": "<i class=\"fa fa-sort-amount-asc\"> Sort-amount-asc"
+            },
+            {
+                "value": "fa fa-sort-amount-desc",
+                "label": "<i class=\"fa fa-sort-amount-desc\"> Sort-amount-desc"
+            },
+            {
+                "value": "fa fa-sort-asc",
+                "label": "<i class=\"fa fa-sort-asc\"> Sort-asc"
+            },
+            {
+                "value": "fa fa-sort-desc",
+                "label": "<i class=\"fa fa-sort-desc\"> Sort-desc"
+            },
+            {
+                "value": "fa fa-sort-down",
+                "label": "<i class=\"fa fa-sort-down\"> Sort-down"
+            },
+            {
+                "value": "fa fa-sort-numeric-asc",
+                "label": "<i class=\"fa fa-sort-numeric-asc\"> Sort-numeric-asc"
+            },
+            {
+                "value": "fa fa-sort-numeric-desc",
+                "label": "<i class=\"fa fa-sort-numeric-desc\"> Sort-numeric-desc"
+            },
+            {
+                "value": "fa fa-sort-up",
+                "label": "<i class=\"fa fa-sort-up\"> Sort-up"
+            },
+            {
+                "value": "fa fa-space-shuttle",
+                "label": "<i class=\"fa fa-space-shuttle\"> Space-shuttle"
+            },
+            {
+                "value": "fa fa-spinner",
+                "label": "<i class=\"fa fa-spinner\"> Spinner"
+            },
+            {
+                "value": "fa fa-spoon",
+                "label": "<i class=\"fa fa-spoon\"> Spoon"
+            },
+            {
+                "value": "fa fa-square",
+                "label": "<i class=\"fa fa-square\"> Square"
+            },
+            {
+                "value": "fa fa-square-o",
+                "label": "<i class=\"fa fa-square-o\"> Square-o"
+            },
+            {
+                "value": "fa fa-star",
+                "label": "<i class=\"fa fa-star\"> Star"
+            },
+            {
+                "value": "fa fa-star-half",
+                "label": "<i class=\"fa fa-star-half\"> Star-half"
+            },
+            {
+                "value": "fa fa-star-half-empty",
+                "label": "<i class=\"fa fa-star-half-empty\"> Star-half-empty"
+            },
+            {
+                "value": "fa fa-star-half-full",
+                "label": "<i class=\"fa fa-star-half-full\"> Star-half-full"
+            },
+            {
+                "value": "fa fa-star-half-o",
+                "label": "<i class=\"fa fa-star-half-o\"> Star-half-o"
+            },
+            {
+                "value": "fa fa-star-o",
+                "label": "<i class=\"fa fa-star-o\"> Star-o"
+            },
+            {
+                "value": "fa fa-street-view",
+                "label": "<i class=\"fa fa-street-view\"> Street-view"
+            },
+            {
+                "value": "fa fa-suitcase",
+                "label": "<i class=\"fa fa-suitcase\"> Suitcase"
+            },
+            {
+                "value": "fa fa-sun-o",
+                "label": "<i class=\"fa fa-sun-o\"> Sun-o"
+            },
+            {
+                "value": "fa fa-support",
+                "label": "<i class=\"fa fa-support\"> Support"
+            },
+            {
+                "value": "fa fa-tablet",
+                "label": "<i class=\"fa fa-tablet\"> Tablet"
+            },
+            {
+                "value": "fa fa-tachometer",
+                "label": "<i class=\"fa fa-tachometer\"> Tachometer"
+            },
+            {
+                "value": "fa fa-tag",
+                "label": "<i class=\"fa fa-tag\"> Tag"
+            },
+            {
+                "value": "fa fa-tags",
+                "label": "<i class=\"fa fa-tags\"> Tags"
+            },
+            {
+                "value": "fa fa-tasks",
+                "label": "<i class=\"fa fa-tasks\"> Tasks"
+            },
+            {
+                "value": "fa fa-taxi",
+                "label": "<i class=\"fa fa-taxi\"> Taxi"
+            },
+            {
+                "value": "fa fa-terminal",
+                "label": "<i class=\"fa fa-terminal\"> Terminal"
+            },
+            {
+                "value": "fa fa-thumb-tack",
+                "label": "<i class=\"fa fa-thumb-tack\"> Thumb-tack"
+            },
+            {
+                "value": "fa fa-thumbs-down",
+                "label": "<i class=\"fa fa-thumbs-down\"> Thumbs-down"
+            },
+            {
+                "value": "fa fa-thumbs-o-down",
+                "label": "<i class=\"fa fa-thumbs-o-down\"> Thumbs-o-down"
+            },
+            {
+                "value": "fa fa-thumbs-o-up",
+                "label": "<i class=\"fa fa-thumbs-o-up\"> Thumbs-o-up"
+            },
+            {
+                "value": "fa fa-thumbs-up",
+                "label": "<i class=\"fa fa-thumbs-up\"> Thumbs-up"
+            },
+            {
+                "value": "fa fa-ticket",
+                "label": "<i class=\"fa fa-ticket\"> Ticket"
+            },
+            {
+                "value": "fa fa-times",
+                "label": "<i class=\"fa fa-times\"> Times"
+            },
+            {
+                "value": "fa fa-times-circle",
+                "label": "<i class=\"fa fa-times-circle\"> Times-circle"
+            },
+            {
+                "value": "fa fa-times-circle-o",
+                "label": "<i class=\"fa fa-times-circle-o\"> Times-circle-o"
+            },
+            {
+                "value": "fa fa-tint",
+                "label": "<i class=\"fa fa-tint\"> Tint"
+            },
+            {
+                "value": "fa fa-toggle-down",
+                "label": "<i class=\"fa fa-toggle-down\"> Toggle-down"
+            },
+            {
+                "value": "fa fa-toggle-left",
+                "label": "<i class=\"fa fa-toggle-left\"> Toggle-left"
+            },
+            {
+                "value": "fa fa-toggle-off",
+                "label": "<i class=\"fa fa-toggle-off\"> Toggle-off"
+            },
+            {
+                "value": "fa fa-toggle-on",
+                "label": "<i class=\"fa fa-toggle-on\"> Toggle-on"
+            },
+            {
+                "value": "fa fa-toggle-right",
+                "label": "<i class=\"fa fa-toggle-right\"> Toggle-right"
+            },
+            {
+                "value": "fa fa-toggle-up",
+                "label": "<i class=\"fa fa-toggle-up\"> Toggle-up"
+            },
+            {
+                "value": "fa fa-trash",
+                "label": "<i class=\"fa fa-trash\"> Trash"
+            },
+            {
+                "value": "fa fa-trash-o",
+                "label": "<i class=\"fa fa-trash-o\"> Trash-o"
+            },
+            {
+                "value": "fa fa-tree",
+                "label": "<i class=\"fa fa-tree\"> Tree"
+            },
+            {
+                "value": "fa fa-trophy",
+                "label": "<i class=\"fa fa-trophy\"> Trophy"
+            },
+            {
+                "value": "fa fa-truck",
+                "label": "<i class=\"fa fa-truck\"> Truck"
+            },
+            {
+                "value": "fa fa-tty",
+                "label": "<i class=\"fa fa-tty\"> Tty"
+            },
+            {
+                "value": "fa fa-umbrella",
+                "label": "<i class=\"fa fa-umbrella\"> Umbrella"
+            },
+            {
+                "value": "fa fa-university",
+                "label": "<i class=\"fa fa-university\"> University"
+            },
+            {
+                "value": "fa fa-unlock",
+                "label": "<i class=\"fa fa-unlock\"> Unlock"
+            },
+            {
+                "value": "fa fa-unlock-alt",
+                "label": "<i class=\"fa fa-unlock-alt\"> Unlock-alt"
+            },
+            {
+                "value": "fa fa-unsorted",
+                "label": "<i class=\"fa fa-unsorted\"> Unsorted"
+            },
+            {
+                "value": "fa fa-upload",
+                "label": "<i class=\"fa fa-upload\"> Upload"
+            },
+            {
+                "value": "fa fa-user",
+                "label": "<i class=\"fa fa-user\"> User"
+            },
+            {
+                "value": "fa fa-user-plus",
+                "label": "<i class=\"fa fa-user-plus\"> User-plus"
+            },
+            {
+                "value": "fa fa-user-secret",
+                "label": "<i class=\"fa fa-user-secret\"> User-secret"
+            },
+            {
+                "value": "fa fa-user-times",
+                "label": "<i class=\"fa fa-user-times\"> User-times"
+            },
+            {
+                "value": "fa fa-users",
+                "label": "<i class=\"fa fa-users\"> Users"
+            },
+            {
+                "value": "fa fa-video-camera",
+                "label": "<i class=\"fa fa-video-camera\"> Video-camera"
+            },
+            {
+                "value": "fa fa-volume-down",
+                "label": "<i class=\"fa fa-volume-down\"> Volume-down"
+            },
+            {
+                "value": "fa fa-volume-off",
+                "label": "<i class=\"fa fa-volume-off\"> Volume-off"
+            },
+            {
+                "value": "fa fa-volume-up",
+                "label": "<i class=\"fa fa-volume-up\"> Volume-up"
+            },
+            {
+                "value": "fa fa-warning",
+                "label": "<i class=\"fa fa-warning\"> Warning"
+            },
+            {
+                "value": "fa fa-wheelchair",
+                "label": "<i class=\"fa fa-wheelchair\"> Wheelchair"
+            },
+            {
+                "value": "fa fa-wifi",
+                "label": "<i class=\"fa fa-wifi\"> Wifi"
+            },
+            {
+                "value": "fa fa-wrench",
+                "label": "<i class=\"fa fa-wrench\"> Wrench"
+            }
+        ]
+    })
     .value('guidEmpty', '00000000-0000-0000-0000-000000000000')
 
     .value('emailRegex', /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);

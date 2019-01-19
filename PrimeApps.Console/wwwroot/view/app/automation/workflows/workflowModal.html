@@ -1,0 +1,28 @@
+﻿<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+        <div class="col-sm-8">
+            <h4 class="modal-title">{{SelectedNodeItem.text}}</h4>
+        </div>
+        <div class="col-sm-6 col-sm-rigth">
+            <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="cancel();">
+                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+            </button>
+            <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
+                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+            </button>
+        </div>
+    </div>
+    <div class="modal-dialog modal-600">
+        <div class="modal-content padding-0">
+            <div class="modal-body">
+                <div id="field-form-body" class="modal-body">
+                    <div class="section" id="section1">
+                        <div class="panel">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

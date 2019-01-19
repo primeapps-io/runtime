@@ -29,8 +29,8 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count()
         {
-            var count = DbContext.Modules
-               .Where(x => !x.Deleted).Count();
+            var count = await DbContext.Modules
+               .Where(x => !x.Deleted && x.Order != 0).CountAsync();
             return count;
         }
 
@@ -57,22 +57,22 @@ namespace PrimeApps.Model.Repositories
 
             return modules;
 
-		}
-		public async Task<ICollection<Module>> GetAllBasic()
-		{
-			var modules = await DbContext.Modules.Select(x => new Module
-			{
-				Id = x.Id,
-				Name = x.Name,
-				LabelEnPlural = x.LabelEnPlural,
-				LabelEnSingular = x.LabelEnSingular,
-				LabelTrSingular = x.LabelTrSingular,
-				LabelTrPlural = x.LabelTrPlural,
-				Order = x.Order,
-				Display = x.Display
-			})
-			 .Where(x => !x.Deleted)
-			 .ToListAsync();
+        }
+        public async Task<ICollection<Module>> GetAllBasic()
+        {
+            var modules = await DbContext.Modules.Select(x => new Module
+            {
+                Id = x.Id,
+                Name = x.Name,
+                LabelEnPlural = x.LabelEnPlural,
+                LabelEnSingular = x.LabelEnSingular,
+                LabelTrSingular = x.LabelTrSingular,
+                LabelTrPlural = x.LabelTrPlural,
+                Order = x.Order,
+                Display = x.Display
+            })
+             .Where(x => !x.Deleted)
+             .ToListAsync();
 
             return modules;
 
@@ -183,15 +183,15 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(tableCreateSql);
 
-            if (result == -1)
-            {
-                // Create warehouse table
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update module.");
+            //if (result == -1)
+            //{
+            //    // Create warehouse table
+            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //        throw new Exception("Warehouse cannot be null during create/update module.");
 
-                if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.CreateTable(_warehouse.DatabaseName, module.Name, CurrentUser, language));
-            }
+            //    if (_warehouse.DatabaseName != "0")
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateTable(_warehouse.DatabaseName, module.Name, CurrentUser, language));
+            //}
 
             return result;
         }
@@ -222,30 +222,30 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(tableAlterSql);
 
-            if (result == -1)
-            {
-                // Alter warehouse table
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update module.");
+            //if (result == -1)
+            //{
+            //    // Alter warehouse table
+            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //        throw new Exception("Warehouse cannot be null during create/update module.");
 
-                if (_warehouse.DatabaseName == "0")
-                    return result;
+            //    if (_warehouse.DatabaseName == "0")
+            //        return result;
 
-                if (moduleChanges.FieldsAdded != null && moduleChanges.FieldsAdded.Count > 0)
-                {
-                    var fieldIds = moduleChanges.FieldsAdded.Select(x => x.Id).ToList();
-                    BackgroundJob.Enqueue(() => _warehouse.CreateColumns(_warehouse.DatabaseName, module.Name, fieldIds, CurrentUser, language));
-                }
+            //    if (moduleChanges.FieldsAdded != null && moduleChanges.FieldsAdded.Count > 0)
+            //    {
+            //        var fieldIds = moduleChanges.FieldsAdded.Select(x => x.Id).ToList();
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateColumns(_warehouse.DatabaseName, module.Name, fieldIds, CurrentUser, language));
+            //    }
 
-                // Create warehouse junction tables
-                if (moduleChanges.RelationsAdded != null && moduleChanges.RelationsAdded.Count > 0)
-                {
-                    foreach (var relation in moduleChanges.RelationsAdded)
-                    {
-                        BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
-                    }
-                }
-            }
+            //    // Create warehouse junction tables
+            //    if (moduleChanges.RelationsAdded != null && moduleChanges.RelationsAdded.Count > 0)
+            //    {
+            //        foreach (var relation in moduleChanges.RelationsAdded)
+            //        {
+            //            BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
+            //        }
+            //    }
+            //}
 
             return result;
         }
@@ -292,15 +292,15 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(tableJunctionCreateSql);
 
-            if (result == -1)
-            {
-                // Create warehouse junction table
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update module.");
+            //if (result == -1)
+            //{
+            //    // Create warehouse junction table
+            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //        throw new Exception("Warehouse cannot be null during create/update module.");
 
-                if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
-            }
+            //    if (_warehouse.DatabaseName != "0")
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
+            //}
 
             return result;
         }
@@ -382,15 +382,15 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Modules
                 .Include(module => module.Sections)
-                    .ThenInclude(section => section.Permissions)
+                .ThenInclude(section => section.Permissions)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Validation)
+                .ThenInclude(field => field.Validation)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Combination)
+                .ThenInclude(field => field.Combination)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Filters)
+                .ThenInclude(field => field.Filters)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Permissions)
+                .ThenInclude(field => field.Permissions)
                 .Include(module => module.Relations)
                 .Include(module => module.Dependencies)
                 .Include(module => module.Calculations)
@@ -407,8 +407,9 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Module> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
             return DbContext.Modules
-                 .Where(x => !x.Deleted);
-            
+                 .Where(x => !x.Deleted && x.Order != 0)
+                 .OrderByDescending(x => x.Id);
+
         }
 
         public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)
@@ -420,9 +421,5 @@ namespace PrimeApps.Model.Repositories
             return module.Fields;
         }
     }
-    public class MyTable
-    {
-        public string Name { get; set; }
 
-    }
 }

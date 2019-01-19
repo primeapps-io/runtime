@@ -22,8 +22,8 @@ angular.module('primeapps')
 
                     if ($scope.id) {
                         $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
-                        $scope.role.label = $scope.role['label_' + $rootScope.language];
-                        $scope.role.description = $scope.role['description_' + $rootScope.language];
+                        $scope.role.label = $scope.role['label_' + $scope.language];
+                        $scope.role.description = $scope.role['description_' + $scope.language];
 
                         if (!$scope.role.master) {
                             $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
@@ -34,10 +34,10 @@ angular.module('primeapps')
                         }
 
                         angular.forEach($scope.role.users, function (userId) {
-                            var user = $filter('filter')($rootScope.workgroup.users, {id: userId}, true)[0];
+                            var user = $filter('filter')($rootScope.workgroup.users, { id: userId }, true)[0];
 
                             if (user)
-                                $scope.roleUsers.push($filter('filter')($rootScope.users, {id: user.Id}, true)[0]);
+                                $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
                         });
                     }
                     else if (reportsTo) {
@@ -87,8 +87,7 @@ angular.module('primeapps')
                 $scope.role_change = true;
             };
 
-            $scope.cancel = function () {
-                $state.go('app.setup.roles');
-            };
+
+
         }
     ]);

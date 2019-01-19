@@ -7,6 +7,7 @@ using PrimeApps.Model.Common.Bpm;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -63,7 +64,31 @@ namespace PrimeApps.Model.Repositories
             return bpmWorkFlow;
         }
 
-        public async Task<int> Count(BpmFindRequest request)
+        public async Task<ICollection<BpmWorkflow>> FindForStudio(PaginationModel paginationModel)
+        {
+            var bpm = await DbContext.BpmWorkflows.OrderByDescending(x => x.Id)
+               .Skip(paginationModel.Offset * paginationModel.Limit)
+               .Take(paginationModel.Limit).ToListAsync();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(BpmWorkflow).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    bpm = bpm.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    bpm = bpm.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+            }
+
+            return bpm;
+             
+        }
+
+        public async Task<int> Count()
         {
             var count = await DbContext.BpmWorkflows.Where(q => !q.Deleted).CountAsync();
 

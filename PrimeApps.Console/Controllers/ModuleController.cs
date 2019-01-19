@@ -62,9 +62,6 @@ namespace PrimeApps.Console.Controllers
         {
             var count = await _moduleRepository.Count();
 
-            if (count < 1)
-                return NotFound();
-
             return Ok(count);
         }
 
@@ -72,9 +69,6 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
             var modules = await _moduleRepository.Find(paginationModel);
-
-            if (modules == null)
-                return NotFound();
 
             return Ok(modules);
         }
@@ -84,9 +78,6 @@ namespace PrimeApps.Console.Controllers
         {
             var module = await _moduleRepository.GetById(id);
 
-            if (module == null)
-                return NotFound();
-
             return Ok(module);
         }
 
@@ -94,9 +85,6 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> GetByName(string name)
         {
             var module = await _moduleRepository.GetByName(name);
-
-            if (module == null)
-                return NotFound();
 
             return Ok(module);
         }
@@ -467,15 +455,15 @@ namespace PrimeApps.Console.Controllers
         {
             var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 
-			return Ok(moduleSettings);
-		}
+            return Ok(moduleSettings);
+        }
 
-		[Route("get_module_fields"), HttpGet]
-		public async Task<IActionResult> GetModuleFieldByName([FromUri]string moduleName)
-		{
-			var fields = await _moduleRepository.GetModuleFieldByName(moduleName);
+        [Route("get_module_fields"), HttpGet]
+        public async Task<IActionResult> GetModuleFieldByName([FromUri]string moduleName)
+        {
+            var fields = await _moduleRepository.GetModuleFieldByName(moduleName);
 
-			return Ok(fields);
-		}
-	}
+            return Ok(fields);
+        }
+    }
 }

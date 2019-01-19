@@ -1,40 +1,37 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='certificates' ? 'active' :''">
-            <a href="/#/app/5/certificates">
-                <i class="fas fa-th-large"></i>
-                Certificates
-            </a>
-        </li>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='certificates' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/certificates" data-trigger="hover" data-type="info" data-title="Certificates" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Certificates</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='passwordPolicies' ? 'active' :''">
-            <a href="/#/app/5/passwordPolicies">
-                <i class="fas fa-code-branch"></i>
-                Password Policies
-            </a>
-        </li>
+    <li ng-class="activeMenuItem ==='passwordPolicies' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/passwordPolicies" data-trigger="hover" data-type="info" data-title="Password Policies" bs-tooltip data-placement="right">
+            <i class="fas fa-code-branch"></i>
+            <span>Password Policies</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='networkAccess' ? 'active' :''">
-            <a href="/#/app/5/networkAccess">
-                <i class="fas fa-network-wired"></i>
-                Network Access
-            </a>
-        </li>
+    <li ng-class="activeMenuItem ==='networkAccess' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/networkAccess" data-trigger="hover" data-type="info" data-title="Network Access" bs-tooltip data-placement="right">
+            <i class="fas fa-network-wired"></i>
+            <span>Network Access</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='cors' ? 'active' :''">
-            <a href="/#/app/5/cors">
-                <i class="fas fa-sliders-h"></i>
-                Cors
-            </a>
-        </li>
+    <li ng-class="activeMenuItem ==='cors' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/cors" data-trigger="hover" data-type="info" data-title="Cors" bs-tooltip data-placement="right">
+            <i class="fas fa-sliders-h"></i>
+            <span>Cors</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='auditTrail' ? 'active' :''">
-            <a href="/#/app/5/auditTrail">
-                <i class="fas fa-sliders-h"></i>
-                Audit Trail
-            </a>
-        </li>
+    <li ng-class="activeMenuItem ==='auditTrail' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/auditTrail" data-trigger="hover" data-type="info" data-title="Audit Trail" bs-tooltip data-placement="right">
+            <i class="fas fa-sliders-h"></i>
+            <span>Audit Trail</span>
+        </a>
+    </li>
 
-    </ul>
-</div>
+</ul>

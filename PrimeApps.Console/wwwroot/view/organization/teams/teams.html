@@ -1,31 +1,44 @@
-<div class="setup-liste-header row">
-    <div class="col-sm-6"><h2 class="setup-title">{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
-        <button class="btn add-button">
-            <i class="fas fa-users"></i> Members (8)
-        </button>
-        <button class="btn btn-radius btn-gray">
-            <i class="fas fa-users"></i> Apps (8)
-        </button>
-
-    </div>
-    <br>
-    <div class="col-sm-6 list-right-menu" ng-show="!selectedTeam">
-        <button class="btn add-button" ng-click="addNewTeam()">
-            <i class="fas fa-plus"></i> Add New Team
-        </button>
-    </div>
-    <div class="col-sm-6 list-right-menu" ng-show="selectedTeam">
-        <button class="btn   btn-radius btn-red" ng-click="delete(teamId)">
-            <i class="fas fa-plus"></i> Delete
-        </button>
-        <button class="btn btn-radius btn-blue" ng-click="addNewTeam(teamId)">
-            <i class="fas fa-plus"></i> Edit
-        </button>
+<div class="setup-title">
+    <h2>{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li ng-show="!selectedTeam">
+                <button class="btn add-button" ng-click="addNewTeam()">
+                    <i class="fas fa-plus"></i> Add New Team
+                </button>
+            </li>
+            <li ng-show="selectedTeam">
+                <button class="btn add-button btn-red" ng-click="delete(teamId)">
+                    <i class="fas fa-trush"></i> Delete
+                </button>
+            </li>
+            <li ng-show="selectedTeam">
+                <button class="btn add-button btn-blue" ng-click="addNewTeam(teamId)">
+                    <i class="fas fa-plus"></i> Edit
+                </button>
+            </li>
+        </ul>
+        
     </div>
 </div>
+<div class="setup-title">
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button">
+                <i class="fas fa-users"></i> Members (8)
+            </button>
+        </li>
+        <li>
+            <button class="btn add-button btn-gray">
+                <i class="fas fa-users"></i> Apps (8)
+            </button>
+        </li>
+    </ul>
+</div>
+
+
 <div>
     <div class="tab-content">
-        <br>
         <table class="table table-hover" ng-show="!selectedTeam">
             <thead>
             <tr>
@@ -66,6 +79,7 @@
                 <span ng-bind-html="item.full_name | highlight: $select.search"></span>
             </ui-select-choices>
         </ui-select>
+
 
         <!--<select id="users"
                 name="users"

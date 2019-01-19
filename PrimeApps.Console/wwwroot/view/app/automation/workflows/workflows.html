@@ -1,70 +1,125 @@
-<div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Workflows</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Workflows</button>
-        </div>
-    </div>
-
-    <div class="tab-content">
+<div class="setup-title">
+    <h2>Workflows</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.BpmWorkflow.NewRule' | translate}}</button>
+</div>
+<div class="tab-content" id="WorkflowsController">
+    <div ng-if="!editMode">
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                    <th>{{'Setup.Modules.Name' | translate}}</th>
-                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                    <th>{{'Setup.Modules.RelationType' | translate}}</th>
+                    <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
+                    <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
+                    <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
+                    <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="workflow in workflows">
+                <tr ng-repeat="workflow in workflows" >
                     <td>{{workflow.name}}</td>
-                    <td>{{workflow.moduleStr}}</td>
-                    <td>{{workflow.operationsStr}}</td>
-                    <td>{{workflow.statusStr}}</td>
-                    <td class="text-right">
-                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
-                            translate}}</a>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
+                    <td>{{workflow.module['label_'+language+'_plural']}}</td>
+                    <td>{{workflow.record_operations}}</td>
+                    <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
+                    <td class="text-center">
+                        <div class="action-buttons-block">
+                            <button type="button" data-toggle="dropdown"
+                                    class="btn btn-xs btn-default list-action-button"
+                                    placement="bottom-right"
+                                    data-animation="am-flip-x"
+                                    bs-dropdown
+                                    aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a ng-click="editMode = true">
+                                        {{'Common.Edit' | translate}}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" confirm-click action="delete(workflow.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                        {{'Common.Remove' | translate}}
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
         <div class="row table-pagination">
-            <div class="col-sm-6">
+            <div class="col-sm-10">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li>
-                            <a href="#" aria-label="Previous">
-                                <i class="fas fa-step-backward"></i>
-                            </a>
-                        </li>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li>
-                            <a href="#" aria-label="Next">
-                                <i class="fas fa-step-forward"></i>
-                            </a>
-                        </li>
-                    </ul>
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="tabelPagination.currentPage"
+                         page-size="tabelPagination.pageSize"
+                         total="tabelPagination.total"
+                         scroll-top="true"
+                         hide-if-empty="true"
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-chevron-right"
+                         text-prev-class="fas fa-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="fas fa-step-forward"
+                         paging-action="changePage(page)">
+                    </div>
                 </nav>
             </div>
-            <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
-            <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
-                <select class="items-per-page-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select></div>
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
         </div>
+    </div>
+    <div ng-if="editMode">
+        <div style="display: none;">
+            <div id="currentFile">(Unsaved File)</div>
+            <!--START menu bar -->
+            <ul id="menuui">
+             <!--Add Bpm Top Menu-->
+            </ul>
+            <!--END menu bar -->
+        </div>
+        <div id="sideBar">
+            <span style="display: inline-block; vertical-align: top; padding: 5px; width:100%">
+                <div id="accordion">
+                    <h4>BPM Items</h4>
+                    <div>
+                        <div id="myPaletteLevel1" class="myPaletteDiv"></div>
+                    </div>
+                    <!--<h4>Level 2 items</h4>
+                <div>
+                    <div id="myPaletteLevel2" class="myPaletteDiv"></div>
+                </div>-->
+                </div>
+            </span>
+
+            <div class="handle">Overview:</div>
+            <div id="myOverviewDiv"></div>
+        </div>
+        <div id="myDiagramDiv"></div>
+
+        <div id="openDocument" class="draggable">
+            <div id="openDraggableHandle" class="handle">Open File</div>
+            <div id="openText" class="elementText">Choose file to open...</div>
+            <select id="mySavedFiles" class="mySavedFiles"></select>
+            <br />
+            <button id="openBtn" class="elementBtn" type="button" onclick="loadFile()" style="margin-left: 70px">Open</button>
+            <button id="cancelBtn" class="elementBtn" type="button" onclick="closeElement('openDocument')">Cancel</button>
+        </div>
+
+        <div id="removeDocument" class="draggable"></div>
     </div>
 </div>

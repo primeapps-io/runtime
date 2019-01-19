@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Teams
                 .Include(x => x.TeamUsers)
-                .Where(x => x.OrganizationId == organizationId && !x.Deleted)
+                .Where(x => x.OrganizationId == organizationId && !x.Deleted).OrderByDescending(x => x.Id)
                 .ToListAsync();
         }
 

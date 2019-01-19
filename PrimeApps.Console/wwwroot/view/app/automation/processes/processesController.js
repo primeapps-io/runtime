@@ -1,270 +1,857 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
-	.controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ProcessesService', 'LayoutService', '$http', 'config',
-		function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ProcessesService, LayoutService, $http, config) {
+    .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
+            $scope.loading = true;
+            //$scope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-			//$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
+            $scope.$parent.wizardStep = 0;
+            $scope.processes = [];
+            $scope.$parent.processes = [];
+            $scope.$parent.menuTopTitle = "Automation";
+            $scope.$parent.activeMenu = 'automation';
+            $scope.$parent.activeMenuItem = 'processes';
+            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1; //TODO Organization ID
+            $scope.hookParameters = [];
+            $scope.approvers = [];
+            $scope.approversLength = 0;
+            $scope.scheduleItems = ProcessesService.getScheduleItems();
+            $scope.dueDateItems = ProcessesService.getDueDateItems();
+            $scope.isEdit = false;
+            $scope.isChosenModule = true;
+            $scope.users = [];// angular.copy($rootScope.workgroup.users);
+            $scope.$parent.collapsed = true;
+            $scope.allowEdit = true;
+            $scope.workflowModel = {};
+            $scope.workflowModel.active = true;
+            $scope.workflowModel.frequency = 'continuous';
+            $scope.workflowModel.trigger_time = 'instant';
+            $scope.filteredModules = $scope.modules;
 
-			$scope.$parent.menuTopTitle = "Automation";
-			$scope.$parent.activeMenu = 'automation';
-			$scope.$parent.activeMenuItem = 'processes';
+            var activityModule = $filter('filter')($scope.modules, { name: 'activities' }, true)[0];
 
-			console.log("RelationsController");
+            ModuleService.getModuleFields(activityModule.name)
+                .then(function (response) {
+                    if (response.data) {
+                        activityModule.fields = response.data;
+                    }
+                });
 
-			$scope.relationsState = angular.copy($scope.relations);
+            //Pagening Start
+            $scope.requestModel = { //default page value
+                limit: "10",
+                offset: 0,
+                order_column: "name"
+            };
 
+            ProcessesService.count(organitzationId).then(function (response) {
+                $scope.pageTotal = response.data;
+            });
 
-			$scope.showFormModal = function (relation) {
-				if (!relation) {
-					relation = {};
-					var sortOrders = [];
+            ProcessesService.find($scope.requestModel, organitzationId).then(function (response) {
+                if (response.data) {
+                    var data = fillModule(response.data);
 
-					angular.forEach($scope.relations, function (item) {
-						sortOrders.push(item.order);
-					});
+                    $scope.processes = data;
+                    $scope.loading = false;
+                }
+            });
 
-					var maxOrder = Math.max.apply(null, sortOrders);
-					maxOrder = maxOrder < 0 ? 0 : maxOrder;
-					relation.order = maxOrder + 1;
-					relation.relation_type = 'one_to_many';
-					relation.isNew = true;
-				}
-
-				$scope.currentRelation = relation;
-				$scope.currentRelation.hasRelationField = true;
-				$scope.currentRelationState = angular.copy($scope.currentRelation);
-				//$scope.fields = ModuleSetupService.getFields($scope.currentRelation);
-				if (!$scope.currentRelation.detail_view_type)
-					$scope.currentRelation.detail_view_type = 'tab';
-				//Module relations list remove itself
-				var filter = {};
-				//filter['label_' + $rootScope.language + '_plural'] = '!' + $scope.module['label_' + $rootScope.language + '_plural'];
-				//$scope.moduleLists = $filter('filter')($rootScope.modules, filter, true);
-
-				$scope.formModal = $scope.formModal || $modal({
-					scope: $scope,
-					templateUrl: 'view/setup/modules/relationForm.html',
-					animation: '',
-					backdrop: 'static',
-					show: false
-				});
-
-				$scope.formModal.$promise.then(function () {
-					if (!relation.isNew)
-						$scope.bindDragDrop();
-
-					$scope.formModal.show();
-				});
-			};
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
 
 
-			var drakeAvailableFields;
-			var drakeSelectedFields;
+                ProcessesService.find(requestModel, organitzationId).then(function (response) {
+                    var data = fillModule(response.data);
 
-			$scope.bindDragDrop = function () {
-				$timeout(function () {
-					if (drakeAvailableFields)
-						drakeAvailableFields.destroy();
+                    $scope.rules = data;
+                    $scope.loading = false;
+                });
 
-					if (drakeSelectedFields)
-						drakeSelectedFields.destroy();
+            };
 
-					var containerLeft = document.querySelector('#availableFields');
-					var containerRight = document.querySelector('#selectedFields');
+            $scope.changeOffset = function () {
+                $scope.changePage(1);
+            };
 
-					drakeAvailableFields = dragularService([containerLeft], {
-						scope: $scope,
-						containersModel: [$scope.fields.availableFields],
-						classes: {
-							mirror: 'gu-mirror-option',
-							transit: 'gu-transit-option'
-						},
-						accepts: accepts,
-						moves: function (el, container, handle) {
-							return handle.classList.contains('dragable');
-						}
-					});
+            var fillModule = function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var moduleId = data[i].module_id;
+                    var module = $filter('filter')($scope.modules, { id: moduleId }, true)[0];
+                    data[i].module = angular.copy(module);
+                }
 
-					drakeSelectedFields = dragularService([containerRight], {
-						scope: $scope,
-						classes: {
-							mirror: 'gu-mirror-option',
-							transit: 'gu-transit-option'
-						},
-						containersModel: [$scope.fields.selectedFields]
-					});
+                return data;
+            };
+            //Pagening End
 
-					function accepts(el, target, source) {
-						if (source != target) {
-							return true;
-						}
-					}
-				}, 100);
-			};
 
-			$scope.relatedModuleChanged = function () {
-				$scope.currentRelation.relationField = null;
 
-				if ($scope.currentRelation.relatedModule)
-					$scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relatedModule.fields, { data_type: 'lookup', lookup_type: $stateParams.module, deleted: false }, true).length > 0;
+            if (!$filter('filter')($scope.users, { id: 0 }, true)[0])
+                $scope.users.unshift({ id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers') });
 
-				$scope.currentRelation.display_fields = null;
-				$scope.fields = ModuleSetupService.getFields($scope.currentRelation);
 
-				if ($scope.currentRelation.relation_type === 'many_to_many')
-					$scope.bindDragDrop();
-			};
+            var setTaskFields = function () {
+                $scope.taskFields = {};
 
-			$scope.relationTypeChanged = function () {
-				if ($scope.currentRelation.relation_type === 'many_to_many')
-					$scope.bindDragDrop();
-			};
+                if (!activityModule.fields)
+                    return;
 
-			$scope.save = function (relationForm) {
-				if (!relationForm.$valid)
-					return;
+                $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+                $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+                $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+                $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+                $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+                $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+                $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+            };
 
-				$scope.saving = true;
-				if (relationForm.two_way)
-					var relation = relationForm;
-				else
-					var relation = angular.copy($scope.currentRelation);
-				relation.display_fields = [];
+            setTaskFields();
 
-				if ($scope.fields.selectedFields && $scope.fields.selectedFields.length > 0) {
-					angular.forEach($scope.fields.selectedFields, function (selectedField) {
-						relation.display_fields.push(selectedField.name);
+            $scope.selectProcess = function (id) {
+                ModuleService.getPickItemsLists(activityModule, false)
+                    .then(function (picklistsActivity) {
+                        $scope.picklistsActivity = picklistsActivity;
 
-						if (selectedField.lookup_type) {
-							var lookupModule = $filter('filter')($rootScope.modules, { name: selectedField.lookup_type }, true)[0];
-							var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                        if (!$scope.id) {
+                            $scope.workflowModel = {};
+                            $scope.workflowModel.active = true;
+                            $scope.workflowModel.frequency = 'continuous';
+                            $scope.workflowModel.trigger_time = 'instant';
+                            $scope.loading = false;
+                            $scope.filteredModules = $scope.modules;
 
-							relation.display_fields.push(selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary');
-						}
-					});
-				}
-				else {
-					var primaryField = $filter('filter')(relation.relatedModule.fields, { primary: true })[0];
-					relation.display_fields.push(primaryField.name);
-				}
+                            ModuleService.getAllProcess()
+                                .then(function (response) {
+                                    var processes = response.data;
 
-				if (relation.isNew) {
-					delete relation.isNew;
+                                    for (var i = 0; i < processes.length; i++) {
+                                        var process = processes[i];
+                                        var processName = $filter('filter')($scope.modules, { id: process.module_id }, true)[0].name;
+                                        if (processName && process.user_id === 0) {
+                                            $scope.filteredModules = $filter('filter')($scope.filteredModules, { name: '!' + processName }, true);
+                                        }
+                                    }
+                                });
 
-					if (!$scope.relations)
-						$scope.relations = [];
 
-					if (relation.relation_type === 'many_to_many') {
-						relation.relationField = {};
-						relation.relationField.name = module.name;
-					}
-				}
+                        }
+                        else {
+                            ProcessesService.get($scope.id)
+                                .then(function (workflow) {
+                                    ProcessesService.getAllProcessRequests($scope.id)
+                                        .then(function (response) {
 
-				ModuleSetupService.prepareRelation(relation);
+                                            if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
+                                                $scope.allowEdit = false;
+                                            }
+                                        });
+                                    workflow = workflow.data;
+                                    $scope.module = $filter('filter')($scope.modules, { id: workflow.module_id }, true)[0];
 
-				//Create dynamic relation for related module in manytomany relation.
-				var createRelationManyToManyModule = function () {
-					var relatedModul = {
-						display_fields: null,
-						hasRelationField: false,
-						isNew: true,
-						order: $scope.currentRelation.order,
-						relatedModule: $scope.module,
-						relationField: null,
-						relation_type: "many_to_many",
-						$valid: true,
-						two_way: true,
-						mainModule: relation.related_module
-					};
+                                    ModuleService.getPickItemsLists($scope.module)
+                                        .then(function (picklists) {
+                                            $scope.modulePicklists = picklists;
+                                            $scope.filters = [];
 
-					if ($scope.currentRelation.hasOwnProperty("label_en_singular")) {
-						relatedModul["label_en_singular"] = $scope.module.label_en_singular;
-						relatedModul["label_en_plural"] = $scope.module.label_en_plural;
-					}
-					else {
-						relatedModul["label_tr_singular"] = $scope.module.label_tr_singular;
-						relatedModul["label_tr_plural"] = $scope.module.label_tr_plural;
-					}
-					$scope.fields.selectedFields = [];
-					$scope.save(relatedModul);
-				}
+                                            for (var i = 0; i < 5; i++) {
+                                                var filter = {};
+                                                filter.id = i;
+                                                filter.field = null;
+                                                filter.operator = null;
+                                                filter.value = null;
+                                                filter.no = i + 1;
 
-				var success = function () {
-					if (!relation.two_way && relation.relation_type === 'many_to_many' && $scope.currentRelation.isNew)
-						createRelationManyToManyModule();
-					else
-						LayoutService.getMyAccount(true)
-							.then(function () {
-								$scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
-								$scope.relations = ModuleSetupService.processRelations($scope.module.relations);
-								ngToast.create({
-									content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
-									className: 'success'
-								});
-								$scope.saving = false;
-								$scope.formModal.hide();
-							});
-				};
+                                                $scope.filters.push(filter);
+                                            }
+                                            $scope.filteredModules = $scope.modules;
+                                            $scope.picklistsModule = picklists;
+                                            $scope.getDynamicProcessModules($scope.module, workflow, true);
+                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
+                                            $scope.getUpdatableModules();
+                                            $scope.generateHookModules(workflow);
+                                            $scope.firstApproverLookupChange(true, workflow);
+                                            $scope.secondApproverLookupChange(true, workflow);
+                                            $scope.prepareFilters();
+                                            $scope.isEdit = true;
+                                            $scope.lastStepClicked = true;
+                                            $scope.loading = false;
+                                        });
+                                });
+                        }
+                    });
+            };
 
-				var error = function () {
-					$scope.relations = $scope.relationsState;
+            $scope.selectModule = function (module) {
+                $scope.loadingFilter = true;
+                $scope.isChosenModule = false;
 
-					if ($scope.formModal) {
-						$scope.formModal.hide();
-						$scope.saving = false;
-					}
-				};
+                ModuleService.getModuleFields(module.name)
+                    .then(function (response) {
+                        if (response.data) {
+                            $scope.workflowModel.module.fields = response.data;
+                            var moduleNameList = [];
 
-				if (!relation.id) {
-					if (relation.mainModule)
-						var mainModuleId = ($filter('filter')($rootScope.modules, { name: relation.mainModule }, true)[0]).id;
-					ModuleService.createModuleRelation(relation, (relation.two_way) ? mainModuleId : $scope.module.id)
-						.then(function () {
-							success();
-						})
-						.catch(function () {
-							error();
-						});
-				}
-				else {
-					ModuleService.updateModuleRelation(relation, $scope.module.id)
-						.then(function () {
-							success();
-						})
-						.catch(function () {
-							error();
-						});
-				}
-			};
+                            angular.forEach($scope.modules, function (module) {
+                                var item = {
+                                    name: module.name
+                                };
 
-			$scope.delete = function (relation) {
-				ModuleService.deleteModuleRelation(relation.id)
-					.then(function () {
-						LayoutService.getMyAccount(true)
-							.then(function () {
-								var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
-								$scope.relations.splice(relationToDeleteIndex, 1);
-								ngToast.create({ content: $filter('translate')('Setup.Modules.RelationDeleteSuccess'), className: 'success' });
-							});
-					})
-					.catch(function () {
-						$scope.relations = $scope.relationsState;
+                                moduleNameList.push(item);
+                            });
 
-						if ($scope.formModal) {
-							$scope.formModal.hide();
-							$scope.saving = false;
-						}
-					});
-			};
+                            var moduleWithField = ModuleService.getFieldsOperator(module, $scope.modules, 0);
 
-			$scope.cancel = function () {
-				angular.forEach($scope.currentRelation, function (value, key) {
-					$scope.currentRelation[key] = $scope.currentRelationState[key];
-				});
+                            $scope.module = angular.copy(moduleWithField);
+                            $scope.workflowModel.module = angular.copy(moduleWithField);
+                        }
 
-				$scope.formModal.hide();
-			}
-		}
-	]);
+
+
+                        $scope.users = [];//angular.copy($rootScope.workgroup.users);
+
+
+                        if (!$filter('filter')($scope.users, { id: 0 }, true)[0])
+                            $scope.users.unshift({ id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers') });
+
+                        $scope.fakeUsers = angular.copy($scope.users);
+
+                        //for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
+                        //    var process = $rootScope.approvalProcesses[i];
+                        //    var user = $filter('filter')($scope.fakeUsers, { id: process.user_id }, true)[0].email;
+                        //    if (process && module.id === process.module_id) {
+                        //        $scope.users = $filter('filter')($scope.users, { email: '!' + user }, true);
+                        //    }
+                        //}
+
+                        if ($scope.users.length !== $scope.fakeUsers.length)
+                            $scope.users.shift();
+
+                        angular.forEach($scope.module.fields, function (field) {
+                            if (field.data_type === 'lookup') {
+                                field.operators = [];
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+                            }
+                        });
+
+                        ModuleService.getPickItemsLists($scope.module)
+                            .then(function (picklists) {
+                                $scope.modulePicklists = picklists;
+                                $scope.filters = [];
+
+                                for (var i = 0; i < 5; i++) {
+                                    var filter = {};
+                                    filter.id = i;
+                                    filter.field = null;
+                                    filter.operator = null;
+                                    filter.value = null;
+                                    filter.no = i + 1;
+
+                                    $scope.filters.push(filter);
+                                }
+
+                                $scope.loadingFilter = false;
+                            });
+
+                        $scope.getUpdatableModules();
+                        $scope.getDynamicProcessModules();
+                        setWebHookModules();
+                    });
+            };
+
+
+            var getFilterValue = function (filter) {
+                var filterValue = '';
+
+                if (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') {
+                    filterValue = filter.value[0].full_name;
+                }
+                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') {
+                    filterValue = filter.value.primary_value;
+                }
+                else if (filter.field.data_type === 'picklist') {
+                    filterValue = filter.value.labelStr;
+                }
+                else if (filter.field.data_type === 'multiselect') {
+                    filterValue = '';
+
+                    angular.forEach(filter.value, function (picklistItem) {
+                        filterValue += picklistItem.labelStr + '; ';
+                    });
+
+                    filterValue = filterValue.slice(0, -2);
+                }
+                else if (filter.field.data_type === 'checkbox') {
+                    filterValue = filter.value.label[$rootScope.language];
+                }
+                else {
+                    ModuleService.formatFieldValue(filter.field, filter.value, $scope.picklistsActivity);
+                    filterValue = angular.copy(filter.field.valueFormatted);
+                }
+
+                return filterValue;
+            };
+
+            $scope.validate = function (tabClick) {
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = tabClick;
+
+                $scope.workflowForm.$submitted = true;
+                $scope.validateOperations();
+
+                if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.user.$valid || !$scope.workflowForm.operation.$valid)
+                    return false;
+
+                return $scope.validateActions(tabClick);
+            };
+
+            $scope.validateOperations = function (tabClick) {
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = tabClick;
+
+                $scope.workflowForm.operation.$setValidity('operations', false);
+
+                if (!$scope.workflowModel.operation)
+                    return false;
+
+                angular.forEach($scope.workflowModel.operation, function (value, key) {
+                    if (value) {
+                        $scope.workflowForm.operation.$setValidity('operations', true);
+                        return true;
+                    }
+                });
+
+                return false;
+            };
+
+            $scope.getUpdatableModules = function () {
+                $scope.updatableModules = [];
+                $scope.updatableModules.push($scope.workflowModel.module);
+
+                angular.forEach($scope.workflowModel.module.fields, function (field) {
+                    if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
+                        var module = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                        $scope.updatableModules.push(module);
+                    }
+                });
+            };
+
+            $scope.prepareFilters = function () {
+                angular.forEach($scope.filters, function (filter) {
+                    if (filter.field && filter.field.data_type === 'lookup' && !angular.isObject(filter.value)) {
+                        if (filter.operator.name === 'empty' || filter.operator.name === 'not_empty')
+                            return;
+                        var id = null;
+
+                        if (!filter.value)
+                            id = filter.valueState;
+                        else
+                            id = filter.value;
+
+                        if (!id)
+                            return;
+
+                        if (filter.field.lookup_type === 'users' && id == 0) {
+                            var user = {};
+                            user.id = 0;
+                            user.email = '[me]';
+                            user.full_name = $filter('translate')('Common.LoggedInUser');
+                            user.primary_value = user.full_name;
+                            filter.value = [user];
+                            return;
+                        }
+
+                        ModuleService.getRecord(filter.field.lookup_type, id)
+                            .then(function (lookupRecord) {
+                                lookupRecord = lookupRecord.data;
+                                if (filter.field.lookup_type === 'users') {
+                                    lookupRecord.primary_value = lookupRecord['full_name'];
+                                    filter.value = [lookupRecord];
+                                }
+                                else {
+                                    var lookupModule = $filter('filter')($scope.modules, { name: filter.field.lookup_type }, true)[0];
+                                    var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
+                                    filter.value = lookupRecord;
+                                    $scope.$broadcast('angucomplete-alt:changeInput', 'filterLookup' + filter.no, lookupRecord);
+                                }
+                            });
+                    }
+                });
+            };
+
+            $scope.lookup = function (searchTerm) {
+                if ($scope.currentLookupField.lookup_type === 'users' && !$scope.currentLookupField.lookupModulePrimaryField) {
+                    var userModulePrimaryField = {};
+                    userModulePrimaryField.data_type = 'text_single';
+                    userModulePrimaryField.name = 'full_name';
+                    $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
+                }
+
+                if (($scope.currentLookupField.lookupModulePrimaryField.data_type === 'number' || $scope.currentLookupField.lookupModulePrimaryField.data_type === 'number_auto') && isNaN(parseFloat(searchTerm))) {
+                    $scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
+                    return $q.defer().promise;
+                }
+
+                return ModuleService.lookup(searchTerm, $scope.currentLookupField, null);
+            };
+
+            $scope.lookupUser = helper.lookupUser;
+
+            $scope.multiselect = function (searchTerm, field) {
+                var picklistItems = [];
+
+                angular.forEach($scope.modulePicklists[field.picklist_id], function (picklistItem) {
+                    if (picklistItem.inactive)
+                        return;
+
+                    if (picklistItem.labelStr.toLowerCase().indexOf(searchTerm) > -1)
+                        picklistItems.push(picklistItem);
+                });
+
+                return picklistItems;
+            };
+
+            $scope.multiselectProfiles = function () {
+                return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights: false }, true);
+            };
+
+            $scope.setCurrentLookupField = function (field) {
+                $scope.currentLookupField = field;
+            };
+
+            $scope.validateActions = function (tabClick) {
+                if (!$scope.lastStepClicked) {
+                    $scope.workflowForm.$submitted = false;
+                    return true;
+                }
+
+                if ($scope.workflowModel.approver_type === 'dynamicApprover') {
+                    if (($scope.workflowModel.firstApproverModule && $scope.workflowModel.first_approver_lookup && $scope.workflowModel.first_approver_field)) {
+                        if ($scope.workflowModel.secondApproverModule) {
+                            if ($scope.workflowModel.secondApproverModule && $scope.workflowModel.second_approver_field && $scope.workflowModel.second_approver_lookup) {
+                                $scope.workflowModel.$submitted = false;
+                                return true;
+                            }
+                        } else {
+                            $scope.workflowModel.$submitted = false;
+                            return true;
+                        }
+                    }
+                }
+
+                else if ($scope.workflowModel.approver_type === 'staticApprover') {
+                    if ($scope.hookParameters[0].approver) {
+                        $scope.workflowModel.$submitted = false;
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            $scope.getDynamicProcessModules = function (module, process, isEdit) {
+                if (isEdit && process.approver_type === 'staticApprover')
+                    return;
+
+                var dynamicprocessModules = [];
+                // var processObj = {};
+
+                var currentModule;
+                if (module)
+                    currentModule = module;
+                else
+                    currentModule = $scope.workflowModel.module;
+
+                var id = 1;
+
+                angular.forEach(currentModule.fields, function (field) {
+
+                    if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted) {
+                        var processObj = {};
+
+                        if (field.lookup_type === currentModule.name) {
+                            var tempModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            processObj.module = tempModule;
+
+                            ModuleService.getModuleFields(tempModule.name)
+                                .then(function (response) {
+                                    if (response.data)
+                                        processObj.module.fields = response.data;
+                                });
+
+                            processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                            processObj.isSameModule = false;
+                            processObj.systemName = field.name;
+                            processObj.id = id;
+                        } else {
+                            tempModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                            processObj.module = tempModule;
+
+                            ModuleService.getModuleFields(tempModule.name)
+                                .then(function (response) {
+                                    if (response.data)
+                                        processObj.module.fields = response.data;
+                                });
+
+                            processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                            processObj.isSameModule = false;
+                            processObj.systemName = field.name;
+                            processObj.id = id;
+                        }
+                        dynamicprocessModules.push(processObj);
+                        id++;
+                    }
+                });
+
+                $scope.dynamicprocessModules = angular.copy(dynamicprocessModules);
+            };
+
+            $scope.firstApproverLookupChange = function (isEdit, process) {
+                if (isEdit && process.approver_type === 'staticApprover')
+                    return;
+
+                $scope.firstDynamicApproverFields = $filter('filter')($scope.modules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
+                ModuleService.getModuleFields($scope.firstDynamicApproverFields.name)
+                    .then(function (response) {
+                        if (response.data)
+                            $scope.firstDynamicApproverFields.fields = response.data;
+                    });
+
+                if (!isEdit) {
+                    if ($scope.workflowModel.first_approver_field)
+                        $scope.workflowModel.first_approver_field = null;
+                }
+
+            };
+
+            $scope.secondApproverLookupChange = function (isEdit, process) {
+                if (isEdit && process.approver_type === 'staticApprover')
+                    return;
+
+                $scope.secondDynamicApproverFields = $filter('filter')($scope.modules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
+
+                if (!isEdit) {
+                    if ($scope.workflowModel.second_approver_field)
+                        $scope.workflowModel.second_approver_field = null;
+                }
+
+            };
+
+            $scope.getSummary = function () {
+                if (!$scope.workflowModel.name || !$scope.workflowModel.module || !$scope.workflowModel.operation)
+                    return;
+
+                var getSummary = function () {
+                    $scope.ruleTriggerText = '';
+                    $scope.ruleFilterText = '';
+                    $scope.ruleActionsText = '';
+                    var andText = $filter('translate')('Common.And');
+                    var orText = $filter('translate')('Common.Or');
+
+                    // if ($scope.workflowModel.operation === "insert"){
+                    //     $scope.workflowModel.frequency = "continuous";
+                    //     $scope.ruleTriggerText += $filter('translate')('Setup.Workflow.RuleTriggers.insertLabel') + ' ' + orText + ' ';
+                    // }
+                    //
+                    // if ($scope.workflowModel.operation === "update") {
+                    //     var updateText = $filter('translate')('Setup.Workflow.RuleTriggers.updateLabel') + ' ' + orText + ' ';
+                    //     $scope.ruleTriggerText += $scope.ruleTriggerText ? updateText.toLowerCase() : updateText;
+                    // }
+
+                    if ($scope.workflowModel.operation.insert)
+                        $scope.ruleTriggerText += $filter('translate')('Setup.Workflow.RuleTriggers.insertLabel') + ' ' + orText + ' ';
+
+                    if ($scope.workflowModel.operation.update) {
+                        var updateText = $filter('translate')('Setup.Workflow.RuleTriggers.updateLabel') + ' ' + orText + ' ';
+                        $scope.ruleTriggerText += $scope.ruleTriggerText ? updateText.toLowerCase() : updateText;
+                    }
+
+                    $scope.ruleTriggerText = $scope.ruleTriggerText.slice(0, -(orText.length + 2));
+
+                    angular.forEach($scope.filters, function (filter) {
+                        if (!filter.field || !filter.operator || !filter.value)
+                            return;
+
+                        $scope.ruleFilterText += filter.field['label_' + $rootScope.language] + ' <b class="operation-highlight">' + filter.operator.label[$rootScope.language] + '</b> ' +
+                            getFilterValue(filter) + ' <b class="operation-highlight">' + andText + '</b><br> ';
+                    });
+
+                    $scope.ruleFilterText = $scope.ruleFilterText.slice(0, -(andText.length + 41));
+
+                    if ($scope.hookParameters) {
+                        var approvers = [];
+                        for (var i = 0; i < $scope.hookParameters.length; i++) {
+                            if ($scope.hookParameters[i].approver) {
+                                var approverObj = {};
+                                approverObj.user_id = $scope.hookParameters[i].approver.id;
+                                approverObj.order = i + 1;
+                                approvers.push(approverObj);
+                            }
+                        }
+
+                        $scope.workflowModel.approvers = approvers;
+                    }
+                };
+
+                getSummary();
+            };
+
+
+            $scope.generateHookModules = function (workflow) {
+                if ($scope.id) {
+                    $scope.hookParameters = [];
+                    var hookParameterArray = workflow.approvers;
+
+                    angular.forEach(hookParameterArray, function (data) {
+
+                        var editParameter = {};
+                        editParameter.selectedUsers = $scope.approvers;
+
+                        for (var i = 0; i < editParameter.selectedUsers.length; i++) {
+                            var currentEl = editParameter.selectedUsers[i];
+                            currentEl.isSelected = false;
+                        }
+                        editParameter.approver = $filter('filter')($rootScope.workgroup.users, { id: data.id }, true)[0];
+                        var order = data.order;
+
+                        $scope.hookParameters[order - 1] = editParameter;
+                    });
+                }
+            };
+
+            var setWebHookModules = function () {
+                $scope.hookParameters = [];
+
+                var parameter = {};
+                parameter.selectedUsers = $scope.approvers;
+                for (var i = 0; i < parameter.selectedUsers.length; i++) {
+                    var currentEl = parameter.selectedUsers[i];
+                    currentEl.isSelected = false;
+                }
+
+                $scope.hookParameters.push(parameter);
+
+            };
+
+            //when add a new user, drops it from the current user array
+            $scope.addNewApprover = function (addItem, index) {
+
+                var arr = angular.copy(addItem.selectedUsers);
+                var parameter = {};
+
+                var currentEl = $filter('filter')(arr, { email: addItem.approver.email }, true)[0];
+                currentEl.isSelected = true;
+
+                parameter.selectedUsers = arr;
+
+                for (var i = 0; i < $scope.hookParameters.length; i++) {
+                    if (i !== index) {
+                        var subEl = $filter('filter')($scope.hookParameters[i].selectedUsers, { email: addItem.approver.email }, true)[0];
+                        subEl.isSelected = true;
+                    }
+                }
+
+                if (arr.length) {
+                    if ($scope.hookParameters.length <= 10) {
+                        $scope.hookParameters.push(parameter);
+                    }
+                    else {
+                        ngToast.create({ content: $filter('translate')('Setup.Workflow.MaximumHookWarning'), className: 'warning' });
+                    }
+                }
+            };
+
+            //when removes the element, appends the current element to users array
+            $scope.removeApprover = function (itemname, ind) {
+
+                var index = $scope.hookParameters.indexOf(itemname);
+
+                if (ind + 1 !== $scope.approversLength) {
+                    for (var i = 0; i < $scope.hookParameters.length; i++) {
+                        if (itemname.approver) {
+                            var currentEl = $filter('filter')($scope.hookParameters[i].selectedUsers, { email: itemname.approver.email }, true)[0];
+                            currentEl.isSelected = false;
+                        }
+
+                    }
+                }
+
+                $scope.hookParameters.splice(index, 1);
+            };
+
+            $scope.approverTypeChanged = function () {
+                if ($scope.workflowModel.approver_type && $scope.workflowModel.approver_type === 'dynamicApprover') {
+                    if ($scope.hookParameters) {
+                        setWebHookModules();
+                    }
+                } else {
+                    if ($scope.workflowModel.firtsApproverLookup)
+                        delete $scope.workflowModel.firtsApproverLookup;
+
+                    if ($scope.workflowModel.first_approver_field)
+                        delete $scope.workflowModel.first_approver_field;
+                }
+
+            };
+
+            $scope.firstApproverModuleChanged = function () {
+                if ($scope.workflowModel.first_approver_lookup)
+                    $scope.workflowModel.first_approver_lookup = null;
+
+                if ($scope.workflowModel.first_approver_field)
+                    $scope.workflowModel.first_approver_field = null;
+
+                if ($scope.workflowModel.secondApproverModule)
+                    $scope.workflowModel.secondApproverModule = null;
+
+                if ($scope.workflowModel.second_approver_lookup)
+                    $scope.workflowModel.second_approver_lookup = null;
+
+                if ($scope.workflowModel.second_approver_field)
+                    $scope.workflowModel.second_approver_field = null;
+            };
+
+            $scope.secondApproverModuleChanged = function () {
+
+                if ($scope.workflowModel.second_approver_lookup)
+                    $scope.workflowModel.second_approver_lookup = null;
+
+                if ($scope.workflowModel.second_approver_field)
+                    $scope.workflowModel.second_approver_field = null;
+            };
+
+            $scope.save = function () {
+                $scope.saving = true;
+
+                var process = ProcessesService.prepareWorkflow($scope.workflowModel, $scope.filters);
+
+                var success = function () {
+                    if (!$scope.id && process.approver_type === 'dynamicApprover' && $filter('filter')($scope.module.fields, { name: 'custom_approver' }, true).length < 1) {
+                        var processModule = angular.copy($scope.module);
+                        for (var i = 1; i < 3; i++) {
+                            var approverField = {};
+                            approverField.data_type = 'email';
+                            approverField.deleted = false;
+                            approverField.display_detail = false;
+                            approverField.display_form = false;
+                            approverField.display_list = false;
+                            approverField.editable = false;
+                            approverField.label_en = i + '. Approver';
+                            approverField.label_tr = i + '. Onaylayıcı';
+                            approverField.name = i === 1 ? 'custom_approver' : 'custom_approver_2';
+                            approverField.order = $scope.module.fields.length + i;
+                            approverField.primary = false;
+                            approverField.section = $filter('filter')($scope.module.fields, { name: 'created_by' }, true)[0].section;
+                            approverField.section_column = 2;
+                            approverField.show_label = true;
+                            approverField.system_type = 1;
+                            approverField.validation = {
+                                readonly: false,
+                                required: false
+                            };
+                            processModule.fields.push(approverField);
+                        }
+                        ModuleService.update(processModule, processModule.id).then(function () {
+                            $scope.saving = false;
+                            $scope.changeOffset(1);
+                            ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                        });
+                    } else {
+                        $scope.saving = false;
+                        $scope.changeOffset(1);
+                        ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                    }
+                };
+
+                if (!$scope.id) {
+                    ProcessesService.create(process)
+                        .then(function () {
+                            success();
+                        })
+                        .catch(function () {
+                            $scope.saving = false;
+                        });
+                }
+                else {
+                    process.id = $scope.workflowModel.id;
+                    process._rev = $scope.workflowModel._rev;
+                    process.type = $scope.workflowModel.type;
+                    process.created_by = $scope.workflowModel.created_by;
+                    process.updated_by = $scope.workflowModel.updated_by;
+                    process.created_at = $scope.workflowModel.created_at;
+                    process.updated_at = $scope.workflowModel.updated_at;
+                    process.deleted = $scope.workflowModel.deleted;
+
+                    ProcessesService.update(process)
+                        .then(function () {
+                            success();
+                        })
+                        .catch(function () {
+                            $scope.saving = false;
+                        });
+                }
+            };
+
+            $scope.delete = function (id) {
+                ProcessesService.getAllProcessRequests(id)
+                    .then(function (response) {
+
+                        if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
+                            ngToast.create({ content: $filter('translate')('Setup.Workflow.ProcessCanNotDelete'), className: 'danger' });
+                            $scope.loading = false;
+                        } else {
+                            ProcessesService.delete(id)
+                                .then(function () {
+                                    $socpe.changeOffset(1);
+                                });
+                        }
+                    });
+            };
+
+            //Modal Start
+            $scope.showFormModal = function (id) {
+                if (id) {
+                    $scope.id = id;
+                    $scope.selectProcess(id);
+                }
+
+                $scope.prosessFormModal = $scope.prosessFormModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/automation/processes/processModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.prosessFormModal.$promise.then(function () {
+                    $scope.prosessFormModal.show();
+                });
+
+            };
+
+            $scope.cancel = function () {
+                angular.forEach($scope.currentRelation, function (value, key) {
+                    $scope.currentRelation[key] = $scope.currentRelationState[key];
+                });
+
+                $scope.processes = [];
+                $scope.id = null;
+                $scope.workflowModel = {};
+                $scope.workflowModel.active = true;
+                $scope.workflowModel.frequency = 'continuous';
+                $scope.workflowModel.trigger_time = 'instant';
+                $scope.filteredModules = $scope.modules;
+                $scope.prosessFormModal.hide();
+            }
+            //Modal End
+
+        }
+    ]);

@@ -6,6 +6,7 @@ angular.module('primeapps')
         function ($timeout, $scope, $filter, $element, dragularService) {
             var drakeRows;
             var drakeCells;
+            var templetFields;
 
             var setDraggableLayout = function () {
                 if (drakeRows)
@@ -15,6 +16,7 @@ angular.module('primeapps')
                     drakeCells.destroy();
 
                 var moduleLayout = $scope.$parent.moduleLayout;
+                var templateFieldContainer = template-field;
                 var container = $element.children().eq(0);
                 var rowContainers = [];
                 var cellContainers = [];
@@ -34,6 +36,8 @@ angular.module('primeapps')
                             cellContainers.push(columnContainer[k]);
                     }
                 }
+
+
 
                 drakeRows = dragularService(container, {
                     scope: $scope,
@@ -70,7 +74,32 @@ angular.module('primeapps')
                         return handle.classList.contains('cell-handle');
                     }
                 });
+
+                templetFields = dragularService(cellContainers, {
+                    scope: $scope,
+                    nameSpace: 'cells',
+                    containersModel: (function () {
+                        var containersModel = [];
+
+                        angular.forEach(moduleLayout.rows, function (row) {
+                            angular.forEach(row.columns, function (column) {
+                                containersModel.push(column.cells);
+                            })
+                        });
+
+                        return containersModel;
+                    })(),
+                    classes: {
+                        mirror: 'gu-mirror-field',
+                        transit: 'gu-transit-field'
+                    },
+                    moves: function (el, container, handle) {
+                        return handle.classList.contains('cell-handle');
+                    }
+                });
+
             };
+
 
             $timeout(function () {
                 setDraggableLayout();
@@ -79,7 +108,7 @@ angular.module('primeapps')
             $scope.$on('dragulardrop', function (e, el) {
                 e.stopPropagation();
                 $timeout(function () {
-                    $scope.$parent.refreshModule();
+                    $scope.refreshModule();
                 }, 0);
             });
 
@@ -91,4 +120,5 @@ angular.module('primeapps')
                     setDraggableLayout();
                 }, 0);
             });
+
         }]);

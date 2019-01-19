@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -182,7 +183,43 @@ namespace PrimeApps.Model.Repositories
 			var result = DbContext.MenuItems.FirstOrDefaultAsync(x => !x.Deleted && x.ParentId == null && x.LabelTr == labelName && x.Route == null);
 			return await result;
 		}
+		public async Task<int> Count()
+		{
+			var count = await DbContext.Menus
+			   .Where(x => !x.Deleted).CountAsync();
+			return count;
+		}
 
+		public async Task<ICollection<Menu>> Find(PaginationModel paginationModel)
+		{
+			var menus = GetPaginationGQuery(paginationModel)
+				.Skip(paginationModel.Offset * paginationModel.Limit)
+				.Take(paginationModel.Limit).ToList();
+
+			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+			{
+				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+
+				if (paginationModel.OrderType == "asc")
+				{
+					menus = menus.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+				else
+				{
+					menus = menus.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+
+			}
+
+			return menus;
+
+		}
+
+		private IQueryable<Menu> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+		{
+			return DbContext.Menus
+				.Where(menus => !menus.Deleted).OrderByDescending(x => x.Id);
+		}
 
 
 	}

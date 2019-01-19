@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Helpers;
 using Hangfire;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -95,16 +96,16 @@ namespace PrimeApps.Model.Repositories
             DbContext.Profiles.Add(newProfile);
             var result = await DbContext.SaveChangesAsync();
 
-            if (result > 0)
-            {
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //    //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse.DatabaseName != "0")
-                {
-                    BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
-                }
-            }
+            //    if (_warehouse?.DatabaseName != "0")
+            //    {
+            //        BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+            //    }
+            //}
         }
 
         public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
@@ -177,16 +178,16 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.SaveChangesAsync();
 
-            if (result > 0)
-            {
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            //if (result > 0)
+            //{
+            //    //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            //    //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if (_warehouse.DatabaseName != "0")
-                {
-                    BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
-                }
-            }
+            //    if (_warehouse?.DatabaseName != "0")
+            //    {
+            //        BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+            //    }
+            //}
         }
 
         /// <summary>
@@ -385,6 +386,95 @@ namespace PrimeApps.Model.Repositories
         public async Task<List<Profile>> GetByParentId(int parentId)
         {
             return await DbContext.Profiles.Where(x => x.ParentId == parentId).ToListAsync();
+        }
+
+        public async Task<Profile> GetByIdBasic(int id)
+        {
+            var profile = await DbContext.Profiles
+                .Where(x => !x.Deleted && x.Id == id)
+                .FirstOrDefaultAsync();
+
+            return profile;
+        }
+
+        public async Task<int> DeleteSoft(Profile profile)
+        {
+            profile.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
+        public async Task<int> Count()
+        {
+            var count = DbContext.Profiles
+               .Where(x => !x.Deleted).Count();
+            return count;
+        }
+
+        public async Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel)
+        {
+            var getPagination = await GetPaginationQuery(paginationModel);
+
+            var profiles = getPagination
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Profile).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    profiles = profiles.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    profiles = profiles.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+
+            return profiles;
+
+        }
+        private async Task<List<ProfileWithUsersDTO>> GetPaginationQuery(PaginationModel paginationModel)
+        {
+            return await DbContext.Profiles
+                               .Select(x => new ProfileWithUsersDTO()
+                               {
+                                   ID = x.Id,
+                                   Description = x.Description,
+                                   Name = x.Name,
+                                   IsPersistent = x.IsPersistent,
+                                   HasAdminRights = x.HasAdminRights,
+                                   SendEmail = x.SendEmail,
+                                   SendSMS = x.SendSMS,
+                                   ExportData = x.ExportData,
+                                   ImportData = x.ImportData,
+                                   WordPdfDownload = x.WordPdfDownload,
+                                   LeadConvert = x.LeadConvert,
+                                   CreatedBy = x.CreatedById,
+                                   DocumentSearch = x.DocumentSearch,
+                                   Tasks = x.Tasks,
+                                   Calendar = x.Calendar,
+                                   Newsfeed = x.Newsfeed,
+                                   Report = x.Report,
+                                   Dashboard = x.Dashboard,
+                                   Home = x.Home,
+                                   CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                                   StartPage = x.StartPage,
+                                   ParentId = x.ParentId,
+                                   UserIds = x.Users.Select(z => z.Id).ToList(),
+                                   Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
+                                   {
+                                       ID = x.Id,
+                                       ModuleId = y.ModuleId,
+                                       Type = (int)y.Type,
+                                       Modify = y.Modify,
+                                       Read = y.Read,
+                                       Remove = y.Remove,
+                                       Write = y.Write
+                                   }).ToList()
+                               }).OrderByDescending(x => x.ID).ToListAsync();
         }
     }
 }

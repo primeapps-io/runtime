@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Entities.Tenant;
 
@@ -20,6 +21,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage);
         Task<Profile> GetDefaultAdministratorProfileAsync();
         Task<Profile> GetDefaultUserProfile();
-
+        Task<Profile> GetByIdBasic(int id);
+        Task<int> DeleteSoft(Profile profile);
+        Task<int> Count();
+        Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel);
     }
 }

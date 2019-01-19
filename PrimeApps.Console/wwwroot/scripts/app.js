@@ -51,6 +51,7 @@ angular.module('primeapps',
             angular.module('primeapps').value = $provide.value;
             angular.module('primeapps').constant = $provide.constant;
             angular.module('primeapps').provider = $provide.provider;
+           // $locationProvider.html5Mode(true).hashPrefix('*');
 
             $locationProvider.hashPrefix('');
             var whiteList = [];
@@ -155,13 +156,12 @@ angular.module('primeapps',
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 try {
                     $rootScope.currentPath = $location.$$url;
-                    $window.yaCounter47616517.hit($location.path());
+
                 }
                 catch (error) {
                     return;
                 }
             });
 
-            $rootScope.app = 'crm';
 
         }]);

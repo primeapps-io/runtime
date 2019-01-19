@@ -1,42 +1,21 @@
-<div class="popover sidebar-footer-popover" tabindex="-1"
-     style="width:290px ; left:0;  padding: 0; z-index: 999999999; background-color: #ffff; box-shadow: rgba(0, 0, 0, 0.10) 0px 0px 50px 5px;
-    border: none;margin-top: 36px">
-    <div class="arrow" ></div>
-    <div class="popover-content user-dropdown">
-        <div class="user-info">
-            <div class="user-image">
-                <!--<image src="" />-->
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="user-text">
-                <h2>{{me.full_name}}</h2>
-                <h3>{{me.email}}</h3>
-            </div>
+<ul class="dropdown-menu user-dropdown" role="menu">
+    <li class="user-info">
+        <div class="user-image">
+            <!--<image src="" />-->
+            <i class="fas fa-user"></i>
         </div>
-        <ul>
-            <li>
-                <a href=""><i class="fas fa-user-cog"></i> <span>Account Settings</span> </a>
-            </li>
-            <li>
-                <a href=""><i class="fas fa-file-alt"></i> <span>Docs &amp; Api</span> </a>
-            </li>
-        </ul>
-        <ul>
-            <li>
-                <a href=""><i class="fas fa-info-circle"></i> Support </a>
-            </li>
-            <li>
-                <a href=""><i class="fas fa-file-alt"></i> Privacy Policy </a>
-            </li>
-            <li>
-                <a href=""><i class="fas fa-file-alt"></i> Legal &amp; Terms </a>
-            </li>
-        </ul>
-
-
-        <div class="form-actions text-center">
-            <button ng-click="logout()" class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+        <div class="user-text">
+            <h2>{{me.full_name}}</h2>
+            <h3>{{me.email}}</h3>
         </div>
-
-    </div>
-</div>
+    </li>
+    <li class="user_divider"></li>
+    <li><a href=""><i class="fas fa-user-cog"></i> <span>Account Settings</span> </a></li>
+    <li><a href=""><i class="fas fa-file-alt"></i> <span>Docs &amp; Api</span> </a></li>
+    <li class="user_divider"></li>
+    <li><a href=""><i class="fas fa-info-circle"></i> Support </a></li>
+    <li><a href=""><i class="fas fa-file-alt"></i> Privacy Policy </a></li>
+    <li><a href=""><i class="fas fa-file-alt"></i> Legal &amp; Terms </a></li>
+    <li class="user_divider"></li>
+    <li class="form-actions text-center"><button ng-click="logout()" class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button></li>
+</ul>

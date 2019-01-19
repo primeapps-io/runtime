@@ -7,6 +7,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -21,6 +22,45 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
 
             return help;
+        }
+
+        public async Task<int> Count()
+        {
+            var count = DbContext.Helps
+               .Where(x => !x.Deleted).Count();
+            return count;
+        }
+
+        public async Task<ICollection<Help>> Find(PaginationModel paginationModel)
+        {
+            var helps = GetPaginationGQuery(paginationModel)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Help).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    helps = helps.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    helps = helps.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+
+            return helps;
+
+        }
+
+        private IQueryable<Help> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+        {
+            return DbContext.Helps
+                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
+
         }
 
         public async Task<Help> GetByIdBasic(int id)

@@ -1,24 +1,21 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">
-            <a href="/#/app/5/appDetails">
-                <i class="fas fa-th-large"></i>
-                App Details
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
-            <a href="/#/app/5/appCollaborators">
-                <i class="fas fa-code-branch"></i>
-                Collaborators
-            </a>
-        </li>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info" data-title="App Details" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>App Details</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/appCollaborators" data-trigger="hover" data-type="info" data-title="Collaborators" bs-tooltip data-placement="right">
+            <i class="fas fa-code-branch"></i>
+            <span>Collaborators</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='notifications' ? 'active' :''">
-            <a href="/#/app/5/notifications">
-                <i class="fas fa-sliders-h"></i>
-                Notifications
-            </a>
-        </li>
-    </ul>
-</div>
+    <li ng-class="activeMenuItem ==='notifications' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{ appId}}/notifications" data-trigger="hover" data-type="info" data-title="Notifications" bs-tooltip data-placement="right">
+            <i class="fas fa-sliders-h"></i>
+            <span>Notifications</span>
+        </a>
+    </li>
+</ul>

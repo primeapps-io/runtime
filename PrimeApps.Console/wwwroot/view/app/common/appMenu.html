@@ -1,102 +1,99 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='overview' ? 'active' :''">
-            <a href="/#/app/{{appId}}/overview">
-                <i class="fas fa-info-circle"></i>
-                Overview
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/modules">
-                <i class="fas fa-th-large"></i>
-                Model
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/templatesEmail">
-                <i class="fas fa-file-alt"></i>
-                Templates
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/workflows">
-                <i class="fas fa-magic"></i>
-                Automation
-            </a>
-        </li>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='overview' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/overview" data-trigger="hover" data-type="info" data-title="Overview" bs-tooltip data-placement="right">
+            <i class="fas fa-info-circle"></i>
+            <span>Overview</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/modules" data-trigger="hover" data-type="info" data-title="Model" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Model</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/templatesEmail" data-trigger="hover" data-type="info" data-title="Templates" bs-tooltip data-placement="right">
+            <i class="fas fa-file-alt"></i>
+            <span>Templates</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/workflows" data-trigger="hover" data-type="info" data-title="Automation" bs-tooltip data-placement="right">
+            <i class="fas fa-magic"></i>
+            <span>Automation</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="/#/app/{{appId}}/reports">
-                <i class="fas fa-chart-area"></i>
-                Analytics
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='functions' ? 'active' :''">
-            <a href="/#/app/{{appId}}/functions">
-                <i class="fas fa-code"></i>
-                Functions
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='components' ? 'active' :''">
-            <a href="/#/app/{{appId}}/components">
-                <i class="fas fa-shapes"></i>
-                Components
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/profiles">
-                <i class="fas fa-random"></i>
-                Authorization
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='menus' ? 'active' :''">
-            <a href="/#/app/{{appId}}/menus">
-                <i class="fas fa-bars"></i>
-                Menus
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='help' ? 'active' :''">
-            <a href="/#/app/{{appId}}/help">
-                <i class="fas fa-medkit"></i>
-                Help &amp; Guides
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='deployment' ? 'active' :''">
-            <a href="/#/app/{{appId}}/deployment">
-                <i class="fas fa-play"></i>
-                Deployment
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/identity">
-                <i class="fas fa-ribbon"></i>
-                Identity
-            </a>
-        </li>
-        <li>
-            <a href="/#/app/{{appId}}/certificates">
-                <i class="fas fa-shield-alt"></i>
-                Security
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='extensions' ? 'active' :''">
-            <a href="/#/app/{{appId}}/extensions">
-                <i class="fas fa-plug"></i>
-                Extensions
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='diagnostics' ? 'active' :''">
-            <a href="/#/app/{{appId}}/diagnostics">
-                <i class="fas fa-diagnoses"></i>
-                Diagnostics
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='settings' ? 'active' :''">
-            <a href="/#/app/{{appId}}/appDetails">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
-        </li>
-    </ul>
-</div>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/reports" data-trigger="hover" data-type="info" data-title="Analytics" bs-tooltip data-placement="right">
+            <i class="fas fa-chart-area"></i>
+            <span>Analytics</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='functions' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/functions" data-trigger="hover" data-type="info" data-title="Functions" bs-tooltip data-placement="right">
+            <i class="fas fa-code"></i>
+            <span>Functions</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='components' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/components" data-trigger="hover" data-type="info" data-title="Components" bs-tooltip data-placement="right">
+            <i class="fas fa-shapes"></i>
+            <span>Components</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/profiles" data-trigger="hover" data-type="info" data-title="Authorization" bs-tooltip data-placement="right">
+            <i class="fas fa-random"></i>
+            <span>Authorization</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='menus' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/menus" data-trigger="hover" data-type="info" data-title="Menus" bs-tooltip data-placement="right">
+            <i class="fas fa-bars"></i>
+            <span>Menus</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='help' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/help" data-trigger="hover" data-type="info" data-title="Help &amp; Guides" bs-tooltip data-placement="right">
+            <i class="fas fa-medkit"></i>
+            <span>Help &amp; Guides</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='deployment' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/deployment" data-trigger="hover" data-type="info" data-title="Deployment" bs-tooltip data-placement="right">
+            <i class="fas fa-play"></i>
+            <span>Deployment</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/identity" data-trigger="hover" data-type="info" data-title="Identity" bs-tooltip data-placement="right">
+            <i class="fas fa-ribbon"></i>
+            <span>Identity</span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/certificates" data-trigger="hover" data-type="info" data-title="Security" bs-tooltip data-placement="right">
+            <i class="fas fa-shield-alt"></i>
+            <span>Security</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='extensions' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/extensions" data-trigger="hover" data-type="info" data-title="Extensions" bs-tooltip data-placement="right">
+            <i class="fas fa-plug"></i>
+            <span>Extensions</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='diagnostics' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/diagnostics" data-trigger="hover" data-type="info" data-title="Diagnostics" bs-tooltip data-placement="right">
+            <i class="fas fa-diagnoses"></i>
+            <span>Diagnostics</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='settings' ? 'active' :''">
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/appDetails" data-trigger="hover" data-type="info" data-title="Settings" bs-tooltip data-placement="right">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
+    </li>
+</ul>

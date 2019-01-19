@@ -1,0 +1,42 @@
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="editForm" class="form-horizontal form-custom" ng-submit="delete(transferRoleId);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="col-sm-8">
+                <h4 class="modal-title">{{'Setup.Roles.RoleDelete' | translate}}</h4>
+            </div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="submit" class="btn btn-radius btn-blue" ladda="roleDeleting">
+                    <i class="fa fa-exclamation-circle pull-left"></i>{{'Setup.Roles.TransferAndDelete' | translate}}
+                </button>
+                <button type="button" class="btn btn-radius  btn-gray " style="margin-left: 5px" ng-click="$hide()" ng-disabled="roleDeleting">
+                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-dialog modal-600" style="height: 300px;">
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-8" style="margin-bottom: 10px; font-weight: 600;">{{'Setup.Roles.RoleDeleteLabel' | translate}}:</label>
+                                    <select
+                                            class="form-control ng-animate-disabled col-sm-8"
+                                            name="transferRoleId"
+                                            ng-model="transferRoleId"
+                                            required
+                                            ng-options="o.id as o['label_'+language] for o in transferRoles"
+                                            ng-init="transferRoleId = transferRoles[0].id">
+                                        <option value="" ng-if="false"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

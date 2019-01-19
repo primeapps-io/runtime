@@ -1,64 +1,258 @@
 <div class="row">
     <div class="col-sm-9" style="border: none ;">
-        <div class="page-content module-designer">
-            <ul dnd-list="module"
-                dnd-allowed-types="['container']"
-                dnd-external-sources="true"
-                dnd-dragover="dragoverCallback(index, external, type, callback)"
-                dnd-drop="dropCallback(index, item, external, type)"
-                class="module-designer-area">
-
-                <li ng-repeat="container in module"
-                    dnd-draggable="container"
-                    dnd-type="'container'"
-                    dnd-effect-allowed="copyMove"
-                    dnd-moved="module.splice($index, 1)"
-                    dnd-callback="module.length"
-                    class="module-section">
-                    <div class="section-header">
-                        <h4>{{container.name }}</h4>
-                    </div>
-
-                    <div class="container-element box box-blue">
-
-                        <ul dnd-list="container.fields"
-                            dnd-allowed-types="['item']"
-                            dnd-horizontal-list="true"
-                            dnd-external-sources="true"
-                            dnd-effect-allowed="{{container.effectAllowed}}"
-                            dnd-dragover="dragoverCallback(index, external, type)"
-                            dnd-drop="dropCallback(index, item, external, type)"
-                            dnd-inserted="logListEvent('inserted at', index, external, type)"
-                            class="section-container">
-                            <li ng-repeat="item in container.fields"
-                                dnd-draggable="item"
-                                dnd-type="'item'"
-                                dnd-effect-allowed="all"
-                                dnd-dragstart="logEvent('Started to drag an item')"
-                                dnd-moved="container.fields.splice($index, 1)"
-                                dnd-dragend="logEvent('Drag operation ended. Drop effect: ' + dropEffect)">
-                                {{item.label}}
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                </li>
-            </ul>
+        <div class="setup-liste-header">
+            <div class="pull-left">
+                <h2 class="setup-title">{{module['label_' + language + '_plural']}}</h2>
+            </div>
+            <div class="pull-right">
+                <a class="btn  btn-radius btn-gray"><i class="fas fa-angle-left"></i> {{'Common.Cancel' |
+                    translate}}</a>
+                <button ng-click="showEditModal(false)" class="btn  btn-radius btn-blue"><i class="fas fa-cog"></i>Settings
+                </button>
+                <button type="button" class="btn btn-radius btn-blue"
+                        ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving">
+                    <i class="fas fa-save"></i> {{!redirect ? ('Common.Save' | translate) :
+                    ('Setup.Modules.SaveFormChanges' | translate)}}
+                </button>
+            </div>
         </div>
 
     </div>
+    <div class="col-sm-3">
+        <h2 class="setup-title">All Fields</h2>
+    </div>
+</div>
+<div class="row module-designer">
+    <div class="col-sm-9" style="border: none ;">
+        <div class="panel panel-default setup-panel">
+
+            <div class="panel-body">
+                <div class="module-form-setup">
+                    <div class="form-horizontal form-custom">
+                        <div class="draggable-form">
+                            <div class="row-container">
+                                <div class="subpanel module-section" ng-class="{'subpanel-draggable':handleHover}"
+                                     ng-init="handleHover=false"
+                                     ng-repeat="row in moduleLayout.rows | filter:{deleted:'!true'}">
+                                    <h5 class="subpanel-heading section-header clearfix">
+                                <span class="row-handle" ng-mouseenter="handleHover = true"
+                                      ng-mouseleave="handleHover = false"><i class="fas fa-arrows-alt row-handle"></i> {{ !row.section.custom_label ?  row.section['label_' + language] : row.section.custom_label }}</span>
+                                        <span class="action-buttons pull-right">
+                                <a href ng-click="showSectionModal(row.section)" class="action-icon"
+                                   title="{{'Common.Edit' | translate}}"><i class="fas fa-pen-alt"></i></a>
+                                <i class="fas fa-trash disabled"
+                                   ng-if="!row.hasPrimaryField && !row.hasSystemRequiredField" confirm-click
+                                   action="deleteSection(row.section.name)" placement="left"
+                                   confirm-message="{{'Common.AreYouSure' | translate}}"
+                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
+                                   title="{{'Common.Delete' | translate}}"></i>
+                                <i class="fas fa-trash"
+                                   ng-if="row.hasPrimaryField || row.hasSystemRequiredField" data-placement="left"
+                                   data-title="{{row.hasPrimaryField ? ('Setup.Modules.PrimarySectionCannotDelete' | translate) : ('Setup.Modules.SystemSectionCannotDelete' | translate)}}"
+                                   bs-tooltip></i>
+                            </span>
+                                    </h5>
+                                    <div class="subpanel-body clearfix">
+                                        <div ng-class="{'col-sm-6': row.section.column_count === 2, 'col-sm-12': row.section.column_count === 1}"
+                                             ng-repeat="column in row.columns">
+                                            <div class="cell-container">
+                                                <div class="form-group"
+                                                     ng-repeat="cell in column.cells | filter:{deleted:'!true'}"
+                                                >
+                                                    <label
+                                                            ng-if="!cell.field.custom_label"
+                                                            class="control-label cell-handle"
+                                                            ng-class="{'col-sm-5':row.section.column_count === 2, 'col-sm-4':row.section.column_count === 1, 'required-field':cell.field.validation.required,'pull-right':cell.field.position==='right'}">
+                                                        <i class="fa fa-arrows pull-left cell-handle"></i>
+                                                        <span ng-show="!cell.field.custom_label && cell.field.show_label "
+                                                              class="cell-handle"
+                                                              style="padding-left: 10px;"><span
+                                                                ng-if="cell.field.validation.required">*</span> {{cell.field['label_' + language]}}:</span>
+                                                        <input type="checkbox" class="cell-handle"
+                                                               ng-show="cell.field.data_type=='checkbox' && cell.field.custom_label">
+                                                    </label>
+
+                                                    <div ng-class="{'col-sm-7': row.section.column_count === 2, 'col-sm-8': row.section.column_count === 1, 'checkbox': cell.field.data_type === 'checkbox','col-sm-12':cell.field.position==='left'}">
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'text_single'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-foreground-color"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'text_multi'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-table-align-top-left"></i>
+                                                        </div>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-custom-format"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number_auto'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-list-numbered"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number_decimal'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-decimal-decrease"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'currency'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-dollar"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'date'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-calendar"></i>
+                                                        </div>
+
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'email'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-email"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'date_time'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-calendar-date"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'time'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-clock"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'picklist'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-list-ordered"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'rating'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-star-outline"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'image'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-image"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'multiselect'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-select-box"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'document'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-i-file"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'lookup'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-search"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'location'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-marker-pin-target"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'url'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-link-horizontal"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'checkbox'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-checkbox-checked"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'combination'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-hyperlink-open-sm"></i>
+                                                        </div>
+
+
+                                                    </div>
+                                                    <span class="action-buttons">
+                                        <a href ng-click="showFieldModal(row, column, cell.field)"
+                                           class="action-icon"
+                                           title="{{'Common.Edit' | translate}}">
+                                            <i class="fas fa-pen-alt"></i>
+                                        </a>
+
+                                        <i class="fas fa-trash action-icon"
+                                           ng-if="!cell.field.primary && !cell.field.systemRequired" confirm-click
+                                           action="deleteField(cell.field.name)" placement="left"
+                                           confirm-message="{{'Common.AreYouSure' | translate}}"
+                                           confirm-yes="{{'Common.Yes' | translate}}"
+                                           confirm-no="{{'Common.No' | translate}}"
+                                           title="{{'Common.Delete' | translate}}">
+
+                                        </i>
+
+                                    <i class="fas fa-trash action-icon-disabled"
+                                       ng-if="cell.field.primary || cell.field.systemRequired"
+                                       data-placement="left"
+                                       data-title="{{cell.field.primary ? ('Setup.Modules.PrimaryFieldCannotDelete' | translate) : ('Setup.Modules.SystemFieldCannotDelete' | translate)}}"
+                                       bs-tooltip></i>
+                                </span>
+                                                </div>
+                                            </div>
+
+                                            <!--<div class="new-field" ng-click="showFieldModal(row, column)">-->
+                                            <!--<span>-->
+                                            <!--<i class="fas fa-plus"></i>{{'Setup.Modules.NewField' |-->
+                                            <!--translate}}</span>-->
+                                            <!--</div>-->
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-new-section text-center" ng-click="showSectionModal()">
+                            <span>
+                                <i class="fas fa-plus"></i> {{'Setup.Modules.NewSection' | translate}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
     <div class="col-sm-3 template-field">
-        <div class="template-field-box text-center" ng-repeat="item in templatesFields" dnd-draggable="item"
-             dnd-effect-allowed="copy"
-             dnd-copied="item.id = item.id + 1" dnd-type="item.type">
+        <div class="template-field-box text-center cell-container" ng-repeat="item in templatesFields">
             <div class="template-field-icon">
                 <span ng-class="item.icon" class="k-icon"></span>
             </div>
             <div class="template-field-text">
-                <h4 style="font-size: 15px">{{item.label}}</h4>
+                <h4 style="font-size: 15px">{{item.field.label_en}}</h4>
             </div>
         </div>
-        <!--<button type="button" class="btn btn-default btn-lg" disabled="disabled"></button>-->
     </div>
 </div>
 

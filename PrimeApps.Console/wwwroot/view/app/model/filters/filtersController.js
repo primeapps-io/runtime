@@ -9,6 +9,11 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'filters';
+
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[2].title = 'Filters';
+
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.requestModel = {
@@ -108,7 +113,7 @@ angular.module('primeapps')
                     moduleChanged(module, false);
                 }
                 else {
-                    $scope.view = [];
+                    $scope.view = {};
                     //moduleChanged($scope.module, true);
                 }
                 $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
@@ -578,7 +583,7 @@ angular.module('primeapps')
                 }
             }
 
-            $scope.validate = function (viewForm , wizardStep) {
+            $scope.validate = function (viewForm, wizardStep) {
 
                 viewForm.$submitted = true;
 

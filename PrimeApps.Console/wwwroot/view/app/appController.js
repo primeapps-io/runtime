@@ -5,7 +5,10 @@ angular.module('primeapps')
     .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q',
         function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q) {
 
+
             $scope.appId = $state.params.appId;
+            $scope.orgId = $state.params.orgId;
+
 
             if (!$scope.appId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
@@ -15,20 +18,18 @@ angular.module('primeapps')
 
             $cookies.put('app_id', $scope.appId);
 
-            if ($scope.appId != ($localStorage.get("currentApp") != null ? $localStorage.get("currentApp").id : false)) {
+            if ($scope.appId != ($localStorage.get("current_app") != null ? $localStorage.get("current_app").id : false)) {
                 $http.get(config.apiUrl + "app/get/" + $scope.appId).then(function (result) {
                     if (result.data) {
                         $scope.menuTopTitle = result.data.label;
-                        $localStorage.set("currentApp", result.data);
-                        $rootScope.breadcrumbListe[1].title = result.data.label;
-                        $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/overview';
+                        $localStorage.set("current_app", result.data);
+
                     }
                 });
             } else {
                 $scope.setTopTitle = function (link) {
-                    $scope.menuTopTitle = $localStorage.get("currentApp").label;
-                    $rootScope.breadcrumbListe[1].title = $scope.menuTopTitle;
-                    $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/' + link;
+                    $scope.menuTopTitle = $localStorage.get("current_app").label;
+
                 }
             }
 
@@ -36,7 +37,6 @@ angular.module('primeapps')
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
-            var deferred = $q.defer();
 
             $scope.getBasicModules = function () {
                 LayoutService.getBasicModules().then(function (result) {
@@ -45,7 +45,7 @@ angular.module('primeapps')
             };
 
             $scope.getBasicModules();
-            deferred.resolve();
+
 
         }
     ]);

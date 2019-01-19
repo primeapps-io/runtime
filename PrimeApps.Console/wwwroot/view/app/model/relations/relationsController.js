@@ -8,6 +8,11 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "relations";
+
+            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
+            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[2].title = 'Relations';
+
             $scope.loading = true;
             $scope.requestModel = {
                 limit: '10',
@@ -119,7 +124,7 @@ angular.module('primeapps')
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/setup/modules/relationForm.html',
+                    templateUrl: 'view/app/model/relations/relationForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
