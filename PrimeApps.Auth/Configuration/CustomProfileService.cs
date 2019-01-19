@@ -26,7 +26,7 @@ namespace PrimeApps.Auth
 			var sub = context.Subject.GetSubjectId();
             var giteaToken = context.Subject.FindFirst("gitea_token");
 
-            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken?.Value.ToString()));
+            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken != null ? giteaToken.Value.ToString() : ""));
 
             if (context.Subject.FindFirst("amr").Value != "external")
 			{
