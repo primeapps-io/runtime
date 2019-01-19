@@ -1,0 +1,62 @@
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="organizationForm" class="form-horizontal form-custom" ng-submit="saveOrganization(organizationForm);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="col-sm-6"><h4 class="modal-title">New Organization</h4></div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="button" class="btn btn-radius btn-gray" ng-click="$parent.$parent.organization = {}; $parent.$parent.organizatioFormModal.hide();">
+                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                </button>
+                <button type="submit" class="btn btn-radius btn-blue" ladda="organizationSaving" ng-disabled="!$parent.$parent.organizationShortnameValid" style="margin-left: 5px">
+                    <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                </button>
+            </div>
+        </div>
+        <div class="modal-dialog modal-600">
+            <div class="modal-content padding-0">
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group" style="position: relative;" ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                                    <label class="col-sm-6 required-field">*Organization Shortname: </label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-8 text-lowercase"
+                                           required
+                                           maxlength="50"
+                                           focus="true"
+                                           ng-trim="false"
+                                           ng-blur="organizationShortnameBlur($parent.$parent.organization)"
+                                           ng-change="checkOrganizationShortname($parent.$parent.organization)"
+                                           ng-model="$parent.$parent.organization.name">
+                                    <div ng-if="$parent.$parent.organizationShortnameChecking">
+                                        <i class="fa fa-spinner fa-spin" style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
+                                    </div>
+                                    <div ng-if="$parent.$parent.organizationShortnameValid">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;" class="fa-sidebar-icon fas fa-check"></i>
+                                    </div>
+                                    <div ng-if="$parent.$parent.organizationShortnameValid === false">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;" class="fas fa-times"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': organizationForm.$submitted && organizationForm.label.$invalid}">
+                                    <label class="col-sm-6 required-field">*Organization Label: </label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="200"
+                                           ng-model="$parent.$parent.organization.label">
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': organizationForm.$submitted && organizationForm.icon.$invalid}">
+                                    <label class="col-sm-4 required-field">*Organization Icon: </label>
+                                    <input class="form-control ng-animate-disabled col-sm-8" type="file" name="icon" required nv-file-select="" uploader="uploader" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

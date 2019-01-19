@@ -25,6 +25,58 @@ angular.module('primeapps')
         users: 16,
         licenses: 32
     })
+    .constant('componentTypeEnums', {
+        script: 1,
+        component: 2
+    })
+    .constant('componentTypes', [
+        { name: 'Script', value: 1 },
+        { name: 'Component', value: 2 }
+    ])
+    .constant('componentPlaceEnums', {
+        field_change: 1,
+        before_create: 2,
+        after_create: 3,
+        before_update: 4,
+        after_update: 5,
+        before_delete: 6,
+        after_delete: 7,
+        after_record_loaded: 8,
+        before_lookup: 9,
+        picklist_filter: 10,
+        before_approve_process: 11,
+        before_reject_process: 12,
+        after_approve_process: 13,
+        after_reject_process: 14,
+        before_send_to_process_approval: 15,
+        after_send_to_process_approval: 16,
+        before_list_request: 17
+    })
+    .constant('componentPlaces', [
+        { name: 'Field Change', value: 1 },
+        { name: 'Before Create', value: 2 },
+        { name: 'After Create', value: 3 },
+        { name: 'Before Update', value: 4 },
+        { name: 'After Update', value: 5 },
+        { name: 'Before Delete', value: 6 },
+        { name: 'After Delete', value: 7 },
+        { name: 'After Record Loaded', value: 8 },
+        { name: 'Before Lookup', value: 9 },
+        { name: 'Picklist Filter', value: 10 },
+        { name: 'Before Approve Process', value: 11 },
+        { name: 'Before Reject Process', value: 12 },
+        { name: 'After Approve Process', value: 13 },
+        { name: 'After Reject Process', value: 14 },
+        { name: 'Before Send To Process Approval', value: 15 },
+        { name: 'After Send To Process Approval', value: 16 },
+        { name: 'Before List Request', value: 17 }
+    ])
+    .constant('operations', {
+        read: 'read',
+        modify: 'modify',
+        write: 'write',
+        remove: 'remove'
+    })
 
     .constant('operations', {
         read: 'read',

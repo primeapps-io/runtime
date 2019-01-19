@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader) {
+    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast) {
             $scope.appModel = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
@@ -67,15 +67,15 @@ angular.module('primeapps')
 
 
             $scope.openModal = function () {
-                $scope.newFormModal = $scope.newFormModal || $modal({
+                $scope.appFormModal = $scope.appFormModal || $modal({
                         scope: $scope,
                         templateUrl: 'view/organization/appform/newAppForm.html',
                         animation: 'am-fade-and-slide-right',
                         backdrop: 'static',
                         show: false
                     });
-                $scope.newFormModal.$promise.then(function () {
-                    $scope.newFormModal.show();
+                $scope.appFormModal.$promise.then(function () {
+                    $scope.appFormModal.show();
                 });
             };
 
@@ -85,6 +85,15 @@ angular.module('primeapps')
             };
 
             $scope.checkName = function (name) {
+                if (!name)
+                    return;
+
+                $scope.appModel.name = name.replace(/\s/g, '');
+                $scope.appModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+                $scope.appModel.name = name.replace(/\s/g, '');
+                $scope.appModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
                 if (!$scope.nameBlur)
                     return;
 
@@ -116,15 +125,22 @@ angular.module('primeapps')
             $scope.save = function (newAppForm) {
                 if (!newAppForm.$valid)
                     return false;
-
+                $scope.appSaving = true;
                 //$scope.appModel.logo = uploader;
-                $scope.appModel.organization_id = 0;
                 $scope.appModel.template_id = 0;
                 $scope.appModel.status = 1;
 
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
-
+                        ngToast.create({ content: 'App ' + $scope.appModel.label + ' successfully created.', className: 'success' });
+                        $scope.appModel = {};
+                        $scope.appSaving = false;
+                        $scope.appFormModal.hide();
+                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrganization.id, appId: response.data });
+                    })
+                    .catch(function () {
+                        ngToast.create({ content: 'App ' + $scope.appModel.label + ' not created.', className: 'danger' });
+                        $scope.appSaving = false;
                     });
             };
         }

@@ -56,7 +56,6 @@ namespace PrimeApps.Model.Repositories
             }
 
             return relations;
-
         }
 
         public async Task<Relation> GetById(int id)

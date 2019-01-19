@@ -51,6 +51,8 @@ namespace PrimeApps.Auth
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //InitializeDatabase(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -10,25 +10,37 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Console;
+using PrimeApps.Console.Services;
+using System.Collections.Generic;
 
 namespace PrimeApps.Console.Controllers
 {
     [Route("api/app")]
     public class AppController : ApiBaseController
     {
+        private IBackgroundTaskQueue Queue;
         private IConfiguration _configuration;
         private IPlatformUserRepository _platformUserRepository;
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
+        private IGiteaHelper _giteaHelper;
 
-        public AppController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, IPermissionHelper permissionHelper)
+        public AppController(IConfiguration configuration,
+            IBackgroundTaskQueue queue,
+            IPlatformUserRepository platformUserRepository,
+            IAppDraftRepository appDraftRepository,
+            IOrganizationRepository organizationRepository,
+            IPermissionHelper permissionHelper,
+            IGiteaHelper giteaHelper)
         {
+            Queue = queue;
+            _configuration = configuration;
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
-            _configuration = configuration;
 
+            _giteaHelper = giteaHelper;
             _permissionHelper = permissionHelper;
         }
 
@@ -62,22 +74,32 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var result = await _appDraftRepository.Create(
-                new AppDraft
-                {
-                    Name = model.Name,
-                    Label = model.Label,
-                    Description = model.Description,
-                    Logo = model.Logo,
-                    OrganizationId = AppUser.OrganizationId,
-                    TempletId = model.TempletId,
-                    Status = AppDraftStatus.Draft
-                });
+            var app = new AppDraft
+            {
+                Name = model.Name,
+                Label = model.Label,
+                Description = model.Description,
+                Logo = model.Logo,
+                OrganizationId = OrganizationId,
+                TempletId = model.TempletId,
+                Status = AppDraftStatus.Draft,
+                Collaborators = new List<AppCollaborator>()
+            };
 
-            return Ok(result);
+            app.Collaborators.Add(new AppCollaborator { UserId = AppUser.Id, ProfileId = 1 });
+
+            var result = await _appDraftRepository.Create(app);
+
+            if (result < 0)
+                return BadRequest("An error occurred while creating an app");
+
+            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser, Request.Cookies["gitea_token"]));
+
+            return Ok(app.Id);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -86,7 +108,7 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
@@ -106,7 +128,7 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
