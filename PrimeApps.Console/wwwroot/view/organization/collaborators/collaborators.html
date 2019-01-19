@@ -12,16 +12,6 @@ selectedCollaborator ?
                     <i class="fas fa-plus"></i> Add New Collaborator
                 </button>
             </li>
-            <li ng-show="selectedCollaborator">
-                <button class="btn add-button btn-red" ng-click="delete(teamId)">
-                    <i class="fas fa-trush"></i> Delete
-                </button>
-            </li>
-            <li ng-show="selectedCollaborator">
-                <button class="btn add-button btn-blue" ng-click="addNewTeam(teamId)">
-                    <i class="fas fa-plus"></i> Edit
-                </button>
-            </li>
         </ul>
 
     </div>
@@ -38,12 +28,32 @@ selectedCollaborator ?
     <br />
 </form>-->
 <div class="tab-content" ng-show="!selectedCollaborator">
-    <table class="table">
+    <table class="table" ng-show="loading">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Role</th>
-                <th style="min-width: 110px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
@@ -55,22 +65,12 @@ selectedCollaborator ?
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="user-text">
-                            <h2 class="ng-binding">{{user.full_name}}</h2>
-                            <h3 class="ng-binding">{{user.email}}</h3>
+                            <h4 class="ng-binding">{{user.full_name}}</h4>
+                            <h5 class="ng-binding">{{user.email}}</h5>
                         </div>
                     </div>
                 </td>
                 <td>{{user.role ? user.role:'-'}}</td>
-                <td class="text-right">
-                    <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" class="action-buttons-delete" confirm-click data-placement="left"
-                            action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                            confirm-yes="{{'Common.Yes' | translate}}"
-                            confirm-no="{{'Common.No' | translate}}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    </div>
-                </td>
             </tr>
         </tbody>
     </table>
@@ -81,26 +81,28 @@ selectedCollaborator ?
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="tabelPagination.currentPage"
-                     page-size="tabelPagination.pageSize"
-                     total="tabelPagination.total"
-                     disabled="true"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
                      scroll-top="true"
                      hide-if-empty="true"
                      show-prev-next="true"
                      show-first-last="true"
-                     text-next-class="fas fa-step-backward"
-                     text-prev-class="glyphicon glyphicon-chevron-left"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
                      text-first-class="fas fa-step-backward"
-                     text-last-class="glyphicon glyphicon-forward"
-                     paging-action="foo('bar', page)">
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
                 </div>
             </nav>
         </div>
         <div>
+            Total Collaborators {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                <option value="10">10</option>
+                <option ng-selected="true" value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
@@ -114,38 +116,33 @@ selectedCollaborator ?
 
 <div ng-show="selectedCollaborator" class="col-sm-5 collaborator-info" style="background: #fff;
 padding: 100px;">
-    <div class="tab-content" ng-show="selectedCollaborator">
+    <div class="" ng-show="selectedCollaborator">
         <div class="row">
             <div class="col-sm-12 image-upload text-center">
                 <i class="fas fa-user-circle fa-9x"></i>
             </div>
             <div class="col-sm-12 user-info text-center">
                 <h2> {{selectedCollaborator.email}}</h2>
-                <h3>Joined :{{selectedCollaborator.created_at}}</h3>
             </div>
+            <div class="col-sm-12">
+                <div style="margin-left:50%" ng-show="updatingRole"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                <select ng-disabled="removing" ng-show="!updatingRole" required ng-model="collaboratorModel.role" name="role" class="form-control  ng-animate-disabled col-sm-8" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
 
-            <div class="dropdown col-sm-12">
-                <div class="dropdown-input" data-animation="am-flip-x" bs-dropdown
-                     aria-haspopup="true" aria-expanded="false">
-                    <div class="dropdown-text ">
-                        <h4>Administrator</h4>
-                        <i class="fas fa-angle-down"></i>
-                    </div>
-                </div>
-                <ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
-                    <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
-                    <li>
-                        <a ng-click="$alert('Holy guacamole')">Collaborator</a>
-                    </li>
+                <!--<ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
+        <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
+        <li>
+            <a ng-click="$alert('Holy guacamole')">Collaborator</a>
+        </li>
 
-                </ul>
+    </ul>-->
             </div>
-
+            <div class="col-sm-12 user-info text-center">
+                <h3>Joined :{{selectedCollaborator.created_at | date:'medium'}}</h3>
+            </div>
         </div>
-
         <div class="col-sm-12 text-center">
             <br>
-            <button class="btn btn-red btn-radius">Remove from organization</button>
+            <button ladda="removing" ng-disabled="updatingRole" ng-click="delete(selectedCollaborator.id)" class="btn btn-red btn-radius">Remove from organization</button>
         </div>
     </div>
 

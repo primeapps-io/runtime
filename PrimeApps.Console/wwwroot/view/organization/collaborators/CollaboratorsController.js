@@ -9,7 +9,9 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
+            $scope.updatingRole = false;
             $scope.collaboratorModel = {};
+            $scope.loading = true;
             var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
             $scope.requestModel = {
@@ -17,7 +19,16 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+            $scope.generator(10);
             CollaboratorsService.count(organitzationId).then(function (response) {
+                
                 $scope.pageTotal = response.data;
             });
 
@@ -72,7 +83,7 @@ angular.module('primeapps')
 
                 var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
                 $scope.selectedCollaborator = angular.copy(result);
-
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                 $scope.$parent.activeMenu = "collaborator";
                 $scope.$parent.activeMenuItem = 'collaborator';
             }
@@ -86,6 +97,7 @@ angular.module('primeapps')
                 $scope.$parent.collaboratorId = id;
                 $scope.selectedCollaborator = angular.copy(result);
                 $scope.$parent.selectedCollaborator = angular.copy(result);
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.$parent.selectedCollaborator.role }, true)[0];
             }
 
             $scope.roles = [
@@ -145,20 +157,27 @@ angular.module('primeapps')
 
             }
 
-            $scope.update = function () {
+            $scope.update = function (collaboratorModel) {
                 if (!$scope.selectedCollaborator)
                     return false;
 
-                CollaboratorsService.update($scope.selectedCollaborator)
+                var updCollaborator = {};
+                updCollaborator.id = $scope.selectedCollaborator.id;
+                updCollaborator.organization_id = $scope.selectedCollaborator.organization_id;
+                updCollaborator.email = $scope.selectedCollaborator.email;
+                updCollaborator.role = collaboratorModel.role.value;
+                CollaboratorsService.update(updCollaborator)
                     .then(function (response) {
                         if (response.data) {
                             getToastMsg('Common.Success', 'success');
                             $scope.getCollaborators();
-                            $state.reload();
+                            $scope.updatingRole = false;
                         }
                     })
                     .catch(function (error) {
                         getToastMsg('Common.Error', 'danger');
+                        $scope.updatingRole = false;
+                        $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
             }
              
@@ -171,6 +190,7 @@ angular.module('primeapps')
                 if (!result)
                     return false;
 
+                $scope.removing = true;
                 var data = {};
                 data.user_id = id;
                 data.organization_id = organitzationId;
@@ -185,13 +205,14 @@ angular.module('primeapps')
                             $scope.$parent.selectedCollaborator = {};
                             $scope.collaboratorId = null;
                             $scope.$parent.collaboratorId = null;
-
+                            $scope.removing = false;
                             $scope.getCollaborators();
                             $state.reload();
                         }
                     })
                     .catch(function (error) {
                         getToastMsg('Common.Error', 'danger');
+                        $scope.removing = false;
                     });
             }
 
