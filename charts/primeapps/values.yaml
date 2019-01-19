@@ -39,7 +39,6 @@ app:
         RedisConnection: "redis-dev.primeapps.io:6379,password=pr!m€Apps!0D€v,defaultDatabase=1"
       AppSettings:
         EnableJobs: "true"
-        AllowInsecureHttp: "true"
         StorageAccessKey: "ofisim-storage"
         StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O"
         TestMode: "true"
@@ -119,7 +118,11 @@ auth:
         ValidUrls: "localhost;primeapps.io"
         ForwardHeaders: "true"
         HttpsRedirection: "true"
-        AuthUrl: "https://auth-dev.primeapps.io"
+        Authority: "https://auth-dev.primeapps.io"
+        EnableGiteaIntegration: "false",
+        GiteaUrl: "",
+        GiteaEmail: "",
+        GiteaPassword: ""
       Sentry:
         Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
         IncludeRequestPayload: "true"
