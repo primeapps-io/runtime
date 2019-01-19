@@ -13,9 +13,9 @@ namespace PrimeApps.Auth
             services.AddAuthentication()
                 .AddJwtBearer(jwt =>
                 {
-                    jwt.Authority = configuration.GetValue("AppSettings:AuthUrl", string.Empty);
+                    jwt.Authority = configuration.GetValue("AppSettings:Authority", string.Empty);
                     jwt.Audience = "api1";
-                    jwt.RequireHttpsMetadata = configuration.GetValue("AppSettings:AuthUrl", string.Empty).Contains("https");
+                    jwt.RequireHttpsMetadata = configuration.GetValue("AppSettings:Authority", string.Empty).Contains("https");
 
                 })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
