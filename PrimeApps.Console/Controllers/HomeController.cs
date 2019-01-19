@@ -37,10 +37,13 @@ namespace PrimeApps.Console.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
             var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
-            var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
+            if (bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
+            {
+                var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
 
-            Request.Cookies.Append(new System.Collections.Generic.KeyValuePair<string, string>("gitea_token", giteaToken));
-            Response.Cookies.Append("gitea_token", giteaToken);
+                Request.Cookies.Append(new System.Collections.Generic.KeyValuePair<string, string>("gitea_token", giteaToken));
+                Response.Cookies.Append("gitea_token", giteaToken);
+            }
 
             var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
             ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
