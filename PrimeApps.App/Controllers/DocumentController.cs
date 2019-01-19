@@ -31,9 +31,10 @@ namespace PrimeApps.App.Controllers
         private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
         private IDocumentHelper _documentHelper;
-
         private IRecordHelper _recordHelper;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration, IDocumentHelper documentHelper)
+        private IUnifiedStorage _storage;
+
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration, IDocumentHelper documentHelper, IUnifiedStorage storage)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -43,9 +44,9 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
             _configuration = configuration;
-
             _documentHelper = documentHelper;
             _recordHelper = recordHelper;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -63,15 +64,15 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("upload_hex"), HttpPost]
-        public async Task<IActionResult> UploadHex([FromBody]JObject data)
+        public async Task<IActionResult> UploadHex([FromBody] JObject data)
         {
             string instanceId,
-              file,
-              description,
-              moduleName,
-              moduleId,
-              recordId,
-              fileName;
+                file,
+                description,
+                moduleName,
+                moduleId,
+                recordId,
+                fileName;
             moduleName = data["module_name"]?.ToString();
             file = data["file"]?.ToString();
             description = data["description"]?.ToString();
@@ -133,9 +134,9 @@ namespace PrimeApps.App.Controllers
             try
             {
                 fileBytes = Enumerable.Range(0, file.Length)
-                     .Where(x => x % 2 == 0)
-                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
-                     .ToArray();
+                    .Where(x => x % 2 == 0)
+                    .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
+                    .ToArray();
             }
             catch (Exception ex)
             {
@@ -242,7 +243,6 @@ namespace PrimeApps.App.Controllers
             //if it is successfully parsed continue.
             if (parser.Success)
             {
-
                 if (parser.FileContents.Length <= 0)
                 {
                     //check the file size if it is 0 bytes then return client with that error code.
@@ -315,7 +315,6 @@ namespace PrimeApps.App.Controllers
             //if it is successfully parsed continue.
             if (parser.Success)
             {
-
                 if (parser.FileContents.Length <= 0)
                 {
                     //check the file size if it is 0 bytes then return client with that error code.
@@ -341,7 +340,6 @@ namespace PrimeApps.App.Controllers
                 //if parser has more then 1 parameters, it means that request is full filled by request maker object - uploader.
                 if (parser.Parameters.Count > 1)
                 {
-
                     //get the file name from parser
                     if (parser.Parameters.ContainsKey("name"))
                     {
@@ -370,20 +368,17 @@ namespace PrimeApps.App.Controllers
                     }
 
 
-
-
                     if (parser.Parameters.ContainsKey("documentsearch"))
                     {
                         documentSearch = parser.Parameters["documentsearch"];
                         bool.TryParse(documentSearch, out documentSearchFlag);
                     }
+
                     if (parser.Parameters.ContainsKey("recordid"))
                     {
                         recordId = parser.Parameters["recordid"];
                         int.TryParse(recordId, out uniqueRecordId);
                     }
-
-
                 }
 
                 if (string.IsNullOrEmpty(uniqueName) || string.IsNullOrEmpty(container) || string.IsNullOrEmpty(moduleName) || string.IsNullOrEmpty(fileName) || uniqueRecordId == 0)
@@ -419,8 +414,7 @@ namespace PrimeApps.App.Controllers
                 {
                     var documentSearchHelper = new DocumentSearch();
 
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
-
+                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false); //False because! 5 min auto index incremental change detection policy check which azure provided
                 }
 
                 //return content type of the file to the client
@@ -432,7 +426,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("remove_document"), HttpPost]
-        public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
+        public async Task<IActionResult> RemoveModuleDocument([FromBody] JObject data)
         {
             string tenantId,
                 module,
@@ -462,7 +456,6 @@ namespace PrimeApps.App.Controllers
             AzureStorage.RemoveFile(containerName, uniqueFileName, _configuration);
 
 
-
             var moduleData = await _moduleRepository.GetByNameBasic(module);
             var field = moduleData.Fields.FirstOrDefault(x => x.Name == fieldName);
             if (field.DocumentSearch)
@@ -479,7 +472,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
+        public async Task<IActionResult> Create([FromBody] DocumentDTO document)
         {
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -506,7 +499,6 @@ namespace PrimeApps.App.Controllers
             }
 
             return BadRequest("Couldn't Create Document!");
-
         }
 
         [Route("image_create"), HttpPost]
@@ -514,9 +506,8 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IActionResult> ImageCreate([FromBody]JObject data)
+        public async Task<IActionResult> ImageCreate([FromBody] JObject data)
         {
-
             string UniqueFileName, MimeType, TenantId;
             UniqueFileName = data["UniqueFileName"]?.ToString();
             MimeType = data["MimeType"]?.ToString();
@@ -526,12 +517,11 @@ namespace PrimeApps.App.Controllers
 
             if (UniqueFileName != null)
             {
-               await AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
+                await AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
                 return Ok(UniqueFileName);
             }
 
             return BadRequest("Couldn't Create Document!");
-
         }
 
         /// <summary>
@@ -544,7 +534,6 @@ namespace PrimeApps.App.Controllers
         [Route("GetEntityDocuments"), HttpPost]
         public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModel req)
         {
-
             //Get last 5 entity documents and return it to the client.
             var result = await _documentRepository.GetTopEntityDocuments(new DocumentRequest()
             {
@@ -554,6 +543,17 @@ namespace PrimeApps.App.Controllers
                 UserId = AppUser.Id,
                 ContainerId = AppUser.TenantGuid
             });
+
+            if (result.Documents.Count > 0)
+            {
+                var bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+
+                foreach (var document in result.Documents)
+                {
+                    document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1), Amazon.S3.Protocol.HTTP, false);
+                }
+            }
+
             return Ok(result);
         }
 
@@ -565,7 +565,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="TenantId">The instance identifier.</param>
         /// <returns>DocumentExplorerResult.</returns>
         [Route("GetDocuments"), HttpPost]
-        public async Task<IActionResult> GetDocuments([FromBody]DocumentRequest req)
+        public async Task<IActionResult> GetDocuments([FromBody] DocumentRequest req)
         {
             //validate the instance id by the session instances.
 
@@ -585,7 +585,6 @@ namespace PrimeApps.App.Controllers
                 UserId = AppUser.Id,
                 ContainerId = AppUser.TenantGuid
             }));
-
         }
 
         /// <summary>
@@ -602,6 +601,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok(doc);
             }
+
             return Ok();
         }
 
@@ -678,7 +678,6 @@ namespace PrimeApps.App.Controllers
         {
             if (!string.IsNullOrEmpty(module) && !string.IsNullOrEmpty(fileNameExt) && !string.IsNullOrEmpty(fieldName))
             {
-
                 var containerName = "module-documents";
                 //var ext = Path.GetExtension(fileName);
 
@@ -718,7 +717,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
+        public async Task<IActionResult> Remove([FromBody] DocumentDTO doc)
         {
             //if the document is not null open a new session and transaction
             var result = await _documentRepository.RemoveAsync(doc.ID);
@@ -737,7 +736,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("Modify"), HttpPost]
-        public async Task<IActionResult> Modify([FromBody]DocumentDTO document)
+        public async Task<IActionResult> Modify([FromBody] DocumentDTO document)
         {
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
             {
@@ -754,11 +753,10 @@ namespace PrimeApps.App.Controllers
             }
 
             return NotFound();
-
         }
 
         [Route("document_search"), HttpPost]
-        public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
+        public async Task<IActionResult> SearchDocument([FromBody] DocumentFilterRequest filterRequest)
         {
             if (filterRequest != null && filterRequest.Filters.Count > 0)
             {
@@ -775,11 +773,12 @@ namespace PrimeApps.App.Controllers
 
                 return Ok(results);
             }
+
             return BadRequest();
         }
 
         [Route("find"), HttpPost]
-        public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
+        public async Task<ICollection<DocumentResult>> Find([FromBody] DocumentFindRequest request)
         {
             var documents = await _documentRepository.GetDocumentsByLimit(request);
 
@@ -787,7 +786,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("count"), HttpPost]
-        public async Task<int> Count([FromBody]DocumentFindRequest request)
+        public async Task<int> Count([FromBody] DocumentFindRequest request)
         {
             return await _documentRepository.Count(request);
         }

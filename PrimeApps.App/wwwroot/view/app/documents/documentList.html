@@ -53,7 +53,7 @@
         <content ng-click="closeLightBox()">
             <p>{{ fileData.name }}</p>
             <img ng-if="fileData.extension=='jpg'|| fileData.extension=='jpeg'|| fileData.extension=='gif' || fileData.extension=='bmp' || fileData.extension=='png'"
-                 ng-src="{{ fileData.FileUrl }}"/>
+                 ng-src="{{ fileData.file_url }}"/>
             <span class="icon"
                   ng-if="!(fileData.extension=='jpg'|| fileData.extension=='jpeg'|| fileData.extension=='gif' || fileData.extension=='bmp' || fileData.extension=='png')"><i
                     class="{{icon(fileData.extension)}}"></i></span>

@@ -75,7 +75,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     ID = entity.Id,
                     Name = entity.Name,
-                    Type = entity.UniqueName,
+                    Type = entity.Type,
                     UniqueName = entity.UniqueName,
                     CreatedBy = entity.CreatedById,
                     CreatedTime = entity.CreatedAt,

@@ -23,7 +23,10 @@ namespace PrimeApps.App.Storage
         private IConfiguration _configuration;
         private IAmazonS3 _client;
 
-        public IAmazonS3 Client { get { return _client; } }
+        public IAmazonS3 Client
+        {
+            get { return _client; }
+        }
 
         public enum ObjectType
         {
@@ -39,23 +42,24 @@ namespace PrimeApps.App.Storage
             NONE
         }
 
-        static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>{
-            {ObjectType.ATTACHMENT,"/attachments/"},
-            {ObjectType.RECORD,"/records/"},
-            {ObjectType.TEMPLATE,"/templates/"},
-            {ObjectType.ANALYTIC,"/analytics/"},
-            {ObjectType.IMPORT,"/imports/"},
-            {ObjectType.NOTE,"/notes/"},
-            {ObjectType.LOGO,"/logos/"},
-            {ObjectType.MAIL,"/mail/"},
-            {ObjectType.PROFILEPICTURE,"/profile_pictures/"},
-            {ObjectType.NONE,""}
+        static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
+        {
+            {ObjectType.ATTACHMENT, "/attachments/"},
+            {ObjectType.RECORD, "/records/"},
+            {ObjectType.TEMPLATE, "/templates/"},
+            {ObjectType.ANALYTIC, "/analytics/"},
+            {ObjectType.IMPORT, "/imports/"},
+            {ObjectType.NOTE, "/notes/"},
+            {ObjectType.LOGO, "/logos/"},
+            {ObjectType.MAIL, "/mail/"},
+            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
+            {ObjectType.NONE, ""}
         };
 
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
         }
 
@@ -176,6 +180,7 @@ namespace PrimeApps.App.Storage
 
             return await _client.PutACLAsync(request);
         }
+
         /// <summary>
         /// Downloads files from S3 as FileStreamResult(Chunked)
         /// </summary>
@@ -214,8 +219,8 @@ namespace PrimeApps.App.Storage
                     await _client.PutBucketAsync(checkPath);
                 }
             }
-
         }
+
         /// <summary>
         /// Deletes a bucket with everything under it.
         /// </summary>
@@ -234,24 +239,27 @@ namespace PrimeApps.App.Storage
         /// <param name="expires"></param>
         /// <param name="protocol"></param>
         /// <returns></returns>
-        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true)
         {
-
             if (bucket.EndsWith('/'))
                 bucket = bucket.Remove(bucket.Length - 1, 1);
 
             GetPreSignedUrlRequest request =
-               new GetPreSignedUrlRequest()
-               {
-                   BucketName = bucket,
-                   Key = key,
-                   Expires = expires,
-                   Protocol = protocol
-               };
+                new GetPreSignedUrlRequest()
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    Expires = expires,
+                    Protocol = protocol
+                };
 
-            var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             var preSignedUrl = _client.GetPreSignedURL(request);
-            preSignedUrl = preSignedUrl.Replace(blobUrl, "").Remove(0, 1);
+
+            if (clearRoot)
+            {
+                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+                preSignedUrl = preSignedUrl.Replace(blobUrl, "").Remove(0, 1);
+            }
 
             return preSignedUrl;
         }
@@ -275,6 +283,7 @@ namespace PrimeApps.App.Storage
             };
             return await _client.CopyObjectAsync(request);
         }
+
         /// <summary>
         /// Deletes an object from a bucket.
         /// </summary>
@@ -401,14 +410,14 @@ namespace PrimeApps.App.Storage
 
         public static string GetPath(string type, int tenant, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)
         {
-            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
         }
     }
 }

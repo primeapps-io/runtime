@@ -20,7 +20,7 @@ namespace PrimeApps.App.Storage
         Task<string> InitiateMultipartUpload(string bucket, string key);
         Task Upload(string bucket, string key, Stream stream);
         Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream);
-        string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP);
+        string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true);
         Task<GetObjectResponse> GetObject(string bucket, string key);
         Task<bool> ObjectExists(string bucket, string key);
 
