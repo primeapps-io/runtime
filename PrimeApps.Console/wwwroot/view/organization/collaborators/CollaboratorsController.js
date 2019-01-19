@@ -28,7 +28,7 @@ angular.module('primeapps')
             };
             $scope.generator(10);
             CollaboratorsService.count(organitzationId).then(function (response) {
-                
+                $scope.$parent.collaboratorCount = response.data;
                 $scope.pageTotal = response.data;
             });
 
@@ -142,7 +142,7 @@ angular.module('primeapps')
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
                         if (response.data) {
-                            getToastMsg('Common.Success', 'success');
+                            ngToast.create({ content: 'Collaborator is saved successfully', className: 'success' });
                             $scope.collaboratorModel.email = "";
                             $scope.getCollaborators();
                             $state.reload();
@@ -169,7 +169,7 @@ angular.module('primeapps')
                 CollaboratorsService.update(updCollaborator)
                     .then(function (response) {
                         if (response.data) {
-                            getToastMsg('Common.Success', 'success');
+                            ngToast.create({ content: 'Role is changed successfully', className: 'success' });
                             $scope.getCollaborators();
                             $scope.updatingRole = false;
                         }
@@ -199,7 +199,7 @@ angular.module('primeapps')
                 CollaboratorsService.delete(data)
                     .then(function (response) {
                         if (response.data) {
-                            getToastMsg('Common.Success', 'success');
+                            ngToast.create({ content: 'Collaborator is deleted successfully', className: 'success' });
 
                             $scope.selectedCollaborator = {};
                             $scope.$parent.selectedCollaborator = {};
