@@ -1174,7 +1174,6 @@ button, select {
         font-weight: bold; }
       .primeapps #wrapper .setup-layout .setup-title span {
         white-space: nowrap;
-        overflow: hidden;
         text-overflow: ellipsis; }
     .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
       width: calc(100% - 80px); }

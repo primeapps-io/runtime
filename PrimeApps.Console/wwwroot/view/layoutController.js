@@ -19,7 +19,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
 
-
+        $scope.organizationShortnameValid = null;
+        $scope.isOrganizationShortnameBlur = false;
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -27,7 +28,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.navbar = angular.element(document.getElementById('navbar-wrapper'));
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
-        $scope.organizations = [];
+        $rootScope.organizations = [];
         $scope.menuOpen = [];
         $rootScope.breadcrumblist = [
             {},
@@ -43,13 +44,18 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }
             });
 
-        LayoutService.myOrganizations()
-            .then(function (response) {
-                if (response.data) {
-                    $scope.organizations = response.data;
-                    //$scope.menuOpen[$scope.organizations[0].id] = true;
-                }
-            });
+        var getMyOrganizations = function () {
+            LayoutService.myOrganizations()
+                .then(function (response) {
+                    if (response.data) {
+                        $rootScope.organizations = response.data;
+
+                        //$scope.menuOpen[$scope.organizations[0].id] = true;
+                    }
+                });
+        };
+
+        getMyOrganizations();
 
         $scope.changeOrganization = function (organization) {
             $scope.menuOpen = [];
@@ -164,23 +170,94 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
 
-        /*/
-        *
-        *
-        * */
-        $scope.addNewOrganization = function () {
-            $scope.addNewOrganizatioModal = $scope.addNewOrganizatioModal || $modal({
-                scope: $scope,
-                templateUrl: 'view/organization/addNewOrganization.html',
-                animation: 'am-fade-and-slide-right',
-                backdrop: 'static',
-                show: false
-            });
-            $scope.addNewOrganizatioModal.$promise.then(function () {
-                $scope.addNewOrganizatioModal.show();
+        $scope.newOrganization = function () {
+            $scope.organizatioFormModal = $scope.organizatioFormModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/organization/newOrganization.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+            $scope.organizatioFormModal.$promise.then(function () {
+                $scope.organizatioFormModal.show();
 
             });
 
+        };
+
+        $scope.organizationShortnameBlur = function (organization) {
+            $scope.isOrganizationShortnameBlur = true;
+            $scope.checkOrganizationShortname(organization ? organization : "");
+        };
+
+        $scope.checkOrganizationShortname = function (organization) {
+            if (!organization || !organization.name)
+                return;
+
+            organization.name = organization.name.replace(/\s/g, '');
+            organization.name = organization.name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+            organization.name = organization.name.replace(/\s/g, '');
+            organization.name = organization.name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+            if (!$scope.isOrganizationShortnameBlur)
+                return;
+
+            $scope.organizationShortnameChecking = true;
+            $scope.organizationShortnameValid = null;
+
+            if (!organization.name || organization.name === '') {
+                $scope.organizationShortnameChecking = false;
+                $scope.organizationShortnameValid = false;
+                return;
+            }
+
+            LayoutService.isOrganizationShortnameUnique(organization.name)
+                .then(function (response) {
+                    $scope.organizationShortnameChecking = false;
+                    if (response.data) {
+                        $scope.organizationShortnameValid = true;
+                    }
+                    else {
+                        $scope.organizationShortnameValid = false;
+                    }
+                })
+                .catch(function () {
+                    $scope.organizationShortnameValid = false;
+                    $scope.organizationShortnameChecking = false;
+                });
+        };
+
+        $scope.saveOrganization = function (organizationForm) {
+            if (!organizationForm.$valid)
+                return;
+
+            $scope.organizationSaving = true;
+
+            LayoutService.createOrganization($scope.organization)
+                .then(function (response) {
+                    var copyOrganization = angular.copy($scope.organization);
+                    copyOrganization.id = response.data;
+
+                    getMyOrganizations();
+                    $scope.changeOrganization(copyOrganization);
+                    $scope.menuOpen[response.data] = true;
+                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' successfully created.', className: 'success' });
+                    $scope.organizationSaving = false;
+                    $scope.organization = {};
+                    $scope.organizatioFormModal.hide();
+                    $scope.organizationShortnameValid = null;
+                    $scope.isOrganizationShortnameBlur = false;
+
+                    $state.go('studio.Apps', { organizationId: response.data });
+
+                })
+                .catch(function () {
+                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' not created.', className: 'danger' });
+                    $scope.organizationSaving = false;
+                    $scope.organizationShortnameValid = null;
+                    $scope.isOrganizationShortnameBlur = false;
+                });
         };
 
         var uploader = $scope.uploader = new FileUploader({

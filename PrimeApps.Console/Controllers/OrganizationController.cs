@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Constants;
 using PrimeApps.Console.Helpers;
+using PrimeApps.Console.Services;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.Team;
@@ -29,8 +30,9 @@ using System.Threading.Tasks;
 namespace PrimeApps.Console.Controllers
 {
     [Route("api/organization"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-    public class OrganizationController : ApiBaseController
+    public class OrganizationController : BaseController
     {
+        private IBackgroundTaskQueue Queue;
         private IConfiguration _configuration;
         private IOrganizationRepository _organizationRepository;
         private IOrganizationUserRepository _organizationUserRepository;
@@ -41,17 +43,26 @@ namespace PrimeApps.Console.Controllers
         private IConsoleUserRepository _consoleUserRepository;
         private IApplicationRepository _applicationRepository;
         private ITeamRepository _teamRepository;
-
+        private IGiteaHelper _giteaHelper;
         private IPermissionHelper _permissionHelper;
         private IOrganizationHelper _organizationHelper;
 
-        public OrganizationController(IConfiguration configuration, IOrganizationRepository organizationRepository, IOrganizationUserRepository organizationUserRepository,
-            IPlatformUserRepository platformUserRepository, IAppDraftRepository applicationDraftRepository,
-            ITeamRepository teamRepository, IApplicationRepository applicationRepository,
-            IPlatformRepository platformRepository, IConsoleUserRepository consoleUserRepository,
-            IServiceScopeFactory serviceScopeFactory, IPermissionHelper permissionHelper,
-            IOrganizationHelper organizationHelper)
+        public OrganizationController(IBackgroundTaskQueue queue,
+            IConfiguration configuration,
+            IOrganizationRepository organizationRepository,
+            IOrganizationUserRepository organizationUserRepository,
+            IPlatformUserRepository platformUserRepository,
+            IAppDraftRepository applicationDraftRepository,
+            ITeamRepository teamRepository,
+            IApplicationRepository applicationRepository,
+            IPlatformRepository platformRepository,
+            IConsoleUserRepository consoleUserRepository,
+            IServiceScopeFactory serviceScopeFactory,
+            IPermissionHelper permissionHelper,
+            IOrganizationHelper organizationHelper,
+            IGiteaHelper giteaHelper)
         {
+            Queue = queue;
             _organizationRepository = organizationRepository;
             _appDraftRepository = applicationDraftRepository;
             _platformUserRepository = platformUserRepository;
@@ -63,17 +74,15 @@ namespace PrimeApps.Console.Controllers
             _teamRepository = teamRepository;
             _configuration = configuration;
 
+            _giteaHelper = giteaHelper;
             _permissionHelper = permissionHelper;
             _organizationHelper = organizationHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-                context.Result = new UnauthorizedResult();
-
-            SetContext(context);
-
+            //SetContext(context);
+            SetContextUser();
             SetCurrentUser(_organizationRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_platformUserRepository);
@@ -211,6 +220,7 @@ namespace PrimeApps.Console.Controllers
             {
                 Id = organization.Id,
                 Name = organization.Name,
+                Label = organization.Label,
                 Icon = organization.Icon,
                 OwnerId = organization.OwnerId,
                 Teams = organization.Teams.Where(x => !x.Deleted).Select(x =>
@@ -303,6 +313,7 @@ namespace PrimeApps.Console.Controllers
             var organization = new Organization
             {
                 Name = model.Name,
+                Label = model.Label,
                 Icon = model.Icon,
                 OwnerId = AppUser.Id,
                 OrganizationUsers = new List<OrganizationUser>()
@@ -319,7 +330,9 @@ namespace PrimeApps.Console.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            return Ok(result);
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser, Request.Cookies["gitea_token"]));
+
+            return Ok(organization.Id);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -396,7 +409,7 @@ namespace PrimeApps.Console.Controllers
                     {
                         template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
                         template.Content = template.Content.Replace("{:LastName}", model.LastName);
-                        template.Content = template.Content.Replace("{:Organization}", organization.Name);
+                        template.Content = template.Content.Replace("{:Organization}", organization.Label);
                         template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
                         template.Content = template.Content.Replace("{:Email}", model.Email);
                         template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
@@ -543,5 +556,15 @@ namespace PrimeApps.Console.Controllers
             return Ok(count);
         }
 
+        [Route("is_unique_name"), HttpGet]
+        public async Task<IActionResult> IsUniqueName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(ModelState);
+
+            var result = await _organizationRepository.IsOrganizationNameAvailableAsync(name);
+
+            return Ok(result);
+        }
     }
 }

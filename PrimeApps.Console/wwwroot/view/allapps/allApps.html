@@ -31,7 +31,7 @@
         <div class="col-sm-12">
             <h4 class="h4-title blue-color font-bold">All Apps</h4>
         </div>
-        <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps" ui-sref="studio.app.overview({appId:app.id})">
+        <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps" ui-sref="studio.app.overview({appId:app.id, orgId:app.organization_id})">
             <div class="app-box">
                 <div class="oval">
                     <span data-trigger="hover" data-type="success" data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>

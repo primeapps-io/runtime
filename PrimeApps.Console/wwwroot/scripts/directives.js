@@ -183,6 +183,7 @@ angular.module('primeapps')
                 }
             }
         }])
+
     .directive('customOnChange', function () {
         return {
             require: 'ngModel',
@@ -1194,6 +1195,7 @@ angular.module('primeapps')
             }
         };
     }])
+
     .directive('uiTinymceMulti', ['$rootScope', 'uiTinymceConfig', function ($rootScope, uiTinymceConfig) {
         uiTinymceConfig = uiTinymceConfig || {};
         var generatedIds = 0;
@@ -1576,6 +1578,7 @@ angular.module('primeapps')
                     }]
             };
         }])
+
     .directive('helpPage', ['$rootScope', '$modal', '$http', 'config', '$filter', 'ngToast', 'HelpService', '$sce', '$cache', '$localStorage',
         function ($rootScope, $modal, $http, config, $filter, ngToast, HelpService, $sce, $cache, $localStorage) {
             return {
@@ -1815,6 +1818,7 @@ angular.module('primeapps')
             }
         };
     }])
+
     .directive('inputStars', [function () {
         function isFloat(n) {
             return Number(n) === n && n % 1 !== 0;

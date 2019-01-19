@@ -66,17 +66,29 @@ namespace PrimeApps.Model.Helpers
         /// <returns></returns>
         public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, int tenantId, int appId)
         {
-            return await CreateDatabaseWithTemplate(connectionString, $"tenant{tenantId}", $"app{appId}");
+            return await CreateDatabaseWithTemplate(connectionString, $"tenant{tenantId}", $"app{appId}", "tenant");
         }
 
-        public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, string databaseName, string templateDbName)
+        /// <summary>
+        /// Creates a new database with the given app id and templet id.
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="templetId"></param>
+        /// <returns></returns>
+
+        public static async Task<bool> CreateDatabaseWithTemplet(string connectionString, int appId, int templetId)
+        {
+            return await CreateDatabaseWithTemplate(connectionString, $"app{appId}", $"templet{templetId}", "app");
+        }
+
+        public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, string databaseName, string templateDbName, string previewMode)
         {
             bool result = false;
             int intResult = 0;
 
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, "tenant")))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, previewMode)))
                 {
                     connection.Open();
 

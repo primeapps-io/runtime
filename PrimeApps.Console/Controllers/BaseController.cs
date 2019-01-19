@@ -92,7 +92,7 @@ namespace PrimeApps.Console.Controllers
             return platformUser;
         }
 
-        public void SetOrganization(ActionExecutingContext context)
+        public int SetOrganization(ActionExecutingContext context)
         {
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
@@ -117,6 +117,8 @@ namespace PrimeApps.Console.Controllers
                 context.Result = new UnauthorizedResult();
 
             context.HttpContext.Items.Add("organization_id", organizationId);
+
+            return organizationId;
         }
     }
 }

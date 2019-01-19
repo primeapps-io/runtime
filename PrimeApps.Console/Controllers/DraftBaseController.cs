@@ -18,7 +18,10 @@ namespace PrimeApps.Console.Controllers
 
         public void SetContext(ActionExecutingContext context)
         {
-            SetOrganization(context);
+            var organizationId = SetOrganization(context);
+
+            if (organizationId <= 0)
+                context.Result = new UnauthorizedResult();
 
             TenantId = null;
             AppId = null;
@@ -28,11 +31,6 @@ namespace PrimeApps.Console.Controllers
 
             var tenantId = 0;
             var appId = 0;
-
-            var organizationId = context.HttpContext.Items["organization_id"];
-
-            if (organizationId == null)
-                context.Result = new UnauthorizedResult();
 
             if (tenantIdValues.Count != 0 && !string.IsNullOrWhiteSpace(tenantIdValues[0]))
                 int.TryParse(tenantIdValues[0], out tenantId);
@@ -46,7 +44,7 @@ namespace PrimeApps.Console.Controllers
             var appDraftRepository = (IAppDraftRepository)context.HttpContext.RequestServices.GetService(typeof(IAppDraftRepository));
             var tenantRepository = (ITenantRepository)context.HttpContext.RequestServices.GetService(typeof(ITenantRepository));
 
-            var appIds = appDraftRepository.GetAppIdsByOrganizationId((int)organizationId);
+            var appIds = appDraftRepository.GetAppIdsByOrganizationId(organizationId);
 
             if (tenantId != 0)
             {

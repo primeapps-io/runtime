@@ -27,6 +27,13 @@ namespace PrimeApps.Model.Repositories
             return orgId != 0;
         }
 
+        public async Task<bool> IsOrganizationNameAvailableAsync(string name)
+        {
+            return await DbContext.Organizations
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync() == null;
+        }
+
         public async Task<Organization> Get(int userId, int organizationId)
         {
             return await DbContext.OrganizationUsers

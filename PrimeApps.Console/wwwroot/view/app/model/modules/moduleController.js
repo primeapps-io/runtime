@@ -9,6 +9,16 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'modules';
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+
+            $scope.generator(10);
+
             $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
             $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Modules';
