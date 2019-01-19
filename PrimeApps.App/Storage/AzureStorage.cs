@@ -197,16 +197,16 @@ namespace PrimeApps.App.Storage
         /// Gets avatar full url
         /// </summary>
         /// <returns></returns>
-        public static string GetAvatarUrl(string avatar, IConfiguration configuration)
+        public static string GetProfilePictureUrl(string profilePicture, IConfiguration configuration)
         {
-            if (string.IsNullOrWhiteSpace(avatar))
+            if (string.IsNullOrWhiteSpace(profilePicture))
             {
                 return string.Empty;
             }
 
             var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
-            return $"{blobUrl}/user-images/{avatar}";
+            return $"{blobUrl}/{profilePicture}";
         }
 
         public static string GetLogoUrl(string logo, IConfiguration configuration)
@@ -218,7 +218,7 @@ namespace PrimeApps.App.Storage
 
             var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
-            return $"{blobUrl}/app-logo/{logo}";
+            return $"{blobUrl}/{logo}";
         }
 
         private static async Task MoveBlockBlobAsync(CloudBlockBlob sourceBlob, CloudBlockBlob destBlob)

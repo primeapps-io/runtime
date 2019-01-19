@@ -44,9 +44,7 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'attach/upload_logo',
-                headers: {'Authorization': 'Bearer ' + $localStorage.read('access_token')},
-                'X-Tenant-Id': $cookies.get('tenant_id'),
+                url: 'storage/upload_logo',
                 queueLimit: 1
             });
 

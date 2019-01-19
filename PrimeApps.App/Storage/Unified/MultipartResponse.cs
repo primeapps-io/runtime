@@ -10,5 +10,6 @@ namespace PrimeApps.App.Storage.Unified
         public string UploadId { get; set; }
         public string ETag { get; set; }
         public MultipartStatusEnum Status { get; set; }
+        public string PublicURL {get;set;}
     }
 }

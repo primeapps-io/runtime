@@ -148,11 +148,6 @@ angular.module('primeapps')
             };
 
             var uploader = $scope.uploader = new FileUploader({
-                headers: {
-                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    'Accept': 'application/json',
-                    'X-Tenant-Id': $cookies.get('tenant_id')
-                },
                 queueLimit: 1
             });
 
@@ -173,7 +168,7 @@ angular.module('primeapps')
             };
 
             uploader.onBeforeUploadItem = function (item) {
-                item.url = config.apiUrl + 'data/import_save_excel?import_id=' + $scope.importResponse.id;
+                item.url = 'storage/upload_import_excel?import_id=' + $scope.importResponse.id;
             };
 
             uploader.filters.push({

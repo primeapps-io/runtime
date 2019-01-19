@@ -167,22 +167,22 @@ namespace PrimeApps.Model.Repositories
 
                 result = await command.ExecuteNonQueryAsync();
 
-                //if (result > 0)
-                //{
-                //    record["id"] = int.Parse(returnValue.NpgsqlValue.ToString());
-                //    record["created_by"] = currentUserId;
-                //    record["updated_by"] = currentUserId;
-                //    record["created_at"] = now;
-                //    record["updated_at"] = now;
-                //    record["deleted"] = false;
+                if (result > 0)
+                {
+                    record["id"] = int.Parse(returnValue.NpgsqlValue.ToString());
+                    record["created_by"] = currentUserId;
+                    record["updated_by"] = currentUserId;
+                    record["created_at"] = now;
+                    record["updated_at"] = now;
+                    record["deleted"] = false;
 
-                //    // Create warehouse record
-                //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                //        throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                    //// Create warehouse record
+                    //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                    //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                //    if (_warehouse.DatabaseName != "0")
-                //        BackgroundJob.Enqueue(() => _warehouse.CreateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser));
-                //}
+                    //if (_warehouse.DatabaseName != "0")
+                    //    BackgroundJob.Enqueue(() => _warehouse.CreateRecord(record, _warehouse.DatabaseName, module.Name, CurrentUser));
+                }
             }
 
             return result;

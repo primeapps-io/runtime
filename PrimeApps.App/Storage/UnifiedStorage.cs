@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Storage
 {
@@ -18,13 +20,47 @@ namespace PrimeApps.App.Storage
     /// </summary>
     public class UnifiedStorage : IUnifiedStorage
     {
+        private IConfiguration _configuration;
         private IAmazonS3 _client;
-        public IAmazonS3 Client { get { return _client; } }
 
-        public UnifiedStorage(IAmazonS3 client)
+        public IAmazonS3 Client
+        {
+            get { return _client; }
+        }
+
+        public enum ObjectType
+        {
+            MAIL,
+            ATTACHMENT,
+            RECORD,
+            TEMPLATE,
+            ANALYTIC,
+            IMPORT,
+            NOTE,
+            LOGO,
+            PROFILEPICTURE,
+            NONE
+        }
+
+        static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
+        {
+            {ObjectType.ATTACHMENT, "/attachments/"},
+            {ObjectType.RECORD, "/records/"},
+            {ObjectType.TEMPLATE, "/templates/"},
+            {ObjectType.ANALYTIC, "/analytics/"},
+            {ObjectType.IMPORT, "/imports/"},
+            {ObjectType.NOTE, "/notes/"},
+            {ObjectType.LOGO, "/logos/"},
+            {ObjectType.MAIL, "/mail/"},
+            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
+            {ObjectType.NONE, ""}
+        };
+
+        public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -52,12 +88,7 @@ namespace PrimeApps.App.Storage
         /// <returns>Upload id required to upload parts.</returns>
         public async Task<string> InitiateMultipartUpload(string bucket, string key)
         {
-
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
-            {
-                await _client.PutBucketAsync(bucket);
-            }
+            await CreateBucketIfNotExists(bucket);
 
             // initiate if it is first chunk.
             var initialResult = await _client.InitiateMultipartUploadAsync(bucket, key);
@@ -85,7 +116,7 @@ namespace PrimeApps.App.Storage
                 Key = key,
                 UploadId = uploadId,
                 PartNumber = chunk,
-                InputStream = stream
+                InputStream = stream,
             };
 
             // Upload a part
@@ -132,6 +163,25 @@ namespace PrimeApps.App.Storage
         }
 
         /// <summary>
+        /// Creates ACL for the object.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="cannedACL"></param>
+        /// <returns>PutACLResponse</returns>
+        public async Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL)
+        {
+            PutACLRequest request = new PutACLRequest()
+            {
+                CannedACL = cannedACL,
+                BucketName = bucket,
+                Key = key
+            };
+
+            return await _client.PutACLAsync(request);
+        }
+
+        /// <summary>
         /// Downloads files from S3 as FileStreamResult(Chunked)
         /// </summary>
         /// <param name="bucket"></param>
@@ -141,7 +191,6 @@ namespace PrimeApps.App.Storage
         public async Task<FileStreamResult> Download(string bucket, string key, string fileName)
         {
             GetObjectResponse file = await _client.GetObjectAsync(bucket, key);
-
             FileStreamResult result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
             {
                 FileDownloadName = fileName,
@@ -158,12 +207,20 @@ namespace PrimeApps.App.Storage
         /// <returns></returns>
         public async Task CreateBucketIfNotExists(string bucket)
         {
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
+            string[] paths = bucket.Split('/');
+            string checkPath = "";
+
+            foreach (string path in paths)
             {
-                await _client.PutBucketAsync(bucket);
+                checkPath += $"{path}/";
+                bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, checkPath);
+                if (!exists)
+                {
+                    await _client.PutBucketAsync(checkPath);
+                }
             }
         }
+
         /// <summary>
         /// Deletes a bucket with everything under it.
         /// </summary>
@@ -180,21 +237,32 @@ namespace PrimeApps.App.Storage
         /// <param name="bucket"></param>
         /// <param name="key"></param>
         /// <param name="expires"></param>
+        /// <param name="protocol"></param>
         /// <returns></returns>
-        public async Task<string> GetShareLink(string bucket, string key, DateTime expires)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true)
         {
+            if (bucket.EndsWith('/'))
+                bucket = bucket.Remove(bucket.Length - 1, 1);
 
             GetPreSignedUrlRequest request =
-               new GetPreSignedUrlRequest()
-               {
-                   BucketName = bucket,
-                   Key = key,
-                   Expires = expires
-               };
+                new GetPreSignedUrlRequest()
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    Expires = expires,
+                    Protocol = protocol
+                };
 
-            return _client.GetPreSignedURL(request);
+            var preSignedUrl = _client.GetPreSignedURL(request);
+
+            if (clearRoot)
+            {
+                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+                preSignedUrl = preSignedUrl.Replace(blobUrl, "").Remove(0, 1);
+            }
+
+            return preSignedUrl;
         }
-
 
         /// <summary>
         /// Copies objects from one bucket to another.
@@ -215,6 +283,7 @@ namespace PrimeApps.App.Storage
             };
             return await _client.CopyObjectAsync(request);
         }
+
         /// <summary>
         /// Deletes an object from a bucket.
         /// </summary>
@@ -229,6 +298,126 @@ namespace PrimeApps.App.Storage
                 Key = key
             };
             return await _client.DeleteObjectAsync(request);
+        }
+
+        public async Task<PutLifecycleConfigurationResponse> SetLifeCycle(string bucket, int days)
+        {
+            LifecycleConfiguration config = new LifecycleConfiguration();
+            config.Rules.Add(new LifecycleRule()
+            {
+                Expiration = new LifecycleRuleExpiration()
+                {
+                    Days = days
+                }
+            });
+
+            PutLifecycleConfigurationRequest request = new PutLifecycleConfigurationRequest
+            {
+                BucketName = bucket,
+                Configuration = config
+            };
+
+            return await _client.PutLifecycleConfigurationAsync(request);
+        }
+
+        public async Task<GetObjectResponse> GetObject(string bucket, string key)
+        {
+            return await _client.GetObjectAsync(new GetObjectRequest()
+            {
+                BucketName = bucket,
+                Key = key
+            });
+        }
+
+        /// <summary>
+        /// Checks if file(object) exists
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<bool> ObjectExists(string bucket, string key)
+        {
+            var response = await _client.GetAllObjectKeysAsync(bucket, key, null);
+            return response.Count > 0;
+        }
+
+        public static string GetMimeType(string name)
+        {
+            var type = name.Split('.')[1];
+            switch (type)
+            {
+                case "gif":
+                    return "image/bmp";
+                case "bmp":
+                    return "image/bmp";
+                case "jpeg":
+                case "jpg":
+                    return "image/jpeg";
+                case "png":
+                    return "image/png";
+                case "tif":
+                case "tiff":
+                    return "image/tiff";
+                case "doc":
+                    return "application/msword";
+                case "docx":
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "pdf":
+                    return "application/pdf";
+                case "ppt":
+                    return "application/vnd.ms-powerpoint";
+                case "pptx":
+                    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                case "xlsx":
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case "xls":
+                    return "application/vnd.ms-excel";
+                case "csv":
+                    return "text/csv";
+                case "xml":
+                    return "text/xml";
+                case "txt":
+                    return "text/plain";
+                case "zip":
+                    return "application/zip";
+                case "ogg":
+                    return "application/ogg";
+                case "mp3":
+                    return "audio/mpeg";
+                case "wma":
+                    return "audio/x-ms-wma";
+                case "wav":
+                    return "audio/x-wav";
+                case "wmv":
+                    return "audio/x-ms-wmv";
+                case "swf":
+                    return "application/x-shockwave-flash";
+                case "avi":
+                    return "video/avi";
+                case "mp4":
+                    return "video/mp4";
+                case "mpeg":
+                    return "video/mpeg";
+                case "mpg":
+                    return "video/mpeg";
+                case "qt":
+                    return "video/quicktime";
+                default:
+                    return "image/jpeg";
+            }
+        }
+
+
+        public static string GetPath(string type, int tenant, string extraPath = "")
+        {
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+
+            return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
+        }
+
+        public static ObjectType GetType(string type)
+        {
+            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
         }
     }
 }

@@ -66,13 +66,8 @@ namespace PrimeApps.Model.Common.Document
         /// <summary>
         /// Document full URL.
         /// </summary>
-        public virtual string FileUrl
-        {
-            get
-            {
-                return GetDocumentUrl(ContainerId, UniqueName);
-            }
-        }
+        public virtual string FileUrl{ get; set; }
+        
         /// <summary>
         /// Document nonentity record id
         /// </summary>
@@ -81,13 +76,5 @@ namespace PrimeApps.Model.Common.Document
         /// Document associated module id
         /// </summary>
         public virtual int ModuleId { get; set; }
-
-        private string GetDocumentUrl(Guid ContainerId, string uniqueName)
-        {
-            var containerName = string.Format("inst-{0}", ContainerId);
-            var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-
-            return blobUrl + "/" + containerName + "/" + uniqueName;
-        }
     }
 }

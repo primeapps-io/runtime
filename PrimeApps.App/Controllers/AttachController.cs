@@ -51,9 +51,10 @@ namespace PrimeApps.App.Controllers
         private IDocumentRepository _documentRepository;
         private IServiceScopeFactory _serviceScopeFactory;
         private IViewRepository _viewRepository;
+        private IUnifiedStorage _storage;
 
         private IRecordHelper _recordHelper;
-        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository)
+        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage storage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository)
         {
             _tenantRepository = tenantRepository;
             _documentRepository = documentRepository;
@@ -67,6 +68,7 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _viewRepository = viewRepository;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -107,20 +109,24 @@ namespace PrimeApps.App.Controllers
             {
                 return BadRequest();
             }
-
-            //if there is a template with this id, try to get it from blob AzureStorage.
-            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}", _configuration);
-
-            try
+            if (!await _storage.ObjectExists(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content))
             {
-                //try to get the attributes of blob.
-                await templateBlob.FetchAttributesAsync();
-            }
-            catch (Exception)
-            {
-                //if there is an exception, it means there is no such file.
                 return NotFound();
             }
+
+            //if there is a template with this id, try to get it from blob AzureStorage.
+            // var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}", _configuration);
+
+            // try
+            // {
+            //     //try to get the attributes of blob.
+            //     await templateBlob.FetchAttributesAsync();
+            // }
+            // catch (Exception)
+            // {
+            //     //if there is an exception, it means there is no such file.
+            //     return NotFound();
+            // }
 
             if (module == "users")
             {
@@ -174,12 +180,9 @@ namespace PrimeApps.App.Controllers
             Aspose.Words.Document doc;
 
             // Open a template document.
-            using (var template = new MemoryStream())
+            using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content, null))
             {
-                await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
-
                 doc = new Aspose.Words.Document(template);
-
             }
 
             // Add related module records.
@@ -227,15 +230,16 @@ namespace PrimeApps.App.Controllers
             doc.Save(outputStream, saveOptions);
             outputStream.Position = 0;
             var mimeType = MimeUtility.GetMimeMapping(fileName);
+            string publicFileName = Guid.NewGuid().ToString().Replace("-", "") + "." + format;
+            string publicPath = UnifiedStorage.GetPath("public", AppUser.TenantId);
             if (save)
             {
 
-                await AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
-                var blob = await AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
+                await _storage.Upload(publicPath, publicFileName, outputStream);
 
                 outputStream.Position = 0;
                 var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-                var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
+                var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
 
                 return Ok(result);
             }
@@ -989,8 +993,6 @@ namespace PrimeApps.App.Controllers
                 //there is no such file, return
                 throw new Exception("Document does not exist in the storage!");
             }
-
-
         }
 
         [Route("download_template"), HttpGet]
@@ -1568,7 +1570,6 @@ namespace PrimeApps.App.Controllers
             var moduleEntity = await _moduleRepository.GetByName(module);
             var Module = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
-            var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
             var fields = Module.Fields.OrderBy(x => x.Id).ToList();
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
@@ -1674,9 +1675,8 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = new MemoryStream())
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
             {
-                await blob.DownloadToStreamAsync(temp);
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
                 Worksheet worksheetData = workbook.Worksheets[0];
@@ -1839,7 +1839,6 @@ namespace PrimeApps.App.Controllers
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
-            var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
@@ -1946,9 +1945,8 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = new MemoryStream())
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
             {
-                await blob.DownloadToStreamAsync(temp);
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
                 Worksheet worksheetData = workbook.Worksheets[0];

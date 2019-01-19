@@ -147,7 +147,7 @@ angular.module('primeapps')
                             DocumentService.getDocument(document.id)
                                 .then(function (doc) {
                                     if (doc.data) {
-                                        $window.open("/attach/download?fileId=" + document.id, "_blank");
+                                        $window.open("/storage/download?fileId=" + document.id, "_blank" + "document");
                                         //var downloadUrl = $scope.getDownloadUrl(document);
                                         //if(downloadUrl){
                                         //$window.location = downloadUrl;
@@ -162,7 +162,7 @@ angular.module('primeapps')
                         };
 
                         $scope.getDownloadUrl = function (document) {
-                            return config.apiUrl + 'Document/Download?fileID=' + document.id + '&access_token=' + $localStorage.read('access_token');
+                            return config.apiUrl + 'storage/download?fileID=' + document.id + '&access_token=' + $localStorage.read('access_token');
                         };
 
                         $scope.showLightBox = function (fileData, Index) {
@@ -219,13 +219,8 @@ angular.module('primeapps')
                         var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
-                            url: config.apiUrl + 'Document/upload_large',
-                            headers: {
-                                'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                "Content-Type": "application/json", "Accept": "application/json",
-                                'X-Tenant-Id': $cookies.get('tenant_id')
-                            }
-                        });
+                                url: 'storage/upload_whole'
+                            });
 
                         uploader.onCompleteItem = function (fileItem, response, status, headers) {
                             if (status === 200) {
@@ -237,7 +232,7 @@ angular.module('primeapps')
                                 var description = '';
 
                                 if (!$scope.customUploader) {
-                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize)
+                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize);
                                 }
                                 else {
                                     entityId = $scope.entityIdFunc();

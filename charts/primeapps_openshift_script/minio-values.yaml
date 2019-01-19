@@ -1,5 +1,5 @@
 image:
-  tag: RELEASE.2018-12-27T18-33-08Z
+  tag: RELEASE.2019-01-10T00-21-20Z
 mode: standalone
 existingSecret: ""
 accessKey: "47551d03d5524a4405c517aac418ef55"
@@ -16,7 +16,7 @@ service:
   type: ClusterIP
   path: /
 minioConfig:
-  region: "eu-west-1"
+  region: ""
   browser: "on"
   domain: "storage.okd.primeapps.io"
   redis:

@@ -81,14 +81,12 @@ angular.module('primeapps')
             $scope.imgUpload = {
                 settings: {
                     multi_selection: false,
-                    url: config.apiUrl + 'Document/upload_attachment',
-                    headers: {
-                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json',
-                        'X-Tenant-Id': $cookies.get('tenant_id')
-                    },
+                    url: 'storage/upload',
                     multipart_params: {
-                        container: dialog_uid
+                        container: dialog_uid,
+                        type: "mail",
+                        upload_id: 0,
+                        response_list: ""
                     },
                     filters: {
                         mime_types: [
@@ -119,12 +117,29 @@ angular.module('primeapps')
                     uploadProgress: function (uploader, file) {
                     },
                     fileUploaded: function (uploader, file, response) {
+                        uploader.settings.multipart_params.response_list="";
+                        uploader.settings.multipart_params.upload_id = 0;
+
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
                         uploadSuccessCallback(resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
+                    chunkUploaded: function (up, file, response) {
+                        var resp = JSON.parse(response.response);
+                        if (resp.upload_id)
+                            up.settings.multipart_params.upload_id = resp.upload_id;
+
+                        if (up.settings.multipart_params.response_list == "") {
+                            up.settings.multipart_params.response_list += resp.e_tag;
+                        } else {
+                            up.settings.multipart_params.response_list += "|" + resp.e_tag;
+                        }
+                    },
                     error: function (file, error) {
+                        this.settings.multipart_params.response_list="";
+                        this.settings.multipart_params.upload_id = 0;
+
                         switch (error.code) {
                             case -600:
                                 tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
