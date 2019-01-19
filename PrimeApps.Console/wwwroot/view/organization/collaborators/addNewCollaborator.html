@@ -1,0 +1,77 @@
+﻿<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="newCollaboratorForm" class="form-horizontal form-custom" ng-submit="save(newCollaboratorForm);" autocomplete="off"
+          novalidate>
+
+        <div class="modal-header">
+            <div class="col-sm-6"><h4 class="modal-title">New Collaborator</h4></div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button ng-disabled="submitting" type="button" class="btn btn-radius btn-gray "
+                        ng-click="addNewCollaboratorModal.hide();">
+                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                </button>
+                <button ladda="submitting" type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px"
+                        ng-click="MinMaxValue()">
+                    <i class="fas fa-save"></i>
+                    {{'Common.Save' | translate}}
+                </button>
+            </div>
+
+        </div>
+        <div class="modal-dialog modal-600">
+            <div class="modal-content padding-0">
+
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group"
+                                     ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
+                                    <label class="col-sm-4 required-field">*Name: </label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="50"
+                                           focus="true"
+                                           ng-model="collaboratorModel.first_name">
+                                </div>
+                                <div class="form-group"
+                                     ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
+                                    <label class="col-sm-4 required-field">*Surname: </label>
+                                    <input type="text"
+                                           name="surname"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="50"
+                                           focus="false"
+                                           ng-model="collaboratorModel.last_name">
+                                </div>
+                                <div class="form-group"
+                                     ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.email.$invalid}">
+                                    <label class="col-sm-4 required-field">*Email: </label>
+                                    <input type="email"
+                                           name="email"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="250"
+                                           focus="false"
+                                           ng-model="collaboratorModel.email">
+                                </div>
+                                <div class="form-group"
+                                     ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.role.$invalid}">
+                                    <label class="col-sm-4 required-field">*Role: </label>
+                                    <select required ng-model="collaboratorModel.role" name="role" class="form-control  ng-animate-disabled col-sm-8" ng-options="role.name for role in roles">
+                                        <option value="">Please select --></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+</div>

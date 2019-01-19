@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
+            $scope.collaboratorModel = {};
             var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
             $scope.requestModel = {
@@ -87,34 +88,59 @@ angular.module('primeapps')
                 $scope.$parent.selectedCollaborator = angular.copy(result);
             }
 
-            $scope.save = function () {
-                if (!$scope.newUserEmail)
+            $scope.roles = [
+                { 'name': 'Admin', 'value': 'administrator' },
+                { 'name': 'Collaborator', 'value': 'collaborator' }
+            ];
+
+            $scope.addNewCollaborator = function () {
+                $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+                $scope.addNewCollaboratorModal.$promise.then(function () {
+                    $scope.addNewCollaboratorModal.show();
+
+                });
+
+            };
+
+            $scope.save = function (newCollaboratorForm) {
+                if (!newCollaboratorForm.$valid)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { email: $scope.newUserEmail }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, { email: $scope.collaboratorModel.email }, true)[0];
 
                 if (result)
                     return false;
 
+                $scope.submitting = true;
+
                 var newCol = {};
                 newCol.organization_id = organitzationId;
-                newCol.role = 'collaborator';
-                newCol.email = $scope.newUserEmail;
-                newCol.first_name = "";
-                newCol.last_name = "";
+                newCol.role = $scope.collaboratorModel.role.value;
+                newCol.email = $scope.collaboratorModel.email;
+                newCol.first_name = $scope.collaboratorModel.first_name;
+                newCol.last_name = $scope.collaboratorModel.last_name;
                 newCol.created_at = new Date();
 
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
                         if (response.data) {
                             getToastMsg('Common.Success', 'success');
-                            $scope.newUserEmail = "";
+                            $scope.collaboratorModel.email = "";
                             $scope.getCollaborators();
                             $state.reload();
+                            $scope.submitting = false;
+                            $scope.addNewCollaboratorModal.hide();
                         }
                     })
                     .catch(function () {
                         getToastMsg('Common.Error', 'danger');
+                        $scope.submitting = false;
                     });
 
             }

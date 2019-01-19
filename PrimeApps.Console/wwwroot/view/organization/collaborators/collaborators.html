@@ -5,8 +5,28 @@ selectedCollaborator ?
     selectedCollaborator.full_name:'Collaborators'
         }}
     </h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li ng-show="!selectedCollaborator">
+                <button class="btn add-button" ng-click="addNewCollaborator()">
+                    <i class="fas fa-plus"></i> Add New Collaborator
+                </button>
+            </li>
+            <li ng-show="selectedCollaborator">
+                <button class="btn add-button btn-red" ng-click="delete(teamId)">
+                    <i class="fas fa-trush"></i> Delete
+                </button>
+            </li>
+            <li ng-show="selectedCollaborator">
+                <button class="btn add-button btn-blue" ng-click="addNewTeam(teamId)">
+                    <i class="fas fa-plus"></i> Edit
+                </button>
+            </li>
+        </ul>
+
+    </div>
 </div>
-<form ng-submit="save()" ng-show="!selectedCollaborator">
+<!--<form ng-submit="save()" ng-show="!selectedCollaborator">
     <div class="search-input">
         <div class="search-input-icon">
             <i class="fas fa-user-plus"></i>
@@ -16,7 +36,7 @@ selectedCollaborator ?
                type="email" style="" required>
     </div>
     <br />
-</form>
+</form>-->
 <div class="tab-content" ng-show="!selectedCollaborator">
     <table class="table">
         <thead>
