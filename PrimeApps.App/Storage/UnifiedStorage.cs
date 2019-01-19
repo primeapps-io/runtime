@@ -32,7 +32,7 @@ namespace PrimeApps.App.Storage
             IMPORT,
             NOTE,
             LOGO,
-            AVATAR,
+            PROFILEPICTURE,
             NONE
         }
 
@@ -42,10 +42,10 @@ namespace PrimeApps.App.Storage
             {ObjectType.TEMPLATE,"/templates/"},
             {ObjectType.ANALYTIC,"/analytics/"},
             {ObjectType.IMPORT,"/imports/"},
-            {ObjectType.NOTE,"/note/"},
-            {ObjectType.LOGO,"/logo/"},
+            {ObjectType.NOTE,"/notes/"},
+            {ObjectType.LOGO,"/logos/"},
             {ObjectType.MAIL,"/mail/"},
-            {ObjectType.AVATAR,"/user_images/"},
+            {ObjectType.PROFILEPICTURE,"/profile_pictures/"},
             {ObjectType.NONE,""}
         };
 
@@ -228,6 +228,7 @@ namespace PrimeApps.App.Storage
         /// <param name="bucket"></param>
         /// <param name="key"></param>
         /// <param name="expires"></param>
+        /// <param name="protocol"></param>
         /// <returns></returns>
         public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP)
         {
@@ -238,7 +239,7 @@ namespace PrimeApps.App.Storage
                    BucketName = bucket,
                    Key = key,
                    Expires = expires,
-                   Protocol = Protocol.HTTP
+                   Protocol = protocol
                };
 
             return _client.GetPreSignedURL(request);

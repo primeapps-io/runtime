@@ -19,7 +19,7 @@ angular.module('primeapps')
                 });
 
             $scope.getDownloadUrl = function (template) {
-                return '/api/storage/download_template?fileId=' + template.id + "&tempType=" + template.template_type;
+                return '/storage/download_template?fileId=' + template.id + "&tempType=" + template.template_type;
             };
 
             $scope.delete = function (template) {

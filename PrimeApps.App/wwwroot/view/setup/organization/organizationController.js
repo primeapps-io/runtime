@@ -44,11 +44,7 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'api/storage/upload_logo',
-                headers: {
-                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
-                },
+                url: 'storage/upload_logo',
                 queueLimit: 1
             });
 

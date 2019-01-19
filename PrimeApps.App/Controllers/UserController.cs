@@ -283,7 +283,7 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
-                acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
+                acc.user.picture = AzureStorage.GetProfilePictureUrl(acc.user.picture, _configuration);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
                 acc.imageUrl = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
                 acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;

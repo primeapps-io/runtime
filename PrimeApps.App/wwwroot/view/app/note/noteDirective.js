@@ -324,7 +324,7 @@ angular.module('primeapps')
                     $scope.imgUpload = {
                         settings: {
                             multi_selection: false,
-                            url: config.apiUrl + 'storage/upload',
+                            url: 'storage/upload',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                 'Accept': 'application/json',
@@ -408,7 +408,7 @@ angular.module('primeapps')
                         settings: {
                             multi_selection: false,
                             unique_names: false,
-                            url: config.apiUrl + 'storage/upload',
+                            url: 'storage/upload',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                 'Accept': 'application/json',
@@ -725,12 +725,7 @@ angular.module('primeapps')
                         $scope.imgUploadForm = {
                             settings: {
                                 multi_selection: false,
-                                url: config.apiUrl + 'storage/upload',
-                                headers: {
-                                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                    'Accept': 'application/json',
-                                    'X-Tenant-Id': $cookies.get('tenant_id')
-                                },
+                                url: 'storage/upload',
                                 multipart_params: {
                                     container: dialog_uid,
                                     type: "note",
@@ -741,7 +736,7 @@ angular.module('primeapps')
                                     mime_types: [{
                                         title: "Image files",
                                         extensions: "jpg,gif,png"
-                                    }, ],
+                                    }],
                                     max_file_size: "2mb"
                                 },
                                 resize: {
@@ -810,7 +805,7 @@ angular.module('primeapps')
                             settings: {
                                 multi_selection: false,
                                 unique_names: false,
-                                url: config.apiUrl + 'storage/upload',
+                                url: 'storage/upload',
                                 headers: {
                                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                     'Accept': 'application/json',

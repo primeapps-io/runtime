@@ -112,7 +112,7 @@ angular.module('primeapps',
 			pluploadOptionProvider.setOptions({
 				// General settings
 				runtimes: 'html5',
-				url: config.apiUrl + 'Document/Upload',
+				url: 'storage/upload',
 				chunk_size: '5mb',
 				multipart: true,
 				unique_names: true

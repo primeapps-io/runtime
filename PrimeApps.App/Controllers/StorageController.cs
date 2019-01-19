@@ -1,32 +1,25 @@
-using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Document;
-using Microsoft.WindowsAzure.Storage.Blob;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using PrimeApps.App.Storage.Unified;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Protocols;
-using PrimeApps.Model;
 using System.Text.RegularExpressions;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Collections.Generic;
 using static PrimeApps.App.Storage.UnifiedStorage;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/storage"), Authorize]
+    [Route("storage")]
     public class StorageController : MvcBaseController
     {
         private IDocumentRepository _documentRepository;
@@ -37,7 +30,6 @@ namespace PrimeApps.App.Controllers
         private ISettingRepository _settingRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
-
 
         public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage, IConfiguration configuration)
         {
@@ -122,7 +114,7 @@ namespace PrimeApps.App.Controllers
                     uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
 
                     response.Status = MultipartStatusEnum.Completed;
-                    if (objectType == ObjectType.NOTE || objectType == ObjectType.AVATAR || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
+                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
                         response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
                     }
@@ -217,9 +209,9 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download")]
-        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int FileId)
+        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)
         {
-            var doc = await _documentRepository.GetById(FileId);
+            var doc = await _documentRepository.GetById(fileId);
             if (doc != null)
             {
                 return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
@@ -251,129 +243,12 @@ namespace PrimeApps.App.Controllers
                 throw new Exception("Document does not exist in the storage!");
             }
         }
-
-        [Route("upload_hex"), HttpPost]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadHex([FromBody]JObject data)
-        {
-            string instanceId,
-              file,
-              description,
-              moduleName,
-              moduleId,
-              recordId,
-              fileName;
-            moduleName = data["module_name"]?.ToString();
-            file = data["file"]?.ToString();
-            description = data["description"]?.ToString();
-            moduleId = data["module_id"]?.ToString();
-            recordId = data["record_id"]?.ToString();
-            fileName = data["file_name"]?.ToString();
-            instanceId = data["instance_id"]?.ToString();
-
-            int parsedModuleId;
-            Guid parsedInstanceId = Guid.NewGuid();
-            int parsedRecordId;
-            byte[] fileBytes;
-
-            if (string.IsNullOrEmpty(file))
-                return BadRequest("Please send file hex string.");
-
-            if (string.IsNullOrEmpty(recordId))
-                return BadRequest("Please send record_id.");
-
-            if (!int.TryParse(recordId, out parsedRecordId))
-                return BadRequest("Please send valid record_id.");
-
-            if (string.IsNullOrEmpty(fileName))
-                return BadRequest("Please send file hex string.");
-
-            if (fileName.Split('.').Length != 2)
-                return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
-
-            if (string.IsNullOrEmpty(instanceId))
-                return BadRequest("Please send instance_id.");
-
-            if (!string.IsNullOrEmpty(instanceId))
-                if (!Guid.TryParse(instanceId, out parsedInstanceId))
-                    return BadRequest("Please send valid instance_id.");
-
-            if (!string.IsNullOrEmpty(moduleId))
-            {
-                var isNumeric = int.TryParse(moduleId, out parsedModuleId);
-                if (!isNumeric)
-                    return BadRequest("Please send integer for module_id parameter.");
-
-                var module = await _moduleRepository.GetById(parsedModuleId);
-
-                if (module == null)
-                    return BadRequest("Module not found.");
-            }
-            else if (!string.IsNullOrEmpty(moduleName))
-            {
-                var module = await _moduleRepository.GetByNameBasic(moduleName);
-
-                if (module == null)
-                    return BadRequest("Module not found.");
-
-                parsedModuleId = module.Id;
-            }
-            else
-                return BadRequest("Please send module_id or module_name paratemer.");
-
-            try
-            {
-                fileBytes = Enumerable.Range(0, file.Length)
-                     .Where(x => x % 2 == 0)
-                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
-                     .ToArray();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
-            }
-
-            var ext = Path.GetExtension(fileName);
-            var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
-
-            string uniqueStandardizedName = fileName.Replace(" ", "-");
-
-            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
-
-            string bucketPath = UnifiedStorage.GetPath("", AppUser.TenantId);
-
-            using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
-            {
-                await _storage.Upload(bucketPath, uniqueName, bytesToStream);
-            }
-
-            Document currentDoc = new Document()
-            {
-                FileSize = fileBytes.Length,
-                Description = description,
-                ModuleId = parsedModuleId,
-                Name = fileName,
-                CreatedAt = DateTime.UtcNow,
-                Type = UnifiedStorage.GetMimeType(ext),
-                UniqueName = uniqueName,
-                RecordId = parsedRecordId,
-                Deleted = false
-            };
-            if (await _documentRepository.CreateAsync(currentDoc) != null)
-            {
-                return Ok(currentDoc.Id.ToString());
-            }
-
-            return BadRequest("Couldn't Create Document!");
-
-            //this request invalid because there is no file, return fail code to the client.
-            //return NotFound();
-        }
-        [Route("create"), HttpPost]
+        
         /// <summary>
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
+        [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]DocumentDTO document)
         {
             //get entity name if this document is uploading to a specific entity.
@@ -402,12 +277,12 @@ namespace PrimeApps.App.Controllers
             return BadRequest("Couldn't Create Document!");
 
         }
-        [Route("upload_avatar"), HttpPost]
 
-        public async Task<IActionResult> UploadAvatar()
+        [Route("upload_profile_picture"), HttpPost]
+        public async Task<IActionResult> UploadProfilePicture()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("avatar", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
 
             if (parser.Success)
             {
@@ -419,6 +294,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 var uniqueName = string.Empty;
+
                 //get the file name from parser
                 if (parser.Parameters.ContainsKey("name"))
                 {
@@ -431,16 +307,18 @@ namespace PrimeApps.App.Controllers
                     uniqueName = Guid.NewGuid() + ext;
                 }
 
-                var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, user_image, stream);
+                    await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                //return content type.
-                return Ok(user_image);
+                var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                
+                return Ok(profilePicture);
             }
+
             //this is not a valid request so return fail.
             return Ok("Fail");
         }
