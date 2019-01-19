@@ -1,0 +1,39 @@
+﻿<div class="tab-content" id="WorkflowEditorController">
+    <div style="display: none;">
+        <div id="currentFile">(Unsaved File)</div>
+        <!--START menu bar -->
+        <ul id="menuui">
+            <!--Add Bpm Top Menu-->
+        </ul>
+        <!--END menu bar -->
+    </div>
+    <div id="sideBar">
+        <span style="display: inline-block; vertical-align: top; padding: 5px; width:100%">
+            <div id="accordion">
+                <h4>BPM Items</h4>
+                <div>
+                    <div id="myPaletteLevel1" class="myPaletteDiv"></div>
+                </div>
+                <!--<h4>Level 2 items</h4>
+                <div>
+                    <div id="myPaletteLevel2" class="myPaletteDiv"></div>
+                </div>-->
+            </div>
+        </span>
+
+        <div class="handle">Overview:</div>
+        <div id="myOverviewDiv"></div>
+    </div>
+    <div id="myDiagramDiv"></div>
+
+    <div id="openDocument" class="draggable">
+        <div id="openDraggableHandle" class="handle">Open File</div>
+        <div id="openText" class="elementText">Choose file to open...</div>
+        <select id="mySavedFiles" class="mySavedFiles"></select>
+        <br />
+        <button id="openBtn" class="elementBtn" type="button" onclick="loadFile()" style="margin-left: 70px">Open</button>
+        <button id="cancelBtn" class="elementBtn" type="button" onclick="closeElement('openDocument')">Cancel</button>
+    </div>
+
+    <div id="removeDocument" class="draggable"></div>
+</div>

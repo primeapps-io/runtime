@@ -1279,20 +1279,20 @@ function init() {
     //Object Single Mouse Click
     window.myDiagram.addDiagramListener("ObjectSingleClicked", function (e) {
         console.log("Tıklandı.", e);
-        var scope = angular.element(document.getElementById("WorkflowsController")).scope();
+        var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(true);
     });
 
     window.myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
         console.log("bitti.", e);
-        var scope = angular.element(document.getElementById("WorkflowsController")).scope();
+        var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(false);
     });
 
     window.myDiagram.addDiagramListener("SelectionDeleted", function (e) {
-        var scope = angular.element(document.getElementById("WorkflowsController")).scope();
+        var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         delete scope.workflowModel[scope.currentObj.subject.part.data.ngModelName];
 
         scope.toogleSideMenu(false);
