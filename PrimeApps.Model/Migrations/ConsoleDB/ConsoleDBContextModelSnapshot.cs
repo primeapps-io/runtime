@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
             modelBuilder
                 .HasDefaultSchema("public")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppCollaborator", b =>
@@ -300,6 +300,11 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
 
                     b.Property<string>("Icon")
                         .HasColumnName("icon")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnName("label")
                         .HasMaxLength(200);
 
                     b.Property<string>("Name")

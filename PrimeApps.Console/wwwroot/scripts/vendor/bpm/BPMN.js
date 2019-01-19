@@ -1292,7 +1292,7 @@ function init() {
     });
 
     window.myDiagram.addDiagramListener("SelectionDeleted", function (e) {
-        var scope = angular.element(document.getElementById("bpmFormController")).scope();
+        var scope = angular.element(document.getElementById("WorkflowsController")).scope();
         delete scope.workflowModel[scope.currentObj.subject.part.data.ngModelName];
 
         scope.toogleSideMenu(false);

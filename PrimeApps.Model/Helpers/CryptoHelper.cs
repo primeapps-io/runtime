@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.App.Helpers
+namespace PrimeApps.Model.Helpers
 {
     public class CryptoHelper
     {

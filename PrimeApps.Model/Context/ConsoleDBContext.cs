@@ -133,6 +133,7 @@ namespace PrimeApps.Model.Context
 
             //Organization
             modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
+            modelBuilder.Entity<Organization>().HasIndex(x => x.Label);
             modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Organization>().HasIndex(x => x.Deleted);

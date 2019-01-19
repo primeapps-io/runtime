@@ -25,14 +25,6 @@ angular.module('primeapps')
         users: 16,
         licenses: 32
     })
-
-    .constant('operations', {
-        read: 'read',
-        modify: 'modify',
-        write: 'write',
-        remove: 'remove'
-    })
-
     .constant('dataTypes', {
         text_single: {
             name: 'text_single',

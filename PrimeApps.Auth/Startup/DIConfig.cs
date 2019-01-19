@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Auth.Data;
+using PrimeApps.Auth.Helpers;
 using PrimeApps.Auth.Models;
 using PrimeApps.Auth.Providers;
 using PrimeApps.Auth.Services;
@@ -55,6 +56,7 @@ namespace PrimeApps.Auth
 
             services.AddHostedService<QueuedHostedService>();
             services.AddScoped<ICacheHelper, CacheHelper>();
+            services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddSingleton<IProfileService, CustomProfileService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -78,7 +78,7 @@
                 <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
                    data-placement="right"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="fas fa-home"></i><span> {{organization.name}} </span></a>
+                        class="fas fa-home"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                            ng-class="currentPath == '/apps?organizationId='+organization.id  ? 'active' :'' "
@@ -95,7 +95,7 @@
             <li class="sidebar-li">
                 <a data-trigger="hover" data-type="info" data-title="Add New Organization" bs-tooltip
                    data-placement="right"
-                   href="" ng-click="addNewOrganization()"><i class="fas fa-plus background-white color-blue"></i><span> Add New Organization</span></a>
+                   href="" ng-click="newOrganization()"><i class="fas fa-plus background-white color-blue"></i><span> Add New Organization</span></a>
 
             </li>
 

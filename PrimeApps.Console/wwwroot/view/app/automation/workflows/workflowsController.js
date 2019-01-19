@@ -7,6 +7,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
+            $scope.workflowModel = {};
             $scope.workflows = [];
             $scope.editMode = true;
             $scope.$parent.workflows = [];
@@ -130,6 +131,11 @@ angular.module('primeapps')
                 $scope.workflowModel = [];
                 $scope.id = null;
                 $scope.formModal.hide();
+            };
+
+            $scope.deleteSelectedItem = function () {
+
+
             };
 
             //Modal End
