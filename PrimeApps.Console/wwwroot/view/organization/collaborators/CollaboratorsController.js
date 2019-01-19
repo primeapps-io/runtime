@@ -12,6 +12,7 @@ angular.module('primeapps')
             $scope.updatingRole = false;
             $scope.collaboratorModel = {};
             $scope.loading = true;
+            $scope.showNewCollaboratorInfo = false;
             var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
             $scope.requestModel = {
@@ -144,10 +145,10 @@ angular.module('primeapps')
                         if (response.data) {
                             ngToast.create({ content: 'Collaborator is saved successfully', className: 'success' });
                             $scope.collaboratorModel.email = "";
-                            $scope.getCollaborators();
-                            $state.reload();
+                            
                             $scope.submitting = false;
-                            $scope.addNewCollaboratorModal.hide();
+                            $scope.userPassword = response.data.password;
+                            $scope.showNewCollaboratorInfo = true;
                         }
                     })
                     .catch(function () {
@@ -156,6 +157,14 @@ angular.module('primeapps')
                     });
 
             }
+
+            $scope.close = function(){
+                $scope.getCollaborators();
+                $state.reload();
+                $scope.addNewCollaboratorModal.hide();
+                $scope.showNewCollaboratorInfo = false;
+            }
+
 
             $scope.update = function (collaboratorModel) {
                 if (!$scope.selectedCollaborator)
