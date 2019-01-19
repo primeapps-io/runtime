@@ -381,7 +381,7 @@ namespace PrimeApps.Console.Controllers
             var appInfo = await _applicationRepository.GetByNameAsync(_configuration.GetSection("AppSettings")["ClientId"]);
 
             var result = 0;
-
+            string password = "";
             using (var httpClient = new HttpClient())
             {
                 var token = await HttpContext.GetTokenAsync("access_token");
@@ -402,7 +402,7 @@ namespace PrimeApps.Console.Controllers
                     var stringResult = content.ReadAsStringAsync().Result;
 
                     var jsonResult = JObject.Parse(stringResult);
-
+                    password = jsonResult["password"].ToString();
                     var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
 
                     foreach (var template in templates)
@@ -456,7 +456,7 @@ namespace PrimeApps.Console.Controllers
                 }
             }
 
-            return Ok(result);
+            return StatusCode(201, new { password = password });
         }
 
         [Route("delete_user"), HttpPost]
