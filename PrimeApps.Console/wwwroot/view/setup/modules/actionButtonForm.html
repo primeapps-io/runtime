@@ -8,6 +8,17 @@
                         : ('Setup.Modules.EditActionButton' | translate)}}</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.relatedModule.$invalid}">
+                        <label class="col-sm-4 required-field">* {{('Setup.Modules.ModuleName' | translate)}}</label>
+                        <select name="module"
+                                class="form-control ng-animate-disabled col-sm-8"
+                                required
+                                ng-model="currentActionButton.module"
+                                ng-change="moduleChanged()"
+                                ng-options="o as o['label_' + language + '_plural'] for o in $parent.modules | orderNotZero | orderBy:'order' track by o.name">
+                            <option value="">{{'Common.Select' | translate}}</option>
+                        </select>
+                    </div>
                     <div class="form-group"
                          ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.type.$invalid}">
                         <label class="col-sm-4 required-field">* {{'Setup.Modules.ActionType' | translate}}: </label>
@@ -96,7 +107,7 @@
                                                         tabindex="1"
                                                         required
                                                         ng-model="parameter.selectedModule"
-                                                        ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                        ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true  | orderBy:'order'">
                                                     <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
                                                 </select>
                                             </td>
@@ -123,6 +134,8 @@
                             </div>
                         </div>
                     </div>
+
+
                     <div class="form-group">
                         <label class="col-sm-4"> {{'Setup.Modules.CssClass' | translate}}: </label>
                         <input type="text"
@@ -130,33 +143,6 @@
                                class="form-control ng-animate-disabled col-sm-8"
                                maxlength="100"
                                ng-model="currentActionButton.css_class">
-                    </div>
-                    <div>
-                        <a href class="advanced-options-link" style="margin-top: 25px;" ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
-                            {{'Setup.Modules.Permissions' | translate}}
-                            <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
-                            <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>
-                        </a>
-                        <div class="advanced-options" style="margin-bottom: 20px;" ng-show="$parent.$parent.showPermissions">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{'Setup.Modules.Profile' | translate}}</th>
-                                        <th class="text-center">{{'Setup.Modules.PermissionShow' | translate}}</th>
-                                        <!--<th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}</th>-->
-                                        <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="permission in currentActionButton.permissions | orderBy:'profile_id'">
-                                        <td>{{permission.profile_name}}</td>
-                                        <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="full" /></td>
-                                        <!--<td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="read_only" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>-->
-                                        <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                     <div class="form-group" ng-show="actionButtonForm.$submitted && actionButtonForm.$invalid">
                         <div class="col-sm-12">

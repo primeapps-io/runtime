@@ -8,6 +8,37 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.id = $location.search().id;
 
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
+            };
+
+            ModuleService.count().then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+            ModuleService.find($scope.requestModel).then(function (response) {
+               // $scope.modules = response.data;
+                $scope.loading = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+                ModuleService.find(requestModel).then(function (response) {
+                    $scope.modules = response.data;
+                    $scope.loading = false;
+                });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+
+
+
             if ($scope.id) {
                 ModuleService.getActionButtons($scope.id)
                     .then(function (actionButtons) {

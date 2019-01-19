@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 'use strict';
 angular.module('primeapps')
 
@@ -983,8 +983,23 @@ angular.module('primeapps')
                     }
                 })
 
-
-                ;
+                .state('studio.app.moduleactions', {
+                    url: '/actionButtons?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/setup/modules/actionButtons.html',
+                            controller: 'ActionButtonsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/setup/modules/actionButtonsController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                });
             //conti
 
 
