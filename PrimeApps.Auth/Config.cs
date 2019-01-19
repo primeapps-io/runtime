@@ -192,6 +192,32 @@ namespace PrimeApps.Auth
                         "api1"
                     },
                     AccessTokenLifetime = 864000
+                },
+                new Client
+                {
+                    ClientId = "primeapps_gitea",
+                    ClientName = "PrimeApps Gitea",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "http://localhost:3000/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:3000/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AccessTokenLifetime = 864000
                 }
             };
         }

@@ -1,7 +1,7 @@
-ace.define("ace/snippets/wollok",["require","exports","module"], function(require, exports, module) {
-"use strict";
+ace.define("ace/snippets/wollok", ["require", "exports", "module"], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "##\n\
+    exports.snippetText = "##\n\
 ## Basic Java packages and import\n\
 snippet im\n\
 	import\n\
@@ -86,6 +86,6 @@ snippet get\n\
 ## Terminate Methods or Loops\n\
 snippet re\n\
 	return";
-exports.scope = "wollok";
+    exports.scope = "wollok";
 
 });

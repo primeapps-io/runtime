@@ -10,6 +10,9 @@ namespace PrimeApps.Model.Entities.Console
         [Column("name"), Required, MaxLength(50)]
         public string Name { get; set; }
 
+        [Column("label"), Required, MaxLength(200)]
+        public string Label { get; set; }
+
         [Column("icon"), MaxLength(200)]
         public string Icon { get; set; }
 

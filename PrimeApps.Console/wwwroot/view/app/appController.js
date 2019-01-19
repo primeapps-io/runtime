@@ -5,18 +5,20 @@ angular.module('primeapps')
     .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q',
         function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q) {
 
-
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
-
             if (!$scope.appId) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.allApps');
                 return;
             }
 
             $cookies.put('app_id', $scope.appId);
+
+            if (!$rootScope.currentOrganization) {
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($scope.orgId) }, true)[0];
+            }
 
             if ($scope.appId != ($localStorage.get("current_app") != null ? $localStorage.get("current_app").id : false)) {
                 $http.get(config.apiUrl + "app/get/" + $scope.appId).then(function (result) {
@@ -46,6 +48,8 @@ angular.module('primeapps')
 
             $scope.getBasicModules();
 
+            $scope.preview = function () {
 
+            };
         }
     ]);

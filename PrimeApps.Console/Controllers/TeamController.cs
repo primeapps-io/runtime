@@ -59,10 +59,10 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = AppUser.OrganizationId, Icon = model.Icon });
+            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = OrganizationId, Icon = model.Icon });
 
             return Ok(result);
         }
@@ -73,7 +73,7 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var team = await _teamRepository.GetByTeamId(id);
@@ -91,7 +91,7 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var team = await _teamRepository.GetByTeamId(id);

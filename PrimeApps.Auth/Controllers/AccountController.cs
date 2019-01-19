@@ -36,6 +36,8 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using System.Net.Http.Headers;
+using PrimeApps.Auth.Helpers;
 
 namespace PrimeApps.Auth.UI
 {
@@ -56,6 +58,7 @@ namespace PrimeApps.Auth.UI
         private IProfileRepository _profileRepository;
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
+        private IGiteaHelper _giteaHelper;
 
         public IBackgroundTaskQueue Queue { get; }
 
@@ -77,10 +80,11 @@ namespace PrimeApps.Auth.UI
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IRecordRepository recordRepository,
+            IGiteaHelper giteaHelper,
             IConfiguration configuration)
         {
             _configuration = configuration;
-
+            _giteaHelper = giteaHelper;
             _userManager = userManager;
             _signInManager = signInManager;
             _interaction = interaction;
@@ -239,6 +243,42 @@ namespace PrimeApps.Auth.UI
                     }
 
                     var user = await _userManager.FindByNameAsync(model.Username);
+                    if (bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
+                    {
+                        try
+                        {
+                            using (var httpClient = new HttpClient())
+                            {
+                                var request = new JObject
+                                {
+                                    ["name"] = "primeapps"
+                                };
+
+                                byte[] bytes = Encoding.GetEncoding(28591).GetBytes(model.Username + ":" + model.Password);
+                                var token = Convert.ToBase64String(bytes);
+
+                                httpClient.DefaultRequestHeaders.Accept.Clear();
+                                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
+
+                                var query = model.Username.Replace("@", string.Empty).Split(".");
+                                Array.Resize(ref query, query.Length - 1);
+                                var userName = string.Join("", query);
+
+                                var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                                var resp = await response.Content.ReadAsStringAsync();
+                                var giteaResponse = JObject.Parse(resp);
+
+                                await HttpContext.SignInAsync(user.Id, model.Username, new Claim("gitea_token", giteaResponse["sha1"].ToString()));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorHandler.LogError(ex, "Auth Login Get Gitea Token. User:" + model.Username);
+                        }
+
+                    }
+
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 
                     // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
@@ -1578,6 +1618,8 @@ namespace PrimeApps.Auth.UI
                                 //TODO Loglara Eklenebilir.
                             }*/
                         }
+
+                        Queue.QueueBackgroundWorkItem(x => _giteaHelper.CreateUser(model.Email, model.Password, model.FirstName + " " + model.LastName));
 
                         //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));

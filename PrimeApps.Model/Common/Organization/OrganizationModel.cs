@@ -15,6 +15,9 @@ namespace PrimeApps.Model.Common.Organization
         [JsonProperty("name"), DataMember(Name = "name"), Required]
         public string Name { get; set; }
 
+        [JsonProperty("label"), DataMember(Name = "label"), Required]
+        public string Label { get; set; }
+
         [JsonProperty("icon"), DataMember(Name = "icon")]
         public string Icon { get; set; }
 

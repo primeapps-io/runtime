@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,19 +25,27 @@ namespace PrimeApps.Console.Controllers
         {
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-            var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value); 
+            var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
             await SetValues(userId);
-             
+
             return View();
         }
 
         private async Task SetValues(int userId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
+            var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
+            var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
+
+            Request.Cookies.Append(new System.Collections.Generic.KeyValuePair<string, string>("gitea_token", giteaToken));
+            Response.Cookies.Append("gitea_token", giteaToken);
 
             var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
             ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             ViewBag.FunctionUrl = _configuration.GetSection("AppSettings")["FunctionUrl"];
+            ViewBag.GiteaUrl = _configuration.GetSection("AppSettings")["GiteaUrl"];
 
             if (useCdn)
             {

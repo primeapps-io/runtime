@@ -15,7 +15,7 @@ namespace PrimeApps.Auth
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 
-		public CustomProfileService(UserManager<ApplicationUser> userManager)
+        public CustomProfileService(UserManager<ApplicationUser> userManager)
 		{
 			_userManager = userManager;
 		}
@@ -24,8 +24,11 @@ namespace PrimeApps.Auth
 		public Task GetProfileDataAsync(ProfileDataRequestContext context)
 		{
 			var sub = context.Subject.GetSubjectId();
+            var giteaToken = context.Subject.FindFirst("gitea_token");
 
-			if (context.Subject.FindFirst("amr").Value != "external")
+            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken?.Value.ToString()));
+
+            if (context.Subject.FindFirst("amr").Value != "external")
 			{
 				var user = _userManager.FindByIdAsync(context.Subject.GetSubjectId()).Result;
 

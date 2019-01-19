@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace PrimeApps.Console
@@ -42,6 +43,7 @@ namespace PrimeApps.Console
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("api1");
                     options.Scope.Add("email");
+                    options.RemoteAuthenticationTimeout = TimeSpan.FromSeconds(20);
                 });
         }
     }

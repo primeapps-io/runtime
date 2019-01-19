@@ -28,8 +28,8 @@ namespace PrimeApps.Model.Common.App
         [JsonProperty("templet_id"), DataMember(Name = "templet_id")]
         public int TempletId { get; set; }
 
-        [JsonProperty("organization_id"), DataMember(Name = "organization_id")]
-        public int OrganizationId { get; set; }
+        /*[JsonProperty("organization_id"), DataMember(Name = "organization_id")]
+        public int OrganizationId { get; set; }*/
 
         [JsonProperty("status"), DataMember(Name = "status")]
         public AppDraftStatus Status { get; set; }
