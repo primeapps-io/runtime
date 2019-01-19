@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 'use strict';
 angular.module('primeapps')
 
@@ -472,6 +472,24 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/workflows/workflowsController.js',
+                                cdnUrl + 'view/app/automation/workflows/workflowsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.workflowEditor', {
+                    url: '/workflowEditor?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/automation/workflows/workflowEditor.html',
+                            controller: 'WorkflowEditorController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/automation/workflows/workflowEditorController.js',
                                 cdnUrl + 'view/app/automation/workflows/workflowsService.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMN.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'
@@ -966,7 +984,7 @@ angular.module('primeapps')
                 })
 
 
-            ;
+                ;
             //conti
 
 
