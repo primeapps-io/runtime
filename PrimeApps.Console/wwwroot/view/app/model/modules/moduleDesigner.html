@@ -1,29 +1,45 @@
 <div class="row">
     <div class="col-sm-9" style="border: none ;">
-        <div class="setup-liste-header">
-            <div class="pull-left">
-                <h2 class="setup-title">{{module['label_' + language + '_plural']}}</h2>
-            </div>
-            <div class="pull-right">
-                <a class="btn  btn-radius btn-gray"><i class="fas fa-angle-left"></i> {{'Common.Cancel' |
-                    translate}}</a>
-                <button ng-click="showEditModal(false)" class="btn  btn-radius btn-blue"><i class="fas fa-cog"></i>Settings
-                </button>
-                <button type="button" class="btn btn-radius btn-blue"
-                        ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving">
-                    <i class="fas fa-save"></i> {{!redirect ? ('Common.Save' | translate) :
-                    ('Setup.Modules.SaveFormChanges' | translate)}}
-                </button>
+        <div class="setup-title">
+            <h2>{{module['label_' + language + '_plural']}}</h2>
+            <div>
+                <ul class="list-unstyled list-inline">
+                    <li></li>
+                    <li>
+                        <a class="btn  btn-radius btn-gray"><i class="fas fa-angle-left"></i>
+                            {{'Common.Cancel' |
+                            translate}}</a>
+                    </li>
+                    <li>
+                        <button ng-click="showEditModal(false)" class="btn btn-radius btn-blue">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn   btn-radius btn-blue"
+                                ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving">
+                            <i class="fas fa-save"></i>
+
+                            {{!redirect ? ('Common.Save' | translate) :
+                            ('Setup.Modules.SaveFormChanges' | translate)}}
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
-
     </div>
     <div class="col-sm-3">
-        <h2 class="setup-title">All Fields</h2>
+        <div class="setup-title">
+            <h2 class="">All Fields</h2>
+        </div>
     </div>
 </div>
+
+
 <div class="row module-designer">
     <div class="col-sm-9" style="border: none ;">
+
         <div class="panel panel-default setup-panel">
 
             <div class="panel-body">
