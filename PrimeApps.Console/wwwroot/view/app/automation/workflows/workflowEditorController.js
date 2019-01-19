@@ -1,18 +1,39 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
-    .controller('WorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, $http, config) {
+    .controller('WorkflowEditorController', ['$rootScope', '$scope', '$location','$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $location, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, $http, config) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
+            $scope.id = $location.search().id;
+            $scope.workflowModel = {};
             $scope.workflows = [];
+            $scope.editMode = false;
             $scope.$parent.workflows = [];
             $scope.$parent.menuTopTitle = "Automation";
             $scope.$parent.activeMenu = 'automation';
-            $scope.$parent.activeMenuItem = 'workflows';
-            $rootScope.subtoggleClass = "";
+            $scope.$parent.activeMenuItem = 'workflowEditor';
 
+            //BPM element menu loading start
+            angular.element(function () {
+                window.initFunc();
+                $rootScope.subtoggleClass = 'full-toggled2';
+            });
+            $scope.triggerBpm = function () {
+                angular.element(function () {
+                    jQuery("#accordion").accordion({
+                        activate: function (event, ui) {
+                            window.myPaletteLevel1.requestUpdate();
+                            window.myPaletteLevel2.requestUpdate();
+                        }
+                    });
+                    window.myDiagram.requestUpdate();
+                    window.myPaletteLevel1.requestUpdate();
+                });
+            };
+            $scope.triggerBpm();
+            //BPM element menu loading end
 
 
             //Pagening Start
@@ -65,7 +86,18 @@ angular.module('primeapps')
 
                 return data;
             };
+            //Pagening End
+            $scope.toogleSideMenu = function () {
+                if ($scope.currentObj.subject) {
+                    var node = $scope.currentObj.subject.part.data;
+                    $scope.SelectedNodeItem = node;
 
+                    if (node) {
+                        $scope.showFormModal();
+                    }
+                }
+            };
+            //
 
 
             //Modal Start
