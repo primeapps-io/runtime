@@ -3,7 +3,34 @@
     <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.ApprovelProcess.NewApprovelProcess' | translate}}</button>
 </div>
 <div class="tab-content">
-    <table class="table">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
+                <th>{{'Setup.Workflow.Module' | translate}}</th>
+                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                <th>{{'Setup.Workflow.Status' | translate}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
         <thead>
             <tr>
                 <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
@@ -19,29 +46,44 @@
                 <td>{{process.module['label_'+language+'_plural']}}</td>
                 <td>{{process.operations}}</td>
                 <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
-                <td class="text-right">
-                    <button type="button" ng-click="showFormModal(process.id)" class="btn btn-xs btn-custom">
-                        {{'Common.Edit' | translate }}
-                    </button>
-                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                            action="delete(process.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                            confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                        {{'Common.Remove' | translate}}
-                    </button>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href ng-click="showFormModal(process.id)">
+                                    {{'Common.Edit' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a href confirm-click action="delete(process.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
-    <div class="row table-pagination">
-        <div class="col-sm-10">
+    <div class="table-pagination">
+        <div>
             <nav aria-label="Page navigation">
                 <div paging
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="tabelPagination.currentPage"
-                     page-size="tabelPagination.pageSize"
-                     total="tabelPagination.total"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
                      scroll-top="true"
                      hide-if-empty="true"
                      show-prev-next="true"
@@ -54,10 +96,13 @@
                 </div>
             </nav>
         </div>
-        <div class="col-sm-2">
+        <div>
+            Total Approval Processes {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                <option value="10">10</option>
+                <option ng-selected="true" value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>

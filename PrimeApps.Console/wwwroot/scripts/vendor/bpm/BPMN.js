@@ -1377,9 +1377,9 @@ function init() {
             copiesArrayObjects: true,
             nodeDataArray: [
                 // -------------------------- Event Nodes
-                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: false }, //"Start"
+                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true }, //"Start"
                 //{ key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message", sidebar: false }, //"Message" // BpmnTaskMessage
-                { key: 103, category: "event", text: "Timer", eventType: 3, eventDimension: 3, item: "Timer", sidebar: false }, //"Timer"
+                { key: 103, category: "event", text: "Timer", eventType: 3, eventDimension: 3, item: "Timer", sidebar: true }, //"Timer"
                 { key: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "End", sidebar: false }, //"End"
                 //{ key: 107, category: "event", text: "Message", eventType: 2, eventDimension: 8, item: "End Message", sidebar: false },//"End Message" // BpmnTaskMessage
                 //{ key: 108, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, item: "Terminate", sidebar: false }, //"Terminate"

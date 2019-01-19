@@ -59,8 +59,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/apps/AppsService.js',
-                                cdnUrl + 'view/organization/apps/AppsController.js'
+                                cdnUrl + 'view/organization/apps/appsService.js',
+                                cdnUrl + 'view/organization/apps/appsController.js'
                             ]);
                         }]
                     }
@@ -95,8 +95,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/organizationform/OrganizationFormService.js',
-                                cdnUrl + 'view/organization/organizationform/OrganizationFormController.js'
+                                cdnUrl + 'view/organization/organizationform/organizationFormService.js',
+                                cdnUrl + 'view/organization/organizationform/organizationFormController.js'
                             ]);
                         }]
                     }
@@ -113,8 +113,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/account/AccountService.js',
-                                cdnUrl + 'view/account/AccountController.js'
+                                cdnUrl + 'view/account/accountService.js',
+                                cdnUrl + 'view/account/accountController.js'
                             ]);
                         }]
                     }
@@ -246,8 +246,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/collaborators/CollaboratorsService.js',
-                                cdnUrl + 'view/organization/collaborators/CollaboratorsController.js'
+                                cdnUrl + 'view/organization/collaborators/collaboratorsService.js',
+                                cdnUrl + 'view/organization/collaborators/collaboratorsController.js'
                             ]);
                         }]
                     }

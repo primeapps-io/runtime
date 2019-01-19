@@ -23,10 +23,22 @@ angular.module('primeapps')
 
             ModuleService.getModuleFields(activityModule.name)
                 .then(function (response) {
-                    if (response.data) {
-                        activityModule.fields = response.data;
+                    if (response) {
+                        activityModule.fields = response;
                     }
                 });
+
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+
+            $scope.generator(10);
+
+        
 
             var uploadSuccessCallback,
                 uploadFailedCallback;
@@ -167,8 +179,8 @@ angular.module('primeapps')
                                                 else
                                                     fieldUpdateModule = $filter('filter')($scope.$parent.modules, { name: workflow.field_update.module }, true)[0];
                                                 ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
-                                                    if (response.data) {
-                                                        fieldUpdateModule.fields = response.data;
+                                                    if (response) {
+                                                        fieldUpdateModule.fields = response;
                                                     }
                                                     ModuleService.getPickItemsLists(fieldUpdateModule)
                                                         .then(function (picklistUpdateModule) {
@@ -199,8 +211,8 @@ angular.module('primeapps')
 
                 ModuleService.getModuleFields($scope.workflowModel.module.name)
                     .then(function (response) {
-                        if (response.data) {
-                            $scope.workflowModel.module.fields = response.data;
+                        if (response) {
+                            $scope.workflowModel.module.fields = response;
                         }
                     });
 
@@ -902,22 +914,21 @@ angular.module('primeapps')
 
                 $scope.workflowModel.changed_field_checkbox = false;
                 $scope.workflowModel.changed_field = null;
-
-            }
+            };
 
             $scope.changeFieldCheckboxChanged = function (status) {
                 if (!status) {
                     $scope.workflowModel.changed_field = null;
                 }
-            }
+            };
 
             $scope.frequencyChanged = function (frequency) {
                 if ($scope.id) {
                     if (frequency === 'continuous')
                         $scope.workflowModel.delete_logs = false;
                 }
+            };
 
-            }
             $scope.updatableField = function (field) {
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;
@@ -1043,6 +1054,7 @@ angular.module('primeapps')
 
                 return picklistItems;
             };
+
             $scope.tags = function (searchTerm, field) {
                 return $http.get(config.apiUrl + "tag/get_tag/" + field.id).then(function (response) {
                     var tags = response.data;
@@ -1051,6 +1063,7 @@ angular.module('primeapps')
                     });
                 });
             };
+
             $scope.setCurrentLookupField = function (field) {
                 $scope.currentLookupField = field;
             };
