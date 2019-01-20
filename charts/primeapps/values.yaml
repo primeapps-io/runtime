@@ -119,10 +119,6 @@ auth:
         ForwardHeaders: "true"
         HttpsRedirection: "true"
         Authority: "https://auth-dev.primeapps.io"
-        EnableGiteaIntegration: "false"
-        GiteaUrl: ""
-        GiteaEmail: ""
-        GiteaPassword: ""
       Sentry:
         Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
         IncludeRequestPayload: "true"
