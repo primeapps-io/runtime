@@ -236,7 +236,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download_template")]
-        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int FileId, string tempType)
+        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int fileId, string tempType)
         {
             var type = "";
             if (tempType == "excel")
@@ -244,7 +244,7 @@ namespace PrimeApps.App.Controllers
             else
                 type = ".docx";
 
-            var temp = await _templateRepository.GetById(FileId);
+            var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
                 return await _storage.Download(UnifiedStorage.GetPath("template", AppUser.TenantId), temp.Content, temp.Name + type);

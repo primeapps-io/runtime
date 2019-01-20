@@ -147,7 +147,7 @@ angular.module('primeapps')
                             DocumentService.getDocument(document.id)
                                 .then(function (doc) {
                                     if (doc.data) {
-                                        $window.open("/storage/download?fileId=" + document.id, "_blank" + "document");
+                                        $window.open("/storage/download?fileId=" + document.id, "_blank");
                                         //var downloadUrl = $scope.getDownloadUrl(document);
                                         //if(downloadUrl){
                                         //$window.location = downloadUrl;
