@@ -22,15 +22,37 @@
                     <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>
                 </td>
                 <td class="text-right">
-                    <button id="actionButton-{{item.name}}" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(item)"><i class="fa fa-caret-down"></i></button>
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="showFormModal(item.id)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="showFormModal(item.id, true)">{{'Common.Copy' | translate}}</a>
+                            </li>
+                            <li>
+                                <a href="#" confirm-click ng-click="delete(item.id)" placement="left"
+                                   confirm-message="{{'Common.AreYouSure' | translate}}"
+                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
-            <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(relation)">{{'Common.Edit' | translate}}</button>-->
-            <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
         </tbody>
     </table>
-    <div class="row table-pagination">
-        <div class="col-sm-10">
+    <div class="table-pagination">
+        <div>
             <nav aria-label="Page navigation">
                 <div paging
                      text-first="&laquo;"
@@ -51,7 +73,10 @@
                 </div>
             </nav>
         </div>
-        <div class="col-sm-2">
+        <div>
+            Total Menus {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                 <option ng-selected="true" value="10">10</option>
@@ -63,5 +88,3 @@
             </select>
         </div>
     </div>
-</div>
-

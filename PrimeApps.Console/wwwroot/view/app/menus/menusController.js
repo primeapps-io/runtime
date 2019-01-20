@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', '$dropdown', 'ProfilesService',
-        function ($rootScope, $scope, $filter, $state, ngToast, $modal, helper, MenusService, config, $location, ModuleService, $dropdown, ProfilesService) {
+    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
+        function ($rootScope, $scope, $filter, $state, ngToast, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
@@ -159,36 +159,6 @@ angular.module('primeapps')
                 }
             ];
 
-            $scope.openDropdown = function (menuItem) {
-                $scope['dropdown' + menuItem.name] = $scope['dropdown' + menuItem.name] || $dropdown(angular.element(document.getElementById('actionButton-' + menuItem.name)), {
-                    placement: 'bottom-right',
-                    scope: $scope,
-                    animation: '',
-                    show: true
-                });
-
-                var menuItems = [
-                    {
-                        'text': $filter('translate')('Common.Edit'),
-                        'click': 'showFormModal(\'' + menuItem.id + '\')' //'#/app/setup/menu?id=' + menuItem.id
-                    },
-                    {
-                        'text': $filter('translate')('Common.Copy'),
-                        'click': 'showFormModal(\'' + menuItem.id + '\',true)'
-                    }
-                ];
-
-                if (!menuItem.default) {
-                    menuItems.push(
-                        {
-                            'text': $filter('translate')('Common.Delete'),
-                            'click': 'delete(\'' + menuItem.id + '\')',
-                        }
-                    );
-                }
-                $scope['dropdown' + menuItem.name].$scope.content = menuItems;
-            };
-
             $scope.newModuleList = angular.copy($scope.$parent.modules);
             //push customModules to modules
             angular.forEach(customModules, function (customModule) {
@@ -196,6 +166,7 @@ angular.module('primeapps')
             });
 
             $scope.showFormModal = function (id, _clone) {
+                $scope.id = id;
                 $scope.menuLists = [];
                 $scope.menu = {};
                 $scope.counter = 1;
@@ -237,6 +208,7 @@ angular.module('primeapps')
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
                 $scope.createArray = [];
+                $scope.index = $scope.createArray.length;
 
                 if (id)
                     MenusService.getMenuById(id).then(function (response) {
@@ -291,9 +263,12 @@ angular.module('primeapps')
                             }
                             //Yeni eklenecek olan modülü +1'den başlatmamız gerekiyor
                             $scope.counter = $scope.menuLists.length + 1;
-                            $scope.loading = false;
 
+                        }).finally(function () {
+                            $scope.loading = false;
                         });
+                    }).finally(function () {
+                        $scope.loading = false;
                     });
 
                 // else
@@ -331,6 +306,8 @@ angular.module('primeapps')
                 $scope.counter += 1;
                 menuList.parentId = 0;
                 menuList.items = [];
+                menuList.index = $scope.index;
+                $scope.index += 1;
                 $scope.menuLists.push(menuList);
 
                 if ($scope.id)
@@ -352,6 +329,8 @@ angular.module('primeapps')
                 labelMenu.id = 0;//null;
                 labelMenu.menuId = menu.no;
                 labelMenu.parentId = menu.id;
+                labelMenu.index = $scope.index;
+                $scope.index += 1;
                 menu.items.push(labelMenu);
             };
 
@@ -369,6 +348,8 @@ angular.module('primeapps')
                 menuItem.isDynamic = module.custom ? false : true;
                 menuItem.parentId = menu.id != null ? menu.id : 0;
                 menuItem.items = [];
+                menuItem.index = $scope.index;
+                $scope.index += 1;
                 //menuItems.menuParent = [];
 
 
@@ -428,7 +409,16 @@ angular.module('primeapps')
                         //we just check if createArray item isUpdate
                         if (isUpdate)
                             angular.forEach($scope.createArray, function (createItem) {
-                                createItem.no = $filter('filter')($scope.menuLists, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0].no;
+                                var findItem = $filter('filter')($scope.menuLists, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
+                                if (findItem)
+                                    createItem.no = findItem.no;
+                                else
+                                    for (var i = 0; i < $scope.menuLists.length; i++) {
+                                        if ($scope.menuLists[i].items.length > 0) {
+                                            findItem = $filter('filter')($scope.menuLists[i].items, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
+                                            createItem.no = findItem.no;
+                                        }
+                                    }
                             });
                         MenusService.createMenuItems($scope.createArray, !$scope.menu.default ? $scope.menu.profile.id : 1)
                             .then(function onSuccess() {
@@ -443,6 +433,7 @@ angular.module('primeapps')
                                                 //$state.go('app.setup.menu_list');
                                                 swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                                                 $scope.addNewMenuFormModal.hide();
+                                                $scope.changePage(1);
                                             });
                                         else {
                                             //AppService.getMyAccount(true);
@@ -450,6 +441,7 @@ angular.module('primeapps')
                                             swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                                             // $state.go('app.setup.menu_list');
                                             $scope.addNewMenuFormModal.hide();
+                                            $scope.changePage(1);
                                         }
                                     });
                                 }
@@ -459,6 +451,7 @@ angular.module('primeapps')
                                     swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                                     //$state.go('app.setup.menu_list');
                                     $scope.addNewMenuFormModal.hide();
+                                    $scope.changePage(1);
                                 }
                             });
                     }
@@ -473,13 +466,15 @@ angular.module('primeapps')
                                     //AppService.getMyAccount(true);
                                     swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                                     //ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
-                                    $state.go('app.setup.menu_list');
+                                    // $state.go('app.setup.menu_list');
+                                    $scope.changePage(1);
                                 });
                             else {
                                 // AppService.getMyAccount(true);
-                                ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
+                                swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                                 //$state.go('app.setup.menu_list');
                                 $scope.addNewMenuFormModal.hide();
+                                $scope.changePage(1);
                             }
                         });
                     }
@@ -487,6 +482,7 @@ angular.module('primeapps')
                         resultPromise.then(function onSuccess() {
                             // $state.go('app.setup.menu_list');
                             $scope.addNewMenuFormModal.hide();
+                            $scope.changePage(1);
                         });
                     }
                     // else
@@ -509,13 +505,7 @@ angular.module('primeapps')
                             $scope.loading = false;
                             //$state.go('app.setup.menu_list');
                             $scope.addNewMenuFormModal.hide();
-                            var requestModel = angular.copy($scope.requestModel);
-                            requestModel.offset = 0;
-                            MenusService.find(requestModel).then(function (response) {
-                                $scope.loading = true;
-                                $scope.menuList = response.data;
-                                $scope.loading = false;
-                            });
+                            $scope.changePage(1);
                         });
                     });
                 }
@@ -569,8 +559,19 @@ angular.module('primeapps')
                          */
                         if (!menuItem && !menu)
                             $scope.deleteArray.push(deleteItem);
-                        if ((menuItem && !menu))
+
+                        if (menuItem && !menu) {
                             $scope.deleteArray.push(menuItem);
+                            $scope.createArray.splice(menuItem.index, 1);
+                        }
+
+                        else if (menu && menuItem) {
+                            $scope.createArray.splice(menuItem.index, 1);
+                        }
+                        else if (menu && !menuItem) {
+                            $scope.createArray.splice(menu.index, 1);
+                        }
+
                     }
 
                     //Delete from menuLists
@@ -599,8 +600,17 @@ angular.module('primeapps')
                         menuItem = menu ? $filter('filter')(menu.items, { name: deleteItem.name }, true)[0] : $filter('filter')($scope.menuLists[menuId - 1].items, { name: deleteItem.name }, true)[0];
                         if (!menuItem && !menu)
                             $scope.deleteArray.push(menuItem);
-                        if (menuItem && !menu && deleteItem.name != "")
+                        if (menuItem && !menu && deleteItem.name != "") {
                             $scope.deleteArray.push(menuItem);
+                            $scope.createArray.splice(menuItem.index, 1);
+                        }
+
+                        else if (menu && menuItem) {
+                            $scope.createArray.splice(menuItem.index, 1);
+                        }
+                        else if (menu && !menuItem) {
+                            $scope.createArray.splice(menu.index, 1);
+                        }
                     }
 
                     $scope.menuLists[menuId - 1].items.splice((moduleId === 1 ? 0 : (moduleId - 1)), 1);
@@ -720,20 +730,29 @@ angular.module('primeapps')
                      * index :0,1,2,3,4 than we cant match the index(4) === (no:5 -1)
                      */
                     filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
+                    var index = undefined;
+                    var SubIndex = undefined;
                     if (filterItem) {
-
-                        angular.forEach(filterItem.items, function (subItem) {
+                        //angular.forEach(filterItem.items, function (subItem) {
+                        if (filterItem.items.length > 0) {
                             var filterSubItem = $filter('filter')(subItem, { id: 0 }, true)[0];
-                            if (filterSubItem)
-                                copyMenuList[filterItem.no - 1].items.splice(filterSubItem.no - 1, 1);
-                        });
-                        copyMenuList.splice(filterItem.no - 1, 1); //we deleted this item, because this item will create
+                            if (filterSubItem) {
+                                SubIndex = filterItem.items.findIndex(x => x.id === 0)//filterSubItem.no);
+                                index = copyMenuList.findIndex(x => x.no === filterItem.no);
+                                copyMenuList[index].items.splice(SubIndex, 1);
+                            }
+                        }
+
+                        index = copyMenuList.findIndex(x => x.no === filterItem.no)
+                        copyMenuList.splice(index, 1); //we deleted this item, because this item will create
                     }
                     // !filterItem -> we check this case previous step, with chield
                     else if (!filterItem && filterSubItem.length > 0) {
-                        angular.forEach(filterSubItem, function (subItem) {
-                            copyMenuList[menuItem.no - 1].items.splice(subItem.no - 1, 1);
-                        });
+                        // angular.forEach(filterSubItem, function (subItem) {
+                        SubIndex = filterSubItem.findIndex(x => x.id === 0);
+                        index = copyMenuList.findIndex(x => x.no === menuItem.no);
+                        copyMenuList[index].items.splice(SubIndex, 1);
+                        // });
                     }
                 });
                 return copyMenuList;
@@ -769,14 +788,9 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 //First delete Menu
                 MenusService.delete(id).then(function () {
-                    var requestModel = angular.copy($scope.requestModel);
-                    requestModel.offset = 0;
-                    MenusService.find(requestModel).then(function (response) {
-                        $scope.loading = true;
-                        $scope.menuList = response.data;
-                        $scope.loading = false;
-                        swal($filter('translate')('Menu.DeleteSuccess'), "", "success");
-                    });
+                    $scope.changePage(1);
+                    swal($filter('translate')('Menu.DeleteSuccess'), "", "success");
+
                 });
             };
         }
