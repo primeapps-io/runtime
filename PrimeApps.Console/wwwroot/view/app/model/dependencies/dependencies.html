@@ -8,37 +8,53 @@
 <div ng-show="!loading" class="tab-content">
     <table class="table">
         <thead>
-        <tr>
-            <th>{{'Setup.Templates.Module' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyType' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'" ng-click="showFormModal(dependency)">
-            <td>{{dependency.parent_module['label_'+language+'_plural']}}</td>
-            <td>{{dependency.dependencyType === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
-                ('Setup.Modules.DependencyTypeValueChange' | translate)}}
-            </td>
-            <td>{{dependency.parentField['label_'+language]}}</td>
-            <td>{{ dependency.child_field ? dependency.childField['label_'+language] : '-'}}</td>
-            <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(dependency)" type="button"
-                            class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
+            <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'" ng-click="showFormModal(dependency)">
+                <td>{{dependency.parent_module['label_'+language+'_plural']}}</td>
+                <td>{{dependency.dependencyType === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
+                    ('Setup.Modules.DependencyTypeValueChange' | translate)}}
+                </td>
+                <td>{{dependency.parentField['label_'+language]}}</td>
+                <td>{{ dependency.child_field ? dependency.childField['label_'+language] : '-'}}</td>
+                <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a href="#" confirm-click ng-click="delete(dependency)" placement="left"
+                                   confirm-message="{{'Common.AreYouSure' | translate}}"
+                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
-    <div class="row table-pagination">
-        <div class="col-sm-10">
+    <div class="table-pagination">
+        <div>
             <nav aria-label="Page navigation">
                 <div paging
                      text-first="&laquo;"
@@ -59,7 +75,10 @@
                 </div>
             </nav>
         </div>
-        <div class="col-sm-2">
+        <div>
+            Total Dependencies {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                 <option ng-selected="true" value="10">10</option>
