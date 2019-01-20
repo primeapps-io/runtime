@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
     public class ActionButton : BaseEntity
     {
-        [Column("name"), Required, MaxLength(50)]
+        [Column("name"), Required, MaxLength(100)]
         public string Name { get; set; }
 
         [Column("template"), Required]
