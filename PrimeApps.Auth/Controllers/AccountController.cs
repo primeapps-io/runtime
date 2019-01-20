@@ -38,6 +38,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Net.Http.Headers;
 using PrimeApps.Auth.Helpers;
+using PrimeApps.Model.Common.App;
 
 namespace PrimeApps.Auth.UI
 {
@@ -212,7 +213,7 @@ namespace PrimeApps.Auth.UI
                     validUrlsArr = validUrls.Split(";");
                 if (result.Succeeded)
                 {
-                    if (vm.ApplicationInfo != null && Array.IndexOf(validUrlsArr, Request.Host.Host) == -1 && vm.ApplicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (vm.ApplicationInfo != null && Array.IndexOf(validUrlsArr, Request.Host.Host) == -1 && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
@@ -359,7 +360,7 @@ namespace PrimeApps.Auth.UI
                 return View(vm);
             }
 
-            var externalLogin = vm.ApplicationInfo.Settings.ExternalLogin != null ? JObject.Parse(vm.ApplicationInfo.Settings.ExternalLogin) : null;
+            var externalLogin = vm.ApplicationInfo.ApplicationSetting.ExternalLogin != null ? JObject.Parse(vm.ApplicationInfo.ApplicationSetting.ExternalLogin) : null;
 
             if (externalLogin != null)
             {
@@ -450,13 +451,13 @@ namespace PrimeApps.Auth.UI
 
             var app = await _applicationRepository.GetByNameAsync(model.AppName);
 
-            var application = new Application()
+            var application = new ApplicationInfoViewModel()
             {
                 Id = app.Id,
                 Name = app.Name,
                 Language = model.Language ?? app.Setting.Language,
                 Domain = app.Setting.AppDomain,
-                Settings = new Settings
+                ApplicationSetting = new ApplicationSettingViewModel
                 {
                     Culture = model.Culture ?? app.Setting.Culture,
                     Currency = app.Setting.Currency,
@@ -776,7 +777,7 @@ namespace PrimeApps.Auth.UI
                         cdnUrlStatic = cdnUrl + "/" + versionStatic;
                     }
 
-                    var application = new Application()
+                    var application = new ApplicationInfoViewModel()
                     {
                         Id = appInfo.Id,
                         Name = appInfo.Name,
@@ -790,7 +791,7 @@ namespace PrimeApps.Auth.UI
                         Favicon = theme["favicon"].ToString(),
                         CdnUrl = cdnUrlStatic,
                         Domain = appInfo.Setting.AppDomain,
-                        Settings = new Settings
+                        ApplicationSetting = new ApplicationSettingViewModel
                         {
                             Culture = appInfo.Setting.Culture,
                             Currency = appInfo.Setting.Currency,
@@ -912,7 +913,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ResetPasswordViewModel> BuildResetPasswordViewModelAsync(string returnUrl, string code, Guid guid, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ResetPasswordViewModel
             {
@@ -934,7 +935,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ForgotPasswordViewModel> BuildForgotPasswordViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ForgotPasswordViewModel
             {
@@ -962,7 +963,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ForgotPasswordViewModel> BuildForgotPasswordViewModelAsync(ForgotPasswordViewModel model, string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ForgotPasswordViewModel
             {
@@ -977,7 +978,7 @@ namespace PrimeApps.Auth.UI
         private async Task<RegisterViewModel> BuildRegisterViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             var schemes = await _schemeProvider.GetAllSchemesAsync();
 
@@ -1022,7 +1023,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ApplicationViewModel> BuildIndexViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ApplicationViewModel
             {
@@ -1048,7 +1049,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfo(_configuration, Request, returnUrl, _applicationRepository);
 
             if (context?.IdP != null)
             {
@@ -1390,14 +1391,14 @@ namespace PrimeApps.Auth.UI
             await _tenantRepository.DeleteAsync(tenant);
         }
 
-        private async Task<JObject> CreateUser(RegisterInputModel model, Application applicationInfo, string returnUrl, bool externalLogin = false)
+        private async Task<JObject> CreateUser(RegisterInputModel model, ApplicationInfoViewModel applicationInfo, string returnUrl, bool externalLogin = false)
         {
             var response = new JObject()
             {
                 ["Error"] = null
             };
 
-            if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.External)
+            if (applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.External)
                 return response;
 
             var identityUser = await _userManager.FindByNameAsync(model.Email);
@@ -1431,7 +1432,7 @@ namespace PrimeApps.Auth.UI
 
                 identityUser = await _userManager.FindByEmailAsync(model.Email);
             }
-            else if (identityUser != null && applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Console)
+            else if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Console)
             {
                 response["Error"] = "UserExist";
                 return response;
@@ -1440,7 +1441,7 @@ namespace PrimeApps.Auth.UI
             if (applicationInfo != null)
             {
                 var token = "";
-                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.Settings.Culture;
+                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.ApplicationSetting.Culture;
 
                 if (!externalLogin && !identityUser.EmailConfirmed)
                     token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
@@ -1450,7 +1451,7 @@ namespace PrimeApps.Auth.UI
 
                 if (platformUser != null)
                 {
-                    if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var appTenant = platformUser.TenantsAsUser?.FirstOrDefault(x => x.Tenant.AppId == applicationInfo.Id);
 
@@ -1481,10 +1482,10 @@ namespace PrimeApps.Auth.UI
                     }
                     else
                     {
-                        platformUser.Setting.Culture = applicationInfo.Settings.Culture;
-                        platformUser.Setting.Currency = applicationInfo.Settings.Currency;
+                        platformUser.Setting.Culture = applicationInfo.ApplicationSetting.Culture;
+                        platformUser.Setting.Currency = applicationInfo.ApplicationSetting.Currency;
                         platformUser.Setting.Language = applicationInfo.Language;
-                        platformUser.Setting.TimeZone = applicationInfo.Settings.TimeZone;
+                        platformUser.Setting.TimeZone = applicationInfo.ApplicationSetting.TimeZone;
 
                     }
 
@@ -1499,7 +1500,7 @@ namespace PrimeApps.Auth.UI
 
                     platformUser = await _platformUserRepository.GetWithTenants(model.Email);
                 }
-                if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                if (applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                 {
                     var tenantId = 0;
                     Tenant tenant = null;
@@ -1521,10 +1522,10 @@ namespace PrimeApps.Auth.UI
                             },
                             Setting = new TenantSetting
                             {
-                                Culture = applicationInfo.Settings.Culture,
-                                Currency = applicationInfo.Settings.Currency,
+                                Culture = applicationInfo.ApplicationSetting.Culture,
+                                Currency = applicationInfo.ApplicationSetting.Currency,
                                 Language = applicationInfo.Language,
-                                TimeZone = applicationInfo.Settings.TimeZone
+                                TimeZone = applicationInfo.ApplicationSetting.TimeZone
                             },
                             CreatedBy = platformUser
                         };
@@ -1545,7 +1546,7 @@ namespace PrimeApps.Auth.UI
                             IsActive = true,
                             IsSubscriber = false,
                             Culture = platformUser.Setting.Culture,
-                            Currency = applicationInfo.Settings.Currency,
+                            Currency = applicationInfo.ApplicationSetting.Currency,
                             CreatedAt = platformUser.CreatedAt,
                             CreatedByEmail = platformUser.Email
                         };

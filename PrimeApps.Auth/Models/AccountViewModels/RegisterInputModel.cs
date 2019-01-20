@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using PrimeApps.Model.Common.App;
 
 namespace PrimeApps.Auth.UI
 {

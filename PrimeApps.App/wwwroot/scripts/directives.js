@@ -1378,7 +1378,9 @@ angular.module('primeapps')
                 templateUrl: 'view/app/trial/trial-box.html?v=' + version,
                 controller: ['$scope',
                     function ($scope) {
-                        if (window.host.indexOf("ofisim.com") > -1 || window.host.indexOf("localhost") > -1) {
+                        var host = window.location.hostname;
+
+                        if (host.indexOf("ofisim.com") > -1 || host.indexOf("localhost") > -1) {
                             $scope.promotion = {
                                 fullName: $rootScope.user.full_name,
                                 phoneNumber: $rootScope.user.phone,
@@ -1390,7 +1392,7 @@ angular.module('primeapps')
                             var toDay = new Date();
                             var userCreateDate = new Date($rootScope.user.created_at);
                             var diff = (toDay - userCreateDate) / 1000;
-                            var diff = Math.abs(Math.floor(diff));
+                            diff = Math.abs(Math.floor(diff));
                             $scope.day = 15 - Math.floor(diff / (24 * 60 * 60));
                             $scope.isPaid = $rootScope.user.is_paid_customer;
                             $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', { remaining: $scope.day });

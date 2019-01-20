@@ -64,18 +64,6 @@ namespace PrimeApps.App.Controllers
 			if (noteEntity == null)
 				return NotFound();
 
-			if (noteEntity.CreatedBy.Picture != null && !noteEntity.CreatedBy.Picture.StartsWith("http://"))
-				noteEntity.CreatedBy.Picture = AzureStorage.GetProfilePictureUrl(noteEntity.CreatedBy.Picture, _configuration);
-
-			if (noteEntity.Likes.Count > 0)
-			{
-				foreach (var likedUser in noteEntity.Likes)
-				{
-					if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-						likedUser.Picture = AzureStorage.GetProfilePictureUrl(likedUser.Picture, _configuration);
-				}
-			}
-
 			return Ok(noteEntity);
 		}
 
@@ -87,36 +75,6 @@ namespace PrimeApps.App.Controllers
 
 			foreach (var note in notes)
 			{
-				if (note.CreatedBy.Picture != null && !note.CreatedBy.Picture.StartsWith("http://"))
-					note.CreatedBy.Picture = AzureStorage.GetProfilePictureUrl(note.CreatedBy.Picture, _configuration);
-
-				if (note.Likes.Count > 0)
-				{
-					foreach (var likedUser in note.Likes)
-					{
-						if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-							likedUser.Picture = AzureStorage.GetProfilePictureUrl(likedUser.Picture, _configuration);
-					}
-				}
-
-				if (note.Notes.Count > 0)
-				{
-					foreach (var subNote in note.Notes)
-					{
-						if (subNote.CreatedBy.Picture != null && !subNote.CreatedBy.Picture.StartsWith("http://"))
-							subNote.CreatedBy.Picture = AzureStorage.GetProfilePictureUrl(subNote.CreatedBy.Picture, _configuration);
-
-						if (subNote.Likes.Count > 0)
-						{
-							foreach (var subLikedUser in note.Likes)
-							{
-								if (subLikedUser.Picture != null && !subLikedUser.Picture.StartsWith("http://"))
-									subLikedUser.Picture = AzureStorage.GetProfilePictureUrl(subLikedUser.Picture, _configuration);
-							}
-						}
-					}
-				}
-
 				if (note.RecordId.HasValue)
 				{
 					if (!moduleRecordIds.ContainsKey(note.Module.Name))
@@ -209,7 +167,6 @@ namespace PrimeApps.App.Controllers
 			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
 			noteEntity = await _noteRepository.GetById(noteEntity.Id);
-			noteEntity.CreatedBy.Picture = AzureStorage.GetProfilePictureUrl(noteEntity.CreatedBy.Picture, _configuration);
 
 			var uri = new Uri(Request.GetDisplayUrl());
 			return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);

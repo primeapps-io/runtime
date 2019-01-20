@@ -2,107 +2,98 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-	ViewBag.Title = "Login";
-	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+    ViewBag.Title = Model.ApplicationInfo.Title;
 
-	var app = "primeapps";
-	var customDomain = false;
-	string customLanguage = null;
-	bool multiLanguage = true;
-	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
-	if (Model.ApplicationInfo != null)
-	{
-		app = Model.ApplicationInfo.Name;
-		multiLanguage = Model.ApplicationInfo.MultiLanguage;
-		ViewBag.Title = Model.ApplicationInfo.Title;
-		customDomain = Model.ApplicationInfo.CustomDomain;
-		//customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
-	}
-	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+    var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    var multiLanguage = Model.ApplicationInfo.MultiLanguage;
+    var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
 }
 <div class="col-md-4 login-sec">
-	<img class="logo-img" src="@Model.ApplicationInfo.Logo" />
-	@if (!customDomain)
-	{
-		<span class="free-info-header">
-			@Html.Raw(string.Format(Localizer["LoginRegisterInfo"].Value, "<a href=" + @Url.Action("Register", "Account", new { ReturnUrl = Model.ReturnUrl }) + ">" + Localizer["LoginRegisterInfoLink"].Value + "</a>"))
-		</span>
-	}
+    <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
+    @if (false) //(!customDomain)
+    {
+        <span class="free-info-header">
+            @Html.Raw(string.Format(Localizer["LoginRegisterInfo"].Value, "<a href=" + @Url.Action("Register", "Account", new {ReturnUrl = Model.ReturnUrl}) + ">" + Localizer["LoginRegisterInfoLink"].Value + "</a>"))
+        </span>
+    }
 
-	<form asp-route="Login" class="login-form" role="form" id="login-form">
-		<input type="hidden" asp-for="@Model.ReturnUrl" />
-		<div class="form-group">
-			<div class="input-group input-group-first">
-				<span class="input-group-addon">
-					<span class="flaticon-email26"></span>
-				</span>
-				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-				<input class="form-control" placeholder="@Localizer["Email"]" asp-for="Username" id="Email" autofocus autocomplete="off">
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="input-group">
-				<span class="input-group-addon">
-					<span class="flaticon-padlock50"></span>
-				</span>
-				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-				<input type="password" class="form-control" placeholder="@Localizer["Password"]" asp-for="Password" id="Password" autocomplete="off">
-			</div>
-		</div>
-		@if (!string.IsNullOrWhiteSpace(Model.Error))
-		{
-			if (Model.Error == "WrongInfo")
-			{
-				<div class="error">@Localizer[Model.Error]</div>
+    <form asp-route="Login" class="login-form" role="form" id="login-form">
+        <input type="hidden" asp-for="@Model.ReturnUrl"/>
+        <div class="form-group">
+            <div class="input-group input-group-first">
+                <span class="input-group-addon">
+                    <span class="flaticon-email26"></span>
+                </span>
+                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+                <input class="form-control" placeholder="@Localizer["Email"]" asp-for="Username" id="Email" autofocus autocomplete="off">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <span class="flaticon-padlock50"></span>
+                </span>
+                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+                <input type="password" class="form-control" placeholder="@Localizer["Password"]" asp-for="Password" id="Password" autocomplete="off">
+            </div>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Error))
+        {
+            if (Model.Error == "WrongInfo")
+            {
+                <div class="error">@Localizer[Model.Error]</div>
             }
             else if (Model.Error == "notFound")
             {
-				<div class="error">@Localizer["NotFound"]</div>
-			}
-		}
-		<div class="error-all"></div>
-		<div class="error-email"></div>
-		<div class="error-pass"></div>
-		<div class="form-check">
-			<button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
-			@if (!customDomain)
-			{
-				if (Model.VisibleExternalProviders.Any())
-				{
-					foreach (var provider in Model.VisibleExternalProviders)
-					{
-						<hr />
-						<a class="btn btn-block add-button"
-						   asp-action="ExternalLogin"
-						   asp-route-provider="@provider.AuthenticationScheme"
-						   asp-route-returnUrl="@Model.ReturnUrl">
-							@Localizer[provider.DisplayName]
-						</a>
-					}
-				}
-			}
+                <div class="error">@Localizer["NotFound"]</div>
+            }
+        }
+        <div class="error-all"></div>
+        <div class="error-email"></div>
+        <div class="error-pass"></div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
+            @if (false) //(!customDomain)
+            {
+                if (Model.VisibleExternalProviders.Any())
+                {
+                    foreach (var provider in Model.VisibleExternalProviders)
+                    {
+                        <hr/>
+                        <a class="btn btn-block add-button"
+                           asp-action="ExternalLogin"
+                           asp-route-provider="@provider.AuthenticationScheme"
+                           asp-route-returnUrl="@Model.ReturnUrl">
+                            @Localizer[provider.DisplayName]
+                        </a>
+                    }
+                }
+            }
 
-			<div class="language">
-				@if (multiLanguage)
-				{
-					if (otherLang == "tr")
-					{
-						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
-					}
-					else if (otherLang == "en")
-					{
-						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
-					}
-				}
-				<a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
-			</div>
-		</div>
-	</form>
+            <div class="language">
+                @if (multiLanguage)
+                {
+                    if (otherLang == "tr")
+                    {
+                        <a href="@Url.Action("ChangeLanguage", "Account", new {language = "tr", ReturnUrl = path})">@Localizer["TR"]</a>
+                        <span>|</span>
+                    }
+                    else if (otherLang == "en")
+                    {
+                        <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
+                        <span>|</span>
+                    }
+                }
+                <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section scripts {
-	<script>
-		$(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             var postTry = false;
 
             if ("@Model.Success" === "accountActivated") {
@@ -129,7 +120,8 @@
             } else if ("@Model.Success" === "NotValidApp") {
                 swal({
                     title: "@Localizer["NotValidAppTitle"])",
-                    text: "@string.Format(Localizer["NotValidAppContent"].ToString(), Model.ApplicationInfo.Name.ToUpper())",
+                    text:
+                        "@string.Format(Localizer["NotValidAppContent"].ToString(), Model.ApplicationInfo.Name.ToUpper())",
 
                     type: "error",
                     button: "@Localizer["Ok"]",
@@ -153,20 +145,20 @@
 
             $(".btn-login").click(function(e) {
                 postTry = true;
-				removeFieldErrors();
-				var l = Ladda.create(this);
-				l.start();
+                removeFieldErrors();
+                var l = Ladda.create(this);
+                l.start();
                 if (fieldsHasValue()) {
                     $(".error-all").removeClass("error");
                     $(".error-all").text("");
-					if (!emailValidator() || !passwordValidator()) {
-						e.stopPropagation();
-						e.preventDefault();
-						l.stop();
-					} else {
-						$('#login-form').append('<input type="hidden" name="button" value="login" />');
-						$('#login-form').submit();
-					 }
+                    if (!emailValidator() || !passwordValidator()) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        l.stop();
+                    } else {
+                        $('#login-form').append('<input type="hidden" name="button" value="login" />');
+                        $('#login-form').submit();
+                    }
                 } else {
                     $(".error-all").addClass("error");
                     $(".error-all").text("@Localizer["LoginFieldsRequired"]");
@@ -241,5 +233,5 @@
                 $(e.target).closest(".input-group").removeClass("input-focus");
             });
         });
-	</script>
+    </script>
 }

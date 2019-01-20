@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using PrimeApps.Model.Common.App;
 
 namespace PrimeApps.Auth.UI
 {

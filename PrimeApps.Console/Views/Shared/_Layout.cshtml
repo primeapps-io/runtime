@@ -1,9 +1,4 @@
 ﻿@{
-    var googleCode = "UA-112242194-1";
-    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
     var token = ViewBag.Token;
 }
 
@@ -56,20 +51,13 @@
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
     @RenderBody()
     <script>
-        /**/
         var version = '@typeof(ControllerContext).Assembly.GetName().Version';
-        /**/
-        /**/
         var cdnUrl = '@ViewBag.CdnUrlDynamic';
-        /**/
-        /**/
         var token = '@token';
-        /**/
         var blobUrl = '';
         var functionUrl = '';
         var tenantId = '0';
         var components = '';
-        var isCustomDomain = false;
 
         document.body.className = 'primeapps';
         window.localStorage.setItem('theme', 'primeapps');

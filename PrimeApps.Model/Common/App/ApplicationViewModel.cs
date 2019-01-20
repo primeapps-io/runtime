@@ -1,15 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace PrimeApps.Auth.UI
+namespace PrimeApps.Model.Common.App
 {
     public class ApplicationViewModel
     {
-        public Application ApplicationInfo { get; set; }
+        public ApplicationInfoViewModel ApplicationInfo { get; set; }
         public string Language { get; set; }
         public string Success { get; set; }
         public string Error { get; set; }
@@ -17,7 +13,7 @@ namespace PrimeApps.Auth.UI
         public string ReturnUrl { get; set; }
     }
 
-    public class Application
+    public class ApplicationInfoViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -31,10 +27,10 @@ namespace PrimeApps.Auth.UI
         public string Favicon { get; set; }
         public bool MultiLanguage { get; set; }
         public string CdnUrl { get; set; }
-        public Settings Settings { get; set; }
+        public ApplicationSettingViewModel ApplicationSetting { get; set; }
     }
 
-    public class Settings
+    public class ApplicationSettingViewModel
     {
         public string Culture { get; set; }
         public string Currency { get; set; }
@@ -42,6 +38,6 @@ namespace PrimeApps.Auth.UI
         public string GoogleAnalytics { get; set; }
         public string ExternalLogin { get; set; }
         public RegistrationType RegistrationType { get; set; }
-		public string TenantOperationWebhook { get; set; }
-	}
+        public string TenantOperationWebhook { get; set; }
+    }
 }

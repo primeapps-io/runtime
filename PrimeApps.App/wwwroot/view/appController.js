@@ -10,7 +10,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.appId = $location.search().app || 1;
-        $scope.isCustomDomain = isCustomDomain;
+        $scope.appLogo = $rootScope.workgroup.logo_url ? $rootScope.workgroup.logo_url : appLogo;
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;
@@ -88,43 +88,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     }
                 });
         };
-
-        var host = window.location.hostname;
-
-        if (host.indexOf('localhost') < 0) {
-            if (host.indexOf('primeapps.io') > -1)
-                $scope.appLogo = 'primeapps';
-            else if (host.indexOf('kobi.ofisim.com') > -1 || host.indexOf('kobi-test.ofisim.com') > -1)
-                $scope.appLogo = 'kobi';
-            else if (host.indexOf('asistan.ofisim.com') > -1 || host.indexOf('asistan-test.ofisim.com') > -1)
-                $scope.appLogo = 'asistan';
-            else if (host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1)
-                $scope.appLogo = 'ik';
-            else if (host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1)
-                $scope.appLogo = 'ik';
-            else if (host.indexOf('cagri.ofisim.com') > -1 || host.indexOf('cagri-test.ofisim.com') > -1)
-                $scope.appLogo = 'cagri';
-            else if (host.indexOf('crm.appsila.com') > -1 || host.indexOf('appsila-test.ofisim.com') > -1)
-                $scope.appLogo = 'appsila';
-            else if (host.indexOf('crm.livasmart.com') > -1 || host.indexOf('livasmart-test.ofisim.com') > -1)
-                $scope.appLogo = 'livasmart';
-            else
-                $scope.appLogo = 'crm';
-        }
-        else {
-            if ($scope.appId === '1')
-                $scope.appLogo = 'crm';
-            else if ($scope.appId === '2')
-                $scope.appLogo = 'asistan';
-            else if ($scope.appId === '3')
-                $scope.appLogo = 'ik';
-            else if ($scope.appId === '4')
-                $scope.appLogo = 'cagri';
-            else if ($scope.appId === '5')
-                $scope.appLogo = 'kobi';
-            else
-                $scope.appLogo = 'primeapps';
-        }
 
         $scope.logout = function () {
             blockUI.start();

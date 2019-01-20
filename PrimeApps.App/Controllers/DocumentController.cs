@@ -550,7 +550,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var document in result.Documents)
                 {
-                    document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1), Amazon.S3.Protocol.HTTP, false);
+                    document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1));
                 }
             }
 

@@ -127,9 +127,7 @@ namespace PrimeApps.App.Controllers
 
                     if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
-                        var clearRoot = objectType == ObjectType.PROFILEPICTURE;
-
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, clearRoot);
+                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                     }
                 }
             }
@@ -407,7 +405,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, false);
+                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                 excelUrl = excelUrl + "--" + parser.Filename;
 
                 import.ExcelUrl = excelUrl;
