@@ -14,7 +14,7 @@
                 <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
                 <th>Yardım Ekranı Türü</th>
                 <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
-                <th style="min-width: 110px;"></th>
+                <th width="50"></th>
             </tr>
         </thead>
         <tbody>
@@ -22,9 +22,21 @@
                 <td>{{helpside.name}}</td>
                 <td>{{helpside.type}}</td>
                 <td>{{helpside.binding}}</td>
-                <td class="text-right">
-                    <button type="button" class="btn btn-xs btn-custom" ng-click="helpEdit(helpside)">{{'Common.Edit' | translate}}</button>
-                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left" action="delete(helpside)" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(helpside)" type="button"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="action-buttons-block">
+                        <button ng-click="helpEdit(helpside)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
+                                data-title="Edit" bs-tooltip data-placement="top"
+                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
+                                aria-expanded="false">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         </tbody>

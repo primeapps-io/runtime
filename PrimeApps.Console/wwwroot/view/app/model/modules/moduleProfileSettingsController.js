@@ -41,10 +41,10 @@ angular.module('primeapps')
 
                 ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
                     var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
-                    for(var i = 0; i < data.length ; i++){
-                        for(var j=0; j<data[i].profile_list.length ; j++){
+                    for (var i = 0; i < data.length; i++) {
+                        for (var j = 0; j < data[i].profile_list.length; j++) {
                             var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
-                            if(!data[i].profileName)
+                            if (!data[i].profileName)
                                 data[i].profileName = profileName;
                             else
                                 data[i].profileName += ', ' + profileName;
@@ -67,20 +67,20 @@ angular.module('primeapps')
 
             var getModuleProfileSettings = function () {
                 ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
-                        var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
-                        for(var i = 0; i < data.length ; i++){
-                            for(var j=0; j<data[i].profile_list.length ; j++){
-                                var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
-                                if(!data[i].profileName)
-                                    data[i].profileName = profileName;
-                                else
-                                    data[i].profileName += ', ' + profileName;
-                            }
+                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
+                    for (var i = 0; i < data.length; i++) {
+                        for (var j = 0; j < data[i].profile_list.length; j++) {
+                            var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            if (!data[i].profileName)
+                                data[i].profileName = profileName;
+                            else
+                                data[i].profileName += ', ' + profileName;
                         }
-                        $scope.profileSettings = data;
-                        $scope.profileSettingState = angular.copy($scope.profileSettings);
-                        $scope.loading = false;
-                    })
+                    }
+                    $scope.profileSettings = data;
+                    $scope.profileSettingState = angular.copy($scope.profileSettings);
+                    $scope.loading = false;
+                })
                     .catch(function () {
                         $scope.loading = false;
                     });
@@ -90,17 +90,17 @@ angular.module('primeapps')
 
             //show form modal
             $scope.showFormModal = function (profileSetting) {
-                $scope.currentProfileSetting= {};
+                $scope.currentProfileSetting = {};
                 $scope.icons = ModuleService.getIcons();
 
                 $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights:false}, true);
+                    return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights: false }, true);
                 };
 
                 if (profileSetting) {
                     var profileList = [];
-                    if(profileSetting.profile_list.length > 0){
-                        for(var k=0; k < profileSetting.profile_list.length ; k++){
+                    if (profileSetting.profile_list.length > 0) {
+                        for (var k = 0; k < profileSetting.profile_list.length; k++) {
                             var profile = $filter('filter')($rootScope.profiles, { id: parseInt(profileSetting.profile_list[k]) }, true)[0];
                             profileList.push(profile);
                         }
@@ -115,7 +115,7 @@ angular.module('primeapps')
 
                 }
 
-                if(!profileSetting){
+                if (!profileSetting) {
                     $scope.currentProfileSetting.isNew = true;
                     $scope.currentProfileSetting.pluralName = $scope.module.label_tr_plural;
                     $scope.currentProfileSetting.singularName = $scope.module.label_tr_singular;
@@ -151,10 +151,10 @@ angular.module('primeapps')
                     delete profileSetting.isNew;
 
                 var profiles = null;
-                if($scope.currentProfileSetting.profiles && $scope.currentProfileSetting.profiles.length){
-                    for (var j = 0; j < $scope.currentProfileSetting.profiles.length; j++){
+                if ($scope.currentProfileSetting.profiles && $scope.currentProfileSetting.profiles.length) {
+                    for (var j = 0; j < $scope.currentProfileSetting.profiles.length; j++) {
                         var profile = $scope.currentProfileSetting.profiles[j];
-                        if(profiles === null)
+                        if (profiles === null)
                             profiles = profile.id;
                         else
                             profiles += ',' + profile.id;
@@ -162,21 +162,21 @@ angular.module('primeapps')
                 }
 
                 var menuIcon;
-                if($scope.currentProfileSetting.menu_icon){
-                    menuIcon  = $scope.currentProfileSetting.menu_icon;
-                }else{
+                if ($scope.currentProfileSetting.menu_icon) {
+                    menuIcon = $scope.currentProfileSetting.menu_icon;
+                } else {
                     menuIcon = $scope.module.menu_icon;
                 }
 
                 var obj = {
-                    module_id : $scope.module.id,
-                    profiles : profiles,
-                    label_en_singular : $scope.currentProfileSetting.singularName,
-                    label_tr_singular : $scope.currentProfileSetting.singularName,
-                    label_en_plural : $scope.currentProfileSetting.pluralName,
-                    label_tr_plural : $scope.currentProfileSetting.pluralName,
-                    menu_icon : menuIcon,
-                    display : $scope.currentProfileSetting.display
+                    module_id: $scope.module.id,
+                    profiles: profiles,
+                    label_en_singular: $scope.currentProfileSetting.singularName,
+                    label_tr_singular: $scope.currentProfileSetting.singularName,
+                    label_en_plural: $scope.currentProfileSetting.pluralName,
+                    label_tr_plural: $scope.currentProfileSetting.pluralName,
+                    menu_icon: menuIcon,
+                    display: $scope.currentProfileSetting.display
                 };
 
 
@@ -190,6 +190,7 @@ angular.module('primeapps')
 
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
+                    $scope.changePage(1);
                 };
 
                 if (!profileSetting.id) {
@@ -221,34 +222,39 @@ angular.module('primeapps')
                 }
             };
 
-
-            //delete
             $scope.delete = function (profileSetting) {
                 delete profileSetting.$$hashKey;
                 var deleteModel = angular.copy($scope.profileSettings);
                 var profileSettingIndex = helper.arrayObjectIndexOf(deleteModel, profileSetting);
                 deleteModel.splice(profileSettingIndex, 1);
 
-                ModuleService.deleteModuleProfileSetting(profileSetting.id)
-                    .then(function () {
-                        var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
-                        $scope.profileSettings.splice(profileSettingIndex, 1);
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this module profile setting ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            ModuleService.deleteModuleProfileSetting(profileSetting.id)
+                                .then(function () {
+                                    var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
+                                    $scope.profileSettings.splice(profileSettingIndex, 1);
+                                    swal("Deleted!", "Your  module profile setting has been deleted!", "success");
 
-                        ngToast.create({
-                            content: $filter('translate')('Setup.Modules.ModuleProfileSettingDeleteSuccess'),
-                            className: 'success'
-                        });
-                    })
-                    .catch(function () {
-                        $scope.profileSettings = $scope.profileSettingState;
+                                })
+                                .catch(function () {
+                                    $scope.profileSettings = $scope.profileSettingState;
 
-                        if ($scope.profileSettingsFormModal) {
-                            $scope.profileSettingsFormModal.hide();
-                            $scope.saving = false;
+                                    if ($scope.profileSettingsFormModal) {
+                                        $scope.profileSettingsFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                         }
                     });
             };
-
 
             //cancel
             $scope.cancel = function () {

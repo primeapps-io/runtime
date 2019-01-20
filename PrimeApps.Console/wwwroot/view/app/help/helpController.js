@@ -43,10 +43,14 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
+                HelpService.find(requestModel).then(function (response) {
+                    $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
+                    $scope.loading = false;
+                });
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
 
@@ -567,7 +571,7 @@ angular.module('primeapps')
 
             $scope.helpModalSave = function () {
                 var help = {};
-
+                $scope.saving = true;
                 if ($scope.helpModalObj.selectHelp === 'modules') {
                     var help = {};
                     help.module_id = $scope.helpModalObj.modulePicklist.id;
@@ -609,8 +613,9 @@ angular.module('primeapps')
                     help.id = $scope.currentTemplate.id;
                     HelpService.update(help);
                     $cache.removeAll();
-                    $scope.changeOffset();
+                    $scope.saving = false;
                     $scope.addNewHelpFormModal.hide();
+                    $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
                 else {
@@ -618,8 +623,9 @@ angular.module('primeapps')
                         HelpService.getByType($scope.modalType)
                             .then(function (response) {
                                 $scope.helpTemplates = response.data;
-                                $scope.changeOffset();
+                                $scope.saving = false;
                                 $scope.addNewHelpFormModal.hide();
+                                $scope.changePage(1);
                                 ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                             });
 
@@ -672,6 +678,7 @@ angular.module('primeapps')
 
             $scope.helpSideSave = function () {
                 var help = {};
+                $scope.saving = true;
 
                 if ($scope.helpModalObj.selectHelpRelation === 'any') {
                     help.module_id = null;
@@ -732,6 +739,7 @@ angular.module('primeapps')
                     help.id = $scope.currentTemplate.id;
                     HelpService.update(help);
                     $scope.changeOffset();
+                    $scope.saving = false;
                     $scope.addNewHelpFormSideModal.hide();
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
@@ -753,6 +761,7 @@ angular.module('primeapps')
                                     createHelpList();
                                     // $state.reload();
                                     $scope.changeOffset();
+                                    $scope.saving = false;
                                     $scope.addNewHelpFormSideModal.hide();
                                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                                 });
@@ -938,12 +947,31 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (helpside) {
-                HelpService.delete(helpside.id)
-                    .then(function () {
-                        var helpToDeleteIndex = helper.arrayObjectIndexOf($scope.helpsides, helpside);
-                        $scope.helpsides.splice(helpToDeleteIndex, 1);
-                        ngToast.create({ content: $filter('translate')('Yardım içeriği başarılı bir şekilde silinmiştir.'), className: 'success' });
-                    })
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this help ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            HelpService.delete(helpside.id)
+                                .then(function () {
+                                    var helpToDeleteIndex = helper.arrayObjectIndexOf($scope.helpsides, helpside);
+                                    $scope.helpsides.splice(helpToDeleteIndex, 1);
+                                    swal("Deleted!", "Your  help has been deleted!", "success");
+
+                                })
+                                .catch(function () {
+
+                                    if ($scope.addNewHelpFormModal) {
+                                        $scope.addNewHelpFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
+                        }
+                    });
             };
         }
     ])

@@ -10,7 +10,7 @@
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
                 <!--<th>{{'Setup.Templates.Module' | translate}}</th>-->
                 <th>Modül</th>
-                <th></th>
+                <th width="50"></th>
             </tr>
         </thead>
         <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
@@ -19,9 +19,21 @@
                 <td>{{template.name}}</td>
                 <!--<td>{{template.module['label_'+language+'_plural']}}</td>-->
                 <td>{{template.module['label_'+language+'_plural']}}</td>
-                <td class="text-right">
-                    <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(template)">{{'Common.Edit' | translate}}</button>
-                    <button type="button" class="btn btn-xs btn-custom" href confirm-click action="delete(template)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</button>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(template)" type="button"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="action-buttons-block">
+                        <button ng-click="showFormModal(template)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
+                                data-title="Edit" bs-tooltip data-placement="top"
+                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
+                                aria-expanded="false">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         </tbody>

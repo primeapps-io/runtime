@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'templatesEmail';
 
             $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Email Templates';
 
             $scope.loading = true;
@@ -296,7 +296,6 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
                 EmailTemplatesService.find(requestModel, 2).then(function (response) {
-
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
                         template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
@@ -313,6 +312,7 @@ angular.module('primeapps')
             };
 
             $scope.templateSave = function () {
+                $scope.saving = true;
                 var template = {};
                 template.module = $scope.newtemplate.moduleName.name;
                 template.name = $scope.newtemplate.template_name;
@@ -335,14 +335,16 @@ angular.module('primeapps')
                 if ($scope.currentTemplate) {
                     template.id = $scope.currentTemplate.id;
                     result = EmailTemplatesService.update(template);
+                    $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
-                    $scope.changeOffset();
+                    $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
                 }
                 else {
                     result = EmailTemplatesService.create(template);
+                    $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
-                    $scope.changeOffset();
+                    $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
                 }
 
@@ -383,11 +385,30 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (template) {
-                EmailTemplatesService.delete(template.id)
-                    .then(function () {
-                        var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
-                        $scope.templates.splice(templateToDeleteIndex, 1);
-                        ngToast.create({ content: $filter('translate')('E-Posta Şablonu başarılı bir şekilde silinmiştir.'), className: 'success' });
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to email template this help ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            EmailTemplatesService.delete(template.id)
+                                .then(function () {
+                                    var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
+                                    $scope.templates.splice(templateToDeleteIndex, 1);
+                                    swal("Deleted!", "Your  email template has been deleted!", "success");
+
+                                })
+                                .catch(function () {
+
+                                    if ($scope.addNewHelpFormModal) {
+                                        $scope.addNewHelpFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
+                        }
                     });
             };
         }

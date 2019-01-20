@@ -57,7 +57,7 @@ angular.module('primeapps')
             function getProfile() {
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
-                ProfilesService.find($scope.requestModel, 2).then(function (response)  {
+                ProfilesService.find($scope.requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
                     $scope.profilesCopy = angular.copy($scope.profiles);
                     $scope.profile = {};
@@ -177,6 +177,7 @@ angular.module('primeapps')
 
                 // if ($scope.profileForm.$valid) {
                 $scope.profileSubmit = true;
+                $scope.saving = true;
                 var result = null;
 
                 $scope.profile.start_page = $scope.profile.PageStart.valueLower;
@@ -204,8 +205,9 @@ angular.module('primeapps')
 
                 result.then(function () {
                     $scope.profileSubmit = false;
+                    $scope.saving = false;
                     $scope.profileFormModal.hide();
-                    getProfile();
+                    $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
 
                     ProfilesService.getAllBasic()
@@ -273,11 +275,30 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (profile) {
-                ProfilesService.delete(profile.id)
-                    .then(function () {
-                        var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
-                        $scope.profiles.splice(profileToDeleteIndex, 1);
-                        ngToast.create({ content: $filter('translate')('Profil başarılı bir şekilde silinmiştir.'), className: 'success' });
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this profile ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            ProfilesService.delete(profile.id)
+                                .then(function () {
+                                    var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
+                                    $scope.profiles.splice(profileToDeleteIndex, 1);
+                                    swal("Deleted!", "Your  profile has been deleted!", "success");
+
+                                })
+                                .catch(function () {
+
+                                    if ($scope.profileFormModal) {
+                                        $scope.profileFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
+                        }
                     });
             };
         }

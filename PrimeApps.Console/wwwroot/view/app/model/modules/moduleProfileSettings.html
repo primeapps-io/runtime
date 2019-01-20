@@ -8,15 +8,28 @@
             <tr>
                 <th>{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}</th>
                 <th>{{'Setup.UserCustomShares.CreatedDate' | translate}}</th>
+                <th width="50"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="profileSetting in profileSettings">
                 <td>{{profileSetting.profileName}}</td>
                 <td>{{profileSetting.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</td>
-                <td class="text-right">
-                    <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(profileSetting)">{{'Common.Edit' | translate}}</button>
-                    <button type="button" class="btn btn-xs btn-custom" href confirm-click action="delete(profileSetting)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</button>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(profileSetting)" type="button"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="action-buttons-block">
+                        <button ng-click="showFormModal(profileSetting)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
+                                data-title="Edit" bs-tooltip data-placement="top"
+                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
+                                aria-expanded="false">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         </tbody>
