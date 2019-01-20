@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
             $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Excel Templates';
 
             $scope.loading = true;
@@ -220,6 +220,12 @@ angular.module('primeapps')
                     swal($filter('translate')('Module.ExcelDesktop'), "", "success");
                     $scope.excelTemplateGuideModal.hide();
                 }
+            };
+
+            $scope.delete = function (id) {
+                ExcelTemplatesService.delete(id).then(function () {
+                    swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
+                });
             };
 
         }

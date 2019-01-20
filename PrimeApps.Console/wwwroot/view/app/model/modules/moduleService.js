@@ -30,6 +30,9 @@ angular.module('primeapps')
                 getIcons: function () {
                     return icons.icons;
                 },
+                getModules: function () {
+                    return $http.get(config.apiUrl + 'module/get_all');
+                },
                 newField: function (dataType) {
 
                     var field = {};
@@ -60,7 +63,7 @@ angular.module('primeapps')
                     }).catch(function (reason) {
                         deferred.reject(reason);
                     });
-                    
+
                     return deferred.promise;
                 },
                 getTemplateFields: function () {
