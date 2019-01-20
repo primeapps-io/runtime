@@ -59,7 +59,7 @@ namespace PrimeApps.App.Storage
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
         }
 
@@ -255,12 +255,6 @@ namespace PrimeApps.App.Storage
 
             var preSignedUrl = _client.GetPreSignedURL(request);
 
-            if (clearRoot)
-            {
-                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-                preSignedUrl = preSignedUrl.Replace(blobUrl, "").Remove(0, 1);
-            }
-
             return preSignedUrl;
         }
 
@@ -410,14 +404,14 @@ namespace PrimeApps.App.Storage
 
         public static string GetPath(string type, int tenant, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)
         {
-            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
         }
     }
 }
