@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'filters';
 
             $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/'+$rootScope.currentOrganization.id+'/app/'+$rootScope.appId+'/overview';
+            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Filters';
 
             $scope.loading = true;
@@ -68,11 +68,12 @@ angular.module('primeapps')
                     FiltersService.deleteView(id)
                         .then(function () {
                             $scope.customView = $filter('filter')($scope.customViews, { active: true })[0];
-                            $scope.customViews.splice($scope.customViews.indexOf($scope.view), 1);
+                            // $scope.customViews.splice($scope.customViews.indexOf($scope.view), 1);
+                            $scope.changePage(1);
                         });
                 }
                 else {
-                    ngToast.create({ content: $filter('translate')('Setup.Modules.OneView'), className: 'warning' });
+                    swal($filter('translate')('Setup.Modules.OneView'), "", "warning");
                     return;
                 }
             };
@@ -191,15 +192,19 @@ angular.module('primeapps')
                  return;
                  }*/
                 ModuleService.getModuleFields(module.name).then(function (response) {
-                    module.fields = response.data;
-                    $scope.fields = FiltersService.getFields(module, angular.copy($scope.view), $scope.$parent.modules);
-                    FiltersService.getPicklists(module, true, $scope.$parent.modules)
+
+                    $scope.module.fields = response.data;
+                    $scope.module = ModuleService.getFieldsOperator(module, $scope.$parent.modules, 0);
+                    $scope.fields = FiltersService.getFields($scope.module, angular.copy($scope.view), $scope.$parent.modules);
+
+                    ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
                             $scope.view.filterList = [];
 
                             for (var i = 0; i < 5; i++) {
                                 var filter = {};
+                                filter.id = i;
                                 filter.field = null;
                                 filter.operator = null;
                                 filter.value = null;
@@ -208,148 +213,9 @@ angular.module('primeapps')
                                 $scope.view.filterList.push(filter);
                             }
 
-                            if ($scope.view.filters) {
-                                $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
-
-                                for (var j = 0; j < $scope.view.filters.length; j++) {
-                                    var name = $scope.view.filters[j].field;
-                                    var value = $scope.view.filters[j].value;
-
-                                    if (name.indexOf('.') > -1) {
-                                        name = name.split('.')[0];
-                                        $scope.view.filters[j].field = name;
-                                    }
-
-                                    var field = $filter('filter')(module.fields, { name: name }, true)[0];
-                                    var fieldValue = null;
-
-                                    if (!field)
-                                        return;
-
-                                    switch (field.data_type) {
-                                        case 'picklist':
-                                            fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
-                                            break;
-                                        case 'multiselect':
-                                            fieldValue = [];
-                                            var multiselectValue = value.split('|');
-
-                                            angular.forEach(multiselectValue, function (picklistLabel) {
-                                                var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
-
-                                                if (picklist)
-                                                    fieldValue.push(picklist);
-                                            });
-                                            break;
-                                        case 'lookup':
-                                            if (field.lookup_type === 'users') {
-                                                var user = {};
-
-                                                if (value === '0' || value === '[me]') {
-                                                    user.id = 0;
-                                                    user.email = '[me]';
-                                                    user.full_name = $filter('translate')('Common.LoggedInUser');
-                                                }
-                                                else {
-                                                    var userItem = $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0];
-                                                    user.id = userItem.Id;
-                                                    user.email = userItem.Email;
-                                                    user.full_name = userItem.FullName;
-
-                                                    //TODO: $rootScope.users kaldirilinca duzeltilecek
-                                                    // ModuleService.getRecord('users', value)
-                                                    //     .then(function (lookupRecord) {
-                                                    //         fieldValue = [lookupRecord.data];
-                                                    //     });
-                                                }
-
-                                                fieldValue = [user];
-                                            }
-                                            else {
-                                                fieldValue = value;
-                                            }
-                                            break;
-                                        case 'date':
-                                        case 'date_time':
-                                        case 'time':
-                                            fieldValue = new Date(value);
-                                            break;
-                                        case 'checkbox':
-                                            fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
-                                            break;
-                                        default :
-                                            fieldValue = value;
-                                            break;
-                                    }
-
-                                    $scope.view.filterList[j].field = field;
-                                    $scope.view.filterList[j].operator = operators[$scope.view.filters[j].operator];
-                                    $scope.view.filterList[j].value = fieldValue;
-
-                                    if ($scope.view.filters[j].operator === 'empty' || $scope.view.filters[j].operator === 'not_empty') {
-                                        $scope.view.filterList[j].value = null;
-                                        $scope.view.filterList[j].disabled = true;
-                                    }
-                                }
-                            }
-                            else {
-                                angular.forEach(module.fields, function (field) {
-                                    field.dataType = dataTypes[field.data_type];
-                                    field.operators = [];
-                                    if (field.data_type === 'lookup') {
-                                        if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
-                                            var lookupModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
-                                            //TODO GETFIELDS
-                                            field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
-
-                                            if (!field.lookupModulePrimaryField)
-                                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-
-                                            var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
-
-                                            for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
-                                                var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
-                                                var operatorLookup = operators[operatorIdLookup];
-                                                field.operators.push(operatorLookup);
-                                            }
-                                        }
-                                        else {
-                                            field.operators.push(operators.equals);
-                                            field.operators.push(operators.not_equal);
-                                            field.operators.push(operators.empty);
-                                            field.operators.push(operators.not_empty);
-
-                                            // if (field.lookup_type === 'users') {
-                                            //     var lookupModule = $filter('filter')(modules, { name: 'users' }, true)[0];
-                                            //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                            // }
-                                            // else if (field.lookup_type === 'profiles') {
-                                            //     var lookupModule = $filter('filter')(modules, { name: 'profiles' }, true)[0];
-                                            //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                            // }
-                                            // else if (field.lookup_type === 'roles') {
-                                            //     var lookupModule = $filter('filter')(modules, { name: 'roles' }, true)[0];
-                                            //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-                                            // }
-                                        }
-
-                                    }
-                                    else {
-                                        for (var n = 0; n < field.dataType.operators.length; n++) {
-                                            var operatorId = field.dataType.operators[n];
-                                            var operator = operators[operatorId];
-                                            field.operators.push(operator);
-                                        }
-                                    }
-
-                                });
-                            }
+                            dragular();
                         });
-                    //dragular();
                 });
-                $timeout(function () {
-                    dragular();
-                }, 1000);
             };
 
             $scope.multiselect = function (searchTerm, field) {
@@ -568,8 +434,9 @@ angular.module('primeapps')
                 function success() {
                     //swal("Good job!", "You clicked the button!", "success");
                     swal("İşlem Başarıyla Gerçekleştirilmiştir!", "", "success");
-                    $state.go('studio.app.filters');
+                    //$state.go('studio.app.filters');
                     $scope.addNewFiltersModal.hide();
+                    $scope.changePage(1);
                 }
 
                 function error(data, status) {
