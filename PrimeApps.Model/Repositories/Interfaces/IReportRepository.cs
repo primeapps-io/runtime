@@ -3,6 +3,7 @@ using PrimeApps.Model.Entities.Tenant;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.Model.Repositories.Interfaces
@@ -34,5 +35,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> UpdateWidget(Widget widget);
         Task<int> DeleteSoftWidget(Widget widget);
         Task<int> DeleteHardWidget(Widget widget);
+        Task<int> Count();
+        Task<ICollection<Report>> Find(PaginationModel paginationModel);
     }
 }

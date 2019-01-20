@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Tenant;
@@ -20,6 +22,51 @@ namespace PrimeApps.Model.Repositories
 	{
 		public ReportRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
+		public async Task<int> Count()
+		{
+			var count = await DbContext.Reports
+				.Where(x => !x.Deleted).CountAsync();
+			return count;
+		}
+
+		public async Task<ICollection<Report>> Find(PaginationModel paginationModel)
+		{
+			var reports = GetPaginationGQuery(paginationModel)
+				.Skip(paginationModel.Offset * paginationModel.Limit)
+				.Take(paginationModel.Limit).ToList();
+
+			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+			{
+				var propertyInfo = typeof(Report).GetProperty(paginationModel.OrderColumn);
+
+				if (paginationModel.OrderType == "asc")
+				{
+					reports = reports.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+				else
+				{
+					reports = reports.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+
+			}
+
+			return reports;
+
+		}
+
+		private IQueryable<Report> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+		{
+			var  reports = DbContext.Reports
+				.Where(x => !x.Deleted);
+
+			if (withIncludes)
+			{
+				reports = reports.Include(x => x.Category);
+			}
+
+			return reports;
+		}
+	
 		public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
 		{
 			var data = new JArray();

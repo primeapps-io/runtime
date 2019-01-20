@@ -58,6 +58,7 @@ namespace PrimeApps.Model.Repositories
             return modules;
 
         }
+       
         public async Task<ICollection<Module>> GetAllBasic()
         {
             var modules = await DbContext.Modules.Select(x => new Module

@@ -2,11 +2,14 @@
 
 angular.module('primeapps')
 
-    .factory('ReportsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper',  '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, systemFields) {
+    .factory('ReportsService', ['$http','config',
+        function ($http,config) {
             return {
-                getReports: function () {
-                    console.log("Merhaba");
-                }
+                count: function () {
+                    return $http.get(config.apiUrl + 'report/count');
+                },
+                find: function (data) {
+                    return $http.post(config.apiUrl + 'report/find', data);
+                },
             };
         }]);
