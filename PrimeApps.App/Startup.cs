@@ -100,7 +100,7 @@ namespace PrimeApps.App
 
             var awsOptions = Configuration.GetAWSOptions();
             awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
-            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
+            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetSection("AppSettings")["StorageUrl"];
             awsOptions.Credentials = new BasicAWSCredentials(
                 Configuration.GetSection("AppSettings")["StorageAccessKey"],
                 Configuration.GetSection("AppSettings")["StorageSecretKey"]);

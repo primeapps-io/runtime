@@ -121,7 +121,7 @@ namespace PrimeApps.App.Controllers
 
             var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
             ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
-            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
             ViewBag.FunctionUrl = _configuration.GetSection("AppSettings")["FunctionUrl"];
 
             if (useCdn)

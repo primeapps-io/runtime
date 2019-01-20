@@ -239,7 +239,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            String blobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -311,7 +311,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            String blobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {

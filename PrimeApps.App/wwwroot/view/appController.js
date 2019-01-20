@@ -94,10 +94,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
             AuthService.logout()
                 .then(function (response) {
-                    $rootScope.app = 'crm';
                     AuthService.logoutComplete();
-                    $cookies.remove('tenant_id')
-                    //$state.go('auth.login');
                     window.location = response.data['redirect_url'];
                     blockUI.stop();
                 });

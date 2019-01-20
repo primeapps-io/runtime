@@ -857,7 +857,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
 
-                            var subdomain = _configuration.GetSection("TestMode")["BlobUrl"] == "true" ? "test" : appDomain;
+                            var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 
                             domain = string.Format(domain, subdomain);
 
