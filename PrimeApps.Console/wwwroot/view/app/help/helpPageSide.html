@@ -1,115 +1,116 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6">
+            <div class="flex-between">
                 <h4 class="modal-title">Yardım Ekranı Ekle</h4>
-            </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" style="margin-right:5px" ng-click="addNewHelpFormSideModal.hide();">
-                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue" ng-click="helpSideSave()" style="margin-left: 5px" ladda="saving" ng-disabled="saving">
-                    <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
-                </button>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button type="button" class="btn add-button btn-radius btn-gray " ng-disabled="saving" style="margin-right:5px" ng-click="addNewHelpFormSideModal.hide();">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ng-click="helpSideSave()" style="margin-left: 5px" ladda="saving" ng-disabled="saving">
+                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="modal-dialog modal-600">
-            <div class="modal-content padding-0">
-                <div class="modal-body">
-                    <div id="field-form-body" class="modal-body">
-                        <div class="section" id="section1">
-                            <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
-                                        <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenName' | translate}}</label></p>
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
-                                        <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</label></p>
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <label class="radio-inline">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="any" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Independent' | translate}}
-                                        </label>
-                                        <label class="radio-inline" style="padding-right: 1px;">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="module" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Module' | translate}}
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="other" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Other' | translate}}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
-                                    </div>
-                                    <div class="col-sm-7 pull-right" ng-show="helpModalObj.selectHelpRelation==='module'">
-                                        <label class="radio-inline" style="padding-right:27px;margin-left: 1px; ">
-                                            <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="list" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.List' | translate}}
-                                        </label>
-                                        <label class="radio-inline" style="padding-right:4px ">
-                                            <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="detail" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Detail' | translate}}
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="form" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Form' | translate}}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
-                                    </div>
-                                    <div class="col-sm-7 pull-right">
-                                        <div ng-show="helpModalObj.selectHelp==='list' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
-                                            <select class="form-control pull-left"
-                                                    ng-model="helpModalObj.modulePicklist"
-                                                    ng-disabled="editDisable"
-                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
-                                        </div>
-                                        <div ng-show="helpModalObj.selectHelp==='detail' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
-                                            <select class="form-control pull-left"
-                                                    ng-model="helpModalObj.moduleDetail"
-                                                    ng-disabled="editDisable"
-                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
-                                        </div>
-                                        <div ng-show="helpModalObj.selectHelp==='form' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
-                                            <select class="form-control pull-left"
-                                                    ng-model="helpModalObj.moduleForm"
-                                                    ng-disabled="editDisable"
-                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
-                                        </div>
-                                        <div  ng-show="helpModalObj.selectHelpRelation==='other'">
-                                            <select class="form-control"
-                                                    ng-model="helpModalObj.routeModules"
-                                                    ng-disabled="editDisable"
-                                                    ng-options="item.name for item in routeModule">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="row" ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
-                                        <textarea name="tinymceModel" ui-tinymce="tinymceOptions" ng-required="true" ng-model="helpModalObj.tinymceModel"></textarea>
-                                        <div class="hidden" plupload="imgUpload">
-                                            <input id="uploadImage" type="file" add-file="add-file" />
-                                        </div>
-                                    </div>
-                                </div>
+        <div class="modal-dialog">
+            <div class="section" id="section1">
+                <div class="panel">
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-5">
+                            <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenName' | translate}}</label></p>
+                        </div>
+                        <div class="col-sm-7">
+                            <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-5">
+                            <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</label></p>
+                        </div>
+                        <div class="col-sm-7">
+                            <label class="radio-inline">
+                                <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="any" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.Independent' | translate}}
+                            </label>
+                            <label class="radio-inline" style="padding-right: 1px;">
+                                <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="module" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.Module' | translate}}
+                            </label>
+                            <label class="radio-inline">
+                                <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="other" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.Other' | translate}}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-5">
+                        </div>
+                        <div class="col-sm-7 pull-right" ng-show="helpModalObj.selectHelpRelation==='module'">
+                            <label class="radio-inline" style="padding-right:27px;margin-left: 1px; ">
+                                <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="list" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.List' | translate}}
+                            </label>
+                            <label class="radio-inline" style="padding-right:4px ">
+                                <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="detail" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.Detail' | translate}}
+                            </label>
+                            <label class="radio-inline">
+                                <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="form" ng-disabled="editDisable">
+                                {{'Setup.HelpGuide.Form' | translate}}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-5">
+                        </div>
+                        <div class="col-sm-7 pull-right">
+                            <div ng-show="helpModalObj.selectHelp==='list' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                <select class="form-control pull-left"
+                                        ng-model="helpModalObj.modulePicklist"
+                                        ng-disabled="editDisable"
+                                        ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                            <div ng-show="helpModalObj.selectHelp==='detail' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                <select class="form-control pull-left"
+                                        ng-model="helpModalObj.moduleDetail"
+                                        ng-disabled="editDisable"
+                                        ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                            <div ng-show="helpModalObj.selectHelp==='form' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                <select class="form-control pull-left"
+                                        ng-model="helpModalObj.moduleForm"
+                                        ng-disabled="editDisable"
+                                        ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                            <div ng-show="helpModalObj.selectHelpRelation==='other'">
+                                <select class="form-control"
+                                        ng-model="helpModalObj.routeModules"
+                                        ng-disabled="editDisable"
+                                        ng-options="item.name for item in routeModule">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="row" ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
+                            <textarea name="tinymceModel" ui-tinymce="tinymceOptions" ng-required="true" ng-model="helpModalObj.tinymceModel"></textarea>
+                            <div class="hidden" plupload="imgUpload">
+                                <input id="uploadImage" type="file" add-file="add-file" />
                             </div>
                         </div>
                     </div>

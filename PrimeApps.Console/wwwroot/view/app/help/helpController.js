@@ -36,7 +36,7 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            HelpService.count().then(function (response) {
+            HelpService.count("email").then(function (response) {
                 $scope.pageTotal = response.data;
             });
 

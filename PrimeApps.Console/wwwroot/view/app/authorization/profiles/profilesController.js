@@ -218,10 +218,6 @@ angular.module('primeapps')
                     $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
 
-                    ProfilesService.getAllBasic()
-                        .then(function (profilesBasic) {
-                            $rootScope.profiles = profilesBasic.data;
-                        });
                 }).catch(function () {
                     $scope.profileSubmit = false;
                 });
@@ -229,10 +225,6 @@ angular.module('primeapps')
             };
 
             var editProfile = function (profile) {
-                ProfilesService.getAll().then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
-                });
                 if (profile.id) {
                     $scope.profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
 
@@ -247,10 +239,6 @@ angular.module('primeapps')
             };
 
             var cloneProfile = function (profile) {
-                ProfilesService.getAll().then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
-                });
                 var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
                 $scope.profile = profile;
                 delete  $scope.profile.name;

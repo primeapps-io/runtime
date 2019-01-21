@@ -1,128 +1,129 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave();" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6">
+            <div class="flex-between">
                 <h4 class="modal-title">Şablon Yükle</h4>
-            </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewEmailTemplateFormModal.hide();">
-                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="saving">
-                    <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
-                </button>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button type="button" class="btn add-button btn-radius btn-gray " ng-disabled="saving" ng-click="addNewEmailTemplateFormModal.hide();">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="saving">
+                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="modal-dialog modal-600">
-            <div class="modal-content padding-0">
-                <div class="modal-body">
-                    <div id="field-form-body" class="modal-body">
-                        <div class="section" id="section1">
-                            <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>Modül</label>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <select class="form-control pull-left"
-                                                ng-change="setContent()"
-                                                ng-model="newtemplate.moduleName"
-                                                ng-options="o as o['label_' + language + '_singular'] for o in templateModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>{{'Template.TemplateName' | translate}}</label>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>{{'Template.Subject' | translate}}</label>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>{{'Template.Sharing' | translate}}</label>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <label>
-                                            <input type="radio" ng-model="newtemplate.sharing_type" value="me">
-                                            {{'View.ShareMe' | translate}}
-                                        </label><br />
-                                        <label>
-                                            <input type="radio" ng-model="newtemplate.sharing_type" value="everybody">
-                                            {{'View.ShareEveryone' | translate}}
-                                        </label><br>
-                                        <label>
-                                            <input type="radio" ng-model="newtemplate.sharing_type" value="custom">
-                                            {{'View.ShareCustom' | translate}}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3"  ng-if="newtemplate.sharing_type === 'custom'">
-                                        <label>{{'Template.SharedUsers' | translate}}</label>
-                                    </div>
-                                    <div class="col-sm-9" ng-if="newtemplate.sharing_type === 'custom'">
-                                        <tags-input name="shares"
-                                                    class="shared-users-input shared-users"
-                                                    ng-model="newtemplate.shares"
-                                                    display-property="full_name"
-                                                    key-property="id"
-                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true">
-                                            <auto-complete source="lookupUser($query, 'record_owner')"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-12">
+        <div class="modal-dialog">
+            <div class="section" id="section1">
+                <div class="panel">
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-3">
+                            <label>Modül</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <select class="form-control pull-left"
+                                    ng-change="setContent()"
+                                    ng-model="newtemplate.moduleName"
+                                    ng-options="o as o['label_' + language + '_singular'] for o in templateModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                <option value="">{{'Common.Select' | translate}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-3">
+                            <label>{{'Template.TemplateName' | translate}}</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-3">
+                            <label>{{'Template.Subject' | translate}}</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-3">
+                            <label>{{'Template.Sharing' | translate}}</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <label>
+                                <input type="radio" ng-model="newtemplate.sharing_type" value="me">
+                                {{'View.ShareMe' | translate}}
+                            </label><br />
+                            <label>
+                                <input type="radio" ng-model="newtemplate.sharing_type" value="everybody">
+                                {{'View.ShareEveryone' | translate}}
+                            </label><br>
+                            <label>
+                                <input type="radio" ng-model="newtemplate.sharing_type" value="custom">
+                                {{'View.ShareCustom' | translate}}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-3" ng-if="newtemplate.sharing_type === 'custom'">
+                            <label>{{'Template.SharedUsers' | translate}}</label>
+                        </div>
+                        <div class="col-sm-9" ng-if="newtemplate.sharing_type === 'custom'">
+                            <tags-input name="shares"
+                                        class="shared-users-input shared-users"
+                                        ng-model="newtemplate.shares"
+                                        display-property="full_name"
+                                        key-property="id"
+                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                        replace-spaces-with-dashes="false"
+                                        add-from-autocomplete-only="true">
+                                <auto-complete source="lookupUser($query, 'record_owner')"
+                                               min-length="0"
+                                               load-on-focus="true"
+                                               load-on-empty="true"
+                                               max-results-to-show="9999"></auto-complete>
+                            </tags-input>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                        <div class="col-sm-12">
                                     <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                               mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
                                               ng-model="newtemplate.tinymce_content" ng-required="true"
                                               mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
-                                        <script type="text/ng-template" id="tag-mentions.tpl">
-                                            <ul class="ment-tags">
-                                                <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                    class="list-group-item clearfix"
-                                                    ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                    {{tag.label}}
-                                                </li>
-                                            </ul>
-                                        </script>
-                                        <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
-                                                     mentio-trigger-char="'#'" mentio-items="tags"
-                                                     mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
-                                                     mentio-select="getTagTextRaw(item)"></mentio-menu>
+                            <script type="text/ng-template" id="tag-mentions.tpl">
+                                <ul class="ment-tags">
+                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                        class="list-group-item clearfix"
+                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                        {{tag.label}}
+                                    </li>
+                                </ul>
+                            </script>
+                            <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                         mentio-trigger-char="'#'" mentio-items="tags"
+                                         mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
 
-                                        <!--<div class="hidden" plupload="imgUpload">-->
-                                            <!--<input id="uploadImage" type="file" add-file="add-file" />-->
-                                        <!--</div>-->
-                                        <!--<div class="hidden" plupload="fileUpload">-->
-                                            <!--<input id="uploadFile" type="file" add-file="add-file" />-->
-                                        <!--</div>-->
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
-                                    <div class="col-sm-offset-3 col-sm-9">
-                                        <div class="callout callout-danger">
-                                            <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            <!--<div class="hidden" plupload="imgUpload">-->
+                            <!--<input id="uploadImage" type="file" add-file="add-file" />-->
+                            <!--</div>-->
+                            <!--<div class="hidden" plupload="fileUpload">-->
+                            <!--<input id="uploadFile" type="file" add-file="add-file" />-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="callout callout-danger">
+                                <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
                             </div>
                         </div>
                     </div>
