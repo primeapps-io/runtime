@@ -318,20 +318,31 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (relation) {
-                RelationsService.deleteModuleRelation(relation.id)
-                    .then(function () {
-                        //var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
-                        // $scope.relations.splice(relationToDeleteIndex, 1);
-                        swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
-                        //$scope.addNewRelationsFormModal.hide();
-                        $scope.changePage(1);
-                    })
-                    .catch(function () {
-                        $scope.relations = $scope.relationsState;
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this dependency ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            RelationsService.deleteModuleRelation(relation.id)
+                                .then(function () {
+                                    //var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
+                                    // $scope.relations.splice(relationToDeleteIndex, 1);
+                                    swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
+                                    //$scope.addNewRelationsFormModal.hide();
+                                    $scope.changePage(1);
+                                })
+                                .catch(function () {
+                                    $scope.relations = $scope.relationsState;
 
-                        if ($scope.addNewRelationsFormModal) {
-                            $scope.addNewRelationsFormModal.hide();
-                            $scope.saving = false;
+                                    if ($scope.addNewRelationsFormModal) {
+                                        $scope.addNewRelationsFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                         }
                     });
             };

@@ -2,9 +2,8 @@
     <h2>{{'Setup.Modules.TitleFilters' | translate}}</h2>
     <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewFilter' | translate}}</button>
 </div>
-<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-<div ng-show="!loading" class="tab-content">
-    <table class="table">
+<div class="tab-content">
+    <table class="table" ng-show="loading">
         <thead>
             <tr>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
@@ -13,7 +12,30 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'">
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table ng-show="!loading" class="table">
+        <thead>
+            <tr>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'View.ViewName' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(view)">
                 <td>{{view.parent_module['label_'+language+'_plural']}}</td>
                 <td>{{view['label_' + language]}}</td>
                 <td class="text-right">
@@ -33,9 +55,7 @@
                                 <a ng-click="showFormModal(view)">{{'Common.Edit' | translate}} </a>
                             </li>
                             <li>
-                                <a href="#" confirm-click ng-click="delete(view.id)" placement="left"
-                                   confirm-message="{{'Common.AreYouSure' | translate}}"
-                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                <a ng-click="$event.stopPropagation();deleteView(view.id);">
                                     {{'Common.Remove' | translate}}
                                 </a>
                             </li>
