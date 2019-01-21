@@ -274,6 +274,14 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
             EmailTemplatesService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
