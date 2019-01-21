@@ -23,12 +23,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+            $scope.generator(10);
+
             TeamsService.count(organitzationId).then(function (response) {
+                $scope.$parent.teamCount = response.data;
                 $scope.pageTotal = response.data;
             });
 
             TeamsService.find($scope.requestModel, organitzationId).then(function (response) {
                 $scope.teamArray = response.data;
+
+                for (var i = 0; i < $scope.teamArray.length; i++) {
+                    var team = $scope.teamArray[i];
+                    team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
+                }
                 $scope.$parent.teamArray = response.data;
                 $scope.loading = false;
             });
@@ -37,10 +52,17 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-
+                TeamsService.count(organitzationId).then(function (response) {
+                    $scope.$parent.teamCount = response.data;
+                    $scope.pageTotal = response.data;
+                });
 
                 TeamsService.find(requestModel, organitzationId).then(function (response) {
                     $scope.teamArray = response.data;
+                    for (var i = 0; i < $scope.teamArray.length; i++) {
+                        var team = $scope.teamArray[i];
+                        team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
+                    }
                     $scope.$parent.teamArray = response.data;
                     $scope.loading = false;
                 });
@@ -48,24 +70,13 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
-            $scope.getTeamsList = function () {
-                TeamsService.getAll()
-                    .then(function (response) {
-                        if (response.data) {
-                            $scope.teamArray = response.data;
-                            $scope.$parent.teamArray = response.data;
-                        }
-                        $scope.loading = false;
-                    })
-                    .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
-                    });
-            }
-
             $scope.getOrganizationUserList = function () {
+                $scope.loadingMembers = true;
+                $scope.generator(10);
+
                 TeamsService.getOrganizationUsers(organitzationId) //TODO Organization ID 
                     .then(function (response) {
                         if (response.data) {
@@ -75,6 +86,7 @@ angular.module('primeapps')
                                 userList.users = $filter('filter')(userList.users, function (value) { return value.user_id != $scope.selectedTeam.team_users[i].user_id });
                             }
                             $scope.orgranizationUserArray = angular.copy(userList.users);
+                            $scope.loadingMembers = false;
                         }
                     })
                     .catch(function (error) {
@@ -87,12 +99,16 @@ angular.module('primeapps')
             $scope.selectTeam = function (id) {
                 if (id)
                     $scope.teamId = id;
-                $scope.$parent.teamId = id;
 
+                $scope.$parent.teamId = id;
+                $scope.loadingMembers = true;
+                $scope.generator(10);
                 TeamsService.get(id)
                     .then(function (response) {
-                        if (response.data)
+                        if (response.data) {
                             $scope.selectedTeam = response.data;
+                            $scope.teamOrganizationName = $filter('filter')($rootScope.organizations, { id: $scope.selectedTeam.organization_id }, true)[0].label;
+                        }
 
                         //$scope.$parent.menuTopTitle = $scope.selectedTeam.name;
                         $scope.$parent.activeMenu = "teams";
@@ -108,7 +124,7 @@ angular.module('primeapps')
                 TeamsService.userAddForTeam(id, $scope.selectedTeam)
                     .then(function (response) {
                         if (response.data) {
-                            getToastMsg('Common.Success', 'success');
+                            ngToast.create({ content: 'Collaborator is added successfully', className: 'success' });
                             $scope.selectTeam($scope.teamId);
                             $scope.getOrganizationUserList();
                             $scope.selectedUser = {};
@@ -123,7 +139,9 @@ angular.module('primeapps')
             $scope.$parent.selectTeam = function (id) {
                 if (id)
                     $scope.teamId = id;
+
                 $scope.$parent.teamId = id;
+                $scope.loadingTeamMembers = true;
 
                 TeamsService.get(id)
                     .then(function (response) {
@@ -169,93 +187,124 @@ angular.module('primeapps')
                 if (!addNewTeamForm.$valid)
                     return false;
 
-                //New add team
-                if (!$scope.teamId) {
+                $scope.submitting = true;
 
-                    $scope.getTeamsList();
-
-                    var searchTeamName = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
-
-                    if (searchTeamName) {
-                        addNewTeamForm.name.$invalid = true;
-                        getToastMsg('A team with the same name is available.', 'warning');
-                        return false;
-                    }
-
-                    TeamsService.create($scope.teamModel)
-                        .then(function (response) {
-                            if (response.data) {
-                                getToastMsg('Team created successfully', 'success');
-                                $scope.clearModels();
-                                $scope.getTeamsList();
-                            }
-                        })
-                        .catch(function (error) {
-                            getToastMsg('Common.Error', 'danger');
-                            return false;
-                        });
-                    ;
-                }
-                else { //Edit team
-                    TeamsService.update($scope.teamId, $scope.teamModel)
-                        .then(function (response) {
-                            if (response.data) {
-                                getToastMsg('Common.Success', 'success');
-                                $scope.clearModels();
-                                $scope.getTeamsList();
-                            }
-                        })
-                        .catch(function (error) {
-                            getToastMsg('Common.Error', 'danger');
-                        });
-                }
-            }
-
-            $scope.delete = function (id) {
-                if (!id)
-                    return false;
-
-                TeamsService.delete(id)
+                TeamsService.isUniqueName($scope.teamModel.name)
                     .then(function (response) {
+                        $scope.nameChecking = false;
                         if (response.data) {
-                            getToastMsg('Team deleted successfully', 'success');
-                            $scope.getTeamsList();
-                            $scope.teamId = 0;
-                            $scope.$parent.teamId = 0;
-                            $scope.addNewTeamFormModal.hide();
-                            $scope.teamModel = {};
-                            $state.reload();
+                            $scope.nameValid = true;
+                            if (!$scope.teamId) {
+                                TeamsService.create($scope.teamModel)
+                                    .then(function (response) {
+                                        if (response.data) {
+                                            $scope.submitting = false;
+                                            getToastMsg('Team created successfully', 'success');
+                                            $scope.clearModels();
+                                            $scope.changePage(1);
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        getToastMsg('Common.Error', 'danger');
+                                        return false;
+                                    });
+                            }
+                            else { //Edit team
+                                TeamsService.update($scope.teamId, $scope.teamModel)
+                                    .then(function (response) {
+                                        if (response.data) {
+                                            getToastMsg('Common.Success', 'success');
+                                            $scope.clearModels();
+                                            $scope.changePage(1);
+                                        }
+                                    })
+                                    .catch(function (error) {
+                                        getToastMsg('Common.Error', 'danger');
+                                    });
+                            }
+                        }
+                        else {
+                            addNewTeamForm.name.$invalid = true;
+                            $scope.submitting = false;
+                            getToastMsg('A team with the same name is available.', 'warning');
+                            return false;
                         }
                     })
-                    .catch(function (result) {
-                        getToastMsg('Common.Error', 'danger');
+                    .catch(function () {
+                        $scope.nameValid = false;
+                        $scope.nameChecking = false;
+                        $scope.submitting = false;
                     });
+            };
+
+            $scope.delete = function (id) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure that you want to delete this team ?",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Okey'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        if (!id)
+                            return false;
+
+                        TeamsService.delete(id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    $scope.changePage(1);
+                                    $scope.teamId = 0;
+                                    $scope.$parent.teamId = 0;
+                                    $scope.addNewTeamFormModal.hide();
+                                    $scope.teamModel = {};
+                                    $state.reload();
+                                    swal("Deleted!", "Team has been deleted!", "success");
+                                }
+                            })
+                            .catch(function (result) {
+                                getToastMsg('Common.Error', 'danger');
+                            });
+                    }
+                })
             }
 
             $scope.deleteUser = function (id) {
-                if (!id)
-                    return false;
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure that you want to delete this member ?",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Okey'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        if (!id)
+                            return false;
 
-                TeamsService.deleteUser(id, $scope.selectedTeam)
-                    .then(function (response) {
-                        if (response) {
-                            getToastMsg('User of team deleted successfully', 'success');
-                            $scope.selectTeam($scope.teamId);
-                            $scope.getOrganizationUserList();
-                            $scope.selectedUser = {};
-                        }
-                    })
-                    .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
-                    });
+                        TeamsService.deleteUser(id, $scope.selectedTeam)
+                            .then(function (response) {
+                                if (response) {
+                                    $scope.selectTeam($scope.teamId);
+                                    $scope.getOrganizationUserList();
+                                    $scope.selectedUser = {};
+                                    swal("Deleted!", "Member has been deleted!", "success");
+                                }
+                            })
+                            .catch(function (error) {
+                                getToastMsg('Common.Error', 'danger');
+                            });
+                    }
+                })
             }
 
             $scope.addNewTeam = function (id) {
                 if (id) {
+                    $scope.editForm = true;
                     $scope.teamId = id;
                     var findTeam = $filter('filter')($scope.teamArray, { id: id }, true)[0];
                     $scope.teamModel.name = findTeam.name;
                     $scope.teamModel.icon = findTeam.icon;
+                } else {
+                    $scope.editForm = false;
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({

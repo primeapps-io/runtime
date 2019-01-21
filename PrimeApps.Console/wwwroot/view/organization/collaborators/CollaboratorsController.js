@@ -44,7 +44,10 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-
+                CollaboratorsService.count(organitzationId).then(function (response) {
+                    $scope.$parent.collaboratorCount = response.data;
+                    $scope.pageTotal = response.data;
+                });
                 CollaboratorsService.find(requestModel, organitzationId).then(function (response) {
                     $scope.collaboratorArray = response.data;
                     $scope.$parent.collaboratorArray = response.data;
@@ -54,7 +57,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
             $scope.getCollaborators = function () {
@@ -149,6 +152,7 @@ angular.module('primeapps')
                             $scope.submitting = false;
                             $scope.userPassword = response.data.password;
                             $scope.showNewCollaboratorInfo = true;
+                            $scope.changePage(1);
                         }
                     })
                     .catch(function () {

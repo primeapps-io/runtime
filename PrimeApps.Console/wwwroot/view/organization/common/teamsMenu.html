@@ -1,5 +1,5 @@
 <ul class="nav nav-pills nav-stacked setup-nav">
-    <li ng-repeat="team in teamArray" ng-class="team.id === teamId ? 'active' :''" ng-click="selectTeam(team.id)">
+    <li ng-repeat="team in teamArray" ng-class="team.id === teamId ? 'active' :''" ng-click="selectTeam(team.id)" data-trigger="hover" data-type="info" data-title="{{team.name}}" bs-tooltip data-placement="right">
 
         <div class="user-info">
             <div class="user-image">
