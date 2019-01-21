@@ -4,9 +4,45 @@
         {{'Setup.Modules.NewDependency' | translate}}
     </button>
 </div>
-<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-<div ng-show="!loading" class="tab-content">
-    <table class="table">
+<div class="tab-content">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
         <thead>
             <tr>
                 <th>{{'Setup.Templates.Module' | translate}}</th>
@@ -41,9 +77,7 @@
                                 <a ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}} </a>
                             </li>
                             <li>
-                                <a href="#" confirm-click ng-click="delete(dependency)" placement="left"
-                                   confirm-message="{{'Common.AreYouSure' | translate}}"
-                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                <a href="#" confirm-click ng-click="$event.stopPropagation(); delete(dependency);">
                                     {{'Common.Remove' | translate}}
                                 </a>
                             </li>
