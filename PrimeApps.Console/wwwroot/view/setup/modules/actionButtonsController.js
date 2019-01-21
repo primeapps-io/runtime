@@ -2,25 +2,63 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$scope', '$filter', 'ngToast', '$modal', 'helper', 'ModuleService', '$location',
-        function ($scope, $filter, ngToast, $modal, helper, ModuleService, $location) {
+    .controller('ActionButtonsController', ['$scope', '$filter', 'ngToast', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
+        function ($scope, $filter, ngToast, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+
             $scope.actionButtons = [];
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
             $scope.loading = true;
             $scope.id = $location.search().id;
 
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
+            };
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+                ActionButtonsService.find($scope.id, requestModel).then(function (response) {
+                    $scope.actionButtons = actionButtons.data;
+                    for (var i = 0; i < actionButtons.data.length; i++) {
+                        $scope.actionButtons[i].parent_module = $filter('filter')($scope.$parent.modules, { id: actionButtons.data[i].module_id }, true)[0];
+                        $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
+                    }
+                    $scope.actionbuttonState = angular.copy($scope.actionButtons);
+                    $scope.loading = false;
+                });
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+
+
             if ($scope.id) {
-                ModuleService.getActionButtons($scope.id)
-                    .then(function (actionButtons) {
-                        if (actionButtons.data.length > 0) {
+
+                ActionButtonsService.count($scope.id).then(function (response) {
+                    $scope.pageTotal = response.data;
+                    var requestModel = angular.copy($scope.requestModel);
+                    requestModel.offset = requestModel.offset - 1;
+                    ActionButtonsService.find($scope.id, requestModel)
+                        .then(function (actionButtons) {
                             $scope.actionButtons = actionButtons.data;
                             for (var i = 0; i < actionButtons.data.length; i++) {
                                 $scope.actionButtons[i].parent_module = $filter('filter')($scope.$parent.modules, { id: actionButtons.data[i].module_id }, true)[0];
+                                $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
                             }
                             $scope.actionbuttonState = angular.copy($scope.actionButtons);
-                        }
-
-                        $scope.loading = false;
-                    });
+                            $scope.loading = false;
+                        });
+                });
             }
 
             $scope.moduleChanged = function () {
@@ -157,6 +195,8 @@ angular.module('primeapps')
                 if (actionButton.isNew)
                     delete actionButton.isNew;
 
+                $scope.id = $scope.module.id;
+
                 actionButton.module_id = $scope.module.id;
                 actionButton.template = 'template';
 
@@ -195,14 +235,12 @@ angular.module('primeapps')
                             actionButton.trigger = response.data.trigger;
                             actionButton.id = response.data.id;
                             actionButton.parent_module = actionButton.module;
-                            $scope.actionButtons.push(actionButton);
 
-                            ngToast.create({
-                                content: $filter('translate')('Setup.Modules.ActionButtonSaveSuccess'),
-                                className: 'success'
-                            });
                             $scope.saving = false;
                             $scope.formModal.hide();
+                            $scope.changePage(1);
+                            swal($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'), "", "success");
+
 
                         }).catch(function () {
                         $scope.actionButtons = $scope.actionbuttonState;
@@ -215,16 +253,11 @@ angular.module('primeapps')
                 } else {
                     ModuleService.updateActionButton(actionButton)
                         .then(function (response) {
-                            $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].action_type = response.data.type;
-                            $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].trigger = response.data.trigger;
-                            $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].method_type = response.data.method_type;
-                            $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].parameters = response.data.parameters;
-                            ngToast.create({
-                                content: $filter('translate')('Setup.Modules.ActionButtonSaveSuccess'),
-                                className: 'success'
-                            });
                             $scope.saving = false;
                             $scope.formModal.hide();
+                            $scope.changePage(1);
+                            swal($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'), "", "success");
+
                         }).catch(function () {
                         $scope.actionButtons = $scope.actionbuttonState;
 
@@ -237,27 +270,34 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (actionButton) {
-                delete actionButton.$$hashKey;
-                var deleteModel = angular.copy($scope.actionButtons);
-                var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
-                deleteModel.splice(actionButtonIndex, 1);
+                // delete actionButton.$$hashKey;
+                // var deleteModel = angular.copy($scope.actionButtons);
+                // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
+                // deleteModel.splice(actionButtonIndex, 1);
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this action button ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            ModuleService.deleteActionButton(actionButton.id)
+                                .then(function () {
+                                    // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
+                                    // $scope.actionButtons.splice(actionButtonIndex, 1);
+                                    $scope.changePage(1);
+                                    swal($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'), "", "success");
+                                })
+                                .catch(function () {
+                                    $scope.actionButtons = $scope.actionButtonState;
 
-                ModuleService.deleteActionButton(actionButton.id)
-                    .then(function () {
-                        var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
-                        $scope.actionButtons.splice(actionButtonIndex, 1);
-
-                        ngToast.create({
-                            content: $filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'),
-                            className: 'success'
-                        });
-                    })
-                    .catch(function () {
-                        $scope.actionButtons = $scope.actionButtonState;
-
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
+                                    if ($scope.formModal) {
+                                        $scope.formModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                         }
                     });
             };
@@ -279,11 +319,11 @@ angular.module('primeapps')
 
                 ModuleService.getModuleFields($scope.module.name).then(function (fields) {
 
-                    $scope.module.fields = fields;
+                    $scope.module.fields = fields.data;
 
                     angular.forEach($scope.module.fields, function (field) {
                         if (field.lookup_type && field.lookup_type != $scope.module.name && field.lookup_type != 'users' && !field.deleted) {
-                            var module = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                            var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
                             $scope.updatableModules.push(module);
                         }
                     });

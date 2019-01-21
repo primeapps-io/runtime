@@ -1002,6 +1002,7 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/actionButtonsController.js',
+                                cdnUrl + 'view/setup/modules/actionButtonsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
