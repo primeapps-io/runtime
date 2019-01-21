@@ -13,7 +13,6 @@
                 <th class="action-column"></th>
             </tr>
         </thead>
-        <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <tbody ng-show="!loading">
             <tr ng-repeat="item in menuList | orderBy:'!default'">
                 <td class="profile-name"><a ng-click="showFormModal(item.id)">{{item.name}}</a></td>
