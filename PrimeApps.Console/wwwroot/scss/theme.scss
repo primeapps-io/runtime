@@ -867,17 +867,29 @@ $primeapps-color: #0D6FAA;
 
   .setup-modal, .module-modal {
     background-color: #fff !important;
-    margin-top: 10px;
-    margin-right: 20px;
+    margin: 10px;
     border-radius: 5px;
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
     overflow-x: hidden;
-    overflow-y: auto;
-
-    .modal-dialog {
+    overflow-y: hidden;
+    .form-custom
+    {
+      position: relative;
       height: 100%;
-      overflow-x: auto;
+      overflow: hidden;
+    }
+    .modal-header
+    {
+      position: relative;
+      width: 100%;
+      top: 0px;
+      left: 0px;
+      background: #FFF;
+      z-index:1;
+    }
+    .modal-dialog {
+      height: calc(100% - 75px);
+      overflow-y: auto;
       margin: 0;
       line-height: 33px !important;
       width: 100% !important;
