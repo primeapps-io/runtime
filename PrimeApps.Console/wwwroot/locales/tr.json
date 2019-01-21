@@ -1644,6 +1644,7 @@
       "Message": "Mesaj",
       "SelectModule": "Bir modül seçiniz ->",
       "SelectField": "Bir alan seçiniz ->",
+      "SelectFunction": "Bir fonksiyon seçiniz ->",
       "ScheduleItem0": "İş akışı çalıştığı anda",
       "ScheduleItem1": "İş akışı çalıştıktan 1 gün sonra",
       "ScheduleItemMany": "İş akışı çalıştıktan {{day}} gün sonra",
@@ -1670,6 +1671,7 @@
       "FunctionName": "Function Name",
       "Handler": "Handler",
       "Runtime": "Runtime",
+      "PostBody": "Yazı alanı",
       "Dependencies": "Dependencies",
       "NoParameterAdded": "Parametre Seçilmedi",
       "Info": {

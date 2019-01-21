@@ -20,6 +20,7 @@ angular.module('primeapps')
             angular.element(function () {
                 window.initFunc();
             });
+
             $scope.triggerBpm = function () {
                 angular.element(function () {
                     jQuery("#accordion").accordion({
@@ -32,6 +33,7 @@ angular.module('primeapps')
                     window.myPaletteLevel1.requestUpdate();
                 });
             };
+
             $scope.triggerBpm();
             //BPM element menu loading end
 
@@ -224,30 +226,33 @@ angular.module('primeapps')
             };
 
             $scope.validate = function (tabClick) {
-                if (!tabClick)
-                    tabClick = $scope.workflowForm;
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = tabClick;
 
-                tabClick.$submitted = true;
+                $scope.workflowForm.$submitted = true;
                 $scope.validateOperations(tabClick);
 
-                if (!tabClick.workflowName.$valid || !tabClick.module.$valid || !tabClick.operation.$valid)
+                if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
-                if ($scope.workflowModel.changed_field_checkbox && !tabClick.changed_field.$valid)
+                if ($scope.workflowModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
                     return false;
                 //TODO 
-                return $scope.validateActions(tabClick);
+                return $scope.validateActions($scope.workflowForm);
             };
 
             $scope.validateOperations = function (tabClick) {
-                tabClick.operation.$setValidity('operations', false);
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = tabClick;
+
+                $scope.workflowForm.operation.$setValidity('operations', false);
 
                 if (!$scope.workflowModel.operation)
                     return false;
 
                 angular.forEach($scope.workflowModel.operation, function (value, key) {
                     if (value) {
-                        tabClick.operation.$setValidity('operations', true);
+                        $scope.workflowForm.operation.$setValidity('operations', true);
                         return true;
                     }
                 });
@@ -396,7 +401,11 @@ angular.module('primeapps')
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
                 notificationObj.module = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0];
-                notificationObj.name = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0]['label_' + $scope.language + '_singular'];
+                var filterResult = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0];
+
+                if (filterResult)
+                    notificationObj.name = filterResult['label_' + $scope.language + '_singular'];
+
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
                 notificationObj.id = id;
@@ -876,6 +885,24 @@ angular.module('primeapps')
                     $scope.workflowForm.updateValue.$setValidity('required', true);
             };
 
+            var setWebHookModules = function () {
+                $scope.hookParameters = [];
+
+                $scope.hookModules = [];
+
+                angular.forEach($scope.updatableModules, function (module) {
+                    $scope.hookModules.push(module);
+                });
+
+                var parameter = {};
+                parameter.parameterName = null;
+                parameter.selectedModules = $scope.hookModules;
+                parameter.selectedField = null;
+                parameter.selectedModule = $scope.workflowModel.module;
+
+                $scope.hookParameters.push(parameter);
+            };
+
             $scope.getSummary = function () {
                 if (!$scope.workflowModel.name || !$scope.workflowModel.module || !$scope.workflowModel.operation)
                     return;
@@ -1048,7 +1075,218 @@ angular.module('primeapps')
                 }
             };
 
+            $scope.saveNodeData = function () {
+                $scope.saving = true;
 
+                var diagram = window.myDiagram.model;
+                var currentNode = $scope.currentObj.subject.part.data;
+                var bpmModel = $scope.workflowModel;
+                var data = {};
+
+                if (!diagram)
+                    return false;
+
+                switch (currentNode.ngModelName) {
+                    case 'start':
+                        data.module_id = bpmModel.module.id;
+                        data.id = $scope.id;
+                        data.name = bpmModel.name;
+                        data.code = bpmModel.code;
+                        data.frequency = bpmModel.frequency;
+                        data.filters = [];
+
+                        var filters = $scope.filters;
+
+                        if (filters && filters.length) {
+                            angular.forEach(filters, function (filterItem) {
+                                if (!filterItem.field || !filterItem.operator)
+                                    return;
+
+                                if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value == null || filterItem.value == undefined))
+                                    return;
+
+                                var field = filterItem.field;
+                                var filter = {};
+
+                                filter.field = field.name;
+                                filter.operator = filterItem.operator.name;
+                                filter.value = filterItem.value;
+                                filter.no = filterItem.no;
+
+                                if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty')) {
+                                    if (field.data_type === 'date' || field.data_type === 'date_time' || field.data_type === 'time')
+                                        filter.value = new Date(filterItem.value).getTime();
+
+                                    if (field.data_type === 'picklist')
+                                        filter.value = filterItem.value.id;
+
+                                    if (field.data_type === 'multiselect') {
+                                        var value = '';
+
+                                        angular.forEach(filterItem.value, function (picklistItem) {
+                                            value += picklistItem.id + ',';
+                                        });
+
+                                        filter.value = value.slice(0, -1);
+                                    }
+
+                                    if (field.data_type === 'lookup' && field.lookup_type !== 'users')
+                                        filter.value = filterItem.value.id;
+
+                                    if (field.data_type === 'lookup' && field.lookup_type === 'users')
+                                        filter.value = filterItem.value[0].id;
+
+                                    if (field.data_type === 'checkbox')
+                                        filter.value = filterItem.value.system_code;
+                                }
+                                else {
+                                    filter.value = '-';
+                                }
+
+                                data.filters.push(filter);
+                            });
+
+                            data.active = bpmModel.active;
+                            data.process_filter = bpmModel.processFilter === "none" ? null : bpmModel.processFilter;
+                            data.trigger_type = "record";
+
+                            var loopArray = [];
+                            angular.forEach(bpmModel.operation, function (value, key) {
+                                if (value)
+                                    this.push(key);
+                            }, loopArray);
+
+                            data.record_operations = loopArray.join();
+                            data.canstartmanuel = false;
+                            data.defitinion_json = {};
+
+                        }
+                        break;
+                    case 'field_update':
+                        //Static Data;
+                        data[currentNode.ngModelName] = {};
+                        data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
+                        data[currentNode.ngModelName].module_id = bpmModel[currentNode.ngModelName].module.id;
+                        data[currentNode.ngModelName].field_id = bpmModel[currentNode.ngModelName].field.id;
+                        SetValue(bpmModel[currentNode.ngModelName]);
+                        //For Bpmn editor
+                        data[currentNode.ngModelName].value = bpmModel[currentNode.ngModelName].value;
+                        //For Workflow Engine
+                        data[currentNode.ngModelName].currentValue = $scope.updateFieldValue;
+                        break;
+                    case 'webHook':
+                        data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
+                        data[currentNode.ngModelName].Parameters = angular.copy($scope.hookParameters);
+                        break;
+                    case 'send_notification':
+                        var workflowModel = {};
+                        workflowModel = bpmModel[currentNode.ngModelName];
+                        data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
+
+                        data[currentNode.ngModelName].send_notification_module = bpmModel.send_notification_module;
+                        data[currentNode.ngModelName].send_notification_ccmodule = bpmModel.send_notification_ccmodule;
+                        data[currentNode.ngModelName].send_notification_bccmodule = bpmModel.send_notification_bccmodule;
+
+                        workflowModel.send_notification_module = bpmModel.send_notification_module;
+                        workflowModel.send_notification_ccmodule = bpmModel.send_notification_ccmodule;
+                        workflowModel.send_notification_bccmodule = bpmModel.send_notification_bccmodule;
+
+                        data[currentNode.ngModelName].subject = workflowModel.subject;
+                        data[currentNode.ngModelName].message = workflowModel.message;
+
+                        var cc = [];
+                        if (workflowModel.cc) {
+                            angular.forEach(workflowModel.send_notification.cc, function (user) {
+                                cc.push(user.email);
+                            });
+                            data[currentNode.ngModelName].cc = cc;
+                        }
+                        else if (workflowModel.send_notification_ccmodule && workflowModel.customCC) {
+                            workflowModel.cc = [];
+                            if (workflowModel.send_notification_ccmodule.module.name === bpmModel.module.name && workflowModel.send_notification_ccmodule.isSameModule) {
+                                data[currentNode.ngModelName].cc.push(workflowModel.customCC.name);
+                            }
+                            else if (workflowModel.send_notification_ccmodule.module.name === bpmModel.module.name && !workflowModel.send_notification_ccmodule.isSameModule) {
+                                var sameModuleLookupsCC = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
+                                data[currentNode.ngModelName].cc.push($filter('filter')(sameModuleLookupsCC, { name: workflowModel.send_notification_ccmodule.systemName }, true)[0].name + '.' + workflowModel.customCC.name);
+                            }
+                            else {
+                                var lookupsCC = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
+                                data[currentNode.ngModelName].cc.push($filter('filter')(lookupsCC, { name: workflowModel.send_notification_ccmodule.systemName }, true)[0].name + '.' + workflowModel.customCC.name);
+                            }
+                        }
+
+                        var bcc = [];
+                        if (workflowModel.bcc) {
+                            // angular.forEach(workflowModel.send_notification.bcc, function (user) {
+                            //     bcc.push(user.email);
+                            // });
+                            // data[currentNode.ngModelName].bcc = bcc;
+                        }
+                        else if (workflowModel.send_notification_bccmodule && workflowModel.customBcc) {
+                            workflowModel.bcc = [];
+                            if (workflowModel.send_notification_bccmodule.module.name === bpmModel.module.name && workflowModel.send_notification_bccmodule.isSameModule) {
+                                data[currentNode.ngModelName].bcc.push(workflowModel.customBcc.name);
+                            }
+                            else if (workflowModel.send_notification_bccmodule.module.name === bpmModel.module.name && !workflowModel.send_notification_bccmodule.isSameModule) {
+                                var sameModuleLookupsBcc = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
+                                data[currentNode.ngModelName].bcc.push($filter('filter')(sameModuleLookupsBcc, { name: workflowModel.send_notification_bccmodule.systemName }, true)[0].name + '.' + workflowModel.customBcc.name);
+                            }
+                            else {
+                                var lookupsBcc = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
+                                data[currentNode.ngModelName].bcc.push($filter('filter')(lookupsBcc, { name: workflowModel.send_notification_bccmodule.systemName }, true)[0].name + '.' + workflowModel.customBcc.name);
+                            }
+                        }
+
+                        // var recipients = [];
+
+                        if (workflowModel.recipients) {
+                            // angular.forEach(workflowModel.send_notification.recipients, function (user) {
+                            //     recipients.push(user.email);
+                            // });
+                            // data[currentNode.ngModelName].recipients = recipients;
+                        }
+                        else {
+                            if (!data[currentNode.ngModelName].recipients)
+                                data[currentNode.ngModelName].recipients = [];
+
+                            if (workflowModel.send_notification_module.module.name === bpmModel.module.name && workflowModel.send_notification_module.isSameModule) {
+                                data[currentNode.ngModelName].recipients.push(workflowModel.customRecipient.name);
+                            }
+                            else if (workflowModel.send_notification_module.module.name === bpmModel.module.name && !workflowModel.send_notification_module.isSameModule) {
+                                var sameModuleLookups = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
+                                data[currentNode.ngModelName].recipients.push($filter('filter')(sameModuleLookups, { name: workflowModel.send_notification_module.systemName }, true)[0].name + '.' + workflowModel.customRecipient.name);
+                            }
+                            else {
+                                var lookups = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
+
+                                data[currentNode.ngModelName].recipients.push($filter('filter')(lookups, { name: workflowModel.send_notification_module.systemName }, true)[0].name + '.' + workflowModel.customRecipient.name);
+                            }
+                        }
+
+                        break;
+                    case 'data_read':
+                        data[currentNode.ngModelName] = {};
+                        data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
+                        data[currentNode.ngModelName].record_key = bpmModel[currentNode.ngModelName].field.name;
+                        break;
+                    default:
+                        if (currentNode.isDefault === false) {
+                            data['condition'] = $scope.workflowModel.condition;
+                            diagram.linkDataArray.find(q => q.from === currentNode.from && q.to === currentNode.to).data = angular.copy(data);
+                        }
+                        break;
+                }
+
+                diagram.nodeDataArray.find(q => q.key === currentNode.key).data = angular.copy(data);
+
+                setTimeout(function () {
+                    $scope.saving = false;
+                    $scope.triggerBpm();
+                    $scope.$digest();
+                    $scope.cancel();
+                }, 2000);
+            };
 
 
 

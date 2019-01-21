@@ -1377,7 +1377,7 @@ function init() {
             copiesArrayObjects: true,
             nodeDataArray: [
                 // -------------------------- Event Nodes
-                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true }, //"Start"
+                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true, ngModelName:"start" }, //"Start"
                 //{ key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message", sidebar: false }, //"Message" // BpmnTaskMessage
                 { key: 103, category: "event", text: "Timer", eventType: 3, eventDimension: 3, item: "Timer", sidebar: true }, //"Timer"
                 { key: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "End", sidebar: false }, //"End"

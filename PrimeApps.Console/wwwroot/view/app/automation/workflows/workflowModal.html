@@ -7,7 +7,7 @@
             <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="cancel();">
                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
             </button>
-            <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
+            <button type="button" class="btn btn-radius btn-blue" ng-click="saveNodeData();" style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
                 <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
             </button>
         </div>
@@ -15,178 +15,162 @@
     <div class="modal-dialog modal-600">
         <div class="modal-content padding-0">
             <div class="modal-body">
-                <div id="field-form-body" class="modal-body">
-                    <div class="section" id="section1">
-                        <div class="panel">
-                            <!--Start START-->
-                            <div ng-show="SelectedNodeItem.item == 'Start'">
-                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
-                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
-                                    <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
-                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
-                                    <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowModel.code" />
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
-                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
-                                    <select class="form-control"
-                                            name="module"
-                                            required
-                                            ng-model="workflowModel.module"
-                                            ng-change="selectModule()"
-                                            ng-disabled="id"
-                                            ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
-                                    </label>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
-                                    <label class="col-sm-4" style="margin-bottom: auto;"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label><br>
-                                    <label class="checkbox-inline">
-                                        <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations()"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
-                                    </label><br>
-                                    <label class="checkbox-inline">
-                                        <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowModel.operation.update);validateOperations();" ng-model="workflowModel.operation.update"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
-                                    </label><br>
-                                    <label class="checkbox-inline">
-                                        <input name="operation" type="checkbox" ng-change="validateOperations()" ng-model="workflowModel.operation.delete"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
-                                    </label>
-                                </div>
-                                <div ng-show="workflowModel.operation.update" class="form-group">
-                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
-                                    <label class="checkbox-inline">
-                                        <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox">
-                                    </label>
-                                </div>
-                                <div ng-show="workflowModel.changed_field_checkbox && workflowModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
-                                    <label class="col-sm-4"><span class="required-field">*</span>{{'Setup.BpmWorkflow.RelatedField' | translate}}:</label>
-                                    <select class="form-control"
-                                            name="changed_field"
-                                            required
-                                            ng-model="workflowModel.changed_field"
-                                            ng-change=""
-                                            ng-disabled="!workflowModel.module"
-                                            ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
-                                    <label class="radio-inline" ng-show="workflowModel.operation.update">
-                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
-                                        {{'Setup.BpmWorkflow.ExecutionFrequencies.OneTime' | translate}}
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
-                                        {{'Setup.BpmWorkflow.ExecutionFrequencies.Continuous' | translate}}
-                                    </label>
-                                </div>
-                                <div class="form-group" ng-show="id && workflowModel.frequency == 'one_time'">
-                                    <label class="col-sm-4">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" ng-model="workflowModel.delete_logs">
-                                    </label>
-                                </div>
-                                <div ng-show="workflowModel.module">
-                                    <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
-                                    <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                    <div ng-if="!loadingFilter">
-                                        <table class="filter-table">
-                                            <thead>
-                                                <tr>
-                                                    <th style="padding-left: 5px; padding-right: 10px;">{{'View.No' | translate}}</th>
-                                                    <th>{{'View.Field' | translate}}</th>
-                                                    <th>{{'View.Operator' | translate}}</th>
-                                                    <th>{{'View.Value' | translate}}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="filter in filters">
-                                                    <td>
-                                                        <span class="filter-no">{{filter.no}}.</span>
-                                                    </td>
-                                                    <td>
-                                                        <select id="field"
-                                                                name="field"
-                                                                class="form-control"
-                                                                ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
-                                                                ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
-                                                                ng-model="filter.field">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <select id="operator"
-                                                                name="operator"
-                                                                class="form-control"
-                                                                ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
-                                                                ng-change="operatorChanged(filter.field, $index)"
-                                                                ng-model="filter.operator">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.operator.name == 'empty' || filter.operator.name == 'not_empty'"
-                                                               maxlength="100"
-                                                               ng-if="filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined" />
-
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="50"
-                                                               numeric
-                                                               ng-if="filter.field.data_type === 'number' || filter.field.data_type === 'number_auto'" />
-
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="19"
-                                                               places="filter.field.decimal_places || 2"
-                                                               number-decimal
-                                                               ng-if="filter.field.data_type === 'number_decimal'" />
-
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="50"
-                                                               places="filter.field.decimal_places || 2"
-                                                               currency-symbol="filter.field.currency_symbol"
-                                                               number-currency
-                                                               ng-if="filter.field.data_type === 'currency'" />
-
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               data-autoclose="1"
-                                                               data-date-type="iso"
-                                                               data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
-                                                               data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
-                                                               data-icon-left="fa fa-chevron-left"
-                                                               data-icon-right="fa fa-chevron-right"
-                                                               data-placement="bottom-right"
-                                                               bs-datepicker
-                                                               ng-if="filter.field.data_type === 'date'">
-
-                                                        <div class="clearfix datetime-pick" ng-if="filter.field.data_type === 'date_time'">
+                <form name="$parent.$parent.workflowForm" ng-submit="save()" class="form-horizontal form-custom" autocomplete="off" novalidate>
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <!--Start START-->
+                                <div ng-show="SelectedNodeItem.item == 'Start'">
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
+                                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
+                                        <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
+                                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
+                                        <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowModel.code" />
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
+                                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
+                                        <select class="form-control"
+                                                name="module"
+                                                required
+                                                ng-model="workflowModel.module"
+                                                ng-change="selectModule()"
+                                                ng-disabled="id"
+                                                ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                                        </label>
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
+                                        <label class="col-sm-4" style="margin-bottom: auto;"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label><br>
+                                        <label class="checkbox-inline">
+                                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(WorkflowForm)"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
+                                        </label><br>
+                                        <label class="checkbox-inline">
+                                            <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowModel.operation.update);validateOperations(WorkflowForm);" ng-model="workflowModel.operation.update"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                                        </label><br>
+                                        <label class="checkbox-inline">
+                                            <input name="operation" type="checkbox" ng-change="validateOperations(WorkflowForm)" ng-model="workflowModel.operation.delete"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
+                                        </label>
+                                    </div>
+                                    <div ng-show="workflowModel.operation.update" class="form-group">
+                                        <label class="col-sm-4">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
+                                        <label class="checkbox-inline">
+                                            <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox">
+                                        </label>
+                                    </div>
+                                    <div ng-show="workflowModel.changed_field_checkbox && workflowModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
+                                        <label class="col-sm-4"><span class="required-field">*</span>{{'Setup.BpmWorkflow.RelatedField' | translate}}:</label>
+                                        <select class="form-control"
+                                                name="changed_field"
+                                                required
+                                                ng-model="workflowModel.changed_field"
+                                                ng-change=""
+                                                ng-disabled="!workflowModel.module"
+                                                ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
+                                        <label class="radio-inline" ng-show="workflowModel.operation.update">
+                                            <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
+                                            {{'Setup.BpmWorkflow.ExecutionFrequencies.OneTime' | translate}}
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
+                                            {{'Setup.BpmWorkflow.ExecutionFrequencies.Continuous' | translate}}
+                                        </label>
+                                    </div>
+                                    <div class="form-group" ng-show="id && workflowModel.frequency == 'one_time'">
+                                        <label class="col-sm-4">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" ng-model="workflowModel.delete_logs">
+                                        </label>
+                                    </div>
+                                    <div ng-show="workflowModel.module">
+                                        <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
+                                        <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                        <div ng-if="!loadingFilter">
+                                            <table class="filter-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="padding-left: 5px; padding-right: 10px;">{{'View.No' | translate}}</th>
+                                                        <th>{{'View.Field' | translate}}</th>
+                                                        <th>{{'View.Operator' | translate}}</th>
+                                                        <th>{{'View.Value' | translate}}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="filter in filters">
+                                                        <td>
+                                                            <span class="filter-no">{{filter.no}}.</span>
+                                                        </td>
+                                                        <td>
+                                                            <select id="field"
+                                                                    name="field"
+                                                                    class="form-control"
+                                                                    ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
+                                                                    ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
+                                                                    ng-model="filter.field">
+                                                                <option value="">{{'Common.Select' | translate}}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select id="operator"
+                                                                    name="operator"
+                                                                    class="form-control"
+                                                                    ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
+                                                                    ng-change="operatorChanged(filter.field, $index)"
+                                                                    ng-model="filter.operator">
+                                                                <option value="">{{'Common.Select' | translate}}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
                                                             <input type="text"
-                                                                   class="form-control ng-animate-disabled date-pick"
+                                                                   class="form-control ng-animate-disabled"
                                                                    ng-model="filter.value"
-                                                                   ng-change="dateTimeChanged(filter.field)"
+                                                                   ng-disabled="filter.operator.name == 'empty' || filter.operator.name == 'not_empty'"
+                                                                   maxlength="100"
+                                                                   ng-if="filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined" />
+
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled"
+                                                                   ng-model="filter.value"
                                                                    ng-disabled="filter.disabled"
-                                                                   placeholder="{{'Common.Date' | translate}}"
+                                                                   maxlength="50"
+                                                                   numeric
+                                                                   ng-if="filter.field.data_type === 'number' || filter.field.data_type === 'number_auto'" />
+
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled"
+                                                                   ng-model="filter.value"
+                                                                   ng-disabled="filter.disabled"
+                                                                   maxlength="19"
+                                                                   places="filter.field.decimal_places || 2"
+                                                                   number-decimal
+                                                                   ng-if="filter.field.data_type === 'number_decimal'" />
+
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled"
+                                                                   ng-model="filter.value"
+                                                                   ng-disabled="filter.disabled"
+                                                                   maxlength="50"
+                                                                   places="filter.field.decimal_places || 2"
+                                                                   currency-symbol="filter.field.currency_symbol"
+                                                                   number-currency
+                                                                   ng-if="filter.field.data_type === 'currency'" />
+
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled"
+                                                                   ng-model="filter.value"
+                                                                   ng-disabled="filter.disabled"
                                                                    data-autoclose="1"
                                                                    data-date-type="iso"
                                                                    data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
@@ -194,11 +178,44 @@
                                                                    data-icon-left="fa fa-chevron-left"
                                                                    data-icon-right="fa fa-chevron-right"
                                                                    data-placement="bottom-right"
-                                                                   bs-datepicker>
+                                                                   bs-datepicker
+                                                                   ng-if="filter.field.data_type === 'date'">
+
+                                                            <div class="clearfix datetime-pick" ng-if="filter.field.data_type === 'date_time'">
+                                                                <input type="text"
+                                                                       class="form-control ng-animate-disabled date-pick"
+                                                                       ng-model="filter.value"
+                                                                       ng-change="dateTimeChanged(filter.field)"
+                                                                       ng-disabled="filter.disabled"
+                                                                       placeholder="{{'Common.Date' | translate}}"
+                                                                       data-autoclose="1"
+                                                                       data-date-type="iso"
+                                                                       data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                                       data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                                       data-icon-left="fa fa-chevron-left"
+                                                                       data-icon-right="fa fa-chevron-right"
+                                                                       data-placement="bottom-right"
+                                                                       bs-datepicker>
+                                                                <input type="text"
+                                                                       class="form-control ng-animate-disabled time-pick"
+                                                                       ng-model="filter.value"
+                                                                       ng-disabled="!filter.value"
+                                                                       placeholder="{{'Common.Time' | translate}}"
+                                                                       data-autoclose="1"
+                                                                       data-time-type="iso"
+                                                                       data-icon-up="fa fa-chevron-up"
+                                                                       data-icon-down="fa fa-chevron-down"
+                                                                       data-length="1"
+                                                                       data-minute-step="10"
+                                                                       data-arrow-behavior="picker"
+                                                                       data-placement="bottom-right"
+                                                                       bs-timepicker>
+                                                            </div>
+
                                                             <input type="text"
-                                                                   class="form-control ng-animate-disabled time-pick"
+                                                                   class="form-control ng-animate-disabled"
                                                                    ng-model="filter.value"
-                                                                   ng-disabled="!filter.value"
+                                                                   ng-disabled="filter.disabled"
                                                                    placeholder="{{'Common.Time' | translate}}"
                                                                    data-autoclose="1"
                                                                    data-time-type="iso"
@@ -208,308 +225,309 @@
                                                                    data-minute-step="10"
                                                                    data-arrow-behavior="picker"
                                                                    data-placement="bottom-right"
-                                                                   bs-timepicker>
-                                                        </div>
+                                                                   bs-timepicker
+                                                                   ng-if="filter.field.data_type === 'time'">
 
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               placeholder="{{'Common.Time' | translate}}"
-                                                               data-autoclose="1"
-                                                               data-time-type="iso"
-                                                               data-icon-up="fa fa-chevron-up"
-                                                               data-icon-down="fa fa-chevron-down"
-                                                               data-length="1"
-                                                               data-minute-step="10"
-                                                               data-arrow-behavior="picker"
-                                                               data-placement="bottom-right"
-                                                               bs-timepicker
-                                                               ng-if="filter.field.data_type === 'time'">
-
-                                                        <select class="form-control ng-animate-disabled"
-                                                                ng-model="filter.value"
-                                                                ng-disabled="filter.disabled"
-                                                                ng-options="o as o.label[language] for o in modulePicklists[filter.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
-                                                                ng-if="filter.field.data_type === 'picklist'">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-
-                                                        <tags-input class="form-control ng-animate-disabled"
+                                                            <select class="form-control ng-animate-disabled"
                                                                     ng-model="filter.value"
-                                                                    display-property="labelStr"
-                                                                    key-property="id"
-                                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                                    replace-spaces-with-dashes="false"
-                                                                    add-from-autocomplete-only="true"
                                                                     ng-disabled="filter.disabled"
-                                                                    ng-if="filter.field.data_type === 'multiselect'">
-                                                            <auto-complete source="multiselect($query, filter.field)"
-                                                                           min-length="0"
-                                                                           load-on-focus="true"
-                                                                           load-on-empty="true"
-                                                                           max-results-to-show="9999"></auto-complete>
-                                                        </tags-input>
+                                                                    ng-options="o as o.label[language] for o in modulePicklists[filter.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
+                                                                    ng-if="filter.field.data_type === 'picklist'">
+                                                                <option value="">{{'Common.Select' | translate}}</option>
+                                                            </select>
 
-                                                        <select class="form-control ng-animate-disabled"
-                                                                ng-model="filter.value"
-                                                                ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
-                                                                ng-if="filter.field.data_type === 'checkbox'">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
+                                                            <tags-input class="form-control ng-animate-disabled"
+                                                                        ng-model="filter.value"
+                                                                        display-property="labelStr"
+                                                                        key-property="id"
+                                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                        replace-spaces-with-dashes="false"
+                                                                        add-from-autocomplete-only="true"
+                                                                        ng-disabled="filter.disabled"
+                                                                        ng-if="filter.field.data_type === 'multiselect'">
+                                                                <auto-complete source="multiselect($query, filter.field)"
+                                                                               min-length="0"
+                                                                               load-on-focus="true"
+                                                                               load-on-empty="true"
+                                                                               max-results-to-show="9999"></auto-complete>
+                                                            </tags-input>
 
-                                                        <tags-input ng-model="filter.value"
-                                                                    display-property="full_name"
-                                                                    key-property="id"
-                                                                    min-tags="1"
-                                                                    max-tags="1"
-                                                                    placeholder="{{'Common.Search' | translate}}"
-                                                                    replace-spaces-with-dashes="false"
-                                                                    add-from-autocomplete-only="true"
-                                                                    ng-disabled="filter.disabled"
-                                                                    ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users'">
-                                                            <auto-complete source="lookupUser($query, 'logged_in_user')"
-                                                                           min-length="0"
-                                                                           load-on-focus="true"
-                                                                           load-on-empty="true"
-                                                                           max-results-to-show="9999"></auto-complete>
-                                                        </tags-input>
-                                                        <input-stars ng-if="filter.field.data_type === 'rating'"
-                                                                     max="{{filter.field.validation.min_length}}"
-                                                                     allow-half
-                                                                     icon-base="fa fa-fw"
-                                                                     icon-empty="fa-star-o"
-                                                                     icon-half="fa-star-half-o"
-                                                                     icon-full="fa-star"
-                                                                     icon-hover-full="fa-star"
-                                                                     ng-model="filter.value">
-                                                        </input-stars>
-                                                        <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
-                                                        <input type="text" class="form-control ng-animate-disabled" disabled ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && filter.disabled" />
-                                                        <angucomplete-alt input-name="{{'filterLookup' + filter.no}}"
-                                                                          id="{{'filterLookup' + filter.no}}"
-                                                                          input-class="form-control"
-                                                                          match-class="highlight-angucomplete"
-                                                                          pause="200"
-                                                                          selected-object="filter.value"
-                                                                          initial-value="filter.value"
-                                                                          remote-api-handler="lookup"
-                                                                          search-fields="name"
-                                                                          title-field="primary_value"
-                                                                          minlength="1"
-                                                                          template-url="views/app/common/angucomplete.html"
-                                                                          focus-in="setCurrentLookupField(filter.field)"
-                                                                          use-original-object="true"
-                                                                          text-searching="{{'Common.Searching' | translate}}"
-                                                                          text-no-results="{{'Common.NoResults' | translate}}"
-                                                                          ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && !filter.disabled" />
-                                                        <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <div style="margin-top: 50px" ng-show="showProcessFilter">
-                                            <label class="col-sm-4">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
-                                            <label><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
+                                                            <select class="form-control ng-animate-disabled"
+                                                                    ng-model="filter.value"
+                                                                    ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
+                                                                    ng-if="filter.field.data_type === 'checkbox'">
+                                                                <option value="">{{'Common.Select' | translate}}</option>
+                                                            </select>
 
-                                            <label><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
+                                                            <tags-input ng-model="filter.value"
+                                                                        display-property="full_name"
+                                                                        key-property="id"
+                                                                        min-tags="1"
+                                                                        max-tags="1"
+                                                                        placeholder="{{'Common.Search' | translate}}"
+                                                                        replace-spaces-with-dashes="false"
+                                                                        add-from-autocomplete-only="true"
+                                                                        ng-disabled="filter.disabled"
+                                                                        ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users'">
+                                                                <auto-complete source="lookupUser($query, 'logged_in_user')"
+                                                                               min-length="0"
+                                                                               load-on-focus="true"
+                                                                               load-on-empty="true"
+                                                                               max-results-to-show="9999"></auto-complete>
+                                                            </tags-input>
+                                                            <input-stars ng-if="filter.field.data_type === 'rating'"
+                                                                         max="{{filter.field.validation.min_length}}"
+                                                                         allow-half
+                                                                         icon-base="fa fa-fw"
+                                                                         icon-empty="fa-star-o"
+                                                                         icon-half="fa-star-half-o"
+                                                                         icon-full="fa-star"
+                                                                         icon-hover-full="fa-star"
+                                                                         ng-model="filter.value">
+                                                            </input-stars>
+                                                            <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
+                                                            <input type="text" class="form-control ng-animate-disabled" disabled ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && filter.disabled" />
+                                                            <angucomplete-alt input-name="{{'filterLookup' + filter.no}}"
+                                                                              id="{{'filterLookup' + filter.no}}"
+                                                                              input-class="form-control"
+                                                                              match-class="highlight-angucomplete"
+                                                                              pause="200"
+                                                                              selected-object="filter.value"
+                                                                              initial-value="filter.value"
+                                                                              remote-api-handler="lookup"
+                                                                              search-fields="name"
+                                                                              title-field="primary_value"
+                                                                              minlength="1"
+                                                                              template-url="views/app/common/angucomplete.html"
+                                                                              focus-in="setCurrentLookupField(filter.field)"
+                                                                              use-original-object="true"
+                                                                              text-searching="{{'Common.Searching' | translate}}"
+                                                                              text-no-results="{{'Common.NoResults' | translate}}"
+                                                                              ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && !filter.disabled" />
+                                                            <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div style="margin-top: 50px" ng-show="showProcessFilter">
+                                                <label class="col-sm-4">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
 
-                                            <label><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
 
-                                            <label><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
+
+                                                <label><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
 
-                                <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
-                                    <div class="callout callout-danger">
-                                        <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                        <p ng-if="workflowForm.$error.operations">{{'Setup.BpmWorkflow.OperationRequiredError' | translate}}</p>
+                                    <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            <p ng-if="workflowForm.$error.operations">{{'Setup.BpmWorkflow.OperationRequiredError' | translate}}</p>
+                                        </div>
                                     </div>
-                                </div>
 
-                            </div>
-                            <!--Start END-->
-                            <!--DataTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'Data Task'">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.UpdateModule' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
-                                        <select class="form-control"
-                                                name="updateModule"
-                                                tabindex="1"
-                                                required
-                                                ng-model="workflowModel.field_update.module"
-                                                ng-change="updateModuleChanged(); setFormValid();"
-                                                ng-options="o as o['label_' + language + '_singular'] for o in updatableModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
+                                </div>
+                                <!--Start END-->
+                                <!--DataTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'Data Task'">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.UpdateModule' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
+                                            <select class="form-control"
+                                                    name="updateModule"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="workflowModel.field_update.module"
+                                                    ng-change="updateModuleChanged(); setFormValid();"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in updatableModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group"
-                                     ng-if="workflowModel.field_update.module">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
-                                        <select class="form-control"
-                                                name="updateField"
-                                                tabindex="2"
-                                                required
-                                                ng-model="workflowModel.field_update.field"
-                                                ng-change="updateFieldChanged(); setFormValid();"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.field_update.module.fields | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
+                                    <div class="form-group"
+                                         ng-if="workflowModel.field_update.module">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
+                                            <select class="form-control"
+                                                    name="updateField"
+                                                    tabindex="2"
+                                                    required
+                                                    ng-model="workflowModel.field_update.field"
+                                                    ng-change="updateFieldChanged(); setFormValid();"
+                                                    ng-options="o as o['label_' + language] for o in workflowModel.field_update.module.fields | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group"
-                                     ng-if="workflowModel.field_update.module && workflowModel.field_update.field">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateValue' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
+                                    <div class="form-group"
+                                         ng-if="workflowModel.field_update.module && workflowModel.field_update.field">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateValue' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
 
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                               ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
-                                               maxlength="{{workflowModel.field_update.field.validation.max_length || 50}}"
-                                               pattern="{{workflowModel.field_update.field.validation.pattern}}"
-                                               ui-mask="{{workflowModel.field_update.field.validation.mask}}"
-                                               ng-if="workflowModel.field_update.field.data_type === 'text_single' && !workflowModel.field_update.field.combination" />
-
-                                        <textarea name="updateValue"
-                                                  class="form-control ng-animate-disabled"
-                                                  tabindex="3"
-                                                  placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                                  ng-model="workflowModel.field_update.value"
-                                                  ng-change="setFormValid()"
-                                                  ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                                  ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
-                                                  maxlength="{{workflowModel.field_update.field.validation.max_length || 500}}"
-                                                  pattern="{{workflowModel.field_update.field.validation.pattern}}"
-                                                  auto-grow
-                                                  ng-if="workflowModel.field_update.field.data_type === 'text_multi'"></textarea>
-
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="workflowModel.field_update.field.validation.required"
-                                               ng-readonly="workflowModel.field_update.field.validation.readonly"
-                                               ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
-                                               maxlength="{{workflowModel.field_update.field.validation.max_length || 18}}"
-                                               ng-trim="false"
-                                               min="workflowModel.field_update.field.validation.min"
-                                               max="workflowModel.field_update.field.validation.max"
-                                               numeric
-                                               ng-if="workflowModel.field_update.field.data_type === 'number'" />
-
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="workflowModel.field_update.field.validation.required"
-                                               ng-readonly="workflowModel.field_update.field.validation.readonly"
-                                               min="workflowModel.field_update.field.validation.min"
-                                               max="workflowModel.field_update.field.validation.max"
-                                               places="workflowModel.field_update.field.decimal_places || 2"
-                                               rounding="workflowModel.field_update.field.rounding"
-                                               number-decimal
-                                               ng-if="workflowModel.field_update.field.data_type === 'number_decimal'" />
-
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="workflowModel.field_update.field.validation.required"
-                                               ng-readonly="workflowModel.field_update.field.validation.readonly"
-                                               min="workflowModel.field_update.field.validation.min"
-                                               max="workflowModel.field_update.field.validation.max"
-                                               places="workflowModel.field_update.field.decimal_places || 2"
-                                               rounding="workflowModel.field_update.field.rounding"
-                                               number-currency
-                                               ng-if="workflowModel.field_update.field.data_type === 'currency'" />
-
-                                        <input type="email"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               placeholder="{{workflowModel.field_update.field.placeholder}}"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                               ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
-                                               maxlength="{{workflowModel.field_update.field.validation.max_length || 100}}"
-                                               ng-if="workflowModel.field_update.field.data_type === 'email'" />
-                                        <input-stars ng-if="workflowModel.field_update.field.data_type === 'rating'"
-                                                     max="{{workflowModel.field_update.field.validation.min_length}}"
-                                                     allow-half
-                                                     icon-base="fa fa-fw"
-                                                     icon-empty="fa-star-o"
-                                                     icon-half="fa-star-half-o"
-                                                     icon-full="fa-star"
-                                                     icon-hover-full="fa-star"
-                                                     ng-model="workflowModel.field_update.value"></input-stars>
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control ng-animate-disabled"
-                                               tabindex="3"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="setFormValid()"
-                                               ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                               data-autoclose="1"
-                                               data-date-type="iso"
-                                               data-min-date="{{(workflowModel.field_update.field.validation.min ? (workflowModel.field_update.field.validation.min === 'today' ? currentDayMin : workflowModel.field_update.field.validation.min) : undefined)}}"
-                                               data-max-date="{{(workflowModel.field_update.field.validation.max ? (workflowModel.field_update.field.validation.max === 'today' ? currentDayMax : workflowModel.field_update.field.validation.max) : undefined)}}"
-                                               data-icon-left="fa fa-chevron-left"
-                                               data-icon-right="fa fa-chevron-right"
-                                               bs-datepicker
-                                               ng-if="workflowModel.field_update.field.data_type === 'date'">
-
-
-                                        <div class="clearfix" ng-if="workflowModel.field_update.field.data_type === 'date_time'">
                                             <input type="text"
                                                    name="updateValue"
-                                                   class="form-control ng-animate-disabled pull-left datetime-date"
+                                                   class="form-control ng-animate-disabled"
+                                                   tabindex="3"
+                                                   placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-change="setFormValid()"
+                                                   ng-required="{{workflowModel.field_update.field.validation.required}}"
+                                                   ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
+                                                   maxlength="{{workflowModel.field_update.field.validation.max_length || 50}}"
+                                                   pattern="{{workflowModel.field_update.field.validation.pattern}}"
+                                                   ui-mask="{{workflowModel.field_update.field.validation.mask}}"
+                                                   ng-if="workflowModel.field_update.field.data_type === 'text_single' && !workflowModel.field_update.field.combination" />
+
+                                            <textarea name="updateValue"
+                                                      class="form-control ng-animate-disabled"
+                                                      tabindex="3"
+                                                      placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                      ng-model="workflowModel.field_update.value"
+                                                      ng-change="setFormValid()"
+                                                      ng-required="{{workflowModel.field_update.field.validation.required}}"
+                                                      ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
+                                                      maxlength="{{workflowModel.field_update.field.validation.max_length || 500}}"
+                                                      pattern="{{workflowModel.field_update.field.validation.pattern}}"
+                                                      auto-grow
+                                                      ng-if="workflowModel.field_update.field.data_type === 'text_multi'"></textarea>
+
+                                            <input type="text"
+                                                   name="updateValue"
+                                                   class="form-control ng-animate-disabled"
+                                                   tabindex="3"
+                                                   placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-change="setFormValid()"
+                                                   ng-required="workflowModel.field_update.field.validation.required"
+                                                   ng-readonly="workflowModel.field_update.field.validation.readonly"
+                                                   ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
+                                                   maxlength="{{workflowModel.field_update.field.validation.max_length || 18}}"
+                                                   ng-trim="false"
+                                                   min="workflowModel.field_update.field.validation.min"
+                                                   max="workflowModel.field_update.field.validation.max"
+                                                   numeric
+                                                   ng-if="workflowModel.field_update.field.data_type === 'number'" />
+
+                                            <input type="text"
+                                                   name="updateValue"
+                                                   class="form-control ng-animate-disabled"
+                                                   tabindex="3"
+                                                   placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-change="setFormValid()"
+                                                   ng-required="workflowModel.field_update.field.validation.required"
+                                                   ng-readonly="workflowModel.field_update.field.validation.readonly"
+                                                   min="workflowModel.field_update.field.validation.min"
+                                                   max="workflowModel.field_update.field.validation.max"
+                                                   places="workflowModel.field_update.field.decimal_places || 2"
+                                                   rounding="workflowModel.field_update.field.rounding"
+                                                   number-decimal
+                                                   ng-if="workflowModel.field_update.field.data_type === 'number_decimal'" />
+
+                                            <input type="text"
+                                                   name="updateValue"
+                                                   class="form-control ng-animate-disabled"
+                                                   tabindex="3"
+                                                   placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-change="setFormValid()"
+                                                   ng-required="workflowModel.field_update.field.validation.required"
+                                                   ng-readonly="workflowModel.field_update.field.validation.readonly"
+                                                   min="workflowModel.field_update.field.validation.min"
+                                                   max="workflowModel.field_update.field.validation.max"
+                                                   places="workflowModel.field_update.field.decimal_places || 2"
+                                                   rounding="workflowModel.field_update.field.rounding"
+                                                   number-currency
+                                                   ng-if="workflowModel.field_update.field.data_type === 'currency'" />
+
+                                            <input type="email"
+                                                   name="updateValue"
+                                                   class="form-control ng-animate-disabled"
+                                                   tabindex="3"
+                                                   placeholder="{{workflowModel.field_update.field.placeholder}}"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-change="setFormValid()"
+                                                   ng-required="{{workflowModel.field_update.field.validation.required}}"
+                                                   ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
+                                                   maxlength="{{workflowModel.field_update.field.validation.max_length || 100}}"
+                                                   ng-if="workflowModel.field_update.field.data_type === 'email'" />
+                                            <input-stars ng-if="workflowModel.field_update.field.data_type === 'rating'"
+                                                         max="{{workflowModel.field_update.field.validation.min_length}}"
+                                                         allow-half
+                                                         icon-base="fa fa-fw"
+                                                         icon-empty="fa-star-o"
+                                                         icon-half="fa-star-half-o"
+                                                         icon-full="fa-star"
+                                                         icon-hover-full="fa-star"
+                                                         ng-model="workflowModel.field_update.value"></input-stars>
+                                            <input type="text"
+                                                   name="updateValue"
+                                                   class="form-control ng-animate-disabled"
                                                    tabindex="3"
                                                    ng-model="workflowModel.field_update.value"
-                                                   ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                                   ng-change="setFormValid()"
                                                    ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                                   placeholder="{{'Common.Date' | translate}}"
                                                    data-autoclose="1"
                                                    data-date-type="iso"
                                                    data-min-date="{{(workflowModel.field_update.field.validation.min ? (workflowModel.field_update.field.validation.min === 'today' ? currentDayMin : workflowModel.field_update.field.validation.min) : undefined)}}"
                                                    data-max-date="{{(workflowModel.field_update.field.validation.max ? (workflowModel.field_update.field.validation.max === 'today' ? currentDayMax : workflowModel.field_update.field.validation.max) : undefined)}}"
                                                    data-icon-left="fa fa-chevron-left"
                                                    data-icon-right="fa fa-chevron-right"
-                                                   bs-datepicker>
+                                                   bs-datepicker
+                                                   ng-if="workflowModel.field_update.field.data_type === 'date'">
+
+
+                                            <div class="clearfix" ng-if="workflowModel.field_update.field.data_type === 'date_time'">
+                                                <input type="text"
+                                                       name="updateValue"
+                                                       class="form-control ng-animate-disabled pull-left datetime-date"
+                                                       tabindex="3"
+                                                       ng-model="workflowModel.field_update.value"
+                                                       ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                                       ng-required="{{workflowModel.field_update.field.validation.required}}"
+                                                       placeholder="{{'Common.Date' | translate}}"
+                                                       data-autoclose="1"
+                                                       data-date-type="iso"
+                                                       data-min-date="{{(workflowModel.field_update.field.validation.min ? (workflowModel.field_update.field.validation.min === 'today' ? currentDayMin : workflowModel.field_update.field.validation.min) : undefined)}}"
+                                                       data-max-date="{{(workflowModel.field_update.field.validation.max ? (workflowModel.field_update.field.validation.max === 'today' ? currentDayMax : workflowModel.field_update.field.validation.max) : undefined)}}"
+                                                       data-icon-left="fa fa-chevron-left"
+                                                       data-icon-right="fa fa-chevron-right"
+                                                       bs-datepicker>
+                                                <input type="text"
+                                                       class="form-control datetime-time"
+                                                       style="{{workflowModel.field_update.field.style.input}}"
+                                                       tabindex="3"
+                                                       ng-model="workflowModel.field_update.value"
+                                                       ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                                       ng-disabled="!workflowModel.field_update.value && !workflowForm.updateValue.$dirty"
+                                                       placeholder="{{'Common.Time' | translate}}"
+                                                       data-autoclose="1"
+                                                       data-time-type="iso"
+                                                       data-icon-up="fa fa-chevron-up"
+                                                       data-icon-down="fa fa-chevron-down"
+                                                       data-length="1"
+                                                       data-minute-step="10"
+                                                       data-arrow-behavior="picker"
+                                                       bs-timepicker>
+                                            </div>
+
                                             <input type="text"
-                                                   class="form-control datetime-time"
-                                                   style="{{workflowModel.field_update.field.style.input}}"
+                                                   name="updateValue"
+                                                   class="form-control"
                                                    tabindex="3"
                                                    ng-model="workflowModel.field_update.value"
                                                    ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
-                                                   ng-disabled="!workflowModel.field_update.value && !workflowForm.updateValue.$dirty"
-                                                   placeholder="{{'Common.Time' | translate}}"
+                                                   ng-required="{{workflowModel.field_update.field.validation.required}}"
                                                    data-autoclose="1"
                                                    data-time-type="iso"
                                                    data-icon-up="fa fa-chevron-up"
@@ -517,665 +535,647 @@
                                                    data-length="1"
                                                    data-minute-step="10"
                                                    data-arrow-behavior="picker"
-                                                   bs-timepicker>
-                                        </div>
+                                                   placeholder="{{'Common.Time' | translate}}"
+                                                   bs-timepicker
+                                                   ng-if="workflowModel.field_update.field.data_type === 'time'">
 
-                                        <input type="text"
-                                               name="updateValue"
-                                               class="form-control"
-                                               tabindex="3"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
-                                               ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                               data-autoclose="1"
-                                               data-time-type="iso"
-                                               data-icon-up="fa fa-chevron-up"
-                                               data-icon-down="fa fa-chevron-down"
-                                               data-length="1"
-                                               data-minute-step="10"
-                                               data-arrow-behavior="picker"
-                                               placeholder="{{'Common.Time' | translate}}"
-                                               bs-timepicker
-                                               ng-if="workflowModel.field_update.field.data_type === 'time'">
-
-                                        <select class="form-control ng-animate-disabled"
-                                                name="updateValue"
-                                                tabindex="3"
-                                                ng-model="workflowModel.field_update.value"
-                                                ng-change="setFormValid()"
-                                                ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                                ng-options="o as o.label[language] for o in picklistsModule[workflowModel.field_update.field.picklist_id] | filter:{inactive:'!true',hidden:'!true'} track by o.id"
-                                                ng-if="workflowModel.field_update.field.data_type === 'picklist'">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-
-                                        <input type="checkbox"
-                                               name="updateValue"
-                                               class="ng-animate-disabled"
-                                               tabindex="3"
-                                               ng-model="workflowModel.field_update.value"
-                                               ng-checked="workflowModel.field_update.value === true"
-                                               ng-if="workflowModel.field_update.field.data_type === 'checkbox'">
-
-                                        <tags-input name="updateValue"
+                                            <select class="form-control ng-animate-disabled"
+                                                    name="updateValue"
                                                     tabindex="3"
                                                     ng-model="workflowModel.field_update.value"
-                                                    display-property="labelStr"
-                                                    key-property="id"
-                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true"
-                                                    ng-if="workflowModel.field_update.field.data_type === 'multiselect'">
-                                            <auto-complete source="multiselect($query, workflowModel.field_update.field)"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
+                                                    ng-change="setFormValid()"
+                                                    ng-required="{{workflowModel.field_update.field.validation.required}}"
+                                                    ng-options="o as o.label[language] for o in picklistsModule[workflowModel.field_update.field.picklist_id] | filter:{inactive:'!true',hidden:'!true'} track by o.id"
+                                                    ng-if="workflowModel.field_update.field.data_type === 'picklist'">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
 
-                                        <tags-input ng-model="workflowModel.field_update.value"
-                                                    display-property="text"
-                                                    placeholder="{{'Common.TagPlaceholder' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    ng-if="!workflowModel.field_update.field.lookupModulePrimaryField ? workflowModel.field_update.field.data_type === 'tag' : workflowModel.field_update.field.lookupModulePrimaryField.data_type === 'tag'">
-                                            <auto-complete source="tags($query, workflowModel.field_update.field)"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
+                                            <input type="checkbox"
+                                                   name="updateValue"
+                                                   class="ng-animate-disabled"
+                                                   tabindex="3"
+                                                   ng-model="workflowModel.field_update.value"
+                                                   ng-checked="workflowModel.field_update.value === true"
+                                                   ng-if="workflowModel.field_update.field.data_type === 'checkbox'">
 
-                                        <!--Doküman için || workflowModel.field_update.field.data_type ==='document' ekelendiğinde direk çalışacak-->
-                                        <div ng-if="workflowModel.field_update.field.data_type === 'image'"
-                                             class="image-type">
-                                            <span class="file-input btn btn-primary btn-sm btn-file">
-                                                {{'Documents.ChooseFiles' | translate}}
-                                                <input id="fileImage_{{workflowModel.field_update.field.name}}"
-                                                       type="file"
-                                                       name="{{workflowModel.field_update.field.name}}"
-                                                       class="fileInput"
-                                                       nv-file-select uploader="uploader"
-                                                       ng-model="workflowModel.field_update.value"
-                                                       ng-required="{{workflowModel.field_update.validation.required}}" />
-                                            </span>
-                                            <label for="fileImage_{{workflowModel.field_update.field.name}}"
-                                                   ng-value='workflowModel.field_update.value'
-                                                   id="lbl_fileDocument_{{workflowModel.field_update.field.name}}">
-                                                {{workflowModel.field_update.value}}
+                                            <tags-input name="updateValue"
+                                                        tabindex="3"
+                                                        ng-model="workflowModel.field_update.value"
+                                                        display-property="labelStr"
+                                                        key-property="id"
+                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true"
+                                                        ng-if="workflowModel.field_update.field.data_type === 'multiselect'">
+                                                <auto-complete source="multiselect($query, workflowModel.field_update.field)"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+
+                                            <tags-input ng-model="workflowModel.field_update.value"
+                                                        display-property="text"
+                                                        placeholder="{{'Common.TagPlaceholder' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        ng-if="!workflowModel.field_update.field.lookupModulePrimaryField ? workflowModel.field_update.field.data_type === 'tag' : workflowModel.field_update.field.lookupModulePrimaryField.data_type === 'tag'">
+                                                <auto-complete source="tags($query, workflowModel.field_update.field)"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+
+                                            <!--Doküman için || workflowModel.field_update.field.data_type ==='document' ekelendiğinde direk çalışacak-->
+                                            <div ng-if="workflowModel.field_update.field.data_type === 'image'"
+                                                 class="image-type">
+                                                <span class="file-input btn btn-primary btn-sm btn-file">
+                                                    {{'Documents.ChooseFiles' | translate}}
+                                                    <input id="fileImage_{{workflowModel.field_update.field.name}}"
+                                                           type="file"
+                                                           name="{{workflowModel.field_update.field.name}}"
+                                                           class="fileInput"
+                                                           nv-file-select uploader="uploader"
+                                                           ng-model="workflowModel.field_update.value"
+                                                           ng-required="{{workflowModel.field_update.validation.required}}" />
+                                                </span>
+                                                <label for="fileImage_{{workflowModel.field_update.field.name}}"
+                                                       ng-value='workflowModel.field_update.value'
+                                                       id="lbl_fileDocument_{{workflowModel.field_update.field.name}}">
+                                                    {{workflowModel.field_update.value}}
+                                                </label>
+                                                <span>
+                                                    <a href ng-show="workflowModel.field_update.value"
+                                                       ng-click="removeFile()">
+                                                        <i class="fa fa-minus-circle"></i>
+                                                    </a>
+                                                    <i ng-show="fileLoading"
+                                                       class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
+                                                </span>
+                                            </div>
+
+                                            <!--<tags-input name="updateValue"-->
+                                            <!--ng-model="workflowModel.field_update.value"-->
+                                            <!--display-property="full_name"-->
+                                            <!--key-property="id"-->
+                                            <!--min-tags="1"-->
+                                            <!--max-tags="1"-->
+                                            <!--placeholder="{{'Common.Search' | translate}}"-->
+                                            <!--replace-spaces-with-dashes="false"-->
+                                            <!--add-from-autocomplete-only="true"-->
+                                            <!--ng-if="workflowModel.field_update.field.data_type === 'lookup' && workflowModel.field_update.field.lookup_type === 'users'">-->
+                                            <!--<auto-complete source="lookupUser($query, 'logged_in_user')"-->
+                                            <!--min-length="0"-->
+                                            <!--load-on-focus="true"-->
+                                            <!--load-on-empty="true"-->
+                                            <!--max-results-to-show="9999"></auto-complete>-->
+                                            <!--</tags-input>-->
+                                            <!--Create new input here. angucomplete-alt must be at the bottom of the form-->
+                                            <angucomplete-alt input-name="updateValue"
+                                                              id="updateValue"
+                                                              input-class="form-control ng-animate-disabled"
+                                                              match-class="highlight-angucomplete"
+                                                              field-tabindex="3"
+                                                              field-required="workflowModel.field_update.field.validation.required"
+                                                              pause="200"
+                                                              selected-object="workflowModel.field_update.value"
+                                                              initial-value="workflowModel.field_update.value"
+                                                              remote-api-handler="lookup"
+                                                              search-fields="name"
+                                                              title-field="primary_value"
+                                                              minlength="2"
+                                                              template-url="views/app/common/angucomplete.html"
+                                                              focus-in="setCurrentLookupField(workflowModel.field_update.field)"
+                                                              text-searching="{{'Common.Searching' | translate}}"
+                                                              text-no-results="{{'Common.NoResults' | translate}}"
+                                                              use-original-object="true"
+                                                              value-changed="setFormValid()"
+                                                              hide-create-new="true"
+                                                              ng-if="workflowModel.field_update.field.data_type === 'lookup'" />
+                                            <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--DataTASK END-->
+                                <!--UserTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'User Task'">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{taskFields.owner['label_' + language]}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
+                                            <tags-input name="owner"
+                                                        ng-model="workflowModel.create_task.owner"
+                                                        display-property="full_name"
+                                                        key-property="id"
+                                                        min-tags="1"
+                                                        max-tags="1"
+                                                        on-tag-added="setFormValid()"
+                                                        on-tag-removed="setFormValid()"
+                                                        placeholder="{{'Common.Search' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true"
+                                                        style="width: 300px !important;">
+                                                <auto-complete source="lookupUser($query, 'record_owner')"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+
+                                            </tags-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{taskFields.subject['label_' + language]}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
+                                            <input name="subjectTask"
+                                                   class="form-control"
+                                                   tabindex="2"
+                                                   required
+                                                   ng-model="workflowModel.create_task.subject"
+                                                   ng-change="setFormValid()"
+                                                   ng-minlength="taskFields.subject.validation.min_length || 0"
+                                                   maxlength="{{taskFields.subject.validation.max_length || 50}}"
+                                                   pattern="{{taskFields.subject.validation.pattern}}"
+                                                   ui-mask="{{taskFields.subject.validation.mask}}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{taskFields.task_due_date['label_' + language]}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.dueDate.$invalid}">
+                                            <select class="form-control"
+                                                    name="dueDate"
+                                                    tabindex="3"
+                                                    required
+                                                    ng-model="workflowModel.create_task.task_due_date"
+                                                    ng-change="setFormValid()"
+                                                    ng-options="o as o.label for o in dueDateItems track by o.value">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-if="taskFields.task_status">
+                                        <label class="col-sm-4">
+                                            {{taskFields.task_status['label_' + language]}}:
+                                        </label>
+                                        <div>
+                                            <select class="form-control"
+                                                    name="taskStatus"
+                                                    tabindex="4"
+                                                    ng-model="workflowModel.create_task.task_status"
+                                                    ng-required="{{taskFields.task_status.validation.required}}"
+                                                    ng-change="setFormValid()"
+                                                    ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_status.picklist_id] | filter:{inactive:'!true'} track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-if="taskFields.task_priority">
+                                        <label class="col-sm-4">
+                                            {{taskFields.task_priority['label_' + language]}}:
+                                        </label>
+                                        <div>
+                                            <select class="form-control"
+                                                    name="taskPriority"
+                                                    tabindex="5"
+                                                    ng-model="workflowModel.create_task.task_priority"
+                                                    ng-required="{{taskFields.task_priority.validation.required}}"
+                                                    ng-change="setFormValid()"
+                                                    ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_priority.picklist_id] | filter:{inactive:'!true'} track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            {{taskFields.task_notification['label_' + language]}}:
+                                        </label>
+                                        <div>
+                                            <select class="form-control"
+                                                    name="taskNotification"
+                                                    tabindex="6"
+                                                    ng-model="workflowModel.create_task.task_notification"
+                                                    ng-required="{{taskFields.task_notification.validation.required}}"
+                                                    ng-change="setFormValid()"
+                                                    ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_notification.picklist_id] | filter:{inactive:'!true'} track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-if="taskFields.description">
+                                        <label class="col-sm-4">
+                                            {{taskFields.description['label_' + language]}}:
+                                        </label>
+                                        <div>
+                                            <textarea name="description"
+                                                      class="form-control"
+                                                      tabindex="7"
+                                                      ng-model="workflowModel.create_task.description"
+                                                      ng-required="{{taskFields.description.validation.required}}"
+                                                      ng-change="setFormValid()"
+                                                      ng-minlength="taskFields.description.validation.min_length || 0"
+                                                      maxlength="{{taskFields.description.validation.max_length || 500}}"
+                                                      pattern="{{taskFields.description.validation.pattern}}"
+                                                      auto-grow></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.create_task && (workflowForm.owner.$error.minTags || workflowForm.subjectTask.$error.required || workflowForm.dueDate.$error.required))">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--UserTASK END-->
+                                <!--NotificationTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'Notification Task'">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.Outlook.RecipientsEmailAdressField' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
+                                            <select class="form-control"
+                                                    name="sendNotificationModule"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="workflowModel.send_notification_module"
+                                                    ng-change="SendNotificationModuleChanged(); setFormValid(); "
+                                                    ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_module && workflowModel.send_notification_module.module && workflowModel.send_notification_module.module.name != 'users'">
+                                            <select class="form-control"
+                                                    name="customRecipient"
+                                                    tabindex="2"
+                                                    required
+                                                    ng-model="workflowModel.send_notification.customRecipient"
+                                                    ng-change="setFormValid();"
+                                                    ng-options="o as o['label_' + language] for o in workflowModel.send_notification_module.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_module.module.name == 'users'">
+                                            <tags-input name="recipients"
+                                                        ng-model="workflowModel.send_notification.recipients"
+                                                        display-property="full_name"
+                                                        key-property="id"
+                                                        min-tags="1"
+                                                        max-tags="5"
+                                                        on-tag-added="setFormValid()"
+                                                        on-tag-removed="setFormValid()"
+                                                        placeholder="{{'Common.Search' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true">
+                                                <auto-complete source="lookupUser($query, 'record_owner')"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            CC:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
+                                            <select class="form-control"
+                                                    name="sendNotificationCCModule"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="workflowModel.send_notification_ccmodule"
+                                                    ng-change="SendNotificationCCModuleChanged(); setFormValid();"
+                                                    ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_ccmodule && workflowModel.send_notification_ccmodule.module && workflowModel.send_notification_ccmodule.module.name != 'users'">
+                                            <select class="form-control"
+                                                    name="customCC"
+                                                    tabindex="2"
+                                                    required
+                                                    ng-model="workflowModel.send_notification.customCC"
+                                                    ng-change="setFormValid();"
+                                                    ng-options="o as o['label_' + language] for o in workflowModel.send_notification_ccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_ccmodule.module.name == 'users'">
+                                            <tags-input name="cc"
+                                                        ng-model="workflowModel.send_notification.cc"
+                                                        display-property="full_name"
+                                                        key-property="id"
+                                                        min-tags="1"
+                                                        max-tags="5"
+                                                        on-tag-added="setFormValid()"
+                                                        on-tag-removed="setFormValid()"
+                                                        placeholder="{{'Common.Search' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true">
+                                                <auto-complete source="lookupUser($query, 'record_owner')"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            BCC:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}">
+                                            <select class="form-control"
+                                                    name="sendNotificationBccModule"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="workflowModel.send_notification_bccmodule"
+                                                    ng-change="SendNotificationBccModuleChanged(); setFormValid();"
+                                                    ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_bccmodule && workflowModel.send_notification_bccmodule.module && workflowModel.send_notification_bccmodule.module.name != 'users'">
+                                            <select class="form-control"
+                                                    name="customBcc"
+                                                    tabindex="2"
+                                                    required
+                                                    ng-model="workflowModel.send_notification.customBcc"
+                                                    ng-change="setFormValid();"
+                                                    ng-options="o as o['label_' + language] for o in workflowModel.send_notification_bccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'">
+                                            <tags-input name="bcc"
+                                                        ng-model="workflowModel.send_notification.bcc"
+                                                        display-property="full_name"
+                                                        key-property="id"
+                                                        min-tags="1"
+                                                        max-tags="5"
+                                                        on-tag-added="setFormValid()"
+                                                        on-tag-removed="setFormValid()"
+                                                        placeholder="{{'Common.Search' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true">
+                                                <auto-complete source="lookupUser($query, 'record_owner')"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.Subject' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectNotification.$invalid}">
+                                            <input name="subjectNotification"
+                                                   mentio
+                                                   tabindex="2"
+                                                   ng-model="workflowModel.send_notification.subject"
+                                                   mentio-id="'11'"
+                                                   type="text"
+                                                   class="form-control"
+                                                   required
+                                                   ng-trim="false"
+                                                   maxlength="200"
+                                                   ng-change="setFormValid()" />
+
+                                            <mentio-menu mentio-for="'11'"
+                                                         mentio-trigger-char="'#'"
+                                                         mentio-items="tags"
+                                                         mentio-template-url="tag-mentions.tpl"
+                                                         mentio-search="searchTags(term)"
+                                                         mentio-select="getTagTextRaw(item,'input')"></mentio-menu>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="width: 300px;">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.Message' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
+                                            <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
+                                                      mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
+                                                      ng-required="true" ng-model="workflowModel.send_notification.message" name="message"
+                                                      mentio-iframe-element="iframeElement"></textarea>
+
+                                            <script type="text/ng-template" id="tag-mentions.tpl">
+                                                <ul class="ment-tags">
+                                                    <li class="item list-group-item clearfix" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                        {{tag.label}}
+                                                    </li>
+                                                </ul>
+
+                                            </script>
+
+                                            <!--TODO
+                                <mentio-menu class="mention-scrollbar" id="hastmenu1"
+                                         mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
+                                         mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                         mentio-search="searchTags(term)"
+                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
+                            <div class="hidden" plupload="imgUpload">
+                                <input id="uploadImage" type="file" add-file="add-file" />
+                            </div>
+                            <div class="hidden" plupload="fileUpload">
+                                <input id="uploadFile" type="file" add-file="add-file" />
+                            </div>-->
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            {{'Setup.BpmWorkflow.Schedule' | translate}}:
+                                        </label>
+                                        <div>
+                                            <select class="form-control"
+                                                    name="scheduleNotification"
+                                                    tabindex="4"
+                                                    ng-model="workflowModel.send_notification.schedule"
+                                                    ng-change="setFormValid()"
+                                                    ng-options="o as o.label for o in scheduleItems track by o.value">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.send_notification && (workflowForm.recipients.$error.required || workflowForm.subjectNotification.$error.required || workflowForm.message.$error.required  || workflowForm.recipients.$error.minTags || workflowForm.recipients.$error.maxTags))">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
+                                            <p ng-if="workflowForm.$error.maxTags">{{'Setup.BpmWorkflow.RecipientsMaxError' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--NotificationTASK END-->
+                                <!--WebHookTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'WebHook Task'">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.Workflow.WebHookUrl' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
+                                            <input type="url"
+                                                   required name="callbackUrl"
+                                                   tabindex="2"
+                                                   class="form-control"
+                                                   maxlength="300"
+                                                   ng-model="workflowModel.webHook.callbackUrl"
+                                                   ng-change="setFormValid()"
+                                                   placeholder="http://" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
+                                            <label class="radio-inline">
+                                                <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="post">
+                                                POST
                                             </label>
-                                            <span>
-                                                <a href ng-show="workflowModel.field_update.value"
-                                                   ng-click="removeFile()">
-                                                    <i class="fa fa-minus-circle"></i>
-                                                </a>
-                                                <i ng-show="fileLoading"
-                                                   class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
-                                            </span>
+                                            <label class="radio-inline">
+                                                <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="get">
+                                                GET
+                                            </label>
                                         </div>
-
-                                        <!--<tags-input name="updateValue"-->
-                                        <!--ng-model="workflowModel.field_update.value"-->
-                                        <!--display-property="full_name"-->
-                                        <!--key-property="id"-->
-                                        <!--min-tags="1"-->
-                                        <!--max-tags="1"-->
-                                        <!--placeholder="{{'Common.Search' | translate}}"-->
-                                        <!--replace-spaces-with-dashes="false"-->
-                                        <!--add-from-autocomplete-only="true"-->
-                                        <!--ng-if="workflowModel.field_update.field.data_type === 'lookup' && workflowModel.field_update.field.lookup_type === 'users'">-->
-                                        <!--<auto-complete source="lookupUser($query, 'logged_in_user')"-->
-                                        <!--min-length="0"-->
-                                        <!--load-on-focus="true"-->
-                                        <!--load-on-empty="true"-->
-                                        <!--max-results-to-show="9999"></auto-complete>-->
-                                        <!--</tags-input>-->
-                                        <!--Create new input here. angucomplete-alt must be at the bottom of the form-->
-                                        <angucomplete-alt input-name="updateValue"
-                                                          id="updateValue"
-                                                          input-class="form-control ng-animate-disabled"
-                                                          match-class="highlight-angucomplete"
-                                                          field-tabindex="3"
-                                                          field-required="workflowModel.field_update.field.validation.required"
-                                                          pause="200"
-                                                          selected-object="workflowModel.field_update.value"
-                                                          initial-value="workflowModel.field_update.value"
-                                                          remote-api-handler="lookup"
-                                                          search-fields="name"
-                                                          title-field="primary_value"
-                                                          minlength="2"
-                                                          template-url="views/app/common/angucomplete.html"
-                                                          focus-in="setCurrentLookupField(workflowModel.field_update.field)"
-                                                          text-searching="{{'Common.Searching' | translate}}"
-                                                          text-no-results="{{'Common.NoResults' | translate}}"
-                                                          use-original-object="true"
-                                                          value-changed="setFormValid()"
-                                                          hide-create-new="true"
-                                                          ng-if="workflowModel.field_update.field.data_type === 'lookup'" />
-                                        <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
                                     </div>
-                                </div>
-                            </div>
-                            <!--DataTASK END-->
-                            <!--UserTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'User Task'">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{taskFields.owner['label_' + language]}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
-                                        <tags-input name="owner"
-                                                    ng-model="workflowModel.create_task.owner"
-                                                    display-property="full_name"
-                                                    key-property="id"
-                                                    min-tags="1"
-                                                    max-tags="1"
-                                                    on-tag-added="setFormValid()"
-                                                    on-tag-removed="setFormValid()"
-                                                    placeholder="{{'Common.Search' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true"
-                                                    style="width: 300px !important;">
-                                            <auto-complete source="lookupUser($query, 'record_owner')"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-
-                                        </tags-input>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{taskFields.subject['label_' + language]}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
-                                        <input name="subjectTask"
-                                               class="form-control"
-                                               tabindex="2"
-                                               required
-                                               ng-model="workflowModel.create_task.subject"
-                                               ng-change="setFormValid()"
-                                               ng-minlength="taskFields.subject.validation.min_length || 0"
-                                               maxlength="{{taskFields.subject.validation.max_length || 50}}"
-                                               pattern="{{taskFields.subject.validation.pattern}}"
-                                               ui-mask="{{taskFields.subject.validation.mask}}" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{taskFields.task_due_date['label_' + language]}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.dueDate.$invalid}">
-                                        <select class="form-control"
-                                                name="dueDate"
-                                                tabindex="3"
-                                                required
-                                                ng-model="workflowModel.create_task.task_due_date"
-                                                ng-change="setFormValid()"
-                                                ng-options="o as o.label for o in dueDateItems track by o.value">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-if="taskFields.task_status">
-                                    <label class="col-sm-4">
-                                        {{taskFields.task_status['label_' + language]}}:
-                                    </label>
-                                    <div>
-                                        <select class="form-control"
-                                                name="taskStatus"
-                                                tabindex="4"
-                                                ng-model="workflowModel.create_task.task_status"
-                                                ng-required="{{taskFields.task_status.validation.required}}"
-                                                ng-change="setFormValid()"
-                                                ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_status.picklist_id] | filter:{inactive:'!true'} track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-if="taskFields.task_priority">
-                                    <label class="col-sm-4">
-                                        {{taskFields.task_priority['label_' + language]}}:
-                                    </label>
-                                    <div>
-                                        <select class="form-control"
-                                                name="taskPriority"
-                                                tabindex="5"
-                                                ng-model="workflowModel.create_task.task_priority"
-                                                ng-required="{{taskFields.task_priority.validation.required}}"
-                                                ng-change="setFormValid()"
-                                                ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_priority.picklist_id] | filter:{inactive:'!true'} track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        {{taskFields.task_notification['label_' + language]}}:
-                                    </label>
-                                    <div>
-                                        <select class="form-control"
-                                                name="taskNotification"
-                                                tabindex="6"
-                                                ng-model="workflowModel.create_task.task_notification"
-                                                ng-required="{{taskFields.task_notification.validation.required}}"
-                                                ng-change="setFormValid()"
-                                                ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_notification.picklist_id] | filter:{inactive:'!true'} track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-if="taskFields.description">
-                                    <label class="col-sm-4">
-                                        {{taskFields.description['label_' + language]}}:
-                                    </label>
-                                    <div>
-                                        <textarea name="description"
-                                                  class="form-control"
-                                                  tabindex="7"
-                                                  ng-model="workflowModel.create_task.description"
-                                                  ng-required="{{taskFields.description.validation.required}}"
-                                                  ng-change="setFormValid()"
-                                                  ng-minlength="taskFields.description.validation.min_length || 0"
-                                                  maxlength="{{taskFields.description.validation.max_length || 500}}"
-                                                  pattern="{{taskFields.description.validation.pattern}}"
-                                                  auto-grow></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.create_task && (workflowForm.owner.$error.minTags || workflowForm.subjectTask.$error.required || workflowForm.dueDate.$error.required))">
-                                    <div class="callout callout-danger">
-                                        <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--UserTASK END-->
-                            <!--NotificationTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'Notification Task'">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.Outlook.RecipientsEmailAdressField' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
-                                        <select class="form-control"
-                                                name="sendNotificationModule"
-                                                tabindex="1"
-                                                required
-                                                ng-model="workflowModel.send_notification_module"
-                                                ng-change="SendNotificationModuleChanged(); setFormValid(); "
-                                                ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_module && workflowModel.send_notification_module.module && workflowModel.send_notification_module.module.name != 'users'">
-                                        <select class="form-control"
-                                                name="customRecipient"
-                                                tabindex="2"
-                                                required
-                                                ng-model="workflowModel.send_notification.customRecipient"
-                                                ng-change="setFormValid();"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.send_notification_module.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_module.module.name == 'users'">
-                                        <tags-input name="recipients"
-                                                    ng-model="workflowModel.send_notification.recipients"
-                                                    display-property="full_name"
-                                                    key-property="id"
-                                                    min-tags="1"
-                                                    max-tags="5"
-                                                    on-tag-added="setFormValid()"
-                                                    on-tag-removed="setFormValid()"
-                                                    placeholder="{{'Common.Search' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true">
-                                            <auto-complete source="lookupUser($query, 'record_owner')"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        CC:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
-                                        <select class="form-control"
-                                                name="sendNotificationCCModule"
-                                                tabindex="1"
-                                                required
-                                                ng-model="workflowModel.send_notification_ccmodule"
-                                                ng-change="SendNotificationCCModuleChanged(); setFormValid();"
-                                                ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_ccmodule && workflowModel.send_notification_ccmodule.module && workflowModel.send_notification_ccmodule.module.name != 'users'">
-                                        <select class="form-control"
-                                                name="customCC"
-                                                tabindex="2"
-                                                required
-                                                ng-model="workflowModel.send_notification.customCC"
-                                                ng-change="setFormValid();"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.send_notification_ccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_ccmodule.module.name == 'users'">
-                                        <tags-input name="cc"
-                                                    ng-model="workflowModel.send_notification.cc"
-                                                    display-property="full_name"
-                                                    key-property="id"
-                                                    min-tags="1"
-                                                    max-tags="5"
-                                                    on-tag-added="setFormValid()"
-                                                    on-tag-removed="setFormValid()"
-                                                    placeholder="{{'Common.Search' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true">
-                                            <auto-complete source="lookupUser($query, 'record_owner')"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        BCC:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}">
-                                        <select class="form-control"
-                                                name="sendNotificationBccModule"
-                                                tabindex="1"
-                                                required
-                                                ng-model="workflowModel.send_notification_bccmodule"
-                                                ng-change="SendNotificationBccModuleChanged(); setFormValid();"
-                                                ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_bccmodule && workflowModel.send_notification_bccmodule.module && workflowModel.send_notification_bccmodule.module.name != 'users'">
-                                        <select class="form-control"
-                                                name="customBcc"
-                                                tabindex="2"
-                                                required
-                                                ng-model="workflowModel.send_notification.customBcc"
-                                                ng-change="setFormValid();"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.send_notification_bccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'">
-                                        <tags-input name="bcc"
-                                                    ng-model="workflowModel.send_notification.bcc"
-                                                    display-property="full_name"
-                                                    key-property="id"
-                                                    min-tags="1"
-                                                    max-tags="5"
-                                                    on-tag-added="setFormValid()"
-                                                    on-tag-removed="setFormValid()"
-                                                    placeholder="{{'Common.Search' | translate}}"
-                                                    replace-spaces-with-dashes="false"
-                                                    add-from-autocomplete-only="true">
-                                            <auto-complete source="lookupUser($query, 'record_owner')"
-                                                           min-length="0"
-                                                           load-on-focus="true"
-                                                           load-on-empty="true"
-                                                           max-results-to-show="9999"></auto-complete>
-                                        </tags-input>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.Subject' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectNotification.$invalid}">
-                                        <input name="subjectNotification"
-                                               mentio
-                                               tabindex="2"
-                                               ng-model="workflowModel.send_notification.subject"
-                                               mentio-id="'11'"
-                                               type="text"
-                                               class="form-control"
-                                               required
-                                               ng-trim="false"
-                                               maxlength="200"
-                                               ng-change="setFormValid()" />
-
-                                        <mentio-menu mentio-for="'11'"
-                                                     mentio-trigger-char="'#'"
-                                                     mentio-items="tags"
-                                                     mentio-template-url="tag-mentions.tpl"
-                                                     mentio-search="searchTags(term)"
-                                                     mentio-select="getTagTextRaw(item,'input')"></mentio-menu>
-                                    </div>
-                                </div>
-                                <div class="form-group" style="width: 300px;">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.Message' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
-                                        <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
-                                                  mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
-                                                  ng-required="true" ng-model="workflowModel.send_notification.message" name="message"
-                                                  mentio-iframe-element="iframeElement"></textarea>
-
-                                        <script type="text/ng-template" id="tag-mentions.tpl">
-                                            <ul class="ment-tags">
-                                                <li class="item list-group-item clearfix" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                    ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                    {{tag.label}}
-                                                </li>
-                                            </ul>
-
-                                        </script>
-
-                                        <!--TODO
-                                            <mentio-menu class="mention-scrollbar" id="hastmenu1"
-                                                     mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
-                                                     mentio-items="tags" mentio-template-url="tag-mentions.tpl"
-                                                     mentio-search="searchTags(term)"
-                                                     mentio-select="getTagTextRaw(item)"></mentio-menu>
-                                        <div class="hidden" plupload="imgUpload">
-                                            <input id="uploadImage" type="file" add-file="add-file" />
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label class="col-sm-4">
+                                            {{'Setup.BpmWorkflow.WebHookParameters' | translate}}:
+                                        </label>
+                                        <div>
+                                            <table class="filter-table" style="width: 300px;">
+                                                <tbody>
+                                                    <tr ng-repeat="parameter in hookParameters" style="border: 0.5px solid #0c4da24f;margin-bottom: 10px">
+                                                        <td>
+                                                            <label class="col-sm-4">
+                                                                {{'Setup.Workflow.ParameterName' | translate}}:
+                                                            </label>
+                                                            <input type="text" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
+                                                            <label class="col-sm-4">
+                                                                {{'Setup.Workflow.SelectedModule' | translate}}:
+                                                            </label>
+                                                            <select class="form-control"
+                                                                    name="hookModule"
+                                                                    tabindex="1"
+                                                                    required
+                                                                    ng-model="parameter.selectedModule"
+                                                                    ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                                <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
+                                                            </select>
+                                                            <label class="col-sm-4">
+                                                                {{'Setup.Workflow.SelectedField' | translate}}:
+                                                            </label>
+                                                            <select class="form-control"
+                                                                    name="hookField"
+                                                                    tabindex="2"
+                                                                    required
+                                                                    ng-model="parameter.selectedField"
+                                                                    ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
+                                                                <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
+                                                            <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fa fa-plus-square"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="hidden" plupload="fileUpload">
-                                            <input id="uploadFile" type="file" add-file="add-file" />
-                                        </div>-->
+                                    </div>
+                                    <div class="form-group" ng-show="workflowForm.actions.$error.actionRequired">
+                                        <input name="actions" type="hidden" ng-model="taskFields.subject.name">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="workflowForm.$error.actionRequired">{{'Setup.BpmWorkflow.ActionsRequiredError' | translate}}</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        {{'Setup.BpmWorkflow.Schedule' | translate}}:
-                                    </label>
-                                    <div>
+                                <!--WebHookTASK END-->
+                                <!--FunctionTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'Function Task'">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            {{'Setup.BpmWorkflow.SelectFunction' | translate}}:
+                                        </label>
                                         <select class="form-control"
-                                                name="scheduleNotification"
-                                                tabindex="4"
-                                                ng-model="workflowModel.send_notification.schedule"
-                                                ng-change="setFormValid()"
-                                                ng-options="o as o.label for o in scheduleItems track by o.value">
+                                                name="function"
+                                                tabindex="1"
+                                                ng-model="workflowModel.function.name"
+                                                ng-options="o.name as o.name for o in functionList track by o.name">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.send_notification && (workflowForm.recipients.$error.required || workflowForm.subjectNotification.$error.required || workflowForm.message.$error.required  || workflowForm.recipients.$error.minTags || workflowForm.recipients.$error.maxTags))">
-                                    <div class="callout callout-danger">
-                                        <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
-                                        <p ng-if="workflowForm.$error.maxTags">{{'Setup.BpmWorkflow.RecipientsMaxError' | translate}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--NotificationTASK END-->
-                            <!--WebHookTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'WebHook Task'">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.Workflow.WebHookUrl' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
-                                        <input type="url"
-                                               required name="callbackUrl"
-                                               tabindex="2"
-                                               class="form-control"
-                                               maxlength="300"
-                                               ng-model="workflowModel.webHook.callbackUrl"
-                                               ng-change="setFormValid()"
-                                               placeholder="http://" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
-                                        <label class="radio-inline">
-                                            <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="post">
-                                            POST
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
                                         </label>
-                                        <label class="radio-inline">
-                                            <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="get">
-                                            GET
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
+                                            <label class="radio-inline">
+                                                <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="post" ng-click="functionType = true;">
+                                                POST
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="get" ng-click="functionType = false;">
+                                                GET
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-show="functionType">
+                                        <label class="col-sm-4">
+                                            {{'Setup.BpmWorkflow.PostBody' | translate}}:
                                         </label>
-                                    </div>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 20px;">
-                                    <label class="col-sm-4">
-                                        {{'Setup.BpmWorkflow.WebHookParameters' | translate}}:
-                                    </label>
-                                    <div>
-                                        <table class="filter-table" style="width: 300px;">
-                                            <tbody>
-                                                <tr ng-repeat="parameter in hookParameters" style="border: 0.5px solid #0c4da24f;margin-bottom: 10px">
-                                                    <td>
-                                                        <label class="col-sm-4">
-                                                            {{'Setup.Workflow.ParameterName' | translate}}:
-                                                        </label>
-                                                        <input type="text" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
-                                                        <label class="col-sm-4">
-                                                            {{'Setup.Workflow.SelectedModule' | translate}}:
-                                                        </label>
-                                                        <select class="form-control"
-                                                                name="hookModule"
-                                                                tabindex="1"
-                                                                required
-                                                                ng-model="parameter.selectedModule"
-                                                                ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                                            <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
-                                                        </select>
-                                                        <label class="col-sm-4">
-                                                            {{'Setup.Workflow.SelectedField' | translate}}:
-                                                        </label>
-                                                        <select class="form-control"
-                                                                name="hookField"
-                                                                tabindex="2"
-                                                                required
-                                                                ng-model="parameter.selectedField"
-                                                                ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
-                                                            <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
-                                                        <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fa fa-plus-square"></i></a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="workflowForm.actions.$error.actionRequired">
-                                    <input name="actions" type="hidden" ng-model="taskFields.subject.name">
-                                    <div class="callout callout-danger">
-                                        <p ng-if="workflowForm.$error.actionRequired">{{'Setup.BpmWorkflow.ActionsRequiredError' | translate}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--WebHookTASK END-->
-                            <!--FunctionTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'Function Task'">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        {{'Setup.BpmWorkflow.SelectFunction' | translate}}:
-                                    </label>
-                                    <select class="form-control"
-                                            name="function"
-                                            tabindex="1"
-                                            ng-model="workflowModel.function.name"
-                                            ng-options="o.name as o.name for o in functionList track by o.name">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
-                                        <label class="radio-inline">
-                                            <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="post" ng-click="functionType = true;">
-                                            POST
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="get" ng-click="functionType = false;">
-                                            GET
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="functionType">
-                                    <label class="col-sm-4">
-                                        {{'Setup.BpmWorkflow.PostBody' | translate}}:
-                                    </label>
-                                    <div>
                                         <textarea name="postBody" tabindex="2" ng-model="workflowModel.function.postBody"
-                                                  style="width: 300px;max-width: 360px;min-width: 100px;min-height: 200px;"
+                                                  style="width: 300px;max-width:460px;min-width: 300px;min-height: 200px;"
                                                   placeholder="Json Data"></textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <!--FunctionTASK END-->
-                            <!--DataReadTASK START-->
-                            <div ng-show="SelectedNodeItem.item == 'Data Read Task'">
-                                <div class="form-group"
-                                     ng-if="workflowModel.module">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
-                                        <select class="form-control"
-                                                name="DataReadField"
-                                                tabindex="1"
-                                                required
-                                                ng-model="workflowModel.data_read.field"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.module.fields | orderBy:'order' track by o.id">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
+                                <!--FunctionTASK END-->
+                                <!--DataReadTASK START-->
+                                <div ng-show="SelectedNodeItem.item == 'Data Read Task'">
+                                    <div class="form-group"
+                                         ng-if="workflowModel.module">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
+                                            <select class="form-control"
+                                                    name="DataReadField"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="workflowModel.data_read.field"
+                                                    ng-options="o as o['label_' + language] for o in workflowModel.module.fields | orderBy:'order' track by o.id">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--DataReadTASK END-->
-                            <!--Conditional Link START-->
-                            <div ng-show="SelectedNodeItem.isDefault == false">
-                                <div class="form-group">
-                                    <label class="col-sm-4">
-                                        <span class="required-field">* </span> {{'Setup.BpmWorkflow.Condition' | translate}}:
-                                    </label>
-                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
-                                        <input name="condition"
-                                               class="form-control"
-                                               tabindex="1"
-                                               required
-                                               ng-model="workflowModel.condition" />
+                                <!--DataReadTASK END-->
+                                <!--Conditional Link START-->
+                                <div ng-show="SelectedNodeItem.isDefault == false">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span> {{'Setup.BpmWorkflow.Condition' | translate}}:
+                                        </label>
+                                        <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
+                                            <input name="condition"
+                                                   class="form-control"
+                                                   tabindex="1"
+                                                   required
+                                                   ng-model="workflowModel.condition" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--Conditional Link END-->
+                                <!--Conditional Link END-->
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

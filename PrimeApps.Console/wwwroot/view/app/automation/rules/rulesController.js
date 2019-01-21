@@ -38,7 +38,7 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-        
+
 
             var uploadSuccessCallback,
                 uploadFailedCallback;
@@ -66,6 +66,7 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+                $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -79,8 +80,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function () {
-                $scope.changePage(1)
+            $scope.changeOffset = function (value) {
+                $scope.changePage(value);
             };
             //Pagening End
 
@@ -1431,7 +1432,7 @@ angular.module('primeapps')
                         $scope.cancel();
                         $scope.changePage(1);
                     });
-            }
+            };
 
             var setWebHookModules = function () {
                 $scope.hookParameters = [];
