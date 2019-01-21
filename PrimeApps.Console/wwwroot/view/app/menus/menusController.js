@@ -6,12 +6,13 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, ngToast, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
-
-            $scope.$parent.menuTopTitle = "Xbrand";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'menus';
             $scope.wizardStep = 0;
             $scope.loading = true;
+            
+            $rootScope.breadcrumblist[2].title = 'Menu';
+            
             $scope.icons = ModuleService.getIcons();
 
             $scope.generator = function (limit) {

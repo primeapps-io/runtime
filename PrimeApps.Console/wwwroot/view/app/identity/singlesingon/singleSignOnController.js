@@ -10,6 +10,8 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Identity";
             $scope.$parent.activeMenu = 'identity';
             $scope.$parent.activeMenuItem = 'singleSingOn';
+            $rootScope.breadcrumblist[2].title = 'Single Sign-On';
+
             console.log("SingleSingOnController");
 
         }

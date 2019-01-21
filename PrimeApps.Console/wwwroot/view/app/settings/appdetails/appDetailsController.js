@@ -10,6 +10,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Settings";
             $scope.$parent.activeMenu = 'settings';
             $scope.$parent.activeMenuItem = 'appDetails';
+            $rootScope.breadcrumblist[2].title = 'App Details';
 
             console.log("AppDetailsController");
 

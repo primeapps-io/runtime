@@ -9,8 +9,6 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
-            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Excel Templates';
 
             $scope.generator = function (limit) {

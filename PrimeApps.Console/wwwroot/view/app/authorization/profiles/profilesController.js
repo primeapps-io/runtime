@@ -7,6 +7,9 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Authorization";
             $scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'profiles';
+
+            $rootScope.breadcrumblist[2].title = 'Profiles';
+
             $scope.loading = true;
 
             $scope.moduleLead = $filter('filter')($scope.$parent.modules, { name: 'leads' }, true)[0];

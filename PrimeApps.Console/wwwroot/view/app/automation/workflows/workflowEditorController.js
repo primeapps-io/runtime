@@ -15,6 +15,7 @@ angular.module('primeapps')
             $rootScope.subtoggleClass = 'full-toggled2';
             $scope.scheduleItems = WorkflowsService.getScheduleItems();
             $scope.dueDateItems = WorkflowsService.getDueDateItems();
+            $rootScope.breadcrumblist[2].title = 'Workflows';
 
             //BPM element menu loading start
             angular.element(function () {

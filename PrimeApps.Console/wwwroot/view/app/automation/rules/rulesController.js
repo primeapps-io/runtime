@@ -14,6 +14,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'rules';
             $rootScope.approvalProcesses = [];
+            $rootScope.breadcrumblist[2].title = 'Business Rules';
             // $scope.id = $location.search().id;
             $scope.scheduleItems = RulesService.getScheduleItems();
             $scope.dueDateItems = RulesService.getDueDateItems();

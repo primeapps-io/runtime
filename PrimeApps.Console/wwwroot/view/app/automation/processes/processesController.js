@@ -13,6 +13,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Automation";
             $scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'processes';
+            $rootScope.breadcrumblist[2].title = 'Approval Processes';
             var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1; //TODO Organization ID
             $scope.hookParameters = [];
             $scope.approvers = [];

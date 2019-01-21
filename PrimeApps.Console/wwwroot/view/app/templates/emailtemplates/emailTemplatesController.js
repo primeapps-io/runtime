@@ -10,8 +10,6 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
 
-            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Email Templates';
 
             $scope.loading = true;

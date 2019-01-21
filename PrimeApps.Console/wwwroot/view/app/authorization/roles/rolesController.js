@@ -8,6 +8,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Authorization";
             $scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'roles';
+            $rootScope.breadcrumblist[2].title = 'Roles';
             $scope.loading = true;
 
             // if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {

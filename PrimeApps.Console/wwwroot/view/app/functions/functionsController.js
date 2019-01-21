@@ -7,9 +7,9 @@ angular.module('primeapps')
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-            $scope.$parent.menuTopTitle = "App 1";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
+            $rootScope.breadcrumblist[2].title = 'Functions';
 
             console.log("BiController");
 

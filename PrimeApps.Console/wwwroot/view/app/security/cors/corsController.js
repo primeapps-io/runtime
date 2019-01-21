@@ -11,6 +11,9 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'security';
             $scope.$parent.activeMenuItem = 'cors';
 
+            $rootScope.breadcrumblist[2].title = 'Cors';
+
+
             console.log("CorsController");
 
         }

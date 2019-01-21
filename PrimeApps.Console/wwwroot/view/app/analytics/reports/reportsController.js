@@ -10,6 +10,9 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Analytics";
             $scope.$parent.activeMenu = 'analytics';
             $scope.$parent.activeMenuItem = 'reports';
+           
+            $rootScope.breadcrumblist[2].title = 'Reports';
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -20,10 +23,7 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrganization.id;
-            $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
-            $rootScope.breadcrumblist[2].title = 'Reports';
-
+          
             $scope.reports = [];
             $scope.loading = true;
             $scope.requestModel = {

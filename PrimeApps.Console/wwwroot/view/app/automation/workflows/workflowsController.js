@@ -12,7 +12,8 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";
-
+            $rootScope.breadcrumblist[2].title = 'Workflows';
+            
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {

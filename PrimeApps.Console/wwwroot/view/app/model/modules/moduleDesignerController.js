@@ -9,7 +9,10 @@ angular.module('primeapps')
             $scope.tabTitle = 'ss';
             $rootScope.subtoggleClass = 'full-toggled2';
             $rootScope.toggleClass = 'toggled full-toggled';
+            $rootScope.breadcrumblist[2].title = 'Module Designer';
+            
 
+            
             $scope.templatesFields = ModuleService.getTemplateFields();
 
             $scope.id = $location.search().id;

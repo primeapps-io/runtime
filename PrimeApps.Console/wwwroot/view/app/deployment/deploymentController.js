@@ -7,9 +7,12 @@ angular.module('primeapps')
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-            $scope.$parent.menuTopTitle = "Xbrand";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'deployment';
+            $rootScope.breadcrumblist[2].title = 'Deployment';
+
+
+
 
             console.log("DeploymentController");
 

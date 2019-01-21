@@ -11,6 +11,9 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'settings';
             $scope.$parent.activeMenuItem = 'notifications';
 
+            $rootScope.breadcrumblist[2].title = 'Notifications';
+
+
             console.log("NotificationsController");
 
         }

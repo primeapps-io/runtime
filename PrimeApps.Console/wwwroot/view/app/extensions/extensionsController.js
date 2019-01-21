@@ -7,9 +7,9 @@ angular.module('primeapps')
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-            $scope.$parent.menuTopTitle = "Xbrand";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'extensions';
+            $rootScope.breadcrumblist[2].title = 'Extensions';
 
             console.log("ExtensionsController");
 

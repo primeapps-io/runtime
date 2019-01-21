@@ -11,6 +11,8 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'identity';
             $scope.$parent.activeMenuItem = 'authentication';
 
+            $rootScope.breadcrumblist[2].title = 'Authentication';
+
             console.log("AuthenticationController");
 
         }

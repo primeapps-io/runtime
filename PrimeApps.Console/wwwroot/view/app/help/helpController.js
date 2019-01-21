@@ -11,6 +11,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'help';
+            $rootScope.breadcrumblist[2].title = 'Help';
             $scope.helpModalObj = {};
             $scope.helpModalObj.selectHelp = 'modules';
             $scope.helpModalObj.selectHelpRelation = 'any';

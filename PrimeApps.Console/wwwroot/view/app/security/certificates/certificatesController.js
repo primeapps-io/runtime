@@ -10,6 +10,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Security";
             $scope.$parent.activeMenu = 'security';
             $scope.$parent.activeMenuItem = 'certificates';
+            $rootScope.breadcrumblist[2].title = 'Certificates';
 
             console.log("CertificatesController");
 

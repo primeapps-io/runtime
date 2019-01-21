@@ -6,7 +6,6 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums) {
             $scope.appId = $state.params.appId;
             $scope.modules = [];
-            $scope.$parent.menuTopTitle = "App 1";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
             $scope.component = {};
@@ -14,6 +13,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.componentPlaces = componentPlaces;
             $scope.componentTypes = componentTypes;
+            $rootScope.breadcrumblist[2].title = 'Components';
 
             $scope.requestModel = {
                 limit: "10",

@@ -6,10 +6,10 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService,PasswordPoliciesService, LayoutService, $http, config) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
-
             $scope.$parent.menuTopTitle = "Security";
-            $scope.$parent.activeMenu = 'identity';
+            $scope.$parent.activeMenu = 'security';
             $scope.$parent.activeMenuItem = 'passwordPolicies';
+            $rootScope.breadcrumblist[2].title = 'Password Policies';
 
             console.log("PasswordPoliciesController");
 

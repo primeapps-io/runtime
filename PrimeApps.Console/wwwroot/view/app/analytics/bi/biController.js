@@ -10,6 +10,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Analytics";
             $scope.$parent.activeMenu = 'analytics';
             $scope.$parent.activeMenuItem = 'bi';
+            $rootScope.breadcrumblist[2].title = 'Bi';
 
             console.log("BiController");
 

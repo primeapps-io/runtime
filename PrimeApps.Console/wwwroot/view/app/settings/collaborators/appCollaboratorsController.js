@@ -9,7 +9,9 @@ angular.module('primeapps')
 
             $scope.$parent.menuTopTitle = "Settings";
             $scope.$parent.activeMenu = 'settings';
-            $scope.$parent.activeMenuItem = 'appCollaborators';
+            $scope.$parent.activeMenuItem = 'appCollaborators';    
+            $rootScope.breadcrumblist[2].title = 'App Collaborators';
+
 
             console.log("AppCollaboratorsController");
 
