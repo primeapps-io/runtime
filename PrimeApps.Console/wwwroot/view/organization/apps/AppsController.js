@@ -8,6 +8,14 @@ angular.module('primeapps')
 
             var organizationId = $location.search().organizationId;
 
+            if (angular.isObject($rootScope.currentOrganization)) {
+                $rootScope.currentOrganization.id = organizationId;
+            } else {
+                $rootScope.currentOrganization = {};
+                $rootScope.currentOrganization.id = organizationId;
+            }
+
+
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
@@ -19,7 +27,6 @@ angular.module('primeapps')
             }
 
             $cookies.put('organization_id', organizationId);
-
 
 
             $scope.appsFilter = {
