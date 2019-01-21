@@ -2,8 +2,12 @@
     <h2>Help</h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <li><button class="btn add-button" ng-click="showFormModal()" style="margin-right: 10px"><i class="fas fa-plus"></i>Tanıtım Ekranı Ekle </button></li>
-            <li><button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i> Yardım Ekranı Ekle </button></li>
+            <li>
+                <button class="btn add-button" ng-click="showFormModal()" style="margin-right: 10px"><i class="fas fa-plus"></i>Tanıtım Ekranı Ekle</button>
+            </li>
+            <li>
+                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i> Yardım Ekranı Ekle</button>
+            </li>
         </ul>
     </div>
 </div>
@@ -24,18 +28,22 @@
                 <td>{{helpside.binding}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(helpside)" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
-                    </div>
-                    <div class="action-buttons-block">
-                        <button ng-click="helpEdit(helpside)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
-                                data-title="Edit" bs-tooltip data-placement="top"
-                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-pen"></i>
-                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="helpEdit(helpside)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="delete(helpside)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
             </tr>

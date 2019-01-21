@@ -21,18 +21,22 @@
                 <td>{{template.module['label_'+language+'_plural']}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(template)" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
-                    </div>
-                    <div class="action-buttons-block">
-                        <button ng-click="showFormModal(template)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
-                                data-title="Edit" bs-tooltip data-placement="top"
-                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-pen"></i>
-                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="showFormModal(template)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="delete(template)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
             </tr>

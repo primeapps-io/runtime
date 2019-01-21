@@ -388,7 +388,7 @@ angular.module('primeapps')
                 const willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to email template this help ?",
+                        text: "Are you sure that you want to delete this email template ?",
                         icon: "warning",
                         buttons: ['Cancel', 'Okey'],
                         dangerMode: true

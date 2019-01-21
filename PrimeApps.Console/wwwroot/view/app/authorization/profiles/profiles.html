@@ -17,28 +17,28 @@
                 <td class="profile-description">{{profile.description}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(profile)" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
+                        <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
-                    </div>
-                    <div class="action-buttons-block">
-                        <button ng-click="showFormModal(profile,false)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
-                                data-title="Edit" bs-tooltip data-placement="top"
-                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                    </div>
-                    <div class="action-buttons-block">
-                        <button ng-click="showFormModal(profile,true)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
-                                data-title="Copy" bs-tooltip data-placement="top"
-                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-copy"></i>
-                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="showFormModal(profile,false)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="showFormModal(profile,true)">{{'Common.Copy' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="delete(profile)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
+
             </tr>
         </tbody>
     </table>

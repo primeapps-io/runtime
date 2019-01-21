@@ -349,7 +349,6 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (dependency) {
-
                 const willDelete =
                     swal({
                         title: "Are you sure?",
