@@ -24,7 +24,7 @@ angular.module('primeapps')
             ModuleService.getModuleFields(activityModule.name)
                 .then(function (response) {
                     if (response) {
-                        activityModule.fields = response;
+                        activityModule.fields = response.data;
                     }
                 });
 
@@ -180,7 +180,7 @@ angular.module('primeapps')
                                                     fieldUpdateModule = $filter('filter')($scope.$parent.modules, { name: workflow.field_update.module }, true)[0];
                                                 ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
                                                     if (response) {
-                                                        fieldUpdateModule.fields = response;
+                                                        fieldUpdateModule.fields = response.data;
                                                     }
                                                     ModuleService.getPickItemsLists(fieldUpdateModule)
                                                         .then(function (picklistUpdateModule) {
@@ -212,7 +212,7 @@ angular.module('primeapps')
                 ModuleService.getModuleFields($scope.workflowModel.module.name)
                     .then(function (response) {
                         if (response) {
-                            $scope.workflowModel.module.fields = response;
+                            $scope.workflowModel.module.fields = response.data;
                         }
                     });
 
@@ -266,7 +266,7 @@ angular.module('primeapps')
 
             $scope.getTagTextRaw = function (item, type) {
                 if (item.name.indexOf("seperator") < 0) {
-                    if (type == 'input')
+                    if (type === 'input')
                         return '{' + item.name + '}';
                     else
                         return '<i style="color:#0f1015;font-style:normal">' + '{' + item.name + '}' + '</i>';
@@ -295,7 +295,7 @@ angular.module('primeapps')
 
                 var tagsList = [];
                 angular.forEach($scope.moduleFields, function (item) {
-                    if (item.name == "seperator")
+                    if (item.name === "seperator")
                         return;
                     if (item.label.indexOf(term) >= 0) {
                         tagsList.push(item);
@@ -513,7 +513,7 @@ angular.module('primeapps')
                 if (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') {
                     filterValue = filter.value[0].full_name;
                 }
-                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') {
+                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
                     filterValue = filter.value.primary_value;
                 }
                 else if (filter.field.data_type === 'picklist') {
@@ -588,7 +588,7 @@ angular.module('primeapps')
             $scope.validateCreateTask = function () {
                 return $scope.workflowModel.create_task &&
                     $scope.workflowModel.create_task.owner &&
-                    $scope.workflowModel.create_task.owner.length == 1 &&
+                    $scope.workflowModel.create_task.owner.length === 1 &&
                     $scope.workflowModel.create_task.subject &&
                     $scope.workflowModel.create_task.task_due_date;
             };
@@ -599,7 +599,7 @@ angular.module('primeapps')
                         return $scope.workflowModel.field_update.updateOption &&
                             $scope.workflowModel.field_update.module &&
                             $scope.workflowModel.field_update.field &&
-                            ($scope.workflowModel.field_update.value != undefined && $scope.workflowModel.field_update.value != null);
+                            ($scope.workflowModel.field_update.value !== undefined && $scope.workflowModel.field_update.value !== null);
                     } else if ($scope.workflowModel.field_update.updateOption && $scope.workflowModel.field_update.updateOption === '2') {
                         return $scope.workflowModel.field_update.updateOption &&
                             $scope.workflowModel.field_update.firstModule &&
@@ -666,7 +666,7 @@ angular.module('primeapps')
                 $scope.updatableModules.push($scope.workflowModel.module);
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
-                    if (field.lookup_type && field.lookup_type != $scope.workflowModel.module.name && field.lookup_type != 'users' && !field.deleted) {
+                    if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
                         var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
                         $scope.updatableModules.push(module);
                     }
@@ -880,7 +880,7 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationCCModuleChanged = function () {
-                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.cc && $scope.workflowModel.send_notification.cc.length == 0)
+                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.cc && $scope.workflowModel.send_notification.cc.length === 0)
                     $scope.workflowModel.send_notification.cc = null;
 
                 if ($scope.workflowModel.send_notification_ccmodule && $scope.workflowModel.send_notification) {
@@ -893,7 +893,7 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationBccModuleChanged = function () {
-                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.bcc && $scope.workflowModel.send_notification.bcc.length == 0)
+                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.bcc && $scope.workflowModel.send_notification.bcc.length === 0)
                     $scope.workflowModel.send_notification.bcc = null;
 
                 if ($scope.workflowModel.send_notification_bccmodule && $scope.workflowModel.send_notification) {
@@ -994,7 +994,7 @@ angular.module('primeapps')
                         if (!id)
                             return;
 
-                        if (filter.field.lookup_type === 'users' && id == 0) {
+                        if (filter.field.lookup_type === 'users' && id === 0) {
                             var user = {};
                             user.id = 0;
                             user.email = '[me]';
@@ -1059,7 +1059,7 @@ angular.module('primeapps')
                 return $http.get(config.apiUrl + "tag/get_tag/" + field.id).then(function (response) {
                     var tags = response.data;
                     return tags.filter(function (tag) {
-                        return tag.text.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1;
+                        return tag.text.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1;
                     });
                 });
             };
@@ -1347,7 +1347,7 @@ angular.module('primeapps')
                         if ($scope.hookParameters.length > 0) {
                             $scope.ruleActionsText += '<br><b>' + $filter('translate')('Setup.Workflow.WebHookParameters') + ':</b><br>';
                             var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
-                            if (lastHookParameter.parameterName && lastHookParameter.selectedField != null && lastHookParameter.selectedModule) {
+                            if (lastHookParameter.parameterName && lastHookParameter.selectedField !== null && lastHookParameter.selectedModule) {
                                 $scope.showWebhookSummaryTable = true;
                                 //if any valid parameter for object
                                 $scope.workflowModel.webHook.hookParameters = $scope.hookParameters;
@@ -1531,9 +1531,9 @@ angular.module('primeapps')
                     fn: function (item) {
                         var extension = helper.getFileExtension(item.name);
                         if (type === 'image') {
-                            return true ? (extension === 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'doc' || extension == 'gif') : false;
+                            return true ? (extension === 'jpg' || extension === 'jpeg' || extension === 'png' || extension === 'doc' || extension === 'gif') : false;
                         } else {
-                            return true ? (extension === 'txt' || extension == 'docx' || extension == 'pdf' || extension == 'doc') : false;
+                            return true ? (extension === 'txt' || extension === 'docx' || extension === 'pdf' || extension === 'doc') : false;
                         }
 
                     }
@@ -1566,14 +1566,14 @@ angular.module('primeapps')
             $scope.removeFile = function () {
                 $scope.workflowModel.field_update.value = null;
                 $scope.uploader.queue = [];
-            }
+            };
 
             $scope.getUpdatableModules = function () {
                 $scope.updatableModules = [];
                 $scope.updatableModules.push($scope.workflowModel.module);
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
-                    if (field.lookup_type && field.lookup_type != $scope.workflowModel.module.name && field.lookup_type != 'users' && !field.deleted) {
+                    if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
                         var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
                         $scope.updatableModules.push(module);
                     }
@@ -1758,7 +1758,7 @@ angular.module('primeapps')
                 $scope.workflowModel = [];
                 $scope.id = null;
                 $scope.ruleFormModal.hide();
-            }
+            };
             //Modal End
         }
     ]);

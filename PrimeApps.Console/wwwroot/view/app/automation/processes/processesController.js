@@ -45,7 +45,7 @@ angular.module('primeapps')
             ModuleService.getModuleFields(activityModule.name)
                 .then(function (response) {
                     if (response) {
-                        activityModule.fields = response;
+                        activityModule.fields = response.data;
                     }
                 });
 
@@ -203,7 +203,7 @@ angular.module('primeapps')
                 ModuleService.getModuleFields(module.name)
                     .then(function (response) {
                         if (response) {
-                            $scope.workflowModel.module.fields = response;
+                            $scope.workflowModel.module.fields = response.data;
                             var moduleNameList = [];
 
                             angular.forEach($scope.$parent.modules, function (module) {
@@ -494,7 +494,7 @@ angular.module('primeapps')
                             ModuleService.getModuleFields(tempModule.name)
                                 .then(function (response) {
                                     if (response)
-                                        processObj.module.fields = response;
+                                        processObj.module.fields = response.data;
                                 });
 
                             processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -508,7 +508,7 @@ angular.module('primeapps')
                             ModuleService.getModuleFields(tempModule.name)
                                 .then(function (response) {
                                     if (response)
-                                        processObj.module.fields = response;
+                                        processObj.module.fields = response.data;
                                 });
 
                             processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -532,7 +532,7 @@ angular.module('primeapps')
                 ModuleService.getModuleFields($scope.firstDynamicApproverFields.name)
                     .then(function (response) {
                         if (response)
-                            $scope.firstDynamicApproverFields.fields = response;
+                            $scope.firstDynamicApproverFields.fields = response.data;
                     });
 
                 if (!isEdit) {
