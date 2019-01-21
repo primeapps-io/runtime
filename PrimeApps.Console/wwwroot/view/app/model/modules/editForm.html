@@ -1,111 +1,134 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form name="editForm" class="form-horizontal form-custom" ng-submit="saveSettings(editForm);" autocomplete="off" novalidate>
-                <div class="modal-header">
-                    <h4 class="modal-title">{{'Setup.Modules.ModuleSettings' | translate}}</h4>
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="editForm" class="form-horizontal form-custom" ng-submit="save(editForm);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">{{'Setup.Modules.ModuleSettings' | translate}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button ng-disabled="saving" ng-click="cancelModule()" type="button"
+                                    class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel'
+                                | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i
+                                    class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
-                        <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
-                        <input type="text"
-                               name="labelPlural"
-                               class="form-control ng-animate-disabled col-sm-8"
-                               required
-                               maxlength="50"
-                               focus="currentLabelState"
-                               ng-model="module['label_' + language + '_plural']">
-                    </div>
-                    <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
-                        <label class="col-sm-4 required-field">* {{'Setup.Modules.SingularName' | translate}}</label>
-                        <input type="text"
-                               name="labelSingular"
-                               class="form-control ng-animate-disabled col-sm-8"
-                               required
-                               maxlength="50"
-                               ng-model="module['label_' + language + '_singular']">
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
-                        <button type="button" data-container="form" class="form-control btn btn-default"
-                                data-placeholder="{{'Common.Icon' | translate}}-" ng-model="module.menu_icon"
-                                data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                bs-select><span class="caret"></span></button>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4">{{'Setup.Modules.DisplayOnMenu' | translate}}: </label>
-                        <div class="col-sm-8" style="padding-left: 0;">
-                            <label class="radio-inline">
-                                <input type="radio" ng-model="module.display" ng-value="true"> {{'Common.Yes' | translate}}
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" ng-model="module.display" ng-value="false"> {{'Common.No' | translate}}
-                            </label>
-                        </div>
-                    </div>
-                    <a href class="advanced-options-link" ng-click="$parent.showAdvancedOptionsEdit = !$parent.showAdvancedOptionsEdit">
-                        {{'Setup.Modules.AdvancedOptions' | translate}}
-                        <i class="fa fa-caret-right" ng-if="!$parent.showAdvancedOptionsEdit"></i>
-                        <i class="fa fa-caret-down" ng-if="$parent.showAdvancedOptionsEdit"></i>
-                    </a>
-                    <div class="advanced-options" ng-show="$parent.showAdvancedOptionsEdit">
-                        <div class="form-group">
-                            <label class="col-sm-4">{{'Setup.Modules.Sharing' | translate}}: </label>
-                            <div class="col-sm-8" style="padding-left: 0;">
-                                <label class="radio-inline">
-                                    <input type="radio" ng-model="module.sharing" value="private"> {{'Setup.Modules.SharingPrivate' | translate}}
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" ng-model="module.sharing" value="public"> {{'Setup.Modules.SharingPublic' | translate}}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-4">{{'Setup.Modules.DisplayOnCalendar' | translate}}: </label>
-                            <div class="col-sm-8" style="padding-left: 0;">
-                                <label class="radio-inline" title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">
-                                    <input type="radio" ng-model="module.display_calendar" ng-value="true" ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" ng-model="module.display_calendar" ng-value="false" ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group" ng-if="module.display_calendar">
-                            <label class="col-sm-4">{{'Setup.Modules.CalendarColor' | translate}}: </label>
-                            <div class="col-sm-8" style="padding-left: 0;">
-                                <ul class="color-picker-simple">
-                                    <li ng-repeat="color in calendarColors" ng-class="{selected: (module.calendar_color_dark === color.dark)}" ng-click="module.calendar_color_dark = color.dark" ng-style="{'background-color': color.dark}"></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-4">{{'Common.DetailViewType' | translate }}: </label>
-                            <div class="col-sm-8" style="padding-left: 0;">
-                                <label class="radio-inline">
-                                    <input type="radio" ng-model="module.detail_view_type" value="tab">
-                                    {{'Common.TabbedView' | translate }}
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" ng-model="module.detail_view_type" value="flat"> {{'Common.FlatView'
-                                    | translate }}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group" ng-show="editForm.$submitted && editForm.$invalid">
-                        <div class="col-sm-12">
-                            <div class="callout callout-danger">
-                                <p ng-if="editForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-custom" ng-disabled="saving" ng-click="cancelModule()">{{'Common.Cancel' | translate}}</button>
-                    <button type="submit" class="btn btn-w-md btn-primary" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+        <div class="modal-dialog">
+            <div class="section">
+                <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
+                    <input type="text"
+                           name="labelPlural"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           focus="currentLabelState"
+                           ng-model="module['label_' + language + '_plural']">
+                </div>
+                <div class="form-group"
+                     ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.SingularName' | translate}}</label>
+                    <input type="text"
+                           name="labelSingular"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="module['label_' + language + '_singular']">
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
+                    <button type="button" data-container="form" class="form-control btn btn-default"
+                            data-placeholder="{{'Common.Icon' | translate}}-" ng-model="module.menu_icon"
+                            data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
+                            bs-select><span class="caret"></span></button>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">{{'Setup.Modules.DisplayOnMenu' | translate}}: </label>
+                    <div class="col-sm-8" style="padding-left: 0;">
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.display" ng-value="true"> {{'Common.Yes' | translate}}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.display" ng-value="false"> {{'Common.No' | translate}}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="advanced-options" ng-show="$parent.showAdvancedOptionsEdit">
+
+                </div>
+
+
+            </div>
+            <div class="section">
+                <div class="form-group">
+                    <label class="col-sm-4">{{'Setup.Modules.Sharing' | translate}}: </label>
+                    <div class="col-sm-8" style="padding-left: 0;">
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.sharing" value="private">
+                            {{'Setup.Modules.SharingPrivate' | translate}}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.sharing" value="public">
+                            {{'Setup.Modules.SharingPublic' | translate}}
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">{{'Setup.Modules.DisplayOnCalendar' | translate}}: </label>
+                    <div class="col-sm-8" style="padding-left: 0;">
+                        <label class="radio-inline"
+                               title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">
+                            <input type="radio" ng-model="module.display_calendar" ng-value="true"
+                                   ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.display_calendar" ng-value="false"
+                                   ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="module.display_calendar">
+                    <label class="col-sm-4">{{'Setup.Modules.CalendarColor' | translate}}: </label>
+                    <div class="col-sm-8" style="padding-left: 0;">
+                        <ul class="color-picker-simple">
+                            <li ng-repeat="color in calendarColors"
+                                ng-class="{selected: (module.calendar_color_dark === color.dark)}"
+                                ng-click="module.calendar_color_dark = color.dark"
+                                ng-style="{'background-color': color.dark}"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">{{'Common.DetailViewType' | translate }}: </label>
+                    <div class="col-sm-8" style="padding-left: 0;">
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.detail_view_type" value="tab">
+                            {{'Common.TabbedView' | translate }}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="module.detail_view_type" value="flat"> {{'Common.FlatView'
+                            | translate }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="section" ng-show="editForm.$submitted && editForm.$invalid">
+                <div class="form-group" >
+                    <div class="col-sm-12">
+                        <div class="callout callout-danger">
+                            <p ng-if="editForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
