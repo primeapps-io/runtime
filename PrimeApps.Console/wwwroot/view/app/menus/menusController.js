@@ -329,8 +329,6 @@ angular.module('primeapps')
                 labelMenu.id = 0;//null;
                 labelMenu.menuId = menu.no;
                 labelMenu.parentId = menu.id;
-                labelMenu.index = $scope.index;
-                $scope.index += 1;
                 menu.items.push(labelMenu);
             };
 
@@ -415,8 +413,9 @@ angular.module('primeapps')
                                 else
                                     for (var i = 0; i < $scope.menuLists.length; i++) {
                                         if ($scope.menuLists[i].items.length > 0) {
-                                            findItem = $filter('filter')($scope.menuLists[i].items, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
-                                            createItem.no = findItem.no;
+                                            findItem = $filter('filter')($scope.menuLists[i].items, { id: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
+                                            if (findItem)
+                                                createItem.no = findItem.no;
                                         }
                                     }
                             });
@@ -560,18 +559,13 @@ angular.module('primeapps')
                         if (!menuItem && !menu)
                             $scope.deleteArray.push(deleteItem);
 
-                        if (menuItem && !menu) {
+                        if (menuItem && !menu)
                             $scope.deleteArray.push(menuItem);
-                            $scope.createArray.splice(menuItem.index, 1);
-                        }
 
-                        else if (menu && menuItem) {
-                            $scope.createArray.splice(menuItem.index, 1);
+                        if (deleteItem) {
+                            $scope.createArray.splice(deleteItem.index, 1);
+                            $scope.index = $scope.index - 1;
                         }
-                        else if (menu && !menuItem) {
-                            $scope.createArray.splice(menu.index, 1);
-                        }
-
                     }
 
                     //Delete from menuLists
@@ -600,16 +594,12 @@ angular.module('primeapps')
                         menuItem = menu ? $filter('filter')(menu.items, { name: deleteItem.name }, true)[0] : $filter('filter')($scope.menuLists[menuId - 1].items, { name: deleteItem.name }, true)[0];
                         if (!menuItem && !menu)
                             $scope.deleteArray.push(menuItem);
-                        if (menuItem && !menu && deleteItem.name != "") {
+                        if (menuItem && !menu && deleteItem.name != "")
                             $scope.deleteArray.push(menuItem);
-                            $scope.createArray.splice(menuItem.index, 1);
-                        }
 
-                        else if (menu && menuItem) {
-                            $scope.createArray.splice(menuItem.index, 1);
-                        }
-                        else if (menu && !menuItem) {
-                            $scope.createArray.splice(menu.index, 1);
+                        if (deleteItem) {
+                            $scope.createArray.splice(deleteItem.index, 1);
+                            $scope.index = $scope.index - 1;
                         }
                     }
 
@@ -735,11 +725,13 @@ angular.module('primeapps')
                     if (filterItem) {
                         //angular.forEach(filterItem.items, function (subItem) {
                         if (filterItem.items.length > 0) {
-                            var filterSubItem = $filter('filter')(subItem, { id: 0 }, true)[0];
+                            var filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
                             if (filterSubItem) {
-                                SubIndex = filterItem.items.findIndex(x => x.id === 0)//filterSubItem.no);
-                                index = copyMenuList.findIndex(x => x.no === filterItem.no);
-                                copyMenuList[index].items.splice(SubIndex, 1);
+                                for (var i = 0; i < filterSubItem.length; i++) {
+                                    SubIndex = filterItem.items.findIndex(x => x.id === 0)//filterSubItem.no);
+                                    index = copyMenuList.findIndex(x => x.no === filterItem.no);
+                                    copyMenuList[index].items.splice(SubIndex, 1);
+                                }
                             }
                         }
 
@@ -749,8 +741,8 @@ angular.module('primeapps')
                     // !filterItem -> we check this case previous step, with chield
                     else if (!filterItem && filterSubItem.length > 0) {
                         // angular.forEach(filterSubItem, function (subItem) {
-                        SubIndex = filterSubItem.findIndex(x => x.id === 0);
                         index = copyMenuList.findIndex(x => x.no === menuItem.no);
+                        SubIndex = copyMenuList[index].items.findIndex(x => x.id === 0);
                         copyMenuList[index].items.splice(SubIndex, 1);
                         // });
                     }
