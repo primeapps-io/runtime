@@ -57,7 +57,7 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            ProfilesService.count(2).then(function (response) {
+            ProfilesService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
@@ -105,6 +105,10 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
+                ProfilesService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);

@@ -1,187 +1,180 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="dependencyForm" class="form-horizontal form-custom" ng-submit="save(dependencyForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-8">
+            <div class="flex-between">
                 <h4 class="modal-title">{{currentDependency.isNew ? ('Setup.Modules.NewDependency' | translate) : ('Setup.Modules.EditDependency' | translate)}}</h4>
-            </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewDependencyModal.hide(); dependencies=dependenciesState;">
-                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
-                    <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
-                </button>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-disabled="saving" ng-click="addNewDependencyModal.hide(); dependencies=dependenciesState;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                        </li>
+                        <li>
+                            <button type="submit" style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
+        <div class="modal-dialog">
+            <div class="section">
+                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.relatedModule.$invalid}">
+                    <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
+                    <select name="module"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.module"
+                            ng-change="moduleChanged()"
+                            ng-options="o as o['label_' + language + '_plural'] for o in $parent.modules | orderNotZero | orderBy:'order' | filter:{display:true} track by o.name">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.dependencyType.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyType' | translate}}: </label>
+                    <select name="dependencyType"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.dependencyType"
+                            ng-disabled="!currentDependency.isNew"
+                            ng-change="dependencyTypeChanged()"
+                            ng-options="o.value as o.label for o in dependencyTypes"></select>
+                </div>
+                <div class="form-group" ng-if="currentDependency.dependencyType === 'value'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.type.$invalid}">
+                    <label class="col-sm-6 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
+                    <select name="type"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.type"
+                            ng-change="$parent.valueChangeTypeChanged()"
+                            ng-options="o.value as o.label for o in valueChangeTypes"></select>
+                </div>
+                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentField.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentField' | translate}}: </label>
+                    <select name="parentField"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.parent_field"
+                            ng-change="parentValueChanged()"
+                            ng-options="o.name as o['label_' + language] for o in getParentFields() | filter:{deleted:'!true'} | orderBy:'order'">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group" ng-if="currentDependency.dependencyType === 'display' && currentDependency.parent_field && (parentDisplayFields | filter:{name: currentDependency.parent_field}:true)[0].data_type != 'checkbox'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.values.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentValues' | translate}}: </label>
+                    <div class="col-sm-8 multiselect-container">
+                        <button type="button"
+                                class="btn btn-default ng-animate-disabled multiselect"
+                                name="values"
+                                ng-model="currentDependency.values"
+                                ng-required="true"
+                                data-icon-checkmark="fa fa-check"
+                                data-placeholder="{{'Common.Multiselect' | translate}}"
+                                data-html="1"
+                                data-multiple="1"
+                                data-max-length="2"
+                                data-max-length-html="{{'Common.Multiselected' | translate}}"
+                                bs-options="o.id as o['label_'+language] for o in picklist track by id"
+                                bs-select></button>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="currentDependency.dependencyType == 'display'">
+                    <label class="col-sm-6 required-field">
+                        * {{'Setup.Modules.AffectedAreaType' | translate }}:
+                    </label>
 
-        <div class="modal-dialog modal-600">
-            <div class="modal-content padding-0">
-                <div class="modal-body">
-                    <div id="field-form-body" class="modal-body">
-                        <div class="section" id="section1">
-                            <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.relatedModule.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
-                                    <select name="module"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.module"
-                                            ng-change="moduleChanged()"
-                                            ng-options="o as o['label_' + language + '_plural'] for o in $parent.modules | orderNotZero | orderBy:'order' | filter:{display:true} track by o.name">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.dependencyType.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyType' | translate}}: </label>
-                                    <select name="dependencyType"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.dependencyType"
-                                            ng-disabled="!currentDependency.isNew"
-                                            ng-change="dependencyTypeChanged()"
-                                            ng-options="o.value as o.label for o in dependencyTypes"></select>
-                                </div>
-                                <div class="form-group" ng-if="currentDependency.dependencyType === 'value'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.type.$invalid}">
-                                    <label class="col-sm-6 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
-                                    <select name="type"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.type"
-                                            ng-change="$parent.valueChangeTypeChanged()"
-                                            ng-options="o.value as o.label for o in valueChangeTypes"></select>
-                                </div>
-                                <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentField.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentField' | translate}}: </label>
-                                    <select name="parentField"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.parent_field"
-                                            ng-change="parentValueChanged()"
-                                            ng-options="o.name as o['label_' + language] for o in getParentFields() | filter:{deleted:'!true'} | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" ng-if="currentDependency.dependencyType === 'display' && currentDependency.parent_field && (parentDisplayFields | filter:{name: currentDependency.parent_field}:true)[0].data_type != 'checkbox'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.values.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentValues' | translate}}: </label>
-                                    <div class="col-sm-8 multiselect-container">
-                                        <button type="button"
-                                                class="btn btn-default ng-animate-disabled multiselect"
-                                                name="values"
-                                                ng-model="currentDependency.values"
-                                                ng-required="true"
-                                                data-icon-checkmark="fa fa-check"
-                                                data-placeholder="{{'Common.Multiselect' | translate}}"
-                                                data-html="1"
-                                                data-multiple="1"
-                                                data-max-length="2"
-                                                data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                bs-options="o.id as o['label_'+language] for o in picklist track by id"
-                                                bs-select></button>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="currentDependency.dependencyType == 'display'">
-                                    <label class="col-sm-6 required-field">
-                                        * {{'Setup.Modules.AffectedAreaType' | translate }}:
-                                    </label>
-
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="field" name="affectedAreaType">{{'Setup.Modules.Field' | translate}}
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="section" name="affectedAreaType">{{'Setup.Modules.Section' | translate}}
-                                    </label>
-                                </div>
-                                <div class="form-group"
-                                     ng-if="affectedAreaType=='field'"
-                                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childField.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyChildField' | translate}}: </label>
-                                    <select name="childField"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.child_field"
-                                            ng-change="getMappingOptions()"
-                                            ng-options="o.name as o['label_' + language] for o in getChildFields() | filter:{hidden:'!true'} | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group"
-                                     ng-if="affectedAreaType=='section'  && currentDependency.dependencyType == 'display'"
-                                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childSection.$invalid}">
-                                    <label class="col-sm-4 required-field">
-                                        * {{
-                                        'Setup.Modules.DependencyChildSection' |
-                                        translate
-                                        }}:
-                                    </label>
-                                    <select name="childSection"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="currentDependency.child_section"
-                                            ng-options="o.name as o['label_' + language] for o in   sections | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group"
-                                     ng-if="currentDependency.type === 'list_text' && currentDependency.dependencyType === 'value'">
-                                    <label class="col-sm-6">{{'Setup.Modules.RemoveChildValue' | translate}}: </label>
-                                    <input type="checkbox"
-                                           ng-model="currentDependency.clear">
-                                </div>
-                                <div class="form-group"
-                                     ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
-                                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentMapField.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldParent' | translate}}: </label>
-                                    <input type="text"
-                                           name="parentMapField"
-                                           class="form-control ng-animate-disabled col-sm-8"
-                                           required
-                                           maxlength="50"
-                                           ng-model="currentDependency.field_map.parent_map_field">
-                                </div>
-                                <div class="form-group"
-                                     ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
-                                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childMapField.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldChild' | translate}}: </label>
-                                    <input type="text"
-                                           name="childMapField"
-                                           class="form-control ng-animate-disabled col-sm-8"
-                                           required
-                                           maxlength="50"
-                                           ng-model="currentDependency.field_map.child_map_field">
-                                </div>
-                                <div class="form-group" ng-if="currentDependency.type === 'list_value' && currentDependency.parent_field && currentDependency.child_field">
-                                    <label class="col-sm-4">{{'Setup.Modules.MappingOptions' | translate}}:</label>
-                                    <div class="col-sm-12">
-                                        <div class="value-map-container">
-                                            <div class="form-group" ng-repeat="option in parentPicklist">
-                                                <label class="col-sm-4">{{option['label_'+language]}}: </label>
-                                                <div class="col-sm-8 multiselect-container">
-                                                    <button type="button"
-                                                            class="btn btn-default ng-animate-disabled multiselect"
-                                                            name="values"
-                                                            ng-model="currentDependency.value_maps[option.id]"
-                                                            ng-required="true"
-                                                            data-icon-checkmark="fa fa-check"
-                                                            data-placeholder="{{'Common.Multiselect' | translate}}"
-                                                            data-html="1"
-                                                            data-multiple="1"
-                                                            data-max-length="2"
-                                                            data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                            bs-options="o.id as o['label_'+language] for o in option.childPicklist | orderBy:('label_'+language)"
-                                                            bs-select></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-show="dependencyForm.$submitted && dependencyForm.$invalid">
-                                    <div class="col-sm-12">
-                                        <div class="callout callout-danger">
-                                            <p ng-if="dependencyForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}</p>
-                                        </div>
-                                    </div>
+                    <label class="radio-inline">
+                        <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="field" name="affectedAreaType">{{'Setup.Modules.Field' | translate}}
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="section" name="affectedAreaType">{{'Setup.Modules.Section' | translate}}
+                    </label>
+                </div>
+                <div class="form-group"
+                     ng-if="affectedAreaType=='field'"
+                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childField.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyChildField' | translate}}: </label>
+                    <select name="childField"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.child_field"
+                            ng-change="getMappingOptions()"
+                            ng-options="o.name as o['label_' + language] for o in getChildFields() | filter:{hidden:'!true'} | orderBy:'order'">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group"
+                     ng-if="affectedAreaType=='section'  && currentDependency.dependencyType == 'display'"
+                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childSection.$invalid}">
+                    <label class="col-sm-4 required-field">
+                        * {{
+                        'Setup.Modules.DependencyChildSection' |
+                        translate
+                        }}:
+                    </label>
+                    <select name="childSection"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentDependency.child_section"
+                            ng-options="o.name as o['label_' + language] for o in   sections | orderBy:'order'">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group"
+                     ng-if="currentDependency.type === 'list_text' && currentDependency.dependencyType === 'value'">
+                    <label class="col-sm-6">{{'Setup.Modules.RemoveChildValue' | translate}}: </label>
+                    <input type="checkbox"
+                           ng-model="currentDependency.clear">
+                </div>
+                <div class="form-group"
+                     ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
+                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentMapField.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldParent' | translate}}: </label>
+                    <input type="text"
+                           name="parentMapField"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="currentDependency.field_map.parent_map_field">
+                </div>
+                <div class="form-group"
+                     ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
+                     ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childMapField.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldChild' | translate}}: </label>
+                    <input type="text"
+                           name="childMapField"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="currentDependency.field_map.child_map_field">
+                </div>
+                <div class="form-group" ng-if="currentDependency.type === 'list_value' && currentDependency.parent_field && currentDependency.child_field">
+                    <label class="col-sm-4">{{'Setup.Modules.MappingOptions' | translate}}:</label>
+                    <div class="col-sm-12">
+                        <div class="value-map-container">
+                            <div class="form-group" ng-repeat="option in parentPicklist">
+                                <label class="col-sm-4">{{option['label_'+language]}}: </label>
+                                <div class="col-sm-8 multiselect-container">
+                                    <button type="button"
+                                            class="btn btn-default ng-animate-disabled multiselect"
+                                            name="values"
+                                            ng-model="currentDependency.value_maps[option.id]"
+                                            ng-required="true"
+                                            data-icon-checkmark="fa fa-check"
+                                            data-placeholder="{{'Common.Multiselect' | translate}}"
+                                            data-html="1"
+                                            data-multiple="1"
+                                            data-max-length="2"
+                                            data-max-length-html="{{'Common.Multiselected' | translate}}"
+                                            bs-options="o.id as o['label_'+language] for o in option.childPicklist | orderBy:('label_'+language)"
+                                            bs-select></button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="dependencyForm.$submitted && dependencyForm.$invalid">
+                    <div class="col-sm-12">
+                        <div class="callout callout-danger">
+                            <p ng-if="dependencyForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}</p>
                         </div>
                     </div>
                 </div>
