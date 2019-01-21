@@ -267,8 +267,13 @@ angular.module('primeapps')
                     resolve: {
                         init: function (LayoutService, $stateParams, $rootScope, genericInterceptor) {
                             // LayoutService.getOrg()
-                            $rootScope.appId = $stateParams.appId;
-                            $rootScope.organizationId = $stateParams.orgId;
+                            $rootScope.currenAppId = $stateParams.appId;
+                            if (angular.isObject($rootScope.currentOrganization)) {
+                                $rootScope.currentOrganization.id = $stateParams.orgId;
+                            } else {
+                                $rootScope.currentOrganization = {};
+                                $rootScope.currentOrganization.id = $stateParams.orgId;
+                            }
 
 
                         },

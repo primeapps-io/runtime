@@ -274,6 +274,14 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
             EmailTemplatesService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
@@ -388,7 +396,7 @@ angular.module('primeapps')
                 const willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to email template this help ?",
+                        text: "Are you sure that you want to delete this email template ?",
                         icon: "warning",
                         buttons: ['Cancel', 'Okey'],
                         dangerMode: true

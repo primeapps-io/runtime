@@ -20,7 +20,7 @@ using System.Web.Http;
 
 namespace PrimeApps.Console.Controllers
 {
-	[Route("api/Profile")]
+	[Route("api/profile")]
 	public class ProfileController : DraftBaseController
 	{
 		private IRelationRepository _relationRepository;
@@ -57,7 +57,7 @@ namespace PrimeApps.Console.Controllers
         /// Creates a new profile.
         /// </summary>
         /// <param name="NewProfile"></param>
-        [Route("Create"), HttpPost]
+        [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
             //Set Warehouse
@@ -72,7 +72,7 @@ namespace PrimeApps.Console.Controllers
         /// Updates an existing profile.
         /// </summary>
         /// <param name="UpdatedProfile"></param>
-        [Route("Update"), HttpPost]
+        [Route("update"), HttpPost]
         public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
             //Set Warehouse
@@ -86,7 +86,7 @@ namespace PrimeApps.Console.Controllers
         /// Removes a profile and replaces its relations with another profile.
         /// </summary>
         /// <param name="RemovalRequest"></param>
-        [Route("Remove"), HttpPost]
+        [Route("remove"), HttpPost]
         public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
@@ -99,7 +99,7 @@ namespace PrimeApps.Console.Controllers
         /// Gets all profiles and permissions belong to users workgroups with a lightweight user id list.
         /// </summary>
         /// <returns></returns>
-        [Route("GetAll"), HttpPost]
+        [Route("get_all"), HttpPost]
         public async Task<IActionResult> GetAll()
         {
             IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
@@ -111,7 +111,7 @@ namespace PrimeApps.Console.Controllers
         /// Changes users profile with another one.
         /// </summary>
         /// <param name="transfer"></param>
-        [Route("ChangeUserProfile"), HttpPost]
+        [Route("change_user_profile"), HttpPost]
         public async Task<IActionResult> ChangeUserProfile([FromBody]ProfileTransferDTO transfer)
         {
             await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
@@ -120,7 +120,7 @@ namespace PrimeApps.Console.Controllers
             return Ok();
         }
 
-        [Route("GetAllBasic"), HttpGet]
+        [Route("get_all_basic"), HttpGet]
         public async Task<IActionResult> GetAllBasic()
         {
             var profiles = await _profileRepository.GetAll();

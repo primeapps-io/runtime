@@ -3,7 +3,31 @@
     <button class="btn add-button" ng-click="showFormModal(profileSetting)"><i class="fas fa-plus"></i> Modül Profil Ayarı Ekle</button>
 </div>
 <div class="tab-content">
-    <table class="table">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}</th>
+                <th>{{'Setup.UserCustomShares.CreatedDate' | translate}}</th>
+                <th width="50"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
         <thead>
             <tr>
                 <th>{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}</th>
@@ -17,25 +41,29 @@
                 <td>{{profileSetting.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(profileSetting)" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
-                    </div>
-                    <div class="action-buttons-block">
-                        <button ng-click="showFormModal(profileSetting)" type="button" class="action-buttons-edit" data-trigger="hover" data-type="info"
-                                data-title="Edit" bs-tooltip data-placement="top"
-                                placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-pen"></i>
-                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="$event.stopPropagation();showFormModal(profileSetting)">{{'Common.Edit' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation();delete(profileSetting)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
             </tr>
         </tbody>
     </table>
-    <div class="row table-pagination">
-        <div class="col-sm-10">
+    <div class="table-pagination">
+        <div>
             <nav aria-label="Page navigation">
                 <div paging
                      text-first="&laquo;"
@@ -56,7 +84,10 @@
                 </div>
             </nav>
         </div>
-        <div class="col-sm-2">
+        <div>
+            Total Module Profile Settings {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                 <option ng-selected="true" value="10">10</option>

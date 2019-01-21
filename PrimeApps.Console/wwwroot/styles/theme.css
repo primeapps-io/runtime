@@ -15,23 +15,6 @@ button, select {
   button:focus, select:focus {
     outline: none !important; }
 
-.loader-tab-out {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.1); }
-  .loader-tab-out .page-loading-table {
-    width: 25%; }
-    .loader-tab-out .page-loading-table i {
-      font-size: 30px; }
-
-.margin-right-10 {
-  margin-right: 10px; }
-
 .primeapps .add-new-section {
   padding: 15px;
   border: 1px dashed rgba(0, 0, 0, 0.28);
@@ -196,42 +179,6 @@ button, select {
   color: #0d6faa !important; }
 .primeapps .collaborators-left-menu ul li {
   cursor: pointer; }
-  .primeapps .collaborators-left-menu ul li .user-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-bottom: none; }
-    .primeapps .collaborators-left-menu ul li .user-info .user-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; }
-      .primeapps .collaborators-left-menu ul li .user-info .user-text h2 {
-        font-size: 16px;
-        color: rgba(0, 0, 0, 0.75);
-        font-weight: bold;
-        line-height: 18px;
-        margin: 0;
-        padding: 0;
-        font-weight: 400; }
-      .primeapps .collaborators-left-menu ul li .user-info .user-text h3 {
-        font-size: 12px;
-        font-weight: bold;
-        color: rgba(0, 0, 0, 0.5);
-        margin: 0;
-        font-weight: 400; }
-    .primeapps .collaborators-left-menu ul li .user-info .user-image {
-      background-color: rgba(0, 0, 0, 0.25);
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-size: 14px;
-      margin-right: 10px; }
 .primeapps .collaborator-info .user-info {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.5); }
@@ -239,6 +186,42 @@ button, select {
     font-size: 16px; }
   .primeapps .collaborator-info .user-info h3 {
     font-size: 12px; }
+.primeapps .user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: none; }
+  .primeapps .user-info .user-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .primeapps .user-info .user-text h2 {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.75);
+      font-weight: bold;
+      line-height: 18px;
+      margin: 0;
+      padding: 0;
+      font-weight: 400; }
+    .primeapps .user-info .user-text h3 {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      margin: 0;
+      font-weight: 400; }
+  .primeapps .user-info .user-image {
+    background-color: rgba(0, 0, 0, 0.25);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 14px;
+    margin-right: 10px; }
 .primeapps .page-loading {
   position: fixed;
   left: 0px;
@@ -396,8 +379,7 @@ button, select {
 .primeapps .tab-content {
   border-radius: 5px;
   background: #FFF;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  position: relative; }
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05); }
 .primeapps .table {
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -414,7 +396,7 @@ button, select {
   .primeapps .table tbody tr td {
     line-height: 15px;
     vertical-align: middle;
-    padding: 10px 20px !important;
+    padding: 10px 20px  !important;
     color: rgba(0, 0, 0, 0.75) !important;
     font-weight: 400 !important;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -547,10 +529,6 @@ button, select {
     .primeapps .setup-modal .modal-header .col-sm-rigth, .primeapps .module-modal .modal-header .col-sm-rigth {
       justify-content: flex-end;
       padding: 0px; }
-      .primeapps .setup-modal .modal-header .col-sm-rigth .btn-gray:hover, .primeapps .module-modal .modal-header .col-sm-rigth .btn-gray:hover {
-        background-color: rgba(0, 0, 0, 0.5); }
-      .primeapps .setup-modal .modal-header .col-sm-rigth .btn-blue:hover, .primeapps .module-modal .modal-header .col-sm-rigth .btn-blue:hover {
-        background-color: rgba(13, 111, 170, 0.9); }
     .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
       font-size: 20px;
       font-weight: bold;
@@ -1111,15 +1089,21 @@ button, select {
               width: 30px;
               text-align: center; }
           .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li .costume-bage {
-            height: 20px;
-            width: 20px;
+            height: 25px;
+            width: 25px;
+            line-height: 15px;
+            padding: 5px;
             background: rgba(0, 0, 0, 0.25);
             color: #fff;
             border-radius: 50%;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center; }
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            display: block;
+            text-align: center;
+            transform: translate(0%, -50%); }
           .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li:last-child {
             border-color: transparent; }
           .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active {
@@ -1174,6 +1158,7 @@ button, select {
         font-weight: bold; }
       .primeapps #wrapper .setup-layout .setup-title span {
         white-space: nowrap;
+        overflow: hidden;
         text-overflow: ellipsis; }
     .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
       width: calc(100% - 80px); }
@@ -1181,6 +1166,8 @@ button, select {
       width: 80px; }
       .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 .tooltip {
         display: block !important; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-text, .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .costume-bage {
+      display: none; }
     .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
       justify-content: center; }
       .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a span {
@@ -1219,6 +1206,17 @@ button, select {
     justify-content: flex-end;
     align-items: center;
     height: 42px; }
+.primeapps .flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+.primeapps .btn {
+  padding: 3px 10px;
+  font-weight: bold; }
+  .primeapps .btn i {
+    padding: 0px 5px; }
+.primeapps .list-inline {
+  margin-bottom: 0px; }
 .primeapps .tooltip.tooltip-info .tooltip-inner {
   background: #0f1015 !important;
   color: #FFF;

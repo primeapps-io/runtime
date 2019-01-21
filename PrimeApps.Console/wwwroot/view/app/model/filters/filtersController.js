@@ -14,6 +14,15 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Filters';
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+
+            $scope.generator(10);
+
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.requestModel = {
@@ -36,6 +45,7 @@ angular.module('primeapps')
                     }
                 }
                 $scope.customViews = customViews;
+                $scope.customViewsState = customViews;
                 $scope.loading = false;
             });
 
@@ -64,34 +74,36 @@ angular.module('primeapps')
             };
 
             $scope.deleteView = function (id) {
-                if ($scope.customViews.length > 1) {
-                    FiltersService.deleteView(id)
-                        .then(function () {
-                            $scope.customView = $filter('filter')($scope.customViews, { active: true })[0];
-                            // $scope.customViews.splice($scope.customViews.indexOf($scope.view), 1);
-                            $scope.changePage(1);
-                        });
-                }
-                else {
-                    swal($filter('translate')('Setup.Modules.OneView'), "", "warning");
-                    return;
-                }
-            };
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this dependency ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            if (id) {
+                                FiltersService.deleteView(id)
+                                    .then(function () {
+                                        $scope.changePage(1);
+                                        swal("Deleted!", "Your  filters has been deleted!", "success");
+                                    }).catch(function () {
+                                    $scope.customViews = $scope.customViewsState;
 
-            // FiltersService.getViews().then(function (response) {
-            //     var customViews = angular.copy(response.data);
-            //     for (var i = customViews.length - 1; i >= 0; i--) {
-            //         var parentModule = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
-            //         if (parentModule) {
-            //             customViews[i].parent_module = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
-            //         } else {
-            //             customViews.splice(i, 1);
-            //         }
-            //     }
-            //
-            //     $scope.customViews = customViews;
-            //     $scope.loading = false;
-            // });
+                                    if ($scope.addNewFiltersModal) {
+                                        $scope.addNewFiltersModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
+                            }
+                            else {
+                                swal($filter('translate')('Setup.Modules.OneView'), "", "warning");
+                                return;
+                            }
+                        }
+                    });
+            };
 
             $scope.showFormModal = function (view) {
                 if (view) {
@@ -470,285 +482,5 @@ angular.module('primeapps')
                 return true;
             };
 
-
-            // FiltersService.getViews_(1)
-            //     .then(function (views) {
-            //         var a = views;
-            //     });
-
-
-            // $scope.changeView = function () {
-            //     tableBlockUI.start();
-            //     $scope.selectedView = $scope.view;
-            //     var cache = $cache.get(cacheKey);
-            //     var viewStateCache = cache.viewState;
-            //     var viewState = viewStateCache || {};
-            //     viewState.active_view = $scope.selectedView.id;
-            //
-            //     ModuleService.setViewState(viewState, $scope.module.id, viewState.id)
-            //         .then(function () {
-            //             tableBlockUI.stop();
-            //             $scope.refresh(true);
-            //         });
-            // };
-
-
-            /*$scope.moduleLists = $filter('filter')($rootScope.modules, { display: true }, true);
-             $scope.setViews = function () {
-             $scope.relations = [];
-             for (var i = 0; i < $rootScope.modules.length; i++) {
-             var module = angular.copy($rootScope.modules[i]);
-             ModuleService.getViews(module.id, undefined, undefined)
-             .then(function (views) {
-             $scope.customViews = $scope.customViews.concat(views);
-             });
-             }
-             };
-
-             $scope.setViews();*/
-
-            /*$scope.moduleChanged = function () {
-             if ($scope.currentActionButton.module) {
-             $scope.module = $scope.currentActionButton.module;
-             webhookParameters();
-             }
-             };
-
-             $scope.showFormModal = function (actionButton) {
-             if (!actionButton) {
-             actionButton = {};
-             actionButton.type = 3;
-             actionButton.triggerType = 1;
-             actionButton.isNew = true;
-             $scope.currentActionButton = actionButton;
-             } else {
-             $scope.currentActionButton = actionButton;
-             $scope.currentActionButton.module = actionButton.parent_module;
-             $scope.moduleChanged();
-             webhookParameters();
-             }
-             $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
-             $scope.actionButtonTypes = [
-             {
-             type: "Modal",
-             value: 3
-             },
-             {
-             type: "Webhook",
-             value: 2
-             }
-             ];
-
-             $scope.displayPages = [
-             {
-             name: $filter('translate')('Setup.Modules.Detail'),
-             value: 1
-             },
-             {
-             name: "Form",
-             value: 2
-             },
-             {
-             name: $filter('translate')('Setup.Modules.All'),
-             value: 3
-             }
-             ];
-
-             if (actionButton.action_type === 'Webhook')
-             actionButton.type = 2;
-
-             if (actionButton.action_type === 'ModalFrame')
-             actionButton.type = 3;
-
-             if (actionButton.trigger === 'Detail')
-             actionButton.triggerType = 1;
-
-             if (actionButton.trigger === 'Form')
-             actionButton.triggerType = 2;
-
-             if (actionButton.trigger === 'All')
-             actionButton.triggerType = 3;
-
-             if (actionButton.type === 3) {
-             $scope.hookParameters = [];
-
-             $scope.hookModules = [];
-
-             angular.forEach($scope.updatableModules, function (module) {
-             $scope.hookModules.push(module);
-             });
-
-             var parameter = {};
-             parameter.parameterName = null;
-             parameter.selectedModules = $scope.hookModules;
-             parameter.selectedField = null;
-
-             $scope.hookParameters.push(parameter);
-             }
-
-             if (actionButton.method_type && actionButton.parameters && actionButton.type == 2) {
-             $scope.hookParameters = [];
-
-             var hookParameterArray = actionButton.parameters.split(',');
-
-             angular.forEach(hookParameterArray, function (data) {
-             var parameter = data.split("|", 3);
-
-             var editParameter = {};
-             editParameter.parameterName = parameter[0];
-             editParameter.selectedModules = angular.copy($scope.updatableModules);
-             var selectedModule;
-
-             if ($scope.module.name === parameter[1]) {
-             selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
-             }
-             else {
-             var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
-             selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
-             }
-
-
-             if (!selectedModule)
-             return;
-
-             editParameter.selectedModule = selectedModule;
-             editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
-
-             $scope.hookParameters.push(editParameter);
-             })
-             }
-
-             $scope.formModal = $scope.formModal || $modal({
-             scope: $scope,
-             templateUrl: 'views/app/setup/crm/modules/actionButtonForm.html',
-             animation: 'am-slide-right',
-             });
-
-             $scope.formModal.$promise.then(function () {
-             $scope.formModal.show();
-             });
-             };
-
-             $scope.save = function (actionButtonForm) {
-             if (!actionButtonForm.$valid)
-             return;
-
-             $scope.saving = true;
-             var actionButton = angular.copy($scope.currentActionButton);
-
-             if (actionButton.isNew)
-             delete actionButton.isNew;
-
-             actionButton.module_id = $scope.module.id;
-             actionButton.template = 'template';
-
-             actionButton.trigger = actionButton.triggerType;
-
-             delete actionButton.triggerType;
-
-             if (actionButton.type === 2) {
-             var hookArray = [];
-             angular.forEach($scope.hookParameters, function (hookParameter) {
-             var moduleName;
-             if ($scope.module.name != hookParameter.selectedModule.name)
-             moduleName = $filter('filter')($scope.module.fields, { lookup_type: hookParameter.selectedModule.name }, true)[0].name;
-             else
-             moduleName = hookParameter.selectedModule.name;
-
-             var parameterString = hookParameter.parameterName + "|" + moduleName + "|" + hookParameter.selectedField.name;
-             hookArray.push(parameterString);
-             });
-
-             if (hookArray.length > 0) {
-             actionButton.parameters = hookArray.toString();
-             }
-             } else {
-             actionButton.parameters = null;
-             actionButton.method_type = null;
-             }
-
-             if (!actionButton.id) {
-             ModuleSetupService.createActionButton(actionButton)
-             .then(function (response) {
-             if (!$scope.actionButtons)
-             $scope.actionButtons = [];
-
-             actionButton.action_type = response.data.type;
-             actionButton.trigger = response.data.trigger;
-             actionButton.id = response.data.id;
-             $scope.actionButtons.push(actionButton);
-
-             ngToast.create({
-             content: $filter('translate')('Setup.Modules.ActionButtonSaveSuccess'),
-             className: 'success'
-             });
-             $scope.saving = false;
-             $scope.formModal.hide();
-
-             }).catch(function () {
-             $scope.actionButtons = $scope.actionbuttonState;
-
-             if ($scope.formModal) {
-             $scope.formModal.hide();
-             $scope.saving = false;
-             }
-             });
-             } else {
-             ModuleSetupService.updateActionButton(actionButton)
-             .then(function (response) {
-             $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].action_type = response.data.type;
-             $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].trigger = response.data.trigger;
-             $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].method_type = response.data.method_type;
-             $filter('filter')($scope.actionButtons, { id: actionButton.id }, true)[0].parameters = response.data.parameters;
-             ngToast.create({
-             content: $filter('translate')('Setup.Modules.ActionButtonSaveSuccess'),
-             className: 'success'
-             });
-             $scope.saving = false;
-             $scope.formModal.hide();
-             }).catch(function () {
-             $scope.actionButtons = $scope.actionbuttonState;
-
-             if ($scope.formModal) {
-             $scope.formModal.hide();
-             $scope.saving = false;
-             }
-             });
-             }
-             };
-
-             $scope.delete = function (actionButton) {
-             delete actionButton.$$hashKey;
-             var deleteModel = angular.copy($scope.actionButtons);
-             var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
-             deleteModel.splice(actionButtonIndex, 1);
-
-             ModuleSetupService.deleteActionButton(actionButton.id)
-             .then(function () {
-             var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
-             $scope.actionButtons.splice(actionButtonIndex, 1);
-
-             ngToast.create({
-             content: $filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'),
-             className: 'success'
-             });
-             })
-             .catch(function () {
-             $scope.actionButtons = $scope.actionButtonState;
-
-             if ($scope.formModal) {
-             $scope.formModal.hide();
-             $scope.saving = false;
-             }
-             });
-             };
-
-             $scope.cancel = function () {
-             angular.forEach($scope.currentActionButton, function (value, key) {
-             $scope.currentActionButton[key] = $scope.currentActionButtonState[key];
-             });
-
-             $scope.formModal.hide();
-             }*/
         }
     ]);
