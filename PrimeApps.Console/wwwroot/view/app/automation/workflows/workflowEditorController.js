@@ -29,26 +29,97 @@ angular.module('primeapps')
                             window.myPaletteLevel2.requestUpdate();
                         }
                     });
-                    window.myDiagram.requestUpdate();
-                    window.myPaletteLevel1.requestUpdate();
+                    if ($scope.id) {
+                        WorkflowsService.get($scope.id)
+                            .then(function (response) {
+                                if (response) {
+                                    var tempJson = JSON.parse(response.data.diagram_json);
+                                    window.myDiagram.model.nodeDataArray = tempJson.nodeDataArray;
+                                    window.myDiagram.model.linkDataArray = tempJson.linkDataArray;
+                                    window.myDiagram.requestUpdate();
+                                    window.myPaletteLevel1.requestUpdate();
+                                }
+                            });
+                    }
+                    else {
+                        window.myDiagram.requestUpdate();
+                        window.myPaletteLevel1.requestUpdate();
+                    }
                 });
-            };
+            }
 
             $scope.triggerBpm();
             //BPM element menu loading end
 
-
+            // BPM click Event and RightSide Menu Controller Start
             $scope.toogleSideMenu = function () {
                 if ($scope.currentObj.subject) {
                     var node = $scope.currentObj.subject.part.data;
-                    $scope.SelectedNodeItem = node;
 
-                    if (node.sidebar) {
-                        $scope.showFormModal();
+                    if (node) {
+                        $scope.SelectedNodeItem = node;
+
+                        if (node.data && node.ngModelName) {
+                            $scope.workflowModel[node.ngModelName] = {}; //clear for new value
+
+                            switch (node.ngModelName) {
+                                case 'start':
+                                    break;
+                                case 'field_update':
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+                                    //$scope.getUpdatableModules();
+                                    break;
+                                case 'webHook':
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+                                    $scope.hookParameters = node.data[node.ngModelName].Parameters;
+                                    break;
+                                case 'send_notification':
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+                                    $scope.workflowModel.send_notification_module = node.data[node.ngModelName].send_notification_module;
+                                    $scope.workflowModel.send_notification_ccmodule = node.data[node.ngModelName].send_notification_ccmodule;
+                                    $scope.workflowModel.send_notification_bccmodule = node.data[node.ngModelName].send_notification_bccmodule;
+                                    break;
+                                case 'data_read':
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+                                    break;
+                                case 'function':
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+
+                                    if ($scope.workflowModel[node.ngModelName]['name'])
+                                        $scope.workflowModel[node.ngModelName]['name'] = { name: $scope.workflowModel[node.ngModelName]['name'] };
+
+                                    if ($scope.workflowModel[node.ngModelName]['methodType'])
+                                        $scope.functionType = $scope.workflowModel[node.ngModelName]['methodType'] === 'post';
+                                    break;
+                                default:
+                                    $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
+                                    break;
+                            }
+                        }
+                        else if (node.isDefault === false) { //FOR Conditional Link
+                            if (node.data)
+                                $scope.workflowModel["condition"] = node.data.condition;
+                            else
+                                $scope.workflowModel["condition"] = null;
+                        }
+                        else {
+                            $scope.workflowModel = {};
+
+                            if (node.ngModelName === 'webHook') {
+                                setWebHookModules();
+                            }
+                        }
                     }
+
+                    if (node.sidebar)
+                        $scope.showFormModal();
                 }
+                else
+                    $scope.SelectedNodeItem = null;
+
+
             };
-            //
+            // BPM click Event and RightSide Menu Controller End
 
 
             //Modal Start
@@ -92,7 +163,6 @@ angular.module('primeapps')
                         if (response) {
                             $scope.workflowModel.module.fields = response.data;
                         }
-
 
                         var module = angular.copy($scope.workflowModel.module);
                         $scope.module = ModuleService.getFieldsOperator(module, $scope.$parent.modules, 0);
@@ -344,6 +414,7 @@ angular.module('primeapps')
 
             $scope.getUpdatableModules = function () {
                 $scope.updatableModules = [];
+                ModuleService.getModuleFields()
                 $scope.updatableModules.push($scope.workflowModel.module);
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
@@ -875,7 +946,7 @@ angular.module('primeapps')
                 $scope.workflowForm.subjectTask.$setValidity('required', true);
                 $scope.workflowForm.dueDate.$setValidity('required', true);
                 $scope.workflowForm.actions.$setValidity('actionRequired', true);
-                $scope.workflowForm.updateOption.$setValidity('required', true);
+                //$scope.workflowForm.updateOption.$setValidity('required', true);
                 $scope.workflowForm.callbackUrl.$setValidity('required', true);
 
                 if ($scope.workflowForm.updateField && $scope.workflowModel.field_update.updateOption === '1')
@@ -1075,6 +1146,51 @@ angular.module('primeapps')
                 }
             };
 
+            var setValue = function (data) {
+                var updateFieldRecordFake = {};
+                updateFieldRecordFake[data.field.name] = angular.copy(data.value);
+                updateFieldRecordFake = ModuleService.prepareRecord(updateFieldRecordFake, data.module);
+                ModuleService.formatFieldValue(data.field, $scope.updateFieldValue, $scope.picklistsModule);
+
+                var newValue = data.field.valueFormatted;
+
+                switch (data.field.data_type) {
+                    case 'lookup':
+                        newValue = data.value.primary_value;
+                        $scope.updateFieldValue = data.value.id;
+                        break;
+                    case 'picklist':
+                        $scope.updateFieldValue = data.value.label[$rootScope.language];
+                        newValue = $scope.updateFieldValue;
+                        break;
+                    case 'multiselect':
+                        $scope.updateFieldValue = '';
+
+                        angular.forEach(value, function (picklistItem) {
+                            var label = picklistItem.label[$rootScope.language];
+                            $scope.updateFieldValue += label + '|';
+                            newValue += label + '; ';
+                        });
+
+                        $scope.updateFieldValue = $scope.updateFieldValue.slice(0, -1);
+                        newValue = newValue.slice(0, -2);
+                        break;
+                    case 'checkbox':
+                        var fieldValue = data.value;
+
+                        if (fieldValue === undefined)
+                            fieldValue = false;
+
+                        var yesNoPicklistItem = $filter('filter')($scope.picklistsModule['yes_no'], { system_code: fieldValue.toString() }, true)[0];
+                        newValue = yesNoPicklistItem.label[$rootScope.language];
+                        $scope.updateFieldValue = fieldValue;
+                        break;
+                    default:
+                        $scope.updateFieldValue = updateFieldRecordFake[data.field.name];
+                        break;
+                }
+            };
+
             $scope.saveNodeData = function () {
                 $scope.saving = true;
 
@@ -1168,7 +1284,7 @@ angular.module('primeapps')
                         data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
                         data[currentNode.ngModelName].module_id = bpmModel[currentNode.ngModelName].module.id;
                         data[currentNode.ngModelName].field_id = bpmModel[currentNode.ngModelName].field.id;
-                        SetValue(bpmModel[currentNode.ngModelName]);
+                        setValue(bpmModel[currentNode.ngModelName]);
                         //For Bpmn editor
                         data[currentNode.ngModelName].value = bpmModel[currentNode.ngModelName].value;
                         //For Workflow Engine
