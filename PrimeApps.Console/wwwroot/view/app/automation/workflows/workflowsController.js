@@ -46,7 +46,8 @@ angular.module('primeapps')
             });
 
             $scope.changePage = function (page) {
-                $scope.loading = true;
+                $scope.loading = true; 
+                $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -61,8 +62,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function () {
-                $scope.changePage(1);
+            $scope.changeOffset = function (value) {
+                $scope.changePage(value);
             };
 
             var fillModule = function (data) {

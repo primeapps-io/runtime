@@ -4,7 +4,7 @@
 </div>
 
 <div class="tab-content">
-    <table class="table">
+    <table class="table" ng-show="loading">
         <thead>
             <tr>
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
@@ -13,7 +13,31 @@
                 <th width="50"></th>
             </tr>
         </thead>
-        <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <tbody>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <!--<th>{{'Setup.Templates.Module' | translate}}</th>-->
+                <th>Modül</th>
+                <th width="50"></th>
+            </tr>
+        </thead>
         <tbody ng-show="!loading">
             <tr ng-repeat="template in templates">
                 <td>{{template.name}}</td>
@@ -31,10 +55,10 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a ng-click="showFormModal(template)">{{'Common.Edit' | translate}} </a>
+                                <a ng-click="$event.stopPropagation();showFormModal(template)">{{'Common.Edit' | translate}} </a>
                             </li>
                             <li>
-                                <a ng-click="delete(template)">{{'Common.Delete' | translate}} </a>
+                                <a ng-click="$event.stopPropagation();delete(template)">{{'Common.Delete' | translate}} </a>
                             </li>
                         </ul>
                     </div>
@@ -42,8 +66,8 @@
             </tr>
         </tbody>
     </table>
-    <div class="row table-pagination">
-        <div class="col-sm-10">
+    <div class="table-pagination">
+        <div>
             <nav aria-label="Page navigation">
                 <div paging
                      text-first="&laquo;"
@@ -64,7 +88,10 @@
                 </div>
             </nav>
         </div>
-        <div class="col-sm-2">
+        <div>
+            Total Email Templates {{pageTotal}}
+        </div>
+        <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                 <option ng-selected="true" value="10">10</option>

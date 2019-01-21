@@ -6,19 +6,19 @@ angular.module('primeapps')
         function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
             return {
                 getAll: function () {
-                    return $http.post(config.apiUrl + 'Profile/GetAll', {});
+                    return $http.post(config.apiUrl + 'profile/get_all', {});
                 },
                 count: function () {
-                    return $http.get(config.apiUrl + 'Profile/count');
+                    return $http.get(config.apiUrl + 'profile/count');
                 },
                 find: function (data) {
-                    return $http.post(config.apiUrl + 'Profile/find', data);
+                    return $http.post(config.apiUrl + 'profile/find', data);
                 },
                 getAllBasic: function () {
-                    return $http.get(config.apiUrl + 'Profile/GetAllBasic');
+                    return $http.get(config.apiUrl + 'profile/get_all_basic');
                 },
                 delete: function (id) {
-                    return $http.delete(config.apiUrl + 'Profile/delete/' + id);
+                    return $http.delete(config.apiUrl + 'profile/delete/' + id);
                 },
                 getProfiles: function (allProfiles, modules, clearPermissions) {
                     var profiles = allProfiles;
@@ -86,7 +86,7 @@ angular.module('primeapps')
                 },
 
                 changeUserProfile: function (userId, tenantId, transferedProfileId) {
-                    return $http.post(config.apiUrl + 'Profile/ChangeUserProfile', {
+                    return $http.post(config.apiUrl + 'profile/change_user_profile', {
                         User_ID: userId,
                         tenant_id: tenantId,
                         Transfered_Profile_ID: transferedProfileId
@@ -94,11 +94,11 @@ angular.module('primeapps')
                 },
 
                 create: function (profile) {
-                    return $http.post(config.apiUrl + 'Profile/Create', profile);
+                    return $http.post(config.apiUrl + 'profile/create', profile);
                 },
 
                 update: function (profile) {
-                    return $http.post(config.apiUrl + 'Profile/Update', profile);
+                    return $http.post(config.apiUrl + 'profile/update', profile);
                 }
             };
         }]);

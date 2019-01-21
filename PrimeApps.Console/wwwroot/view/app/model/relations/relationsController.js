@@ -13,6 +13,16 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Relations';
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+
+            $scope.generator(10);
+
             $scope.loading = true;
             $scope.requestModel = {
                 limit: '10',
@@ -308,20 +318,31 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (relation) {
-                RelationsService.deleteModuleRelation(relation.id)
-                    .then(function () {
-                        //var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
-                        // $scope.relations.splice(relationToDeleteIndex, 1);
-                        swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
-                        //$scope.addNewRelationsFormModal.hide();
-                        $scope.changePage(1);
-                    })
-                    .catch(function () {
-                        $scope.relations = $scope.relationsState;
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this relation ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            RelationsService.deleteModuleRelation(relation.id)
+                                .then(function () {
+                                    //var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
+                                    // $scope.relations.splice(relationToDeleteIndex, 1);
+                                    swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
+                                    //$scope.addNewRelationsFormModal.hide();
+                                    $scope.changePage(1);
+                                })
+                                .catch(function () {
+                                    $scope.relations = $scope.relationsState;
 
-                        if ($scope.addNewRelationsFormModal) {
-                            $scope.addNewRelationsFormModal.hide();
-                            $scope.saving = false;
+                                    if ($scope.addNewRelationsFormModal) {
+                                        $scope.addNewRelationsFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                         }
                     });
             };

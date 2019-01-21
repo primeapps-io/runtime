@@ -1,0 +1,19 @@
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="formname" class="form-horizontal form-custom" ng-submit="save(formname);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">Modal Title</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+					     <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  --> 
+                        <li><button type="button" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                        <li><button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-dialog">
+          <div class="section"> <!-- section içeriği  --> </div>
+        </div>
+    </form>
+</div>

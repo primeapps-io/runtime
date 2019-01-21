@@ -10,7 +10,7 @@ angular.module('primeapps')
                 },
 
                 getAllBasic: function () {
-                    return $http.get(config.apiUrl + 'Profile/GetAllBasic');
+                    return $http.get(config.apiUrl + 'profile/get_all_basic');
                 },
 
                 getProfiles: function (allProfiles, instanceId, clearPermissions) {

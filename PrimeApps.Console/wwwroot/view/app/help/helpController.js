@@ -28,6 +28,14 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
             HelpService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
@@ -42,6 +50,10 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
+                HelpService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
 
                 HelpService.find(requestModel).then(function (response) {
                     $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);

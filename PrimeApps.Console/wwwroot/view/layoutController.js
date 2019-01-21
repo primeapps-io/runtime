@@ -49,7 +49,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 .then(function (response) {
                     if (response.data) {
                         $rootScope.organizations = response.data;
-
+                        helper.hideLoader();
                         //$scope.menuOpen[$scope.organizations[0].id] = true;
                     }
                 });

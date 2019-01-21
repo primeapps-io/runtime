@@ -18,7 +18,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'organization/is_unique_name?name=' + name);
                 },
                 getOrg: function (refresh) {
-                    helper.hideLoader();
+
                 },
                 getAppInfo: function (appId) {
                     $http.get(config.apiUrl + "app/get/" + $scope.appId);
@@ -49,7 +49,7 @@ angular.module('primeapps')
                             if (profile.is_persistent && !profile.has_admin_rights)
                                 profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var sectionPermission = $filter('filter')(sectionPermissions, { profile_id: profile.id }, true)[0];
+                            var sectionPermission = $filter('filter')(sectionPermissions, {profile_id: profile.id}, true)[0];
 
                             if (!sectionPermission) {
                                 section.permissions.push({
@@ -83,19 +83,19 @@ angular.module('primeapps')
                         field.label = field['label_' + $rootScope.language];
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
-                        field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
+                        field.sectionObj = $filter('filter')(module.sections, {name: field.section}, true)[0];
 
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
-                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
 
                                 if (!lookupModule)
                                     continue;
 
-                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
+                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
 
                                 if (!field.lookupModulePrimaryField)
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
                                 var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
@@ -112,16 +112,16 @@ angular.module('primeapps')
                                 field.operators.push(operators.not_empty);
 
                                 if (field.lookup_type === 'users') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                                 else if (field.lookup_type === 'profiles') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                                 else if (field.lookup_type === 'roles') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                             }
 
@@ -161,7 +161,7 @@ angular.module('primeapps')
                             if (profileItem.is_persistent && !profileItem.has_admin_rights)
                                 profileItem.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.id }, true)[0];
+                            var fieldPermission = $filter('filter')(fieldPermissions, {profile_id: profileItem.id}, true)[0];
 
                             if (!fieldPermission)
                                 field.permissions.push({
@@ -243,8 +243,40 @@ angular.module('primeapps')
                         module.display_calendar = true;
 
                     return module;
-                }
+                },
+                getAppData: function (appId) {
+                    var deferred = $q.defer();
 
+                    $http.get(config.apiUrl + "app/get/" + appId).then(function (result) {
+                        if (result.data) {
+                            $rootScope.currentApp = result.data;
+
+                            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
+                            $rootScope.breadcrumblist[1] = {
+                                title: result.data.name,
+                                link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
+                            };
+
+
+                        }
+                    });
+
+                    var promises = [];
+                    promises.push($http.get(config.apiUrl + 'module/get_all_basic'));
+                    promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
+                    $q.all(promises).then(function (response) {
+                        if (response.length < 2 || response[0].status != 200 || response[1].status != 200) {
+
+                            deferred.resolve(false);
+                            return deferred.promise;
+                        }
+
+                        $rootScope.appModules = response[0].data;
+                        $rootScope.appProfiles = response[1].data;
+                    });
+
+
+                }
             };
         }]);
 

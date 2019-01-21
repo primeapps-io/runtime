@@ -274,12 +274,20 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            EmailTemplatesService.count().then(function (response) {
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
+            EmailTemplatesService.count("email").then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
             //2 templateType Module
-            EmailTemplatesService.find($scope.requestModel, 2).then(function (response) {
+            EmailTemplatesService.find($scope.requestModel, "email").then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
                     template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
@@ -295,12 +303,16 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                EmailTemplatesService.find(requestModel, 2).then(function (response) {
+                EmailTemplatesService.find(requestModel, "email").then(function (response) {
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
                         template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
+
+                    EmailTemplatesService.count("email").then(function (response) {
+                        $scope.pageTotal = response.data;
+                    });
 
                 }).finally(function () {
                     $scope.loading = false;

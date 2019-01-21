@@ -267,8 +267,15 @@ angular.module('primeapps')
                     resolve: {
                         init: function (LayoutService, $stateParams, $rootScope, genericInterceptor) {
                             // LayoutService.getOrg()
-                            $rootScope.appId = $stateParams.appId;
-                            $rootScope.organizationId = $stateParams.orgId;
+                            $rootScope.currenAppId = $stateParams.appId;
+                            if (angular.isObject($rootScope.currentOrganization)) {
+                                $rootScope.currentOrganization.id = $stateParams.orgId;
+                            } else {
+                                $rootScope.currentOrganization = {};
+                                $rootScope.currentOrganization.id = $stateParams.orgId;
+                            }
+
+                            LayoutService.getAppData($rootScope.currenAppId);
 
 
                         },
@@ -276,7 +283,7 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
-                        }],
+                        }]
 
                     }
                 })
@@ -995,7 +1002,42 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/actionButtonsController.js',
+                                cdnUrl + 'view/setup/modules/actionButtonsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
+                //settings
+                .state('studio.settings', {
+                    url: 'settings',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/settings/settings.html',
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/settings/settingsService.js',
+                                cdnUrl + 'view/settings/settingsController.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.settings.profile', {
+                    url: '/profile',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/settings/profile/profile.html',
+                            controller: 'ProfileController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/settings/profile/profileController.js'
                             ]);
                         }]
                     }

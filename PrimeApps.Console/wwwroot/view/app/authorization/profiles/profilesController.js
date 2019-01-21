@@ -49,7 +49,15 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            ProfilesService.count(2).then(function (response) {
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
+            ProfilesService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
@@ -97,6 +105,10 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
+                ProfilesService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
@@ -210,10 +222,6 @@ angular.module('primeapps')
                     $scope.changePage(1);
                     ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
 
-                    ProfilesService.getAllBasic()
-                        .then(function (profilesBasic) {
-                            $rootScope.profiles = profilesBasic.data;
-                        });
                 }).catch(function () {
                     $scope.profileSubmit = false;
                 });
@@ -221,10 +229,6 @@ angular.module('primeapps')
             };
 
             var editProfile = function (profile) {
-                ProfilesService.getAll().then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
-                });
                 if (profile.id) {
                     $scope.profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
 
@@ -239,10 +243,6 @@ angular.module('primeapps')
             };
 
             var cloneProfile = function (profile) {
-                ProfilesService.getAll().then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
-                });
                 var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
                 $scope.profile = profile;
                 delete  $scope.profile.name;

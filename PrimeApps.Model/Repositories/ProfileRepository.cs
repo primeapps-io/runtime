@@ -474,7 +474,7 @@ namespace PrimeApps.Model.Repositories
                                        Remove = y.Remove,
                                        Write = y.Write
                                    }).ToList()
-                               }).OrderByDescending(x => x.ID).ToListAsync();
+                               }).ToListAsync();
         }
     }
 }
