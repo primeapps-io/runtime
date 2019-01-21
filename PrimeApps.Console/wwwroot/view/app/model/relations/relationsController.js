@@ -13,6 +13,16 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Relations';
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+
+            };
+
+            $scope.generator(10);
+
             $scope.loading = true;
             $scope.requestModel = {
                 limit: '10',
