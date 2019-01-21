@@ -2,7 +2,7 @@
     <form name="relationForm" class="form-horizontal form-custom" ng-submit="save(relationForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Modal Title</h4>
+                <h4 class="modal-title">{{currentRelation.isNew ? ('Setup.Modules.NewRelation' | translate) : ('Setup.Modules.EditRelation' | translate)}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
