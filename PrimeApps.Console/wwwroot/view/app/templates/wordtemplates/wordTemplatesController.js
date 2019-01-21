@@ -13,6 +13,15 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/app/' + $rootScope.appId + '/overview';
             $rootScope.breadcrumblist[2].title = 'Excel Templates';
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+
+            $scope.generator(10);
+
             $scope.loading = true;
 
             $scope.requestModel = {
@@ -32,6 +41,7 @@ angular.module('primeapps')
                     template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
                 });
                 $scope.templates = templates;
+                $scope.templatesState = templates;
 
             }).finally(function () {
                 $scope.loading = false;
@@ -49,6 +59,7 @@ angular.module('primeapps')
                         template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
+                    $scope.templatesState = templates;
 
                 }).finally(function () {
                     $scope.loading = false;
@@ -360,9 +371,27 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (id) {
-                WordTemplatesService.delete(id).then(function () {
-                    swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
-                });
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this dependency ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            WordTemplatesService.delete(id).then(function () {
+                                $scope.changePage(1);
+                                swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
+                            }).catch(function () {
+                                $scope.templates = $scope.templatesState;
+                                if ($scope.addNewWordTemplateFormModal) {
+                                    $scope.addNewWordTemplateFormModal.hide();
+                                    $scope.saving = false;
+                                }
+                            });
+                        }
+                    });
             };
         }
     ]);

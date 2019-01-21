@@ -12,7 +12,38 @@
     </div>
 </div>
 <div class="tab-content">
-    <table class="table">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Templates.Status' | translate}}</th>
+                <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table ng-show="!loading" class="table">
         <thead>
             <tr>
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
@@ -43,9 +74,7 @@
                                 <a ng-click="showFormModal(template)">{{'Common.Edit' | translate}} </a>
                             </li>
                             <li>
-                                <a href="#" confirm-click ng-click="delete(template.id)" placement="left"
-                                   confirm-message="{{'Common.AreYouSure' | translate}}"
-                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                <a ng-click="$event.stopPropagation();delete(template.id);">
                                     {{'Common.Remove' | translate}}
                                 </a>
                             </li>
