@@ -1,0 +1,17 @@
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='profile ' ? 'active' :''">
+        <a href="/#/settings/profile" data-trigger="hover" data-type="info" data-title="Profile"
+           bs-tooltip data-placement="right">
+            <i class="fas fa-info-circle"></i>
+            <span>Profile </span>
+        </a>
+    </li>
+    <li>
+        <a href="/#/org/{{ orgId}}/app/{{appId}}/modules" data-trigger="hover" data-type="info" data-title="Model"
+           bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Password </span>
+        </a>
+    </li>
+
+</ul>

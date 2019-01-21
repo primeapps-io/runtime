@@ -29,14 +29,14 @@ angular.module('primeapps')
 
                     var organizationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : null;
 
-                    var appId = $rootScope.currenAppId ? $rootScope.currenAppId : null;
+                    var appId = $rootScope.currenAppId !="undefined" &&  $rootScope.currenAppId  ? $rootScope.currenAppId : null;
 
                     var tenantId = $cookies.get('tenant_id');
 
                     if (organizationId)
                         config.headers['X-Organization-Id'] = organizationId;
 
-                    if (appId)
+                    if (appId && appId != "undefined")
                         config.headers['X-App-Id'] = appId;
 
                     if (tenantId)

@@ -275,13 +275,15 @@ angular.module('primeapps')
                                 $rootScope.currentOrganization.id = $stateParams.orgId;
                             }
 
+                            LayoutService.getAppData($rootScope.currenAppId);
+
 
                         },
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
-                        }],
+                        }]
 
                     }
                 })
@@ -1001,6 +1003,40 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/actionButtonsController.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
+                //settings
+                .state('studio.settings', {
+                    url: 'settings',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/settings/settings.html',
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/settings/settingsService.js',
+                                cdnUrl + 'view/settings/settingsController.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.settings.profile', {
+                    url: '/profile',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/settings/profile/profile.html',
+                            controller: 'ProfileController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/settings/profile/profileController.js'
                             ]);
                         }]
                     }

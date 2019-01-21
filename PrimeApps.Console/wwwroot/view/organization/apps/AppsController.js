@@ -5,9 +5,8 @@ angular.module('primeapps')
     .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$cookies',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $cookies) {
 
-
-            var organizationId = $location.search().organizationId;
-
+            var organizationId = parseInt($location.search().organizationId);
+            $rootScope.currenAppId = null;
             if (angular.isObject($rootScope.currentOrganization)) {
                 $rootScope.currentOrganization.id = organizationId;
             } else {
