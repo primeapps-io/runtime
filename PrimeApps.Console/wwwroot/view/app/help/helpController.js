@@ -36,7 +36,7 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            HelpService.count("email").then(function (response) {
+            HelpService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
@@ -50,6 +50,10 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
+                HelpService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
 
                 HelpService.find(requestModel).then(function (response) {
                     $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);

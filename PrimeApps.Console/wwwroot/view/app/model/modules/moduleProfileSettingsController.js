@@ -47,11 +47,15 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
+                ModuleService.profileSettingsCount(module.id).then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
+
                 ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
                     var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
                     for (var i = 0; i < data.length; i++) {
                         for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
                             if (!data[i].profileName)
                                 data[i].profileName = profileName;
                             else
@@ -78,7 +82,7 @@ angular.module('primeapps')
                     var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
                     for (var i = 0; i < data.length; i++) {
                         for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
                             if (!data[i].profileName)
                                 data[i].profileName = profileName;
                             else
@@ -102,14 +106,14 @@ angular.module('primeapps')
                 $scope.icons = ModuleService.getIcons();
 
                 $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights: false }, true);
+                    return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
                 };
 
                 if (profileSetting) {
                     var profileList = [];
                     if (profileSetting.profile_list.length > 0) {
                         for (var k = 0; k < profileSetting.profile_list.length; k++) {
-                            var profile = $filter('filter')($rootScope.profiles, { id: parseInt(profileSetting.profile_list[k]) }, true)[0];
+                            var profile = $filter('filter')($rootScope.appProfiles, { id: parseInt(profileSetting.profile_list[k]) }, true)[0];
                             profileList.push(profile);
                         }
                     }
