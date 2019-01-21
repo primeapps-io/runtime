@@ -4,7 +4,35 @@
 </div>
 
 <div class="tab-content">
-    <table class="table">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Menu.MenuName'|translate}}</th>
+                <th>{{'Menu.ProfileName'|translate}}</th>
+                <th>{{'Menu.DefaultMenu'|translate}}</th>
+                <th class="action-column"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table ng-show="!loading" class="table">
         <thead>
             <tr>
                 <th>{{'Menu.MenuName'|translate}}</th>
@@ -14,8 +42,8 @@
             </tr>
         </thead>
         <tbody ng-show="!loading">
-            <tr ng-repeat="item in menuList | orderBy:'!default'">
-                <td class="profile-name"><a ng-click="showFormModal(item.id)">{{item.name}}</a></td>
+            <tr ng-repeat="item in menuList | orderBy:'!default'" ng-click="showFormModal(item.id)">
+                <td class="profile-name">{{item.name}}</td>
                 <td><p>{{item.profile_name}}</p></td>
                 <td><p ng-show="item.default">{{'Menu.DefaultValueTrue'|translate}} </p>
                     <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>
@@ -38,9 +66,7 @@
                                 <a ng-click="showFormModal(item.id, true)">{{'Common.Copy' | translate}}</a>
                             </li>
                             <li>
-                                <a href="#" confirm-click ng-click="delete(item.id)" placement="left"
-                                   confirm-message="{{'Common.AreYouSure' | translate}}"
-                                   confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                <a ng-click="$event.stopPropagation();delete(item.id);">
                                     {{'Common.Remove' | translate}}
                                 </a>
                             </li>

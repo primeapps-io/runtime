@@ -14,6 +14,14 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.icons = ModuleService.getIcons();
 
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+            $scope.generator(10);
+
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
@@ -24,8 +32,16 @@ angular.module('primeapps')
             });
 
             MenusService.find($scope.requestModel).then(function (response) {
-                $scope.menuList = response.data;
-                $scope.loading = false;
+                var menuList = response.data;
+                ProfilesService.getAllBasic().then(function (response) {
+                    $scope.newProfiles = response.data;
+                    angular.forEach(menuList, function (menu) {
+                        menu.profile_name = $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].name;
+                    });
+                    $scope.menuList = menuList;
+                    $scope.menuListState = menuList;
+                    $scope.loading = false;
+                });
             });
 
             $scope.changePage = function (page) {
@@ -35,8 +51,16 @@ angular.module('primeapps')
 
                 MenusService.find(requestModel).then(function (response) {
                     $scope.loading = true;
-                    $scope.menuList = response.data;
-                    $scope.loading = false;
+                    var menuList = response.data;
+                    ProfilesService.getAllBasic().then(function (response) {
+                        $scope.newProfiles = response.data;
+                        angular.forEach(menuList, function (menu) {
+                            menu.profile_name = $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].name;
+                        });
+                        $scope.menuList = menuList;
+                        $scope.menuListState = menuList;
+                        $scope.loading = false;
+                    });
                 });
             };
 
@@ -171,23 +195,21 @@ angular.module('primeapps')
                 $scope.menu = {};
                 $scope.counter = 1;
                 $scope.clone = _clone;
-                ProfilesService.getAllBasic().then(function (response) {
-                    $scope.loading = true;
-                    $scope.newProfiles = response.data;
-
-                    /**
-                     * Profile picklist filter, If exist delete from picklist
-                     * Yapılacaklar
-                     * */
-                    angular.forEach($scope.menuList, function (menu) {
-                        $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].deleted = true;
-                    });
-
-                    if (id)
-                        setMenuList(id);
-                    else
-                        $scope.loading = false;
+                $scope.loading = true;
+                
+                /**
+                 * Profile picklist filter, If exist delete from picklist
+                 * Yapılacaklar
+                 * */
+                angular.forEach($scope.menuList, function (menu) {
+                    $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].deleted = true;
                 });
+
+                if (id)
+                    setMenuList(id);
+                else
+                    $scope.loading = false;
+                // });
 
                 $scope.addNewMenuFormModal = $scope.addNewMenuFormModal || $modal({
                     scope: $scope,
@@ -779,11 +801,28 @@ angular.module('primeapps')
             //Menu Delete
             $scope.delete = function (id) {
                 //First delete Menu
-                MenusService.delete(id).then(function () {
-                    $scope.changePage(1);
-                    swal($filter('translate')('Menu.DeleteSuccess'), "", "success");
+                const willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this menu ?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Okey'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            MenusService.delete(id).then(function () {
+                                $scope.changePage(1);
+                                swal($filter('translate')('Menu.DeleteSuccess'), "", "success");
+                            }).catch(function () {
+                                $scope.menuList = $scope.menuListState;
 
-                });
+                                if ($scope.addNewMenuFormModal) {
+                                    $scope.addNewMenuFormModal.hide();
+                                    $scope.saving = false;
+                                }
+                            });
+                        }
+                    });
             };
         }
 

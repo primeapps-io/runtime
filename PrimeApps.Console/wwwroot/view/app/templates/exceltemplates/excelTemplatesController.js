@@ -236,7 +236,7 @@ angular.module('primeapps')
                 const willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this dependency ?",
+                        text: "Are you sure that you want to delete this excel template ?",
                         icon: "warning",
                         buttons: ['Cancel', 'Okey'],
                         dangerMode: true

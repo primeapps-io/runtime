@@ -54,7 +54,7 @@
             </tr>
         </thead>
         <tbody ng-show="!loading">
-            <tr ng-repeat="template in templates">
+            <tr ng-repeat="template in templates" ng-click="showFormModal(template)">
                 <td>{{template.name}}</td>
                 <td>{{template.module['label_'+language+'_plural']}}</td>
                 <td>{{template.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
