@@ -213,14 +213,14 @@ namespace PrimeApps.Auth.UI
 
                 if (result.Succeeded)
                 {
-                    if (vm.ApplicationInfo != null && Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) == -1 && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
                         if (platformUser?.TenantsAsUser?.Count > 0)
                         {
                             var tenant = platformUser.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == vm.ApplicationInfo.Id);
-                            
+
                             if (tenant == null)
                             {
                                 await _signInManager.SignOutAsync();
@@ -247,7 +247,7 @@ namespace PrimeApps.Auth.UI
                     var user = await _userManager.FindByNameAsync(model.Username);
 
                     var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
-                    
+
                     if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
                     {
                         try
@@ -909,6 +909,45 @@ namespace PrimeApps.Auth.UI
             //return View("LoggedOut", vm);
         }
 
+        /// <summary>
+        /// Create identity user. Only identity user, not platform or tenant user.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> CreateIdentityUser([FromBody]CreateAccountBindingModel model)
+        {
+            var identityUser = await _userManager.FindByNameAsync(model.Email);
+
+            if (identityUser != null)
+                return BadRequest("User exist");
+
+            var applicationUser = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                NormalizedEmail = model.Email,
+                NormalizedUserName = !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""
+            };
+
+            var result = await _userManager.CreateAsync(applicationUser, model.Password);
+
+            if (!result.Succeeded)
+                throw new Exception(result.Errors.ToJsonString());
+
+            result = await _userManager.AddClaimsAsync(applicationUser, new Claim[]
+            {
+                new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""),
+                new Claim(JwtClaimTypes.GivenName, model.FirstName),
+                new Claim(JwtClaimTypes.FamilyName, model.LastName),
+                new Claim(JwtClaimTypes.Email, model.Email),
+                new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
+            });
+
+            if (!result.Succeeded)
+                throw new Exception(result.Errors.ToJsonString());
+
+            return Ok();
+        }
+
         /*****************************************/
         /* helper APIs for the AccountController */
         /*****************************************/
@@ -1379,7 +1418,7 @@ namespace PrimeApps.Auth.UI
             }
         }
 
-        public async void DatabaseRollback(ApplicationUser user, bool newIdentityUser, bool newPlatformUser, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Tenant tenant = null, PlatformUser platformUser = null)
+        private async void DatabaseRollback(ApplicationUser user, bool newIdentityUser, bool newPlatformUser, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Tenant tenant = null, PlatformUser platformUser = null)
         {
             if (tenant != null)
             {
