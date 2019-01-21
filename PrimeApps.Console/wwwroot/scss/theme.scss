@@ -1559,7 +1559,7 @@ $primeapps-color: #0D6FAA;
       margin-left: 0px;
       overflow-x: inherit; //scroll kapalı halı
       overflow-y: inherit;
-      z-index: 2000;
+      z-index: 1000;
       background: url("../images/primeapps/menu_background.png") !important;
       background-repeat: repeat !important;
 
@@ -2035,3 +2035,29 @@ $primeapps-color: #0D6FAA;
   }
 }
 
+.placeholder {
+  margin: 0 auto;
+  min-height: 50px;
+  background-color: #eee;
+}
+@keyframes placeHolderShimmer{
+  0%{
+    background-position: -468px 0
+  }
+  100%{
+    background-position: 468px 0
+  }
+}
+.animated-background {
+  animation-duration: 0.70s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: darkgray;
+  background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+  background-size: 800px 104px;
+  padding: 10px;
+  margin-bottom:5px;
+  position: relative;
+}
