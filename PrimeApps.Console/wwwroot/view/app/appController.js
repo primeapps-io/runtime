@@ -15,7 +15,6 @@ angular.module('primeapps')
             }
 
             $rootScope.language = 'en';
-            $scope.menuTopTitle = $rootScope.currentApp.label;
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
@@ -28,8 +27,8 @@ angular.module('primeapps')
 
             $scope.getBasicModules();
 
-            $scope.preview = function () {
-                $scope.previewActivating = true;
+            $rootScope.preview = function () {
+                $rootScope.previewActivating = true;
                 LayoutService.getPreviewToken()
                     .then(function (response) {
                         $scope.previewActivating = false;

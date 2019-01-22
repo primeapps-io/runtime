@@ -29,11 +29,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.menuOpen = [];
-        $rootScope.breadcrumblist = [
-            {},
-            {},
-            {}
-        ];
+
 
         var getMyOrganizations = function () {
             LayoutService.myOrganizations()

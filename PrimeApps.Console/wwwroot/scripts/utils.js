@@ -503,6 +503,11 @@ angular.module('primeapps')
                     return deferred.promise;
                 },
                 getPicklists: function (picklistTypes, refresh, modules) {
+
+                    if (!modules) {
+                        modules = $rootScope.appModules;
+                    }
+
                     var deferred = $q.defer();
                     var picklists = {};
                     var picklistIds = [];

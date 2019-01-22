@@ -36,6 +36,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Apps
                 .Where(x => x.Id == id && !x.Deleted)
+                .Include(x => x.Organization)
                 .FirstOrDefaultAsync();
         }
 
