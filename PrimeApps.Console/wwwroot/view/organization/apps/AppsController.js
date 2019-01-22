@@ -9,7 +9,7 @@ angular.module('primeapps')
 
             $rootScope.currentOrgId = parseInt($stateParams.organizationId);
 
-            if (!$rootScope.currenOrgId) {
+            if (!$rootScope.currentOrgId) {
                 $state.go('studio.allApps');
             }
 
@@ -23,7 +23,7 @@ angular.module('primeapps')
 
             if (!$rootScope.currentOrgId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
-                $state.go('app.allApps');
+                $state.go('studio.allApps');
                 return;
             }
 
