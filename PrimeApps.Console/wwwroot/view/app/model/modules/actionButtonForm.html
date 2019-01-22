@@ -1,0 +1,165 @@
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="actionButtonForm" class="form-horizontal form-custom" ng-submit="save(actionButtonForm);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">{{currentActionButton.isNew ? ('Setup.Modules.NewActionButton' | translate) : ('Setup.Modules.EditActionButton' | translate)}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-click="formModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-dialog">
+            <div class="section">
+                <div class="form-group" ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.relatedModule.$invalid}">
+                    <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
+                    <select name="module"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentActionButton.module"
+                            ng-change="moduleChanged()"
+                            ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group"
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.type.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.ActionType' | translate}}: </label>
+                    <select
+                            name="type"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentActionButton.type"
+                            ng-options="o.value as o.type for o in actionButtonTypes">
+                    </select>
+                </div>
+                <div class="form-group"
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.trigger.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DisplayPage' | translate}}: </label>
+                    <select
+                            name="triggerType"
+                            class="form-control ng-animate-disabled col-sm-8"
+                            required
+                            ng-model="currentActionButton.triggerType"
+                            ng-options="o.value as o.name for o in displayPages">
+                    </select>
+                </div>
+                <div class="form-group"
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.name.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Modules.ActionButonName' |
+                        translate}}: </label>
+                    <input type="text"
+                           name="name"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="currentActionButton.name">
+                </div>
+                <div class="form-group"
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.url.$invalid}">
+                    <label class="col-sm-4 required-field">* URL</label>
+                    <input type="text"
+                           name="url"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="100"
+                           ng-model="currentActionButton.url">
+                </div>
+                <div ng-if="currentActionButton.type == 2" class="form-group"
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.method_type.$invalid}">
+                    <label class="col-sm-4 required-field">* {{'Setup.Workflow.WebHookMethod' | translate}}:</label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline">
+                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
+                                   value="post" required>
+                            POST
+                        </label>
+                        <label class="radio-inline">
+                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
+                                   value="get" required>
+                            GET
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="currentActionButton.type == 2">
+                    <div class="row form-inline" style="margin-bottom: 10px;">
+                        <label class="col-sm-4 required-field">{{'Setup.Workflow.WebHookParameters' |
+                            translate}}:</label>
+                    </div>
+                    <div>
+                        <div class="col-sm-12">
+                            <table class="filter-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
+                                        <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
+                                        <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in hookParameters">
+                                        <td style="padding: 1px">
+                                            <input type="text" required ng-model="parameter.parameterName" tabindex="2"
+                                                   class="form-control" maxlength="500" />
+                                        </td>
+                                        <td style="padding: 1px">
+                                            <select class="form-control"
+                                                    name="hookModule"
+                                                    tabindex="1"
+                                                    required
+                                                    ng-model="parameter.selectedModule"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true  | orderBy:'order'">
+                                                <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 1px">
+                                            <select class="form-control"
+                                                    name="hookField"
+                                                    tabindex="2"
+                                                    required
+                                                    ng-model="parameter.selectedField"
+                                                    ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
+                                                <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding-left: 10px">
+                                            <a href ng-show="hookParameters.length > 1"
+                                               ng-click="webhookParameterRemove(parameter)"><i
+                                                    class="fa fa-minus-square"></i></a>
+                                            <a href ng-show="$last" ng-click="webhookParameterAdd(parameter)"><i
+                                                    class="fa fa-plus-square"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4"> {{'Setup.Modules.CssClass' | translate}}: </label>
+                    <input type="text"
+                           name="css_class"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           maxlength="100"
+                           ng-model="currentActionButton.css_class">
+                </div>
+                <div class="form-group" ng-show="actionButtonForm.$submitted && actionButtonForm.$invalid">
+                    <div class="col-sm-12">
+                        <div class="callout callout-danger">
+                            <p ng-if="actionButtonForm.$error.required">{{'Setup.Modules.RequiredError' |
+                                translate}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
