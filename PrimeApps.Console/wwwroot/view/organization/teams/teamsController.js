@@ -11,8 +11,6 @@ angular.module('primeapps')
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
             $scope.teamId;
-            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
-
 
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
@@ -32,12 +30,12 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            TeamsService.count(organitzationId).then(function (response) {
+            TeamsService.count($rootScope.currenOrgId).then(function (response) {
                 $scope.$parent.teamCount = response.data;
                 $scope.pageTotal = response.data;
             });
 
-            TeamsService.find($scope.requestModel, organitzationId).then(function (response) {
+            TeamsService.find($scope.requestModel, $rootScope.currenOrgId).then(function (response) {
                 $scope.teamArray = response.data;
 
                 for (var i = 0; i < $scope.teamArray.length; i++) {
@@ -52,12 +50,12 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                TeamsService.count(organitzationId).then(function (response) {
+                TeamsService.count($rootScope.currenOrgId).then(function (response) {
                     $scope.$parent.teamCount = response.data;
                     $scope.pageTotal = response.data;
                 });
 
-                TeamsService.find(requestModel, organitzationId).then(function (response) {
+                TeamsService.find(requestModel, $rootScope.currenOrgId).then(function (response) {
                     $scope.teamArray = response.data;
                     for (var i = 0; i < $scope.teamArray.length; i++) {
                         var team = $scope.teamArray[i];
@@ -77,7 +75,7 @@ angular.module('primeapps')
                 $scope.loadingMembers = true;
                 $scope.generator(10);
 
-                TeamsService.getOrganizationUsers(organitzationId) //TODO Organization ID 
+                TeamsService.getOrganizationUsers($rootScope.currenOrgId) //TODO Organization ID
                     .then(function (response) {
                         if (response.data) {
                             var userList = response.data;

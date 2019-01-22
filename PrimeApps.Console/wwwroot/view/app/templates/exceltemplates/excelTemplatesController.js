@@ -115,8 +115,8 @@ angular.module('primeapps')
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
-                        'X-Organization-Id': $cookies.get('organization_id'),
-                        'X-App-Id': $cookies.get('app_id')
+                        'X-Organization-Id': $rootScope.currenOrgId,
+                        'X-App-Id': $rootScope.currentAppId
                     },
                     filters: {
                         mime_types: [

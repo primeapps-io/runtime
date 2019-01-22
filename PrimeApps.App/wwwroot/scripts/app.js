@@ -60,7 +60,11 @@ angular.module('primeapps',
 				whiteList.push(blobUrl + '**');
 
 			if (functionUrl)
-				whiteList.push(functionUrl + '**');
+                whiteList.push(functionUrl + '**');
+
+            angular.forEach(trustedUrls, function (trustedUrl) {
+                whiteList.push(trustedUrl.url + '**')
+            });
 
 			if (whiteList.length > 0) {
 				whiteList.push('self');

@@ -53,13 +53,14 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
 
-                WorkflowsService.find(requestModel, organitzationId).then(function (response) {
-                    var data = fillModule(response.data);
+                WorkflowsService.find(requestModel, $rootScope.currenOrgId)
+                    .then(function (response) {
+                        var data = fillModule(response.data);
 
-                    $scope.workflows = data;
-                    $scope.$parent.workflows = data;
-                    $scope.loading = false;
-                });
+                        $scope.workflows = data;
+                        $scope.$parent.workflows = data;
+                        $scope.loading = false;
+                    });
 
             };
 

@@ -28,7 +28,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.navbar = angular.element(document.getElementById('navbar-wrapper'));
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
-        $rootScope.organizations = [];
         $scope.menuOpen = [];
         $rootScope.breadcrumblist = [
             {},
@@ -36,26 +35,15 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             {}
         ];
 
-
-        LayoutService.me()
-            .then(function (response) {
-                if (response.data) {
-                    $scope.me = response.data;
-                }
-            });
-
         var getMyOrganizations = function () {
             LayoutService.myOrganizations()
                 .then(function (response) {
                     if (response.data) {
                         $rootScope.organizations = response.data;
-                        helper.hideLoader();
                         //$scope.menuOpen[$scope.organizations[0].id] = true;
                     }
                 });
         };
-
-        getMyOrganizations();
 
         $scope.changeOrganization = function (organization) {
             $scope.menuOpen = [];
@@ -249,7 +237,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.Apps', { organizationId: response.data });
+                    $state.go('studio.apps', { organizationId: response.data });
 
                 })
                 .catch(function () {

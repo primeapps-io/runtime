@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -40,8 +41,8 @@ namespace PrimeApps.App.Controllers
             var tenantRepository = (ITenantRepository)HttpContext.RequestServices.GetService(typeof(ITenantRepository));
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-            var cryptoString = CryptoHelper.Encrypt("app_id=5", "222EF106646458CD59995D4378B55DF2");
-            var decrypto = CryptoHelper.Decrypt("dZ1AdGTKBHFtas+vLzM30fPlOkVmzwJn7Nzd/nkcGH0=", "222EF106646458CD59995D4378B55DF2");
+            //var cryptoString = CryptoHelper.Encrypt("app_id=5", "222EF106646458CD59995D4378B55DF2");
+            //var decrypto = CryptoHelper.Decrypt("dZ1AdGTKBHFtas+vLzM30fPlOkVmzwJn7Nzd/nkcGH0=", "222EF106646458CD59995D4378B55DF2");
 
             if (preview != null)
             {

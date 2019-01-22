@@ -6,30 +6,20 @@ angular.module('primeapps')
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $cookies) {
 
             $scope.loading = true;
-            var organizationId = parseInt($location.search().organizationId);
-            $rootScope.currenAppId = null;
-            if (angular.isObject($rootScope.currentOrganization)) {
-                $rootScope.currentOrganization.id = organizationId;
-            } else {
-                $rootScope.currentOrganization = {};
-                $rootScope.currentOrganization.id = organizationId;
-            }
+
 
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
-            if (!organizationId) {
+            if (!$rootScope.currenOrgId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.allApps');
                 return;
             }
 
-            $cookies.put('organization_id', organizationId);
-
-
             $scope.appsFilter = {
-                organization_id: $state.params.organizationId,
+                organization_id: $rootScope.currenOrgId,
                 search: null,
                 page: null,
                 status: 0
