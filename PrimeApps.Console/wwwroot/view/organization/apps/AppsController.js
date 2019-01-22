@@ -4,15 +4,7 @@ angular.module('primeapps')
 
     .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$cookies',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $cookies) {
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
 
-            };
-
-            $scope.generator(3);
             $scope.loading = true;
             var organizationId = parseInt($location.search().organizationId);
             $rootScope.currenAppId = null;
@@ -22,9 +14,6 @@ angular.module('primeapps')
                 $rootScope.currentOrganization = {};
                 $rootScope.currentOrganization.id = organizationId;
             }
-
-         
-            
 
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
             $rootScope.breadcrumblist[1] = {};
@@ -50,7 +39,7 @@ angular.module('primeapps')
                 .then(function (result) {
                     $scope.apps = result.data;
                     $scope.loading = false;
-                    
+
                 });
         }
     ]);

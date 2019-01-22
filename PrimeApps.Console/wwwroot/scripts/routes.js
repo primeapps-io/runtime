@@ -218,6 +218,7 @@ angular.module('primeapps')
                             }]
                     }
                 })
+
                 .state('studio.organization.teams', {
                     url: '/teams',
                     views: {
@@ -235,6 +236,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.organization.collaborators', {
                     url: '/collaborators',
                     views: {
@@ -287,6 +289,7 @@ angular.module('primeapps')
 
                     }
                 })
+
                 .state('studio.app.overview', {
                     url: '/overview?:id',
                     views: {
@@ -303,6 +306,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.app.modules', {
                     url: '/modules?:id',
                     views: {
@@ -320,6 +324,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.app.moduledesigner', {
                     url: '/moduleDesigner?:id',
                     views: {
@@ -337,7 +342,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
 
                 .state('studio.app.relations', {
                     url: '/relations?:id',
@@ -666,6 +670,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.app.moduleprofilesettings', {
                     url: '/moduleprofilesettings/:module',
                     views: {
@@ -683,6 +688,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.app.roles', {
                     url: '/roles',
                     views: {
@@ -1026,6 +1032,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.settings.profile', {
                     url: '/profile',
                     views: {
@@ -1042,7 +1049,7 @@ angular.module('primeapps')
                         }]
                     }
                 });
-            //conti
+              //conti
 
 
             $urlRouterProvider.otherwise('/all-apps');

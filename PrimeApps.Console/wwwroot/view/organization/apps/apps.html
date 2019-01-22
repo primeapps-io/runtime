@@ -26,7 +26,7 @@
         <div class="col-sm-12">
             <h4 class="h4-title blue-color font-bold">All Apps</h4>
         </div>
-        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ui-sref="studio.appsForm">
+        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ui-sref="studio.appsForm" ng-show="!loading">
             <div class="app-box">
                 <div class="oval">
 
@@ -42,18 +42,18 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-repeat="item in placeholderArray" ng-show="loading">
-            <div class="app-box">                 
-                    <div class="animated-background" style="height: 100%;width: 100%;margin: 0;"></div>         
-                  
+        <div class="col-sm-6 col-md-3 app-layout-box" ng-show="loading">
+            <div class="app-box">
+                <div class="animated-background" style="height: 100%;width: 100%;margin: 0;"></div>
+
             </div>
             <div class="app-info">
                 <div class="animated-background" style="height: 100%;width: 100%;"></div>
             </div>
         </div>
-        
-        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-repeat="app in apps"
-             ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})"  ng-show="!loading">
+
+        <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps"
+             ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})" ng-show="!loading">
             <div class="app-box">
                 <div class="oval">
                     <span data-trigger="hover" data-type="success"

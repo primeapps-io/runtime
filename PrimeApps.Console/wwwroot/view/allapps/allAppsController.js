@@ -9,6 +9,8 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
+            $scope.loading = true;
+
             $scope.apps = [];
             $scope.appsFilter = {
                 search: null,
@@ -20,6 +22,7 @@ angular.module('primeapps')
                 .then(function (response) {
                     if (response.data) {
                         $scope.apps = response.data;
+                        $scope.loading = false;
                     }
                 });
 
