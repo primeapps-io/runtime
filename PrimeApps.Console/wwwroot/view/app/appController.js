@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
+            $scope.modules = $rootScope.modules;
 
             if (!$rootScope.currentAppId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
@@ -26,8 +27,6 @@ angular.module('primeapps')
                     $scope.modules = result.data;
                 });
             };
-
-            $scope.getBasicModules();
 
             $rootScope.preview = function () {
                 $rootScope.previewActivating = true;
