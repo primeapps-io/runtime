@@ -1,17 +1,26 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="organizationForm" class="form-horizontal form-custom" ng-submit="saveOrganization(organizationForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6"><h4 class="modal-title">New Organization</h4></div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray" ng-click="$parent.$parent.organization = {}; $parent.$parent.organizatioFormModal.hide();">
-                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue" ladda="organizationSaving" ng-disabled="!$parent.$parent.organizationShortnameValid" style="margin-left: 5px">
-                    <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
-                </button>
+            <div class="flex-between">
+                <h4 class="modal-title">New Organization</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="$parent.$parent.organization = {}; $parent.$parent.organizatioFormModal.hide();">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="organizationSaving" ng-disabled="!$parent.$parent.organizationShortnameValid" style="margin-left: 5px">
+                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="modal-dialog modal-600">
+        <div class="modal-dialog">
             <div class="modal-content padding-0">
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
