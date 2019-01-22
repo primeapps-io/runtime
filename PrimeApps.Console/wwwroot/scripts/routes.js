@@ -83,7 +83,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currenOrgId})[0];
 
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
@@ -228,7 +228,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currenOrgId})[0];
 
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
@@ -289,8 +289,6 @@ angular.module('primeapps')
                             function ($rootScope, LayoutService, $stateParams, $state, $filter) {
                                 $rootScope.currentAppId = parseInt($stateParams.appId);
                                 $rootScope.currenOrgId = parseInt($stateParams.orgId);
-
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
 
                                 LayoutService.getAppData($rootScope.currentAppId);
                             }],
