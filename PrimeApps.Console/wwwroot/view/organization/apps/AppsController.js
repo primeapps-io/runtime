@@ -14,7 +14,7 @@ angular.module('primeapps')
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currenOrgId)},true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)},true)[0];
 
 
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
