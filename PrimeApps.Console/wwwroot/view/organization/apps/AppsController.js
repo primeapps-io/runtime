@@ -9,12 +9,12 @@ angular.module('primeapps')
 
             $rootScope.currentOrgId = parseInt($stateParams.organizationId);
 
-            if (!$rootScope.currentOrgId) {
+            if (!$rootScope.currentOrgId && $rootScope.organizations) {
                 $state.go('studio.allApps');
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)},true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
 
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};

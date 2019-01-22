@@ -2,20 +2,35 @@
 
 angular.module('primeapps')
 
-    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast','$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast,$stateParams) {
+    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast, $stateParams) {
             $scope.appModel = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
 
             $rootScope.currentOrgId = parseInt($stateParams.organizationId);
+
+            if (!$rootScope.currentOrgId && $rootScope.organizations) {
+                $state.go('studio.allApps');
+            }
+
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)},true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
 
-            $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
-            $rootScope.breadcrumblist[1] = {};
+            $rootScope.breadcrumblist[0] = {
+                title: $rootScope.currentOrganization.name,
+                link: '#/apps?organizationId=' + $rootScope.currentOrgId
+            };
+            $rootScope.breadcrumblist[1] = {title: "App Form"};
             $rootScope.breadcrumblist[2] = {};
+
+            if (!$rootScope.currentOrgId) {
+                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                $state.go('studio.allApps');
+                return;
+            }
+
 
             var uploader = $scope.uploader = new FileUploader({
                 url: 'upload.php'
@@ -77,12 +92,12 @@ angular.module('primeapps')
 
             $scope.openModal = function () {
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/appform/newAppForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/appform/newAppForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -141,14 +156,20 @@ angular.module('primeapps')
 
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
-                        ngToast.create({ content: 'App ' + $scope.appModel.label + ' successfully created.', className: 'success' });
+                        ngToast.create({
+                            content: 'App ' + $scope.appModel.label + ' successfully created.',
+                            className: 'success'
+                        });
                         $scope.appModel = {};
                         $scope.appSaving = false;
                         $scope.appFormModal.hide();
-                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: response.data });
+                        $state.go('studio.app.overview', {orgId: $rootScope.currentOrgId, appId: response.data});
                     })
                     .catch(function () {
-                        ngToast.create({ content: 'App ' + $scope.appModel.label + ' not created.', className: 'danger' });
+                        ngToast.create({
+                            content: 'App ' + $scope.appModel.label + ' not created.',
+                            className: 'danger'
+                        });
                         $scope.appSaving = false;
                     });
             };
