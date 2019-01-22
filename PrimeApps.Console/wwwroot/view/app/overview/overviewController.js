@@ -9,9 +9,9 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'overview';
             $scope.$parent.tabTitle = 'Overview';
 
-            if ($scope.$parent.setTopTitle) {
-                $scope.$parent.setTopTitle();
-            }
+
+           
+            $scope.$parent.menuTopTitle = $rootScope.currentApp.name;
 
             //$rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrgId;
             //$rootScope.breadcrumblist[1] = {title:$scope.$parent.menuTopTitle};

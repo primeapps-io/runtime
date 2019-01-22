@@ -159,7 +159,7 @@ angular.module('primeapps')
 
                     var sortOrders = [];
 
-                    angular.forEach($scope.$parent.modules, function (moduleItem) {
+                    angular.forEach($rootScope.appModules, function (moduleItem) {
                         sortOrders.push(moduleItem.order);
                     });
 
@@ -458,7 +458,7 @@ angular.module('primeapps')
                         module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
                         module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
                         module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']);
-                        var allModules = $scope.$parent.modules.concat(deletedModules);
+                        var allModules = $rootScope.appModules.concat(deletedModules);
                         var i = 2;
 
                         while (true) {

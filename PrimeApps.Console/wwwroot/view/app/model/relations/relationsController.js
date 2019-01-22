@@ -2,13 +2,13 @@
 
 angular.module('primeapps')
 
-    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService','$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService,$location) {
+    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService', '$location',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location) {
 
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "relations";
-            
+
             $rootScope.breadcrumblist[2].title = 'Relations';
 
             $scope.generator = function (limit) {
@@ -96,7 +96,7 @@ angular.module('primeapps')
                 $scope.currentRelation.hasRelationField = true;
                 $scope.currentRelation.module = relation.parent_module;
                 $scope.currentRelationState = angular.copy($scope.currentRelation);
-                $scope.fields = RelationsService.getFields($scope.currentRelation, $scope.$parent.modules);
+                $scope.fields = RelationsService.getFields($scope.currentRelation, $rootScope.appModules);
 
                 //Module relations list remove itself
                 var filter = {};
@@ -104,7 +104,7 @@ angular.module('primeapps')
                     filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
                 }
                 //Module relations list remove itself
-                $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
+                $scope.moduleLists = $filter('filter')($rootScope.appModules, filter, true);
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
                     scope: $scope,
@@ -172,7 +172,7 @@ angular.module('primeapps')
                     var filter = {};
                     filter['label_' + $scope.language + '_plural'] = '!' + $scope.module['label_' + $scope.language + '_plural'];
                     //Module relations list remove itself
-                    $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
+                    $scope.moduleLists = $filter('filter')($rootScope.appModules, filter, true);
                 }
             };
 
@@ -182,7 +182,7 @@ angular.module('primeapps')
                 var filter = {};
                 filter['label_' + $scope.language + '_plural'] = filter['label_' + $scope.language + '_plural'] = '!' + relatedModuleName['label_' + $scope.language + '_plural'];
                 // $scope.parentModuleLists = filter['label_' + $rootScope.language + '_plural'] = '!' + relatedModuleName['label_' + $rootScope.language + '_plural'];
-                $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
+                $scope.moduleLists = $filter('filter')($rootScope.appModules, filter, true);
                 ModuleService.getModuleFields(relatedModuleName).then(function (response) {
                     $scope.currentRelation.relation_module.fields = response.data;
                     if ($scope.currentRelation.module) {
@@ -192,7 +192,7 @@ angular.module('primeapps')
                             $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relation_module.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
 
                         $scope.currentRelation.display_fields = null;
-                        $scope.fields = RelationsService.getFields($scope.currentRelation, $scope.$parent.modules);
+                        $scope.fields = RelationsService.getFields($scope.currentRelation, $rootScope.appModules);
 
                         if ($scope.currentRelation.relation_type === 'many_to_many')
                             $scope.bindDragDrop();
@@ -221,7 +221,7 @@ angular.module('primeapps')
                         relation.display_fields.push(selectedField.name);
 
                         if (selectedField.lookup_type) {
-                            var lookupModule = $filter('filter')($scope.$parent.modules, { name: selectedField.lookup_type }, true)[0];
+                            var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
                             var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
                             relation.display_fields.push(selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary');
@@ -297,7 +297,7 @@ angular.module('primeapps')
 
                 if (!relation.id) {
                     if (relation.mainModule)
-                        var mainModuleId = ($filter('filter')($scope.$parent.modules, { name: relation.mainModule }, true)[0]).id;
+                        var mainModuleId = ($filter('filter')($rootScope.appModules, { name: relation.mainModule }, true)[0]).id;
                     RelationsService.createModuleRelation(relation, (relation.two_way) ? mainModuleId : $scope.module.id)
                         .then(function () {
                             success();

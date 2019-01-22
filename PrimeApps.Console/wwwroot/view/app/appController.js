@@ -9,7 +9,6 @@ angular.module('primeapps')
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
-
             if (!$rootScope.currentAppId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('studio.allApps');

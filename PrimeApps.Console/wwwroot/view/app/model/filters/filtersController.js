@@ -27,7 +27,7 @@ angular.module('primeapps')
             $scope.wizardStep = 0;
             $scope.requestModel = {
                 limit: '10',
-                offset: 1
+                offset: 0
             };
 
             FiltersService.count($scope.id).then(function (response) {
@@ -37,9 +37,9 @@ angular.module('primeapps')
             FiltersService.find($scope.id, $scope.requestModel).then(function (response) {
                 var customViews = angular.copy(response.data);
                 for (var i = customViews.length - 1; i >= 0; i--) {
-                    var parentModule = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
+                    var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
                     if (parentModule) {
-                        customViews[i].parent_module = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
+                        customViews[i].parent_module = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
                     } else {
                         customViews.splice(i, 1);
                     }
@@ -57,9 +57,9 @@ angular.module('primeapps')
                 FiltersService.find($scope.id, requestModel).then(function (response) {
                     var customViews = angular.copy(response.data);
                     for (var i = customViews.length - 1; i >= 0; i--) {
-                        var parentModule = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
+                        var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
                         if (parentModule) {
-                            customViews[i].parent_module = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
+                            customViews[i].parent_module = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
                         } else {
                             customViews.splice(i, 1);
                         }
@@ -206,8 +206,8 @@ angular.module('primeapps')
                 ModuleService.getModuleFields(module.name).then(function (response) {
 
                     $scope.module.fields = response.data;
-                    $scope.module = ModuleService.getFieldsOperator(module, $scope.$parent.modules, 0);
-                    $scope.fields = FiltersService.getFields($scope.module, angular.copy($scope.view), $scope.$parent.modules);
+                    $scope.module = ModuleService.getFieldsOperator(module, $rootScope.appModules, 0);
+                    $scope.fields = FiltersService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
 
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
@@ -319,7 +319,7 @@ angular.module('primeapps')
                     view.fields.push(field);
 
                     if (selectedField.lookup_type && selectedField.lookup_type != 'relation') {
-                        var lookupModule = $filter('filter')($scope.$parent.modules, { name: selectedField.lookup_type }, true)[0];
+                        var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
                         var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         var fieldPrimary = {};
                         fieldPrimary.field = selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary';
@@ -343,7 +343,7 @@ angular.module('primeapps')
                     var fieldName = field.name;
 
                     if (field.data_type === 'lookup' && field.lookup_type != 'users') {
-                        var lookupModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                        var lookupModule = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                         var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                     }
