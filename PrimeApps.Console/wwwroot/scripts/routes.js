@@ -305,7 +305,7 @@ angular.module('primeapps')
 
                                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
 
-                                LayoutService.getAppData($rootScope.currentAppId);
+                                return LayoutService.getAppData($rootScope.currentAppId);
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
