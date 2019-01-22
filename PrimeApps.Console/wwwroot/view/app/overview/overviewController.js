@@ -13,7 +13,7 @@ angular.module('primeapps')
                 $scope.$parent.setTopTitle();
             }
 
-            //$rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currenOrgId;
+            //$rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrgId;
             //$rootScope.breadcrumblist[1] = {title:$scope.$parent.menuTopTitle};
             $rootScope.breadcrumblist[2] = {title: 'Overview'};
 

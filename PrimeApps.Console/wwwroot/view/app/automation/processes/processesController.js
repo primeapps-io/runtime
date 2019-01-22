@@ -50,11 +50,11 @@ angular.module('primeapps')
             };
 
 
-            ProcessesService.find($scope.requestModel, $rootScope.currenOrgId).then(function (response) {
+            ProcessesService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 if (response.data) {
                     var data = fillModule(response.data);
 
-                    ProcessesService.count($rootScope.currenOrgId).then(function (response) {
+                    ProcessesService.count($rootScope.currentOrgId).then(function (response) {
                         $scope.pageTotal = response.data;
                     });
 
@@ -69,7 +69,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
 
-                ProcessesService.find(requestModel, $rootScope.currenOrgId).then(function (response) {
+                ProcessesService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     var data = fillModule(response.data);
 
                     $scope.rules = data;

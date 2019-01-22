@@ -21,14 +21,14 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
-            if (!$rootScope.currenOrgId) {
+            if (!$rootScope.currentOrgId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.allApps');
                 return;
             }
 
             $scope.appsFilter = {
-                organization_id: $rootScope.currenOrgId,
+                organization_id: $rootScope.currentOrgId,
                 search: null,
                 page: null,
                 status: 0

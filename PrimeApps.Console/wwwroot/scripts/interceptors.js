@@ -25,9 +25,9 @@ angular.module('primeapps')
                     }
 
                     // if ($rootScope.currentOrganization)
-                    //     config.headers['X-Organization-Id'] = $rootScope.currenOrgId;
+                    //     config.headers['X-Organization-Id'] = $rootScope.currentOrgId;
 
-                    var organizationId = $rootScope.currenOrgId ? $rootScope.currenOrgId : null;
+                    var organizationId = $rootScope.currentOrgId ? $rootScope.currentOrgId : null;
 
                     var appId = $rootScope.currentAppId !="undefined" &&  $rootScope.currentAppId  ? $rootScope.currentAppId : null;
 

@@ -78,7 +78,7 @@ angular.module('primeapps')
                             $scope.pageTotal = response.data;
                         });
 
-                        RulesService.find($scope.requestModel, $rootScope.currenOrgId)
+                        RulesService.find($scope.requestModel, $rootScope.currentOrgId)
                             .then(function (response) {
                                 if (response.data) {
                                     var data = fillModule(response.data);

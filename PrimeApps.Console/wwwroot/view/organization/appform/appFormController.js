@@ -136,7 +136,7 @@ angular.module('primeapps')
                         $scope.appModel = {};
                         $scope.appSaving = false;
                         $scope.appFormModal.hide();
-                        $state.go('studio.app.overview', { orgId: $rootScope.currenOrgId, appId: response.data });
+                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: response.data });
                     })
                     .catch(function () {
                         ngToast.create({ content: 'App ' + $scope.appModel.label + ' not created.', className: 'danger' });

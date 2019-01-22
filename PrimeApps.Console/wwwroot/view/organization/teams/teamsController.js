@@ -30,12 +30,12 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            TeamsService.count($rootScope.currenOrgId).then(function (response) {
+            TeamsService.count($rootScope.currentOrgId).then(function (response) {
                 $scope.$parent.teamCount = response.data;
                 $scope.pageTotal = response.data;
             });
 
-            TeamsService.find($scope.requestModel, $rootScope.currenOrgId).then(function (response) {
+            TeamsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 $scope.teamArray = response.data;
 
                 for (var i = 0; i < $scope.teamArray.length; i++) {
@@ -50,12 +50,12 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                TeamsService.count($rootScope.currenOrgId).then(function (response) {
+                TeamsService.count($rootScope.currentOrgId).then(function (response) {
                     $scope.$parent.teamCount = response.data;
                     $scope.pageTotal = response.data;
                 });
 
-                TeamsService.find(requestModel, $rootScope.currenOrgId).then(function (response) {
+                TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     $scope.teamArray = response.data;
                     for (var i = 0; i < $scope.teamArray.length; i++) {
                         var team = $scope.teamArray[i];
@@ -75,7 +75,7 @@ angular.module('primeapps')
                 $scope.loadingMembers = true;
                 $scope.generator(10);
 
-                TeamsService.getOrganizationUsers($rootScope.currenOrgId) //TODO Organization ID
+                TeamsService.getOrganizationUsers($rootScope.currentOrgId) //TODO Organization ID
                     .then(function (response) {
                         if (response.data) {
                             var userList = response.data;

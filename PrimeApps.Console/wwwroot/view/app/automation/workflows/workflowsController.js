@@ -53,7 +53,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
 
-                WorkflowsService.find(requestModel, $rootScope.currenOrgId)
+                WorkflowsService.find(requestModel, $rootScope.currentOrgId)
                     .then(function (response) {
                         var data = fillModule(response.data);
 

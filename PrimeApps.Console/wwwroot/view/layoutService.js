@@ -6,21 +6,18 @@ angular.module('primeapps')
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
                 getAll: function () {
-                    return $http.get(config.apiUrl + 'user/me')
-                        .then(function (response) {
-                            $rootScope.me = response.data;
-                            return $http.get(config.apiUrl + 'user/organizations')
-                                .then(function (response) {
-                                    if (response) {
-                                        if (!$rootScope.breadcrumblist) {
-                                            $rootScope.breadcrumblist = [{}, {}, {}];
-                                        }
-                                        $rootScope.organizations = response.data;
-                                        helper.hideLoader();
-                                    }
-                                })
-                        })
+                    var promises = [];
+                    promises.push($http.get(config.apiUrl + 'user/me'));
+                    promises.push($http.get(config.apiUrl + 'user/organizations'));
+                    return $q.all(promises).then(function (response) {
+                        $rootScope.me = response[0].data;
+                        $rootScope.organizations = response[1].data;
 
+                        if (!$rootScope.breadcrumblist) {
+                            $rootScope.breadcrumblist = [{}, {}, {}];
+                        }
+                        helper.hideLoader();
+                    });
                 },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');

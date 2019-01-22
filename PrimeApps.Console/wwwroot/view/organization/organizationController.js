@@ -11,7 +11,7 @@ angular.module('primeapps')
             // $scope.tabTitle='organization';
 
 
-            $http.get(config.apiUrl + 'team/count/' + $rootScope.currenOrgId).then(function (response) {
+            $http.get(config.apiUrl + 'team/count/' + $rootScope.currentOrgId).then(function (response) {
                 $scope.$parent.teamCount = response.data;
             });
         }
