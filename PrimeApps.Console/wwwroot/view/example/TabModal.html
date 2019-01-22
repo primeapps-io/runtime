@@ -13,16 +13,20 @@
             </div>
         </div>
         <div class="modal-dialog">
-            <div class="megalist">
-                <div class="modal-menu">
-                    <ul class="list-unstyled">
-					    <!-- Burası tab item  -->
-                        <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(formname) ? wizardStep = 0 : false">...</a></li>
-                        <li>...</li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="section" id="section1" ng-show="wizardStep == 0">  <!-- Burası tab ilgili tabın içeriği    --> </div>
+            <div class="modal-content view-form">
+                <div class="modal-body">
+                    <div class="megalist">
+                        <div class="modal-menu">
+                            <ul class="list-unstyled">
+                                <!-- Burası tab item  -->
+                                <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(formname) ? wizardStep = 0 : false">...</a></li>
+                                <li>...</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="section" id="section1" ng-show="wizardStep == 0">  <!-- Burası tab ilgili tabın içeriği    --> </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
