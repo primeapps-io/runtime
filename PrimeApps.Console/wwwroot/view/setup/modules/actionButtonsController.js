@@ -29,7 +29,7 @@ angular.module('primeapps')
                 ActionButtonsService.find($scope.id, requestModel).then(function (response) {
                     $scope.actionButtons = actionButtons.data;
                     for (var i = 0; i < actionButtons.data.length; i++) {
-                        $scope.actionButtons[i].parent_module = $filter('filter')($scope.$parent.modules, { id: actionButtons.data[i].module_id }, true)[0];
+                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: actionButtons.data[i].module_id }, true)[0];
                         $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
                     }
                     $scope.actionbuttonState = angular.copy($scope.actionButtons);
@@ -52,7 +52,7 @@ angular.module('primeapps')
                         .then(function (actionButtons) {
                             $scope.actionButtons = actionButtons.data;
                             for (var i = 0; i < actionButtons.data.length; i++) {
-                                $scope.actionButtons[i].parent_module = $filter('filter')($scope.$parent.modules, { id: actionButtons.data[i].module_id }, true)[0];
+                                $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: actionButtons.data[i].module_id }, true)[0];
                                 $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
                             }
                             $scope.actionbuttonState = angular.copy($scope.actionButtons);
@@ -323,7 +323,7 @@ angular.module('primeapps')
 
                     angular.forEach($scope.module.fields, function (field) {
                         if (field.lookup_type && field.lookup_type != $scope.module.name && field.lookup_type != 'users' && !field.deleted) {
-                            var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             $scope.updatableModules.push(module);
                         }
                     });

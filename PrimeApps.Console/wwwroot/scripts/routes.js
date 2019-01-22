@@ -212,7 +212,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
 
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
@@ -368,9 +368,9 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/model/filters/filtersController.js',
                                 cdnUrl + 'view/app/model/filters/filtersService.js',
-                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                                cdnUrl + 'view/app/model/modules/moduleService.js',
+                                cdnUrl + 'view/app/model/filters/filtersController.js'
                             ]);
                         }]
                     }
@@ -1028,15 +1028,15 @@ angular.module('primeapps')
                     url: '/actionButtons?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/actionButtons.html',
+                            templateUrl: cdnUrl + 'view/app/model/modules/actionButtons.html',
                             controller: 'ActionButtonsController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/actionButtonsController.js',
-                                cdnUrl + 'view/setup/modules/actionButtonsService.js',
+                                cdnUrl + 'view/app/model/modules/actionButtonsController.js',
+                                cdnUrl + 'view/app/model/modules/actionButtonsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
