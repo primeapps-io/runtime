@@ -7,6 +7,7 @@ angular.module('primeapps')
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
+            $scope.$parent.menuTopTitle = $scope.currentApp.label
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
 
@@ -15,21 +16,6 @@ angular.module('primeapps')
             /*if (!$scope.orgId || !$scope.appId) {
                 $state.go('studio.apps', { organizationId: $scope.orgId });
             }*/
-
-            if (!$scope.currentApp) {
-                ComponentsService.getApp($scope.appId)
-                    .then(function (response) {
-                        if (!response) {
-                            $state.go('studio.apps', { organizationId: $scope.orgId });
-                        }
-
-                        $localStorage.set('current_app', response.data);
-                        $scope.$parent.menuTopTitle = response.data.label;
-
-                    })
-            } else {
-                $scope.$parent.menuTopTitle = $scope.currentApp.label;
-            }
 
             $scope.modules = [];
 

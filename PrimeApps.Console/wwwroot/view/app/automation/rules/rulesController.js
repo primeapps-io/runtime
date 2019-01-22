@@ -20,7 +20,7 @@ angular.module('primeapps')
             $scope.scheduleItems = RulesService.getScheduleItems();
             $scope.dueDateItems = RulesService.getDueDateItems();
             $scope.showProcessFilter = false;
-            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1; //TODO Organization ID
+
             var activityModule = $filter('filter')($scope.$parent.modules, { name: 'activities' }, true)[0];
 
             ModuleService.getModuleFields(activityModule.name)
@@ -53,11 +53,11 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
-            RulesService.count(organitzationId).then(function (response) {
+            RulesService.count($rootScope.currenOrgId).then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            RulesService.find($scope.requestModel, organitzationId).then(function (response) {
+            RulesService.find($scope.requestModel, $rootScope.currenOrgId).then(function (response) {
                 if (response.data) {
                     var data = fillModule(response.data);
 
@@ -73,7 +73,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
 
-                RulesService.find(requestModel, organitzationId).then(function (response) {
+                RulesService.find(requestModel, $rootScope.currenOrgId).then(function (response) {
                     var data = fillModule(response.data);
 
                     $scope.rules = data;

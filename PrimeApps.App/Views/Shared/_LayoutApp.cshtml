@@ -1,29 +1,30 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using PrimeApps.App.Extensions
 @{
-        var app = "primeapps";
-        if (ViewBag.AppInfo != null)
-        {
-            app = ViewBag.AppInfo["app"].Value;
-        }
-        var googleCode = app == "crm" ? "UA-78675728-1" : "UA-112242194-1";
-        //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-        //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-        /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-        var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
-        var customDomain = false;
-        var customLanguage = string.Empty;
-        //var favicon = ViewBag.AppInfo["favicon"].Value;
-        var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
-        var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
-        var hasAdminRight = ViewBag.HasAdminRight;
-        var tenantId = ViewBag.TenantId;
-        var token = ViewBag.Token;
-        var appId = ViewBag.AppId;
-        var encryptedUserId = ViewBag.EncryptedUserId;
-        var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
-        var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var app = "primeapps";
+    if (ViewBag.AppInfo != null)
+    {
+        app = ViewBag.AppInfo["app"].Value;
     }
+    var googleCode = app == "crm" ? "UA-78675728-1" : "UA-112242194-1";
+    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
+    var customDomain = false;
+    var customLanguage = string.Empty;
+    //var favicon = ViewBag.AppInfo["favicon"].Value;
+    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
+    var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
+    var hasAdminRight = ViewBag.HasAdminRight;
+    var tenantId = ViewBag.TenantId;
+    var token = ViewBag.Token;
+    var appId = ViewBag.AppId;
+    var encryptedUserId = ViewBag.EncryptedUserId;
+    var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
+    var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+}
 
 <!DOCTYPE html>
 <html lang="{{language}}" ng-app="primeapps">
@@ -100,6 +101,7 @@
         var token = '@token';
         var applicationId = '@appId';
         var encryptedUserId = '@encryptedUserId';
+        var trustedUrls = JSON.parse('@trustedUrls');
 		var getParameterByName = function (name) {
 			var url = window.location.href;
 			name = name.replace(/[\[\]]/g, '\\$&');

@@ -56,6 +56,20 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
+                            function ($rootScope, $q, $state, $stateParams, $filter) {
+                                $rootScope.currenOrgId = parseInt($stateParams.organizationId);
+
+                                if (!$rootScope.currenOrgId) {
+                                    $state.go('studio.allApps');
+                                }
+
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
+
+                                if (!$rootScope.currentOrganization) {
+                                    $state.go('studio.allApps');
+                                }
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/apps/appsService.js',
@@ -74,6 +88,20 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
+                            function ($rootScope, $q, $state, $stateParams, $filter) {
+                                $rootScope.currenOrgId = parseInt($stateParams.organizationId);
+
+                                if (!$rootScope.currenOrgId) {
+                                    $state.go('studio.allApps');
+                                }
+
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
+
+                                if (!$rootScope.currentOrganization) {
+                                    $state.go('studio.allApps');
+                                }
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/appform/appFormService.js',
@@ -205,14 +233,18 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope', '$q', '$state', 'LayoutService',
-                            function ($rootScope, $q, $state, LayoutService) {
-                                var deferred = $q.defer();
+                        start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
+                            function ($rootScope, $q, $state, $stateParams, $filter) {
+                                $rootScope.currenOrgId = parseInt($stateParams.organizationId);
 
-                                if ($rootScope.preview) {
-                                    $state.go('app.allApps');
-                                    deferred.resolve();
-                                    return deferred.promise;
+                                if (!$rootScope.currenOrgId) {
+                                    $state.go('studio.allApps');
+                                }
+
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
+
+                                if (!$rootScope.currentOrganization) {
+                                    $state.go('studio.allApps');
                                 }
                             }]
                     }
@@ -266,20 +298,15 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        init: function (LayoutService, $stateParams, $rootScope, genericInterceptor) {
-                            // LayoutService.getOrg()
-                            $rootScope.currenAppId = parseInt($stateParams.appId);
-                            if (angular.isObject($rootScope.currentOrganization)) {
-                                $rootScope.currentOrganization.id = $stateParams.orgId;
-                            } else {
-                                $rootScope.currentOrganization = {};
-                                $rootScope.currentOrganization.id = $stateParams.orgId;
-                            }
+                        start: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter',
+                            function ($rootScope, LayoutService, $stateParams, $state, $filter) {
+                                $rootScope.currentAppId = parseInt($stateParams.appId);
+                                $rootScope.currenOrgId = parseInt($stateParams.orgId);
 
-                            LayoutService.getAppData($rootScope.currenAppId);
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currenOrgId })[0];
 
-
-                        },
+                                LayoutService.getAppData($rootScope.currentAppId);
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
@@ -1081,7 +1108,7 @@ angular.module('primeapps')
                         }]
                     }
                 });
-              //conti
+            //conti
 
 
             $urlRouterProvider.otherwise('/all-apps');

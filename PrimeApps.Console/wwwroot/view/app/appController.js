@@ -14,28 +14,8 @@ angular.module('primeapps')
                 return;
             }
 
-            $cookies.put('app_id', $scope.appId);
-
-            if (!$rootScope.currentOrganization) {
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($scope.orgId) }, true)[0];
-            }
-
-            if ($scope.appId != ($localStorage.get("current_app") != null ? $localStorage.get("current_app").id : false)) {
-                $http.get(config.apiUrl + "app/get/" + $scope.appId).then(function (result) {
-                    if (result.data) {
-                        $scope.menuTopTitle = result.data.label;
-                        $localStorage.set("current_app", result.data);
-
-                    }
-                });
-            } else {
-                $scope.setTopTitle = function (link) {
-                    $scope.menuTopTitle = $localStorage.get("current_app").label;
-
-                }
-            }
-
             $rootScope.language = 'en';
+            $scope.menuTopTitle = $rootScope.currentApp.label;
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
