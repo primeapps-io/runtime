@@ -21,69 +21,76 @@
             </div>
         </div>
         <div class="modal-dialog">
-            <div class="section" id="section1">
-                <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-                    <label class="col-sm-12 control-label">*{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}:</label>
-                    <div class="col-sm-12">
-                        <tags-input name="profiles"
-                                    tabindex="999"
-                                    ng-model="currentProfileSetting.profiles"
-                                    display-property="name"
-                                    key-property="id"
-                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                    replace-spaces-with-dashes="false"
-                                    add-from-autocomplete-only="true"
-                                    min-length="1"
-                                    ng-required="true">
-                            <auto-complete source="multiselect()"
-                                           min-length="0"
-                                           load-on-focus="true"
-                                           load-on-empty="true"
-                                           max-results-to-show="9999"></auto-complete>
-                        </tags-input>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-12 control-label">* {{'Setup.Modules.ModulePluralName' | translate}}</label>
-                    <div class="col-sm-12">
-                        <input type="text"
-                               name="labelPlural"
-                               class="form-control ng-animate-disabled col-sm-8"
-                               required
-                               maxlength="50"
-                               focus="currentLabelState"
-                               ng-model="currentProfileSetting.pluralName">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-12 control-label">* {{'Setup.Modules.ModuleSingularName' | translate}} :</label>
-                    <div class="col-sm-12">
-                        <input type="text"
-                               name="labelSingular"
-                               class="form-control ng-animate-disabled col-sm-8"
-                               required
-                               maxlength="50"
-                               ng-model="currentProfileSetting.singularName">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-12 control-label">{{'Setup.Modules.ModuleIcon' | translate}}:</label>
-                    <div class="col-sm-12">
-                        <button type="button" data-container="form" class="form-control btn btn-default"
-                                data-placeholder="{{'Common.Icon' | translate}}-" ng-model="currentProfileSetting.menu_icon"
-                                data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                bs-select><span class="caret"></span></button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}:</label>
-                    <div class="col-sm-12">
-                        <label class="radio-inline">
-                            <input type="radio" ng-model="currentProfileSetting.display" ng-value="true"> {{'Common.Yes' | translate}}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" ng-model="currentProfileSetting.display" ng-value="false"> {{'Common.No' | translate}}
-                        </label>
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div id="field-form-body" class="modal-body">
+                        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                        <div class="panel">
+                            <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
+                                <label class="col-sm-12 control-label">*{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}:</label>
+                                <div class="col-sm-12">
+                                    <tags-input name="profiles"
+                                                tabindex="999"
+                                                ng-model="currentProfileSetting.profiles"
+                                                display-property="name"
+                                                key-property="id"
+                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                replace-spaces-with-dashes="false"
+                                                add-from-autocomplete-only="true"
+                                                min-length="1"
+                                                ng-required="true">
+                                        <auto-complete source="multiselect()"
+                                                       min-length="0"
+                                                       load-on-focus="true"
+                                                       load-on-empty="true"
+                                                       max-results-to-show="9999"></auto-complete>
+                                    </tags-input>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-12 control-label">* {{'Setup.Modules.ModulePluralName' | translate}}</label>
+                                <div class="col-sm-12">
+                                    <input type="text"
+                                           name="labelPlural"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="50"
+                                           focus="currentLabelState"
+                                           ng-model="currentProfileSetting.pluralName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-12 control-label">* {{'Setup.Modules.ModuleSingularName' | translate}} :</label>
+                                <div class="col-sm-12">
+                                    <input type="text"
+                                           name="labelSingular"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="50"
+                                           ng-model="currentProfileSetting.singularName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-12 control-label">{{'Setup.Modules.ModuleIcon' | translate}}:</label>
+                                <div class="col-sm-12">
+                                    <button type="button" data-container="form" class="form-control btn btn-default"
+                                            data-placeholder="{{'Common.Icon' | translate}}-" ng-model="currentProfileSetting.menu_icon"
+                                            data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
+                                            bs-select><span class="caret"></span></button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}:</label>
+                                <div class="col-sm-12">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="currentProfileSetting.display" ng-value="true"> {{'Common.Yes' | translate}}
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="currentProfileSetting.display" ng-value="false"> {{'Common.No' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
