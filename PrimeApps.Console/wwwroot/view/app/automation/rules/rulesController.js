@@ -13,6 +13,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Automation";
             $scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'rules';
+            $scope.workflowModel = {};
             $rootScope.approvalProcesses = [];
             $rootScope.breadcrumblist[2].title = 'Business Rules';
             // $scope.id = $location.search().id;
@@ -1757,7 +1758,7 @@ angular.module('primeapps')
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
 
-                $scope.workflowModel = [];
+                $scope.workflowModel = {};
                 $scope.id = null;
                 $scope.ruleFormModal.hide();
             };

@@ -47,7 +47,7 @@ angular.module('primeapps')
                         window.myPaletteLevel1.requestUpdate();
                     }
                 });
-            }
+            } 
 
             $scope.triggerBpm();
             //BPM element menu loading end

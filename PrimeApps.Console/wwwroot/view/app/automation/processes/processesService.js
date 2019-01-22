@@ -41,9 +41,9 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'process_request/get_requests/' + id);
                 },
 
-                process: function (workflows) {
+                process: function (workflows, modules) {
                     angular.forEach(workflows, function (workflow) {
-                        var module = $filter('filter')($rootScope.modules, { id: workflow.module_id }, true)[0];
+                        var module = $filter('filter')(modules, { id: workflow.module_id }, true)[0];
 
                         if (!module)
                             return;
@@ -111,7 +111,7 @@ angular.module('primeapps')
                     return dueDateItems;
                 },
 
-                processWorkflow: function (workflow, module, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, dynamicprocessModules) {
+                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, dynamicprocessModules) {
 
                     var workflowModel = {};
                     workflowModel.id = workflow.id;
@@ -143,7 +143,7 @@ angular.module('primeapps')
 
                         var lookupField = processApproverField[0].split('.');
                         var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
-                        var approverModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                        var approverModule = $filter('filter')(modules, { name: lookupModule.lookup_type }, true)[0];
                         ModuleService.getModuleFields(approverModule.name)
                             .then(function (response1) {
                                 if (response1.data) {
@@ -158,7 +158,7 @@ angular.module('primeapps')
                                 moduleObj.id = paramModule.id;
                                 workflowModel.firstApproverModule = moduleObj;
                                 workflowModel.first_approver_lookup = $filter('filter')(approverModule.fields, { name: lookupField[1] }, true)[0];
-                                var firstDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.first_approver_lookup.lookup_type }, true)[0];
+                                var firstDynamicApproverFields = $filter('filter')(modules, { name: workflowModel.first_approver_lookup.lookup_type }, true)[0];
                                 ModuleService.getModuleFields(firstDynamicApproverFields.name)
                                     .then(function (response2) {
                                         if (response2.data) {
@@ -170,7 +170,7 @@ angular.module('primeapps')
                                             var secondModuleObj = {};
                                             var secondLookupField = processApproverField[1].split('.');
                                             var secondLookupModule = $filter('filter')(workflowModel.module.fields, { name: secondLookupField[0] }, true)[0];
-                                            var secondApproverModule = $filter('filter')($rootScope.modules, { name: secondLookupModule.lookup_type }, true)[0];
+                                            var secondApproverModule = $filter('filter')(modules, { name: secondLookupModule.lookup_type }, true)[0];
                                             ModuleService.getModuleFields(secondApproverModule.name)
                                                 .then(function (response3) {
                                                     if (response3.data) {
@@ -185,7 +185,7 @@ angular.module('primeapps')
                                                     secondModuleObj.id = secondParamModule.id;
                                                     workflowModel.secondApproverModule = secondModuleObj;
                                                     workflowModel.second_approver_lookup = $filter('filter')(secondApproverModule.fields, { name: secondLookupField[1] }, true)[0];
-                                                    var secondDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.second_approver_lookup.lookup_type }, true)[0];
+                                                    var secondDynamicApproverFields = $filter('filter')(modules, { name: workflowModel.second_approver_lookup.lookup_type }, true)[0];
                                                     workflowModel.second_approver_field = $filter('filter')(secondDynamicApproverFields.fields, { name: secondLookupField[2] }, true)[0];
 
                                                 });
@@ -308,7 +308,7 @@ angular.module('primeapps')
                             if (!filterItem.field || !filterItem.operator)
                                 return;
 
-                            if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value == null || filterItem.value == undefined))
+                            if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value === null || filterItem.value === undefined))
                                 return;
 
                             var field = filterItem.field;
@@ -335,7 +335,7 @@ angular.module('primeapps')
                                     filter.value = value.slice(0, -1);
                                 }
 
-                                if (field.data_type === 'lookup' && field.lookup_type != 'users')
+                                if (field.data_type === 'lookup' && field.lookup_type !== 'users')
                                     filter.value = filter.value.id;
 
                                 if (field.data_type === 'lookup' && field.lookup_type === 'users')
@@ -362,6 +362,4 @@ angular.module('primeapps')
                 }
             };
         }]);
-
-angular.module('primeapps')
 

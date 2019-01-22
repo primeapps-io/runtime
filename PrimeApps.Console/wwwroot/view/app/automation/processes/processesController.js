@@ -183,7 +183,7 @@ angular.module('primeapps')
                                             $scope.filteredModules = $scope.$parent.modules;
                                             $scope.picklistsModule = picklists;
                                             $scope.getDynamicProcessModules($scope.module, workflow, true);
-                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
+                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $scope.$parent.modules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
                                             $scope.getUpdatableModules();
                                             $scope.generateHookModules(workflow);
                                             $scope.firstApproverLookupChange(true, workflow);
@@ -854,7 +854,7 @@ angular.module('primeapps')
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
 
-                $scope.processes = [];
+                //$scope.processes = [];
                 $scope.id = null;
                 $scope.workflowModel = {};
                 $scope.workflowModel.active = true;

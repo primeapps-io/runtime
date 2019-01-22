@@ -497,7 +497,7 @@ button, select {
     -webkit-box-shadow: none; }
   .primeapps .modal .megalist {
     display: flex; }
-    .primeapps .modal .megalist div {
+    .primeapps .modal .megalist>div {
       width: 100%; }
       .primeapps .modal .megalist div.modal-menu {
         width: auto;
