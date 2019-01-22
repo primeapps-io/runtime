@@ -1,25 +1,32 @@
-﻿<div class="modal setup-modal" tabindex="-1" role="dialog">
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form ng-show="!showNewCollaboratorInfo" name="newCollaboratorForm" class="form-horizontal form-custom" ng-submit="save(newCollaboratorForm);" autocomplete="off"
           novalidate>
 
         <div class="modal-header">
-            <div class="col-sm-6"><h4 class="modal-title">New Collaborator</h4></div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button ng-disabled="submitting" type="button" class="btn btn-radius btn-gray "
-                        ng-click="addNewCollaboratorModal.hide();">
-                    <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button ladda="submitting" type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px"
-                        ng-click="MinMaxValue()">
-                    <i class="fas fa-save margin-right-10"></i>
-                    {{'Common.Save' | translate}}
-                </button>
+            <div class="flex-between">
+                <h4 class="modal-title">New Collaborator</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button ng-disabled="submitting" type="button" class="btn add-button btn-radius btn-gray "
+                                    ng-click="addNewCollaboratorModal.hide();">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button ladda="submitting" type="submit" class="btn add-button btn-radius btn-blue " style="margin-left: 5px"
+                                    ng-click="MinMaxValue()">
+                                <i class="fas fa-save margin-right-10"></i>
+                                {{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
         </div>
-        <div class="modal-dialog modal-600">
+        <div class="modal-dialog">
             <div class="modal-content padding-0">
-
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
@@ -101,7 +108,7 @@
                     <button type="submit" class="btn btn-primary btn-w-lg"><i class="fa fa-check-circle pull-left"></i>Send Email</button>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
