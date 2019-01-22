@@ -48,7 +48,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Workflow>> Find(PaginationModel paginationModel)
         {
-            var rules = await DbContext.Workflows.OrderByDescending(x => x.Id)
+            var rules = await DbContext.Workflows.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit).ToListAsync();
 

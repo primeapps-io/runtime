@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";
             $rootScope.breadcrumblist[2].title = 'Workflows';
-            
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -47,7 +47,7 @@ angular.module('primeapps')
             });
 
             $scope.changePage = function (page) {
-                $scope.loading = true; 
+                $scope.loading = true;
                 $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
@@ -112,9 +112,27 @@ angular.module('primeapps')
                 $scope.formModal.hide();
             };
 
-            $scope.deleteSelectedItem = function () {
-
-
+            $scope.delete = function (id) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure that you want to delete this workflow ?",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Okey'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        WorkflowsService.delete(id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    $scope.cancel();
+                                    $scope.id = null;
+                                    //$state.reload();
+                                    $scope.changePage(1);
+                                    swal("Deleted!", "Workflow has been deleted!", "success");
+                                }
+                            });
+                    }
+                });
             };
 
             //Modal End

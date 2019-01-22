@@ -1,11 +1,10 @@
 <div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
-    <form name="formname" class="form-horizontal form-custom" ng-submit="save(formname);" autocomplete="off" novalidate>
+    
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Modal title  </h4>
+                <h4 class="modal-title">{{'Setup.Nav.ApprovelProcess' | translate}}</h4>
                 <div>
-                    <ul class="list-unstyled list-inline">
-					<!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                    <ul class="list-unstyled list-inline"> 
                         <li><button type="button" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
                         <li><button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                     </ul>
@@ -18,9 +17,10 @@
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <!-- Burası tab item  -->
-                                <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(formname) ? wizardStep = 0 : false">...</a></li>
-                                <li>...</li>
+                                <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.Workflow.ApprovelProcess.RuleInformation' | translate}}</a></li>
+                                <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
+                                <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</a></li>
+                                <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.ApprovelProcess.SummaryAndConfirmation' | translate}}</a></li>
                             </ul>
                         </div>
                         <div>
@@ -30,6 +30,5 @@
                 </div>
             </div>
         </div>
-    </form>
 </div>
 

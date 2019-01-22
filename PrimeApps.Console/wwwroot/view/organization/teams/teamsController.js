@@ -263,8 +263,8 @@ angular.module('primeapps')
                                 getToastMsg('Common.Error', 'danger');
                             });
                     }
-                })
-            }
+                });
+            };
 
             $scope.deleteUser = function (id) {
                 swal({

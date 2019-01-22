@@ -5,8 +5,6 @@ angular.module('primeapps')
     .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
-            //$scope.$parent.modules = $http.get(config.apiUrl + 'module/get_all');
-
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
@@ -42,12 +40,7 @@ angular.module('primeapps')
 
             var activityModule = $filter('filter')($scope.$parent.modules, { name: 'activities' }, true)[0];
 
-            ModuleService.getModuleFields(activityModule.name)
-                .then(function (response) {
-                    if (response) {
-                        activityModule.fields = response.data;
-                    }
-                });
+
 
             //Pagening Start
             $scope.requestModel = { //default page value
@@ -56,13 +49,14 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
-            ProcessesService.count($rootScope.currenOrgId).then(function (response) {
-                $scope.pageTotal = response.data;
-            });
 
             ProcessesService.find($scope.requestModel, $rootScope.currenOrgId).then(function (response) {
                 if (response.data) {
                     var data = fillModule(response.data);
+
+                    ProcessesService.count($rootScope.currenOrgId).then(function (response) {
+                        $scope.pageTotal = response.data;
+                    });
 
                     $scope.processes = data;
                     $scope.loading = false;
@@ -71,7 +65,6 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
-                $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -109,16 +102,19 @@ angular.module('primeapps')
             var setTaskFields = function () {
                 $scope.taskFields = {};
 
-                if (!activityModule.fields)
-                    return;
-
-                $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+                ModuleService.getModuleFields(activityModule.name)
+                    .then(function (response) {
+                        if (response) {
+                            activityModule.fields = response.data;
+                            $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+                            $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+                            $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+                            $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+                            $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+                            $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+                            $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+                        }
+                    });
             };
 
             setTaskFields();
@@ -284,7 +280,7 @@ angular.module('primeapps')
                 if (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') {
                     filterValue = filter.value[0].full_name;
                 }
-                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') {
+                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
                     filterValue = filter.value.primary_value;
                 }
                 else if (filter.field.data_type === 'picklist') {
@@ -369,7 +365,7 @@ angular.module('primeapps')
                         if (!id)
                             return;
 
-                        if (filter.field.lookup_type === 'users' && id == 0) {
+                        if (filter.field.lookup_type === 'users' && id === 0) {
                             var user = {};
                             user.id = 0;
                             user.email = '[me]';
@@ -503,7 +499,7 @@ angular.module('primeapps')
                             processObj.systemName = field.name;
                             processObj.id = id;
                         } else {
-                            tempModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            var tempModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
                             processObj.module = tempModule;
 
                             ModuleService.getModuleFields(tempModule.name)
@@ -819,10 +815,24 @@ angular.module('primeapps')
                             ngToast.create({ content: $filter('translate')('Setup.Workflow.ProcessCanNotDelete'), className: 'danger' });
                             $scope.loading = false;
                         } else {
-                            ProcessesService.delete(id)
-                                .then(function () {
-                                    $socpe.changeOffset(1);
-                                });
+                            swal({
+                                title: "Are you sure?",
+                                text: "Are you sure that you want to delete this approval process ?",
+                                icon: "warning",
+                                buttons: ['Cancel', 'Okey'],
+                                dangerMode: true
+                            }).then(function (value) {
+                                if (value) {
+                                    ProcessesService.delete(id)
+                                        .then(function () {
+                                            swal("Deleted!", "Approval process has been deleted!", "success");
+                                            $scope.cancel();
+                                            $scope.id = null;
+                                           // $state.reload();
+                                            $scope.changePage(1);
+                                        });
+                                }
+                            });
                         }
                     });
             };

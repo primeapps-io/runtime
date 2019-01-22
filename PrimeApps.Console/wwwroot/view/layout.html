@@ -5,12 +5,19 @@
                 <ul class="breadcrumb">
                     <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
                         <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
-                        <a  href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
+                        <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
                     <li>
                 </ul>
 
             </div>
             <ul class="nav navbar-nav navbar-right">
+                <li style="margin-left:  10px" ng-if="currenAppId">
+                    <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
+                            class="btn btn-radius btn-blue">
+                        <i class="fas fa-eye"></i>
+                        <span>Preview</span>
+                    </button>
+                </li>
                 <li>
                     <button style="border:none" type="button" class="rigth-oval-toolbar-item"
                             aria-hidden="true"
@@ -73,7 +80,7 @@
                 <a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"
                    href="#"><i class="fas fa-home"></i> <span>All Apps</span></a>
             </li>
-            <li class="sidebar-li" ng-repeat="organization in organizations"
+            <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
                 <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
                    data-placement="right"

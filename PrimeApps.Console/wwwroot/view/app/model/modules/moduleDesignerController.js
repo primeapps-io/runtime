@@ -4,15 +4,13 @@ angular.module('primeapps')
 
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, ngToast, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
-            $scope.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'ss';
-            $scope.tabTitle = 'ss';
+
             $rootScope.subtoggleClass = 'full-toggled2';
             $rootScope.toggleClass = 'toggled full-toggled';
             $rootScope.breadcrumblist[2].title = 'Module Designer';
-            
+            $scope.loading = true;
 
-            
+
             $scope.templatesFields = ModuleService.getTemplateFields();
 
             $scope.id = $location.search().id;
@@ -320,7 +318,7 @@ angular.module('primeapps')
                     });
 
                 $scope.currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
-
+                $scope.loading = false;
             };
 
             if (!$scope.id && !$scope.clone) {
@@ -414,6 +412,7 @@ angular.module('primeapps')
 
 
                     $scope.initModuleDesginer();
+
 
                 });
 
@@ -1411,7 +1410,7 @@ angular.module('primeapps')
                     resultPromise = ModuleService.moduleCreate(moduleModel);
                 }
                 else {
-                     resultPromise = ModuleService.update(moduleModel, moduleModel.id);
+                    resultPromise = ModuleService.update(moduleModel, moduleModel.id);
                 }
 
                 resultPromise
