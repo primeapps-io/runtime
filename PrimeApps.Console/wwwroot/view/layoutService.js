@@ -65,7 +65,7 @@ angular.module('primeapps')
                             if (profile.is_persistent && !profile.has_admin_rights)
                                 profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var sectionPermission = $filter('filter')(sectionPermissions, { profile_id: profile.id }, true)[0];
+                            var sectionPermission = $filter('filter')(sectionPermissions, {profile_id: profile.id}, true)[0];
 
                             if (!sectionPermission) {
                                 section.permissions.push({
@@ -99,19 +99,19 @@ angular.module('primeapps')
                         field.label = field['label_' + $rootScope.language];
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
-                        field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
+                        field.sectionObj = $filter('filter')(module.sections, {name: field.section}, true)[0];
 
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
-                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
 
                                 if (!lookupModule)
                                     continue;
 
-                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
+                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
 
                                 if (!field.lookupModulePrimaryField)
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
                                 var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
@@ -128,16 +128,16 @@ angular.module('primeapps')
                                 field.operators.push(operators.not_empty);
 
                                 if (field.lookup_type === 'users') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                                 else if (field.lookup_type === 'profiles') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                                 else if (field.lookup_type === 'roles') {
-                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                             }
 
@@ -177,7 +177,7 @@ angular.module('primeapps')
                             if (profileItem.is_persistent && !profileItem.has_admin_rights)
                                 profileItem.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.id }, true)[0];
+                            var fieldPermission = $filter('filter')(fieldPermissions, {profile_id: profileItem.id}, true)[0];
 
                             if (!fieldPermission)
                                 field.permissions.push({
@@ -273,7 +273,7 @@ angular.module('primeapps')
                         $rootScope.appProfiles = response[1].data;
                         var result = response[2];
                         $rootScope.currentApp = result.data;
-                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentApp.organization_id })[0];
+                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentApp.organization_id) } ,true)[0];
 
                         if (!angular.isArray($rootScope.breadcrumblist))
                             $rootScope.breadcrumblist = [{}, {}, {}];
