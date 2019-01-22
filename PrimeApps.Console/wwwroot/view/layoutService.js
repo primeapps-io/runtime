@@ -255,6 +255,7 @@ angular.module('primeapps')
 
                     return module;
                 },
+
                 getAppData: function (appId) {
                     var promises = [];
                     promises.push($http.get(config.apiUrl + 'module/get_all_basic'));

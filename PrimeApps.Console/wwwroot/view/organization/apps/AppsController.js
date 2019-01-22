@@ -7,7 +7,7 @@ angular.module('primeapps')
 
             $scope.loading = true;
 
-            $rootScope.currenOrgId = parseInt($stateParams.organizationId);
+            $rootScope.currentOrgId = parseInt($stateParams.organizationId);
 
             if (!$rootScope.currenOrgId) {
                 $state.go('studio.allApps');

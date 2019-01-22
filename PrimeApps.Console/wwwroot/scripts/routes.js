@@ -54,6 +54,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/apps/appsService.js',
@@ -72,20 +73,6 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
-                            function ($rootScope, $q, $state, $stateParams, $filter) {
-                                $rootScope.currentOrgId = parseInt($stateParams.organizationId);
-
-                                if (!$rootScope.currentOrgId) {
-                                    $state.go('studio.allApps');
-                                }
-
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
-
-                                if (!$rootScope.currentOrganization) {
-                                    $state.go('studio.allApps');
-                                }
-                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/appform/appFormService.js',
@@ -219,13 +206,13 @@ angular.module('primeapps')
                     resolve: {
                         start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
                             function ($rootScope, $q, $state, $stateParams, $filter) {
-                                $rootScope.currentOrgId = parseInt($stateParams.organizationId);
+                                $rootScope.currenOrgId = parseInt($stateParams.organizationId);
 
-                                if (!$rootScope.currentOrgId) {
+                                if (!$rootScope.currenOrgId) {
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currenOrgId})[0];
 
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
@@ -285,11 +272,9 @@ angular.module('primeapps')
                         start: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter',
                             function ($rootScope, LayoutService, $stateParams, $state, $filter) {
                                 $rootScope.currentAppId = parseInt($stateParams.appId);
-                                $rootScope.currentOrgId = parseInt($stateParams.orgId);
+                                $rootScope.currenOrgId = parseInt($stateParams.orgId);
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
-
-                                return LayoutService.getAppData($rootScope.currentAppId);
+                                LayoutService.getAppData($rootScope.currentAppId);
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([

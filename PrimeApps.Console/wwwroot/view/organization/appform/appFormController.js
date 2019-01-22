@@ -2,11 +2,20 @@
 
 angular.module('primeapps')
 
-    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast) {
+    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast','$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast,$stateParams) {
             $scope.appModel = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
+
+            $rootScope.currenOrgId = parseInt($stateParams.organizationId);
+            if ($rootScope.organizations)
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currenOrgId)},true)[0];
+
+
+            $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
+            $rootScope.breadcrumblist[1] = {};
+            $rootScope.breadcrumblist[2] = {};
 
             var uploader = $scope.uploader = new FileUploader({
                 url: 'upload.php'

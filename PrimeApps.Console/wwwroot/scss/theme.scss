@@ -307,7 +307,8 @@ button, select {
     background-color: #fff;
     padding-top: 15px;
     padding-bottom: 15px;
-
+    position: sticky;
+    top: 5%;
     .template-field-box {
       border: 1px dotted #fff;
       cursor: move;
@@ -1993,7 +1994,8 @@ button, select {
         width: 250px;
         padding-left: 15px;
         padding-right: 15px;
-
+        position: sticky;
+        top: 5%;
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
