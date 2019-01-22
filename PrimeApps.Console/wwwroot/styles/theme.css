@@ -8,8 +8,10 @@
   clear: both;
 }
 
-.newstyleinput {
-  padding-left: 30px;
+.newinput {
+  padding-left: 23px !important;
+  padding-right: 20px !important;
+  line-height: 20px;
   position: relative;
   cursor: pointer;
   -webkit-user-select: none;
@@ -17,12 +19,14 @@
   -ms-user-select: none;
   user-select: none;
 }
-.newstyleinput input {
+.newinput input[type=radio] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+  height: 0;
+  width: 0;
 }
-.newstyleinput input[type=radio] ~ span {
+.newinput input[type=radio] ~ span {
   position: absolute;
   top: 0;
   left: 0;
@@ -31,12 +35,72 @@
   background-color: #eee;
   border-radius: 50%;
 }
-.newstyleinput:hover input ~ span {
+.newinput input[type=radio] ~ span:after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 7px !important;
+  left: 7px !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50%;
+  background: white;
+}
+.newinput input[type=radio]:checked ~ span {
+  background-color: #0D6FAA;
+}
+.newinput input[type=radio]:checked ~ span:after {
+  display: block;
+}
+.newinput input[type=checkbox] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.newinput input[type=checkbox] ~ span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border-radius: 2px;
+}
+.newinput input[type=checkbox] ~ span:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px !important;
+  top: 3px !important;
+  width: 6px !important;
+  height: 12px !important;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.newinput input[type=checkbox]:checked ~ span {
+  background-color: #0D6FAA;
+}
+.newinput input[type=checkbox]:checked ~ span:after {
+  display: block;
+}
+.newinput:hover input[type=radio] ~ span {
   background-color: #ccc;
 }
-.newstyleinput input[type=radio]:checked ~ span {
-  background-color: #2196F3;
+.newinput:hover input[type=radio]:checked ~ span {
+  background-color: #0D6FAA;
 }
+.newinput:hover input[type=checkbox] ~ span {
+  background-color: #ccc;
+}
+.newinput:hover input[type=checkbox]:checked ~ span {
+  background-color: #0D6FAA;
+}
+
 button, select {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
@@ -598,6 +662,7 @@ button:focus, select:focus {
 }
 .primeapps .modal .panel {
   -webkit-box-shadow: none;
+  margin-bottom: 0px;
 }
 .primeapps .modal .megalist {
   display: flex;
@@ -649,6 +714,10 @@ button:focus, select:focus {
 }
 .primeapps .modal .megalist > div.modal-menu ul li a:hover {
   color: rgba(0, 0, 0, 0.75);
+}
+.primeapps .modal .megalist > div.modal-menu ul li ul {
+  list-style-type: none;
+  padding-left: 10px;
 }
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
@@ -702,10 +771,6 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
-  height: 80vh;
-}
-.primeapps .setup-modal .modal-content .form-custom, .primeapps .module-modal .modal-content .form-custom {
-  margin-bottom: 100px;
 }
 .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
   padding-top: 7px;
