@@ -272,5 +272,7 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Users.Include(x => x.Setting).SingleOrDefault(x => x.Email == email);
         }
+
+
     }
 }

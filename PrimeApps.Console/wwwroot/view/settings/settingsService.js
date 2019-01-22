@@ -6,19 +6,19 @@ angular.module('primeapps')
             return {
 
                 editUser: function (user) {
-                    return $http.post(config.apiUrl + 'User/Edit', {
-                        id: user.id,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
+                    return $http.put(config.apiUrl + 'user/edit', {
+                        //id: user.id,
+                        first_name: user.firstName,
+                        last_name: user.lastName,
                         email: user.email,
-                        password: user.password,
-                        picture: user.picture,
-                        phone: user.phone
+                        // password: user.password,
+                        //picture: user.picture,
+                        // phone: user.phone
                     });
                 },
 
                 removeUser: function (password) {
-                    return $http.post(config.apiUrl + 'User/Remove', angular.toJson(password));
+                    return $http.post(config.apiUrl + 'user/change_password', angular.toJson(password));
                 },
 
                 changePassword: function (currentPassword, newPassword, confirmPassword) {
