@@ -12,7 +12,9 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -96,5 +98,31 @@ namespace PrimeApps.Console.Controllers
 
             return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
         }
-    }
+
+		[Route("change_password")]
+		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
+		{
+			if (HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
+				return Unauthorized();
+
+			changePasswordBindingModel.Email = HttpContext.User.FindFirst("email").Value;
+
+			var appInfo = await _applicationRepository.Get(Request.Host.Value);
+			using (var httpClient = new HttpClient())
+			{
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/change_password?client=" + appInfo.Name;
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+				var json = JsonConvert.SerializeObject(changePasswordBindingModel);
+				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+				if (!response.IsSuccessStatusCode)
+					return BadRequest(response);
+			}
+
+			return Ok();
+		}
+	}
 }
