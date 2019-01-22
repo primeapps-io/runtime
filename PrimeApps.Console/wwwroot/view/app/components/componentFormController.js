@@ -7,7 +7,6 @@ angular.module('primeapps')
             $scope.modules = [];
             $scope.id = $state.params.id;
 
-            $scope.$parent.menuTopTitle = "App 1";
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
             $scope.componentPlaces = componentPlaces;
