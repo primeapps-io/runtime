@@ -1,3 +1,20 @@
+.scroll-style-4::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+.scroll-style-4::-webkit-scrollbar {
+  width: 7px;
+  background-color: #F5F5F5;
+}
+
+.scroll-style-4::-webkit-scrollbar-thumb {
+  background-color: #0D6FAA;
+  border: 0px solid #555555;
+  border-radius: 5px;
+}
+
 .wrt:before,
 .wrt:after {
   content: " ";
@@ -388,7 +405,7 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #2DABE1;
+  background: #f6f5f2;
 }
 .primeapps .page-loading i {
   font-size: 50px;
@@ -659,6 +676,7 @@ button:focus, select:focus {
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 10px;
+  margin-bottom: 20px;
 }
 .primeapps .modal .panel {
   -webkit-box-shadow: none;
