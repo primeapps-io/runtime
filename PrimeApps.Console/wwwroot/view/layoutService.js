@@ -6,10 +6,11 @@ angular.module('primeapps')
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
                 getAll: function () {
+                    var deferred = $q.defer();
                     var promises = [];
                     promises.push($http.get(config.apiUrl + 'user/me'));
                     promises.push($http.get(config.apiUrl + 'user/organizations'));
-                    return $q.all(promises).then(function (response) {
+                    $q.all(promises).then(function (response) {
                         $rootScope.me = response[0].data;
                         $rootScope.organizations = response[1].data;
 
@@ -17,7 +18,11 @@ angular.module('primeapps')
                             $rootScope.breadcrumblist = [{}, {}, {}];
                         }
                         helper.hideLoader();
+                        deferred.resolve(true);
+                        return deferred.promise;
                     });
+
+                    return deferred.promise;
                 },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
@@ -256,11 +261,12 @@ angular.module('primeapps')
                     return module;
                 },
 
-                getAppData: function (appId) {
+                getAppData: function () {
                     var promises = [];
+                    var deferred = $q.defer();
                     promises.push($http.get(config.apiUrl + 'module/get_all_basic'));
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
-                    promises.push($http.get(config.apiUrl + "app/get/" + appId));
+                    promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
 
                     return $q.all(promises).then(function (response) {
                         $rootScope.appModules = response[0].data;
@@ -281,10 +287,11 @@ angular.module('primeapps')
                         };
 
                         $rootScope.menuTopTitle = $rootScope.currentApp.label;
-
+                        deferred.resolve(true);
+                        return deferred.promise;
                     });
 
-
+                    return deferred.promise;
                 }
             };
         }]);

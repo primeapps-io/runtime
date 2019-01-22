@@ -274,7 +274,7 @@ angular.module('primeapps')
                                 $rootScope.currentAppId = parseInt($stateParams.appId);
                                 $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
-                                return LayoutService.getAppData($rootScope.currentAppId);
+                                return LayoutService.getAppData();
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([

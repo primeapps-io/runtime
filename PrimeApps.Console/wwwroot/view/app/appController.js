@@ -5,8 +5,6 @@ angular.module('primeapps')
     .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q', '$window',
         function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q, $window) {
 
-
-
             if (!$rootScope.currentAppId) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('studio.allApps');
