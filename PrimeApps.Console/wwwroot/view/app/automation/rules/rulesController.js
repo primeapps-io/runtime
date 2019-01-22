@@ -78,13 +78,14 @@ angular.module('primeapps')
                             $scope.pageTotal = response.data;
                         });
 
-                        RulesService.find($scope.requestModel, organitzationId).then(function (response) {
-                            if (response.data) {
-                                var data = fillModule(response.data);
-                                $scope.rules = data;
+                        RulesService.find($scope.requestModel, $rootScope.currenOrgId)
+                            .then(function (response) {
+                                if (response.data) {
+                                    var data = fillModule(response.data);
+                                    $scope.rules = data;
 
-                            }
-                        });
+                                }
+                            });
 
                         $scope.changePage = function (page) {
                             $scope.loading = true;
