@@ -62,9 +62,9 @@
                                     {{'Common.Edit' | translate}}
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" confirm-click action="delete(workflow.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                    {{'Common.Remove' | translate}}
+                            <li> 
+                                <a ng-click="$event.stopPropagation();delete(workflow.id);">
+                                    {{'Common.Delete' | translate}}
                                 </a>
                             </li>
 

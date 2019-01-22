@@ -76,6 +76,60 @@
 
         var loaderDiv = document.getElementById('loader');
         loaderDiv.style.display = 'block';
+        "use strict";
+
+// a few helper functions...
+
+// for creating the inner elements of an SVG, https://developer.mozilla.org/en-US/docs/Web/API/Document/createElementNS
+        var createSVGElement = function createSVGElement(s) {
+            return document.createElementNS("http://www.w3.org/2000/svg", s);
+        };
+
+// alias the querySelector
+        var $ = function $(s) {
+            return document.querySelector(s);
+        };
+
+
+        var randomRange = function randomRange(min, max) {
+            return Math.random() * (max - min) + min;
+        };
+
+        var createCircle = function createCircle() {
+            var $circle = createSVGElement("circle");
+            $circle.setAttribute("r", randomRange(0.5, 2));
+            $circle.setAttribute("fill", "#AAB7C4");
+            $circle.setAttribute("cx", randomRange(0, 75));
+            $circle.setAttribute("cy", randomRange(0, 75));
+            return $circle;
+        };
+
+
+        var $rocket = $("#rocket-icon");
+        var $top = $rocket.querySelector("*");
+        var $flame = $(".flame");
+
+        var flicker = Array.from({ length: 20 }).map(function () {
+            return {
+                transform: "scale(" + randomRange(0.9, 1.52) + ", " + randomRange(0.9, 1.2) + ")"
+            };
+        });
+        $flame.animate(flicker, { duration: 750, iterations: Infinity });
+
+        var $stars = Array.from({ length: 10 }).map(function () {
+            return createCircle();
+        });
+        $stars.forEach(function ($star) {
+            return $rocket.insertBefore($star, $top);
+        });
+
+
+        var across = [{ cx: "75px", fillOpacity: 0 }, { fillOpacity: 1 }, { cx: "0", fillOpacity: 0 }];
+        $stars.forEach(function ($star) {
+            var duration = randomRange(50, 1000);
+            $star.animate(across, { duration: duration, iterations: Infinity });
+        });
+
     </script>
     <environment include="Development">
         <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>

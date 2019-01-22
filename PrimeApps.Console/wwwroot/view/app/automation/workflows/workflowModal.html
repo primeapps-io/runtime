@@ -7,7 +7,7 @@
             <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="cancel();">
                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
             </button>
-            <button type="button" class="btn btn-radius btn-blue" ng-click="saveNodeData();" style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
+            <button type="button" class="btn btn-radius btn-blue" ng-click="saveNodeData();" style="margin-left: 5px" ladda="saving">
                 <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
             </button>
         </div>

@@ -48,7 +48,7 @@
                 <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button type="button" data-toggle="dropdown"
+                        <button type="button" ng-click="$event.stopPropagation();" data-toggle="dropdown"
                                 class="btn btn-xs btn-default list-action-button"
                                 placement="bottom-right"
                                 data-animation="am-flip-x"
@@ -62,9 +62,9 @@
                                     {{'Common.Edit' | translate}}
                                 </a>
                             </li>
-                            <li>
-                                <a href confirm-click action="delete(process.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                    {{'Common.Remove' | translate}}
+                            <li> 
+                                <a ng-click="$event.stopPropagation();delete(process.id);">
+                                    {{'Common.Delete' | translate}}
                                 </a>
                             </li>
 
