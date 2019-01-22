@@ -71,7 +71,7 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($scope.$parent.modules, { id: moduleId }, true)[0];
+                    var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
                     data[i].module = angular.copy(module);
                 }
 

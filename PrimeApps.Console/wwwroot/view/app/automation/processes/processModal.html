@@ -5,8 +5,8 @@
             <h4 class="modal-title">{{'Setup.Nav.ApprovelProcess' | translate}}</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button"  ng-click="cancel();" ng-disabled="saving" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                    <li><button type="button" ng-click="save();" ladda="saving"  class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
