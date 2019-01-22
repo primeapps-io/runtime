@@ -423,12 +423,12 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'view/get_all/');
                 },
 
-                count: function () {
-                    return $http.get(config.apiUrl + 'view/count');
+                count: function (id) {
+                    return $http.get(config.apiUrl + 'view/count/' + id);
                 },
 
-                find: function (data) {
-                    return $http.post(config.apiUrl + 'view/find', data);
+                find: function (id, data) {
+                    return $http.post(config.apiUrl + 'view/find/' + id, data);
                 },
 
                 setViewState: function (viewState, moduleId, id) {

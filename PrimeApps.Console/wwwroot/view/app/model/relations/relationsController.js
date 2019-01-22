@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService) {
+    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService','$location',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService,$location) {
 
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = "model";
@@ -21,16 +21,18 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
+            $scope.id = $location.search().id ? $location.search().id : 0;
+
             $scope.loading = true;
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
             };
 
-            RelationsService.count().then(function (response) {
+            RelationsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
-            RelationsService.find($scope.requestModel).then(function (response) {
+            RelationsService.find($scope.id, $scope.requestModel).then(function (response) {
                 $scope.relations = response.data;
                 angular.forEach($scope.relations, function (relation) {
                     var relationField = $filter('filter')(relation.relation_module.fields, { name: relation.relation_field, deleted: false }, true)[0];
@@ -52,7 +54,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
 
-                RelationsService.find(requestModel).then(function (response) {
+                RelationsService.find($scope.id, requestModel).then(function (response) {
                     $scope.relations = response.data;
                     angular.forEach($scope.relations, function (relation) {
                         var relationField = $filter('filter')(relation.relation_module.fields, { name: relation.relation_field, deleted: false }, true)[0];

@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> UpdateViewState(ViewState viewState);
 		Task<int> DeleteViewShare(ViewShares view, TenantUser user);
 
-		Task<int> Count();
-		Task<ICollection<View>> Find(PaginationModel paginationModel);
+		Task<int> Count(int id);
+		Task<ICollection<View>> Find(int id, PaginationModel paginationModel);
 	}
 }

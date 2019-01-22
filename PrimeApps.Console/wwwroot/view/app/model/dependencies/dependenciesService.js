@@ -6,11 +6,11 @@ angular.module('primeapps')
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, activityTypes, yesNo, transactionTypes, ModuleService) {
 
             return {
-                count: function () {
-                    return $http.get(config.apiUrl + 'dependency/count');
+                count: function (id) {
+                    return $http.get(config.apiUrl + 'dependency/count/' + id);
                 },
-                find: function (data) {
-                    return $http.post(config.apiUrl + 'dependency/find', data);
+                find: function (id, data) {
+                    return $http.post(config.apiUrl + 'dependency/find/' + id, data);
                 },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);

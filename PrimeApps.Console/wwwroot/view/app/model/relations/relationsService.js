@@ -5,11 +5,11 @@ angular.module('primeapps')
     .factory('RelationsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
-                count: function () {
-                    return $http.get(config.apiUrl + 'relation/count');
+                count: function (id) {
+                    return $http.get(config.apiUrl + 'relation/count/' + id);
                 },
-                find: function (data) {
-                    return $http.post(config.apiUrl + 'relation/find', data);
+                find: function (id, data) {
+                    return $http.post(config.apiUrl + 'relation/find/' + id, data);
                 },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
@@ -789,7 +789,8 @@ angular.module('primeapps')
                             if (selectedFieldName) {
                                 selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
                             }
-                        } ;
+                        }
+                        ;
 
                         var newField = {};
                         newField.name = field.name;

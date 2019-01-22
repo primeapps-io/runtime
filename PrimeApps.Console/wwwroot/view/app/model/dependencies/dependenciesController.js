@@ -2,14 +2,16 @@
 
 angular.module('primeapps')
 
-    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService', 'ModuleService', '$timeout',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout) {
+    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService', 'ModuleService', '$timeout', '$location',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout, $location) {
 
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "dependencies";
 
             $rootScope.breadcrumblist[2].title = 'Dependencies';
+
+            $scope.id = $location.search().id ? $location.search().id : 0;
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -25,13 +27,13 @@ angular.module('primeapps')
 
             $scope.requestModel = {
                 limit: '10',
-                offset: 1
+                offset: 0
             };
 
-            DependenciesService.count().then(function (response) {
+            DependenciesService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
-            DependenciesService.find($scope.requestModel).then(function (response) {
+            DependenciesService.find($scope.id, $scope.requestModel).then(function (response) {
                 var dependencies = response.data;
                 $scope.dependencies = DependenciesService.processDependencies(dependencies);
                 $scope.dependenciesState = $scope.dependencies;
@@ -43,7 +45,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                DependenciesService.find(requestModel).then(function (response) {
+                DependenciesService.find($scope.id, requestModel).then(function (response) {
                     var dependencies = response.data;
                     $scope.dependencies = DependenciesService.processDependencies(dependencies);
                     $scope.dependenciesState = $scope.dependencies;

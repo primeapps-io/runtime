@@ -21,6 +21,8 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
+            $scope.id = $location.search().id ? $location.search().id : 0;
+
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.requestModel = {
@@ -28,11 +30,11 @@ angular.module('primeapps')
                 offset: 1
             };
 
-            FiltersService.count().then(function (response) {
+            FiltersService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            FiltersService.find($scope.requestModel).then(function (response) {
+            FiltersService.find($scope.id, $scope.requestModel).then(function (response) {
                 var customViews = angular.copy(response.data);
                 for (var i = customViews.length - 1; i >= 0; i--) {
                     var parentModule = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];
@@ -52,7 +54,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                FiltersService.find(requestModel).then(function (response) {
+                FiltersService.find($scope.id, requestModel).then(function (response) {
                     var customViews = angular.copy(response.data);
                     for (var i = customViews.length - 1; i >= 0; i--) {
                         var parentModule = $filter('filter')($scope.$parent.modules, { id: customViews[i].module_id }, true)[0];

@@ -340,7 +340,7 @@ angular.module('primeapps')
 
 
                 .state('studio.app.relations', {
-                    url: '/relations',
+                    url: '/relations?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/relations/relations.html',
@@ -359,7 +359,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.filters', {
-                    url: '/filters',
+                    url: '/filters?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/filters/filtersList.html',
@@ -378,7 +378,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.dependencies', {
-                    url: '/dependencies',
+                    url: '/dependencies?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/dependencies/dependencies.html',

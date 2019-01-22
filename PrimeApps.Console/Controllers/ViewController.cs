@@ -182,10 +182,10 @@ namespace PrimeApps.Console.Controllers
 			return Ok(viewStateEntity);
 		}
 
-		[Route("count"), HttpGet]
-		public async Task<IActionResult> Count()
+		[Route("count/{id:int}"), HttpGet]
+		public async Task<IActionResult> Count(int id)
 		{
-			var count = await _viewRepository.Count();
+			var count = await _viewRepository.Count(id);
 
 			if (count < 1)
 				return NotFound();
@@ -193,10 +193,10 @@ namespace PrimeApps.Console.Controllers
 			return Ok(count);
 		}
 
-		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		[Route("find/{id:int}"), HttpPost]
+		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
 		{
-			var views = await _viewRepository.Find(paginationModel);
+			var views = await _viewRepository.Find(id, paginationModel);
 
 			if (views == null)
 				return NotFound();

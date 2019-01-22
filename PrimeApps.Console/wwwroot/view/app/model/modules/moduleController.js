@@ -57,7 +57,7 @@ angular.module('primeapps')
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
                     scope: $scope,
-                    template: 'view/setup/modules/deleteForm.html',
+                    template: 'view/app/model/modules/deleteForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false

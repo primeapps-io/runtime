@@ -27,16 +27,20 @@ namespace PrimeApps.Model.Repositories
 			_warehouse = warehouse;
 		}
 
-		public async Task<int> Count()
+		public async Task<int> Count(int id)
 		{
-			var count =await DbContext.Dependencies
-			   .Where(x => !x.Deleted).CountAsync();
-			return count;
+			var count = DbContext.Dependencies
+			   .Where(x => !x.Deleted);
+
+			if (id > 0)
+				count = count.Where(x => x.ModuleId == id);
+
+			return await count.CountAsync();
 		}
 
-		public async Task<ICollection<Dependency>> Find(PaginationModel paginationModel)
+		public async Task<ICollection<Dependency>> Find(int id, PaginationModel paginationModel)
 		{
-			var dependencies = GetPaginationGQuery(paginationModel)
+			var dependencies = GetPaginationGQuery(id, paginationModel)
 				.Skip(paginationModel.Offset * paginationModel.Limit)
 				.Take(paginationModel.Limit).ToList();
 
@@ -100,12 +104,19 @@ namespace PrimeApps.Model.Repositories
 				.ThenInclude(x => x.Fields);
 		}
 
-		private IQueryable<Dependency> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+		private IQueryable<Dependency> GetPaginationGQuery(int id, PaginationModel paginationModel, bool withIncludes = true)
 		{
-			return DbContext.Dependencies
-				.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
-				.Include(dependency => dependency.Module).ThenInclude(module => module.Fields)
-				.Where(dependency => !dependency.Deleted).OrderByDescending(x => x.Id);
+			var dependencies = DbContext.Dependencies
+				.Where(dependency => !dependency.Deleted);
+
+			if (id > 0)
+				dependencies = dependencies.Where(x => x.ModuleId == id);
+
+			dependencies = dependencies.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
+									   .Include(dependency => dependency.Module).ThenInclude(module => module.Fields);
+
+			return dependencies.OrderByDescending(x => x.Id);
+
 		}
 	}
 }

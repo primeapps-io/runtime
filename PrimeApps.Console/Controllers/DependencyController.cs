@@ -50,20 +50,20 @@ namespace PrimeApps.Console.Controllers
 			base.OnActionExecuting(context);
 		}
 
-		[Route("count"), HttpGet]
-		public async Task<IActionResult> Count()
+		[Route("count/{id:int}"), HttpGet]
+		public async Task<IActionResult> Count(int id)
 		{
-			var count = await _dependencyRepository.Count();
+			var count = await _dependencyRepository.Count(id);
 
 			if (count < 1)
 				return Ok(null);
 
 			return Ok(count);
 		}
-		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		[Route("find/{id:int}"), HttpPost]
+		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
 		{
-			var dependencies = await _dependencyRepository.Find(paginationModel);
+			var dependencies = await _dependencyRepository.Find(id, paginationModel);
 
 			if (dependencies == null)
 				return Ok(null);

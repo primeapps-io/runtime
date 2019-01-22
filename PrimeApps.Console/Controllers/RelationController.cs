@@ -52,10 +52,10 @@ namespace PrimeApps.Console.Controllers
 			base.OnActionExecuting(context);
 		}
 
-		[Route("count"), HttpGet]
-		public async Task<IActionResult> Count()
+		[Route("count/{id:int}"), HttpGet]
+		public async Task<IActionResult> Count(int id)
 		{
-			var count = await _relationRepository.Count();
+			var count = await _relationRepository.Count(id);
 
 			if (count < 1)
 				return Ok(null);
@@ -63,10 +63,10 @@ namespace PrimeApps.Console.Controllers
 			return Ok(count);
 		}
 
-		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		[Route("find/{id:int}"), HttpPost]
+		public async Task<IActionResult> Find(int id,[FromBody]PaginationModel paginationModel)
 		{
-			var relations = await _relationRepository.Find(paginationModel);
+			var relations = await _relationRepository.Find(id,paginationModel);
 
 			if (relations == null)
 				return Ok(null);

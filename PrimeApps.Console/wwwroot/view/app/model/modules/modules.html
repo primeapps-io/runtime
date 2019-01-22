@@ -16,144 +16,146 @@
 
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th class="text-center" width="50">Icon</th>
-            <th>{{'Setup.Modules.Name' | translate}}</th>
-            <th>{{'Setup.Modules.Type' | translate}}</th>
-            <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
-            <th>{{'Setup.Modules.Sharing' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th class="text-center" width="50">Icon</th>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.Type' | translate}}</th>
+                <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
+                <th>{{'Setup.Modules.Sharing' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div>
-                    <div class="animated-background"></div>
-                </div>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
 
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
 
 
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th class="text-center" width="50">Icon</th>
-            <th>{{'Setup.Modules.Name' | translate}}</th>
-            <th>{{'Setup.Modules.Type' | translate}}</th>
-            <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
-            <th>{{'Setup.Modules.Sharing' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th class="text-center" width="50">Icon</th>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.Type' | translate}}</th>
+                <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
+                <th>{{'Setup.Modules.Sharing' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
-            ui-sref="studio.app.moduledesigner({id:module.id})">
-            <td class="text-center"><i
-                    class="{{module.menu_icon}}"></i></td>
-            <td>
+            <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
+                ui-sref="studio.app.moduledesigner({id:module.id})">
+                <td class="text-center"><i
+                        class="{{module.menu_icon}}"></i></td>
+                <td>
                 <span>
                     {{module['label_' + language + '_plural']}}
                 </span>
-                <span ng-if="user.isDemo && module.created_by_id!=user.ID">
+                    <span ng-if="user.isDemo && module.created_by_id!=user.ID">
                         {{module['label_' + language + '_plural']}}
                     </span>
-            </td>
-            <td>{{'Setup.Modules.Type-' + module.system_type
-                | translate}}
-            </td>
-            <td>{{module.display ? ('Common.Yes' |
-                translate) : ('Common.No' | translate)}}
-            </td>
-            <td>{{module.sharing === 'private' ?
-                ('Setup.Modules.SharingPrivate' | translate) :
-                ('Setup.Modules.SharingPublic' | translate)}}
-            </td>
-            <td class="text-center">
-                <!--<div class="action-buttons-block">-->
-                <!--<button ng-click="$event.stopPropagation(); delete(module)" type="button"-->
-                <!--class="action-buttons-delete">-->
-                <!--<i class="fas fa-trash"></i>-->
-                <!--</button>-->
-                <!--</div>-->
-                <!--<div class="action-buttons-block">-->
-                <!--<button ng-click="$event.stopPropagation();" type="button" class="action-buttons-edit"-->
-                <!--data-trigger="hover" data-type="info"-->
-                <!--data-title="Edit" bs-tooltip data-placement="top"-->
-                <!--placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"-->
-                <!--aria-expanded="false">-->
-                <!--<i class="fas fa-pen"></i>-->
-                <!--</button>-->
-                <!--</div>-->
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ui-sref="studio.app.moduledesigner({id:module.id})">
-                                {{'Common.Edit' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" confirm-click action="delete(relation)" placement="left"
-                               confirm-message="{{'Common.AreYouSure' | translate}}"
-                               confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                {{'Common.Remove' | translate}}
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#app/{{$root.currentPath.split('/')[2]}}/relations">
-                                {{'Setup.Modules.ModuleRelations' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation();"
-                               href="/#/org/{{orgId}}/app/{{appId}}/dependencies">
-                                {{'Setup.Modules.FieldsDependencies' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation();"
-                               href="/#/org/{{orgId}}/app/{{appId}}/buttons">
-                                {{'Setup.Modules.ActionButtons' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation();"
-                               href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{module.name}}">
-                                Modüle Profil Ayarları
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
+                </td>
+                <td>{{'Setup.Modules.Type-' + module.system_type
+                    | translate}}
+                </td>
+                <td>{{module.display ? ('Common.Yes' |
+                    translate) : ('Common.No' | translate)}}
+                </td>
+                <td>{{module.sharing === 'private' ?
+                    ('Setup.Modules.SharingPrivate' | translate) :
+                    ('Setup.Modules.SharingPublic' | translate)}}
+                </td>
+                <td class="text-center">
+                    <!--<div class="action-buttons-block">-->
+                    <!--<button ng-click="$event.stopPropagation(); delete(module)" type="button"-->
+                    <!--class="action-buttons-delete">-->
+                    <!--<i class="fas fa-trash"></i>-->
+                    <!--</button>-->
+                    <!--</div>-->
+                    <!--<div class="action-buttons-block">-->
+                    <!--<button ng-click="$event.stopPropagation();" type="button" class="action-buttons-edit"-->
+                    <!--data-trigger="hover" data-type="info"-->
+                    <!--data-title="Edit" bs-tooltip data-placement="top"-->
+                    <!--placement="bottom-right" data-animation="am-flip-x" bs-dropdownaria-haspopup="true"-->
+                    <!--aria-expanded="false">-->
+                    <!--<i class="fas fa-pen"></i>-->
+                    <!--</button>-->
+                    <!--</div>-->
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ui-sref="studio.app.moduledesigner({id:module.id})">
+                                    {{'Common.Edit' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation(); showDeleteForm(module);">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/#/org/{{orgId}}/app/{{appId}}/relations?id={{module.id}}">
+                                    {{'Setup.Modules.ModuleRelations' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation();"
+                                   href="/#/org/{{orgId}}/app/{{appId}}/dependencies?id={{module.id}}">
+                                    {{'Setup.Modules.FieldsDependencies' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/#/org/{{orgId}}/app/{{appId}}/filters?id={{module.id}}">
+                                    {{'Setup.Modules.TitleFilters' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation();"
+                                   href="/#/org/{{orgId}}/app/{{appId}}/actionButtons?id={{module.id}}">
+                                    {{'Setup.Modules.ActionButtons' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation();"
+                                   href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{module.name}}">
+                                    Modüle Profil Ayarları
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">

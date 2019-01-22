@@ -155,16 +155,20 @@ namespace PrimeApps.Model.Repositories
 			return await DbContext.SaveChangesAsync();
 		}
 
-		public async Task<int> Count()
+		public async Task<int> Count(int id)
 		{
-			var count = DbContext.Modules
-			   .Where(x => !x.Deleted).Count();
-			return count;
+			var count = DbContext.Views
+			   .Where(x => !x.Deleted);
+
+			if (id > 0)
+				count = count.Where(x => x.ModuleId == id);
+
+			return count.Count();
 		}
 
-		public async Task<ICollection<View>> Find(PaginationModel paginationModel)
+		public async Task<ICollection<View>> Find(int id, PaginationModel paginationModel)
 		{
-			var views = GetPaginationGQuery(paginationModel)
+			var views = GetPaginationGQuery(id, paginationModel)
 				.Skip(paginationModel.Offset * paginationModel.Limit)
 				.Take(paginationModel.Limit).ToList();
 
@@ -187,10 +191,14 @@ namespace PrimeApps.Model.Repositories
 
 		}
 
-		private IQueryable<View> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+		private IQueryable<View> GetPaginationGQuery(int id, PaginationModel paginationModel, bool withIncludes = true)
 		{
-			return DbContext.Views
-				 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
+			var views = DbContext.Views.Where(x => !x.Deleted);
+
+			if (id > 0)
+				views = views.Where(x => x.ModuleId == id);
+
+			return views.OrderByDescending(x => x.Id);
 
 		}
 	}
