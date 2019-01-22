@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q',
-        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q) {
+    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q', '$window',
+        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q, $window) {
 
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
@@ -49,7 +49,15 @@ angular.module('primeapps')
             $scope.getBasicModules();
 
             $scope.preview = function () {
-
+                $scope.previewActivating = true;
+                LayoutService.getPreviewToken()
+                    .then(function (response) {
+                        $scope.previewActivating = false;
+                        $window.open('http://localhost:5001?preview=' + encodeURIComponent(response.data), '_blank');
+                    })
+                    .catch(function (response) {
+                        $scope.previewActivating = false;
+                    });
             };
         }
     ]);

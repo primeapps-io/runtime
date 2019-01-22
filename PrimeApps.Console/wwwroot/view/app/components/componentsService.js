@@ -19,6 +19,9 @@ angular.module('primeapps')
                 },
                 getAllModulesBasic: function () {
                     return $http.get(config.apiUrl + 'module/get_all_basic');
+                },
+                getApp: function (id) {
+                    return $http.get(config.apiUrl + 'app/get/' + id);
                 }
             };
         }]);

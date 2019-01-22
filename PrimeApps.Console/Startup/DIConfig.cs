@@ -56,7 +56,8 @@ namespace PrimeApps.Console
 			services.AddScoped<IAuditLogHelper, AuditLogHelper>();
 			services.AddScoped<ICalculationHelper, CalculationHelper>();
 			services.AddScoped<IChangeLogHelper, ChangeLogHelper>();
-			services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
+            services.AddScoped<IFunctionHelper, FunctionHelper>();
+            services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
 			services.AddScoped<IWorkflowHelper, WorkflowHelper>();
 			services.AddScoped<IProcessHelper, ProcessHelper>();
 			services.AddScoped<IDocumentHelper, DocumentHelper>();

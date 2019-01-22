@@ -1,4 +1,3 @@
-<div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
 <div ng-if="!loading" class="tab-content">
     <div class="col-sm-12" style="border: none ;">
         <div class="setup-liste-header row">
@@ -28,7 +27,7 @@
                                 <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
                             </h3>
                             <div class="ui action small input" style="font-size: 17px;color: #4890bc;background: #f7f7f7 !important;padding: 18px;">
-                                {{giteaUrl}}/primeapps/test1.git
+                                {{giteaUrl}}/{{organization.name}}/test1.git
                             </div>
                         </div>
                         <div class="ui divider"></div>

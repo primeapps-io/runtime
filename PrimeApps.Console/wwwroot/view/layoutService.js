@@ -5,6 +5,20 @@ angular.module('primeapps')
     .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce',
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
+                getAll: function () {
+                    return $http.get(config.apiUrl + 'user/me')
+                        .then(function (response) {
+                            $rootScope.me = response.data;
+                            return $http.get(config.apiUrl + 'user/organizations')
+                                .then(function (response) {
+                                    if (response) {
+                                        $rootScope.organizations = response.data;
+                                        helper.hideLoader();
+                                    }
+                                })
+                        })
+
+                },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
                 },
@@ -17,9 +31,6 @@ angular.module('primeapps')
                 isOrganizationShortnameUnique: function (name) {
                     return $http.get(config.apiUrl + 'organization/is_unique_name?name=' + name);
                 },
-                getOrg: function (refresh) {
-
-                },
                 getAppInfo: function (appId) {
                     $http.get(config.apiUrl + "app/get/" + $scope.appId);
                 },
@@ -27,7 +38,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'module/get_all_basic');
                 },
                 getPreviewToken: function () {
-
+                    return $http.get(config.apiUrl + 'preview/key');
                 },
                 processModule: function (module) {
                     for (var i = 0; i < module.sections.length; i++) {

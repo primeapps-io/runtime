@@ -5,6 +5,7 @@
     /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
     var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
     var token = ViewBag.Token;
+    var giteaUrl = ViewBag.GiteaUrl;
 }
 
 <!DOCTYPE html>
@@ -70,6 +71,7 @@
         var tenantId = '0';
         var components = '';
         var isCustomDomain = false;
+        var giteaUrl = '@giteaUrl';
 
         document.body.className = 'primeapps';
         window.localStorage.setItem('theme', 'primeapps');
