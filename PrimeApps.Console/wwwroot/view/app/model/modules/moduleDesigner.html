@@ -42,10 +42,65 @@
     <div class="col-sm-9" style="border: none ;">
 
         <div class="panel panel-default setup-panel">
+            <div ng-if="loading">
+                <div class="panel-body">
+                    <div class="subpanel module-section">
+                        <h5 class="">
+                            <div class="animated-background" style=" height: 40px;width: 100%;margin: 0;"></div>
+                        </h5>
+                        <div class="subpanel-body clearfix">
 
-            <div class="panel-body">
+                            <div class="col-sm-6">
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;margin-bottom: 20px"></d>
+                                </div>
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;;margin-bottom: 20px;"></d>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;margin-bottom: 20px"></d>
+                                </div>
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;;margin-bottom: 20px;"></d>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="subpanel module-section">
+                        <h5 class="">
+                            <div class="animated-background" style=" height: 40px;width: 100%;margin: 0;"></div>
+                        </h5>
+                        <div class="subpanel-body clearfix">
+
+                            <div class="col-sm-6">
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;margin-bottom: 20px"></d>
+                                </div>
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;;margin-bottom: 20px;"></d>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;margin-bottom: 20px"></d>
+                                </div>
+                                <div class="animated-background"
+                                     style="height:40px;width: 100%;;margin-bottom: 20px;"></d>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="panel-body" ng-if="!loading">
                 <div class="module-form-setup">
                     <div class="form-horizontal form-custom">
+
                         <div class="draggable-form">
                             <div class="row-container">
                                 <div class="subpanel module-section" ng-class="{'subpanel-draggable':handleHover}"

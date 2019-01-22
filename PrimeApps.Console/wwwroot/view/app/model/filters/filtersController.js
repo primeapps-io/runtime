@@ -2,14 +2,14 @@
 
 angular.module('primeapps')
 
-    .controller('FiltersController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'FiltersService', '$http', 'config', '$modal', 'ModuleService', 'dataTypes', '$timeout',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, FiltersService, $http, config, $modal, ModuleService, dataTypes, $timeout) {
+    .controller('FiltersController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'FiltersService', '$http', 'config', '$modal', 'ModuleService',
+        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, FiltersService, $http, config, $modal, ModuleService) {
 
 
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'filters';
-            
+
             $rootScope.breadcrumblist[2].title = 'Filters';
 
             $scope.generator = function (limit) {
@@ -120,7 +120,7 @@ angular.module('primeapps')
                     //     return;
                     // }
 
-                    if ($scope.view.filter_logic && $rootScope.language === 'tr')
+                    if ($scope.view.filter_logic && $scope.language === 'tr')
                         $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
 
                     moduleChanged(module, false);
@@ -343,7 +343,7 @@ angular.module('primeapps')
                     var fieldName = field.name;
 
                     if (field.data_type === 'lookup' && field.lookup_type != 'users') {
-                        var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                        var lookupModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
                         var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                     }
@@ -358,13 +358,13 @@ angular.module('primeapps')
 
                     if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty')) {
                         if (field.data_type === 'picklist')
-                            filter.value = filter.value.label[$rootScope.user.tenantLanguage];
+                            filter.value = filter.value.label[$scope.language];
 
                         if (field.data_type === 'multiselect') {
                             var value = '';
 
                             angular.forEach(filter.value, function (picklistItem) {
-                                value += picklistItem.label[$rootScope.user.tenantLanguage] + '|';
+                                value += picklistItem.label[$scopelanguage] + '|';
                             });
 
                             filter.value = value.slice(0, -1);
