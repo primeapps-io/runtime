@@ -4,7 +4,20 @@
 </div>
 
 <div class="tab-content">
-    <div class="row">
+    <table class="table">
+        <div class="col-sm-12" style="margin-top: 100px; margin-bottom: 100px; display: flex;justify-content: center;">
+            <div class="row">
+                <div class="col-sm-12" style="padding-bottom: 30px">
+                    <img class="padding-10" src="images/primeapps/overview.png"
+                         srcset="images/primeapps/overview@2x.png 2x,
+                              images/primeapps/overview@3x.png 3x"
+                         class="logo">
+                </div>
+                <div><h2 style="font-size: 20px; color: #0d6faa;text-align: center;">Coming Soon</h2></div>
+            </div>
+        </div>
+    </table>
+    <!--<div class="row">
         <ui-select ng-model="selectedUser"
                    on-select="selectUserForTeam($select.selected.user_id)">
             <ui-select-match allow-clear="true" placeholder="Add collaborators and teams">
@@ -73,23 +86,14 @@
                             </ul>
                         </div>
                     </td>
-                    <!--<td class="text-right">
-                    <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">
-                        {{ 'Common.Edit' | translate }}
-                    </a>
-                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                            action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                            confirm-yes="{{'Common.Yes' | translate}}"
-                            confirm-no="{{'Common.No' | translate}}">
-                        {{'Common.Remove' | translate}}
-                    </button>
-                </td>-->
                 </tr>
             </tbody>
         </table>
         <div class="table-pagination" ng-show="!selectedTeam">
             <div>
                 <nav aria-label="Page navigation">
+                    ar
+                    
                     <div paging
                          text-first="&laquo;"
                          ul-class="pagination"
@@ -124,5 +128,5 @@
                 </select>
             </div>
         </div>
-    </div>
+    </div>-->
 </div>

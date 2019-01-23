@@ -69,7 +69,7 @@
 .newinput input[type=radio]:checked ~ span:after {
   display: block;
 }
-.newinput input[type=radio]:disabled span {
+.newinput input[type=radio]:disabled ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -112,14 +112,14 @@
 .newinput input[type=checkbox]:disabled {
   cursor: not-allowed;
 }
-.newinput input[type=checkbox]:disabled span {
+.newinput input[type=checkbox]:disabled ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .newinput input[disabled=disabled] {
   cursor: not-allowed;
 }
-.newinput input[disabled=disabled] span {
+.newinput input[disabled=disabled] ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -425,7 +425,7 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #f6f5f2;
+  background: #FFF;
 }
 .primeapps .page-loading i {
   font-size: 50px;
@@ -1540,6 +1540,7 @@ button:focus, select:focus {
   padding-right: 15px;
   position: sticky;
   top: 5%;
+  z-index: 2;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
   background: #fff;
@@ -1640,6 +1641,7 @@ button:focus, select:focus {
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
+  z-index: 1;
 }
 .primeapps #wrapper .setup-layout .setup-title {
   font-weight: bold;

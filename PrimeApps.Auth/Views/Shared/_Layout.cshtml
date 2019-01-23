@@ -40,23 +40,43 @@
         line-height: 1em;
         letter-spacing: 7px;
     }
+    #fof h3 {
+        font-family: Montserrat,sans-serif,Arial;
+        font-weight: 700;
+        color: white;
+        line-height: 1em;
+        letter-spacing: 3px;
+    }
+
+        #fof p {
+            font-family: Montserrat,sans-serif,Arial;
+            font-weight: 700;
+            color: white;
+            line-height: 1em;
+        }
 
     #fof p:first-child {
         margin-top: 0;
     }
 </style>
 <body>
-<div class="wrapper row2">
-    <div id="container" class="clear">
+    <div class="wrapper row2">
+        <div id="container" class="clear">
 
-        <div id="fof" class="clear">
-            <h1>PRIMEAPPS</h1>
-            <h1>AUTHENTICATION SERVER</h1>
-            @RenderBody()
+            <div id="fof" class="clear">
+                <h1>PRIMEAPPS</h1>
+                <h1>AUTHENTICATION SERVER</h1>
+                @if (!string.IsNullOrEmpty(ViewBag.UserName))
+                {
+                    <h3>Logged in User</h3>
+                    <p style="text-transform: uppercase;">@ViewBag.UserName</p>
+                    <p>@ViewBag.Email</p>
+                }
+                @RenderBody()
+            </div>
         </div>
     </div>
-</div>
-<script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
-@RenderSection("scripts", required: false)
+    <script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
+    @RenderSection("scripts", required: false)
 </body>
 </html>
