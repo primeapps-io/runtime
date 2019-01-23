@@ -768,7 +768,7 @@ button:focus, select:focus {
 .primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
   position: relative;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
   position: relative;

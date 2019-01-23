@@ -1010,9 +1010,9 @@ button, select {
     overflow-y: hidden;
 
     .form-custom {
-      //position: relative;
-      //height: 100%;
-      //overflow: hidden;
+      position: relative;
+      height: 100%;
+      overflow: auto;
     }
 
     .modal-header {
