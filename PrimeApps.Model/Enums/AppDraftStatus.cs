@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "draft")]
         Draft = 1,
 
-        [EnumMember(Value = "publish")]
-        Publish = 2,
+        [EnumMember(Value = "published")]
+        Published = 2,
 
-        [EnumMember(Value = "unpublish")]
-        Unpublish = 3
+        [EnumMember(Value = "unpublished")]
+        Unpublished = 3
     }
 }
