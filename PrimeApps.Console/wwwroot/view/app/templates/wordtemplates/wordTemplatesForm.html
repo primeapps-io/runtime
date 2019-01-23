@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
                     <label class="col-sm-3 control-label">{{'Setup.Templates.Module' | translate}}</label>
@@ -36,14 +36,14 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                     <div class="col-sm-9" ng-init="template.active = true">
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateActive' | translate}}
+                            {{'Setup.Templates.TemplateActive' | translate}}<span></span>
                         </label>
 
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateDeactive' | translate}}
+                            {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
                         </label>
                     </div>
                 </div>

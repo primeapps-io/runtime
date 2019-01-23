@@ -6,7 +6,7 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" ng-click="addNewExcelTemplateFormModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                            <button type="button" ng-disabled="saving" ng-click="addNewExcelTemplateFormModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
                             <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
 
                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
@@ -37,14 +37,14 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                     <div class="col-sm-9" ng-init="template.active = true">
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateActive' | translate}}
+                            {{'Setup.Templates.TemplateActive' | translate}}<span></span>
                         </label>
 
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateDeactive' | translate}}
+                            {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
                         </label>
                     </div>
                 </div>

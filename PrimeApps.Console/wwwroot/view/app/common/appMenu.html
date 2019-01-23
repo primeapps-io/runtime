@@ -1,5 +1,5 @@
-<ul class="nav nav-pills nav-stacked setup-nav">
-    <li ng-class="activeMenuItem ==='overview' ? 'active' :''">
+<ul class="nav nav-pills nav-stacked setup-nav" ng-show="!appLoading">
+    <li ng-class="activeMenuItem === 'overview' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info" data-title="Overview" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
             <span>Overview</span>
@@ -30,13 +30,13 @@
             <span>Analytics</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='functions' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info" data-title="Functions" bs-tooltip data-placement="right">
             <i class="fas fa-code"></i>
             <span>Functions</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='components' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info" data-title="Components" bs-tooltip data-placement="right">
             <i class="fas fa-shapes"></i>
             <span>Components</span>
@@ -48,19 +48,19 @@
             <span>Authorization</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='menus' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info" data-title="Menus" bs-tooltip data-placement="right">
             <i class="fas fa-bars"></i>
             <span>Menus</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='help' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info" data-title="Help &amp; Guides" bs-tooltip data-placement="right">
             <i class="fas fa-medkit"></i>
             <span>Help &amp; Guides</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='deployment' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info" data-title="Deployment" bs-tooltip data-placement="right">
             <i class="fas fa-play"></i>
             <span>Deployment</span>
@@ -78,22 +78,96 @@
             <span>Security</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='extensions' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info" data-title="Extensions" bs-tooltip data-placement="right">
             <i class="fas fa-plug"></i>
             <span>Extensions</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='diagnostics' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/diagnostics" data-trigger="hover" data-type="info" data-title="Diagnostics" bs-tooltip data-placement="right">
             <i class="fas fa-diagnoses"></i>
             <span>Diagnostics</span>
         </a>
     </li>
-    <li ng-class="activeMenuItem ==='settings' ? 'active' :''">
+    <li ng-class="activeMenuItem ==='settings' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/appDetails" data-trigger="hover" data-type="info" data-title="Settings" bs-tooltip data-placement="right">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
+        </a>
+    </li>
+</ul>
+
+<ul class="nav nav-pills nav-stacked setup-nav" ng-show="appLoading">
+    <li ng-class="activeMenuItem === 'overview' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+
+    <li>
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='settings' ? appLoading ? 'active blocked' : 'active' :''">
+        <a>
+            <div class="animated-background" style="width:100%"></div>
         </a>
     </li>
 </ul>

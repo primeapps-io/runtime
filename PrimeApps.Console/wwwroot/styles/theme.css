@@ -69,7 +69,7 @@
 .newinput input[type=radio]:checked ~ span:after {
   display: block;
 }
-.newinput input[type=radio]:disabled span {
+.newinput input[type=radio]:disabled ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -112,14 +112,14 @@
 .newinput input[type=checkbox]:disabled {
   cursor: not-allowed;
 }
-.newinput input[type=checkbox]:disabled span {
+.newinput input[type=checkbox]:disabled ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .newinput input[disabled=disabled] {
   cursor: not-allowed;
 }
-.newinput input[disabled=disabled] span {
+.newinput input[disabled=disabled] ~ span {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -202,6 +202,11 @@ button:focus, select:focus {
 }
 .primeapps .module-section .cell-container .form-group .action-buttons .action-icon {
   color: rgba(6, 6, 6, 0.75) !important;
+  font-size: 14px !important;
+}
+.primeapps .module-section .cell-container .form-group .action-buttons .action-icon-disabled {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.25) !important;
 }
 .primeapps .module-section .cell-container .form-group .control-label {
   text-align: left;
@@ -219,16 +224,15 @@ button:focus, select:focus {
 .primeapps .module-section .section-header {
   border: none !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 10px !important;
+  padding: 15px 10px !important;
 }
-.primeapps .module-section .section-header span {
+.primeapps .module-section .section-header span:first-child {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.75);
-  font-size: 16px;
 }
-.primeapps .module-section .section-header span i {
+.primeapps .module-section .section-header span:first-child i {
   color: rgba(0, 0, 0, 0.5) !important;
-  margin-right: 15px;
+  margin-right: 5px;
 }
 .primeapps .module-section .section-header:hover {
   background: rgba(13, 111, 170, 0.1);
@@ -277,14 +281,12 @@ button:focus, select:focus {
   background: #fff !important;
 }
 .primeapps .template-field .template-field-box .template-field-icon span {
-  font-size: 22px;
+  font-size: 18px;
   color: rgba(0, 0, 0, 0.5);
 }
-.primeapps .template-field .template-field-box .template-field-icon h4 {
-  font-size: 15px !important;
-}
-.primeapps .template-field .template-field-box .template-field-icon .template-field-text h4 {
-  font-size: 15px !important;
+.primeapps .template-field .template-field-box .template-field-text h4 {
+  font-size: 14px !important;
+  margin: 0px;
 }
 .primeapps .module-designer .new-field {
   border: 1px dashed rgba(0, 0, 0, 0.28);
@@ -425,7 +427,7 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #f6f5f2;
+  background: #F6F5F2;
 }
 .primeapps .page-loading i {
   font-size: 50px;
@@ -690,7 +692,7 @@ button:focus, select:focus {
 }
 .primeapps .modal {
   left: auto;
-  padding: 20px 30px;
+  padding: 20px 10px 20px 30px;
 }
 .primeapps .modal .section {
   padding: 20px;
@@ -710,8 +712,11 @@ button:focus, select:focus {
 }
 .primeapps .modal .megalist > div.modal-menu {
   width: auto;
-  position: relative;
   padding-right: 20px;
+  position: -webkit-sticky;
+  position: sticky;
+  align-self: flex-start;
+  top: 0px;
 }
 .primeapps .modal .megalist > div.modal-menu:before {
   content: "";
@@ -719,9 +724,9 @@ button:focus, select:focus {
   right: 22px;
   top: 0px;
   width: 2px;
-  height: 100%;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.05);
+  height: 100vh;
 }
 .primeapps .modal .megalist > div.modal-menu ul li {
   white-space: nowrap;
@@ -757,6 +762,16 @@ button:focus, select:focus {
   list-style-type: none;
   padding-left: 10px;
 }
+.primeapps .modal .megalist .section {
+  padding: 0px;
+  border: none;
+  border-radius: 0px;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+}
+.primeapps .modal .megalist .section:last-child {
+  border: none;
+  margin-bottom: 0px;
+}
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
   margin: 10px;
@@ -768,7 +783,7 @@ button:focus, select:focus {
 .primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
   position: relative;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
   position: relative;
@@ -784,6 +799,7 @@ button:focus, select:focus {
   margin: 0;
   line-height: 33px !important;
   width: 100% !important;
+  padding-right: 20px;
 }
 .primeapps .setup-modal .modal-dialog input[type=radio]:checked + span:after, .primeapps .module-modal .modal-dialog input[type=radio]:checked + span:after {
   width: 10px;
@@ -837,8 +853,13 @@ button:focus, select:focus {
   font-weight: bold;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+  padding: 0px;
+  padding-right: 20px;
+  border-bottom: none;
+}
+.primeapps .setup-modal .modal-header .flex-between, .primeapps .module-modal .modal-header .flex-between {
+  padding-bottom: 10px;
   border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-  padding: 10px 0px;
   margin-bottom: 20px;
 }
 .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
@@ -1540,6 +1561,7 @@ button:focus, select:focus {
   padding-right: 15px;
   position: sticky;
   top: 5%;
+  z-index: 2;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
   background: #fff;
@@ -1640,6 +1662,7 @@ button:focus, select:focus {
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
+  z-index: 1;
 }
 .primeapps #wrapper .setup-layout .setup-title {
   font-weight: bold;

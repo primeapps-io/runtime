@@ -87,7 +87,7 @@ $primeapps-color: #0D6FAA;
       }
     }
     &:disabled {
-      span{
+      ~ span{
         opacity: .5;
         cursor: not-allowed;
       }
@@ -134,7 +134,7 @@ $primeapps-color: #0D6FAA;
     }
     &:disabled {
       cursor: not-allowed;
-      span{
+      ~ span{
         opacity: .5;
         cursor: not-allowed;
       }
@@ -144,7 +144,7 @@ $primeapps-color: #0D6FAA;
   input[disabled="disabled"]
   {
     cursor: not-allowed;
-    span{
+    ~ span{
       opacity: .5;
       cursor: not-allowed;
     }
@@ -242,9 +242,15 @@ button, select {
           right: 10px;
           top: 50%;
           transform: translate(0%, -50%);
-
+          
           .action-icon {
             color: rgba(6, 6, 6, 0.75) !important;
+            font-size: 14px !important;
+          }
+          .action-icon-disabled
+          {
+            font-size: 14px !important;
+            color: rgba(0,0,0,0.25) !important;
           }
         }
 
@@ -278,17 +284,19 @@ button, select {
     .section-header {
       border: none !important;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-      padding: 10px !important;
+      padding: 15px 10px !important;
 
       span {
-        font-weight: bold;
-        color: rgba(0, 0, 0, 0.75);
-        font-size: 16px;
+        &:first-child{
+          font-weight: bold;
+          color: rgba(0, 0, 0, 0.75);
 
-        i {
-          color: rgba(0, 0, 0, 0.5) !important;
-          margin-right: 15px;
+          i {
+            color: rgba(0, 0, 0, 0.5) !important;
+            margin-right: 5px;
+          }
         }
+        
       }
 
       &:hover {
@@ -350,20 +358,15 @@ button, select {
 
       .template-field-icon {
         span {
-          font-size: 22px;
+          font-size: 18px;
           color: rgba(0, 0, 0, 0.5);
         }
-
+      }
+      .template-field-text {
         h4 {
-          font-size: 15px !important;
+          font-size: 14px !important;
+          margin: 0px;
         }
-
-        .template-field-text {
-          h4 {
-            font-size: 15px !important;
-          }
-        }
-
       }
     }
   }
@@ -562,7 +565,7 @@ button, select {
     width: 100vw;
     color: #FFF;
     height: 100vh;
-    background: #f6f5f2;
+    background: #F6F5F2;
 
     i {
       font-size: 50px;
@@ -920,7 +923,7 @@ button, select {
 
   .modal {
     left: auto;
-    padding: 20px 30px;
+    padding: 20px 10px 20px 30px;
 
     .section {
       padding: 20px;
@@ -936,14 +939,18 @@ button, select {
 
     .megalist {
       display: flex;
+      
 
       > div {
         width: 100%;
 
         &.modal-menu {
           width: auto;
-          position: relative;
           padding-right: 20px;
+          position: -webkit-sticky;
+          position: sticky;
+          align-self: flex-start;
+          top: 0px;
 
           &:before {
             content: '';
@@ -951,9 +958,9 @@ button, select {
             right: 22px;
             top: 0px;
             width: 2px;
-            height: 100%;
             border-radius: 3px;
             background: rgba(0, 0, 0, 0.05);
+            height: 100vh;
           }
 
           ul {
@@ -996,6 +1003,18 @@ button, select {
               }
             }
           }
+          
+        }
+        
+      }
+      .section{
+        padding: 0px;
+        border: none;
+        border-radius: 0px;
+        border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+        &:last-child{
+          border: none;
+          margin-bottom: 0px;
         }
       }
     }
@@ -1010,9 +1029,9 @@ button, select {
     overflow-y: hidden;
 
     .form-custom {
-      //position: relative;
-      //height: 100%;
-      //overflow: hidden;
+      position: relative;
+      height: 100%;
+      overflow: auto;
     }
 
     .modal-header {
@@ -1030,7 +1049,7 @@ button, select {
       margin: 0;
       line-height: 33px !important;
       width: 100% !important;
-
+      padding-right: 20px;
 
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -1114,10 +1133,15 @@ button, select {
     }
 
     .modal-header {
-      border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-      padding: 10px 0px;
-      margin-bottom: 20px;
-
+      padding: 0px;
+      padding-right: 20px;
+      border-bottom: none;
+      .flex-between
+      {
+        padding-bottom: 10px;
+        border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
       h4 {
         font-size: 16px;
         font-weight: bold;
@@ -2031,6 +2055,7 @@ button, select {
         padding-right: 15px;
         position: sticky;
         top: 5%;
+        z-index: 2;
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
@@ -2146,6 +2171,7 @@ button, select {
         padding-left: 15px;
         padding-right: 15px;
         @include hoverEffect();
+        z-index: 1;
       }
 
       .setup-title {

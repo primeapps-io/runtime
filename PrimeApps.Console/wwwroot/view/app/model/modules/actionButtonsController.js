@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$scope', '$filter', 'ngToast', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
-        function ($scope, $filter, ngToast, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', 'ngToast', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
+        function ($rootScope, $scope, $filter, ngToast, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
 
             $scope.actionButtons = [];
             $scope.generator = function (limit) {
