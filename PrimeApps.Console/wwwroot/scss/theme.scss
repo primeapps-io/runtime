@@ -242,9 +242,15 @@ button, select {
           right: 10px;
           top: 50%;
           transform: translate(0%, -50%);
-
+          
           .action-icon {
             color: rgba(6, 6, 6, 0.75) !important;
+            font-size: 14px !important;
+          }
+          .action-icon-disabled
+          {
+            font-size: 14px !important;
+            color: rgba(0,0,0,0.25) !important;
           }
         }
 
@@ -278,17 +284,19 @@ button, select {
     .section-header {
       border: none !important;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-      padding: 10px !important;
+      padding: 15px 10px !important;
 
       span {
-        font-weight: bold;
-        color: rgba(0, 0, 0, 0.75);
-        font-size: 16px;
+        &:first-child{
+          font-weight: bold;
+          color: rgba(0, 0, 0, 0.75);
 
-        i {
-          color: rgba(0, 0, 0, 0.5) !important;
-          margin-right: 15px;
+          i {
+            color: rgba(0, 0, 0, 0.5) !important;
+            margin-right: 5px;
+          }
         }
+        
       }
 
       &:hover {
@@ -350,20 +358,15 @@ button, select {
 
       .template-field-icon {
         span {
-          font-size: 22px;
+          font-size: 18px;
           color: rgba(0, 0, 0, 0.5);
         }
-
+      }
+      .template-field-text {
         h4 {
-          font-size: 15px !important;
+          font-size: 14px !important;
+          margin: 0px;
         }
-
-        .template-field-text {
-          h4 {
-            font-size: 15px !important;
-          }
-        }
-
       }
     }
   }

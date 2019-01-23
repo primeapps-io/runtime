@@ -202,6 +202,11 @@ button:focus, select:focus {
 }
 .primeapps .module-section .cell-container .form-group .action-buttons .action-icon {
   color: rgba(6, 6, 6, 0.75) !important;
+  font-size: 14px !important;
+}
+.primeapps .module-section .cell-container .form-group .action-buttons .action-icon-disabled {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.25) !important;
 }
 .primeapps .module-section .cell-container .form-group .control-label {
   text-align: left;
@@ -219,16 +224,15 @@ button:focus, select:focus {
 .primeapps .module-section .section-header {
   border: none !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 10px !important;
+  padding: 15px 10px !important;
 }
-.primeapps .module-section .section-header span {
+.primeapps .module-section .section-header span:first-child {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.75);
-  font-size: 16px;
 }
-.primeapps .module-section .section-header span i {
+.primeapps .module-section .section-header span:first-child i {
   color: rgba(0, 0, 0, 0.5) !important;
-  margin-right: 15px;
+  margin-right: 5px;
 }
 .primeapps .module-section .section-header:hover {
   background: rgba(13, 111, 170, 0.1);
@@ -277,14 +281,12 @@ button:focus, select:focus {
   background: #fff !important;
 }
 .primeapps .template-field .template-field-box .template-field-icon span {
-  font-size: 22px;
+  font-size: 18px;
   color: rgba(0, 0, 0, 0.5);
 }
-.primeapps .template-field .template-field-box .template-field-icon h4 {
-  font-size: 15px !important;
-}
-.primeapps .template-field .template-field-box .template-field-icon .template-field-text h4 {
-  font-size: 15px !important;
+.primeapps .template-field .template-field-box .template-field-text h4 {
+  font-size: 14px !important;
+  margin: 0px;
 }
 .primeapps .module-designer .new-field {
   border: 1px dashed rgba(0, 0, 0, 0.28);
@@ -425,7 +427,7 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #FFF;
+  background: #F6F5F2;
 }
 .primeapps .page-loading i {
   font-size: 50px;
