@@ -9,6 +9,7 @@ using System.Reflection;
 using PrimeApps.Console.Services;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Console.Storage;
 
 namespace PrimeApps.Console
 {
@@ -63,7 +64,7 @@ namespace PrimeApps.Console
 			services.AddScoped<IDocumentHelper, DocumentHelper>();
 			services.AddScoped<IBpmHelper, BpmHelper>();
 			services.AddScoped<IRoleHelper, RoleHelper>();
-			services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
+            services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
 			services.AddScoped<Helpers.IAuditLogHelper, Helpers.AuditLogHelper>();
 			services.AddScoped<Helpers.ICalculationHelper, Helpers.CalculationHelper>();
 			services.AddScoped<Helpers.IChangeLogHelper, Helpers.ChangeLogHelper>();

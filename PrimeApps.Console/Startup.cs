@@ -1,4 +1,7 @@
 ﻿using System.Globalization;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using PrimeApps.Console.Storage;
 
 namespace PrimeApps.Console
 {
@@ -90,6 +94,16 @@ namespace PrimeApps.Console
                     LanguageViewLocationExpanderFormat.Suffix,
                     opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
+
+            var awsOptions = Configuration.GetAWSOptions();
+            awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
+            awsOptions.Credentials = new BasicAWSCredentials(
+                Configuration.GetSection("AppSettings")["StorageAccessKey"],
+                Configuration.GetSection("AppSettings")["StorageSecretKey"]);
+            services.AddDefaultAWSOptions(awsOptions);
+            services.AddAWSService<IAmazonS3>();
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

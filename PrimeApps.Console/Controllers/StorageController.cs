@@ -20,7 +20,7 @@ using PrimeApps.Console.Storage.Unified;
 namespace PrimeApps.Console.Controllers
 {
     [Route("storage")]
-    public class StorageController : DraftBaseController
+    public class StorageController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -48,13 +48,13 @@ namespace PrimeApps.Console.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_documentRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_noteRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_importRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_documentRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_templateRepository);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_settingRepository);
+            SetCurrentUser(_importRepository);
 
             base.OnActionExecuting(context);
         }
@@ -337,7 +337,7 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("logo", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", OrganizationId);
 
             if (parser.Success)
             {

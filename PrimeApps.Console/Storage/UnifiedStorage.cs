@@ -38,7 +38,8 @@ namespace PrimeApps.Console.Storage
             NOTE,
             LOGO,
             PROFILEPICTURE,
-            NONE
+            NONE,
+            APPLOGO
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -52,7 +53,8 @@ namespace PrimeApps.Console.Storage
             {ObjectType.LOGO, "/logos/"},
             {ObjectType.MAIL, "/mail/"},
             {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
-            {ObjectType.NONE, ""}
+            {ObjectType.NONE, ""},
+            {ObjectType.APPLOGO, "/applogos/"}
         };
 
         /// <summary>
@@ -186,10 +188,17 @@ namespace PrimeApps.Console.Storage
         /// <returns></returns>
         public async Task CreateBucketIfNotExists(string bucket)
         {
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
+            string[] paths = bucket.Split('/');
+            string checkPath = "";
+
+            foreach (string path in paths)
             {
-                await _client.PutBucketAsync(bucket);
+                checkPath += $"{path}/";
+                bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, checkPath);
+                if (!exists)
+                {
+                    await _client.PutBucketAsync(checkPath);
+                }
             }
         }
         /// <summary>
@@ -268,7 +277,7 @@ namespace PrimeApps.Console.Storage
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
-            return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
+            return $"organization{tenant}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)
