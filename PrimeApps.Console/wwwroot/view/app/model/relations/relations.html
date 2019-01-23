@@ -62,26 +62,9 @@
                 <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete (relation);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="showFormModal(relation)">
-                                    {{'Common.Edit' | translate}}
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation(); delete(relation);">
-                                    {{'Common.Remove' | translate}}
-                                </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
             </tr>

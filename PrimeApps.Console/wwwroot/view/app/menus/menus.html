@@ -59,11 +59,11 @@
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu">
+                            <!--<li>-->
+                                <!--<a ng-click="$event.stopPropagation();showFormModal(item.id)">{{'Common.Edit' | translate}} </a>-->
+                            <!--</li>-->
                             <li>
-                                <a ng-click="showFormModal(item.id)">{{'Common.Edit' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="showFormModal(item.id, true)">{{'Common.Copy' | translate}}</a>
+                                <a ng-click="$event.stopPropagation();showFormModal(item.id, true)">{{'Common.Copy' | translate}}</a>
                             </li>
                             <li>
                                 <a ng-click="$event.stopPropagation();delete(item.id);">

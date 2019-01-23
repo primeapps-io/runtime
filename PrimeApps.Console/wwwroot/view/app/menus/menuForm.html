@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content">
                 <div class="modal-contanier">
                     <div class="modal-body view-form">
@@ -27,7 +27,8 @@
                                     <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
                                 </ul>
                             </div>
-                            <div class="section" id="section1" ng-show="wizardStep == 0">
+                            <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="section" id="section1" ng-show="wizardStep == 0 && !loading">
                                 <h4>{{'Menu.MenuInformation'|translate}}</h4>
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
@@ -74,7 +75,7 @@
                                 </div>
                             </div>
 
-                            <div class="section" id="section2" ng-show="wizardStep == 1">
+                            <div class="section" id="section2" ng-show="wizardStep == 1 && !loading ">
                                 <h4>{{'Menu.MenuSummary'|translate}}</h4>
                                 <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                 <div ng-show="!loading" class="panel">

@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
@@ -64,17 +64,15 @@
                                         </select>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.labelSingular.$invalid}">
-                                        <label class="col-sm-6 required-field">* {{'Setup.Modules.RelationType' | translate}}</label>
-                                        <div class="form-control ng-animate-disabled col-sm-8 newinput" style="padding-left: 0; background-color:white;">
-                                            <label class="radio-inline newinput">
-                                                <input type="radio" ng-model="currentRelation.relation_type" value="one_to_many" ng-disabled="!currentRelation.isNew"> {{'Setup.Modules.OneToMany' | translate}}<span></span>
-                                            </label>
-                                            <label class="radio-inline newinput">
-                                                <input type="radio" ng-model="currentRelation.relation_type" value="many_to_many"
-                                                       ng-disabled="!currentRelation.isNew" ng-change="relationTypeChanged()">
-                                                {{'Setup.Modules.ManyToMany' | translate}}<span></span>
-                                            </label>
-                                        </div>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.RelationType' | translate}}</label>
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-model="currentRelation.relation_type" value="one_to_many" ng-disabled="!currentRelation.isNew"> {{'Setup.Modules.OneToMany' | translate}}<span></span>
+                                        </label>
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-model="currentRelation.relation_type" value="many_to_many"
+                                                   ng-disabled="!currentRelation.isNew" ng-change="relationTypeChanged()">
+                                            {{'Setup.Modules.ManyToMany' | translate}}<span></span>
+                                        </label>
                                     </div>
                                     <div class="form-group" ng-if="currentRelation.relation_module && currentRelation.relation_module.name != 'activities' && currentRelation.relation_module.name != 'mails' && currentRelation.relation_type === 'one_to_many'" ng-class="{'has-error': relationForm.$submitted && relationForm.relationField.$invalid}">
                                         <label class="col-sm-4 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
@@ -102,18 +100,17 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-6 ng-binding">{{'Common.DetailViewType' | translate}}: </label>
-                                        <div class="form-control ng-animate-disabled col-sm-8" style="padding-left: 0; background-color:white;">
-                                            <label class="radio-inline newinput">
-                                                <input type="radio" ng-model="currentRelation.detail_view_type" value="tab"
-                                                       class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1560">
-                                                {{'Common.TabbedView' | translate}}<span></span>
-                                            </label>
-                                            <label class="radio-inline newinput">
-                                                <input type="radio" ng-model="currentRelation.detail_view_type" value="flat"
-                                                       class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1561"> {{'Common.FlatView' | translate}}<span></span>
-                                            </label>
-                                        </div>
+                                        <label class="col-sm-12 ng-binding">{{'Common.DetailViewType' | translate}}: </label>
+
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-model="currentRelation.detail_view_type" value="tab"
+                                                   class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1560">
+                                            {{'Common.TabbedView' | translate}}<span></span>
+                                        </label>
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-model="currentRelation.detail_view_type" value="flat"
+                                                   class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1561"> {{'Common.FlatView' | translate}}<span></span>
+                                        </label>
                                     </div>
                                     <div class="form-group" ng-if="currentRelation.relationField || (currentRelation.relation_module && currentRelation.relation_type === 'many_to_many')">
                                         <label class="col-sm-4 required-field">* {{'Setup.Modules.ViewFields' | translate}}: </label>

@@ -2138,8 +2138,8 @@
 		"MenuNameRequiredError": "Menu Name field is required.",
 		"Icon": "Category Icon",
 		"CategoryName": "Category Name",
-		"DefaultValurTrue": "Yes",
-		"DefaultValurFalse": "No",
+		"DefaultValueTrue": "Yes",
+		"DefaultValueFalse": "No",
 		"MenuElementType": "Menu Element Type",
 		"Modules": "Modules"
 	}

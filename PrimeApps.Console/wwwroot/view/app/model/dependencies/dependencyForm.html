@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
@@ -111,10 +111,7 @@
                                          ng-if="affectedAreaType=='section'  && currentDependency.dependencyType == 'display'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childSection.$invalid}">
                                         <label class="col-sm-4 required-field">
-                                            * {{
-                                            'Setup.Modules.DependencyChildSection' |
-                                            translate
-                                            }}:
+                                            * {{'Setup.Modules.DependencyChildSection' |translate}}:
                                         </label>
                                         <select name="childSection"
                                                 class="form-control ng-animate-disabled col-sm-8"

@@ -42,24 +42,9 @@
                     <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
                     <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); deleteView(view.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="showFormModal(view)">{{'Common.Edit' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();deleteView(view.id);">
-                                    {{'Common.Remove' | translate}}
-                                </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
             </tr>
