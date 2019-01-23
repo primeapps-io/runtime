@@ -1067,7 +1067,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/settingsController.js'
@@ -1085,7 +1085,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad,studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/profile/profileController.js'
@@ -1103,7 +1103,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/password/passwordController.js'
