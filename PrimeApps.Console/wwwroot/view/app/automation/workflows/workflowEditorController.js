@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.$parent.loadingFilter = false;
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
+            $scope.workflowStartModel = {};
             $scope.$parent.menuTopTitle = "Automation";
             $scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflowEditor';
@@ -65,6 +66,29 @@ angular.module('primeapps')
 
                             switch (node.ngModelName) {
                                 case 'start':
+                                    $scope.workflowStartModel = {};
+                                    $scope.workflowStartModel = node.data;
+                                    $scope.workflowStartModel.operation = {};
+
+                                    angular.forEach(node.data.record_operations.split(','), function (item) {
+                                        $scope.workflowStartModel.operation[item] = true;
+                                    });
+
+                                    ModuleService.getModuleById(node.data.module_id)
+                                        .then(function (response) {
+                                            if (response.data) {
+                                                var module = response.data;
+                                                ModuleService.getModuleFields(module.name)
+                                                    .then(function (result) {
+                                                        if (result.data) {
+                                                            module.fields = result.data;
+                                                            $scope.module = module;
+                                                            $scope.workflowStartModel.module = module;
+                                                        }
+                                                    });
+                                            }
+                                        });
+
                                     break;
                                 case 'field_update':
                                     $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
@@ -159,13 +183,13 @@ angular.module('primeapps')
             $scope.selectModule = function () {
                 $scope.loadingFilter = true;
 
-                ModuleService.getModuleFields($scope.workflowModel.module.name)
+                ModuleService.getModuleFields($scope.workflowStartModel.module.name)
                     .then(function (response) {
                         if (response) {
-                            $scope.workflowModel.module.fields = response.data;
+                            $scope.workflowStartModel.module.fields = response.data;
                         }
 
-                        var module = angular.copy($scope.workflowModel.module);
+                        var module = angular.copy($scope.workflowStartModel.module);
                         $scope.module = ModuleService.getFieldsOperator(module, $rootScope.appModules, 0);
 
                         //TODO 
@@ -174,7 +198,7 @@ angular.module('primeapps')
                         //    $scope.workflowModel.processFilter = 'all';
                         //}
                         //else {
-                        $scope.workflowModel.processFilter = 'none';
+                        $scope.workflowStartModel.processFilter = 'none';
                         $scope.showProcessFilter = false;
                         //}
 
@@ -306,7 +330,7 @@ angular.module('primeapps')
                 if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
-                if ($scope.workflowModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
+                if ($scope.workflowStartModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
                     return false;
                 //TODO 
                 return $scope.validateActions($scope.workflowForm);
@@ -318,10 +342,10 @@ angular.module('primeapps')
 
                 $scope.workflowForm.operation.$setValidity('operations', false);
 
-                if (!$scope.workflowModel.operation)
+                if (!$scope.workflowStartModel.operation)
                     return false;
 
-                angular.forEach($scope.workflowModel.operation, function (value, key) {
+                angular.forEach($scope.workflowStartModel.operation, function (value, key) {
                     if (value) {
                         $scope.workflowForm.operation.$setValidity('operations', true);
                         return true;
@@ -415,15 +439,15 @@ angular.module('primeapps')
 
             $scope.getUpdatableModules = function () {
                 $scope.updatableModules = [];
-                ModuleService.getModuleFields($scope.workflowModel.module.name)
+                ModuleService.getModuleFields($scope.workflowStartModel.module.name)
                     .then(function (response) {
                         if (response.data)
-                            $scope.workflowModel.module.fields = response.data;
+                            $scope.workflowStartModel.module.fields = response.data;
 
-                        $scope.updatableModules.push($scope.workflowModel.module);
+                        $scope.updatableModules.push($scope.workflowStartModel.module);
 
-                        angular.forEach($scope.workflowModel.module.fields, function (field) {
-                            if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
+                        angular.forEach($scope.workflowStartModel.module.fields, function (field) {
+                            if (field.lookup_type && field.lookup_type !== $scope.workflowStartModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
                                 var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                                 $scope.updatableModules.push(module);
                             }
@@ -443,7 +467,7 @@ angular.module('primeapps')
                 if (module)
                     currentModule = module;
                 else
-                    currentModule = $scope.workflowModel.module;
+                    currentModule = $scope.workflowStartModel.module;
 
                 notificationObj.module = currentModule;
                 notificationObj.name = currentModule['label_' + $scope.language + '_singular'];
@@ -500,7 +524,7 @@ angular.module('primeapps')
                 if (module)
                     currentModule = module;
                 else
-                    currentModule = $scope.workflowModel.module;
+                    currentModule = $scope.workflowStartModel.module;
 
                 updateObj.module = currentModule;
                 updateObj.name = currentModule['label_' + $scope.language + '_singular'];
@@ -669,27 +693,27 @@ angular.module('primeapps')
 
             $scope.operationUpdateChanged = function (status) {
                 if (!status) {
-                    $scope.workflowModel.frequency = 'continuous';
+                    $scope.workflowStartModel.frequency = 'continuous';
 
                     if ($scope.id)
-                        $scope.workflowModel.delete_logs = false;
+                        $scope.workflowStartModel.delete_logs = false;
                 }
 
-                $scope.workflowModel.changed_field_checkbox = false;
-                $scope.workflowModel.changed_field = null;
+                $scope.workflowStartModel.changed_field_checkbox = false;
+                $scope.workflowStartModel.changed_field = null;
 
             };
 
             $scope.changeFieldCheckboxChanged = function (status) {
                 if (!status) {
-                    $scope.workflowModel.changed_field = null;
+                    $scope.workflowStartModel.changed_field = null;
                 }
             };
 
             $scope.frequencyChanged = function (frequency) {
                 if ($scope.id) {
                     if (frequency === 'continuous')
-                        $scope.workflowModel.delete_logs = false;
+                        $scope.workflowStartModel.delete_logs = false;
                 }
             };
 
@@ -975,13 +999,13 @@ angular.module('primeapps')
                 parameter.parameterName = null;
                 parameter.selectedModules = $scope.hookModules;
                 parameter.selectedField = null;
-                parameter.selectedModule = $scope.workflowModel.module;
+                parameter.selectedModule = $scope.workflowStartModel.module;
 
                 $scope.hookParameters.push(parameter);
             };
 
             $scope.getSummary = function () {
-                if (!$scope.workflowModel.name || !$scope.workflowModel.module || !$scope.workflowModel.operation)
+                if (!$scope.workflowStartModel.name || !$scope.workflowStartModel.module || !$scope.workflowStartModel.operation)
                     return;
 
                 var getSummary = function () {
@@ -991,15 +1015,15 @@ angular.module('primeapps')
                     var andText = $filter('translate')('Common.And');
                     var orText = $filter('translate')('Common.Or');
 
-                    if ($scope.workflowModel.operation.insert)
+                    if ($scope.workflowStartModel.operation.insert)
                         $scope.ruleTriggerText += $filter('translate')('Setup.Workflow.RuleTriggers.insertLabel') + ' ' + orText + ' ';
 
-                    if ($scope.workflowModel.operation.update) {
+                    if ($scope.workflowStartModel.operation.update) {
                         var updateText = $filter('translate')('Setup.Workflow.RuleTriggers.updateLabel') + ' ' + orText + ' ';
                         $scope.ruleTriggerText += $scope.ruleTriggerText ? updateText.toLowerCase() : updateText;
                     }
 
-                    if ($scope.workflowModel.operation.delete) {
+                    if ($scope.workflowStartModel.operation.delete) {
                         var deleteText = $filter('translate')('Setup.Workflow.RuleTriggers.deleteLabel') + ' ' + orText + ' ';
                         $scope.ruleTriggerText += $scope.ruleTriggerText ? deleteText.toLowerCase() : deleteText;
                     }
@@ -1203,6 +1227,7 @@ angular.module('primeapps')
                 var diagram = window.myDiagram.model;
                 var currentNode = $scope.currentObj.subject.part.data;
                 var bpmModel = $scope.workflowModel;
+                var startModel = $scope.workflowStartModel;
                 var data = {};
 
                 if (!diagram)
@@ -1210,11 +1235,10 @@ angular.module('primeapps')
 
                 switch (currentNode.ngModelName) {
                     case 'start':
-                        data.module_id = bpmModel.module.id;
+                        data = startModel;
+
+                        data.module_id = startModel.module.id;
                         data.id = $scope.id;
-                        data.name = bpmModel.name;
-                        data.code = bpmModel.code;
-                        data.frequency = bpmModel.frequency;
                         data.filters = [];
 
                         var filters = $scope.filters;
@@ -1267,22 +1291,23 @@ angular.module('primeapps')
 
                                 data.filters.push(filter);
                             });
-
-                            data.active = bpmModel.active;
-                            data.process_filter = bpmModel.processFilter === "none" ? null : bpmModel.processFilter;
-                            data.trigger_type = "record";
-
-                            var loopArray = [];
-                            angular.forEach(bpmModel.operation, function (value, key) {
-                                if (value)
-                                    this.push(key);
-                            }, loopArray);
-
-                            data.record_operations = loopArray.join();
-                            data.canstartmanuel = false;
-                            data.defitinion_json = {};
-
                         }
+
+
+                        data.process_filter = startModel.processFilter === "none" ? null : startModel.processFilter;
+                        data.trigger_type = "record";
+
+                        var loopArray = [];
+                        angular.forEach(startModel.operation, function (value, key) {
+                            if (value)
+                                this.push(key);
+                        }, loopArray);
+
+                        data.record_operations = loopArray.join();
+                        data.canstartmanuel = false;
+                        data.defitinion_json = {};
+
+
                         break;
                     case 'field_update':
                         //Static Data;
@@ -1410,9 +1435,107 @@ angular.module('primeapps')
                 }, 2000);
             };
 
+            $scope.save = function () {
+                $scope.saving = true;
+                var diagram = window.myDiagram.model;
+                var bpmModel = $scope.workflowModel;
+                var startModel = $scope.workflowStartModel;
 
+                if (diagram) {
+                    var data = {};
+                    data.active = startModel.active;
+                    data.id = $scope.id;
+                    data.module_id = startModel.module.id;
+                    data.name = startModel.name;
+                    data.code = startModel.code;
+                    data.frequency = startModel.frequency;
+                    data.canstartmanuel = false;
+                    data.defitinion_json = {};
+                    var loopArray = [];
 
+                    angular.forEach(bpmModel.operation, function (value, key) {
+                        if (value)
+                            this.push(key);
+                    }, loopArray);
 
+                    data.record_operations = loopArray.join();
+                    var filters = $scope.filters;
+
+                    if (filters && filters.length) {
+                        data.filters = [];
+
+                        angular.forEach(filters, function (filterItem) {
+                            if (!filterItem.field || !filterItem.operator)
+                                return;
+
+                            if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value == null || filterItem.value == undefined))
+                                return;
+
+                            var field = filterItem.field;
+                            var filter = {};
+                            filter.field = field.name;
+                            filter.operator = filterItem.operator.name;
+                            filter.value = filterItem.value;
+                            filter.no = filterItem.no;
+
+                            if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty')) {
+                                if (field.data_type === 'date' || field.data_type === 'date_time' || field.data_type === 'time')
+                                    filter.value = new Date(filter.value).getTime();
+
+                                if (field.data_type === 'picklist')
+                                    filter.value = filter.value.id;
+
+                                if (field.data_type === 'multiselect') {
+                                    var value = '';
+
+                                    angular.forEach(filter.value, function (picklistItem) {
+                                        value += picklistItem.id + ',';
+                                    });
+
+                                    filter.value = value.slice(0, -1);
+                                }
+
+                                if (field.data_type === 'lookup' && field.lookup_type != 'users')
+                                    filter.value = filter.value.id;
+
+                                if (field.data_type === 'lookup' && field.lookup_type === 'users')
+                                    filter.value = filter.value[0].id;
+
+                                if (field.data_type === 'checkbox')
+                                    filter.value = filter.value.system_code;
+                            }
+                            else {
+                                filter.value = '-';
+                            }
+
+                            data.filters.push(filter);
+                        });
+                    }
+
+                    WorkflowsService.getByCode(data.code)
+                        .then(function (response) {
+                            if (response.data.length > 1)
+                                $scope.saving = false;
+                            else {
+                                if (!$scope.id) {
+                                    WorkflowsService.create(data)
+                                        .then(function onSuccess() {
+                                            success();
+                                        }).catch(function onError() {
+                                            $scope.saving = false;
+                                        });
+                                }
+                            }
+                        });
+                }
+            };
+
+            var success = function () {
+                $scope.saving = false;
+                $state.go('studio.app.workflows');
+                ngToast.create({ content: $filter('translate')('Setup.BpmWorkflow.SubmitSuccess'), className: 'success' });
+
+            };
 
 
         }

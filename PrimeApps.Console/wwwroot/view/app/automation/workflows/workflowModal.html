@@ -17,18 +17,18 @@
                 <div ng-show="SelectedNodeItem.item == 'Start'">
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
                         <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
-                        <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
+                        <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowStartModel.name" />
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
                         <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
-                        <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowModel.code" />
+                        <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowStartModel.code" />
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                         <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
                         <select class="form-control"
                                 name="module"
                                 required
-                                ng-model="workflowModel.module"
+                                ng-model="workflowStartModel.module"
                                 ng-change="selectModule()"
                                 ng-disabled="id"
                                 ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
@@ -38,57 +38,57 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
                         <label class="checkbox-inline">
-                            <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                            <input type="checkbox" ng-model="workflowStartModel.active"> {{'Common.Active' | translate}}
                         </label>
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
                         <label class="col-sm-4" style="margin-bottom: auto;"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label><br>
                         <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(WorkflowForm)"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
+                            <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(WorkflowForm)"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
                         </label><br>
                         <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowModel.operation.update);validateOperations(WorkflowForm);" ng-model="workflowModel.operation.update"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                            <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(WorkflowForm);" ng-model="workflowStartModel.operation.update"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
                         </label><br>
                         <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-change="validateOperations(WorkflowForm)" ng-model="workflowModel.operation.delete"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
+                            <input name="operation" type="checkbox" ng-change="validateOperations(WorkflowForm)" ng-model="workflowStartModel.operation.delete"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
                         </label>
                     </div>
-                    <div ng-show="workflowModel.operation.update" class="form-group">
+                    <div ng-show="workflowStartModel.operation.update" class="form-group">
                         <label class="col-sm-4">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
                         <label class="checkbox-inline">
-                            <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox">
+                            <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox">
                         </label>
                     </div>
-                    <div ng-show="workflowModel.changed_field_checkbox && workflowModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
+                    <div ng-show="workflowStartModel.changed_field_checkbox && workflowStartModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
                         <label class="col-sm-4"><span class="required-field">*</span>{{'Setup.BpmWorkflow.RelatedField' | translate}}:</label>
                         <select class="form-control"
                                 name="changed_field"
                                 required
-                                ng-model="workflowModel.changed_field"
+                                ng-model="workflowStartModel.changed_field"
                                 ng-change=""
-                                ng-disabled="!workflowModel.module"
-                                ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                ng-disabled="!workflowStartModel.module"
+                                ng-options="o as o['label_' + language] for o in workflowStartModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                             <option value="">{{'Common.Select' | translate}}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
-                        <label class="radio-inline" ng-show="workflowModel.operation.update">
-                            <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
+                        <label class="radio-inline" ng-show="workflowStartModel.operation.update">
+                            <input ng-change="frequencyChanged(workflowStartModel.frequency)" name="operation" type="radio" ng-model="workflowStartModel.frequency" value="one_time">
                             {{'Setup.BpmWorkflow.ExecutionFrequencies.OneTime' | translate}}
                         </label>
                         <label class="radio-inline">
-                            <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
+                            <input ng-change="frequencyChanged(workflowStartModel.frequency)" name="operation" type="radio" ng-model="workflowStartModel.frequency" value="continuous">
                             {{'Setup.BpmWorkflow.ExecutionFrequencies.Continuous' | translate}}
                         </label>
                     </div>
-                    <div class="form-group" ng-show="id && workflowModel.frequency == 'one_time'">
+                    <div class="form-group" ng-show="id && workflowStartModel.frequency == 'one_time'">
                         <label class="col-sm-4">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
                         <label class="checkbox-inline">
-                            <input type="checkbox" ng-model="workflowModel.delete_logs">
+                            <input type="checkbox" ng-model="workflowStartModel.delete_logs">
                         </label>
                     </div>
-                    <div ng-show="workflowModel.module">
+                    <div ng-show="workflowStartModel.module">
                         <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
                         <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                         <div ng-if="!loadingFilter">
@@ -305,13 +305,13 @@
                             </table>
                             <div style="margin-top: 50px" ng-show="showProcessFilter">
                                 <label class="col-sm-4">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
-                                <label><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
+                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
 
-                                <label><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
+                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
 
-                                <label><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
+                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
 
-                                <label><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
+                                <label><input type="radio" ng-checked="true" ng-model="workflowStartModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
                             </div>
                         </div>
                     </div>
@@ -1132,7 +1132,7 @@
                 <!--DataReadTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'Data Read Task'">
                     <div class="form-group"
-                         ng-if="workflowModel.module">
+                         ng-if="workflowStartModel.module">
                         <label class="col-sm-4">
                             <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
                         </label>
@@ -1142,7 +1142,7 @@
                                     tabindex="1"
                                     required
                                     ng-model="workflowModel.data_read.field"
-                                    ng-options="o as o['label_' + language] for o in workflowModel.module.fields | orderBy:'order' track by o.id">
+                                    ng-options="o as o['label_' + language] for o in workflowStartModel.module.fields | orderBy:'order' track by o.id">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
                         </div>
