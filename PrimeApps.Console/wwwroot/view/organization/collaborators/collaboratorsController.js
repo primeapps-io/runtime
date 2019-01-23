@@ -27,10 +27,10 @@ angular.module('primeapps')
 
             };
             $scope.generator(10);
-            CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
+            /*CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
                 $scope.$parent.collaboratorCount = response.data;
                 $scope.pageTotal = response.data;
-            });
+            });*/
 
             CollaboratorsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 $scope.collaboratorArray = response.data;

@@ -224,7 +224,13 @@ angular.module('primeapps')
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
                                 }
-                            }]
+                            }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/organization/organizationController.js',
+                                cdnUrl + 'view/organization/organizationService.js'
+                            ]);
+                        }]
                     }
                 })
 
