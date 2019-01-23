@@ -12,8 +12,23 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'appCollaborators';    
             $rootScope.breadcrumblist[2].title = 'App Collaborators';
 
+            $scope.appCollaborators = [];
+            AppCollaboratorsService.getCollaborators($scope.$parent.appId).then(function (response) {
+                $scope.appCollaborators = response.data;
+                var organization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrganization.id }, true)[0];
 
-            console.log("AppCollaboratorsController");
+                for (var i = 0; i < $scope.appCollaborators.length; i++) {
+                    var appCollaborator = $scope.appCollaborators[i];
+                    if (appCollaborator.user_id) {
+
+                    }
+
+                    if (appCollaborator.team_id) {
+
+                    }
+                }
+            });
+            console.log($scope)
 
         }
     ]);

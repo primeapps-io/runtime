@@ -6,7 +6,7 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                            <button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
                             <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
@@ -328,18 +328,18 @@
                                 <h4>{{'View.ShareInformation' | translate}}</h4>
                                 <div class="panel">
                                     <div class="sharing">
-                                        <label>
+                                        <label class="newinput">
                                             <input type="radio" ng-model="view.sharing_type" value="me">
-                                            {{'View.ShareMe' | translate}}
+                                            {{'View.ShareMe' | translate}}<span></span>
                                         </label><br />
-                                        <label> <!--ng-if="user.profile.HasAdminRights">-->
+                                        <label class="newinput"> <!--ng-if="user.profile.HasAdminRights">-->
                                             <input type="radio" ng-model="view.sharing_type" value="everybody">
-                                            {{'View.ShareEveryone' | translate}}
+                                            {{'View.ShareEveryone' | translate}}<span></span>
                                         </label><br />
                                         <!--</label><br ng-if="user.profile.HasAdminRights" />-->
-                                        <label>
+                                        <label class="newinput">
                                             <input type="radio" ng-model="view.sharing_type" value="custom">
-                                            {{'View.ShareCustom' | translate}}
+                                            {{'View.ShareCustom' | translate}}<span></span>
                                         </label>
                                     </div>
                                     <div class="shared-users" ng-if="view.sharing_type === 'custom'">
