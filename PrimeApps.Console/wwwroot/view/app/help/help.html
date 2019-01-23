@@ -3,10 +3,10 @@
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn add-button" ng-click="showFormModal()" style="margin-right: 10px"><i class="fas fa-plus"></i>Tanıtım Ekranı Ekle</button>
+                <button class="btn add-button" ng-click="showFormModal()" style="margin-right: 10px"><i class="fas fa-plus"></i>New Introduction</button>
             </li>
             <li>
-                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i> Yardım Ekranı Ekle</button>
+                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i>New Help</button>
             </li>
         </ul>
     </div>
@@ -66,10 +66,10 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a ng-click="$event.stopPropagation();helpEdit(helpside)">{{'Common.Edit' | translate}} </a>
+                                <a ng-click="$event.stopPropagation();helpEdit(helpside)">Edit </a>
                             </li>
                             <li>
-                                <a ng-click="$event.stopPropagation();delete(helpside)">{{'Common.Delete' | translate}} </a>
+                                <a ng-click="$event.stopPropagation();delete(helpside)">Delete </a>
                             </li>
                         </ul>
                     </div>

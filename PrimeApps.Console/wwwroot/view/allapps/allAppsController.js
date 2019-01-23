@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('AllAppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AllAppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AllAppsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
 
-            $rootScope.breadcrumblist[0] = {title: 'All Apps'};
+            $rootScope.breadcrumblist[0] = { title: 'All Apps' };
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
@@ -35,9 +35,7 @@ angular.module('primeapps')
 
                 AllAppsService.myApps($scope.appsFilter)
                     .then(function (response) {
-                        if (response.data) {
-                            $scope.apps = response.data;
-                        }
+                        $scope.apps = response.data;
                     });
             };
         }
