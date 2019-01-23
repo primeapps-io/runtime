@@ -59,13 +59,13 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a href ng-click="showFormModal(rule.id)">
+                                <a href ng-click="$event.stopPropagation();showFormModal(rule.id)">
                                     {{'Common.Edit' | translate}}
                                 </a>
                             </li>
                             <li>
-                                <a href confirm-click action="delete(rule.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                    {{'Common.Remove' | translate}}
+                                <a ng-click="$event.stopPropagation();delete(rule.id);">
+                                    {{'Common.Delete' | translate}}
                                 </a>
                             </li>
 

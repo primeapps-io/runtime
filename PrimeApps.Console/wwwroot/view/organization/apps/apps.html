@@ -26,7 +26,8 @@
         <div class="col-sm-12">
             <h4 class="h4-title blue-color font-bold">All Apps</h4>
         </div>
-        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ui-sref="studio.appsForm" ng-show="!loading">
+        <div class="col-sm-6 col-md-3 app-layout-box am-fade" ui-sref="studio.appsForm({organizationId:currentOrgId})"
+             ng-show="!loading">
             <div class="app-box">
                 <div class="oval">
 
@@ -58,7 +59,7 @@
                 <div class="oval">
                     <span data-trigger="hover" data-type="success"
                           data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
-                          class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
+                          class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                 </div>
                 <div class="image">
                     <img ng-src="{{app.logo}}"/>

@@ -20,13 +20,30 @@ angular.module('primeapps')
             $scope.scheduleItems = RulesService.getScheduleItems();
             $scope.dueDateItems = RulesService.getDueDateItems();
             $scope.showProcessFilter = false;
-            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1; //TODO Organization ID
-            var activityModule = $filter('filter')($scope.$parent.modules, { name: 'activities' }, true)[0];
+
+            var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
             ModuleService.getModuleFields(activityModule.name)
                 .then(function (response) {
                     if (response) {
                         activityModule.fields = response.data;
+                        $scope.taskFields = {};
+
+                        if (!activityModule.fields)
+                            return;
+
+                        $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+                        $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+                        $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+                        $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+                        $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+                        $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+                        $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+
+                        ModuleService.getPickItemsLists(activityModule, false)
+                            .then(function (picklistsActivity) {
+                                $scope.picklistsActivity = picklistsActivity;
+                            });
                     }
                 });
 
@@ -53,32 +70,38 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
-            RulesService.count(organitzationId).then(function (response) {
-                $scope.pageTotal = response.data;
-            });
 
-            RulesService.find($scope.requestModel, organitzationId).then(function (response) {
-                if (response.data) {
-                    var data = fillModule(response.data);
 
-                    $scope.rules = data;
-                    $scope.loading = false;
-                }
-            });
+            var count = function () {
+                RulesService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
+            };
+            count();
+
+            RulesService.find($scope.requestModel, $rootScope.currentOrgId)
+                .then(function (response) {
+                    if (response.data) {
+                        var data = fillModule(response.data);
+                        $scope.rules = data;
+                        $scope.loading = false;
+                    }
+                });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
-                $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+                count();
 
-
-                RulesService.find(requestModel, organitzationId).then(function (response) {
-                    var data = fillModule(response.data);
-
-                    $scope.rules = data;
-                    $scope.loading = false;
-                });
+                RulesService.find(requestModel)
+                    .then(function (response) {
+                        var data = fillModule(response.data);
+                        $scope.rules = data;
+                        $scope.loading = false;
+                    }).catch(function (err) {
+                        $scope.loading = false;
+                    });
 
             };
 
@@ -91,30 +114,16 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($scope.$parent.modules, { id: moduleId }, true)[0];
+                    var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
                     data[i].module = angular.copy(module);
                 }
 
                 return data;
-            }
-
-
-            var setTaskFields = function () {
-                $scope.taskFields = {};
-
-                if (!activityModule.fields)
-                    return;
-
-                $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
             };
 
-            setTaskFields();
+
+
+
 
 
             var selectRule = function () {
@@ -133,7 +142,8 @@ angular.module('primeapps')
                             RulesService.get($scope.id)
                                 .then(function (workflow) {
                                     $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $scope.$parent.modules, 0);
+                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0)
+
                                     $scope.workflowModel.operation = {};
 
                                     angular.forEach($scope.workflowModel.operations_array, function (value) {
@@ -165,7 +175,7 @@ angular.module('primeapps')
                                                 $scope.getSendNotificationUpdatableModules($scope.module);
                                                 $scope.getDynamicFieldUpdateModules($scope.module);
                                                 //TODO
-                                                $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.$parent.modules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                 $scope.getUpdatableModules();
                                                 $scope.generateHookModules();
                                             }
@@ -174,13 +184,13 @@ angular.module('primeapps')
                                                 if (workflow.field_update.module.split(',').length > 1) {
                                                     var updModule = workflow.field_update.module.split(',')[0];
                                                     if (updModule === $scope.module.name)
-                                                        fieldUpdateModule = $filter('filter')($scope.$parent.modules, { name: updModule }, true)[0];
+                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
                                                     else {
-                                                        fieldUpdateModule = $filter('filter')($scope.$parent.modules, { name: $scope.module.name }, true)[0];
+                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
                                                     }
                                                 }
                                                 else
-                                                    fieldUpdateModule = $filter('filter')($scope.$parent.modules, { name: workflow.field_update.module }, true)[0];
+                                                    fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
                                                 ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
                                                     if (response) {
                                                         fieldUpdateModule.fields = response.data;
@@ -191,11 +201,11 @@ angular.module('primeapps')
                                                             $scope.getSendNotificationUpdatableModules($scope.module);
                                                             $scope.getDynamicFieldUpdateModules($scope.module);
                                                             //TODO
-                                                            $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.$parent.modules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                            $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                             $scope.getUpdatableModules();
                                                             $scope.generateHookModules();
                                                         });
-                                                })
+                                                });
 
                                             }
 
@@ -204,67 +214,69 @@ angular.module('primeapps')
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
                                         });
+
                                 });
                         }
                     });
-            }
+            };
 
-            $scope.selectModule = function () {
+            $scope.selectModule = function (module) {
                 $scope.loadingFilter = true;
+                if (!$scope.workflowModel.module)
+                    $scope.workflowModel.module = module;
 
                 ModuleService.getModuleFields($scope.workflowModel.module.name)
                     .then(function (response) {
                         if (response) {
                             $scope.workflowModel.module.fields = response.data;
                         }
-                    });
 
-                var module = angular.copy($scope.workflowModel.module);
-                $scope.module = ModuleService.getFieldsOperator(module, $scope.$parent.modules, 0);
+                        $scope.module = ModuleService.getFieldsOperator($scope.workflowModel.module, $rootScope.appModules, 0)
 
-                if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
-                    $scope.showProcessFilter = true;
-                    $scope.workflowModel.processFilter = 'all';
-                }
-                else {
-                    $scope.workflowModel.processFilter = 'none';
-                    $scope.showProcessFilter = false;
-                }
-
-                angular.forEach($scope.module.fields, function (field) {
-                    if (field.data_type === 'lookup') {
-                        field.operators = [];
-                        field.operators.push(operators.equals);
-                        field.operators.push(operators.not_equal);
-                        field.operators.push(operators.empty);
-                        field.operators.push(operators.not_empty);
-                    }
-                });
-
-                ModuleService.getPickItemsLists($scope.module)
-                    .then(function (picklists) {
-                        $scope.modulePicklists = picklists;
-                        $scope.filters = [];
-
-                        for (var i = 0; i < 5; i++) {
-                            var filter = {};
-                            filter.id = i;
-                            filter.field = null;
-                            filter.operator = null;
-                            filter.value = null;
-                            filter.no = i + 1;
-
-                            $scope.filters.push(filter);
+                        if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
+                            $scope.showProcessFilter = true;
+                            $scope.workflowModel.processFilter = 'all';
+                        }
+                        else {
+                            $scope.workflowModel.processFilter = 'none';
+                            $scope.showProcessFilter = false;
                         }
 
-                        $scope.loadingFilter = false;
+                        angular.forEach($scope.module.fields, function (field) {
+                            if (field.data_type === 'lookup') {
+                                field.operators = [];
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+                            }
+                        });
+
+                        ModuleService.getPickItemsLists($scope.module)
+                            .then(function (picklists) {
+                                $scope.modulePicklists = picklists;
+                                $scope.filters = [];
+
+                                for (var i = 0; i < 5; i++) {
+                                    var filter = {};
+                                    filter.id = i;
+                                    filter.field = null;
+                                    filter.operator = null;
+                                    filter.value = null;
+                                    filter.no = i + 1;
+
+                                    $scope.filters.push(filter);
+                                }
+
+                                $scope.loadingFilter = false;
+                            });
+
+                        $scope.getUpdatableModules();
+                        $scope.getSendNotificationUpdatableModules();
+                        $scope.getDynamicFieldUpdateModules();
+                        setWebHookModules();
+
                     });
-
-                $scope.getUpdatableModules();
-                $scope.getSendNotificationUpdatableModules();
-                $scope.getDynamicFieldUpdateModules();
-                setWebHookModules();
-
             };
 
             $scope.getTagTextRaw = function (item, type) {
@@ -670,13 +682,13 @@ angular.module('primeapps')
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
                     if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                        var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                        var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                         $scope.updatableModules.push(module);
                     }
                 });
 
                 $scope.fieldUpdateModules = angular.copy($scope.updatableModules);
-                $scope.fieldUpdateModules.unshift($filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0]);
+                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]);
             };
 
             //upodatable modules for send_notification
@@ -703,13 +715,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var notificationObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            notificationObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
                             notificationObj.id = id;
                         } else {
-                            notificationObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
@@ -722,8 +734,8 @@ angular.module('primeapps')
 
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
-                notificationObj.module = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0];
-                notificationObj.name = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0]['label_' + $scope.language + '_singular'];
+                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                notificationObj.name = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]['label_' + $scope.language + '_singular'];
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
                 notificationObj.id = id;
@@ -756,13 +768,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var updateObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            updateObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
                             updateObj.id = id;
                         } else {
-                            updateObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
@@ -956,7 +968,7 @@ angular.module('primeapps')
                             lookupRecord.primary_value = lookupRecord['full_name'];
                         }
                         else {
-                            var lookupModule = $filter('filter')($scope.$parent.modules, { name: $scope.workflowModel.field_update.field.lookup_type }, true)[0];
+                            var lookupModule = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.field_update.field.lookup_type }, true)[0];
                             var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                             lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
                         }
@@ -1015,7 +1027,7 @@ angular.module('primeapps')
                                     filter.value = [lookupRecord];
                                 }
                                 else {
-                                    var lookupModule = $filter('filter')($scope.$parent.modules, { name: filter.field.lookup_type }, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.appModules, { name: filter.field.lookup_type }, true)[0];
                                     var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                     lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
                                     filter.value = lookupRecord;
@@ -1392,7 +1404,7 @@ angular.module('primeapps')
 
                 var success = function () {
                     $scope.saving = false;
-                    $state.go('studio.app.rules');
+                    // $state.go('studio.app.rules');
                     $scope.cancel();
                     $scope.changePage(1);
 
@@ -1429,11 +1441,28 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (id) {
-                RulesService.delete(id)
-                    .then(function () {
-                        $scope.cancel();
-                        $scope.changePage(1);
-                    });
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure that you want to delete this rule ?",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Okey'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        if (!id)
+                            return false;
+
+                        RulesService.delete(id)
+                            .then(function () {
+                                //$scope.cancel();
+                                $scope.workflowModel = {};
+                                $scope.id = null;
+                                $scope.changePage(1);
+                                //$state.reload();
+                                swal("Deleted!", "Rule has been deleted!", "success");
+                            });
+                    }
+                });
             };
 
             var setWebHookModules = function () {
@@ -1577,13 +1606,13 @@ angular.module('primeapps')
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
                     if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                        var module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                        var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                         $scope.updatableModules.push(module);
                     }
                 });
 
                 $scope.fieldUpdateModules = angular.copy($scope.updatableModules);
-                $scope.fieldUpdateModules.unshift($filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0]);
+                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]);
             };
             //upodatable modules for send_notification
 
@@ -1610,13 +1639,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var notificationObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            notificationObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
                             notificationObj.id = id;
                         } else {
-                            notificationObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
@@ -1629,8 +1658,8 @@ angular.module('primeapps')
 
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
-                notificationObj.module = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0];
-                var resultModule = $filter('filter')($scope.$parent.modules, { name: 'users' }, true)[0];
+                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
 
                 if (resultModule)
                     notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
@@ -1667,13 +1696,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var updateObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            updateObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
                             updateObj.id = id;
                         } else {
-                            updateObj.module = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;

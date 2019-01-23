@@ -10,9 +10,8 @@ angular.module('primeapps')
             // $scope.activeMenuItem = 'organization';
             // $scope.tabTitle='organization';
 
-            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
-            $http.get(config.apiUrl + 'team/count/' + organitzationId).then(function (response) {
+            $http.get(config.apiUrl + 'team/count/' + $rootScope.currentOrgId).then(function (response) {
                 $scope.$parent.teamCount = response.data;
             });
         }

@@ -25,11 +25,11 @@ angular.module('primeapps')
                     }
 
                     // if ($rootScope.currentOrganization)
-                    //     config.headers['X-Organization-Id'] = $rootScope.currentOrganization.id;
+                    //     config.headers['X-Organization-Id'] = $rootScope.currentOrgId;
 
-                    var organizationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : null;
+                    var organizationId = $rootScope.currentOrgId ? $rootScope.currentOrgId : null;
 
-                    var appId = $rootScope.currenAppId !="undefined" &&  $rootScope.currenAppId  ? $rootScope.currenAppId : null;
+                    var appId = $rootScope.currentAppId !="undefined" &&  $rootScope.currentAppId  ? $rootScope.currentAppId : null;
 
                     var tenantId = $cookies.get('tenant_id');
 

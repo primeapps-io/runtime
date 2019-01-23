@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";
             $rootScope.breadcrumblist[2].title = 'Workflows';
-            
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -47,19 +47,20 @@ angular.module('primeapps')
             });
 
             $scope.changePage = function (page) {
-                $scope.loading = true; 
+                $scope.loading = true;
                 $scope.count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
 
-                WorkflowsService.find(requestModel, organitzationId).then(function (response) {
-                    var data = fillModule(response.data);
+                WorkflowsService.find(requestModel, $rootScope.currentOrgId)
+                    .then(function (response) {
+                        var data = fillModule(response.data);
 
-                    $scope.workflows = data;
-                    $scope.$parent.workflows = data;
-                    $scope.loading = false;
-                });
+                        $scope.workflows = data;
+                        $scope.$parent.workflows = data;
+                        $scope.loading = false;
+                    });
 
             };
 
@@ -70,7 +71,7 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($scope.$parent.modules, { id: moduleId }, true)[0];
+                    var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
                     data[i].module = angular.copy(module);
                 }
 
@@ -112,9 +113,27 @@ angular.module('primeapps')
                 $scope.formModal.hide();
             };
 
-            $scope.deleteSelectedItem = function () {
-
-
+            $scope.delete = function (id) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure that you want to delete this workflow ?",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Okey'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        WorkflowsService.delete(id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    $scope.cancel();
+                                    $scope.id = null;
+                                    //$state.reload();
+                                    $scope.changePage(1);
+                                    swal("Deleted!", "Workflow has been deleted!", "success");
+                                }
+                            });
+                    }
+                });
             };
 
             //Modal End

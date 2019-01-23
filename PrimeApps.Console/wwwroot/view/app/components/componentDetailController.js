@@ -2,20 +2,30 @@
 
 angular.module('primeapps')
 
-    .controller('ComponentFormController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
+    .controller('ComponentDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums, $localStorage) {
             $scope.modules = [];
             $scope.id = $state.params.id;
+            $scope.orgId = $state.params.orgId;
 
-            $scope.$parent.menuTopTitle = "App 1";
+            $scope.$parent.menuTopTitle = $scope.currentApp.label
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
+
+            $scope.currentApp = $localStorage.get("current_app");
+
+            /*if (!$scope.orgId || !$scope.appId) {
+             $state.go('studio.apps', { organizationId: $scope.orgId });
+             }*/
+
             $scope.componentPlaces = componentPlaces;
             $scope.componentTypes = componentTypes;
             $scope.componentForm = {};
             $scope.loading = true;
             //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, { id: 1 }, true)[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
+            $scope.giteaUrl = giteaUrl;
+
             /*$scope.aceOption = {
              mode: 'javascript',
              theme: 'tomorrow_night',
@@ -39,6 +49,7 @@ angular.module('primeapps')
                     }
 
                     $scope.component = response.data;
+                    $scope.componentTypeName = $scope.component.type;
                     $scope.component.place = componentPlaceEnums[$scope.component.place];
                     $scope.component.type = componentTypeEnums[$scope.component.type];
                     $scope.loading = false;
@@ -48,7 +59,7 @@ angular.module('primeapps')
             var openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
                         scope: $scope,
-                        templateUrl: 'view/app/components/formComponentModal.html',
+                        templateUrl: 'view/app/components/componentFormModal.html',
                         animation: 'am-fade-and-slide-right',
                         backdrop: 'static',
                         show: false
@@ -59,7 +70,7 @@ angular.module('primeapps')
             };
 
             $scope.edit = function () {
-                $scope.modalLoading = true;
+               //$scope.modalLoading = true;
                 $scope.editing = true;
 
                 openModal();
@@ -67,10 +78,10 @@ angular.module('primeapps')
                     ComponentsService.getAllModulesBasic()
                         .then(function (response) {
                             $scope.modules = response.data;
-                            $scope.modalLoading = false;
+                            //$scope.modalLoading = false;
                         })
                 } else {
-                    $scope.modalLoading = false;
+                    //$scope.modalLoading = false;
                 }
             };
 
