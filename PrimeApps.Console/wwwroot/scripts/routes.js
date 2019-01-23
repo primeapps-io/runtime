@@ -19,7 +19,7 @@ angular.module('primeapps')
                     templateUrl: 'view/layout.html',
                     controller: 'LayoutController',
                     resolve: {
-                        start: ['$rootScope', 'LayoutService', function ($rootScope, LayoutService) {
+                        studio: ['$rootScope', 'LayoutService', function ($rootScope, LayoutService) {
                             return LayoutService.getAll();
                         }]
                     }
@@ -36,8 +36,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope',
-                            function ($rootScope) {
+                        start: ['$rootScope', 'studio',
+                            function ($rootScope, studio) {
                                 $rootScope.currentAppId = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
@@ -58,8 +58,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope',
-                            function ($rootScope) {
+                        start: ['$rootScope', 'studio',
+                            function ($rootScope, studio) {
                                 $rootScope.currentAppId = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
@@ -80,7 +80,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/appform/appFormService.js',
                                 cdnUrl + 'view/organization/appform/appFormController.js'
@@ -98,7 +98,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/organizationform/organizationFormService.js',
                                 cdnUrl + 'view/organization/organizationform/organizationFormController.js'
@@ -116,7 +116,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/account/accountService.js',
                                 cdnUrl + 'view/account/accountController.js'
@@ -134,7 +134,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 'scripts/vendor/angular-fusioncharts.js',
                                 cdnUrl + 'view/dashboard/dashboardService.js',
@@ -153,7 +153,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/view/viewFormController.js',
                                 cdnUrl + 'view/view/viewService.js'
@@ -190,7 +190,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/reports/reportsService.js',
                                 cdnUrl + 'view/reports/createReportController.js'
@@ -211,8 +211,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope', '$q', '$state', '$stateParams', '$filter',
-                            function ($rootScope, $q, $state, $stateParams, $filter) {
+                        organization: ['$rootScope', '$q', '$state', '$stateParams', '$filter', 'studio',
+                            function ($rootScope, $q, $state, $stateParams, $filter, studio) {
                                 $rootScope.currentOrgId = parseInt($stateParams.organizationId);
 
                                 if (!$rootScope.currentOrgId) {
@@ -237,6 +237,10 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        start: ['$rootScope', 'organization',
+                            function ($rootScope, organization) {
+                                $rootScope.currentAppId = null;
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/teams/teamsService.js',
@@ -255,8 +259,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope',
-                            function ($rootScope) {
+                        start: ['$rootScope', 'organization',
+                            function ($rootScope, organization) {
                                 $rootScope.currentAppId = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
@@ -280,8 +284,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        start: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter',
-                            function ($rootScope, LayoutService, $stateParams, $state, $filter) {
+                        app: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter', 'studio',
+                            function ($rootScope, LayoutService, $stateParams, $state, $filter, studio) {
                                 $rootScope.currentAppId = parseInt($stateParams.appId);
                                 $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
@@ -305,7 +309,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/overview/overviewController.js'
                             ]);
@@ -322,7 +326,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleController.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
@@ -340,7 +344,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleDesignerController.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
@@ -358,7 +362,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/relations/relationsController.js',
                                 cdnUrl + 'view/app/model/relations/relationsService.js',
@@ -377,7 +381,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/filters/filtersService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js',
@@ -396,7 +400,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/dependencies/dependenciesController.js',
                                 cdnUrl + 'view/app/model/dependencies/dependenciesService.js',
@@ -415,7 +419,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesController.js',
                                 cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesService.js'
@@ -433,7 +437,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesController.js',
                                 cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesService.js'
@@ -451,7 +455,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesController.js',
                                 cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesService.js'
@@ -469,7 +473,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/emailtemplates/templatesEmailGuideController.js'
                             ]);
@@ -486,7 +490,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/workflows/workflowsController.js',
                                 cdnUrl + 'view/app/automation/workflows/workflowsService.js'
@@ -504,7 +508,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/workflows/workflowEditorController.js',
                                 cdnUrl + 'view/app/automation/workflows/workflowsService.js',
@@ -524,7 +528,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/rules/rulesController.js',
                                 cdnUrl + 'view/app/automation/rules/rulesService.js'
@@ -542,7 +546,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/processes/processesController.js',
                                 cdnUrl + 'view/app/automation/processes/processesService.js'
@@ -560,7 +564,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/analytics/reports/reportsController.js',
                                 cdnUrl + 'view/app/analytics/reports/reportsService.js'
@@ -578,7 +582,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/analytics/dashboards/dashboardsController.js',
                                 cdnUrl + 'view/app/analytics/dashboards/dashboardsService.js'
@@ -596,7 +600,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/analytics/warehouse/warehouseController.js',
                                 cdnUrl + 'view/app/analytics/warehouse/warehouseService.js'
@@ -614,7 +618,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/analytics/bi/biController.js',
                                 cdnUrl + 'view/app/analytics/bi/biService.js'
@@ -632,7 +636,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/functions/functionsController.js',
                                 cdnUrl + 'view/app/functions/functionsService.js'
@@ -649,7 +653,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/components/functionDetailController.js',
                                 cdnUrl + 'view/app/components/functionService.js'
@@ -666,7 +670,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/components/componentsController.js',
                                 cdnUrl + 'view/app/components/componentsService.js'
@@ -684,7 +688,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/components/componentDetailController.js',
                                 cdnUrl + 'view/app/components/componentsService.js'
@@ -701,7 +705,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/authorization/profiles/profilesController.js',
                                 cdnUrl + 'view/app/authorization/profiles/profilesService.js'
@@ -719,7 +723,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/moduleProfileSettingsController.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
@@ -737,7 +741,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/authorization/roles/rolesController.js',
                                 cdnUrl + 'view/app/authorization/roles/rolesService.js'
@@ -755,7 +759,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/menus/menusController.js',
                                 cdnUrl + 'view/app/menus/menusService.js',
@@ -774,7 +778,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/help/helpController.js',
                                 cdnUrl + 'view/app/help/helpService.js'
@@ -792,7 +796,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/deployment/deploymentController.js',
                                 cdnUrl + 'view/app/deployment/deploymentService.js'
@@ -810,7 +814,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/diagnostics/diagnosticsController.js',
                                 cdnUrl + 'view/app/diagnostics/diagnosticsService.js'
@@ -828,7 +832,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/extensions/extensionsController.js',
                                 cdnUrl + 'view/app/extensions/extensionsService.js'
@@ -846,7 +850,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/security/certificates/certificatesController.js',
                                 cdnUrl + 'view/app/security/certificates/certificatesService.js'
@@ -864,7 +868,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
                                 cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
@@ -882,7 +886,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/security/audittrail/auditTrailController.js',
                                 cdnUrl + 'view/app/security/audittrail/auditTrailService.js'
@@ -900,7 +904,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/security/cors/corsController.js',
                                 cdnUrl + 'view/app/security/cors/corsService.js'
@@ -918,7 +922,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/security/networkaccess/networkaccessController.js',
                                 cdnUrl + 'view/app/security/networkaccess/networkaccessService.js'
@@ -936,7 +940,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/identity/authentication/authenticationController.js',
                                 cdnUrl + 'view/app/identity/authentication/authenticationService.js'
@@ -954,7 +958,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/identity/identityprovider/identityController.js',
                                 cdnUrl + 'view/app/identity/identityprovider/identityService.js'
@@ -972,7 +976,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/identity/singlesingon/singleSignOnController.js',
                                 cdnUrl + 'view/app/identity/singlesingon/singleSignOnService.js'
@@ -990,7 +994,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/settings/appdetails/appDetailsController.js',
                                 cdnUrl + 'view/app/settings/appdetails/appDetailsService.js'
@@ -1008,7 +1012,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/settings/collaborators/appCollaboratorsController.js',
                                 cdnUrl + 'view/app/settings/collaborators/appCollaboratorsService.js'
@@ -1026,7 +1030,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/settings/notifications/notificationsController.js',
                                 cdnUrl + 'view/app/settings/notifications/notificationsService.js'
@@ -1044,7 +1048,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/modules/actionButtonsController.js',
                                 cdnUrl + 'view/app/model/modules/actionButtonsService.js',
@@ -1063,7 +1067,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/settingsController.js'
@@ -1081,7 +1085,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/profile/profileController.js'
@@ -1099,7 +1103,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/settings/settingsService.js',
                                 cdnUrl + 'view/settings/password/passwordController.js'
