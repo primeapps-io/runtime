@@ -87,7 +87,7 @@ $primeapps-color: #0D6FAA;
       }
     }
     &:disabled {
-      span{
+      ~ span{
         opacity: .5;
         cursor: not-allowed;
       }
@@ -134,7 +134,7 @@ $primeapps-color: #0D6FAA;
     }
     &:disabled {
       cursor: not-allowed;
-      span{
+      ~ span{
         opacity: .5;
         cursor: not-allowed;
       }
@@ -144,7 +144,7 @@ $primeapps-color: #0D6FAA;
   input[disabled="disabled"]
   {
     cursor: not-allowed;
-    span{
+    ~ span{
       opacity: .5;
       cursor: not-allowed;
     }
@@ -2031,6 +2031,7 @@ button, select {
         padding-right: 15px;
         position: sticky;
         top: 5%;
+        z-index: 2;
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
@@ -2146,6 +2147,7 @@ button, select {
         padding-left: 15px;
         padding-right: 15px;
         @include hoverEffect();
+        z-index: 1;
       }
 
       .setup-title {
