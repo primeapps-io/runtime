@@ -49,6 +49,8 @@ $primeapps-color: #0D6FAA;
   -ms-user-select: none;
   user-select: none;
   
+  
+  
   input[type="radio"] 
   {
     position: absolute;
@@ -83,6 +85,9 @@ $primeapps-color: #0D6FAA;
           display:block;
         }
       }
+    }
+    &:disabled {
+      opacity: .5;
     }
   }
 
@@ -123,6 +128,9 @@ $primeapps-color: #0D6FAA;
           display:block;
         }
       }
+    }
+    &:disabled {
+      opacity: .5;
     }
   }
   
