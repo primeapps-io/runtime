@@ -75,6 +75,7 @@ namespace PrimeApps.Model.Repositories
                     Id = x.AppDraft.Id,
                     OrganizationId = x.AppDraft.OrganizationId,
                     Name = x.AppDraft.Name,
+                    Label = x.AppDraft.Label,
                     Description = x.AppDraft.Description,
                     Logo = x.AppDraft.Logo,
                     TempletId = x.AppDraft.TempletId,

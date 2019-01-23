@@ -59,14 +59,14 @@
                 <div class="oval">
                     <span data-trigger="hover" data-type="success"
                           data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
-                          class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
+                          class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                 </div>
                 <div class="image">
                     <img ng-src="{{app.logo}}"/>
                 </div>
             </div>
             <div class="app-info">
-                <h3>{{app.name}}</h3>
+                <h3>{{app.label}}</h3>
                 <h4>{{app.description}} </h4>
             </div>
         </div>
