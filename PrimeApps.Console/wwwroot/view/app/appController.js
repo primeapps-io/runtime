@@ -27,17 +27,5 @@ angular.module('primeapps')
             };
 
             $scope.getBasicModules();
-
-            $rootScope.preview = function () {
-                $rootScope.previewActivating = true;
-                LayoutService.getPreviewToken()
-                    .then(function (response) {
-                        $scope.previewActivating = false;
-                        $window.open('http://localhost:5001?preview=' + encodeURIComponent(response.data), '_blank');
-                    })
-                    .catch(function (response) {
-                        $scope.previewActivating = false;
-                    });
-            };
         }
     ]);

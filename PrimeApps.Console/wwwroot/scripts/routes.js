@@ -36,6 +36,10 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        start: ['$rootScope',
+                            function ($rootScope) {
+                                $rootScope.currentAppId = null;
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/allapps/allAppsService.js',
@@ -54,7 +58,10 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-
+                        start: ['$rootScope',
+                            function ($rootScope) {
+                                $rootScope.currentAppId = null;
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/apps/appsService.js',
@@ -248,6 +255,10 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
+                        start: ['$rootScope',
+                            function ($rootScope) {
+                                $rootScope.currentAppId = null;
+                            }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/collaborators/collaboratorsService.js',

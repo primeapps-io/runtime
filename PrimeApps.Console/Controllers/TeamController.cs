@@ -176,9 +176,6 @@ namespace PrimeApps.Console.Controllers
         {
             var count = await _teamRepository.Count(organizationId);
 
-            if (count < 1)
-                return NotFound();
-
             return Ok(count);
         }
 

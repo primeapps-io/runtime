@@ -54,6 +54,18 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             return check;
         };
 
+        $scope.preview = function () {
+            $rootScope.previewActivating = true;
+            LayoutService.getPreviewToken()
+                .then(function (response) {
+                    $scope.previewActivating = false;
+                    $window.open('http://localhost:5001?preview=' + encodeURIComponent(response.data), '_blank');
+                })
+                .catch(function (response) {
+                    $scope.previewActivating = false;
+                });
+        };
+
         $scope.logout = function () {
             blockUI.start();
 
