@@ -87,7 +87,10 @@ $primeapps-color: #0D6FAA;
       }
     }
     &:disabled {
-      opacity: .5;
+      span{
+        opacity: .5;
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -130,10 +133,23 @@ $primeapps-color: #0D6FAA;
       }
     }
     &:disabled {
-      opacity: .5;
+      cursor: not-allowed;
+      span{
+        opacity: .5;
+        cursor: not-allowed;
+      }
+      
     }
   }
-  
+  input[disabled="disabled"]
+  {
+    cursor: not-allowed;
+    span{
+      opacity: .5;
+      cursor: not-allowed;
+    }
+  }
+
   &:hover{
     input[type="radio"]{
       ~ span {
@@ -1480,6 +1496,7 @@ button, select {
         flex-direction: column;
         align-items: center;
         margin-top: 23px;
+        
 
         h3 {
           line-height: 20px;
@@ -1488,6 +1505,11 @@ button, select {
           font-weight: bold;
           margin: 0px;
           padding: 0px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 100%;
+          text-align: center;
         }
 
         h4 {
@@ -1497,6 +1519,11 @@ button, select {
           font-weight: 400;
           line-height: 25px;
           color: rgba(0, 0, 0, 0.5);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 100%;
+          text-align: center;
         }
       }
 
