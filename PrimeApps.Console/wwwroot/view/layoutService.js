@@ -282,11 +282,11 @@ angular.module('primeapps')
                         $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
 
                         $rootScope.breadcrumblist[1] = {
-                            title: result.data.name,
+                            title: result.data.label,
                             link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
                         };
 
-                        $rootScope.menuTopTitle = $rootScope.currentApp.name;
+                        $rootScope.menuTopTitle = $rootScope.currentApp.label;
                         deferred.resolve(true);
                         return deferred.promise;
                     });

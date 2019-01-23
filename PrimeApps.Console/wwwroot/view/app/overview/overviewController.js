@@ -11,7 +11,7 @@ angular.module('primeapps')
 
 
            
-            $scope.$parent.menuTopTitle = $rootScope.currentApp.name;
+            $scope.$parent.menuTopTitle = $rootScope.currentApp.label;
 
             //$rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentOrgId;
             //$rootScope.breadcrumblist[1] = {title:$scope.$parent.menuTopTitle};
