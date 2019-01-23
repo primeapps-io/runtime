@@ -172,5 +172,16 @@ namespace PrimeApps.Console.Controllers
 
             return app == null ? Ok(true) : Ok(false);
         }
+
+        [Route("get_collaborators/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAppCollaborators(int id)
+        {
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var app = await _appDraftRepository.GetAppCollaborators(id);
+
+            return Ok(app);
+        }
     }
 }

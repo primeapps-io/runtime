@@ -82,15 +82,22 @@
         </div>
     </form>
     <div class="modal-header" ng-show="showNewCollaboratorInfo">
-        <div class="col-sm-6"><h4 class="modal-title">Collabrator Info</h4></div>
-        <div class="col-sm-6 col-sm-rigth">
-            <button type="button" class="btn btn-radius btn-gray"
-                    ng-click="close();">
-                <i class="fas fa-times margin-right-10"></i>Close
-            </button>
+        <div class="flex-between">
+            <h4 class="modal-title">Collabrator Info</h4>
+            <div>
+                <ul class="list-unstyled list-inline">
+                    <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                    <li>
+                        <button type="button" class="btn btn-radius btn-gray"
+                                ng-click="close();">
+                            <i class="fas fa-times margin-right-10"></i>Close
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="modal-dialog modal-300" ng-show="showNewCollaboratorInfo">
+    <div class="modal-dialog" ng-show="showNewCollaboratorInfo">
         <div class="modal-content padding-0">
             <div class="modal-body">
                 <div class="col-sm-12">
