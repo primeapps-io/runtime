@@ -923,7 +923,7 @@ button, select {
 
   .modal {
     left: auto;
-    padding: 20px 30px;
+    padding: 20px 10px 20px 30px;
 
     .section {
       padding: 20px;
@@ -939,14 +939,18 @@ button, select {
 
     .megalist {
       display: flex;
+      
 
       > div {
         width: 100%;
 
         &.modal-menu {
           width: auto;
-          position: relative;
           padding-right: 20px;
+          position: -webkit-sticky;
+          position: sticky;
+          align-self: flex-start;
+          top: 0px;
 
           &:before {
             content: '';
@@ -954,9 +958,9 @@ button, select {
             right: 22px;
             top: 0px;
             width: 2px;
-            height: 100%;
             border-radius: 3px;
             background: rgba(0, 0, 0, 0.05);
+            height: 100vh;
           }
 
           ul {
@@ -999,6 +1003,18 @@ button, select {
               }
             }
           }
+          
+        }
+        
+      }
+      .section{
+        padding: 0px;
+        border: none;
+        border-radius: 0px;
+        border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+        &:last-child{
+          border: none;
+          margin-bottom: 0px;
         }
       }
     }
@@ -1033,7 +1049,7 @@ button, select {
       margin: 0;
       line-height: 33px !important;
       width: 100% !important;
-
+      padding-right: 20px;
 
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -1117,10 +1133,15 @@ button, select {
     }
 
     .modal-header {
-      border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-      padding: 10px 0px;
-      margin-bottom: 20px;
-
+      padding: 0px;
+      padding-right: 20px;
+      border-bottom: none;
+      .flex-between
+      {
+        padding-bottom: 10px;
+        border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
       h4 {
         font-size: 16px;
         font-weight: bold;

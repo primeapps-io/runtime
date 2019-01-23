@@ -692,7 +692,7 @@ button:focus, select:focus {
 }
 .primeapps .modal {
   left: auto;
-  padding: 20px 30px;
+  padding: 20px 10px 20px 30px;
 }
 .primeapps .modal .section {
   padding: 20px;
@@ -712,8 +712,11 @@ button:focus, select:focus {
 }
 .primeapps .modal .megalist > div.modal-menu {
   width: auto;
-  position: relative;
   padding-right: 20px;
+  position: -webkit-sticky;
+  position: sticky;
+  align-self: flex-start;
+  top: 0px;
 }
 .primeapps .modal .megalist > div.modal-menu:before {
   content: "";
@@ -721,9 +724,9 @@ button:focus, select:focus {
   right: 22px;
   top: 0px;
   width: 2px;
-  height: 100%;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.05);
+  height: 100vh;
 }
 .primeapps .modal .megalist > div.modal-menu ul li {
   white-space: nowrap;
@@ -759,6 +762,16 @@ button:focus, select:focus {
   list-style-type: none;
   padding-left: 10px;
 }
+.primeapps .modal .megalist .section {
+  padding: 0px;
+  border: none;
+  border-radius: 0px;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+}
+.primeapps .modal .megalist .section:last-child {
+  border: none;
+  margin-bottom: 0px;
+}
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
   margin: 10px;
@@ -786,6 +799,7 @@ button:focus, select:focus {
   margin: 0;
   line-height: 33px !important;
   width: 100% !important;
+  padding-right: 20px;
 }
 .primeapps .setup-modal .modal-dialog input[type=radio]:checked + span:after, .primeapps .module-modal .modal-dialog input[type=radio]:checked + span:after {
   width: 10px;
@@ -839,8 +853,13 @@ button:focus, select:focus {
   font-weight: bold;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+  padding: 0px;
+  padding-right: 20px;
+  border-bottom: none;
+}
+.primeapps .setup-modal .modal-header .flex-between, .primeapps .module-modal .modal-header .flex-between {
+  padding-bottom: 10px;
   border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-  padding: 10px 0px;
   margin-bottom: 20px;
 }
 .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
