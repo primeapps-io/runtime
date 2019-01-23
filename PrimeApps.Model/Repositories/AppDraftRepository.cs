@@ -101,5 +101,12 @@ namespace PrimeApps.Model.Repositories
 
             return appCollabrator;
         }
+
+        public async Task<List<AppCollaborator>> GetAppCollaborators(int appId)
+        {
+            return await DbContext.AppCollaborators
+                .Where(x => x.AppId == appId && !x.Deleted)
+                .ToListAsync();
+        }
     }
 }
