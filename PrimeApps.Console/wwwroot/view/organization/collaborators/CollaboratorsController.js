@@ -13,7 +13,6 @@ angular.module('primeapps')
             $scope.collaboratorModel = {};
             $scope.loading = true;
             $scope.showNewCollaboratorInfo = false;
-            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
             $scope.requestModel = {
                 limit: "10",
@@ -28,12 +27,12 @@ angular.module('primeapps')
 
             };
             $scope.generator(10);
-            CollaboratorsService.count(organitzationId).then(function (response) {
+            CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
                 $scope.$parent.collaboratorCount = response.data;
                 $scope.pageTotal = response.data;
             });
 
-            CollaboratorsService.find($scope.requestModel, organitzationId).then(function (response) {
+            CollaboratorsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 $scope.collaboratorArray = response.data;
                 $scope.$parent.collaboratorArray = response.data;
                 $scope.loading = false;
@@ -44,11 +43,11 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                CollaboratorsService.count(organitzationId).then(function (response) {
+                CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
                     $scope.$parent.collaboratorCount = response.data;
                     $scope.pageTotal = response.data;
                 });
-                CollaboratorsService.find(requestModel, organitzationId).then(function (response) {
+                CollaboratorsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     $scope.collaboratorArray = response.data;
                     $scope.$parent.collaboratorArray = response.data;
                     $scope.loading = false;
@@ -62,7 +61,7 @@ angular.module('primeapps')
 
             $scope.getCollaborators = function () {
                 var filter = {};
-                filter.organization_id = organitzationId;
+                filter.organization_id = $rootScope.currentOrgId;
                 filter.page = 1;
                 filter.order_by = null;
                 filter.order_field = null;
@@ -136,7 +135,7 @@ angular.module('primeapps')
                 $scope.submitting = true;
 
                 var newCol = {};
-                newCol.organization_id = organitzationId;
+                newCol.organization_id = $rootScope.currentOrgId;
                 newCol.role = $scope.collaboratorModel.role.value;
                 newCol.email = $scope.collaboratorModel.email;
                 newCol.first_name = $scope.collaboratorModel.first_name;
@@ -206,7 +205,7 @@ angular.module('primeapps')
                 $scope.removing = true;
                 var data = {};
                 data.user_id = id;
-                data.organization_id = organitzationId;
+                data.organization_id = $rootScope.currentOrgId;
                 data.role = result.role;
 
                 CollaboratorsService.delete(data)

@@ -11,6 +11,7 @@
     var encryptedUserId = ViewBag.EncryptedUserId;
     var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
     var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+	var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
 }
 
 <!DOCTYPE html>
@@ -87,7 +88,8 @@
     var token = '@token';
     var applicationId = '@appId';
     var encryptedUserId = '@encryptedUserId';
-
+    var trustedUrls = JSON.parse('@trustedUrls');
+    
     if (theme) {
         document.body.className = theme;
     } else {

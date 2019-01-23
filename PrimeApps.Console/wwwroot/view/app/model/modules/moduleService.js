@@ -388,6 +388,9 @@ angular.module('primeapps')
                 },
 
                 getPickItemsLists: function (module, withRelatedPicklists) {
+                    if (!module.fields)
+                        return {};
+
                     var deferred = $q.defer();
                     var fields = angular.copy(module.fields);
                     var picklists = {};
@@ -405,7 +408,7 @@ angular.module('primeapps')
                         for (var i = 0; i < module.fields.length; i++) {
                             var field = module.fields[i];
 
-                            if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+                            if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
 
                                 if (!lookupModule)
@@ -1781,6 +1784,9 @@ angular.module('primeapps')
                 },
 
                 getFieldsOperator: function (module, modules, counter) {
+                    if (!module)
+                        return {};
+
                     if (counter >= module.fields.length)
                         return module;
 
@@ -1789,6 +1795,7 @@ angular.module('primeapps')
                     if (!field)
                         this.getFieldsOperator(module, modules, counter + 1);
 
+                    field.dataType = {};
                     field.dataType = dataTypes[field.data_type];
                     field.operators = [];
 
@@ -1900,7 +1907,7 @@ angular.module('primeapps')
 
         }
     ])
-;
+    ;
 
 angular.module('primeapps')
 

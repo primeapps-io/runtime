@@ -1,14 +1,14 @@
 <ul class="nav nav-pills nav-stacked setup-nav">
 
     <li ng-class="activeMenuItem ==='collaborators' ? 'active' :''">
-        <a href="/#/organization/1/collaborators" data-trigger="hover" data-type="info" data-title="Collaborators" bs-tooltip data-placement="right">
+        <a href="/#/organization/{{currentOrgId}}/collaborators" data-trigger="hover" data-type="info" data-title="Collaborators" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
             <span>Collaborators</span>
         </a>
         <span ng-show="collaboratorCount" class="costume-bage">{{collaboratorCount}}</span>
     </li>
     <li ng-class="activeMenuItem ==='teams' ? 'active' :''">
-        <a href="/#/organization/1/teams"  data-trigger="hover" data-type="info" data-title="Teams" bs-tooltip data-placement="right">
+        <a href="/#/organization/{{currentOrgId}}/teams"  data-trigger="hover" data-type="info" data-title="Teams" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Teams</span>
         </a>

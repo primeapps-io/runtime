@@ -5,6 +5,25 @@ angular.module('primeapps')
     .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce',
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
+                getAll: function () {
+                    var promises = [];
+                    var def = $q.defer();
+
+                    promises.push($http.get(config.apiUrl + 'user/me'));
+                    promises.push($http.get(config.apiUrl + 'user/organizations'));
+                    return $q.all(promises).then(function (response) {
+                        $rootScope.me = response[0].data;
+                        $rootScope.organizations = response[1].data;
+
+                        if (!$rootScope.breadcrumblist) {
+                            $rootScope.breadcrumblist = [{}, {}, {}];
+                        }
+                        def.resolve($rootScope.organizations);
+                        helper.hideLoader();
+                    });
+
+                    return def.promise;
+                },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
                 },
@@ -17,9 +36,6 @@ angular.module('primeapps')
                 isOrganizationShortnameUnique: function (name) {
                     return $http.get(config.apiUrl + 'organization/is_unique_name?name=' + name);
                 },
-                getOrg: function (refresh) {
-
-                },
                 getAppInfo: function (appId) {
                     $http.get(config.apiUrl + "app/get/" + $scope.appId);
                 },
@@ -27,7 +43,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'module/get_all_basic');
                 },
                 getPreviewToken: function () {
-
+                    return $http.get(config.apiUrl + 'preview/key');
                 },
                 processModule: function (module) {
                     for (var i = 0; i < module.sections.length; i++) {
@@ -244,38 +260,38 @@ angular.module('primeapps')
 
                     return module;
                 },
-                getAppData: function (appId) {
-                    var deferred = $q.defer();
 
-                    $http.get(config.apiUrl + "app/get/" + appId).then(function (result) {
-                        if (result.data) {
-                            $rootScope.currentApp = result.data;
-
-                            $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
-                            $rootScope.breadcrumblist[1] = {
-                                title: result.data.name,
-                                link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
-                            };
-
-
-                        }
-                    });
-
+                getAppData: function () {
                     var promises = [];
+                    var deferred = $q.defer();
                     promises.push($http.get(config.apiUrl + 'module/get_all_basic'));
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
-                    $q.all(promises).then(function (response) {
-                        if (response.length < 2 || response[0].status != 200 || response[1].status != 200) {
+                    promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
 
-                            deferred.resolve(false);
-                            return deferred.promise;
-                        }
-
+                    return $q.all(promises).then(function (response) {
                         $rootScope.appModules = response[0].data;
                         $rootScope.appProfiles = response[1].data;
+                        var result = response[2];
+                        $rootScope.currentApp = result.data;
+                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentApp.organization_id) } ,true)[0];
+
+                        if (!angular.isArray($rootScope.breadcrumblist))
+                            $rootScope.breadcrumblist = [{}, {}, {}];
+
+                        $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.name;
+                        $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
+
+                        $rootScope.breadcrumblist[1] = {
+                            title: result.data.name,
+                            link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
+                        };
+
+                        $rootScope.menuTopTitle = $rootScope.currentApp.name;
+                        deferred.resolve(true);
+                        return deferred.promise;
                     });
 
-
+                    return deferred.promise;
                 }
             };
         }]);

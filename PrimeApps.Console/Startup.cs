@@ -64,11 +64,11 @@ namespace PrimeApps.Console
             services.AddMvc(opt =>
                 {
                     opt.CacheProfiles.Add("Nocache",
-                    new CacheProfile()
-                    {
-                        Location = ResponseCacheLocation.None,
-                        NoStore = true,
-                    });
+                        new CacheProfile()
+                        {
+                            Location = ResponseCacheLocation.None,
+                            NoStore = true,
+                        });
                 })
                 .AddWebApiConventions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
@@ -88,10 +88,7 @@ namespace PrimeApps.Console
                 })
                 .AddViewLocalization(
                     LanguageViewLocationExpanderFormat.Suffix,
-                    opts =>
-                    {
-                        opts.ResourcesPath = "Localization";
-                    })
+                    opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
         }
 
@@ -124,15 +121,25 @@ namespace PrimeApps.Console
                 app.UseHsts().UseHttpsRedirection();
             }
 
+            app.Use(async (ctx, next) =>
+            {
+                if (enableHttpsRedirection)
+                    ctx.Request.Scheme = "https";
+                else
+                    ctx.Request.Scheme = "http";
+
+                await next();
+            });
+
             app.UseHangfireDashboard();
             app.UseStaticFiles();
             app.UseAuthentication();
 
             app.UseCors(cors =>
-              cors
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin()
+                cors
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
             );
 
             JobConfiguration(app, Configuration);

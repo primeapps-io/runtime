@@ -2,34 +2,33 @@
 
 angular.module('primeapps')
 
-    .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$cookies',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $cookies) {
+    .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $stateParams) {
 
             $scope.loading = true;
-            var organizationId = parseInt($location.search().organizationId);
-            $rootScope.currenAppId = null;
-            if (angular.isObject($rootScope.currentOrganization)) {
-                $rootScope.currentOrganization.id = organizationId;
-            } else {
-                $rootScope.currentOrganization = {};
-                $rootScope.currentOrganization.id = organizationId;
+
+            $rootScope.currentOrgId = parseInt($stateParams.organizationId);
+
+            if (!$rootScope.currentOrgId && $rootScope.organizations) {
+                $state.go('studio.allApps');
             }
+
+            if ($rootScope.organizations)
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+
 
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.name};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
-            if (!organizationId) {
+            if (!$rootScope.currentOrgId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
-                $state.go('app.allApps');
+                $state.go('studio.allApps');
                 return;
             }
 
-            $cookies.put('organization_id', organizationId);
-
-
             $scope.appsFilter = {
-                organization_id: $state.params.organizationId,
+                organization_id: $rootScope.currentOrgId,
                 search: null,
                 page: null,
                 status: 0

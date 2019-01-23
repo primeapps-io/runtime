@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'ModuleService',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, ModuleService) {
+    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'operators', '$cache', 'dataTypes', 'systemFields', 'ModuleService',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, operators, $cache, dataTypes, systemFields, ModuleService) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'process/find/', model);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -28,5 +29,5 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Tenant> GetTenantByEmailAndAppId(string email, int appId);
         Task<int> GetTenantModuleLicenseCount(int tenantId);
         PlatformUser GetByEmail(string email);
-    }
+	}
 }
