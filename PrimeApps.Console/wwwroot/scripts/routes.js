@@ -1,13 +1,12 @@
 ﻿﻿
 'use strict';
 angular.module('primeapps')
-
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
+
             if (token) {
                 window.localStorage['access_token'] = token;
             }
-
             if (!window.localStorage.getItem('access_token')) {
                 return;
             }
