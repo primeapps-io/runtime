@@ -849,7 +849,7 @@ angular.module('primeapps')
                     section.deleted = false;
                     $scope.showPermissionWarning = false;
                     section.permissions = [];
-                    angular.forEach($rootScope.profiles, function (profile) {
+                    angular.forEach($rootScope.appProfiles, function (profile) {
                         if (profile.is_persistent && profile.has_admin_rights)
                             profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
@@ -1404,13 +1404,16 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                var resultPromise;
 
                 if (!$scope.id || $scope.clone) {
-                    resultPromise = ModuleService.moduleCreate(moduleModel);
+                    ModuleService.moduleCreate(moduleModel).then(function () {
+                        $scope.saving = false;
+                    });
                 }
                 else {
-                    resultPromise = ModuleService.update(moduleModel, moduleModel.id);
+                    ModuleService.update(moduleModel, moduleModel.id).then(function () {
+                        $scope.saving = false;
+                    });
                 }
 
 
