@@ -121,16 +121,6 @@ namespace PrimeApps.Console
                 app.UseHsts().UseHttpsRedirection();
             }
 
-            app.Use(async (ctx, next) =>
-            {
-                if (enableHttpsRedirection)
-                    ctx.Request.Scheme = "https";
-                else
-                    ctx.Request.Scheme = "http";
-
-                await next();
-            });
-
             app.UseHangfireDashboard();
             app.UseStaticFiles();
             app.UseAuthentication();
