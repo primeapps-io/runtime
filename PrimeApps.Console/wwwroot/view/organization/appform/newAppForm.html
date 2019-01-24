@@ -67,22 +67,94 @@
                                            maxlength="50"
                                            ng-model="appModel.description">
                                 </div>
-                                <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-                                    <span class="col-sm-12" ng-if="!appModel.logo" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>
-                                    <div ng-show="uploader.isHTML5" class="col-sm-12 file-uploader" ng-if="!appModel.logo">
-                                        <div nv-file-drop="" nv-file-over="" uploader="uploader"
-                                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
-                                             style="float: right;">
-                                            <div class="">
-                                                <i class="fas fa-cloud-download-alt"></i>
-                                                <span>Choose a file or drag it here</span>
+                                <!--<div class="form-group"-->
+                                     <!--ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">-->
+                                    <!--<span class="col-sm-12" ng-if="!appModel.logo" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>-->
+                                    <!--<div ng-show="uploader.isHTML5" class="col-sm-12 file-uploader" ng-if="!appModel.logo">-->
+                                        <!--<div nv-file-drop="" nv-file-over="" uploader="uploader"-->
+                                             <!--over-class="uploader-over" nv-file-select class="uploader-area drop-zone"-->
+                                             <!--style="float: right;">-->
+                                            <!--<div class="">-->
+                                                <!--<i class="fas fa-cloud-download-alt"></i>-->
+                                                <!--<span>Choose a file or drag it here</span>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="col-sm-4" ng-if="appModel.logo">-->
+                                        <!--<img ng-src="{{appModel.logo}}" height="150px"/>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <div class="form-group">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label"></label>
+                                            <div class="col-sm-9">
+                                                <img src="images/user-image.png"
+                                                     ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}"
+                                                     user-image="{{user.id}}" class="img-rounded" ng-if="!croppedImage" />
+                                                <img ng-src="{{croppedImage}}" class="img-rounded" ng-if="croppedImage" />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-4" ng-if="appModel.logo">
-                                        <img ng-src="{{appModel.logo}}" height="150px"/>
-                                    </div>
+
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-3 col-sm-9">
+                            <span class="file-input btn btn-custom btn-sm btn-file">
+                                {{'Setup.Settings.NewProfilePicture' | translate}} <input type="file" nv-file-select uploader="uploader" ng-disabled="croppedImage">
+                            </span>
+                                                <span class="file-input btn btn-custom btn-sm btn-file" ng-click="removeProfileImage()">
+                                {{'Setup.Settings.RemoveProfileImage' | translate}}
+                            </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-show="uploader.queue.length > 0">
+                                            <label class="col-sm-3 control-label"></label>
+                                            <div class="col-sm-9">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
+                                                            <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
+                                                            <th>{{'Documents.Result' | translate}}</th>
+                                                            <th>{{'Documents.Actions' | translate}}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="item in uploader.queue">
+                                                            <td>
+                                                                <div class="cropArea">
+                                                                    <img-crop image="item.image" result-image="$parent.croppedImage" style="display: inline !important;" area-type="square" result-image-size="250"></img-crop>
+                                                                </div>
+                                                            </td>
+                                                            <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
+                                                            <td ng-show="uploader.isHTML5">
+                                                                <div class="progress" style="margin-bottom: 0;">
+                                                                    <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
+                                                                <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
+                                                                <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
+                                                            </td>
+                                                            <td nowrap>
+                                                                <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                                    <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
+                                                                </button>
+                                                                <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                                    <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
+                                                                </button>
+                                                                <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
+                                                                    <span class="fa fa-trash-o"></span> {{'Common.Cancel' | translate}}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

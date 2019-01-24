@@ -44,8 +44,8 @@ angular.module('primeapps')
 
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 if (status === 200) {
-                     $scope.appModel.logo = response;
-                    editCompany(true);
+                    var userModel = angular.copy($rootScope.user);
+                    $scope.appModel.logo = response;
                 }
             };
 
@@ -55,20 +55,22 @@ angular.module('primeapps')
                         ngToast.create({ content: $filter('translate')('Setup.Settings.ImageError'), className: 'warning' });
                         break;
                     case 'sizeFilter':
-                        ngToast.create({ content: $filter('translate')('Setup.Organization.SizeError'), className: 'warning' });
+                        ngToast.create({ content: $filter('translate')('Setup.Settings.SizeError'), className: 'warning' });
                         break;
                 }
             };
 
             uploader.onAfterAddingFile = function (item) {
+                $scope.croppedImage = '';
                 var reader = new FileReader();
+
                 reader.onload = function (event) {
                     $scope.$apply(function () {
-                        $scope.imagePreview = event.target.result;
+                        item.image = event.target.result;
                     });
                 };
+
                 reader.readAsDataURL(item._file);
-                item.upload();
             };
 
             uploader.filters.push({
@@ -82,7 +84,7 @@ angular.module('primeapps')
             uploader.filters.push({
                 name: 'sizeFilter',
                 fn: function (item) {
-                    return item.size < 50000;//50 kb
+                    return item.size < 5242880;//5 mb
                 }
             });
 
