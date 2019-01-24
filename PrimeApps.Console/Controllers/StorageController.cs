@@ -20,7 +20,7 @@ using PrimeApps.Console.Storage.Unified;
 namespace PrimeApps.Console.Controllers
 {
     [Route("storage")]
-    public class StorageController : ApiBaseController
+    public class StorageController : DraftBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -48,13 +48,13 @@ namespace PrimeApps.Console.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_documentRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_templateRepository);
-            SetCurrentUser(_noteRepository);
-            SetCurrentUser(_settingRepository);
-            SetCurrentUser(_importRepository);
+            SetCurrentUser(_documentRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_recordRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_templateRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_noteRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_importRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -185,7 +185,7 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("template", 1);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -337,7 +337,7 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo", OrganizationId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", 1);
 
             if (parser.Success)
             {

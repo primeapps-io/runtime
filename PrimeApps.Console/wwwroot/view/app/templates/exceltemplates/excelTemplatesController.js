@@ -64,7 +64,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
             $scope.showFormModal = function (template) {
@@ -78,12 +78,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewExcelTemplateFormModal.$promise.then(function () {
                     $scope.addNewExcelTemplateFormModal.show();
@@ -93,12 +93,12 @@ angular.module('primeapps')
             $scope.showTemplateGuideModal = function () {
 
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.excelTemplateGuideModal.$promise.then(function () {
                     $scope.excelTemplateGuideModal.show();
@@ -107,22 +107,19 @@ angular.module('primeapps')
 
             $scope.fileUpload = {
                 settings: {
-                    runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload_Excel',
-                    chunk_size: '256kb',
-                    multipart: true,
-                    unique_names: true,
+                    multi_selection: false,
+                    unique_names: false,
+                    url: 'storage/upload_template',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $rootScope.currentAppId
+                        'X-Organization-Id': $rootScope.currentOrgId
                     },
                     filters: {
                         mime_types: [
-                            { title: 'Template Files', extensions: 'xls,xlsx' }
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
-                        max_file_size: '10mb'
+                        max_file_size: "50mb"
                     }
                 },
                 events: {
@@ -131,16 +128,16 @@ angular.module('primeapps')
                         var template = {
                             name: $scope.template.name,
                             module: $scope.template.module.name,
-                            template_type: 'excel',
+                            template_type: 'module',
                             content: resp.UniqueName,
                             content_type: resp.ContentType,
                             chunks: resp.Chunks,
-                            subject: "Excel",
+                            subject: "Word",
                             active: $scope.template.active
                         };
 
                         if (!$scope.template.id) {
-                            WordTemplatesService.create(template)
+                            ExcelTemplatesService.create(template)
                                 .then(function () {
                                     success();
                                 })
@@ -151,7 +148,7 @@ angular.module('primeapps')
                         else {
                             template.id = $scope.template.id;
 
-                            WordTemplatesService.update(template)
+                            ExcelTemplatesService.update(template)
                                 .then(function () {
                                     success();
                                 })
@@ -182,7 +179,7 @@ angular.module('primeapps')
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
 
-                        WordTemplatesService.update(template)
+                        ExcelTemplatesService.update(template)
                             .then(function () {
                                 success();
                             })
@@ -224,9 +221,11 @@ angular.module('primeapps')
             $scope.getDownloadUrlExcel = function (selectedModuleExcel) {
                 if (selectedModuleExcel) {
                     var moduleName = selectedModuleExcel.name;
-                    $window.open("/attach/export_excel?module=" + moduleName + '&locale=' + $scope.language, "_blank");
-                    swal($filter('translate')('Module.ExcelDesktop'), "", "success");
-                    $scope.excelTemplateGuideModal.hide();
+                    $http.post("/attach/export_excel?module=" + moduleName + '&locale=' + $scope.language, "_blank").then(function (response) {
+                        $scope.settings = response.data.value;
+                        ngToast.create({ content: $filter('translate')('Expenses.SettingsUpdate'), className: 'success' });
+                        $scope.getExpenseSettings();
+                    });
                 }
             };
 

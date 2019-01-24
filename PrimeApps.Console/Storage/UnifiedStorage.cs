@@ -39,7 +39,8 @@ namespace PrimeApps.Console.Storage
             LOGO,
             PROFILEPICTURE,
             NONE,
-            APPLOGO
+            APPLOGO,
+            APPTEMPLATE
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -54,7 +55,8 @@ namespace PrimeApps.Console.Storage
             {ObjectType.MAIL, "/mail/"},
             {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
             {ObjectType.NONE, ""},
-            {ObjectType.APPLOGO, "/applogos/"}
+            {ObjectType.APPLOGO, "/app_logo/"},
+            {ObjectType.APPTEMPLATE, "/app_template/"}
         };
 
         /// <summary>

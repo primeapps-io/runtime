@@ -31,8 +31,8 @@ using MimeMapping;
 
 namespace PrimeApps.Console.Controllers
 {
-	[Route("attach")]
-    public class AttachController : DraftBaseController
+    [Route("attach")]
+    public class AttachController : MvcBaseController
     {
         private ITenantRepository _tenantRepository;
         private ITemplateRepository _templateRepository;
@@ -67,15 +67,15 @@ namespace PrimeApps.Console.Controllers
         {
             SetContext(context);
             SetCurrentUser(_tenantRepository);
-            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_documentRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_settingsRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_noteRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_templateRepository);
+            SetCurrentUser(_documentRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_settingsRepository);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_viewRepository);
             _recordHelper.SetCurrentUser(AppUser);
             base.OnActionExecuting(context);
         }
@@ -1027,7 +1027,7 @@ namespace PrimeApps.Console.Controllers
             }
         }
 
-        [Route("export_excel")]
+        [HttpPost("export_excel")]
         public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
@@ -1060,22 +1060,22 @@ namespace PrimeApps.Console.Controllers
             {
                 var field = fields[i];
 
-                if (field.DataType != Model.Enums.DataType.Lookup)
-                {
-                    findRequest.Fields.Add(field.Name);
-                }
-                else
-                {
-                    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
-                    var primaryField = new Field();
+                //if (field.DataType != Model.Enums.DataType.Lookup)
+                //{
+                //    findRequest.Fields.Add(field.Name);
+                //}
+                //else
+                //{
+                //    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                //    var primaryField = new Field();
 
-                    if (lookupModule != null)
-                        primaryField = lookupModule.Fields.Single(x => x.Primary);
-                    else
-                        continue;
+                //    if (lookupModule != null)
+                //        primaryField = lookupModule.Fields.Single(x => x.Primary);
+                //    else
+                //        continue;
 
-                    findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
-                }
+                //    findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
+                //}
             }
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
@@ -1179,10 +1179,10 @@ namespace PrimeApps.Console.Controllers
                         var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
                         var primaryField = new Field();
 
-                        if (lookupModule != null)
-                            primaryField = lookupModule.Fields.Single(x => x.Primary);
-                        else
-                            continue;
+                        //if (lookupModule != null)
+                        //    primaryField = lookupModule.Fields.Single(x => x.Primary);
+                        //else
+                        //    continue;
 
                         dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                     }

@@ -91,34 +91,31 @@ angular.module('primeapps')
 
             $scope.fileUpload = {
                 settings: {
-                    runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload',
-                    chunk_size: '256kb',
-                    multipart: true,
-                    unique_names: true,
+                    multi_selection: false,
+                    unique_names: false,
+                    url: 'storage/upload_template',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $rootScope.currentAppId
+                        'X-Organization-Id': $rootScope.currentOrgId
                     },
                     filters: {
                         mime_types: [
-                            { title: 'Template Files', extensions: 'doc,docx' }
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
-                        max_file_size: '10mb'
+                        max_file_size: "50mb"
                     }
                 },
                 events: {
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
                         var template = {
-                            name: $scope.template.name,
-                            module: $scope.template.module.name,
+                            name: $scope.template.templateName,
+                            module: $scope.template.templateModule.name,
                             template_type: 'module',
-                            content: resp.UniqueName,
-                            content_type: resp.ContentType,
-                            chunks: resp.Chunks,
+                            content: resp.unique_name,
+                            content_type: resp.content_type,
+                            chunks: resp.chunks,
                             subject: "Word",
                             active: $scope.template.active
                         };
@@ -198,15 +195,7 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrl = function (template) {
-
-                if (template) {
-                    $scope.templateDownloadUrl = config.apiUrl + 'Document/download_template?templateId=' + template.id + '&access_token=' + window.localStorage.getItem('access_token'); //$localStorage.get('access_token');
-                    return $scope.templateDownloadUrl;
-                }
-                else {
-                    $scope.templateDownloadUrl = config.apiUrl + 'Document/download_template?templateId=' + $scope.template.id + '&access_token=' + window.localStorage.getItem('access_token'); //$localStorage.get('access_token');
-                    return $scope.templateDownloadUrl;
-                }
+                return '/storage/download_template?fileId=' + template.id + "&tempType=" + template.template_type;
             };
 
             $scope.clearTemplateFile = function () {
