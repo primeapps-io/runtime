@@ -14,8 +14,8 @@ angular.module('primeapps')
             $scope.currentApp = $localStorage.get("current_app");
 
             /*if (!$scope.orgId || !$scope.appId) {
-                $state.go('studio.apps', { organizationId: $scope.orgId });
-            }*/
+             $state.go('studio.apps', { organizationId: $scope.orgId });
+             }*/
 
             $scope.modules = [];
 
@@ -29,6 +29,21 @@ angular.module('primeapps')
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
+            };
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+                ComponentsService.find($scope.requestModel)
+                    .then(function (response) {
+                        $scope.components = response.data;
+                        $scope.loading = false;
+                    });
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
             };
 
             $scope.generator = function (limit) {

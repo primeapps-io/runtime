@@ -81,7 +81,9 @@ angular.module('primeapps')
                             var userList = response.data;
 
                             for (var i = 0; i < $scope.selectedTeam.team_users.length; i++) {
-                                userList.users = $filter('filter')(userList.users, function (value) { return value.user_id != $scope.selectedTeam.team_users[i].user_id });
+                                userList.users = $filter('filter')(userList.users, function (value) {
+                                    return value.user_id != $scope.selectedTeam.team_users[i].user_id
+                                });
                             }
                             $scope.orgranizationUserArray = angular.copy(userList.users);
                             $scope.loadingMembers = false;
@@ -306,12 +308,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -333,7 +335,11 @@ angular.module('primeapps')
                 $scope.teamModel = {};
             };
 
-            var getToastMsg = function (msg, type = 'success') {
+            var getToastMsg = function (msg, type) {
+                if (!type) {
+                    type = 'success';
+                }
+
                 ngToast.create({
                     content: $filter('translate')(msg),
                     className: type

@@ -1,5 +1,4 @@
-﻿﻿
-'use strict';
+﻿﻿'use strict';
 angular.module('primeapps')
 
     .config(['$stateProvider', '$urlRouterProvider',
