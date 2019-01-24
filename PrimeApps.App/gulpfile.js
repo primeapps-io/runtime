@@ -16,33 +16,33 @@ gulp.task('build', function (callback) {
 
 gulp.task('strip', function () {
     //Striping console and debugger statements from views directory
-    var directories = getDirectories('view/');
+    var directories = getDirectories('wwwroot/view/');
 
     for (var i = 0, l = directories.length; i < l; i++) {
-        gulp.src('view/' + directories[i] + '/*.js')
+        gulp.src('wwwroot/view/' + directories[i] + '/*.js')
             .pipe(stripDebug())
-            .pipe(gulp.dest('view/' + directories[i] + '/'));
+            .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/'));
 
-        var subDirectories = getDirectories('view/' + directories[i] + '/');
+        var subDirectories = getDirectories('wwwroot/view/' + directories[i] + '/');
 
         for (var j = 0, lj = subDirectories.length; j < lj; j++) {
-            gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/*.js')
+            gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/*.js')
                 .pipe(stripDebug())
-                .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/'));
+                .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/'));
 
-            var subSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j] + '/');
+            var subSubDirectories = getDirectories('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/');
 
             for (var k = 0, jk = subSubDirectories.length; k < jk; k++) {
-                gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/*.js')
+                gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/*.js')
                     .pipe(stripDebug())
-                    .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
+                    .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
 
-                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
+                var subSubSubDirectories = getDirectories('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
 
                 for (var m = 0, km = subSubSubDirectories.length; m < km; m++) {
-                    gulp.src('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
+                    gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
                         .pipe(stripDebug())
-                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
+                        .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
                 }
             }
         }
@@ -56,33 +56,33 @@ gulp.task('strip', function () {
 
 gulp.task('uglify', function () {
     //Uglifying views directory
-    var directories = getDirectories('view/');
+    var directories = getDirectories('wwwroot/view/');
 
     for (var i = 0, l = directories.length; i < l; i++) {
-        gulp.src('view/' + directories[i] + '/*.js')
+        gulp.src('wwwroot/view/' + directories[i] + '/*.js')
             .pipe(uglify())
-            .pipe(gulp.dest('view/' + directories[i] + '/'));
+            .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/'));
 
-        var subDirectories = getDirectories('view/' + directories[i] + '/');
+        var subDirectories = getDirectories('wwwroot/view/' + directories[i] + '/');
 
         for (var j = 0, lj = subDirectories.length; j < lj; j++) {
-            gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/*.js')
+            gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/*.js')
                 .pipe(uglify())
-                .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/'));
+                .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/'));
 
-            var subSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j] + '/');
+            var subSubDirectories = getDirectories('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/');
 
             for (var k = 0, jk = subSubDirectories.length; k < jk; k++) {
-                gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/*.js')
+                gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/*.js')
                     .pipe(uglify())
-                    .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
+                    .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
 
-                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
+                var subSubSubDirectories = getDirectories('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
 
                 for (var m = 0, km = subSubSubDirectories.length; m < km; m++) {
-                    gulp.src('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
+                    gulp.src('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
                         .pipe(uglify())
-                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
+                        .pipe(gulp.dest('wwwroot/view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
                 }
             }
         }

@@ -6,39 +6,39 @@ angular.module('primeapps')
         function ($stateProvider, $urlRouterProvider) {
 
             /*if (window.location.hash.indexOf('#access_token') > -1) {
-                var parseQueryString = function (queryString) {
-                    var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
+             var parseQueryString = function (queryString) {
+             var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
 
-                    if (queryString === null) {
-                        return data;
-                    }
+             if (queryString === null) {
+             return data;
+             }
 
-                    pairs = queryString.split("&");
+             pairs = queryString.split("&");
 
-                    for (var i = 0; i < pairs.length; i++) {
-                        pair = pairs[i];
-                        separatorIndex = pair.indexOf("=");
+             for (var i = 0; i < pairs.length; i++) {
+             pair = pairs[i];
+             separatorIndex = pair.indexOf("=");
 
-                        if (separatorIndex === -1) {
-                            escapedKey = pair;
-                            escapedValue = null;
-                        } else {
-                            escapedKey = pair.substr(0, separatorIndex);
-                            escapedValue = pair.substr(separatorIndex + 1);
-                        }
+             if (separatorIndex === -1) {
+             escapedKey = pair;
+             escapedValue = null;
+             } else {
+             escapedKey = pair.substr(0, separatorIndex);
+             escapedValue = pair.substr(separatorIndex + 1);
+             }
 
-                        key = decodeURIComponent(escapedKey);
-                        value = decodeURIComponent(escapedValue);
+             key = decodeURIComponent(escapedKey);
+             value = decodeURIComponent(escapedValue);
 
-                        data[key] = value;
-                    }
+             data[key] = value;
+             }
 
-                    return data;
-                };
+             return data;
+             };
 
-                var queryString = parseQueryString(window.location.hash.substr(1));
-                window.localStorage['access_token'] = queryString.access_token;
-            }*/
+             var queryString = parseQueryString(window.location.hash.substr(1));
+             window.localStorage['access_token'] = queryString.access_token;
+             }*/
 
             if (token) {
                 window.localStorage['access_token'] = token;
@@ -1346,6 +1346,17 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
+                    var splitUrls = componentContent.app.templateUrl.split('{appConfigs.');
+
+                    if (splitUrls.length > 1) {
+                        angular.forEach(splitUrls, function (splitUrl, key) {
+                            if (splitUrl.indexOf('}') > -1) {
+                                var configObj = splitUrl.split('}')[0];
+                                componentContent.app.templateUrl = componentContent.app.templateUrl.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+                            }
+                        });
+                    }
+
                     var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
@@ -1367,10 +1378,6 @@ angular.module('primeapps')
                                             }
                                         }
                                         str = str.substring(0, str.length - 1);
-
-                                        if (componentContent.app.templateUrl.indexOf('{') > -1 && componentContent.app.templateUrl.indexOf('}') > -1) {
-                                            //TODO: replace {parameter}
-                                        }
 
                                         var fUrl = componentContent.app.templateUrl.lastIndexOf('http', 0) === 0 ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
 

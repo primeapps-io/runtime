@@ -660,7 +660,7 @@ angular.module('primeapps')
 							filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
 							if (filterSubItem) {
 								for (var i = 0; i < filterSubItem.length; i++) {
-									SubIndex = filterItem.items.findIndex(x => x.id === 0);//filterSubItem.no);
+									SubIndex = filterItem.items.findIndex(x => x.id === 0);
 									index = copyMenuList.findIndex(x => x.no === filterItem.no);
 									copyMenuList[index].items.splice(SubIndex, 1);
 								}

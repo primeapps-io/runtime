@@ -8,7 +8,8 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>PRIMEAPPS</title>
-    <link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />
+    @*<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />*@
+
 </head>
 <style>
     body {
@@ -25,28 +26,29 @@
         transform: translate(-50%, -70%);
     }
 
-    #fof .hgroup h1, #fof .hgroup h2 {
-        margin: 0;
-        padding: 0;
-        text-transform: uppercase;
-        font-family: sans-serif;
-    }
+        #fof .hgroup h1, #fof .hgroup h2 {
+            margin: 0;
+            padding: 0;
+            text-transform: uppercase;
+            font-family: sans-serif;
+        }
 
-    #fof h1 {
-        font-family: Montserrat,sans-serif,Arial;
-        font-weight: 700;
-        font-size: 55px;
-        color: white;
-        line-height: 1em;
-        letter-spacing: 7px;
-    }
-    #fof h3 {
-        font-family: Montserrat,sans-serif,Arial;
-        font-weight: 700;
-        color: white;
-        line-height: 1em;
-        letter-spacing: 3px;
-    }
+        #fof h1 {
+            font-family: Montserrat,sans-serif,Arial;
+            font-weight: 700;
+            font-size: 55px;
+            color: white;
+            line-height: 1em;
+            letter-spacing: 7px;
+        }
+
+        #fof h3 {
+            font-family: Montserrat,sans-serif,Arial;
+            font-weight: 700;
+            color: white;
+            line-height: 1em;
+            letter-spacing: 3px;
+        }
 
         #fof p {
             font-family: Montserrat,sans-serif,Arial;
@@ -55,9 +57,9 @@
             line-height: 1em;
         }
 
-    #fof p:first-child {
-        margin-top: 0;
-    }
+            #fof p:first-child {
+                margin-top: 0;
+            }
 </style>
 <body>
     <div class="wrapper row2">
@@ -76,7 +78,7 @@
             </div>
         </div>
     </div>
-    <script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
+    @*<script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>*@
     @RenderSection("scripts", required: false)
 </body>
 </html>
