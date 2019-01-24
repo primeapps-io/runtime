@@ -142,7 +142,7 @@ angular.module('primeapps')
                             RulesService.get($scope.id)
                                 .then(function (workflow) {
                                     $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0)
+                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0);
 
                                     $scope.workflowModel.operation = {};
 

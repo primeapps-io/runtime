@@ -11,6 +11,7 @@
         </div>
     </div>
     <div class="modal-dialog">
+        <div ng-if="loadingFilter" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <form name="$parent.$parent.workflowForm" ng-submit="save()" class="form-horizontal form-custom" autocomplete="off" novalidate>
             <div class="panel">
                 <!--Start START-->
@@ -31,7 +32,7 @@
                                 ng-model="workflowStartModel.module"
                                 ng-change="selectModule()"
                                 ng-disabled="id"
-                                ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
                             <option value="">{{'Common.Select' | translate}}</option>
                         </select>
                     </div>
@@ -90,7 +91,6 @@
                     </div>
                     <div ng-show="workflowStartModel.module">
                         <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
-                        <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                         <div ng-if="!loadingFilter">
                             <table class="filter-table">
                                 <thead>
@@ -539,7 +539,7 @@
                                     ng-model="workflowModel.field_update.value"
                                     ng-change="setFormValid()"
                                     ng-required="{{workflowModel.field_update.field.validation.required}}"
-                                    ng-options="o as o.label[language] for o in picklistsModule[workflowModel.field_update.field.picklist_id] | filter:{inactive:'!true',hidden:'!true'} track by o.id"
+                                    ng-options="o as o.label[language] for o in modulePicklists[workflowModel.field_update.field.picklist_id] | filter:{inactive:'!true',hidden:'!true'} track by o.id"
                                     ng-if="workflowModel.field_update.field.data_type === 'picklist'">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
@@ -969,17 +969,17 @@
                             </script>
 
                             <!--TODO
-                                <mentio-menu class="mention-scrollbar" id="hastmenu1"
-                                         mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
-                                         mentio-items="tags" mentio-template-url="tag-mentions.tpl"
-                                         mentio-search="searchTags(term)"
-                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
-                            <div class="hidden" plupload="imgUpload">
-                                <input id="uploadImage" type="file" add-file="add-file" />
-                            </div>
-                            <div class="hidden" plupload="fileUpload">
-                                <input id="uploadFile" type="file" add-file="add-file" />
-                            </div>-->
+                            <mentio-menu class="mention-scrollbar" id="hastmenu1"
+                                     mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
+                                     mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                     mentio-search="searchTags(term)"
+                                     mentio-select="getTagTextRaw(item)"></mentio-menu>
+                        <div class="hidden" plupload="imgUpload">
+                            <input id="uploadImage" type="file" add-file="add-file" />
+                        </div>
+                        <div class="hidden" plupload="fileUpload">
+                            <input id="uploadFile" type="file" add-file="add-file" />
+                        </div>-->
                         </div>
                     </div>
                     <div class="form-group">
@@ -1042,6 +1042,7 @@
                             {{'Setup.BpmWorkflow.WebHookParameters' | translate}}:
                         </label>
                         <div>
+                            <!--TODO webHook parameters-->
                             <table class="filter-table" style="width: 300px;">
                                 <tbody>
                                     <tr ng-repeat="parameter in hookParameters" style="border: 0.5px solid #0c4da24f;margin-bottom: 10px">

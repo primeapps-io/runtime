@@ -7,7 +7,7 @@
         </ul>
         <!--END menu bar -->
     </div>
-    <div id="sideBar"> 
+    <div id="sideBar">
         <div id="accordion">
             <h4>BPM Items</h4>
             <div>
@@ -22,7 +22,8 @@
         <div class="handle">Overview:</div>
         <div id="myOverviewDiv"></div>
     </div>
-    <div id="myDiagramDiv"></div> 
+    <div id="myDiagramDiv"></div>
+
     <div id="openDocument" class="draggable">
         <div id="openDraggableHandle" class="handle">Open File</div>
         <div id="openText" class="elementText">Choose file to open...</div>
@@ -33,4 +34,8 @@
     </div>
 
     <div id="removeDocument" class="draggable"></div>
+</div>
+<div class="row" style="float: right;margin-right: 20px;">
+    <a href ui-sref="studio.app.workflows" class="btn btn-w-xlg btn-radius btn-gray" ng-disabled="saving" ><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</a>
+    <button type="button" class="btn btn-w-xlg add-button btn-radius btn-blue" ng-click="save();" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
 </div>

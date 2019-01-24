@@ -2,9 +2,9 @@
 
 angular.module('primeapps')
 
-    .factory('WorkflowsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
-            return { 
+    .factory('WorkflowsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'operators',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, operators) {
+            return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'bpm/find/', model);
                 },
@@ -54,8 +54,8 @@ angular.module('primeapps')
                     window.diagramData = angular.fromJson(workflow.diagram_json);
 
                     // window.myDiagram.startTransaction("LoadModel");
-                    window.myDiagram.model = new go.GraphLinksModel(diagramData.nodeDataArray, diagramData.linkDataArray);
-                    window.myDiagram.requestUpdate();
+                    //window.myDiagram.model = new go.GraphLinksModel(diagramData.nodeDataArray, diagramData.linkDataArray);
+                    //window.myDiagram.requestUpdate();
                     // window.myDiagram.commitTransaction("LoadModel");
 
                     // angular.forEach(window.diagramData.nodeDataArray, function (node) {
@@ -76,7 +76,7 @@ angular.module('primeapps')
                     //         workflow.field_update.value = node.data.value;
                     //     }
                     // });
-                    angular.forEach(workflow.operations_array, function (operation) {
+                    angular.forEach(workflow.record_operations.split(','), function (operation) {
                         workflowModel.operation[operation] = true;
                     });
 
@@ -93,7 +93,7 @@ angular.module('primeapps')
 
                             switch (field.data_type) {
                                 case 'picklist':
-                                    fieldValue = $filter('filter')(picklistsModule[field.picklist_id], { labelStr: filter.value }, true)[0];
+                                    fieldValue = $filter('filter')(picklistsModule[field.picklist_id], { id: filter.value }, true)[0];
                                     break;
                                 case 'multiselect':
                                     var picklistItems = filter.value.split('|');
