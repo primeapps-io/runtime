@@ -59,9 +59,6 @@ angular.module('primeapps',
 			if (blobUrl)
 				whiteList.push(blobUrl + '**');
 
-			if (functionUrl)
-                whiteList.push(functionUrl + '**');
-
             angular.forEach(trustedUrls, function (trustedUrl) {
                 whiteList.push(trustedUrl.url + '**')
             });
@@ -136,10 +133,12 @@ angular.module('primeapps',
 							url = url.call(url, params);
 						}
 
-						if (angular.isString(url) && functionUrl) {
-							if (url.indexOf(functionUrl) > -1) {
-								url += (url.indexOf('?') < 0 ? '?' : '&');
-								url += 'v=' + new Date().getTime() / 1000;
+						if (angular.isString(url) && routeTemplateUrls && routeTemplateUrls.length > 0) {
+							for (var i = 0; i < routeTemplateUrls.length; i++) {
+								if (url.indexOf(routeTemplateUrls[i]) > -1) {
+									url += (url.indexOf('?') < 0 ? '?' : '&');
+									url += 'v=' + new Date().getTime() / 1000;
+								}	
 							}
 						}
 					}

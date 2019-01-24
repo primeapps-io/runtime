@@ -4,14 +4,14 @@
     var customLanguage = string.Empty;
     var appInfo = (ApplicationInfoViewModel)ViewBag.AppInfo;
     var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
-    var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
     var tenantId = ViewBag.TenantId;
     var token = ViewBag.Token;
     var appId = ViewBag.AppId;
     var encryptedUserId = ViewBag.EncryptedUserId;
     var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
-    var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
-	var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var appConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var routeTemplateUrls  = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
 }
 
 <!DOCTYPE html>
@@ -66,16 +66,16 @@
 
     @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"] != null)
     {
-        @foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"])
-         {
-             <link rel="stylesheet" href="@afterCss"/>
-         }
+        foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"])
+        {
+            <link rel="stylesheet" href="@afterCss"/>
+        }
     }
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
 @RenderBody()
 <script>
-    var globalConfigs = @globalConfigs;
+    var appConfigs = @appConfigs;
     var version = '@typeof(ControllerContext).Assembly.GetName().Version';
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
     var customLanguage = '@customLanguage';
@@ -83,13 +83,13 @@
     var theme = window.localStorage.getItem('theme');
     var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
     var blobUrl = '@blobUrl';
-    var functionUrl = '@functionUrl';
     var tenantId = '@tenantId';
     var token = '@token';
     var applicationId = '@appId';
     var encryptedUserId = '@encryptedUserId';
     var trustedUrls = JSON.parse('@trustedUrls');
-    
+    var routeTemplateUrls = JSON.parse('@routeTemplateUrls');
+
     if (theme) {
         document.body.className = theme;
     } else {
@@ -102,10 +102,10 @@
 
 @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"] != null)
 {
-    @foreach (var beforeJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"])
-     {
-         <script src="@beforeJs"></script>
-     }
+    foreach (var beforeJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"])
+    {
+        <script src="@beforeJs"></script>
+    }
 }
 
 <environment include="Development">
@@ -218,10 +218,10 @@
 
 @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"] != null)
 {
-    @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"])
-     {
-         <script src="@afterJs"></script>
-     }
+    foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"])
+    {
+        <script src="@afterJs"></script>
+    }
 }
 
 @RenderSection("scripts", required: false)

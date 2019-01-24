@@ -40,14 +40,13 @@ angular.module('primeapps')
                 window.localStorage['access_token'] = queryString.access_token;
             }*/
 
-            if (token){
+            if (token) {
                 window.localStorage['access_token'] = token;
             }
 
-            if (!window.localStorage.getItem('access_token')){
+            if (!window.localStorage.getItem('access_token')) {
                 return;
             }
-
 
             //app
             $stateProvider
@@ -119,8 +118,8 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/module/moduleListController.js',
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/email/bulkEMailController.js',
-								cdnUrl + 'view/app/sms/bulkSMSController.js',
-								cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
+                                cdnUrl + 'view/app/sms/bulkSMSController.js',
+                                cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                                 cdnUrl + 'view/app/leave/collectiveLeaveController.js',
                                 cdnUrl + 'view/app/module/exportDataController.js'
@@ -766,8 +765,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/moduleSetupController.js',
-								cdnUrl + 'view/setup/modules/moduleSetupService.js',
-								cdnUrl + 'view/setup/license/licenseService.js'
+                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
+                                cdnUrl + 'view/setup/license/licenseService.js'
                             ]);
                         }]
                     }
@@ -1059,43 +1058,43 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-				})
+                })
 
-				.state('app.setup.menu', {
-					url: '/menu',
-					views: {
-						'app': {
-							templateUrl: cdnUrl + 'view/setup/menu/menu.html',
-							controller: 'MenuController'
-						}
-					},
-					resolve: {
-						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-							return $ocLazyLoad.load([
-								cdnUrl + 'view/setup/menu/menuController.js',
-								cdnUrl + 'view/setup/menu/menuService.js'
-							]);
-						}]
-					}
-				})
+                .state('app.setup.menu', {
+                    url: '/menu',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/setup/menu/menu.html',
+                            controller: 'MenuController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/setup/menu/menuController.js',
+                                cdnUrl + 'view/setup/menu/menuService.js'
+                            ]);
+                        }]
+                    }
+                })
 
-				.state('app.setup.menu_list', {
-					url: '/menu_list',
-					views: {
-						'app': {
-							templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
-							controller: 'MenuListController'
-						}
-					},
-					resolve: {
-						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-							return $ocLazyLoad.load([
-								cdnUrl + 'view/setup/menu/menuListController.js',
-								cdnUrl + 'view/setup/menu/menuService.js'
-							]);
-						}]
-					}
-				})
+                .state('app.setup.menu_list', {
+                    url: '/menu_list',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
+                            controller: 'MenuListController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/setup/menu/menuListController.js',
+                                cdnUrl + 'view/setup/menu/menuService.js'
+                            ]);
+                        }]
+                    }
+                })
 
                 .state('app.setup.workflows', {
                     url: '/workflows',
@@ -1347,7 +1346,7 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
-                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId ) + '/' + component.name + '/';
+                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
                         files.push(componentContent.files[i].includes('http') ? componentContent.files[i] : url + componentContent.files[i]);
@@ -1369,7 +1368,11 @@ angular.module('primeapps')
                                         }
                                         str = str.substring(0, str.length - 1);
 
-                                        var fUrl = componentContent.app.templateUrl.includes('http') ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
+                                        if (componentContent.app.templateUrl.indexOf('{') > -1 && componentContent.app.templateUrl.indexOf('}') > -1) {
+                                            //TODO: replace {parameter}
+                                        }
+
+                                        var fUrl = componentContent.app.templateUrl.lastIndexOf('http', 0) === 0 ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
 
                                         if (str.length > 1) {
                                             fUrl += str;

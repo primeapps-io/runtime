@@ -7,8 +7,25 @@ angular.module('primeapps')
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
-
                     var accessToken = $localStorage.read('access_token');
+
+                    if ((cdnUrl && config.url.indexOf(cdnUrl) > -1) || (blobUrl && config.url.indexOf(blobUrl) > -1))
+                        config.headers['Access-Control-Allow-Origin'] = '*';
+                    else if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0))
+                        config.headers['Authorization'] = 'Bearer ' + accessToken;
+
+                    if ($rootScope.branchAvailable) {
+                        config.headers['branch_id'] = $rootScope.user.branchId;
+                    }
+
+                    var appId = $cookies.get('app_id');
+                    var tenantId = $cookies.get('tenant_id');
+
+                    if (appId)
+                        config.headers['X-App-Id'] = appId;
+
+                    if (tenantId)
+                        config.headers['X-Tenant-Id'] = tenantId;
 
                     if (trustedUrls.length > 0) {
                         var getValue = function (key) {
@@ -22,14 +39,16 @@ angular.module('primeapps')
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                             }
-                        }
+                        };
+
                         angular.forEach(trustedUrls, function (trustedUrl) {
                             if (config.url.indexOf(trustedUrl.url) > -1) {
                                 if (trustedUrl["headers"]) {
                                     angular.forEach(trustedUrl["headers"], function (headerObjValue, headerObjKey) {
                                         if (headerObjValue.indexOf("::dynamic") > -1) {
                                             config.headers[headerObjKey] = getValue(headerObjKey);
-                                        } else {
+                                        }
+                                        else {
                                             config.headers[headerObjKey] = headerObjValue;
                                         }
                                     });
@@ -38,31 +57,6 @@ angular.module('primeapps')
                             }
                         });
                     }
-
-                    if ((cdnUrl && config.url.indexOf(cdnUrl) > -1) || (blobUrl && config.url.indexOf(blobUrl) > -1) || (functionUrl && config.url.indexOf(functionUrl) > -1))
-                        config.headers['Access-Control-Allow-Origin'] = '*';
-                    else if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (functionUrl === '' || config.url.indexOf(functionUrl) < 0))
-                        config.headers['Authorization'] = 'Bearer ' + accessToken;
-
-                    if ((functionUrl && config.url.indexOf(functionUrl) > -1)) {
-                        config.headers['user_id'] = $rootScope.user.id;
-                        config.headers['tenant_id'] = $rootScope.user.tenant_id;
-                        config.headers['X-Auth-Key'] = encryptedUserId;
-
-                        if ($rootScope.branchAvailable) {
-                            config.headers['branch_id'] = $rootScope.user.branchId;
-                        }
-                    }
-
-                    var appId = $cookies.get('app_id');
-                    var tenantId = $cookies.get('tenant_id');
-
-                    if (appId)
-                        config.headers['X-App-Id'] = appId;
-
-                    if (tenantId)
-                        config.headers['X-Tenant-Id'] = tenantId;
-
 
                     return config;
                 },
@@ -75,10 +69,10 @@ angular.module('primeapps')
                             $localStorage.remove('access_token');
                             $localStorage.remove('refresh_token');
                             $window.location.href = '/auth/SignOut';
-                        } else {
+                        }
+                        else {
                             $window.location.href = '/';
                         }
-
 
                         return;
                     }
@@ -99,21 +93,21 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'danger' });
+                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'danger'});
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            ngToast.create({ content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning' });
+                            ngToast.create({content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning'});
                         }
 
                         return $q.reject(rejection);
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        ngToast.create({ content: $filter('translate')('Common.NetworkError'), className: 'warning' });
+                        ngToast.create({content: $filter('translate')('Common.NetworkError'), className: 'warning'});
                         return $q.reject(rejection);
                     }
 
@@ -121,7 +115,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
+                    ngToast.create({content: $filter('translate')('Common.Error'), className: 'danger'});
 
                     return $q.reject(rejection);
                 }
