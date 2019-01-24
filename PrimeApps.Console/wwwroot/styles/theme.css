@@ -432,6 +432,19 @@ button:focus, select:focus {
 .primeapps .page-loading i {
   font-size: 50px;
 }
+.primeapps .page-loading2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.65);
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
 .primeapps body {
   background-color: #f6f5f2 !important;
 }
@@ -657,6 +670,10 @@ button:focus, select:focus {
   background: rgba(206, 4, 4, 0.5);
   color: #FFF;
 }
+.primeapps .table tbody tr .action-buttons-block button.action-buttons-delete:hover {
+  background: #ce0404;
+  color: #FFF;
+}
 .primeapps .table tbody tr .action-buttons-block button:hover {
   background: rgba(0, 0, 0, 0.15);
   color: rgba(0, 0, 0, 0.75);
@@ -825,6 +842,18 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
+}
+.primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
+  max-width: 100% !important;
+}
+.primeapps .setup-modal .modal-content .multiselect-container .multiselect, .primeapps .module-modal .modal-content .multiselect-container .multiselect {
+  position: relative;
+}
+.primeapps .setup-modal .modal-content .multiselect-container .multiselect .caret, .primeapps .module-modal .modal-content .multiselect-container .multiselect .caret {
+  top: 15px;
+  border-top: 5px solid;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
 }
 .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
   padding-top: 7px;
@@ -1039,6 +1068,9 @@ button:focus, select:focus {
   margin-right: 0;
   margin-bottom: 20px !important;
 }
+.primeapps .form-group.bottom0 {
+  margin-bottom: 0px !important;
+}
 .primeapps .form-group label {
   padding: 0;
   color: rgba(0, 0, 0, 0.75);
@@ -1057,7 +1089,7 @@ button:focus, select:focus {
   max-width: none !important;
 }
 .primeapps .form-group .form-control[disabled] {
-  color: rgba(0, 0, 0, 0.25);
+  opacity: 0.25;
 }
 .primeapps .checkbox-inline input[type=checkbox] {
   position: relative !important;
@@ -1342,6 +1374,16 @@ button:focus, select:focus {
 .primeapps .dropdown-menu li a:hover {
   background-color: rgba(17, 87, 163, 0.1);
   color: #000;
+}
+.primeapps .dropdown-menu.select-multiple {
+  width: 100% !important;
+}
+.primeapps .dropdown-menu.select-multiple li a {
+  line-height: 30px;
+}
+.primeapps .dropdown-menu.select-multiple li a i {
+  line-height: 20px;
+  padding: 5px;
 }
 .primeapps .file-uploader {
   margin: 0px;
@@ -1680,7 +1722,7 @@ button:focus, select:focus {
   margin: 0px;
   font-weight: bold;
 }
-.primeapps #wrapper .setup-layout .setup-title span {
+.primeapps #wrapper .setup-layout .setup-title .app-menu2 span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
