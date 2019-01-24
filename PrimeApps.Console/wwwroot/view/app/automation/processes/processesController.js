@@ -129,9 +129,9 @@ angular.module('primeapps')
                             $scope.workflowModel.active = true;
                             $scope.workflowModel.frequency = 'continuous';
                             $scope.workflowModel.trigger_time = 'instant';
-                            $scope.loading = false;
                             $scope.filteredModules = $rootScope.appModules;
-
+                            $scope.loading = false;
+                            $scope.modalLoading = false;
                             ModuleService.getAllProcess()
                                 .then(function (response) {
                                     var processes = response.data;
@@ -187,6 +187,7 @@ angular.module('primeapps')
                                             $scope.isEdit = true;
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
+                                            $scope.modalLoading = false; 
                                         });
                                 });
                         }
@@ -194,7 +195,7 @@ angular.module('primeapps')
             };
 
             $scope.selectModule = function (module) {
-                $scope.loadingFilter = true;
+                $scope.modalLoading = true;
                 $scope.isChosenModule = false;
 
                 ModuleService.getModuleFields(module.name)
@@ -264,7 +265,7 @@ angular.module('primeapps')
                                     $scope.filters.push(filter);
                                 }
 
-                                $scope.loadingFilter = false;
+                                $scope.modalLoading = false;
                             });
 
                         $scope.getUpdatableModules();
@@ -828,7 +829,7 @@ angular.module('primeapps')
                                             swal("Deleted!", "Approval process has been deleted!", "success");
                                             $scope.cancel();
                                             $scope.id = null;
-                                           // $state.reload();
+                                            // $state.reload();
                                             $scope.changePage(1);
                                         });
                                 }
@@ -839,6 +840,7 @@ angular.module('primeapps')
 
             //Modal Start
             $scope.showFormModal = function (id) {
+                $scope.modalLoading = true;
                 if (id) {
                     $scope.id = id;
                     $scope.selectProcess(id);

@@ -137,6 +137,7 @@ angular.module('primeapps')
                             $scope.workflowModel.processFilter = 'none';
                             $scope.workflowModel.frequency = 'continuous';
                             $scope.loading = false;
+                            $scope.modalLoading = false;
                         }
                         else {
                             RulesService.get($scope.id)
@@ -213,6 +214,7 @@ angular.module('primeapps')
 
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
+                                            $scope.modalLoading = false;
                                         });
 
                                 });
@@ -1761,6 +1763,8 @@ angular.module('primeapps')
 
             //Modal Start
             $scope.showFormModal = function (id) {
+                $scope.modalLoading = true;
+
                 if (id) {
                     $scope.id = id;
 

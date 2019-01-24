@@ -41,34 +41,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="workflow in workflows">
+            <tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">
                 <td>{{workflow.name}}</td>
                 <td>{{workflow.module['label_'+language+'_plural']}}</td>
                 <td>{{workflow.record_operations}}</td>
                 <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ui-sref="studio.app.workflowEditor({id:workflow.id})">
-                                    {{'Common.Edit' | translate}}
-                                </a>
-                            </li>
-                            <li> 
-                                <a ng-click="$event.stopPropagation();delete(workflow.id);">
-                                    {{'Common.Delete' | translate}}
-                                </a>
-                            </li>
-
-                        </ul>
                     </div>
                 </td>
             </tr>
