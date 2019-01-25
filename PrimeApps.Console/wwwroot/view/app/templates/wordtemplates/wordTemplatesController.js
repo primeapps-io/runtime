@@ -77,12 +77,12 @@ angular.module('primeapps')
                     $scope.template = [];
                 }
                 $scope.addNewWordTemplateFormModal = $scope.addNewWordTemplateFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewWordTemplateFormModal.$promise.then(function () {
                     $scope.addNewWordTemplateFormModal.show();
@@ -97,7 +97,8 @@ angular.module('primeapps')
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId
+                        'X-Organization-Id': $rootScope.currentOrgId,
+                        'X-App-Id': $scope.appId
                     },
                     filters: {
                         mime_types: [
@@ -142,7 +143,8 @@ angular.module('primeapps')
                         }
                     }
                 }
-            };
+            }
+            ;
 
             $scope.save = function (uploadForm) {
 
@@ -177,17 +179,17 @@ angular.module('primeapps')
             $scope.showTemplateGuideModal = function () {
 
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false,
-                    controller: function () {
-                        ModuleService.getModules().then(function (response) {
-                            $scope.modules = response.data;
-                        });
-                    }
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false,
+                        controller: function () {
+                            ModuleService.getModules().then(function (response) {
+                                $scope.modules = response.data;
+                            });
+                        }
+                    });
 
                 $scope.wordTemplateGuideModal.$promise.then(function () {
                     $scope.wordTemplateGuideModal.show();
@@ -195,7 +197,7 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrl = function (template) {
-                return '/storage/download_template?fileId=' + template.id + "&tempType=" + template.template_type;
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId ;
             };
 
             $scope.clearTemplateFile = function () {

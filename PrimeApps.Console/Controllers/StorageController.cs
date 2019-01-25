@@ -64,128 +64,128 @@ namespace PrimeApps.Console.Controllers
         /// </summary>
         /// <param name="fileContents">The file contents.</param>
         /// <returns>System.String.</returns>
-        [HttpPost("upload")]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> Upload(IFormCollection form)
-        {
-            IFormFile file = form.Files.First();
-            StringValues bucketName = $"tenant{AppUser.TenantId}",
-                chunksStr,
-                uploadId,
-                chunkStr,
-                fileName,
-                responseList,
-                type,
-                container;
-            form.TryGetValue("chunks", out chunksStr);
-            form.TryGetValue("chunk", out chunkStr);
-            form.TryGetValue("name", out fileName);
-            form.TryGetValue("upload_id", out uploadId);
-            form.TryGetValue("response_list", out responseList);
-            form.TryGetValue("type", out type);
-            form.TryGetValue("container", out container);
-            ObjectType objectType = UnifiedStorage.GetType(type);
+        //[HttpPost("upload")]
+        //[DisableRequestSizeLimit]
+        //public async Task<IActionResult> Upload(IFormCollection form)
+        //{
+        //    IFormFile file = form.Files.First();
+        //    StringValues bucketName = $"tenant{AppUser.TenantId}",
+        //        chunksStr,
+        //        uploadId,
+        //        chunkStr,
+        //        fileName,
+        //        responseList,
+        //        type,
+        //        container;
+        //    form.TryGetValue("chunks", out chunksStr);
+        //    form.TryGetValue("chunk", out chunkStr);
+        //    form.TryGetValue("name", out fileName);
+        //    form.TryGetValue("upload_id", out uploadId);
+        //    form.TryGetValue("response_list", out responseList);
+        //    form.TryGetValue("type", out type);
+        //    form.TryGetValue("container", out container);
+        //    ObjectType objectType = UnifiedStorage.GetType(type);
 
 
-            if (!string.IsNullOrWhiteSpace(container))
-            {
-                bucketName = GetPath(type, AppUser.TenantId, container);
-            }
-            else
-            {
-                bucketName = GetPath(type, AppUser.TenantId);
-            }
+        //    if (!string.IsNullOrWhiteSpace(container))
+        //    {
+        //        bucketName = GetPath(type, AppUser.TenantId, container);
+        //    }
+        //    else
+        //    {
+        //        bucketName = GetPath(type, AppUser.TenantId);
+        //    }
 
-            int chunk = 0,
-                chunks = 1;
+        //    int chunk = 0,
+        //        chunks = 1;
 
-            int.TryParse(chunksStr, out chunks);
-            int.TryParse(chunkStr, out chunk);
-            chunk++; // increase it since s3 chunk indexes starting from 1 instead of 0
+        //    int.TryParse(chunksStr, out chunks);
+        //    int.TryParse(chunkStr, out chunk);
+        //    chunk++; // increase it since s3 chunk indexes starting from 1 instead of 0
 
-            MultipartResponse response = new MultipartResponse();
-            CompleteMultipartUploadResponse uploadResult;
-            try
-            {
-                if (chunk == 1)
-                {
-                    uploadId = await _storage.InitiateMultipartUpload(bucketName, fileName);
-                    response.Status = MultipartStatusEnum.Initiated;
-                    response.UploadId = uploadId;
-                }
+        //    MultipartResponse response = new MultipartResponse();
+        //    CompleteMultipartUploadResponse uploadResult;
+        //    try
+        //    {
+        //        if (chunk == 1)
+        //        {
+        //            uploadId = await _storage.InitiateMultipartUpload(bucketName, fileName);
+        //            response.Status = MultipartStatusEnum.Initiated;
+        //            response.UploadId = uploadId;
+        //        }
 
-                response.ETag = await _storage.UploadPart(bucketName, fileName, chunk, chunks, uploadId, file.OpenReadStream());
-                if (response.Status == MultipartStatusEnum.NotSet)
-                    response.Status = MultipartStatusEnum.ChunkUpload;
+        //        response.ETag = await _storage.UploadPart(bucketName, fileName, chunk, chunks, uploadId, file.OpenReadStream());
+        //        if (response.Status == MultipartStatusEnum.NotSet)
+        //            response.Status = MultipartStatusEnum.ChunkUpload;
 
-                if (chunk == chunks)
-                {
-                    uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
+        //        if (chunk == chunks)
+        //        {
+        //            uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
 
-                    response.Status = MultipartStatusEnum.Completed;
+        //            response.Status = MultipartStatusEnum.Completed;
 
-                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
-                    {
-                        var clearRoot = objectType == ObjectType.PROFILEPICTURE;
+        //            if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
+        //            {
+        //                var clearRoot = objectType == ObjectType.PROFILEPICTURE;
 
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, clearRoot);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                await _storage.AbortMultipartUpload(bucketName, fileName, uploadId);
-                response.Status = MultipartStatusEnum.Aborted;
-            }
+        //                response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, clearRoot);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        await _storage.AbortMultipartUpload(bucketName, fileName, uploadId);
+        //        response.Status = MultipartStatusEnum.Aborted;
+        //    }
 
-            return Json(response);
-        }
+        //    return Json(response);
+        //}
 
-        [HttpPost("upload_whole")]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadWhole()
-        {
-            var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+        //[HttpPost("upload_whole")]
+        //[DisableRequestSizeLimit]
+        //public async Task<IActionResult> UploadWhole()
+        //{
+        //    var parser = new HttpMultipartParser(Request.Body, "file");
+        //    StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
 
-            //if it is successfully parsed continue.
-            if (parser.Success)
-            {
-                if (parser.FileContents.Length <= 0)
-                {
-                    //check the file size if it is 0 bytes then return client with that error code.
-                    return BadRequest();
-                }
+        //    //if it is successfully parsed continue.
+        //    if (parser.Success)
+        //    {
+        //        if (parser.FileContents.Length <= 0)
+        //        {
+        //            //check the file size if it is 0 bytes then return client with that error code.
+        //            return BadRequest();
+        //        }
 
-                var ext = Path.GetExtension(parser.Filename);
-                var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+        //        var ext = Path.GetExtension(parser.Filename);
+        //        var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-                using (Stream stream = new MemoryStream(parser.FileContents))
-                {
-                    await _storage.Upload(bucketName, uniqueName, stream);
-                }
+        //        using (Stream stream = new MemoryStream(parser.FileContents))
+        //        {
+        //            await _storage.Upload(bucketName, uniqueName, stream);
+        //        }
 
-                var result = new DocumentUploadResult
-                {
-                    ContentType = parser.ContentType,
-                    UniqueName = uniqueName,
-                    Chunks = 0
-                };
+        //        var result = new DocumentUploadResult
+        //        {
+        //            ContentType = parser.ContentType,
+        //            UniqueName = uniqueName,
+        //            Chunks = 0
+        //        };
 
-                //return content type of the file to the client
-                return Ok(result);
-            }
+        //        //return content type of the file to the client
+        //        return Ok(result);
+        //    }
 
-            //this request invalid because there is no file, return fail code to the client.
-            return NotFound();
-        }
+        //    //this request invalid because there is no file, return fail code to the client.
+        //    return NotFound();
+        //}
 
         [HttpPost("upload_template")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", 1);
+            StringValues bucketName = UnifiedStorage.GetPath("template", OrganizationId, (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -219,205 +219,184 @@ namespace PrimeApps.Console.Controllers
             return NotFound();
         }
 
-        [Route("download")]
-        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)
-        {
-            var doc = await _documentRepository.GetById(fileId);
-            if (doc != null)
-            {
-                return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
-            }
-            else
-            {
-                //there is no such file, return
-                throw new Exception("Document does not exist in the storage!");
-            }
-        }
+        //[Route("download")]
+        //public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)
+        //{
+        //    var doc = await _documentRepository.GetById(fileId);
+        //    if (doc != null)
+        //    {
+        //        return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
+        //    }
+        //    else
+        //    {
+        //        //there is no such file, return
+        //        throw new Exception("Document does not exist in the storage!");
+        //    }
+        //}
 
-        [Route("download_template")]
-        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int fileId, string tempType)
-        {
-            var type = "";
-            if (tempType == "excel")
-                type = ".xlsx";
-            else
-                type = ".docx";
+        ///// <summary>
+        ///// Validates and creates document record permanently after temporary upload process completed.
+        ///// </summary>
+        ///// <param name="document">The document.</param>
+        //[Route("create"), HttpPost]
+        //public async Task<IActionResult> Create([FromBody] DocumentDTO document)
+        //{
+        //    //get entity name if this document is uploading to a specific entity.
+        //    string uniqueStandardizedName = document.FileName.Replace(" ", "-");
 
-            var temp = await _templateRepository.GetById(fileId);
-            if (temp != null)
-            {
-                return await _storage.Download(UnifiedStorage.GetPath("template", AppUser.TenantId), temp.Content, temp.Name + type);
-            }
-            else
-            {
-                //there is no such file, return
-                throw new Exception("Document does not exist in the storage!");
-            }
-        }
+        //    uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
-        /// <summary>
-        /// Validates and creates document record permanently after temporary upload process completed.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] DocumentDTO document)
-        {
-            //get entity name if this document is uploading to a specific entity.
-            string uniqueStandardizedName = document.FileName.Replace(" ", "-");
+        //    Document currentDoc = new Document()
+        //    {
+        //        FileSize = document.FileSize,
+        //        Description = document.Description,
+        //        ModuleId = document.ModuleId,
+        //        Name = document.FileName,
+        //        CreatedAt = DateTime.UtcNow,
+        //        Type = document.MimeType,
+        //        UniqueName = document.UniqueFileName,
+        //        RecordId = document.RecordId,
+        //        Deleted = false
+        //    };
+        //    if (await _documentRepository.CreateAsync(currentDoc) != null)
+        //    {
+        //        //transfer file to the permanent storage by committing it.
+        //        return Ok(currentDoc.Id.ToString());
+        //    }
 
-            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+        //    return BadRequest("Couldn't Create Document!");
+        //}
 
-            Document currentDoc = new Document()
-            {
-                FileSize = document.FileSize,
-                Description = document.Description,
-                ModuleId = document.ModuleId,
-                Name = document.FileName,
-                CreatedAt = DateTime.UtcNow,
-                Type = document.MimeType,
-                UniqueName = document.UniqueFileName,
-                RecordId = document.RecordId,
-                Deleted = false
-            };
-            if (await _documentRepository.CreateAsync(currentDoc) != null)
-            {
-                //transfer file to the permanent storage by committing it.
-                return Ok(currentDoc.Id.ToString());
-            }
+        //[Route("upload_profile_picture"), HttpPost]
+        //public async Task<IActionResult> UploadProfilePicture()
+        //{
+        //    HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+        //    StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
 
-            return BadRequest("Couldn't Create Document!");
-        }
+        //    if (parser.Success)
+        //    {
+        //        //if succesfully parsed, then continue to thread.
+        //        if (parser.FileContents.Length <= 0)
+        //        {
+        //            //if file is invalid, then stop thread and return bad request status code.
+        //            return BadRequest();
+        //        }
 
-        [Route("upload_profile_picture"), HttpPost]
-        public async Task<IActionResult> UploadProfilePicture()
-        {
-            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
+        //        var uniqueName = string.Empty;
 
-            if (parser.Success)
-            {
-                //if succesfully parsed, then continue to thread.
-                if (parser.FileContents.Length <= 0)
-                {
-                    //if file is invalid, then stop thread and return bad request status code.
-                    return BadRequest();
-                }
+        //        //get the file name from parser
+        //        if (parser.Parameters.ContainsKey("name"))
+        //        {
+        //            uniqueName = parser.Parameters["name"];
+        //        }
 
-                var uniqueName = string.Empty;
+        //        if (string.IsNullOrEmpty(uniqueName))
+        //        {
+        //            var ext = Path.GetExtension(parser.Filename);
+        //            uniqueName = Guid.NewGuid() + ext;
+        //        }
 
-                //get the file name from parser
-                if (parser.Parameters.ContainsKey("name"))
-                {
-                    uniqueName = parser.Parameters["name"];
-                }
+        //        var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
-                if (string.IsNullOrEmpty(uniqueName))
-                {
-                    var ext = Path.GetExtension(parser.Filename);
-                    uniqueName = Guid.NewGuid() + ext;
-                }
+        //        using (Stream stream = new MemoryStream(parser.FileContents))
+        //        {
+        //            await _storage.Upload(bucketName, fileName, stream);
+        //        }
 
-                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+        //        var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
-                using (Stream stream = new MemoryStream(parser.FileContents))
-                {
-                    await _storage.Upload(bucketName, fileName, stream);
-                }
+        //        return Ok(profilePicture);
+        //    }
 
-                var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+        //    //this is not a valid request so return fail.
+        //    return Ok("Fail");
+        //}
 
-                return Ok(profilePicture);
-            }
+        //[Route("upload_logo"), HttpPost]
+        //public async Task<IActionResult> UploadLogo()
+        //{
+        //    HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+        //    StringValues bucketName = UnifiedStorage.GetPath("applogo", 1);
 
-            //this is not a valid request so return fail.
-            return Ok("Fail");
-        }
+        //    if (parser.Success)
+        //    {
+        //        //if succesfully parsed, then continue to thread.
+        //        if (parser.FileContents.Length <= 0)
+        //        {
+        //            //if file is invalid, then stop thread and return bad request status code.
+        //            return BadRequest();
+        //        }
 
-        [Route("upload_logo"), HttpPost]
-        public async Task<IActionResult> UploadLogo()
-        {
-            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo", 1);
+        //        var uniqueName = string.Empty;
+        //        //get the file name from parser
+        //        if (parser.Parameters.ContainsKey("name"))
+        //        {
+        //            uniqueName = parser.Parameters["name"];
+        //        }
 
-            if (parser.Success)
-            {
-                //if succesfully parsed, then continue to thread.
-                if (parser.FileContents.Length <= 0)
-                {
-                    //if file is invalid, then stop thread and return bad request status code.
-                    return BadRequest();
-                }
+        //        if (string.IsNullOrEmpty(uniqueName))
+        //        {
+        //            var ext = Path.GetExtension(parser.Filename);
+        //            uniqueName = Guid.NewGuid() + ext;
+        //        }
 
-                var uniqueName = string.Empty;
-                //get the file name from parser
-                if (parser.Parameters.ContainsKey("name"))
-                {
-                    uniqueName = parser.Parameters["name"];
-                }
+        //        var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
-                if (string.IsNullOrEmpty(uniqueName))
-                {
-                    var ext = Path.GetExtension(parser.Filename);
-                    uniqueName = Guid.NewGuid() + ext;
-                }
+        //        using (Stream stream = new MemoryStream(parser.FileContents))
+        //        {
+        //            await _storage.Upload(bucketName, fileName, stream);
+        //        }
 
-                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+        //        var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
-                using (Stream stream = new MemoryStream(parser.FileContents))
-                {
-                    await _storage.Upload(bucketName, fileName, stream);
-                }
+        //        //return content type.
+        //        return Ok(logo);
+        //    }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+        //    //this is not a valid request so return fail.
+        //    return Ok("Fail");
+        //}
 
-                //return content type.
-                return Ok(logo);
-            }
+        //[Route("upload_import_excel"), HttpPost]
+        //public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")] int importId)
+        //{
+        //    var import = await _importRepository.GetById(importId);
 
-            //this is not a valid request so return fail.
-            return Ok("Fail");
-        }
+        //    if (import == null)
+        //        return NotFound();
 
-        [Route("upload_import_excel"), HttpPost]
-        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")] int importId)
-        {
-            var import = await _importRepository.GetById(importId);
+        //    var parser = new HttpMultipartParser(Request.Body, "file");
+        //    StringValues bucketName = UnifiedStorage.GetPath("import", AppUser.TenantId);
 
-            if (import == null)
-                return NotFound();
+        //    //if it is successfully parsed continue.
+        //    if (parser.Success)
+        //    {
+        //        if (parser.FileContents.Length <= 0)
+        //        {
+        //            //check the file size if it is 0 bytes then return client with that error code.
+        //            return BadRequest();
+        //        }
 
-            var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("import", AppUser.TenantId);
+        //        var ext = Path.GetExtension(parser.Filename);
+        //        var fileName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-            //if it is successfully parsed continue.
-            if (parser.Success)
-            {
-                if (parser.FileContents.Length <= 0)
-                {
-                    //check the file size if it is 0 bytes then return client with that error code.
-                    return BadRequest();
-                }
+        //        using (Stream stream = new MemoryStream(parser.FileContents))
+        //        {
+        //            await _storage.Upload(bucketName, fileName, stream);
+        //        }
 
-                var ext = Path.GetExtension(parser.Filename);
-                var fileName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+        //        var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, false);
+        //        excelUrl = excelUrl + "--" + parser.Filename;
 
-                using (Stream stream = new MemoryStream(parser.FileContents))
-                {
-                    await _storage.Upload(bucketName, fileName, stream);
-                }
+        //        import.ExcelUrl = excelUrl;
+        //        await _importRepository.Update(import);
 
-                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, false);
-                excelUrl = excelUrl + "--" + parser.Filename;
+        //        //return content type of the file to the client
+        //        return Ok(parser.Filename);
+        //    }
 
-                import.ExcelUrl = excelUrl;
-                await _importRepository.Update(import);
-
-                //return content type of the file to the client
-                return Ok(parser.Filename);
-            }
-
-            //this request invalid because there is no file, return fail code to the client.
-            return NotFound();
-        }
+        //    //this request invalid because there is no file, return fail code to the client.
+        //    return NotFound();
+        //}
     }
 }

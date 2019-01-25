@@ -45,9 +45,10 @@ namespace PrimeApps.Console.Controllers
         private IDocumentRepository _documentRepository;
         private IServiceScopeFactory _serviceScopeFactory;
         private IViewRepository _viewRepository;
+        private IUnifiedStorage _storage;
 
         private IRecordHelper _recordHelper;
-        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository)
+        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository, IUnifiedStorage storage)
         {
             _tenantRepository = tenantRepository;
             _documentRepository = documentRepository;
@@ -61,21 +62,22 @@ namespace PrimeApps.Console.Controllers
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _viewRepository = viewRepository;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_tenantRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_templateRepository);
-            SetCurrentUser(_documentRepository);
-            SetCurrentUser(_picklistRepository);
-            SetCurrentUser(_settingsRepository);
-            SetCurrentUser(_noteRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_viewRepository);
+            //SetCurrentUser(_tenantRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_recordRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_templateRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_documentRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_picklistRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingsRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_noteRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_viewRepository, PreviewMode, AppId, TenantId);
             _recordHelper.SetCurrentUser(AppUser);
             base.OnActionExecuting(context);
         }
@@ -987,45 +989,45 @@ namespace PrimeApps.Console.Controllers
 
         }
 
-        [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "template_id")]int templateId)
-        {
-            //get the document record from database
-            var template = await _templateRepository.GetById(templateId);
-            string publicName = "";
+        //[Route("download_template"), HttpGet]
+        //public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "template_id")]int templateId)
+        //{
+        //    //get the document record from database
+        //    var template = await _templateRepository.GetById(templateId);
+        //    string publicName = "";
 
-            if (template != null)
-            {
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
+        //    if (template != null)
+        //    {
+        //        //if there is a document with this id, try to get it from blob AzureStorage.
+        //        var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
+        //        try
+        //        {
+        //            //try to get the attributes of blob.
+        //            await blob.FetchAttributesAsync();
+        //        }
+        //        catch (Exception)
+        //        {
+        //            //if there is an exception, it means there is no such file.
+        //            return NotFound();
+        //        }
 
-                //Bandwidth is enough, send the AzureStorage.
-                publicName = template.Name;
+        //        //Bandwidth is enough, send the AzureStorage.
+        //        publicName = template.Name;
 
-                string[] splittedFileName = template.Content.Split('.');
-                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
+        //        string[] splittedFileName = template.Content.Split('.');
+        //        string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
 
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + $"{template.Name}.{extension}"); // force download
-                await blob.DownloadToStreamAsync(Response.Body);
+        //        Response.Headers.Add("Content-Disposition", "attachment; filename=" + $"{template.Name}.{extension}"); // force download
+        //        await blob.DownloadToStreamAsync(Response.Body);
 
-                return new EmptyResult();
-            }
-            else
-            {
-                //there is no such file, return
-                return NotFound();
-            }
-        }
+        //        return new EmptyResult();
+        //    }
+        //    else
+        //    {
+        //        //there is no such file, return
+        //        return NotFound();
+        //    }
+        //}
 
         [HttpPost("export_excel")]
         public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
@@ -1820,6 +1822,27 @@ namespace PrimeApps.Console.Controllers
                 memory.Position = 0;
 
                 return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
+
+        [Route("download_template")]
+        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int fileId, string tempType, int appId, int organizationId)
+        {
+            var type = "";
+            if (tempType == "excel")
+                type = ".xlsx";
+            else
+                type = ".docx";
+
+            var temp = await _templateRepository.GetById(fileId);
+            if (temp != null)
+            {
+                return await _storage.Download(UnifiedStorage.GetPath("template", organizationId, appId), temp.Content, temp.Name + type);
+            }
+            else
+            {
+                //there is no such file, return
+                throw new Exception("Document does not exist in the storage!");
             }
         }
 

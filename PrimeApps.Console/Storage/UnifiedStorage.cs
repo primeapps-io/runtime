@@ -275,11 +275,11 @@ namespace PrimeApps.Console.Storage
             return await _client.DeleteObjectAsync(request);
         }
 
-        public static string GetPath(string type, int tenant, string extraPath = "")
+        public static string GetPath(string type, int organization,int appId , string extraPath = "")
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
-            return $"organization{tenant}{pathMap[objectType]}{extraPath}";
+            return $"organization{organization}{"/app" + appId}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Console.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -19,7 +20,7 @@ namespace PrimeApps.Console.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            var organizationId = SetOrganization(context);
+            var organizationId = Convert.ToInt32(context.HttpContext.Request.Query["organizationId"].ToString());
 
             if (organizationId <= 0)
                 context.Result = new UnauthorizedResult();
@@ -31,7 +32,7 @@ namespace PrimeApps.Console.Controllers
             context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues);
 
             var tenantId = 0;
-            var appId = 0;
+            var appId = Convert.ToInt32(context.HttpContext.Request.Query["appId"].ToString());
 
             if (tenantIdValues.Count != 0 && !string.IsNullOrWhiteSpace(tenantIdValues[0]))
                 int.TryParse(tenantIdValues[0], out tenantId);
