@@ -42,8 +42,10 @@
                                     </div>
 
                                     <div class=" form-group">
-                                        <label class="col-sm-4 control-label newinput">{{'Menu.DefaultMenu'|translate}}:</label>
-                                        <input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
+
+                                        <label class="col-sm-4 control-label newinput">
+                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
+                                        </label>
                                     </div>
 
                                     <div ng-show="!menu.default" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">

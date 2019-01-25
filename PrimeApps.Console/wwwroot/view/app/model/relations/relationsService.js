@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('RelationsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
+    .factory('RelationsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'ModuleService',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, ModuleService) {
             return {
                 count: function (id) {
                     return $http.get(config.apiUrl + 'relation/count/' + id);
@@ -725,102 +725,115 @@ angular.module('primeapps')
                 },
 
                 getFields: function (module, allModules) {
+                    var deferred = $q.defer();
                     var fields = {};
                     fields.selectedFields = [];
                     fields.availableFields = [];
                     fields.allFields = [];
-                    if (!module.relation_module)
+
+                    if (!module.related_module)
                         return fields;
-                    var moduleFields = angular.copy(module.relation_module.fields);
-                    moduleFields = $filter('filter')(moduleFields, {
-                        display_list: true,
-                        lookup_type: '!relation'
-                    }, true);
 
-                    var seperatorFieldMain = {};
-                    seperatorFieldMain.name = 'seperator-main';
-                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.relation_module.label_tr_singular : module.relation_module.label_en_singular;
-                    seperatorFieldMain.order = 0;
-                    seperatorFieldMain.seperator = true;
-                    moduleFields.push(seperatorFieldMain);
-                    var seperatorLookupOrder = 0;
 
-                    angular.forEach(moduleFields, function (field) {
-                        if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
-                            var lookupModule = angular.copy($filter('filter')(allModules, { name: field.lookup_type }, true)[0]);
-                            seperatorLookupOrder += 100;
-                            if (lookupModule === null || lookupModule === undefined) return;
-                            var seperatorFieldLookup = {};
-                            seperatorFieldLookup.name = 'seperator-' + lookupModule.name;
-                            seperatorFieldLookup.order = seperatorLookupOrder;
-                            seperatorFieldLookup.seperator = true;
+                    ModuleService.getModuleFields(module.related_module.name).then(function (res) {
+                        module.related_module.fields = res.data;
+                        var moduleFields = angular.copy(module.related_module.fields);
+                        var relationField = $filter('filter')(moduleFields, { name: module.relation_field, deleted: false }, true)[0];
+                        module.relationField = relationField;
 
-                            if ($rootScope.language === 'tr')
-                                seperatorFieldLookup.label = lookupModule.label_tr_singular + ' (' + field.label_tr + ')';
-                            else
-                                seperatorFieldLookup.label = lookupModule.label_en_singular + ' (' + field.label_en + ')';
+                        moduleFields = $filter('filter')(moduleFields, {
+                            display_list: true,
+                            lookup_type: '!relation'
+                        }, true);
 
-                            moduleFields.push(seperatorFieldLookup);
+                        var seperatorFieldMain = {};
+                        seperatorFieldMain.name = 'seperator-main';
+                        seperatorFieldMain.label = $rootScope.language === 'tr' ? module.related_module.label_tr_singular : module.related_module.label_en_singular;
+                        seperatorFieldMain.order = 0;
+                        seperatorFieldMain.seperator = true;
+                        moduleFields.push(seperatorFieldMain);
+                        var seperatorLookupOrder = 0;
 
-                            var lookupModuleFields = angular.copy(lookupModule.fields);
-                            lookupModuleFields = $filter('filter')(lookupModuleFields, { display_list: true }, true);
+                        angular.forEach(moduleFields, function (field) {
+                            if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
+                                var lookupModule = angular.copy($filter('filter')(allModules, { name: field.lookup_type }, true)[0]);
+                                seperatorLookupOrder += 100;
+                                if (lookupModule === null || lookupModule === undefined) return;
+                                var seperatorFieldLookup = {};
+                                seperatorFieldLookup.name = 'seperator-' + lookupModule.name;
+                                seperatorFieldLookup.order = seperatorLookupOrder;
+                                seperatorFieldLookup.seperator = true;
 
-                            angular.forEach(lookupModuleFields, function (fieldLookup) {
-                                if (fieldLookup.data_type === 'lookup')
-                                    return;
+                                if ($rootScope.language === 'tr')
+                                    seperatorFieldLookup.label = lookupModule.label_tr_singular + ' (' + field.label_tr + ')';
+                                else
+                                    seperatorFieldLookup.label = lookupModule.label_en_singular + ' (' + field.label_en + ')';
 
-                                fieldLookup.label = $rootScope.language === 'tr' ? fieldLookup.label_tr : fieldLookup.label_en;
-                                fieldLookup.labelExt = '(' + field.label + ')';
-                                fieldLookup.name = field.name + '.' + lookupModule.name + '.' + fieldLookup.name;
-                                fieldLookup.order = parseInt(fieldLookup.order) + seperatorLookupOrder;
-                                moduleFields.push(fieldLookup);
-                            });
-                        }
-                    });
+                                moduleFields.push(seperatorFieldLookup);
 
-                    angular.forEach(moduleFields, function (field) {
-                        if (field.deleted)
-                            return;
+                                var lookupModuleFields = angular.copy(lookupModule.fields);
+                                lookupModuleFields = $filter('filter')(lookupModuleFields, { display_list: true }, true);
 
-                        var selectedField = null;
+                                angular.forEach(lookupModuleFields, function (fieldLookup) {
+                                    if (fieldLookup.data_type === 'lookup')
+                                        return;
 
-                        if (module.display_fields) {
-                            var selectedFieldName = $filter('filter')(module.display_fields, field.name, true)[0];
-                            if (selectedFieldName) {
-                                selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
+                                    fieldLookup.label = $rootScope.language === 'tr' ? fieldLookup.label_tr : fieldLookup.label_en;
+                                    fieldLookup.labelExt = '(' + field.label + ')';
+                                    fieldLookup.name = field.name + '.' + lookupModule.name + '.' + fieldLookup.name;
+                                    fieldLookup.order = parseInt(fieldLookup.order) + seperatorLookupOrder;
+                                    moduleFields.push(fieldLookup);
+                                });
                             }
-                        }
-                        ;
+                        });
 
-                        var newField = {};
-                        newField.name = field.name;
-                        newField.label = field.label ? field.label : field['label_' + $rootScope.language];
-                        newField.labelExt = field.labelExt;
-                        newField.order = field.order;
-                        newField.lookup_type = field.lookup_type;
-                        newField.seperator = field.seperator;
-                        newField.multiline_type = field.multiline_type;
+                        angular.forEach(moduleFields, function (field) {
+                            if (field.deleted)
+                                return;
 
-                        if (selectedField) {
-                            newField.order = selectedField.order;
-                            fields.selectedFields.push(newField);
-                        }
-                        else {
-                            var primaryField = $filter('filter')(moduleFields, { primary: true }, true)[0];
+                            var selectedField = null;
 
-                            if (field.name != primaryField.name)
-                                fields.availableFields.push(newField);
-                            else
+                            if (module.display_fields) {
+                                var selectedFieldName = $filter('filter')(module.display_fields, field.name, true)[0];
+                                if (selectedFieldName) {
+                                    selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
+                                }
+                            }
+
+                            var newField = {};
+                            newField.name = field.name;
+                            newField.label = field.label ? field.label : field['label_' + $rootScope.language];
+                            newField.labelExt = field.labelExt;
+                            newField.order = field.order;
+                            newField.lookup_type = field.lookup_type;
+                            newField.seperator = field.seperator;
+                            newField.multiline_type = field.multiline_type;
+
+                            if (selectedField) {
+                                newField.order = selectedField.order;
                                 fields.selectedFields.push(newField);
-                        }
+                            }
+                            else {
+                                var primaryField = $filter('filter')(moduleFields, { primary: true }, true)[0];
 
-                        fields.allFields.push(newField);
+                                if (field.name != primaryField.name)
+                                    fields.availableFields.push(newField);
+                                else
+                                    fields.selectedFields.push(newField);
+                            }
+
+                            fields.allFields.push(newField);
+                        });
+
+                        fields.selectedFields = $filter('orderBy')(fields.selectedFields, 'order');
+                        fields.availableFields = $filter('orderBy')(fields.availableFields, 'order');
+
+                        return deferred.resolve(fields);
+
+                    }).catch(function (reason) {
+                        deferred.reject(reason.data);
                     });
-
-                    fields.selectedFields = $filter('orderBy')(fields.selectedFields, 'order');
-                    fields.availableFields = $filter('orderBy')(fields.availableFields, 'order');
-
-                    return fields;
+                    return deferred.promise;
                 },
 
                 deleteFieldsMappings: function (request) {
@@ -854,12 +867,12 @@ angular.module('primeapps')
                 },
 
                 prepareRelation: function (relation) {
-                    relation.related_module = relation.relation_module.name;
+                    relation.related_module = relation.related_module.name;
 
                     if (relation.relationField)
                         relation.relation_field = relation.relationField.name;
 
-                    delete relation.relation_module;
+                   // delete relation.related_module;
                     delete relation.relationField;
                     delete relation.hasRelationField;
                     delete relation.type;
