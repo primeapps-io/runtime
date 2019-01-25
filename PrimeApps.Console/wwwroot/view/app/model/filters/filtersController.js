@@ -107,23 +107,25 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (view) {
                 if (view) {
-                    $scope.view = angular.copy(view);
-                    var module = view.parent_module;
-                    $scope.module = module;
-                    $scope.view.label = $scope.view['label_' + $scope.language];
-                    $scope.view.edit = true;
-                    // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
+                    FiltersService.getView(view.id).then(function (view) {
+                        $scope.view = angular.copy(view);
+                        $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
+                        $scope.view.label = $scope.view['label_' + $scope.language];
+                        $scope.view.edit = true;
 
-                    // if (!$scope.view) {
-                    //     TODO
-                    //     $state.go('app.crm.moduleList', { type: module.name });
-                    //     return;
-                    // }
+                        // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
 
-                    if ($scope.view.filter_logic && $scope.language === 'tr')
-                        $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
+                        // if (!$scope.view) {
+                        //     TODO
+                        //     $state.go('app.crm.moduleList', { type: module.name });
+                        //     return;
+                        // }
 
-                    moduleChanged(module, false);
+                        if ($scope.view.filter_logic && $scope.language === 'tr')
+                            $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
+
+                        moduleChanged($scope.module, false);
+                    });
                 }
                 else {
                     $scope.view = {};
@@ -224,6 +226,13 @@ angular.module('primeapps')
 
                                 $scope.view.filterList.push(filter);
                             }
+
+                            if ($scope.view.filters.length > 0)
+                                for (var i = 0; i < $scope.view.filters.length; i++) {
+                                    $scope.view.filterList[i] = $scope.view.filters[i];
+                                    $scope.view.filterList[i].field = $filter('filter')($scope.module.fields, { name: $scope.view.filters[i].field }, true)[0];
+
+                                }
 
                             dragular();
                         });
@@ -401,7 +410,7 @@ angular.module('primeapps')
                 }
 
                 if (!$scope.view.id) {
-                    ViewService.create(view)
+                    FiltersService.create(view)
                         .then(function (response) {
                             //var viewState = cache.viewState;
                             var viewState;

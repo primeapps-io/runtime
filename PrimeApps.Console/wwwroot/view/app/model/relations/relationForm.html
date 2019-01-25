@@ -23,9 +23,9 @@
                             <div class="section" id="section1">
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.related_module.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
+                                        <label class="col-sm-12 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
                                         <select name="module"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentRelation.module"
                                                 ng-change="moduleChanged()"
@@ -34,28 +34,28 @@
                                         </select>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.labelPlural.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
                                         <input type="text"
                                                name="labelPlural"
-                                               class="form-control ng-animate-disabled col-sm-8"
+                                               class="form-control ng-animate-disabled col-sm-12"
                                                required
                                                maxlength="50"
                                                focus="currentLabelState"
                                                ng-model="currentRelation['label_' + language + '_plural']">
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.labelSingular.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.SingularName' | translate}}</label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.SingularName' | translate}}</label>
                                         <input type="text"
                                                name="labelSingular"
-                                               class="form-control ng-animate-disabled col-sm-8"
+                                               class="form-control ng-animate-disabled col-sm-12"
                                                required
                                                maxlength="50"
                                                ng-model="currentRelation['label_' + language + '_singular']">
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.relatedModule.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.RelatedModule' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.RelatedModule' | translate}}: </label>
                                         <select name="relatedModule"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentRelation.related_module"
                                                 ng-change="relatedModuleChanged()"
@@ -75,9 +75,9 @@
                                         </label>
                                     </div>
                                     <div class="form-group" ng-if="currentRelation.related_module && currentRelation.related_module.name != 'activities' && currentRelation.related_module.name != 'mails' && currentRelation.relation_type === 'one_to_many'" ng-class="{'has-error': relationForm.$submitted && relationForm.relationField.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
                                         <select name="relationField"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentRelation.relationField"
                                                 ng-show="currentRelation.hasRelationField"
@@ -88,9 +88,9 @@
                                         <span ng-show="!currentRelation.hasRelationField">{{'Setup.Modules.NoRelationFields' | translate}}</span>
                                     </div>
                                     <div class="form-group" ng-if="currentRelation.related_module && (currentRelation.related_module.name === 'activities' || currentRelation.related_module.name === 'mails' ) && (module.name != 'activities' || module.name != 'mails') && currentRelation.relation_type === 'one_to_many'" ng-init="currentRelation.relationField = (currentRelation.related_module.fields | filter:{name:'related_to'})[0]; currentRelation.hasRelationField = true;">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
                                         <select name="relationField"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentRelation.relationField"
                                                 ng-disabled="true"
@@ -113,7 +113,7 @@
                                         </label>
                                     </div>
                                     <div class="form-group" ng-if="currentRelation.relationField || (currentRelation.related_module && currentRelation.relation_type === 'many_to_many')">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.ViewFields' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.ViewFields' | translate}}: </label>
                                         <div class="col-sm-12">
                                             <div class="fields-header">
                                                 <span class="title-left">{{'Setup.Modules.AvailableFields' | translate}}:</span>

@@ -24,9 +24,9 @@
                             <div class="section" id="section1">
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.relatedModule.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
+                                        <label class="col-sm-12 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
                                         <select name="module"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.module"
                                                 ng-change="moduleChanged()"
@@ -35,9 +35,9 @@
                                         </select>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.dependencyType.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyType' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.DependencyType' | translate}}: </label>
                                         <select name="dependencyType"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.dependencyType"
                                                 ng-disabled="!currentDependency.isNew"
@@ -45,18 +45,18 @@
                                                 ng-options="o.value as o.label for o in dependencyTypes"></select>
                                     </div>
                                     <div class="form-group" ng-if="currentDependency.dependencyType === 'value'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.type.$invalid}">
-                                        <label class="col-sm-6 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
                                         <select name="type"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.type"
                                                 ng-change="valueChangeTypeChanged()"
                                                 ng-options="o.value as o.label for o in valueChangeTypes"></select>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentField.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentField' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.DependencyParentField' | translate}}: </label>
                                         <select name="parentField"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.parent_field"
                                                 ng-change="parentValueChanged()"
@@ -65,10 +65,10 @@
                                         </select>
                                     </div>
                                     <div class="form-group" ng-if="currentDependency.dependencyType === 'display' && currentDependency.parent_field && (parentDisplayFields | filter:{name: currentDependency.parent_field}:true)[0].data_type != 'checkbox'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.values.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyParentValues' | translate}}: </label>
-                                        <div class="col-sm-8 multiselect-container">
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.DependencyParentValues' | translate}}: </label>
+                                        <div class="col-sm-12 multiselect-container">
                                             <button type="button"
-                                                    class="btn btn-default ng-animate-disabled multiselect"
+                                                    class="form-control ng-animate-disabled multiselect"
                                                     name="values"
                                                     ng-model="currentDependency.values"
                                                     ng-required="true"
@@ -83,7 +83,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group" ng-show="currentDependency.dependencyType == 'display'">
-                                        <label class="col-sm-6 required-field">
+                                        <label class="col-sm-12 required-field">
                                             * {{'Setup.Modules.AffectedAreaType' | translate }}:
                                         </label>
 
@@ -97,9 +97,9 @@
                                     <div class="form-group"
                                          ng-if="affectedAreaType=='field'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childField.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.DependencyChildField' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.DependencyChildField' | translate}}: </label>
                                         <select name="childField"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.child_field"
                                                 ng-change="getMappingOptions()"
@@ -110,11 +110,11 @@
                                     <div class="form-group"
                                          ng-if="affectedAreaType=='section'  && currentDependency.dependencyType == 'display'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childSection.$invalid}">
-                                        <label class="col-sm-4 required-field">
+                                        <label class="col-sm-12 required-field">
                                             * {{'Setup.Modules.DependencyChildSection' |translate}}:
                                         </label>
                                         <select name="childSection"
-                                                class="form-control ng-animate-disabled col-sm-8"
+                                                class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.child_section"
                                                 ng-options="o.name as o['label_' + language] for o in   sections | orderBy:'order'">
@@ -125,16 +125,16 @@
                                          ng-if="currentDependency.type === 'list_text' && currentDependency.dependencyType === 'value'">
                                         <label class="newinput">{{'Setup.Modules.RemoveChildValue' | translate}}
                                             <input type="checkbox"
-                                               ng-model="currentDependency.clear"><span></span>
+                                                   ng-model="currentDependency.clear"><span></span>
                                         </label>
                                     </div>
                                     <div class="form-group"
                                          ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentMapField.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldParent' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.MappingFieldParent' | translate}}: </label>
                                         <input type="text"
                                                name="parentMapField"
-                                               class="form-control ng-animate-disabled col-sm-8"
+                                               class="form-control ng-animate-disabled col-sm-12"
                                                required
                                                maxlength="50"
                                                ng-model="currentDependency.field_map.parent_map_field">
@@ -142,21 +142,21 @@
                                     <div class="form-group"
                                          ng-if="currentDependency.type === 'list_field' && currentDependency.dependencyType === 'value'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childMapField.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.MappingFieldChild' | translate}}: </label>
+                                        <label class="col-sm-12 required-field">* {{'Setup.Modules.MappingFieldChild' | translate}}: </label>
                                         <input type="text"
                                                name="childMapField"
-                                               class="form-control ng-animate-disabled col-sm-8"
+                                               class="form-control ng-animate-disabled col-sm-12"
                                                required
                                                maxlength="50"
                                                ng-model="currentDependency.field_map.child_map_field">
                                     </div>
                                     <div class="form-group" ng-if="currentDependency.type === 'list_value' && currentDependency.parent_field && currentDependency.child_field">
-                                        <label class="col-sm-4">{{'Setup.Modules.MappingOptions' | translate}}:</label>
+                                        <label class="col-sm-12">{{'Setup.Modules.MappingOptions' | translate}}:</label>
                                         <div class="col-sm-12">
                                             <div class="value-map-container">
                                                 <div class="form-group" ng-repeat="option in parentPicklist">
                                                     <label class="col-sm-4">{{option['label_'+language]}}: </label>
-                                                    <div class="col-sm-8 multiselect-container">
+                                                    <div class="col-sm-12 multiselect-container">
                                                         <button type="button"
                                                                 class="btn btn-default ng-animate-disabled multiselect"
                                                                 name="values"

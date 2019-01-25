@@ -301,7 +301,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'picklist/find', ids);
                 },
 
-                getViews_: function (moduleId, displayFields, cache) {
+                getViews: function (moduleId, displayFields, cache) {
                     var that = this;
                     var deferred = $q.defer();
                     var module = $filter('filter')($rootScope.modules, { id: moduleId }, true)[0];
@@ -419,8 +419,15 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'picklist/get/' + id);
                 },
 
-                getViews: function () {
-                    return $http.get(config.apiUrl + 'view/get_all/');
+                getView: function (id) {
+                    var deferred = $q.defer();
+                    $http.get(config.apiUrl + 'view/get/' + id).then(function (view) {
+                        deferred.resolve(view.data);
+                    }).catch(function (reason) {
+                        deferred.reject(reason.data);
+                    });
+
+                    return deferred.promise;
                 },
 
                 count: function (id) {

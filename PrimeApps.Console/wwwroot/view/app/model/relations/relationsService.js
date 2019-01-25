@@ -793,8 +793,8 @@ angular.module('primeapps')
 
                             var selectedField = null;
 
-                            if (module.display_fields) {
-                                var selectedFieldName = $filter('filter')(module.display_fields, field.name, true)[0];
+                            if (module.display_fields_array) {
+                                var selectedFieldName = $filter('filter')(module.display_fields_array, field.name, true)[0];
                                 if (selectedFieldName) {
                                     selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
                                 }
