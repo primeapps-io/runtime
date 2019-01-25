@@ -87,7 +87,7 @@
                     <td>{{team.organizationName}}</td>
                     <td class="text-right">
                         <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                            <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
                                     class="btn btn-xs btn-default list-action-button"
                                     placement="bottom-right"
                                     data-animation="am-flip-x"
@@ -97,10 +97,10 @@
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li>
-                                    <a ng-click="addNewTeam(team.id)">{{'Common.Edit' | translate}} </a>
+                                    <a ng-click="$event.stopPropagation(); addNewTeam(team.id)">{{'Common.Edit' | translate}} </a>
                                 </li>
                                 <li>
-                                    <a ng-click="delete(team.id)">{{'Common.Delete' | translate}} </a>
+                                    <a ng-click="$event.stopPropagation(); delete(team.id)">{{'Common.Delete' | translate}} </a>
                                 </li>
                             </ul>
                         </div>
