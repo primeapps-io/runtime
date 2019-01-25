@@ -37,7 +37,6 @@
     <Folder Include="Migrations\ConsoleDB\" />
     <Folder Include="Migrations\PlatformDB\" />
     <Folder Include="Migrations\TenantDB" />
-    <Folder Include="Migrations\TenantDB\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
