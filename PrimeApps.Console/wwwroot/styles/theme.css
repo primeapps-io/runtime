@@ -1214,6 +1214,9 @@ button:focus, select:focus {
   margin-right: 0;
   margin-bottom: 20px !important;
 }
+.primeapps .form-group.has-error select {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
 .primeapps .form-group.bottom0 {
   margin-bottom: 0px !important;
 }
@@ -1688,7 +1691,7 @@ button:focus, select:focus {
   padding-left: 10px;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a {
-  padding: 5px 10px;
+  padding: 5px 10px 5px 30px;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a i {
   margin-right: 0px;

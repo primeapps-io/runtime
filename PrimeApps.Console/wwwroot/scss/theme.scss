@@ -1556,6 +1556,11 @@ button, select {
     margin-left: 0;
     margin-right: 0;
     margin-bottom: 20px !important;
+    &.has-error{
+      select{
+        background-color: rgba(206, 4, 4, 0.15) !important;
+      }
+    }
     &.bottom0{
       margin-bottom: 0px !important;
     }
@@ -1577,7 +1582,6 @@ button, select {
       font-weight: 400;
       height: 40px !important;
       max-width: none !important;
-
       &[disabled] {
         opacity: 0.5;
       }
@@ -2196,7 +2200,7 @@ button, select {
 
           li {
             a {
-              padding: 5px 10px;
+              padding: 5px 10px 5px 30px;
 
               i {
                 margin-right: 0px;
