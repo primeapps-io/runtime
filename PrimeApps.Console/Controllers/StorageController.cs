@@ -312,50 +312,50 @@ namespace PrimeApps.Console.Controllers
         //    return Ok("Fail");
         //}
 
-        //[Route("upload_logo"), HttpPost]
-        //public async Task<IActionResult> UploadLogo()
-        //{
-        //    HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-        //    StringValues bucketName = UnifiedStorage.GetPath("applogo", 1);
+        [Route("upload_logo"), HttpPost]
+        public async Task<IActionResult> UploadLogo()
+        {
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", OrganizationId, (int)AppId);
 
-        //    if (parser.Success)
-        //    {
-        //        //if succesfully parsed, then continue to thread.
-        //        if (parser.FileContents.Length <= 0)
-        //        {
-        //            //if file is invalid, then stop thread and return bad request status code.
-        //            return BadRequest();
-        //        }
+            if (parser.Success)
+            {
+                //if succesfully parsed, then continue to thread.
+                if (parser.FileContents.Length <= 0)
+                {
+                    //if file is invalid, then stop thread and return bad request status code.
+                    return BadRequest();
+                }
 
-        //        var uniqueName = string.Empty;
-        //        //get the file name from parser
-        //        if (parser.Parameters.ContainsKey("name"))
-        //        {
-        //            uniqueName = parser.Parameters["name"];
-        //        }
+                var uniqueName = string.Empty;
+                //get the file name from parser
+                if (parser.Parameters.ContainsKey("name"))
+                {
+                    uniqueName = parser.Parameters["name"];
+                }
 
-        //        if (string.IsNullOrEmpty(uniqueName))
-        //        {
-        //            var ext = Path.GetExtension(parser.Filename);
-        //            uniqueName = Guid.NewGuid() + ext;
-        //        }
+                if (string.IsNullOrEmpty(uniqueName))
+                {
+                    var ext = Path.GetExtension(parser.Filename);
+                    uniqueName = Guid.NewGuid() + ext;
+                }
 
-        //        var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
-        //        using (Stream stream = new MemoryStream(parser.FileContents))
-        //        {
-        //            await _storage.Upload(bucketName, fileName, stream);
-        //        }
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, fileName, stream);
+                }
 
-        //        var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
-        //        //return content type.
-        //        return Ok(logo);
-        //    }
+                //return content type.
+                return Ok(logo);
+            }
 
-        //    //this is not a valid request so return fail.
-        //    return Ok("Fail");
-        //}
+            //this is not a valid request so return fail.
+            return Ok("Fail");
+        }
 
         //[Route("upload_import_excel"), HttpPost]
         //public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")] int importId)

@@ -33,21 +33,15 @@ angular.module('primeapps')
 
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'storage/upload_logo',
-                headers: {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                    'Accept': 'application/json',
-                    'X-Organization-Id': $rootScope.currentOrgId
-                },
-                queueLimit: 1
-            });
-
-            uploader.onCompleteItem = function (fileItem, response, status, headers) {
-                if (status === 200) {
-                    var userModel = angular.copy($rootScope.user);
-                    $scope.appModel.logo = response;
-                }
-            };
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId
+                    },
+                    queueLimit: 1
+                })
+            ;
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -69,7 +63,6 @@ angular.module('primeapps')
                         item.image = event.target.result;
                     });
                 };
-
                 reader.readAsDataURL(item._file);
             };
 
@@ -182,6 +175,11 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.logoRemove = function () {
+                uploader.queue[0].remove();
+                uploader.queue[0].image = null;
+            };
+
             $scope.save = function (newAppForm) {
                 if (!newAppForm.$valid)
                     return false;
@@ -189,17 +187,40 @@ angular.module('primeapps')
                 //$scope.appModel.logo = uploader;
                 $scope.appModel.template_id = 0;
                 $scope.appModel.status = 1;
-
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
-                        ngToast.create({
-                            content: 'App ' + $scope.appModel.label + ' successfully created.',
-                            className: 'success'
-                        });
                         $scope.appModel = {};
                         $scope.appSaving = false;
                         $scope.appFormModal.hide();
-                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: response.data });
+                        var header = {
+                            'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                            'Accept': 'application/json',
+                            'X-Organization-Id': $rootScope.currentOrgId,
+                            'X-App-Id': response.data.id
+                        };
+                        uploader.queue[0].uploader.headers = header;
+                        uploader.queue[0].headers = header;
+                        uploader.queue[0].upload();
+
+                        uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                            if (status === 200) {
+                                $scope.updateApp = {};
+                                $scope.updateApp.description = response.data.description;
+                                $scope.updateApp.label = response.data.label;
+                                $scope.updateApp.name = response.data.name;
+                                $scope.updateApp.status = response.data.status;
+                                $scope.updateApp.template_id = response.data.templet_id;
+                                $scope.updateApp.logo = logoUrl;
+                                AppFormService.update(response.data.id, $scope.updateApp).then(function (response) {
+                                    ngToast.create({
+                                        content: 'App ' + $scope.appModel.label + ' successfully created.',
+                                        className: 'success'
+                                    });
+                                });
+                            }
+                        };
+
+                        $state.go('studio.allApps');
                     })
                     .catch(function () {
                         ngToast.create({

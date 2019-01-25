@@ -1,5 +1,5 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm);" autocomplete="off"
+    <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm)" autocomplete="off"
           novalidate>
         <div class="modal-header">
             <div class="flex-between">
@@ -111,14 +111,12 @@
                                                 <img ng-src="{{croppedImage}}" class="img-rounded resultimg"
                                                      ng-if="croppedImage"/>
                                                 <div class="action-buttons-block">
-                                                    <button type="button" class="action-buttons-delete">
+                                                    <button type="button" class="action-buttons-delete" ng-click="logoRemove();">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
-                                                
                                             </div>
                                             <div class="col-xs-12" ng-repeat="item in uploader.queue">
-                                                
                                                 <div class="cropArea cropArea2">
                                                     <label class="">Please crop your image: </label>
                                                     <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
@@ -127,10 +125,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                
-                                
-                                
+
                                 <!--<div class="form-group">-->
                                     <!--<form class="form-horizontal">-->
 
