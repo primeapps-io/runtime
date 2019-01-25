@@ -18,7 +18,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'menu/create/menu_items', { module: module, profileId: profileId });
                 },
                 updateMenuItems: function (menuLabel) {
-                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel });
+                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel: menuLabel });
                 },
                 deleteMenuItems: function (ids) {
                     return $http({

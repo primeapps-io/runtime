@@ -660,21 +660,31 @@ angular.module('primeapps')
 							filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
 							if (filterSubItem) {
 								for (var i = 0; i < filterSubItem.length; i++) {
-									SubIndex = filterItem.items.findIndex(x => x.id === 0);
-									index = copyMenuList.findIndex(x => x.no === filterItem.no);
+									SubIndex = filterItem.items.findIndex(function(el){
+										return el.id === 0;
+									});
+									index = copyMenuList.findIndex(function(el){
+										return el.no === filterItem.no;
+									});
 									copyMenuList[index].items.splice(SubIndex, 1);
 								}
 							}
 						}
 
-						index = copyMenuList.findIndex(x => x.no === filterItem.no);
+						index = copyMenuList.findIndex(function(el){
+							return el.no === filterItem.no;
+						});
 						copyMenuList.splice(index, 1); //we deleted this item, because this item will create
 					}
 					// !filterItem -> we check this case previous step, with chield
 					else if (!filterItem && filterSubItem.length > 0) {
 						//angular.forEach(filterSubItem, function (subItem) {
-						index = copyMenuList.findIndex(x => x.no === menuItem.no);
-						SubIndex = copyMenuList[index].items.findIndex(x => x.id === 0);
+						index = copyMenuList.findIndex(function(el){
+							return el.no === menuItem.no;
+						});
+						SubIndex = copyMenuList[index].items.findIndex(function(el){
+							return el.id === 0;
+						});
 						copyMenuList[index].items.splice(SubIndex, 1);
 						//});
 					}
