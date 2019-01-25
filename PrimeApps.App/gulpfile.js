@@ -49,9 +49,9 @@ gulp.task('strip', function () {
     }
 
     //Striping console and debugger statements from scripts directory
-    return gulp.src('scripts/*.js')
+    return gulp.src('wwwroot/scripts/*.js')
         .pipe(stripDebug())
-        .pipe(gulp.dest('scripts/'));
+        .pipe(gulp.dest('wwwroot/scripts/'));
 });
 
 gulp.task('uglify', function () {
@@ -89,15 +89,15 @@ gulp.task('uglify', function () {
     }
 
     //Uglifying scripts directory
-    return gulp.src('scripts/*.js')
+    return gulp.src('wwwroot/scripts/*.js')
         .pipe(uglify())
-        .pipe(gulp.dest('scripts/'));
+        .pipe(gulp.dest('wwwroot/scripts/'));
 });
 
 gulp.task('minify', function () {
-    return gulp.src('styles/*.css')
+    return gulp.src('wwwroot/styles/*.css')
 		.pipe(minify({ compatibility: 'ie8'}))
-        .pipe(gulp.dest('styles/'));
+        .pipe(gulp.dest('wwwroot/styles/'));
 });
 
 gulp.task('bundle', function() {

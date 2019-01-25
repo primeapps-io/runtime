@@ -37,12 +37,12 @@ gulp.task('strip', function () {
                     .pipe(stripDebug())
                     .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
 
-                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
+                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/');
 
                 for (var m = 0, km = subSubSubDirectories.length; m < km; m++) {
-                    gulp.src('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
+                    gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
                         .pipe(stripDebug())
-                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
+                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/'));
                 }
             }
         }
@@ -77,12 +77,12 @@ gulp.task('uglify', function () {
                     .pipe(uglify())
                     .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/'));
 
-                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/');
+                var subSubSubDirectories = getDirectories('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/');
 
                 for (var m = 0, km = subSubSubDirectories.length; m < km; m++) {
-                    gulp.src('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
+                    gulp.src('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/*.js')
                         .pipe(uglify())
-                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j]+ '/'  + subSubDirectories[k] + '/' +  subSubSubDirectories[m] + '/'));
+                        .pipe(gulp.dest('view/' + directories[i] + '/' + subDirectories[j] + '/' + subSubDirectories[k] + '/' + subSubSubDirectories[m] + '/'));
                 }
             }
         }
@@ -96,11 +96,11 @@ gulp.task('uglify', function () {
 
 gulp.task('minify', function () {
     return gulp.src('styles/*.css')
-		.pipe(minify({ compatibility: 'ie8'}))
+        .pipe(minify({ compatibility: 'ie8' }))
         .pipe(gulp.dest('styles/'));
 });
 
-gulp.task('bundle', function() {
+gulp.task('bundle', function () {
     return gulp.src('./bundle.config.js')
         .pipe(bundle())
         .pipe(gulp.dest('./dist'));
