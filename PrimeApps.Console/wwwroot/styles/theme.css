@@ -491,6 +491,19 @@ button:focus, select:focus {
 .primeapps .collaborator-info .user-info h3 {
   font-size: 12px;
 }
+.primeapps .collaborator-detail {
+  position: relative;
+  padding: 30px;
+  text-align: center;
+}
+.primeapps .collaborator-detail > div {
+  margin-bottom: 20px;
+}
+.primeapps .collaborator-detail h2 {
+  font-size: 18px;
+  margin: 0px;
+  display: block;
+}
 .primeapps .user-info {
   display: flex;
   flex-direction: row;
@@ -959,6 +972,21 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
+}
+.primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
+  width: 100%;
+}
+.primeapps .setup-modal .modal-content tags-input .host, .primeapps .module-modal .modal-content tags-input .host {
+  margin: 0px;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags, .primeapps .module-modal .modal-content tags-input .host .tags {
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
+  background: transparent;
+  height: 30px;
 }
 .primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
   max-width: 100% !important;
@@ -1562,6 +1590,7 @@ button:focus, select:focus {
 }
 .primeapps #wrapper #navbar-wrapper {
   left: 250px;
+  z-index: 1001;
 }
 .primeapps #wrapper #page-content-wrapper {
   position: relative;
@@ -1920,6 +1949,9 @@ button:focus, select:focus {
 .primeapps .btn i {
   padding: 0px 5px;
 }
+.primeapps .btn.btn-primary {
+  border-bottom: none;
+}
 .primeapps .list-inline {
   margin-bottom: 0px;
 }
@@ -1957,6 +1989,62 @@ button:focus, select:focus {
 .primeapps .template-field .template-field-box .template-field-text h4 {
     margin: 0px !important;
   }
+}
+.primeapps .module-form-setup .draggable-form .form-group {
+  padding: 5px 40px 4px 5px;
+}
+.primeapps .ui-select-bootstrap {
+  height: 40px;
+  line-height: 40px;
+  border-radius: 5px;
+  border: none;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.05);
+}
+.primeapps .ui-select-bootstrap .btn-default-focus {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+.primeapps .ui-select-bootstrap .glyphicon-remove {
+  display: none;
+}
+.primeapps .ui-select-bootstrap .form-control {
+  height: 40px;
+  line-height: 30px;
+  border: none;
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .form-control:hover {
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-choices-row-inner {
+  padding: 10px !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-choices {
+  width: 100% !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle {
+  border: none;
+  background: transparent;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle:hover {
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle > .caret {
+  padding: 0px;
+  right: 10px;
+}
+.primeapps .ui-select-bootstrap.bigwhiteselect {
+  height: 60px;
+  line-height: 60px;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  background: #FFF;
+}
+.primeapps .ui-select-bootstrap.bigwhiteselect .form-control {
+  height: 60px;
+  line-height: 50px;
 }
 
 .placeholder {

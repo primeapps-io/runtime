@@ -36,7 +36,7 @@
 
                                     <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
                                         <label class="col-sm-12 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
-                                        <ui-select name="reportsTo" class="form-control ng-animate-disabled col-sm-12"
+                                        <ui-select name="reportsTo" class="ng-animate-disabled"
                                                    on-select="roleUpdateChange()"
                                                    ng-model="role.reports_to"
                                                    ng-required="!role.master">
