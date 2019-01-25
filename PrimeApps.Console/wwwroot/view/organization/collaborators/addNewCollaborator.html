@@ -86,7 +86,6 @@
             <h4 class="modal-title">Collabrator Info</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                     <li>
                         <button type="button" class="btn btn-radius btn-gray"
                                 ng-click="close();">
@@ -102,20 +101,26 @@
             <div class="modal-body">
                 <div class="col-sm-12">
                     <label style="font-weight:bold !important">Password</label>
-                    <input type="text" name="pass" class="form-control"
-                           required
-                           ng-model="userPassword"
-                           ng-disabled="true" />
-                </div>
-                <div class="col-sm-12" style="margin-top:15px">
-                    <span style="font-weight:bold !important">Please take a note of the password</span>
-                </div>
-
-                <div class="col-sm-12">
-                    <button type="submit" class="btn btn-primary btn-w-lg"><i class="fa fa-check-circle pull-left"></i>Send Email</button>
+                    <div class="input-group">
+                        <input type="text" name="pass" class="form-control"
+                               required
+                               ng-model="userPassword"
+                               ng-disabled="true" />
+                        <span class="input-group-addon" ngclipboard data-clipboard-text="{{userPassword}}" style="cursor:pointer;">
+                            <i class="fa fa-copy"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
+            <div class="col-sm-12" style="margin-top:15px">
+                <span style="font-weight:bold !important">Please take a note of the password</span>
+            </div>
 
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary btn-w-lg"><i class="fa fa-check-circle pull-left"></i>Send Email</button>
+            </div>
         </div>
+
     </div>
 </div>
+
