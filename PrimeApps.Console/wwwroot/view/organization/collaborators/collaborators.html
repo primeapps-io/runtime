@@ -1,10 +1,5 @@
 <div class="setup-title">
-    <h2>
-        {{
-selectedCollaborator ?
-    selectedCollaborator.full_name:'Collaborators'
-        }}
-    </h2>
+    <h2> {{ selectedCollaborator ? selectedCollaborator.full_name:'Collaborators' }} </h2>
     <div>
         <ul class="list-unstyled list-inline">
             <li ng-show="!selectedCollaborator">
@@ -46,7 +41,6 @@ selectedCollaborator ?
                     <div class="animated-background"></div>
                 </td>
             </tr>
-
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
@@ -112,38 +106,27 @@ selectedCollaborator ?
         </div>
     </div>
 </div>
-
-
-<div ng-show="selectedCollaborator" class="col-sm-5 collaborator-info" style="background: #fff;
-padding: 100px;">
-    <div class="" ng-show="selectedCollaborator">
-        <div class="row">
-            <div class="col-sm-12 image-upload text-center">
+<div ng-show="selectedCollaborator" class="row">
+    <div class="col-md-6 col-lg-4">
+        <div class="tab-content collaborator-detail">
+            <div ng-show="updatingRole" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="">
                 <i class="fas fa-user-circle fa-9x"></i>
             </div>
-            <div class="col-sm-12 user-info text-center">
+            <div>
                 <h2> {{selectedCollaborator.email}}</h2>
+                <small>Joined :{{selectedCollaborator.created_at | date:'medium'}}</small>
             </div>
-            <div class="col-sm-12">
-                <div style="margin-left:50%" ng-show="updatingRole"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                <select ng-disabled="removing" ng-show="!updatingRole" required ng-model="collaboratorModel.role" name="role" class="form-control  ng-animate-disabled col-sm-8" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
-
-                <!--<ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
-        <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
-        <li>
-            <a ng-click="$alert('Holy guacamole')">Collaborator</a>
-        </li>
-
-    </ul>-->
+            <div>
+                <div class="form-group">
+                    <select ng-disabled="removing" required ng-model="collaboratorModel.role" name="role" class="form-control ng-animate-disabled" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
+                </div>
             </div>
-            <div class="col-sm-12 user-info text-center">
-                <h3>Joined :{{selectedCollaborator.created_at | date:'medium'}}</h3>
+           
+            <div>
+                <button ladda="removing" ng-disabled="updatingRole" ng-click="delete(selectedCollaborator.id)" class="btn btn-red btn-radius">Remove from organization</button>
             </div>
-        </div>
-        <div class="col-sm-12 text-center">
-            <br>
-            <button ladda="removing" ng-disabled="updatingRole" ng-click="delete(selectedCollaborator.id)" class="btn btn-red btn-radius">Remove from organization</button>
         </div>
     </div>
-
+    
 </div>

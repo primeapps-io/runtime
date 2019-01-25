@@ -227,13 +227,10 @@ angular.module('primeapps')
                                 $scope.view.filterList.push(filter);
                             }
 
-                            if ($scope.view.filters.length > 0)
-                                for (var i = 0; i < $scope.view.filters.length; i++) {
-                                    $scope.view.filterList[i] = $scope.view.filters[i];
-                                    $scope.view.filterList[i].field = $filter('filter')($scope.module.fields, { name: $scope.view.filters[i].field }, true)[0];
-
-                                }
-
+                            if ($scope.view.filters.length > 0) {
+                                $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
+                                $scope.view.filterList = FiltersService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
+                            }
                             dragular();
                         });
                 });

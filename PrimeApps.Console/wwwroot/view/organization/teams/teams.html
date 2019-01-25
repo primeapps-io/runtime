@@ -8,13 +8,13 @@
                 </button>
             </li>
             <li ng-show="selectedTeam">
-                <button class="btn add-button btn-red" ng-click="delete(teamId)">
-                    <i class="fas fa-trush"></i> Delete
+                <button class="btn btn-red" ng-click="delete(teamId)">
+                    <i class="fas fa-trash"></i> Delete
                 </button>
             </li>
             <li ng-show="selectedTeam">
-                <button class="btn add-button btn-blue" ng-click="addNewTeam(teamId)">
-                    <i class="fas fa-plus"></i> Edit
+                <button class="btn btn-blue" ng-click="addNewTeam(teamId)">
+                    <i class="fas fa-pen"></i> Edit
                 </button>
             </li>
         </ul>
@@ -35,11 +35,9 @@
         </li>
     </ul>
 </div>-->
-
-
-<div>
-    <div class="tab-content">
-        <table class="table" ng-show="!selectedTeam && loading">
+<div class="tab-content" ng-show="!selectedTeam">
+    <div ng-show="loading">
+        <table class="table" >
             <thead>
                 <tr>
                     <th>Name</th>
@@ -62,19 +60,28 @@
 
             </tbody>
         </table>
-        <table class="table table-hover" ng-show="!selectedTeam && !loading">
+    </div>
+    <div ng-show="!loading">
+        <table class="table table-hover">
             <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Team member</th>
-                    <th>Organization</th>
-                    <th style="width: 50px;"></th>
-                </tr>
+            <tr>
+                <th>Name</th>
+                <th>Team member</th>
+                <th>Organization</th>
+                <th style="width: 50px;"></th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="team in teamArray">
-                    <td ng-click="selectTeam(team.id)" style="cursor:pointer;">
-                        <i class="{{team.icon}}"></i> {{team.name}}
+                <tr ng-click="selectTeam(team.id)" ng-repeat="team in teamArray">
+                    <td>
+                        <div class="user-info">
+                            <div class="user-image">
+                                <i ng-class="team.icon"></i>
+                            </div>
+                            <div class="user-text">
+                                <h2 class="ng-binding">{{team.name}}</h2>
+                            </div>
+                        </div>
                     </td>
                     <td>{{team.team_users ? team.team_users.length:0}}</td>
                     <td>{{team.organizationName}}</td>
@@ -112,7 +119,7 @@
                 </tr>
             </tbody>
         </table>
-        <div class="table-pagination" ng-show="!selectedTeam">
+        <div class="table-pagination">
             <div>
                 <nav aria-label="Page navigation">
                     <div paging
@@ -149,76 +156,66 @@
                 </select>
             </div>
         </div>
-
-
-
-
-
-
-        <ui-select ng-show="selectedTeam" ng-model="selectedUser"
-                   on-select="selectUserForTeam($select.selected.user_id)">
-            <ui-select-match allow-clear="true" placeholder="Add collaborators from {{teamOrganizationName}}">
-                {{$select.selected.full_name}}
-            </ui-select-match>
-            <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
-                <span ng-bind-html="item.full_name | highlight: $select.search"></span>
-            </ui-select-choices>
-        </ui-select>
-
-
-        <!--<select id="users"
-                name="users"
-                ng-show="selectedTeam"
-                class="form-control ng-animate-disabled"
-                ng-options="o as o.full_name for o in orgranizationUserArray |  orderBy:'name' track by o.user_id"
-                ng-model="selectedUser.id">
-            <option value="">{{'Common.Select' | translate}}</option>
-        </select>-->
-        <div ng-show="selectedTeam.team_users.length < 1" style="padding:10px"><p>No member available.</p></div>
-        <table class="table" ng-show="selectedTeam && loadingMembers && selectedTeam.team_users.length > 0">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in placeholderArray">
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-        <table class="table table-hover" ng-show="selectedTeam && !loadingMembers && selectedTeam.team_users.length > 0">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th style="width: 50px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="user in selectedTeam.team_users">
-                    <td>
-                        {{user.full_name}}
-                        <p class="small">{{user.email}}</p>
-                    </td>
-                    <td class="text-right">
-                        <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation();deleteUser(user.user_id)" type="button" class="action-buttons-delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>-->
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
-
+</div>
+<div ng-show="selectedTeam">
+    <ui-select ng-model="selectedUser" class="bigwhiteselect"
+               on-select="selectUserForTeam($select.selected.user_id)">
+        <ui-select-match allow-clear="true" placeholder="Add collaborators from {{teamOrganizationName}}">
+            {{$select.selected.full_name}}
+        </ui-select-match>
+        <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
+            <span ng-bind-html="item.full_name | highlight: $select.search"></span>
+        </ui-select-choices>
+    </ui-select>
+    <div class="tab-content" style="margin-top: 30px;">
+        <div ng-show="loadingMembers">
+            <table class="table" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in placeholderArray">
+                        <td>
+                            <div class="animated-background"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-show="!loadingMembers">
+            <div ng-show="selectedTeam.team_users.length < 1" style="padding:10px"><p>No member available.</p></div>
+            <table class="table table-hover" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in selectedTeam.team_users">
+                        <td>
+                            {{user.full_name}}
+                            <p class="small">{{user.email}}</p>
+                        </td>
+                        <td class="text-right">
+                            <div class="action-buttons-block">
+                                <button ng-click="$event.stopPropagation();deleteUser(user.user_id)" type="button" class="action-buttons-delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                    action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                    confirm-yes="{{'Common.Yes' | translate}}"
+                                    confirm-no="{{'Common.No' | translate}}">
+                                {{'Common.Remove' | translate}}
+                            </button>-->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

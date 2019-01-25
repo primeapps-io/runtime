@@ -615,7 +615,6 @@ button, select {
     }
 
   }
-
   .collaborator-info {
     .user-info {
       font-weight: bold;
@@ -631,7 +630,21 @@ button, select {
       }
     }
   }
-
+  .collaborator-detail{
+    position: relative;
+    padding: 30px;
+    text-align: center;
+    > div {
+      margin-bottom: 20px;
+    
+    }
+    h2{
+      font-size: 18px;
+      margin: 0px;
+      display: block;
+    }
+  }
+  
   .user-info {
 
     display: flex;
@@ -1232,6 +1245,26 @@ button, select {
 
     .modal-content {
       border: none;
+      .autocomplete
+      {
+        width: 100%;
+      }
+      tags-input{
+        .host{
+          margin: 0px;
+          .tags{
+            width: 100%;
+            border: none;
+            background: transparent;
+            input{
+              background: transparent;
+              height: 30px;
+            }
+            .tag-item{
+            }
+          }
+        }
+      }
       .multiselect-container
       {
         max-width: 100% !important;
@@ -2019,6 +2052,7 @@ button, select {
     #navbar-wrapper {
 
       left: 250px;
+      z-index: 1001;
     }
 
     #page-content-wrapper {
@@ -2487,6 +2521,9 @@ button, select {
     i {
       padding: 0px 5px;
     }
+    &.btn-primary{
+      border-bottom: none;
+    }
   }
 
   .list-inline {
@@ -2544,8 +2581,68 @@ button, select {
       }
     }
   }
-  
-  
+  .module-form-setup{
+    .draggable-form{
+      .form-group{
+        padding: 5px 40px 4px 5px;
+      }
+    }
+  }
+  .ui-select-bootstrap {
+    height: 40px;
+    line-height: 40px;
+    border-radius: 5px;
+    border: none;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    .btn-default-focus{
+      border:none;
+      background: transparent;
+      box-shadow: none;
+      outline: none;
+    }
+    .glyphicon-remove
+    {
+      display: none;
+    }
+    .form-control{
+      height: 40px;
+      line-height: 30px;
+      border: none;
+      background: transparent !important;
+      &:hover{
+        background: transparent !important;
+      }
+    }
+    .ui-select-choices-row-inner{
+      padding: 10px !important;
+    }
+    .ui-select-choices{
+      width: 100% !important;
+    }
+    .ui-select-toggle {
+      border: none;
+      background: transparent;
+      &:hover{
+        background: transparent !important;
+      }
+      > .caret{
+        padding: 0px;
+        right: 10px;
+      }
+    }
+    &.bigwhiteselect
+    {
+      height: 60px;
+      line-height: 60px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      background:#FFF;
+      .form-control{
+        height: 60px;
+        line-height: 50px;
+      }
+    }
+  }
   
 }
 
