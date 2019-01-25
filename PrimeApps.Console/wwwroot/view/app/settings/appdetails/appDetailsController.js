@@ -62,7 +62,7 @@ angular.module('primeapps')
                 $scope.appModel.description = app.description;
                 $scope.appModel.template_id = 0;
                 $scope.appModel.status = 1;
-                //Logo gelecek
+                $scope.appModel.logo = app.logo;
             });
 
             $scope.save = function () {

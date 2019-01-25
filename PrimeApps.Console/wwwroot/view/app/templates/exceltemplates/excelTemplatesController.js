@@ -90,7 +90,7 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-
+                $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
                         scope: $scope,
                         templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
@@ -221,7 +221,11 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrlExcel = function (template) {
-                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId ;
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            };
+
+            $scope.getDownloadUrl = function (template) {
+                return '/attach/export_excel?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
             };
 
             $scope.delete = function (id) {
