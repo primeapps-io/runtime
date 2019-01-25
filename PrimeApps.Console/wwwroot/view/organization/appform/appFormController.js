@@ -204,6 +204,7 @@ angular.module('primeapps')
 
                         uploader.onCompleteItem = function (fileItem, logoUrl, status) {
                             if (status === 200) {
+                                ngToast.create({ content: $filter('translate')('App successfully created.'), className: 'success' });
                                 $scope.updateApp = {};
                                 $scope.updateApp.description = response.data.description;
                                 $scope.updateApp.label = response.data.label;
@@ -212,15 +213,9 @@ angular.module('primeapps')
                                 $scope.updateApp.template_id = response.data.templet_id;
                                 $scope.updateApp.logo = logoUrl;
                                 AppFormService.update(response.data.id, $scope.updateApp).then(function (response) {
-                                    ngToast.create({
-                                        content: 'App ' + $scope.appModel.label + ' successfully created.',
-                                        className: 'success'
-                                    });
                                 });
                             }
                         };
-
-                        $state.go('studio.allApps');
                     })
                     .catch(function () {
                         ngToast.create({

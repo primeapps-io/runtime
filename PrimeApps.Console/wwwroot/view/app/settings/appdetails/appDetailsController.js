@@ -60,6 +60,8 @@ angular.module('primeapps')
                 $scope.appModel.name = app.name;
                 $scope.appModel.label = app.label;
                 $scope.appModel.description = app.description;
+                $scope.appModel.template_id = 0;
+                $scope.appModel.status = 1;
                 //Logo gelecek
             });
 
