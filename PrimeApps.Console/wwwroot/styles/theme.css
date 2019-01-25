@@ -1235,7 +1235,7 @@ button:focus, select:focus {
   max-width: none !important;
 }
 .primeapps .form-group .form-control[disabled] {
-  opacity: 0.25;
+  opacity: 0.5;
 }
 .primeapps .checkbox-inline input[type=checkbox] {
   position: relative !important;
