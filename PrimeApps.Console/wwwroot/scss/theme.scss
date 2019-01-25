@@ -1209,6 +1209,7 @@ button, select {
       line-height: 33px !important;
       width: 100% !important;
       padding-right: 20px;
+      overflow-x: hidden;
 
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -1826,7 +1827,7 @@ button, select {
 
     }
 
-    ul {
+    > ul {
       width: 250px;
 
       .open {
@@ -1837,7 +1838,7 @@ button, select {
           display: block;
         }
       }
-
+      
       li {
         cursor: pointer;
 
@@ -1892,6 +1893,57 @@ button, select {
         }
 
       }
+      > li:nth-child(6n+1){
+        > a{
+          > i{
+            background: #CE0404;
+          }
+        }
+      }
+      > li:nth-child(6n+2){
+        > a{
+          > i{
+            background: #1157A3;
+          }
+        }
+      }
+      > li:nth-child(6n+3){
+        > a{
+          > i{
+            background: #9F5590;
+          }
+        }
+      }
+      > li:nth-child(6n+4){
+        > a{
+          > i{
+            background: #5359DF;
+          }
+        }
+      }
+      > li:nth-child(6n+5){
+        > a{
+          > i{
+            background: #92C549;
+          }
+        }
+      }
+      > li:nth-child(6n+6){
+        > a{
+          > i{
+            background: #F1638B;
+          }
+        }
+      }
+      > li:last-child{
+        > a{
+          > i{
+            background: #FFF;
+            color: #1157A3;
+          }
+        }
+      }
+      
     }
 
     .color-blue {
@@ -2643,6 +2695,130 @@ button, select {
       }
     }
   }
+  .menu-setup {
+    .custom-menu {
+      font-size: 16px;
+      font-weight: bold;
+      li{
+        background: rgba(0,0,0,.05);
+        border-radius: 5px;
+      }
+      .form-group {
+        margin-bottom: 5px !important;
+        .form-control
+        {
+          width: auto;
+        }
+      }
+      .custom-menu{
+        padding-left: 30px;
+        font-size: 14px;
+        li{
+          background: transparent;
+          border-radius: 0px;
+        }
+      }
+      .menu-list {
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 5px 110px 5px 10px;
+      }
+      .editable-buttons{
+        display: inline-block;
+        margin: 3px;
+        button{
+          background: rgba(13, 111, 170, 0.75);
+          width: 30px;
+          font-size: 12px;
+          height: 30px;
+          line-height: 30px;
+          text-align: center;
+          border: none;
+          color: rgba(255, 255, 255, 1);
+          border-radius: 50%;
+          padding: 0px;
+          cursor: pointer;
+          text-decoration: none;
+          display: inline-block;
+          &:hover {
+            background: rgba(13, 111, 170, 1);
+            color: rgba(255, 255, 255, 1);
+          }
+        }
+      }
+      .menu-label{
+        padding-right: 10px;
+      }
+      .action-buttons-block {
+        display: inline-block;
+        position: absolute;
+        right: 10px;
+
+        a {
+          background: rgba(13, 111, 170, 0.75);
+          width: 30px;
+          font-size: 12px;
+          height: 30px;
+          line-height: 30px;
+          text-align: center;
+          border: none;
+          color: rgba(255, 255, 255, 1);
+          border-radius: 50%;
+          padding: 0px;
+          cursor: pointer;
+          text-decoration: none;
+          display: inline-block;
+
+          &.action-buttons-edit {
+            background: rgba(0, 0, 0, 0.25);
+            &:hover {
+              background: rgba(0, 0, 0, 0.5);
+              color: #FFF;
+            }
+          }
+
+          &.action-buttons-delete {
+            background: rgba(206, 4, 4, 0.5);
+            color: #FFF;
+            &:hover {
+              background: rgba(206, 4, 4, 1);
+              color: #FFF;
+            }
+          }
+
+          &:hover {
+            background: rgba(13, 111, 170, 1);
+            color: rgba(255, 255, 255, 1);
+          }
+
+
+        }
+      }
+    }
+    .arrow {
+      display: inline-block;
+      margin-right: 10px;
+      span {
+        display: block;
+        line-height: 10px;
+        font-size: 14px;
+        i {
+          cursor: pointer;
+          color: #CCC;
+          &:hover {
+            color: #000;
+          }
+        }
+      }
+    }
+  }
+  
+  
+  
+  
+  
+  
   
 }
 

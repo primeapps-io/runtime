@@ -60,14 +60,14 @@
 
             <li class="sidebar-li">
                 <a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"
-                   href="#"><i class="fas fa-home"></i> <span>All Apps</span></a>
+                   href="#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
                 <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
                    data-placement="right"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="fas fa-home"></i><span> {{organization.label}} </span></a>
+                        class="fas fa-building"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                            ng-class="currentPath == '/apps?organizationId='+organization.id  ? 'active' :'' "
