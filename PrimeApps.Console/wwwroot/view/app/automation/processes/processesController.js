@@ -5,6 +5,7 @@ angular.module('primeapps')
     .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
+            $scope.modalLoading = true;
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
@@ -186,6 +187,10 @@ angular.module('primeapps')
                                             $scope.prepareFilters();
                                             $scope.isEdit = true;
                                             $scope.lastStepClicked = true;
+                                            $scope.loading = false;
+                                            $scope.modalLoading = false; 
+                                        })
+                                        .catch(function (err) {
                                             $scope.loading = false;
                                             $scope.modalLoading = false; 
                                         });
@@ -857,7 +862,7 @@ angular.module('primeapps')
                 $scope.prosessFormModal.$promise.then(function () {
                     $scope.prosessFormModal.show();
                 });
-
+                $scope.modalLoading = false;
             };
 
             $scope.cancel = function () {

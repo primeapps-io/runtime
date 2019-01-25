@@ -6,6 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, operators, RulesService, ModuleService, LayoutService, $http, config) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
+            $scope.modalLoading = true;
             $scope.$parent.wizardStep = 0;
             $scope.$parent.tab = 0;
             $scope.rules = [];
@@ -84,12 +85,12 @@ angular.module('primeapps')
                     if (response.data) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
-                        $scope.loading = false;
+                        $scope.loading = false; 
                     }
                 });
 
             $scope.changePage = function (page) {
-                $scope.loading = true;
+                $scope.loading = true; 
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 count();
@@ -98,9 +99,9 @@ angular.module('primeapps')
                     .then(function (response) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
-                        $scope.loading = false;
+                        $scope.loading = false; 
                     }).catch(function (err) {
-                        $scope.loading = false;
+                        $scope.loading = false; 
                     });
 
             };
@@ -216,7 +217,7 @@ angular.module('primeapps')
                                             $scope.loading = false;
                                             $scope.modalLoading = false;
                                         });
-
+                                    $scope.modalLoading = false;
                                 });
                         }
                     });
@@ -224,6 +225,8 @@ angular.module('primeapps')
 
             $scope.selectModule = function (module) {
                 $scope.loadingFilter = true;
+                $scope.modalLoading = true;
+
                 if (!$scope.workflowModel.module)
                     $scope.workflowModel.module = module;
 
@@ -269,7 +272,7 @@ angular.module('primeapps')
 
                                     $scope.filters.push(filter);
                                 }
-
+                                $scope.modalLoading = false;
                                 $scope.loadingFilter = false;
                             });
 
@@ -1783,7 +1786,7 @@ angular.module('primeapps')
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
                 });
-
+                $scope.modalLoading = false;
             };
 
             $scope.cancel = function () {

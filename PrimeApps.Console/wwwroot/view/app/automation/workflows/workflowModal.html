@@ -17,15 +17,15 @@
                 <!--Start START-->
                 <div ng-show="SelectedNodeItem.item == 'Start'">
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
-                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
+                        <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Name' | translate}}:</label>
                         <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowStartModel.name" />
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
-                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
+                        <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Code' | translate}}:</label>
                         <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowStartModel.code" />
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
-                        <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
+                        <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.BpmWorkflow.Module' | translate}}:</label>
                         <select class="form-control"
                                 name="module"
                                 required
@@ -37,31 +37,36 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
-                        <label class="checkbox-inline">
+                        <label class="col-sm-12">{{'Setup.BpmWorkflow.Status' | translate}}:</label>
+                        <label class="checkbox-inline newinput">
                             <input type="checkbox" ng-model="workflowStartModel.active"> {{'Common.Active' | translate}}
+                            <span></span>
                         </label>
                     </div>
                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
-                        <label class="col-sm-4" style="margin-bottom: auto;"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label><br>
-                        <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(WorkflowForm)"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></span>
+                        <label class="col-sm-12" style="margin-bottom: auto;"><span class="required-field">*</span> {{'Setup.BpmWorkflow.RuleTrigger' | translate}}:</label><br>
+                        <label class="checkbox-inline newinput">
+                            <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(WorkflowForm)"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></small>
+                            <span></span>
                         </label><br>
-                        <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(WorkflowForm);" ng-model="workflowStartModel.operation.update"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                        <label class="checkbox-inline newinput">
+                            <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(WorkflowForm);" ng-model="workflowStartModel.operation.update"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
+                            <span></span>
                         </label><br>
-                        <label class="checkbox-inline">
-                            <input name="operation" type="checkbox" ng-change="validateOperations(WorkflowForm)" ng-model="workflowStartModel.operation.delete"><span ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></span>
+                        <label class="checkbox-inline newinput">
+                            <input name="operation" type="checkbox" ng-change="validateOperations(WorkflowForm)" ng-model="workflowStartModel.operation.delete"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></small>
+                            <span></span>
                         </label>
                     </div>
                     <div ng-show="workflowStartModel.operation.update" class="form-group">
-                        <label class="col-sm-4">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
-                        <label class="checkbox-inline">
+                        <label class="col-sm-12">{{'Setup.BpmWorkflow.WhenFieldChanged' | translate}}:</label>
+                        <label class="checkbox-inline newinput">
                             <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox">
+                            <span></span>
                         </label>
                     </div>
                     <div ng-show="workflowStartModel.changed_field_checkbox && workflowStartModel.operation.update" class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
-                        <label class="col-sm-4"><span class="required-field">*</span>{{'Setup.BpmWorkflow.RelatedField' | translate}}:</label>
+                        <label class="col-sm-12"><span class="required-field">*</span>{{'Setup.BpmWorkflow.RelatedField' | translate}}:</label>
                         <select class="form-control"
                                 name="changed_field"
                                 required
@@ -73,20 +78,23 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
-                        <label class="radio-inline" ng-show="workflowStartModel.operation.update">
+                        <label class="col-sm-12">{{'Setup.BpmWorkflow.ExecutionFrequency' | translate}}:</label>
+                        <label class="radio-inline newinput" ng-show="workflowStartModel.operation.update">
                             <input ng-change="frequencyChanged(workflowStartModel.frequency)" name="operation" type="radio" ng-model="workflowStartModel.frequency" value="one_time">
                             {{'Setup.BpmWorkflow.ExecutionFrequencies.OneTime' | translate}}
+                            <span></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input ng-change="frequencyChanged(workflowStartModel.frequency)" name="operation" type="radio" ng-model="workflowStartModel.frequency" value="continuous">
                             {{'Setup.BpmWorkflow.ExecutionFrequencies.Continuous' | translate}}
+                            <span></span>
                         </label>
                     </div>
                     <div class="form-group" ng-show="id && workflowStartModel.frequency == 'one_time'">
-                        <label class="col-sm-4">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
-                        <label class="checkbox-inline">
+                        <label class="col-sm-12">{{'Setup.BpmWorkflow.DeleteLogs' | translate}}:</label>
+                        <label class="checkbox-inline newinput">
                             <input type="checkbox" ng-model="workflowStartModel.delete_logs">
+                            <span></span>
                         </label>
                     </div>
                     <div ng-show="workflowStartModel.module">
@@ -304,14 +312,14 @@
                                 </tbody>
                             </table>
                             <div style="margin-top: 50px" ng-show="showProcessFilter">
-                                <label class="col-sm-4">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
-                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
+                                <label class="col-sm-12">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
+                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowStartModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
 
-                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
+                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowStartModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
 
-                                <label><input type="radio" ng-model="workflowStartModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
+                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowStartModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
 
-                                <label><input type="radio" ng-checked="true" ng-model="workflowStartModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
+                                <label class="radio-inline newinput"><input type="radio" ng-checked="true" ng-model="workflowStartModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
                             </div>
                         </div>
                     </div>
@@ -329,7 +337,7 @@
                 <!--DataTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'Data Task'">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.UpdateModule' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
@@ -346,7 +354,7 @@
                     </div>
                     <div class="form-group"
                          ng-if="workflowModel.field_update.module">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
@@ -363,7 +371,7 @@
                     </div>
                     <div class="form-group"
                          ng-if="workflowModel.field_update.module && workflowModel.field_update.field">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateValue' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
@@ -607,6 +615,8 @@
                                 </span>
                             </div>
 
+
+
                             <!--<tags-input name="updateValue"-->
                             <!--ng-model="workflowModel.field_update.value"-->
                             <!--display-property="full_name"-->
@@ -653,7 +663,7 @@
                 <!--UserTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'User Task'">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{taskFields.owner['label_' + language]}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
@@ -679,7 +689,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{taskFields.subject['label_' + language]}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
@@ -696,7 +706,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{taskFields.task_due_date['label_' + language]}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.dueDate.$invalid}">
@@ -712,7 +722,7 @@
                         </div>
                     </div>
                     <div class="form-group" ng-if="taskFields.task_status">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{taskFields.task_status['label_' + language]}}:
                         </label>
                         <div>
@@ -728,7 +738,7 @@
                         </div>
                     </div>
                     <div class="form-group" ng-if="taskFields.task_priority">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{taskFields.task_priority['label_' + language]}}:
                         </label>
                         <div>
@@ -744,7 +754,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{taskFields.task_notification['label_' + language]}}:
                         </label>
                         <div>
@@ -760,7 +770,7 @@
                         </div>
                     </div>
                     <div class="form-group" ng-if="taskFields.description">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{taskFields.description['label_' + language]}}:
                         </label>
                         <div>
@@ -786,7 +796,7 @@
                 <!--NotificationTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'Notification Task'">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.Outlook.RecipientsEmailAdressField' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
@@ -832,7 +842,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             CC:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
@@ -878,7 +888,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             BCC:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}">
@@ -924,7 +934,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.Subject' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectNotification.$invalid}">
@@ -949,7 +959,7 @@
                         </div>
                     </div>
                     <div class="form-group" style="width: 300px;">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.Message' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
@@ -969,21 +979,21 @@
                             </script>
 
                             <!--TODO
-                            <mentio-menu class="mention-scrollbar" id="hastmenu1"
-                                     mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
-                                     mentio-items="tags" mentio-template-url="tag-mentions.tpl"
-                                     mentio-search="searchTags(term)"
-                                     mentio-select="getTagTextRaw(item)"></mentio-menu>
-                        <div class="hidden" plupload="imgUpload">
-                            <input id="uploadImage" type="file" add-file="add-file" />
-                        </div>
-                        <div class="hidden" plupload="fileUpload">
-                            <input id="uploadFile" type="file" add-file="add-file" />
-                        </div>-->
+                                <mentio-menu class="mention-scrollbar" id="hastmenu1"
+                                         mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
+                                         mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                         mentio-search="searchTags(term)"
+                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
+                            <div class="hidden" plupload="imgUpload">
+                                <input id="uploadImage" type="file" add-file="add-file" />
+                            </div>
+                            <div class="hidden" plupload="fileUpload">
+                                <input id="uploadFile" type="file" add-file="add-file" />
+                            </div>-->
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{'Setup.BpmWorkflow.Schedule' | translate}}:
                         </label>
                         <div>
@@ -1008,7 +1018,7 @@
                 <!--WebHookTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'WebHook Task'">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.Workflow.WebHookUrl' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
@@ -1023,22 +1033,24 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
-                            <label class="radio-inline">
+                            <label class="radio-inline newinput">
                                 <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="post">
                                 POST
+                                <span></span>
                             </label>
-                            <label class="radio-inline">
+                            <label class="radio-inline newinput">
                                 <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="get">
                                 GET
+                                <span></span>
                             </label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{'Setup.BpmWorkflow.WebHookParameters' | translate}}:
                         </label>
                         <div>
@@ -1047,11 +1059,11 @@
                                 <tbody>
                                     <tr ng-repeat="parameter in hookParameters" style="border: 0.5px solid #0c4da24f;margin-bottom: 10px">
                                         <td>
-                                            <label class="col-sm-4">
+                                            <label class="col-sm-12">
                                                 {{'Setup.Workflow.ParameterName' | translate}}:
                                             </label>
                                             <input type="text" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
-                                            <label class="col-sm-4">
+                                            <label class="col-sm-12">
                                                 {{'Setup.Workflow.SelectedModule' | translate}}:
                                             </label>
                                             <select class="form-control"
@@ -1062,7 +1074,7 @@
                                                     ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                                 <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
                                             </select>
-                                            <label class="col-sm-4">
+                                            <label class="col-sm-12">
                                                 {{'Setup.Workflow.SelectedField' | translate}}:
                                             </label>
                                             <select class="form-control"
@@ -1094,7 +1106,7 @@
                 <!--FunctionTASK START-->
                 <div ng-show="SelectedNodeItem.item == 'Function Task'">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{'Setup.BpmWorkflow.SelectFunction' | translate}}:
                         </label>
                         <select class="form-control"
@@ -1106,22 +1118,24 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.WebHookMethod' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
-                            <label class="radio-inline">
+                            <label class="radio-inline newinput">
                                 <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="post" ng-click="functionType = true;">
                                 POST
+                                <span></span>
                             </label>
-                            <label class="radio-inline">
+                            <label class="radio-inline newinput">
                                 <input name="methodType" type="radio" ng-model="workflowModel.function.methodType" value="get" ng-click="functionType = false;">
                                 GET
+                                <span></span>
                             </label>
                         </div>
                     </div>
                     <div class="form-group" ng-show="functionType">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             {{'Setup.BpmWorkflow.PostBody' | translate}}:
                         </label>
                         <textarea name="postBody" tabindex="2" ng-model="workflowModel.function.postBody"
@@ -1134,7 +1148,7 @@
                 <div ng-show="SelectedNodeItem.item == 'Data Read Task'">
                     <div class="form-group"
                          ng-if="workflowStartModel.module">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span>{{'Setup.BpmWorkflow.UpdateField' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}">
@@ -1153,7 +1167,7 @@
                 <!--Conditional Link START-->
                 <div ng-show="SelectedNodeItem.isDefault == false">
                     <div class="form-group">
-                        <label class="col-sm-4">
+                        <label class="col-sm-12">
                             <span class="required-field">* </span> {{'Setup.BpmWorkflow.Condition' | translate}}:
                         </label>
                         <div ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
