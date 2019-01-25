@@ -9,7 +9,6 @@ var bundle = require('gulp-bundle-assets');
 
 gulp.task('build', function (callback) {
     runSequence(
-        'strip',
         ['uglify', 'minify', 'bundle'],
         callback);
 });
@@ -18,7 +17,7 @@ gulp.task('strip', function () {
     //Striping console and debugger statements from views directory
     var directories = getDirectories('view/');
 
-    for (var i = 0, l = directories.length; i < l; i++) {
+    /*for (var i = 0, l = directories.length; i < l; i++) {
         gulp.src('view/' + directories[i] + '/*.js')
             .pipe(stripDebug())
             .pipe(gulp.dest('view/' + directories[i] + '/'));
@@ -46,7 +45,7 @@ gulp.task('strip', function () {
                 }
             }
         }
-    }
+    }*/
 
     //Striping console and debugger statements from scripts directory
     return gulp.src('scripts/*.js')
@@ -56,7 +55,7 @@ gulp.task('strip', function () {
 
 gulp.task('uglify', function () {
     //Uglifying views directory
-    var directories = getDirectories('view/');
+    /*var directories = getDirectories('view/');
 
     for (var i = 0, l = directories.length; i < l; i++) {
         gulp.src('view/' + directories[i] + '/*.js')
@@ -86,24 +85,24 @@ gulp.task('uglify', function () {
                 }
             }
         }
-    }
+    }*/
 
     //Uglifying scripts directory
-    return gulp.src('scripts/*.js')
+    return gulp.src('wwwroot/scripts/*.js')
         .pipe(uglify())
-        .pipe(gulp.dest('scripts/'));
+        .pipe(gulp.dest('wwwroot/scripts/'));
 });
 
 gulp.task('minify', function () {
-    return gulp.src('styles/*.css')
+    return gulp.src('wwwroot/styles/*.css')
         .pipe(minify({ compatibility: 'ie8' }))
-        .pipe(gulp.dest('styles/'));
+        .pipe(gulp.dest('wwwroot/styles/'));
 });
 
 gulp.task('bundle', function () {
     return gulp.src('./bundle.config.js')
         .pipe(bundle())
-        .pipe(gulp.dest('./dist'));
+        .pipe(gulp.dest('./wwwroot/bundles'));
 });
 
 //Helpers
