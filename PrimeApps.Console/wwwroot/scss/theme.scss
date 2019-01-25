@@ -1991,7 +1991,7 @@ button, select {
       a {
         line-height: 40px;
 
-        &:hover {
+        &:hover,&:focus {
           background-color: rgba(17, 87, 163, 0.1);
           color: #000
         }
