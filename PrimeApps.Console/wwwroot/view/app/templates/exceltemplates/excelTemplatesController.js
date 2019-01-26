@@ -71,7 +71,7 @@ angular.module('primeapps')
 
                 if (template) {
                     setCurrentTemplate(template);
-                    $scope.getDownloadUrl();
+					$scope.getDownloadUrlExcel();
                 }
                 else {
                     $scope.template = [];
