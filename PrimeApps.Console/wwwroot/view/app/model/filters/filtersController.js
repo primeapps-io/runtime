@@ -213,6 +213,7 @@ angular.module('primeapps')
 
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
+                            $scope.loading = true;
                             $scope.modulePicklists = picklists;
                             $scope.view.filterList = [];
 
@@ -227,12 +228,14 @@ angular.module('primeapps')
                                 $scope.view.filterList.push(filter);
                             }
 
-                            if ($scope.view.filters.length > 0) {
+                            if ($scope.view.filters && $scope.view.filters.length > 0) {
                                 $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
                                 $scope.view.filterList = FiltersService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
                             }
                             dragular();
-                        });
+                        }).finally(function () {
+                        $scope.loading = false;
+                    });
                 });
             };
 

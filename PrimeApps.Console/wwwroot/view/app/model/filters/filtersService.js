@@ -461,7 +461,7 @@ angular.module('primeapps')
                         var fieldValue = null;
 
                         if (!field)
-                            return;
+							return filterList;
 
                         switch (field.data_type) {
                             case 'picklist':
