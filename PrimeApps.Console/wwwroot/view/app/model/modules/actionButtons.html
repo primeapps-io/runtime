@@ -1,13 +1,28 @@
 <div class="setup-title">
-    <h2>{{'Setup.Modules.TitleFilters' | translate}}</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewFilter' | translate}}</button>
+    <h2>Actions</h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li></li>
+            <li>
+                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewActionButton' | translate}}
+                </button>
+            </li>
+        </ul>
+    </div>
 </div>
+
 <div class="tab-content">
+    <div class="empty-message" ng-if="actionButtons.length < 1 && !loading ">
+        {{'Setup.Modules.NoActionButton' | translate}}
+    </div>
     <table class="table" ng-show="loading">
         <thead>
             <tr>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
                 <th></th>
             </tr>
         </thead>
@@ -23,26 +38,42 @@
                 <td>
                     <div class="animated-background"></div>
                 </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
             </tr>
         </tbody>
     </table>
-    <table ng-show="!loading" class="table">
+    <table class="table" ng-show="!loading && actionButtons.length > 0">
         <thead>
             <tr>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(view)">
-                <td>{{view.parent_module['label_'+language+'_plural']}}</td>
-                <td>{{view['label_' + language]}}</td>
-                <td class="text-right">
-                    <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
-                    <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
+            <tr ng-repeat="actionButton in actionButtons | filter:{hidden:'!true'} | orderBy:'created_at'" ng-click="showFormModal(actionButton)">
+                <td>{{actionButton.parent_module['label_' + language + '_plural']}}</td>
+                <td>{{actionButton.name}}</td>
+                <td ng-if="actionButton.action_type == 'ModalFrame'">Modal</td>
+                <td ng-if="actionButton.action_type == 'Webhook'">Webhook</td>
+                <td>{{actionButton.url}}</td>
+                <td ng-if="actionButton.trigger == 'Detail'">{{'Setup.Modules.Detail' | translate}}</td>
+                <td ng-if="actionButton.trigger == 'Form'">Form</td>
+                <td ng-if="actionButton.trigger == 'All'">{{'Setup.Modules.All' | translate}}</td>
+                <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); deleteView(view.id);" type="button" class="action-buttons-delete">
+                        <button ng-click="$event.stopPropagation(); delete(actionButton);" type="button" class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -73,7 +104,7 @@
             </nav>
         </div>
         <div>
-            Total Filters {{pageTotal}}
+            Total Action Buttons {{pageTotal}}
         </div>
         <div>
             <span class="pagination-span">Items per page  </span>

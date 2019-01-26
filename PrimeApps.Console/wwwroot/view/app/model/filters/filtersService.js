@@ -301,7 +301,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'picklist/find', ids);
                 },
 
-                getViews_: function (moduleId, displayFields, cache) {
+                getViews: function (moduleId, displayFields, cache) {
                     var that = this;
                     var deferred = $q.defer();
                     var module = $filter('filter')($rootScope.modules, { id: moduleId }, true)[0];
@@ -419,8 +419,15 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'picklist/get/' + id);
                 },
 
-                getViews: function () {
-                    return $http.get(config.apiUrl + 'view/get_all/');
+                getView: function (id) {
+                    var deferred = $q.defer();
+                    $http.get(config.apiUrl + 'view/get/' + id).then(function (view) {
+                        deferred.resolve(view.data);
+                    }).catch(function (reason) {
+                        deferred.reject(reason.data);
+                    });
+
+                    return deferred.promise;
                 },
 
                 count: function (id) {
@@ -438,6 +445,90 @@ angular.module('primeapps')
                     viewState.module_id = moduleId;
 
                     return $http.put(config.apiUrl + 'view/set_view_state', viewState);
+                },
+                setFilter: function (viewFilters, moduleFields, modulePicklists, filterList) {
+
+                    for (var j = 0; j < viewFilters.length; j++) {
+                        var name = viewFilters[j].field;
+                        var value = viewFilters[j].value;
+
+                        if (name.indexOf('.') > -1) {
+                            name = name.split('.')[0];
+                            viewFilters[j].field = name;
+                        }
+
+                        var field = $filter('filter')(moduleFields, { name: name }, true)[0];
+                        var fieldValue = null;
+
+                        if (!field)
+							return filterList;
+
+                        switch (field.data_type) {
+                            case 'picklist':
+                                fieldValue = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
+                                break;
+                            case 'multiselect':
+                                fieldValue = [];
+                                var multiselectValue = value.split('|');
+
+                                angular.forEach(multiselectValue, function (picklistLabel) {
+                                    var picklist = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
+
+                                    if (picklist)
+                                        fieldValue.push(picklist);
+                                });
+                                break;
+                            case 'lookup':
+                                if (field.lookup_type === 'users') {
+                                    var user = {};
+
+                                    if (value === '0' || value === '[me]') {
+                                        user.id = 0;
+                                        user.email = '[me]';
+                                        user.full_name = $filter('translate')('Common.LoggedInUser');
+                                    }
+                                    else {
+                                        var userItem = $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0];
+                                        user.id = userItem.Id;
+                                        user.email = userItem.Email;
+                                        user.full_name = userItem.FullName;
+
+                                        //TODO: $rootScope.users kaldirilinca duzeltilecek
+                                        // ModuleService.getRecord('users', value)
+                                        //     .then(function (lookupRecord) {
+                                        //         fieldValue = [lookupRecord.data];
+                                        //     });
+                                    }
+
+                                    fieldValue = [user];
+                                }
+                                else {
+                                    fieldValue = value;
+                                }
+                                break;
+                            case 'date':
+                            case 'date_time':
+                            case 'time':
+                                fieldValue = new Date(value);
+                                break;
+                            case 'checkbox':
+                                fieldValue = $filter('filter')(modulePicklists.yes_no, { system_code: value }, true)[0];
+                                break;
+                            default :
+                                fieldValue = value;
+                                break;
+                        }
+
+                        filterList[j].field = field;
+                        filterList[j].operator = operators[viewFilters[j].operator];
+                        filterList[j].value = fieldValue;
+
+                        if (viewFilters[j].operator === 'empty' || viewFilters[j].operator === 'not_empty') {
+                            filterList[j].value = null;
+                            filterList[j].disabled = true;
+                        }
+                    }
+                    return filterList;
                 }
             };
         }]);

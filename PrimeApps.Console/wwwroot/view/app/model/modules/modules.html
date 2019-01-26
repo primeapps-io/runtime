@@ -13,7 +13,6 @@
 </div>
 
 <div class="tab-content">
-
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -52,8 +51,6 @@
             </tr>
         </tbody>
     </table>
-
-
     <table class="table" ng-show="!loading">
         <thead>
             <tr>
@@ -125,18 +122,17 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="/#/org/{{orgId}}/app/{{appId}}/relations?id={{module.id}}">
+                                <a ng-click="$event.stopPropagation();" href="/#/org/{{orgId}}/app/{{appId}}/relations?id={{module.id}}">
                                     {{'Setup.Modules.ModuleRelations' | translate}}
                                 </a>
                             </li>
                             <li>
-                                <a ng-click="$event.stopPropagation();"
-                                   href="/#/org/{{orgId}}/app/{{appId}}/dependencies?id={{module.id}}">
+                                <a ng-click="$event.stopPropagation();" href="/#/org/{{orgId}}/app/{{appId}}/dependencies?id={{module.id}}">
                                     {{'Setup.Modules.FieldsDependencies' | translate}}
                                 </a>
                             </li>
                             <li>
-                                <a href="/#/org/{{orgId}}/app/{{appId}}/filters?id={{module.id}}">
+                                <a ng-click="$event.stopPropagation();" href="/#/org/{{orgId}}/app/{{appId}}/filters?id={{module.id}}">
                                     {{'Setup.Modules.TitleFilters' | translate}}
                                 </a>
                             </li>

@@ -1,47 +1,51 @@
-﻿<div class="modal setup-modal" tabindex="-1" role="dialog">
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="save(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-8">
-                <h4 class="modal-title ">{{'Setup.Templates.SelectTemplateFields' | translate}}</h4>
-            </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="excelTemplateGuideModal.hide();">
-                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-                </button>
+            <div class="flex-between">
+                <h4 class="modal-title">{{'Setup.Templates.SelectTemplateFields' | translate}}</h4>
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <button type="button" ng-click="excelTemplateGuideModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                    </li>
+                </ul>
             </div>
         </div>
 
-        <div class="modal-dialog modal-600">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content padding-0">
-                <div class="modal-body">
-                    <div id="field-form-body" class="modal-body">
+                <div class="modal-contanier">
+                    <div class="modal-body">
+                        <div id="field-form-body" class="modal-body">
+                            <div class="panel">
 
-                        <div class="col-sm-7">
-                            <div class="module-select clearfix" style="margin-top: 50px">
-                                <select name="selectedModuleExcel"
-                                        class="ng-animate-disabled col-sm-6 form-control"
-                                        ng-model="selectedModuleExcel"
-                                        ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in $parent.modules | filter:{name:'!users'} | orderBy:'order'">
-                                    <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
-                                </select>
-                            </div>
-                            <div ng-show="selectedModuleExcel">
-                                <span class="pull-left" style="margin-left: 5px;margin-top: 6px;">{{'Module.DownloadExcelTemplate' | translate }} :</span>
-                                <div class="template-button pull-left" style="margin-left: 5px;" ng-click="getDownloadUrl(selectedModuleExcel)">
+                                <div class="col-sm-7">
+                                    <div class="module-select clearfix" style="margin-top: 50px">
+                                        <select name="selectedModuleExcel"
+                                                class="ng-animate-disabled col-sm-6 form-control"
+                                                ng-model="selectedModuleExcel"
+                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in appModules | filter:{name:'!users'} | orderBy:'order'">
+                                            <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div ng-show="selectedModuleExcel">
+                                        <span class="pull-left" style="margin-left: 5px;margin-top: 6px;">{{'Module.DownloadExcelTemplate' | translate }} :</span>
+                                        <div class="template-button pull-left" style="margin-left: 5px;" ng-click="getDownloadUrl(selectedModuleExcel)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-5">
+                                    <ul class="instructions-list" style="margin-top: 50px">
+                                        <li>{{'Setup.Templates.TemplateGuide1' | translate}}</li>
+                                        <li>
+                                            {{'Module.DownloadExcelButton' | translate }}
+                                        </li>
+                                        <!--<li>-->
+                                            <!--<span ng-bind-html="'Module.OtherReport' | translate" />-->
+                                        <!--</li>-->
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="col-sm-5">
-                            <ul class="instructions-list" style="margin-top: 50px">
-                                <li>{{'Setup.Templates.TemplateGuide1' | translate}}</li>
-                                <li>
-                                    {{'Module.DownloadExcelButton' | translate }}
-                                </li>
-                                <li>
-                                    <span ng-bind-html="'Module.OtherReport' | translate" />
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,7 @@
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Repositories.Interfaces;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.UI
@@ -29,6 +30,8 @@ namespace PrimeApps.Auth.UI
                 return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);*/
             ViewBag.Error = error;
             ViewBag.Success = success;
+            ViewBag.UserName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
+            ViewBag.Email = User.Claims.FirstOrDefault(x => x.Type == "email")?.Value;
             return View();
         }
 

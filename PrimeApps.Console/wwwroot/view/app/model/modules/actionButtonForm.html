@@ -6,16 +6,16 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" ng-click="formModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                            <button type="button" ng-disabled="saving" ng-click="formModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.relatedModule.$invalid}">
                     <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>

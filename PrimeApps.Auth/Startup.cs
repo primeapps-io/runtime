@@ -45,7 +45,7 @@ namespace PrimeApps.Auth
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
         }
 
@@ -99,12 +99,12 @@ namespace PrimeApps.Auth
                 SupportedUICultures = supportedCultures
             });
 
-
             app.Use(async (ctx, next) =>
             {
                 ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
                 await next();
             });
+
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseMvcWithDefaultRoute();

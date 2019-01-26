@@ -28,6 +28,7 @@ angular.module('primeapps')
 			var systemSubscriberProfileId = $filter('filter')($scope.users, { is_subscriber: true }, true)[0].profile_id;
 			$scope.$parent.collapsed = true;
 			var menuUpdate = false;
+			$scope.index = $scope.createArray.length;
 
 			var customModules = [
 				{
@@ -253,6 +254,8 @@ angular.module('primeapps')
 				$scope.counter += 1;
 				menuList.parentId = 0;
 				menuList.items = [];
+				menuList.index = $scope.index;
+				$scope.index += 1;
 				$scope.menuLists.push(menuList);
 
 				if ($scope.id)
@@ -292,6 +295,8 @@ angular.module('primeapps')
 				menuItem.isDynamic = module.custom ? false : true;
 				menuItem.parentId = menu.id != null ? menu.id : 0;
 				menuItem.items = [];
+				menuList.index = $scope.index;
+				$scope.index += 1;
 				//menuItems.menuParent = [];
 
 
@@ -350,7 +355,17 @@ angular.module('primeapps')
 						//we just check if createArray item isUpdate 
 						if (isUpdate)
 							angular.forEach($scope.createArray, function (createItem) {
-								createItem.no = $filter('filter')($scope.menuLists, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0].no;
+								var findItem = $filter('filter')($scope.menuLists, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
+								if (findItem)
+									createItem.no = findItem.no;
+								else
+									for (var i = 0; i < $scope.menuLists.length; i++) {
+										if ($scope.menuLists[i].items.length > 0) {
+											findItem = $filter('filter')($scope.menuLists[i].items, { id: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0];
+											if (findItem)
+												createItem.no = findItem.no;
+										}
+									}
 							});
 
 						MenuService.createMenuItems($scope.createArray, !$scope.defaultMenu ? $scope.profileItem.id : systemSubscriberProfileId)
@@ -475,8 +490,14 @@ angular.module('primeapps')
 						 */
 						if (!menuItem && !menu)
 							$scope.deleteArray.push(deleteItem);
-						if ((menuItem && !menu))
+						if (menuItem && !menu)
 							$scope.deleteArray.push(menuItem);
+
+						//We just deleted menu or  menuItem from createArray
+						if (deleteItem) {
+							$scope.createArray.splice(deleteItem.index, 1);
+							$scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
+						}
 					}
 
 					//Delete from menuLists
@@ -507,12 +528,18 @@ angular.module('primeapps')
 							$scope.deleteArray.push(menuItem);
 						if (menuItem && !menu && deleteItem.name != "")
 							$scope.deleteArray.push(menuItem);
+
+						//We just deleted menu or  menuItem from createArray
+						if (deleteItem) {
+							$scope.createArray.splice(deleteItem.index, 1);
+							$scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
+						}
 					}
 
-					$scope.menuLists[menuId - 1].items.splice((moduleId === 1 ? 0 : (moduleId - 1)), 1);
+					$scope.menuLists[menuId - 1].items.splice(moduleId === 1 ? 0 : moduleId - 1, 1);
 
 					angular.forEach($scope.menuLists[menuId - 1].items, function (item) {
-						item.no = item.no > moduleId ? (item.no - 1) : item.no;
+						item.no = item.no > moduleId ? item.no - 1 : item.no;
 					});
 				}
 
@@ -558,7 +585,7 @@ angular.module('primeapps')
 
 					var menu = $filter('filter')($scope.menuLists, { no: no }, true)[0];
 					var menuItem = $filter('filter')(menu.items, { no: menuItemNo }, true)[0];
-					var prev = angular.copy(menu.items[index - 1]);
+					prev = angular.copy(menu.items[index - 1]);
 					menu.items[index - 1] = angular.copy(menu.items[index]);
 					menu.items[index - 1].no = prev.no;
 
@@ -594,7 +621,7 @@ angular.module('primeapps')
 				else {
 					var menu = $filter('filter')($scope.menuLists, { no: no }, true)[0];
 					var menuItem = $filter('filter')(menu.items, { no: menuItemNo }, true)[0];
-					var prev = angular.copy(menu.items[index + 1]);
+					prev = angular.copy(menu.items[index + 1]);
 					menu.items[index + 1] = angular.copy(menu.items[index]);
 					menu.items[index + 1].no = prev.no;
 
@@ -607,40 +634,80 @@ angular.module('primeapps')
 
 			function updateMenuItem() {
 
+				var index = undefined;
+				var SubIndex = undefined;
+
 				var copyMenuList = angular.copy($scope.menuLists);
 				angular.forEach(copyMenuList, function (menuItem) {
-					var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
-					var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label
-					/** we sorted descending items, because when we splice the menuItem we need a index
-					 * items[{
-					 *    no    :1,2,3,4,5,6
-					 *    index:0,1,2,3,4,5
-					 * }]
-					 * example splice items 5,6, if we splice no:5
-					 * no    :1,2,3,4,6
-					 * index :0,1,2,3,4 than we cant match the index(4) === (no:6 -1)
-					 * -------------
-					 * splice items 5,6, if we splice no:6 match the index(5) === (no:6 -1)
-					 * no    :1,2,3,4,5
-					 * index :0,1,2,3,4 than we cant match the index(4) === (no:5 -1)
-					 */
-					filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
-					if (filterItem) {
+					if (menuItem.items.length > 0)
 
-						angular.forEach(filterItem.items, function (subItem) {
-							var filterSubItem = $filter('filter')(subItem, { id: 0 }, true)[0];
-							if (filterSubItem)
-								copyMenuList[filterItem.no - 1].items.splice(filterSubItem.no - 1, 1);
+						for (var i = 0; i < menuItem.items.length; i++) {
+							if (menuItem.items[i].id === 0) {
+								SubIndex = menuItem.items.findIndex(function (el) {
+									return el.id === 0;
+								});
+								index = copyMenuList.findIndex(function (el) {
+									return el.no === menuItem.no;
+								});
+								i = subIndex - 1;
+								copyMenuList[index].items.splice(SubIndex, 1);
+							}
+						}
+
+					if (menuItem.id === 0) {
+						index = copyMenuList.findIndex(function (el) {
+							return el.no === menuItem.no;
 						});
-						copyMenuList.splice(filterItem.no - 1, 1); //we deleted this item, because this item will create
+						i = index - 1;
+						copyMenuList.splice(index, 1); //we deleted this item, because this item will create				
 					}
-					// !filterItem -> we check this case previous step, with chield
-					else if (!filterItem && filterSubItem.length > 0) {
-						angular.forEach(filterSubItem, function (subItem) {
-							copyMenuList[menuItem.no - 1].items.splice(subItem.no - 1, 1);
-						});
-					}
+
 				});
+				//var copyMenuList = angular.copy($scope.menuLists);
+				//angular.forEach(copyMenuList, function (menuItem) {
+				//	var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
+				//	var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label
+				//	/** we sorted descending items, because when we splice the menuItem we need a index
+				//	 * items[{
+				//	 *    no    :1,2,3,4,5,6
+				//	 *    index:0,1,2,3,4,5
+				//	 * }]
+				//	 * example splice items 5,6, if we splice no:5
+				//	 * no    :1,2,3,4,6
+				//	 * index :0,1,2,3,4 than we cant match the index(4) === (no:6 -1)
+				//	 * -------------
+				//	 * splice items 5,6, if we splice no:6 match the index(5) === (no:6 -1)
+				//	 * no    :1,2,3,4,5
+				//	 * index :0,1,2,3,4 than we cant match the index(4) === (no:5 -1)
+				//	 */
+				//	filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
+				//	var index = undefined;
+				//	var SubIndex = undefined;
+
+				//	if (filterItem) {
+				//		if (filterItem.items.length > 0) {
+				//			filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
+				//			if (filterSubItem) {
+				//				for (var i = 0; i < filterSubItem.length; i++) {
+				//					SubIndex = filterItem.items.findIndex(x => x.id === 0);//filterSubItem.no);
+				//					index = copyMenuList.findIndex(x => x.no === filterItem.no);
+				//					copyMenuList[index].items.splice(SubIndex, 1);
+				//				}
+				//			}
+				//		}
+
+				//		index = copyMenuList.findIndex(x => x.no === filterItem.no);
+				//		copyMenuList.splice(index, 1); //we deleted this item, because this item will create
+				//	}
+				//	// !filterItem -> we check this case previous step, with chield
+				//	else if (!filterItem && filterSubItem.length > 0) {
+				//		//angular.forEach(filterSubItem, function (subItem) {
+				//		index = copyMenuList.findIndex(x => x.no === menuItem.no);
+				//		SubIndex = copyMenuList[index].items.findIndex(x => x.id === 0);
+				//		copyMenuList[index].items.splice(SubIndex, 1);
+				//		//});
+				//	}
+				//});
 				return copyMenuList;
 			}
 

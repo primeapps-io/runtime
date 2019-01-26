@@ -61,24 +61,9 @@
                 <td><a href="{{getDownloadUrlExcel(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
                 <td class="text-right">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(template.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="showFormModal(template)">{{'Common.Edit' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();delete(template.id);">
-                                    {{'Common.Remove' | translate}}
-                                </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
             </tr>

@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content padding-0">
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
@@ -82,33 +82,45 @@
         </div>
     </form>
     <div class="modal-header" ng-show="showNewCollaboratorInfo">
-        <div class="col-sm-6"><h4 class="modal-title">Collabrator Info</h4></div>
-        <div class="col-sm-6 col-sm-rigth">
-            <button type="button" class="btn btn-radius btn-gray"
-                    ng-click="close();">
-                <i class="fas fa-times margin-right-10"></i>Close
-            </button>
+        <div class="flex-between">
+            <h4 class="modal-title">Collabrator Info</h4>
+            <div>
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <button type="button" class="btn btn-radius btn-gray"
+                                ng-click="close();">
+                            <i class="fas fa-times margin-right-10"></i>Close
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="modal-dialog modal-300" ng-show="showNewCollaboratorInfo">
+    <div class="modal-dialog scroll-style-4" ng-show="showNewCollaboratorInfo">
         <div class="modal-content padding-0">
             <div class="modal-body">
                 <div class="col-sm-12">
                     <label style="font-weight:bold !important">Password</label>
-                    <input type="text" name="pass" class="form-control"
-                           required
-                           ng-model="userPassword"
-                           ng-disabled="true" />
-                </div>
-                <div class="col-sm-12" style="margin-top:15px">
-                    <span style="font-weight:bold !important">Please take a note of the password</span>
-                </div>
-
-                <div class="col-sm-12">
-                    <button type="submit" class="btn btn-primary btn-w-lg"><i class="fa fa-check-circle pull-left"></i>Send Email</button>
+                    <div class="input-group">
+                        <input type="text" name="pass" class="form-control"
+                               required
+                               ng-model="userPassword"
+                               ng-disabled="true" />
+                        <span class="input-group-addon" ngclipboard data-clipboard-text="{{userPassword}}" style="cursor:pointer;">
+                            <i class="fa fa-copy"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
+            <div class="col-sm-12" style="margin-top:15px">
+                <span style="font-weight:bold !important">Please take a note of the password</span>
+            </div>
 
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary btn-w-lg"><i class="fa fa-check-circle pull-left"></i>Send Email</button>
+            </div>
         </div>
+
     </div>
 </div>
+

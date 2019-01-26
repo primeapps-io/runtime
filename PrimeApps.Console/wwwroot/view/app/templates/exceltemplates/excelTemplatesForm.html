@@ -6,7 +6,7 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" ng-click="addNewExcelTemplateFormModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                            <button type="button" ng-disabled="saving" ng-click="addNewExcelTemplateFormModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
                             <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
@@ -15,46 +15,46 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
 
                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
-                    <label class="col-sm-3 control-label">{{'Setup.Templates.Module' | translate}}</label>
+                    <label class="col-sm-12 control-label">{{'Setup.Templates.Module' | translate}}</label>
                     <select name="module"
                             class="ng-animate-disabled form-control"
                             ng-model="template.templateModule"
                             ng-required="true"
-                            ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in $parent.modules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">
+                            ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in appModules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
                 </div>
 
                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                    <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateName' | translate}}</label>
+                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateName' | translate}}</label>
                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.templateName" />
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
-                    <div class="col-sm-9" ng-init="template.active = true">
-                        <label class="radio-inline">
+                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
+                    <div class="col-sm-12" ng-init="template.active = true">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateActive' | translate}}
+                            {{'Setup.Templates.TemplateActive' | translate}}<span></span>
                         </label>
 
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateDeactive' | translate}}
+                            {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
                         </label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
-                    <div class="col-sm-9">
-                                        <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
-                                            {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".xls,.xlsx" add-file="add-file" />
-                                        </span>
+                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
+                    <div class="col-sm-12">
+                        <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
+                            {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".xls,.xlsx" add-file="add-file" />
+                        </span>
                         <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span>
                         <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
                         <a class="btn btn-default clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>

@@ -1,29 +1,34 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
-    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu)" autocomplete="off" novalidate>
+<div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
+    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6"><h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4></div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;">{{'Common.Cancel' |translate }}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ng-disabled="menuLists.length < 1" ladda="saving">
-                    <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
-                </button>
+            <div class="flex-between">
+                <h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-disabled="saving" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                        </li>
+                        <li>
+                            <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div class="modal-dialog modal-900">
+        <div class="modal-dialog scroll-style-4">
             <div class="modal-content">
                 <div class="modal-contanier">
-                    <div class="col-sm-2 modal-left-menu">
-                        <ul class="nav bs-sidenav" bs-scrollspy-list>
-                            <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
-                            <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-sm-10">
-                        <div id="field-form-body" class="modal-body">
-                            <div class="section" id="section1" ng-show="wizardStep == 0">
+                    <div class="modal-body view-form">
+                        <div class="megalist">
+                            <div class="modal-menu">
+                                <ul class="list-unstyled">
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
+                                </ul>
+                            </div>
+                            <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+                            <div class="section" id="section1" ng-show="wizardStep == 0">  <!--&& !loading">-->
                                 <h4>{{'Menu.MenuInformation'|translate}}</h4>
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
@@ -37,8 +42,10 @@
                                     </div>
 
                                     <div class=" form-group">
-                                        <label class="col-sm-4 control-label">{{'Menu.DefaultMenu'|translate}}:</label>
-                                        <input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" />
+
+                                        <label class="col-sm-4 control-label newinput">
+                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
+                                        </label>
                                     </div>
 
                                     <div ng-show="!menu.default" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
@@ -71,16 +78,18 @@
                             </div>
 
                             <div class="section" id="section2" ng-show="wizardStep == 1">
+                                <!--&& !loading ">-->
                                 <h4>{{'Menu.MenuSummary'|translate}}</h4>
-                                <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                <div ng-show="!loading" class="panel">
+                                <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+                                <!--ng-show="!loading"-->
+                                <div  class="panel">
                                     <div class="form-group">
                                         <label class="control-label col-sm-4 ">{{'Menu.MenuElementType'|translate}}:</label>
-                                        <label class="radio-inline">
-                                            <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" ng-change="radioChange()" ng-model="menu.display" ng-value="true"> {{'Menu.CurrentMenu'|translate}}
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-change="radioChange()" ng-model="menu.display" ng-value="true"> {{'Menu.CurrentMenu'|translate}}<span></span>
                                         </label>
                                     </div>
 
@@ -116,10 +125,10 @@
                                     <legend />
                                     <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i>
                                     </div>
-                                    <div ng-show="menuLists.length >0">
-                                        <ol ng-model="menuLists" class="custom-menu">
-                                            <li style="margin-top: 10px; list-style-type: none;" ng-repeat="menuList in $parent.menuLists">
-                                                <div class="row form-group menu-list">
+                                    <div ng-show="menuLists.length >0" class="menu-setup">
+                                        <ul ng-model="menuLists" class="custom-menu list-unstyled">
+                                            <li ng-repeat="menuList in $parent.menuLists">
+                                                <div class="form-group menu-list">
                                                 <span class="action-buttons arrow">
                                                     <span ng-if="!$first" class="" ng-click="up($index,menuList.no)"> <i class="fa fa-angle-up" aria-hidden="true"></i></span>
                                                     <span ng-if="!$last" class="" ng-click="down($index,menuList.no)"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
@@ -127,54 +136,54 @@
 
                                                     <span class="menu-label">{{menuList.no+'. '+(!menuList.isEdit ? (menuList.name ) : "")}}</span>
                                                     <span ng-show="menuList.isEdit">
-                                                    <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name" />
-                                                    <button style="width:170px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"
-                                                            data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"
-                                                            data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                                            bs-select><span class="caret"></span></button>
-                                                    <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
-                                                        <button type="button" class="btn btn-primary" ng-click="update(menuList.no,menuList.icon)"><i class="fa fa-check"></i></button>
-                                                    </div>
-                                                </span>
-                                                    <span class="action-buttons">
-                                                    <a style="color:#a3be8c; font-size: 10px !important; line-height: 14px !important;" ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit" ng-click="addModule(menuList.no)" class="action-icon add-role-button" data-nodrag>
-                                                        {{'Common.Add' | translate}}
-                                                    </a>
-                                                    <span ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit"> | </span>
-                                                    <a style="color:#8FA5C7; cursor: pointer; font-size: 10px !important; line-height: 14px !important;" ng-if="!menuList.isEdit" ng-click="edit(menuList.no)" class="action-icon edit-role-button" data-nodrag>
-                                                        {{'Common.Edit' | translate}}
-                                                    </a>
-                                                    <span ng-if=" !menuList.isEdit"> | </span>
-                                                    <a style="color:#c78389; font-size: 10px !important; line-height: 14px !important; " ng-show="!menuList.isEdit" href class="action-icon delete-role-button" ng-click="remove_(menuList.menuId, menu.no, $index, menuList.menuModuleType)" data-nodrag>
-                                                        {{'Common.Delete' | translate}}
-                                                    </a>
-                                                 </span>
+                                                        <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name" />
+                                                        <button style="width:120px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"
+                                                                data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"
+                                                                data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
+                                                                bs-select><span class="caret"></span>
+                                                        </button>
+                                                        <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
+                                                            <button type="button" ng-click="update(menuList.no,menuList.icon)"><i class="fa fa-check"></i></button>
+                                                        </div>
+                                                    </span>
+                                                    <span class="action-buttons-block">
+                                                        <a ng-if="!menuList.isEdit" ng-click="edit(menuList.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a ng-show="!menuList.isEdit" href class="action-buttons-delete" ng-click="remove_(menuList.menuId, menu.no, $index, menuList.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                            
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                        <a ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit" ng-click="addModule(menuList.no)" data-nodrag title="{{'Common.Add' | translate}}">
+                                                            <i class="fas fa-plus"></i>
+                                                        </a>
+                                                    </span>
                                                 </div>
-                                                <ol class="fa-ul" ng-model="menuList.items" class="custom-menu">
-                                                    <li style="font-size: 13px;" ng-repeat="menu in menuList.items">
-                                                        <div class="row form-group menu-list">
-                                                        <span class="action-buttons arrow">
-                                                            <span ng-if="!$first && menu.name" class="" ng-click="up($index,menuList.no,menu.no)"><i class="fa fa-angle-up" aria-hidden="true"></i> </span>
-                                                            <span ng-if="!$last && menu.name" class="" ng-click="down($index,menuList.no,menu.no)"> <i class=" fa fa-angle-down" aria-hidden="true"></i> </span>
-                                                        </span>
+                                                <ul class="list-unstyled custom-menu" ng-model="menuList.items">
+                                                    <li ng-repeat="menu in menuList.items">
+                                                        <div class="form-group menu-list">
+                                                            <span class="action-buttons arrow">
+                                                                <span ng-if="!$first && menu.name" class="" ng-click="up($index,menuList.no,menu.no)"><i class="fa fa-angle-up" aria-hidden="true"></i> </span>
+                                                                <span ng-if="!$last && menu.name" class="" ng-click="down($index,menuList.no,menu.no)"> <i class=" fa fa-angle-down" aria-hidden="true"></i> </span>
+                                                            </span>
                                                             <span class="menu-label" ng-show="!menu.isEdit && menu.name">{{ menu.menuId + '.' + menu.no+'. '+ menu.name}}</span>
                                                             <span ng-show="menu.isEdit">
-                                                            <input class="form-control" maxlength="50" ng-model="menu.name" />
-                                                            <button style="width: 170px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"
-                                                                    data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"
-                                                                    data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                                                    bs-select><span class="caret"></span></button>
-                                                            <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
-                                                                <button type="button" class="btn btn-primary" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
-                                                            </div>
-                                                        </span>
-                                                            <span class="action-buttons">
-                                                                <a style="color:#8FA5C7; cursor: pointer; font-size: 10px !important; line-height: 14px !important;" ng-if="!menu.isEdit && menu.name" ng-click="edit(menuList.no,menu.no)" class="action-icon edit-role-button" data-nodrag>
-                                                                     {{'Common.Edit' | translate}}
+                                                                <input class="form-control" maxlength="50" ng-model="menu.name" />
+                                                                <button style="width: 120px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"
+                                                                        data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"
+                                                                        data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
+                                                                        bs-select><span class="caret"></span>
+                                                                </button>
+                                                                <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
+                                                                    <button type="button" class="btn btn-primary" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
+                                                                </div>
+                                                            </span>
+                                                            <span class="action-buttons-block">
+                                                                <a ng-if="!menu.isEdit && menu.name" ng-click="edit(menuList.no,menu.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">
+                                                                     <i class="fas fa-pen"></i>
                                                                 </a>
-                                                                <span ng-if=" !menu.isEdit && menu.name"> | </span>
-                                                                <a style="color:#c78389; font-size: 10px !important; line-height: 12px !important;" ng-show="!menu.isEdit && menu.name" href class="action-icon delete-role-button" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag>
-                                                                    {{'Common.Delete' | translate}}
+                                                                <a ng-show="!menu.isEdit && menu.name" href class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                    <i class="fas fa-trash"></i>
                                                                 </a>
                                                             </span>
                                                             <select
@@ -183,17 +192,17 @@
                                                                     ng-model="menuModuleList"
                                                                     ng-change="selectModule(menu.menuId, menu.no, menuModuleList)"
                                                                     ng-show="!menu.isEdit && !menu.name"
-                                                                    ng-options="o as o['label_' + language + '_plural'] for o in $parent.modules | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                                                    ng-options="o as o['label_' + language + '_plural'] for o in appModules | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
-                                                            <a style="color:#c78389; font-size: 10px !important; line-height: 14px !important; " ng-show="!menu.isEdit && !menu.name" class="action-icon delete-role-button" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag>
-                                                                {{'Common.Delete' | translate}}
+                                                            <a ng-show="!menu.isEdit && !menu.name" class="action-icon delete-role-button" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                <i class="fas fa-trash"></i>
                                                             </a>
                                                         </div>
                                                     </li>
-                                                </ol>
+                                                </ul>
                                             </li>
-                                        </ol>
+                                        </ul>
                                     </div>
                                     <div class="form-group text-right">
                                         <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>

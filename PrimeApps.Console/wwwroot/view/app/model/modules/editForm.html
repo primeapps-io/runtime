@@ -1,5 +1,5 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="editForm" class="form-horizontal form-custom" ng-submit="save(editForm);" autocomplete="off" novalidate>
+    <form name="editForm" class="form-horizontal form-custom" ng-submit="saveSettings(editForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
                 <h4 class="modal-title">{{'Setup.Modules.ModuleSettings' | translate}}</h4>
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
                     <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
@@ -52,46 +52,47 @@
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.DisplayOnMenu' | translate}}: </label>
                     <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.display" ng-value="true"> {{'Common.Yes' | translate}}
+                            <span></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.display" ng-value="false"> {{'Common.No' | translate}}
+                            <span></span>
                         </label>
                     </div>
                 </div>
-
-                <div class="advanced-options" ng-show="$parent.showAdvancedOptionsEdit">
-
-                </div>
-
 
             </div>
             <div class="section">
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.Sharing' | translate}}: </label>
                     <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.sharing" value="private">
                             {{'Setup.Modules.SharingPrivate' | translate}}
+                            <span></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.sharing" value="public">
                             {{'Setup.Modules.SharingPublic' | translate}}
+                            <span></span>
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.DisplayOnCalendar' | translate}}: </label>
                     <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline"
+                        <label class="radio-inline newinput"
                                title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">
                             <input type="radio" ng-model="module.display_calendar" ng-value="true"
                                    ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}
+                            <span></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.display_calendar" ng-value="false"
                                    ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}
+                            <span></span>
                         </label>
                     </div>
                 </div>
@@ -109,17 +110,20 @@
                 <div class="form-group">
                     <label class="col-sm-4">{{'Common.DetailViewType' | translate }}: </label>
                     <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.detail_view_type" value="tab">
                             {{'Common.TabbedView' | translate }}
+                            <span></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="radio-inline newinput">
                             <input type="radio" ng-model="module.detail_view_type" value="flat"> {{'Common.FlatView'
                             | translate }}
+                            <span></span>
                         </label>
                     </div>
                 </div>
             </div>
+
             <div class="section" ng-show="editForm.$submitted && editForm.$invalid">
                 <div class="form-group" >
                     <div class="col-sm-12">

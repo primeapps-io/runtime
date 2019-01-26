@@ -36,7 +36,7 @@ angular.module('primeapps')
             WordTemplatesService.find($scope.requestModel, 3).then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 });
                 $scope.templates = templates;
                 $scope.templatesState = templates;
@@ -54,7 +54,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;
@@ -183,12 +183,12 @@ angular.module('primeapps')
                         templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
                         animation: 'am-fade-and-slide-right',
                         backdrop: 'static',
-                        show: false,
-                        controller: function () {
-                            ModuleService.getModules().then(function (response) {
-                                $scope.modules = response.data;
-                            });
-                        }
+                        show: false//,
+                        //controller: function () {
+                        //    ModuleService.getModules().then(function (response) {
+                        //        $scope.modules = response.data;
+                        //    });
+                        //}
                     });
 
                 $scope.wordTemplateGuideModal.$promise.then(function () {
@@ -298,9 +298,13 @@ angular.module('primeapps')
             };
 
             $scope.moduleChanged = function (selectedModule) {
-                $scope.lookupModules = getLookupModules(selectedModule);
-                $scope.getModuleRelations(selectedModule);
-                $scope.selectedSubModule = null;
+                $scope.loading = true;
+                ModuleService.getModuleByName(selectedModule.name).then(function (response) {
+                    $scope.selectedModule = response.data;
+                    $scope.lookupModules = getLookupModules($scope.selectedModule);
+                    $scope.getModuleRelations($scope.selectedModule);
+                    $scope.selectedSubModule = null;
+                });
             };
 
             $scope.getModuleRelations = function (module) {
@@ -311,36 +315,51 @@ angular.module('primeapps')
 
                 if (module.name === 'quotes') {
                     var quoteProductsModule = $filter('filter')($scope.modules, { name: 'quote_products' }, true)[0];
-                    getLookupModules(quoteProductsModule);
-                    module.relatedModules.push(quoteProductsModule);
+                    ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
+                        quoteProductsModule = response.data;
+                        getLookupModules(quoteProductsModule);
+                        module.relatedModules.push(quoteProductsModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 }
 
                 if (module.name === 'sales_orders') {
                     var orderProductsModule = $filter('filter')($scope.modules, { name: 'order_products' }, true)[0];
-                    getLookupModules(orderProductsModule);
-                    module.relatedModules.push(orderProductsModule);
+                    ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
+                        orderProductsModule = response.data;
+                        getLookupModules(orderProductsModule);
+                        module.relatedModules.push(orderProductsModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 }
 
                 angular.forEach(module.relations, function (relation) {
                     var relatedModule = $filter('filter')($scope.modules, { name: relation.related_module }, true)[0];
+                    ModuleService.getModuleByName(relatedModule.name).then(function (response) {
+                        relatedModule = response.data;
+                        if (relation.deleted || !relatedModule || relatedModule.order === 0)
+                            return;
 
-                    if (relation.deleted || !relatedModule || relatedModule.order === 0)
-                        return;
+                        relatedModule = angular.copy(relatedModule);
 
-                    relatedModule = angular.copy(relatedModule);
+                        if (relation.relation_type === 'many_to_many') {
+                            angular.forEach(relatedModule.fields, function (field) {
+                                field.name = relation.related_module + '_id.' + field.name;
+                            });
+                        }
+                        else {
+                            getLookupModules(relatedModule);
+                        }
 
-                    if (relation.relation_type === 'many_to_many') {
-                        angular.forEach(relatedModule.fields, function (field) {
-                            field.name = relation.related_module + '_id.' + field.name;
-                        });
-                    }
-                    else {
-                        getLookupModules(relatedModule);
-                    }
-
-                    module.relatedModules.push(relatedModule);
+                        module.relatedModules.push(relatedModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 });
 
+                $scope.loading = false;
                 addNoteModuleRelation(module);
             };
 

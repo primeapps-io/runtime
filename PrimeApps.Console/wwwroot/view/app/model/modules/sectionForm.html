@@ -1,4 +1,4 @@
-<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-700" tabindex="-1" role="dialog">
     <form name="sectionForm" class="form-horizontal form-custom"
           ng-submit="saveSection(sectionForm); showAdvancedOptionsSection = false;" autocomplete="off" novalidate>
         <div class="modal-header">
@@ -21,8 +21,10 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
+                <h4>Section Info</h4>
                 <div class="form-group"
                      ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">
                     <label class="col-sm-4 required-field">* {{'Setup.Modules.SectionName' | translate}}:</label>
@@ -55,13 +57,15 @@
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}: </label>
                     <div class="col-sm-8">
-                        <label class="checkbox-inline">
+                        <label class="checkbox-inline newinput">
                             <input type="checkbox" ng-model="currentSection.display_form">
                             {{'Setup.Modules.DisplayForm' | translate}}
+                            <span></span>
                         </label>
-                        <label class="checkbox-inline">
+                        <label class="checkbox-inline newinput">
                             <input type="checkbox" ng-model="currentSection.display_detail">
                             {{'Setup.Modules.DisplayDetail' | translate}}
+                            <span></span>
                         </label>
                     </div>
 
@@ -69,49 +73,56 @@
 
             </div>
             <div class="section">
-                <h4> Profile Permission </h4>
+                <h4>Section Permission</h4>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>{{'Setup.Modules.Profile' | translate}}</th>
+                        <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
+                        <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
+                        </th>
+                        <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="permission in currentSection.permissions | orderBy:'profile_id' ">
+                        <td>{{permission.profile_name }}</td>
+                        <td class="text-center">
+                            <label class="radio-inline newinput">
+                                <input type="radio"
+                                       ng-model="permission.type"
+                                       value="full">
+                                <span></span>
 
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <div class="advanced-options" style="margin-bottom: 20px;">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>{{'Setup.Modules.Profile' | translate}}</th>
-                                    <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
-                                    <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
-                                    </th>
-                                    <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="permission in appProfiles | orderBy:'profile_id' ">
-                                    <td>{{ permission.name }}</td>
-                                    <td class="text-center user-not-select"><input type="radio"
-                                                                                   ng-model="permission.type"
-                                                                                   value="full"/></td>
-                                    <td class="text-center user-not-select"><input type="radio"
-                                                                                   ng-model="permission.type"
-                                                                                   value="read_only"
-                                                                                   ng-disabled="permission.profile_is_admin"
-                                                                                   title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate))}}"/>
-                                    </td>
-                                    <td class="text-center user-not-select">
-                                        <input type="radio"
-                                               ng-model="permission.type"
-                                               value="none"
-                                               ng-disabled="permission.profile_is_admin"
-                                               title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate) )}}"/>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                            </label>
 
-                </div>
+                        <td class="text-center">
+                            <label class="radio-inline newinput">
+                                <input type="radio"
+                                       ng-model="permission.type"
+                                       value="read_only"
+                                       ng-disabled="permission.profile_is_admin"
+                                       title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate))}}"
+                                >
+                                <span></span>
+                            </label>
+                        </td>
+                        <td class="text-center">
+                            <label class="radio-inline newinput">
+                                <input type="radio"
+                                       ng-model="permission.type"
+                                       value="none"
+                                       ng-disabled="permission.profile_is_admin"
+                                       title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate) )}}">
+                                <span></span>
+                            </label>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
             </div>
-
             <div class="form-group" ng-show="sectionForm.$submitted && sectionForm.$invalid">
                 <div class="col-sm-12">
                     <div class="callout callout-danger">

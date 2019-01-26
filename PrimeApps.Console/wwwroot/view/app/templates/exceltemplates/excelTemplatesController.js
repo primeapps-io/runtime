@@ -35,7 +35,7 @@ angular.module('primeapps')
             ExcelTemplatesService.find($scope.requestModel, 4).then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 });
                 $scope.templates = templates;
                 $scope.templatesState = templates;
@@ -53,7 +53,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;

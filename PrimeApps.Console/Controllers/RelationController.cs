@@ -71,11 +71,11 @@ namespace PrimeApps.Console.Controllers
 			if (relations == null)
 				return Ok(null);
 
-			foreach (var relation in relations)
-			{
-				var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
-				relation.RelationModule = relationModule;
-			}
+			//foreach (var relation in relations)
+			//{
+			//	var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
+			//	relation.RelationModule = relationModule;
+			//}
 
 			return Ok(relations);
 		}

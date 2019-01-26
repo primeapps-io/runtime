@@ -1,104 +1,73 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="roleForm" class="form-horizontal form-custom" ng-submit="save(roleForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-8">
+            <div class="flex-between">
                 <h4 class="modal-title">{{'Setup.Roles.Title2' | translate}}</h4>
-            </div>
-            <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewRoleFormModal.hide();">
-                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving">
-                    <i class="fas fa-save"></i>{{'Common.Save' | translate}}
-                </button>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button ng-disabled="saving" ng-click="addNewRoleFormModal.hide();" type="button" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                        </li>
+                        <li>
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <!--<div ng-class=" id ? 'modal-dialog modal-900' : 'modal-dialog modal-600'">-->
-        <div class="modal-dialog modal-600">
-            <div class="modal-content">
+        <div class="modal-dialog">
+            <div class="modal-content padding-0">
                 <div class="modal-contanier">
-                    <!--<div ng-show="id" class="col-sm-2 modal-left-menu">-->
-                    <!--<ul class="nav bs-sidenav" bs-scrollspy-list>-->
-                    <!--<li><a>{{'Setup.Roles.Title2' | translate}}</a></li>-->
-                    <!--<li><a>{{'Setup.Roles.Title3' | translate}}</a></li>-->
-                    <!--</ul>-->
-                    <!--</div>-->
-                    <!--<div ng-class=" id ? 'col-sm-10':''">-->
-                    <div id="field-form-body" class="modal-body">
-                        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                        <div ng-show="!loading" class="section" id="section1">
-                            <h4>{{'Setup.Roles.Title2' | translate}}</h4>
-                            <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-                                    <label class="col-sm-4 control-label">*{{'Setup.Roles.RoleName' | translate}}:</label>
-                                    <input name="name" class="form-control col-sm-8" maxlength="200" required ng-model="role.label" />
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
-                                    <textarea rows="3" name="description" class="form-control col-sm-8" maxlength="200" auto-grow ng-model="role.description"></textarea>
-                                </div>
-
-                                <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
-                                    <label class="col-sm-4 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
-                                    <ui-select name="reportsTo" class="form-control ng-animate-disabled col-sm-8"
-                                               on-select="roleUpdateChange()"
-                                               ng-model="role.reports_to"
-                                               ng-required="!role.master">
-                                        <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
-                                        <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
-                                            <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </div>
-
-                                <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
-                                    <label class="col-sm-8 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
-                                    <div class="form-control ng-animate-disabled col-sm-8" style="padding-left: 0; background-color:white;">
-                                        <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data">{{'Setup.Roles.ShareDataYes' | translate}}</label>
-                                        <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}</label>
+                    <div class="modal-body">
+                        <div id="field-form-body" class="modal-body">
+                            <div class="section" id="section1">
+                                <h4>{{'Setup.Roles.Title2' | translate}}</h4>
+                                <div class="panel">
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
+                                        <label class="col-sm-12 control-label">*{{'Setup.Roles.RoleName' | translate}}:</label>
+                                        <input name="name" class="form-control col-sm-12" maxlength="200" required ng-model="role.label" />
                                     </div>
-                                </div>
 
-                                <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
-                                    <div class="col-sm-12">
-                                        <div class="callout callout-danger">
-                                            <p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                    <div class="form-group">
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
+                                        <textarea rows="3" name="description" class="form-control col-sm-12" maxlength="200" auto-grow ng-model="role.description"></textarea>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
+                                        <ui-select name="reportsTo" class="ng-animate-disabled"
+                                                   on-select="roleUpdateChange()"
+                                                   ng-model="role.reports_to"
+                                                   ng-required="!role.master">
+                                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                                            <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
+                                        <div class="form-control ng-animate-disabled col-sm-12" style="padding-left: 0; background-color:white;">
+                                            <label class="radio-inline newinput"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data">{{'Setup.Roles.ShareDataYes' | translate}}<span></span></label>
+                                            <label class="radio-inline newinput"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}<span></span></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
+                                        <div class="col-sm-12">
+                                            <div class="callout callout-danger">
+                                                <p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!--<div ng-show="wizardSetep == 1" class="section" id="section2">-->
-                                <!--<h4>{{'Setup.Roles.Title3' | translate}}</h4>-->
-                                <!--<div class="tab-content">-->
-                                <!--<table class="table">-->
-                                <!--<thead>-->
-                                <!--<tr>-->
-                                <!--<th>{{'Setup.Users.UserEmail' | translate}}</th>-->
-                                <!--<th>{{'Setup.Users.UserFullName' | translate}}</th>-->
-                                <!--<th>{{'Setup.Users.UserStatus' | translate}}</th>-->
-                                <!--</tr>-->
-                                <!--</thead>-->
-                                <!--<tbody>-->
-                                <!--<tr ng-repeat="userItem in roleUsers | filter:{ IsActive:true } track by userItem.id">-->
-                                <!--<td>{{userItem.Email}}</td>-->
-                                <!--<td><span ng-if="userItem.id">{{userItem.FirstName + " " + userItem.LastName}}</span></td>-->
-                                <!--<td>-->
-                                <!--<span ng-if="userItem.IsSubscriber">{{'Setup.Users.GroupOwner' | translate}}</span>-->
-                                <!--<span ng-if="userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus1' | translate}}</span>-->
-                                <!--<span ng-if="!userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus2' | translate}}</span>-->
-                                <!--</td>-->
-                                <!--</tr>-->
-                                <!--</tbody>-->
-                                <!--</table>-->
-                                <!--</div>-->
-                                <!--</div>-->
-                                <!--</div>-->
-                                <!--</div>-->
-                                <!--</div>-->
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>

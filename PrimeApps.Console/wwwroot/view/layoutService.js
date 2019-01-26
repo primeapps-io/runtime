@@ -6,23 +6,23 @@ angular.module('primeapps')
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
                 getAll: function () {
-                    var deferred = $q.defer();
                     var promises = [];
+                    var def = $q.defer();
+
                     promises.push($http.get(config.apiUrl + 'user/me'));
                     promises.push($http.get(config.apiUrl + 'user/organizations'));
-                    $q.all(promises).then(function (response) {
+                    return $q.all(promises).then(function (response) {
                         $rootScope.me = response[0].data;
                         $rootScope.organizations = response[1].data;
 
                         if (!$rootScope.breadcrumblist) {
                             $rootScope.breadcrumblist = [{}, {}, {}];
                         }
+                        def.resolve($rootScope.organizations);
                         helper.hideLoader();
-                        deferred.resolve(true);
-                        return deferred.promise;
                     });
 
-                    return deferred.promise;
+                    return def.promise;
                 },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
@@ -278,7 +278,7 @@ angular.module('primeapps')
                         if (!angular.isArray($rootScope.breadcrumblist))
                             $rootScope.breadcrumblist = [{}, {}, {}];
 
-                        $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.name;
+                        $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
                         $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
 
                         $rootScope.breadcrumblist[1] = {

@@ -186,6 +186,10 @@
 .newinput input[type=radio]:checked ~ span:after {
   display: block;
 }
+.newinput input[type=radio]:disabled ~ span {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .newinput input[type=checkbox] {
   position: absolute;
   opacity: 0;
@@ -221,6 +225,20 @@
 }
 .newinput input[type=checkbox]:checked ~ span:after {
   display: block;
+}
+.newinput input[type=checkbox]:disabled {
+  cursor: not-allowed;
+}
+.newinput input[type=checkbox]:disabled ~ span {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.newinput input[disabled=disabled] {
+  cursor: not-allowed;
+}
+.newinput input[disabled=disabled] ~ span {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .newinput:hover input[type=radio] ~ span {
   background-color: #ccc;
@@ -301,6 +319,11 @@ button:focus, select:focus {
 }
 .primeapps .module-section .cell-container .form-group .action-buttons .action-icon {
   color: rgba(6, 6, 6, 0.75) !important;
+  font-size: 14px !important;
+}
+.primeapps .module-section .cell-container .form-group .action-buttons .action-icon-disabled {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.25) !important;
 }
 .primeapps .module-section .cell-container .form-group .control-label {
   text-align: left;
@@ -318,16 +341,15 @@ button:focus, select:focus {
 .primeapps .module-section .section-header {
   border: none !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 10px !important;
+  padding: 15px 10px !important;
 }
-.primeapps .module-section .section-header span {
+.primeapps .module-section .section-header span:first-child {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.75);
-  font-size: 16px;
 }
-.primeapps .module-section .section-header span i {
+.primeapps .module-section .section-header span:first-child i {
   color: rgba(0, 0, 0, 0.5) !important;
-  margin-right: 15px;
+  margin-right: 5px;
 }
 .primeapps .module-section .section-header:hover {
   background: rgba(13, 111, 170, 0.1);
@@ -376,14 +398,12 @@ button:focus, select:focus {
   background: #fff !important;
 }
 .primeapps .template-field .template-field-box .template-field-icon span {
-  font-size: 22px;
+  font-size: 18px;
   color: rgba(0, 0, 0, 0.5);
 }
-.primeapps .template-field .template-field-box .template-field-icon h4 {
-  font-size: 15px !important;
-}
-.primeapps .template-field .template-field-box .template-field-icon .template-field-text h4 {
-  font-size: 15px !important;
+.primeapps .template-field .template-field-box .template-field-text h4 {
+  font-size: 14px !important;
+  margin: 0px;
 }
 .primeapps .module-designer .new-field {
   border: 1px dashed rgba(0, 0, 0, 0.28);
@@ -471,6 +491,19 @@ button:focus, select:focus {
 .primeapps .collaborator-info .user-info h3 {
   font-size: 12px;
 }
+.primeapps .collaborator-detail {
+  position: relative;
+  padding: 30px;
+  text-align: center;
+}
+.primeapps .collaborator-detail > div {
+  margin-bottom: 20px;
+}
+.primeapps .collaborator-detail h2 {
+  font-size: 18px;
+  margin: 0px;
+  display: block;
+}
 .primeapps .user-info {
   display: flex;
   flex-direction: row;
@@ -524,10 +557,23 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #f6f5f2;
+  background: #F6F5F2;
 }
 .primeapps .page-loading i {
   font-size: 50px;
+}
+.primeapps .page-loading2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.65);
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
 }
 .primeapps body {
   background-color: #f6f5f2 !important;
@@ -754,6 +800,10 @@ button:focus, select:focus {
   background: rgba(206, 4, 4, 0.5);
   color: #FFF;
 }
+.primeapps .table tbody tr .action-buttons-block button.action-buttons-delete:hover {
+  background: #ce0404;
+  color: #FFF;
+}
 .primeapps .table tbody tr .action-buttons-block button:hover {
   background: rgba(0, 0, 0, 0.15);
   color: rgba(0, 0, 0, 0.75);
@@ -789,7 +839,7 @@ button:focus, select:focus {
 }
 .primeapps .modal {
   left: auto;
-  padding: 20px 30px;
+  padding: 20px 10px 20px 30px;
 }
 .primeapps .modal .section {
   padding: 20px;
@@ -809,8 +859,11 @@ button:focus, select:focus {
 }
 .primeapps .modal .megalist > div.modal-menu {
   width: auto;
-  position: relative;
   padding-right: 20px;
+  position: -webkit-sticky;
+  position: sticky;
+  align-self: flex-start;
+  top: 0px;
 }
 .primeapps .modal .megalist > div.modal-menu:before {
   content: "";
@@ -818,9 +871,9 @@ button:focus, select:focus {
   right: 22px;
   top: 0px;
   width: 2px;
-  height: 100%;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.05);
+  height: 100vh;
 }
 .primeapps .modal .megalist > div.modal-menu ul li {
   white-space: nowrap;
@@ -856,6 +909,16 @@ button:focus, select:focus {
   list-style-type: none;
   padding-left: 10px;
 }
+.primeapps .modal .megalist .section {
+  padding: 0px;
+  border: none;
+  border-radius: 0px;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+}
+.primeapps .modal .megalist .section:last-child {
+  border: none;
+  margin-bottom: 0px;
+}
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
   margin: 10px;
@@ -867,7 +930,7 @@ button:focus, select:focus {
 .primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
   position: relative;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
   position: relative;
@@ -883,6 +946,8 @@ button:focus, select:focus {
   margin: 0;
   line-height: 33px !important;
   width: 100% !important;
+  padding-right: 20px;
+  overflow-x: hidden;
 }
 .primeapps .setup-modal .modal-dialog input[type=radio]:checked + span:after, .primeapps .module-modal .modal-dialog input[type=radio]:checked + span:after {
   width: 10px;
@@ -908,6 +973,33 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
+}
+.primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
+  width: 100%;
+}
+.primeapps .setup-modal .modal-content tags-input .host, .primeapps .module-modal .modal-content tags-input .host {
+  margin: 0px;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags, .primeapps .module-modal .modal-content tags-input .host .tags {
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
+  background: transparent;
+  height: 30px;
+}
+.primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
+  max-width: 100% !important;
+}
+.primeapps .setup-modal .modal-content .multiselect-container .multiselect, .primeapps .module-modal .modal-content .multiselect-container .multiselect {
+  position: relative;
+}
+.primeapps .setup-modal .modal-content .multiselect-container .multiselect .caret, .primeapps .module-modal .modal-content .multiselect-container .multiselect .caret {
+  top: 15px;
+  border-top: 5px solid;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
 }
 .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
   padding-top: 7px;
@@ -936,8 +1028,13 @@ button:focus, select:focus {
   font-weight: bold;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+  padding: 0px;
+  padding-right: 20px;
+  border-bottom: none;
+}
+.primeapps .setup-modal .modal-header .flex-between, .primeapps .module-modal .modal-header .flex-between {
+  padding-bottom: 10px;
   border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-  padding: 10px 0px;
   margin-bottom: 20px;
 }
 .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
@@ -1117,6 +1214,12 @@ button:focus, select:focus {
   margin-right: 0;
   margin-bottom: 20px !important;
 }
+.primeapps .form-group.has-error select {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
+.primeapps .form-group.bottom0 {
+  margin-bottom: 0px !important;
+}
 .primeapps .form-group label {
   padding: 0;
   color: rgba(0, 0, 0, 0.75);
@@ -1135,7 +1238,7 @@ button:focus, select:focus {
   max-width: none !important;
 }
 .primeapps .form-group .form-control[disabled] {
-  color: rgba(0, 0, 0, 0.25);
+  opacity: 0.5;
 }
 .primeapps .checkbox-inline input[type=checkbox] {
   position: relative !important;
@@ -1186,7 +1289,7 @@ button:focus, select:focus {
   margin-top: 5px;
   margin-bottom: 30px;
 }
-.primeapps .page-container .app-layout-box N .tooltip.tooltip-success .tooltip-inner {
+.primeapps .page-container .app-layout-box .tooltip.tooltip-success .tooltip-inner {
   background-color: rgba(0, 0, 0, 0.75);
   border-color: rgba(0, 0, 0, 0.75);
   color: #fff;
@@ -1258,6 +1361,11 @@ button:focus, select:focus {
   font-weight: bold;
   margin: 0px;
   padding: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
 .primeapps .page-container .app-layout-box .app-info h4 {
   margin: 0px;
@@ -1266,6 +1374,11 @@ button:focus, select:focus {
   font-weight: 400;
   line-height: 25px;
   color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
 .primeapps .page-container .app-layout-box:hover .app-box {
   box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
@@ -1315,45 +1428,45 @@ button:focus, select:focus {
 .primeapps #sidebar-wrapper .sidebar-brand a:hover {
   background: none;
 }
-.primeapps #sidebar-wrapper ul {
+.primeapps #sidebar-wrapper > ul {
   width: 250px;
 }
-.primeapps #sidebar-wrapper ul .open {
+.primeapps #sidebar-wrapper > ul .open {
   background-color: #121212;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
 }
-.primeapps #sidebar-wrapper ul .open ul {
+.primeapps #sidebar-wrapper > ul .open ul {
   display: block;
 }
-.primeapps #sidebar-wrapper ul li {
+.primeapps #sidebar-wrapper > ul li {
   cursor: pointer;
 }
-.primeapps #sidebar-wrapper ul li ul {
+.primeapps #sidebar-wrapper > ul li ul {
   display: none;
   list-style: none;
 }
-.primeapps #sidebar-wrapper ul li ul .active {
+.primeapps #sidebar-wrapper > ul li ul .active {
   color: #fff;
 }
-.primeapps #sidebar-wrapper ul li ul li {
+.primeapps #sidebar-wrapper > ul li ul li {
   line-height: 20px;
 }
-.primeapps #sidebar-wrapper ul li ul li a {
+.primeapps #sidebar-wrapper > ul li ul li a {
   color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
 }
-.primeapps #sidebar-wrapper ul li ul li a i {
+.primeapps #sidebar-wrapper > ul li ul li a i {
   font-size: 14px;
   background: none;
 }
-.primeapps #sidebar-wrapper ul li ul li a:hover {
+.primeapps #sidebar-wrapper > ul li ul li a:hover {
   background: none;
   color: #fff;
 }
-.primeapps #sidebar-wrapper ul li a {
+.primeapps #sidebar-wrapper > ul li a {
   font-weight: bold;
   font-size: 14px;
   padding-top: 5px;
@@ -1361,7 +1474,7 @@ button:focus, select:focus {
   display: flex;
   align-items: center;
 }
-.primeapps #sidebar-wrapper ul li a i {
+.primeapps #sidebar-wrapper > ul li a i {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1372,6 +1485,28 @@ button:focus, select:focus {
   background: #9e005d;
   border-radius: 50%;
   margin-right: 10px;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+1) > a > i {
+  background: #CE0404;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+2) > a > i {
+  background: #1157A3;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+3) > a > i {
+  background: #9F5590;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+4) > a > i {
+  background: #5359DF;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+5) > a > i {
+  background: #92C549;
+}
+.primeapps #sidebar-wrapper > ul > li:nth-child(6n+6) > a > i {
+  background: #F1638B;
+}
+.primeapps #sidebar-wrapper > ul > li:last-child > a > i {
+  background: #FFF;
+  color: #1157A3;
 }
 .primeapps #sidebar-wrapper .color-blue {
   color: #0d6faa;
@@ -1407,9 +1542,19 @@ button:focus, select:focus {
 .primeapps .dropdown-menu li a {
   line-height: 40px;
 }
-.primeapps .dropdown-menu li a:hover {
+.primeapps .dropdown-menu li a:hover, .primeapps .dropdown-menu li a:focus {
   background-color: rgba(17, 87, 163, 0.1);
   color: #000;
+}
+.primeapps .dropdown-menu.select-multiple {
+  width: 100% !important;
+}
+.primeapps .dropdown-menu.select-multiple li a {
+  line-height: 30px;
+}
+.primeapps .dropdown-menu.select-multiple li a i {
+  line-height: 20px;
+  padding: 5px;
 }
 .primeapps .file-uploader {
   margin: 0px;
@@ -1471,6 +1616,7 @@ button:focus, select:focus {
 }
 .primeapps #wrapper #navbar-wrapper {
   left: 250px;
+  z-index: 1001;
 }
 .primeapps #wrapper #page-content-wrapper {
   position: relative;
@@ -1545,7 +1691,7 @@ button:focus, select:focus {
   padding-left: 10px;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a {
-  padding: 5px 10px;
+  padding: 5px 10px 5px 30px;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a i {
   margin-right: 0px;
@@ -1629,6 +1775,7 @@ button:focus, select:focus {
   padding-right: 15px;
   position: sticky;
   top: 5%;
+  z-index: 2;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
   background: #fff;
@@ -1729,6 +1876,7 @@ button:focus, select:focus {
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
+  z-index: 1;
 }
 .primeapps #wrapper .setup-layout .setup-title {
   font-weight: bold;
@@ -1746,7 +1894,7 @@ button:focus, select:focus {
   margin: 0px;
   font-weight: bold;
 }
-.primeapps #wrapper .setup-layout .setup-title span {
+.primeapps #wrapper .setup-layout .setup-title .app-menu2 span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1827,6 +1975,9 @@ button:focus, select:focus {
 .primeapps .btn i {
   padding: 0px 5px;
 }
+.primeapps .btn.btn-primary {
+  border-bottom: none;
+}
 .primeapps .list-inline {
   margin-bottom: 0px;
 }
@@ -1864,6 +2015,171 @@ button:focus, select:focus {
 .primeapps .template-field .template-field-box .template-field-text h4 {
     margin: 0px !important;
   }
+}
+.primeapps .module-form-setup .draggable-form .form-group {
+  padding: 5px 40px 4px 5px;
+}
+.primeapps .ui-select-bootstrap {
+  height: 40px;
+  line-height: 40px;
+  border-radius: 5px;
+  border: none;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.05);
+}
+.primeapps .ui-select-bootstrap .btn-default-focus {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+.primeapps .ui-select-bootstrap .glyphicon-remove {
+  display: none;
+}
+.primeapps .ui-select-bootstrap .form-control {
+  height: 40px;
+  line-height: 30px;
+  border: none;
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .form-control:hover {
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-choices-row-inner {
+  padding: 10px !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-choices {
+  width: 100% !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle {
+  border: none;
+  background: transparent;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle:hover {
+  background: transparent !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-toggle > .caret {
+  padding: 0px;
+  right: 10px;
+}
+.primeapps .ui-select-bootstrap.bigwhiteselect {
+  height: 60px;
+  line-height: 60px;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  background: #FFF;
+}
+.primeapps .ui-select-bootstrap.bigwhiteselect .form-control {
+  height: 60px;
+  line-height: 50px;
+}
+.primeapps .menu-setup .custom-menu {
+  font-size: 16px;
+  font-weight: bold;
+}
+.primeapps .menu-setup .custom-menu li {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+.primeapps .menu-setup .custom-menu .form-group {
+  margin-bottom: 5px !important;
+}
+.primeapps .menu-setup .custom-menu .form-group .form-control {
+  width: auto;
+}
+.primeapps .menu-setup .custom-menu .custom-menu {
+  padding-left: 30px;
+  font-size: 14px;
+}
+.primeapps .menu-setup .custom-menu .custom-menu li {
+  background: transparent;
+  border-radius: 0px;
+}
+.primeapps .menu-setup .custom-menu .menu-list {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 5px 110px 5px 10px;
+}
+.primeapps .menu-setup .custom-menu .editable-buttons {
+  display: inline-block;
+  margin: 3px;
+}
+.primeapps .menu-setup .custom-menu .editable-buttons button {
+  background: rgba(13, 111, 170, 0.75);
+  width: 30px;
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 0px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.primeapps .menu-setup .custom-menu .editable-buttons button:hover {
+  background: #0d6faa;
+  color: white;
+}
+.primeapps .menu-setup .custom-menu .menu-label {
+  padding-right: 10px;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a {
+  background: rgba(13, 111, 170, 0.75);
+  width: 30px;
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 0px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit {
+  background: rgba(0, 0, 0, 0.25);
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit:hover {
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFF;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete {
+  background: rgba(206, 4, 4, 0.5);
+  color: #FFF;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover {
+  background: #ce0404;
+  color: #FFF;
+}
+.primeapps .menu-setup .custom-menu .action-buttons-block a:hover {
+  background: #0d6faa;
+  color: white;
+}
+.primeapps .menu-setup .arrow {
+  display: inline-block;
+  margin-right: 10px;
+}
+.primeapps .menu-setup .arrow span {
+  display: block;
+  line-height: 10px;
+  font-size: 14px;
+}
+.primeapps .menu-setup .arrow span i {
+  cursor: pointer;
+  color: #CCC;
+}
+.primeapps .menu-setup .arrow span i:hover {
+  color: #000;
 }
 
 .placeholder {

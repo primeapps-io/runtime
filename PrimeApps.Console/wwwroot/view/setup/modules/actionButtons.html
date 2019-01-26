@@ -12,7 +12,7 @@
 </div>
 
 <div class="tab-content">
-    <div class="empty-message" ng-if="actionButtons.length < 1">
+    <div class="empty-message" ng-if="actionButtons.length < 1 && !loading ">
         {{'Setup.Modules.NoActionButton' | translate}}
     </div>
     <table class="table" ng-show="loading">

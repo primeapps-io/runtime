@@ -113,7 +113,7 @@ namespace PrimeApps.Model.Repositories
 								  .OrderByDescending(x => x.Id);
 
 			return relations;
-		
+
 		}
 	}
 }

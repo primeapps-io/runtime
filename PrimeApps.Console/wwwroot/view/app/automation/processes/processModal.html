@@ -5,13 +5,14 @@
             <h4 class="modal-title">{{'Setup.Nav.ApprovelProcess' | translate}}</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button" ng-click="cancel();" ng-disabled="saving" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                    <li><button type="button" ng-click="save();" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="modal-dialog">
+        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div class="modal-content view-form">
             <div class="modal-body">
                 <div class="megalist">
@@ -32,11 +33,11 @@
                                     <h4>{{'Setup.Workflow.ApprovelProcess.RuleInformation' | translate}}</h4>
                                     <div class="panel">
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
-                                            <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.Name' | translate}}:</label>
+                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.Name' | translate}}:</label>
                                             <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
-                                            <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.Module' | translate}}:</label>
+                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.Module' | translate}}:</label>
                                             <select class="form-control"
                                                     name="module"
                                                     required
@@ -48,7 +49,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.user.$invalid}">
-                                            <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.User' | translate}}</label>
+                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.User' | translate}}</label>
                                             <select ng-disabled="isEdit || isChosenModule" class="form-control"
                                                     name="user" validateOperations()
                                                     tabindex="1"
@@ -59,31 +60,36 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-sm-4">{{'Setup.Workflow.Status' | translate}}:</label>
-                                            <label class="checkbox-inline">
+                                            <label class="col-sm-12">{{'Setup.Workflow.Status' | translate}}:</label>
+                                            <label class="checkbox-inline newinput">
                                                 <input ng-disabled="!allowEdit" type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                                                <span></span>
                                             </label>
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
-                                            <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.RuleTrigger' | translate}}:</label>
-                                            <label class="checkbox-inline">
-                                                <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></span>
+                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.RuleTrigger' | translate}}:</label>
+                                            <label class="checkbox-inline newinput">
+                                                <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(workflowForm)"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></small>
+                                                <span></span>
                                             </label><br>
-                                            <label class="checkbox-inline">
-                                                <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                                            <label class="checkbox-inline newinput">
+                                                <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations(workflowForm)"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
+                                                <span></span>
                                             </label>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-sm-3 control-label"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.TriggerTime' | translate}}:</label>
-                                            <label class="radio-inline">
-                                                <input ng-disabled="isEdit" name="triggerTime" type="radio" value="instant" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Instant' | translate}}</span>
+                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.TriggerTime' | translate}}:</label>
+                                            <label class="radio-inline newinput">
+                                                <input ng-disabled="isEdit" name="triggerTime" type="radio" value="instant" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Instant' | translate}}
+                                                <span></span>
                                             </label><br>
-                                            <label class="radio-inline">
-                                                <input ng-disabled="isEdit" name="triggerTime" type="radio" value="manuel" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Manuel' | translate}}</span>
+                                            <label class="radio-inline newinput">
+                                                <input ng-disabled="isEdit" name="triggerTime" type="radio" value="manuel" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Manuel' | translate}}
+                                                <span></span>
                                             </label>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-sm-4">{{'Setup.Workflow.ApprovelProcess.ProfileAuthorization' | translate}}: </label>
+                                            <label class="col-sm-12">{{'Setup.Workflow.ApprovelProcess.ProfileAuthorization' | translate}}: </label>
                                             <tags-input name="profiles"
                                                         style="max-width: 300px !important;"
                                                         tabindex="999"
@@ -103,14 +109,16 @@
                                             </tags-input>
                                         </div>
                                         <div class="form-group" ng-show="workflowModel.operation == 'update'">
-                                            <label class="col-sm-4">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
-                                            <label class="radio-inline">
+                                            <label class="col-sm-12">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
+                                            <label class="radio-inline newinput">
                                                 <input name="frequency" type="radio" ng-model="workflowModel.frequency" value="one_time">
                                                 {{'Setup.Workflow.ExecutionFrequencies.OneTime' | translate}}
+                                                <span></span>
                                             </label>
-                                            <label class="radio-inline">
+                                            <label class="radio-inline newinput">
                                                 <input name="frequency" type="radio" ng-model="workflowModel.frequency" value="continuous">
                                                 {{'Setup.Workflow.ExecutionFrequencies.Continuous' | translate}}
+                                                <span></span>
                                             </label>
                                         </div>
                                         <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.user.$error.required)">
@@ -137,7 +145,6 @@
                                 <div class="section" ng-show="wizardStep == 1">
                                     <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                     <div class="panel">
-                                        <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                         <div ng-show="!loadingFilter">
                                             <table class="filter-table">
                                                 <thead>
@@ -389,7 +396,7 @@
                                             <hr>
                                             <div class="form-group clearfix"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.firstApproverModule.$invalid}">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.ApproverModule' | translate}}:
                                                 </label>
                                                 <select ng-disabled="isEdit"
@@ -406,7 +413,7 @@
                                             <div class="form-group clearfix"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.firtApproverLookup.$invalid}"
                                                  ng-if="workflowModel.firstApproverModule">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">* </span>
                                                     {{'Setup.Workflow.ApprovelProcess.ApproverLookup' | translate}}:
                                                 </label>
@@ -424,7 +431,7 @@
                                             <div class="form-group clearfix"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.firtsApproverField.$invalid}"
                                                  ng-if="workflowModel.first_approver_lookup && workflowModel.firstApproverModule">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">* </span>
                                                     {{'Setup.Workflow.ApprovelProcess.ApproverEmailField' | translate}}:
                                                 </label>
@@ -442,7 +449,7 @@
                                             <div class="" style="margin-bottom: -25px"><label class="col-sm-offset-5 control-label">2. {{'Setup.Workflow.ApprovelProcess.Approver' | translate}}</label></div>
                                             <hr>
                                             <div class="form-group clearfix">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.ApproverModule' | translate}}:
                                                 </label>
                                                 <select ng-disabled="isEdit || !workflowModel.first_approver_field"
@@ -459,7 +466,7 @@
                                             <div class="form-group clearfix"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondApproverLookup.$invalid}"
                                                  ng-if="workflowModel.secondApproverModule">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">* </span>
                                                     {{'Setup.Workflow.ApprovelProcess.ApproverLookup' | translate}}:
                                                 </label>
@@ -477,7 +484,7 @@
                                             <div class="form-group clearfix"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondApproverField.$invalid}"
                                                  ng-if="workflowModel.second_approver_lookup && workflowModel.secondApproverModule">
-                                                <label class="col-sm-4">
+                                                <label class="col-sm-12">
                                                     <span class="required-field">* </span>
                                                     {{'Setup.Workflow.ApprovelProcess.ApproverEmailField' | translate}}:
                                                 </label>

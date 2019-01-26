@@ -36,7 +36,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="profile in profiles">
+            <tr ng-repeat="profile in profiles" ng-click="showFormModal(profile,false)">
                 <td class="profile-name">{{profile.name}}</td>
                 <td class="profile-description">{{profile.description}}</td>
                 <td class="text-center">

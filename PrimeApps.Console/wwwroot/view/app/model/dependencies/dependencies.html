@@ -65,24 +65,9 @@
             <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
+                    <button ng-click="$event.stopPropagation(); delete(dependency);" type="button" class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
                     </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}} </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation(); delete(dependency);">
-                                {{'Common.Remove' | translate}}
-                            </a>
-                        </li>
-                    </ul>
                 </div>
             </td>
         </tr>

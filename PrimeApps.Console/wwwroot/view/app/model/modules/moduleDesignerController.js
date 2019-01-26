@@ -849,7 +849,7 @@ angular.module('primeapps')
                     section.deleted = false;
                     $scope.showPermissionWarning = false;
                     section.permissions = [];
-                    angular.forEach($rootScope.profiles, function (profile) {
+                    angular.forEach($rootScope.appProfiles, function (profile) {
                         if (profile.is_persistent && profile.has_admin_rights)
                             profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
@@ -1404,79 +1404,19 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                var resultPromise;
 
                 if (!$scope.id || $scope.clone) {
-                    resultPromise = ModuleService.moduleCreate(moduleModel);
+                    ModuleService.moduleCreate(moduleModel).then(function () {
+                        $scope.saving = false;
+                    });
                 }
                 else {
-                    resultPromise = ModuleService.update(moduleModel, moduleModel.id);
+                    ModuleService.update(moduleModel, moduleModel.id).then(function () {
+                        $scope.saving = false;
+                    });
                 }
 
-                resultPromise
-                    .then(function onSuccess() {
-                        LayoutService.getMyAccount(true)
-                            .then(function () {
-                                var moduleKey = $scope.module.name + "_" + $scope.module.name;
-                                $cache.remove(moduleKey);
 
-                                //When delete a fields. Also delete their mappings and view filters
-                                if ($scope.currentDeletedFields.length) {
-                                    var deletedFieldsIds = [];
-
-                                    $scope.currentDeletedFields.forEach(function (deletedField) {
-                                        deletedFieldsIds.push(deletedField.id);
-
-                                        if ($rootScope.activeFilters && $rootScope.activeFilters.hasOwnProperty(moduleKey) &&
-                                            $rootScope.activeFilters[moduleKey].hasOwnProperty(deletedField.name)) {
-
-                                            if (Object.keys($rootScope.activeFilters[moduleKey]).length > 1)
-                                                delete $rootScope.activeFilters[moduleKey][deletedField.name];
-                                            else
-                                                delete $rootScope.activeFilters[moduleKey];
-                                        }
-
-                                    });
-
-                                    ModuleService.deleteFieldsMappings(deletedFieldsIds);
-                                }
-
-                                if ($scope.editModal)
-                                    $scope.editModal.hide();
-
-                                if (!$scope.redirect)
-                                    $state.go('app.setup.modules');
-                                else
-                                    $state.go('app.moduleForm', {type: $scope.module.name});
-
-                                ngToast.create({
-                                    content: $filter('translate')('Setup.Modules.SaveSuccess'),
-                                    className: 'success'
-                                });
-
-                                if (!$scope.id || $scope.clone)
-                                    getLookupTypes(true);
-
-                                $cache.remove('calendar_events');
-                            });
-                    })
-                    .catch(function onError(data, status) {
-                        if (!$scope.id) {
-                            $scope.saving = false;
-
-                            if ($scope.editModal)
-                                $scope.editModal.hide();
-                        }
-                        else {
-                            LayoutService.getMyAccount(true)
-                                .then(function () {
-                                    if ($scope.editModal)
-                                        $scope.editModal.hide();
-
-                                    $state.go('app.setup.modules');
-                                });
-                        }
-                    });
             }
 
 
