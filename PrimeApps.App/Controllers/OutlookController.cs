@@ -25,159 +25,162 @@ using ModuleHelper = PrimeApps.Model.Helpers.ModuleHelper;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/outlook"), Authorize]
-	public class OutlookController : ApiBaseController
-	{
-		private ISettingRepository _settingRepository;
-		private IModuleRepository _moduleRepository;
-		private IViewRepository _viewRepository;
-		private IProfileRepository _profileRepository;
-		private IPicklistRepository _picklistRepository;
-		private IRecordRepository _recordRepository;
-		private IMenuRepository _menuRepository;
-		private Warehouse _warehouse;
-		private IConfiguration _configuration;
+    [Route("api/outlook"), Authorize]
+    public class OutlookController : ApiBaseController
+    {
+        private ISettingRepository _settingRepository;
+        private IModuleRepository _moduleRepository;
+        private IViewRepository _viewRepository;
+        private IProfileRepository _profileRepository;
+        private IPicklistRepository _picklistRepository;
+        private IRecordRepository _recordRepository;
+        private IMenuRepository _menuRepository;
+        private ITagRepository _tagRepository;
+        private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
-		private IRecordHelper _recordHelper;
-		private IModuleHelper _moduleHelper;
-		public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository, IRecordHelper recordHelper, IModuleHelper moduleHelper, IConfiguration configuration)
-		{
-			_settingRepository = settingRepository;
-			_moduleRepository = moduleRepository;
-			_viewRepository = viewRepository;
-			_profileRepository = profileRepository;
-			_picklistRepository = picklistRepository;
-			_recordRepository = recordRepository;
-			_warehouse = warehouse;
-			_menuRepository = menuRepository;
+        private IRecordHelper _recordHelper;
+        private IModuleHelper _moduleHelper;
 
-			_recordHelper = recordHelper;
-			_moduleHelper = moduleHelper;
-			_configuration = configuration;
-		}
+        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, IMenuRepository menuRepository, ITagRepository tagRepository, Warehouse warehouse, IRecordHelper recordHelper, IModuleHelper moduleHelper, IConfiguration configuration)
+        {
+            _settingRepository = settingRepository;
+            _moduleRepository = moduleRepository;
+            _viewRepository = viewRepository;
+            _profileRepository = profileRepository;
+            _picklistRepository = picklistRepository;
+            _recordRepository = recordRepository;
+            _tagRepository = tagRepository;
+            _menuRepository = menuRepository;
+            _warehouse = warehouse;
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+            _recordHelper = recordHelper;
+            _moduleHelper = moduleHelper;
+            _configuration = configuration;
+        }
 
-			base.OnActionExecuting(context);
-		}
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
 
-		[Route("get_settings"), HttpGet]
-		public async Task<IActionResult> GetSettings()
-		{
-			List<Setting> outlookSettings = null;
-			var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
-			var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
+            base.OnActionExecuting(context);
+        }
 
-			if (outlookModuleSetting != null && outlookEmailFieldSetting != null)
-			{
-				outlookSettings = new List<Setting>
-				{
-					outlookModuleSetting,
-					outlookEmailFieldSetting
-				};
-			}
+        [Route("get_settings"), HttpGet]
+        public async Task<IActionResult> GetSettings()
+        {
+            List<Setting> outlookSettings = null;
+            var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
+            var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
 
-			return Ok(outlookSettings);
-		}
+            if (outlookModuleSetting != null && outlookEmailFieldSetting != null)
+            {
+                outlookSettings = new List<Setting>
+                {
+                    outlookModuleSetting,
+                    outlookEmailFieldSetting
+                };
+            }
 
-		[Route("save_settings"), HttpPost]
-		public async Task<IActionResult> SaveSettings([FromBody]OutlookBindingModel outlookSetting)
-		{
-			var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
-			var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
+            return Ok(outlookSettings);
+        }
 
-			if (outlookModuleSetting == null)
-			{
-				outlookModuleSetting = new Setting();
-				outlookModuleSetting.Type = SettingType.Outlook;
-				outlookModuleSetting.Key = "outlook_module";
-				outlookModuleSetting.Value = outlookSetting.Module;
+        [Route("save_settings"), HttpPost]
+        public async Task<IActionResult> SaveSettings([FromBody]OutlookBindingModel outlookSetting)
+        {
+            var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
+            var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
 
-				var result = await _settingRepository.Create(outlookModuleSetting);
+            if (outlookModuleSetting == null)
+            {
+                outlookModuleSetting = new Setting();
+                outlookModuleSetting.Type = SettingType.Outlook;
+                outlookModuleSetting.Key = "outlook_module";
+                outlookModuleSetting.Value = outlookSetting.Module;
 
-				if (result < 1)
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-			}
-			else
-			{
-				outlookModuleSetting.Value = outlookSetting.Module;
+                var result = await _settingRepository.Create(outlookModuleSetting);
 
-				await _settingRepository.Update(outlookModuleSetting);
-			}
+                if (result < 1)
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            }
+            else
+            {
+                outlookModuleSetting.Value = outlookSetting.Module;
 
-			if (outlookEmailFieldSetting == null)
-			{
-				outlookEmailFieldSetting = new Setting();
-				outlookEmailFieldSetting.Type = SettingType.Outlook;
-				outlookEmailFieldSetting.Key = "outlook_email_field";
-				outlookEmailFieldSetting.Value = outlookSetting.EmailField;
+                await _settingRepository.Update(outlookModuleSetting);
+            }
 
-				var result = await _settingRepository.Create(outlookEmailFieldSetting);
+            if (outlookEmailFieldSetting == null)
+            {
+                outlookEmailFieldSetting = new Setting();
+                outlookEmailFieldSetting.Type = SettingType.Outlook;
+                outlookEmailFieldSetting.Key = "outlook_email_field";
+                outlookEmailFieldSetting.Value = outlookSetting.EmailField;
 
-				if (result < 1)
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-			}
-			else
-			{
-				outlookEmailFieldSetting.Value = outlookSetting.EmailField;
+                var result = await _settingRepository.Create(outlookEmailFieldSetting);
 
-				await _settingRepository.Update(outlookEmailFieldSetting);
-			}
+                if (result < 1)
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            }
+            else
+            {
+                outlookEmailFieldSetting.Value = outlookSetting.EmailField;
 
-			//Save module relation
-			var module = await _moduleRepository.GetByName(outlookSetting.Module);
-			var relation = module.Relations.FirstOrDefault(x => x.RelatedModule == "mails" && !x.Deleted);
+                await _settingRepository.Update(outlookEmailFieldSetting);
+            }
 
-			if (relation == null)
-			{
-				relation = new Relation
-				{
-					ModuleId = module.Id,
-					RelatedModule = "mails",
-					RelationType = RelationType.OneToMany,
-					RelationField = "related_to",
-					LabelEnPlural = "Mail",
-					LabelEnSingular = "Mails",
-					LabelTrPlural = "E-Postalar",
-					LabelTrSingular = "E-Posta",
-					Order = (short)(module.Relations.Count + 1),
-					DisplayFieldsArray = new[] { "subject", "sender", "recipients", "sending_date", "body", "created_at", "state" }
-				};
+            //Save module relation
+            var module = await _moduleRepository.GetByName(outlookSetting.Module);
+            var relation = module.Relations.FirstOrDefault(x => x.RelatedModule == "mails" && !x.Deleted);
 
-				var resultCreate = await _moduleRepository.CreateRelation(relation);
+            if (relation == null)
+            {
+                relation = new Relation
+                {
+                    ModuleId = module.Id,
+                    RelatedModule = "mails",
+                    RelationType = RelationType.OneToMany,
+                    RelationField = "related_to",
+                    LabelEnPlural = "Mail",
+                    LabelEnSingular = "Mails",
+                    LabelTrPlural = "E-Postalar",
+                    LabelTrSingular = "E-Posta",
+                    Order = (short)(module.Relations.Count + 1),
+                    DisplayFieldsArray = new[] {"subject", "sender", "recipients", "sending_date", "body", "created_at", "state"}
+                };
 
-				if (resultCreate < 1)
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.InternalServerError);
-			}
+                var resultCreate = await _moduleRepository.CreateRelation(relation);
 
-			return Ok();
-		}
+                if (resultCreate < 1)
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
 
-		[Route("create_mail_module"), HttpPost]
-		public async Task<IActionResult> CreateMailModule()
-		{
-			var picklist = new PicklistBindingModel { LabelTr = "Mail Yönü", LabelEn = "Mail Direction", Items = new List<PicklistItemBindingModel>() };
-			picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Giden E-posta", LabelEn = "Out", Value = "out", Order = 1 });
-			picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Gelen E-posta", LabelEn = "In", Value = "in", Order = 2 });
+            return Ok();
+        }
 
-			var picklistEntity = PicklistHelper.CreateEntity(picklist);
-			var result = await _picklistRepository.Create(picklistEntity);
+        [Route("create_mail_module"), HttpPost]
+        public async Task<IActionResult> CreateMailModule()
+        {
+            var picklist = new PicklistBindingModel {LabelTr = "Mail Yönü", LabelEn = "Mail Direction", Items = new List<PicklistItemBindingModel>()};
+            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Giden E-posta", LabelEn = "Out", Value = "out", Order = 1});
+            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Gelen E-posta", LabelEn = "In", Value = "in", Order = 2});
 
-			if (result < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            var picklistEntity = PicklistHelper.CreateEntity(picklist);
+            var result = await _picklistRepository.Create(picklistEntity);
 
-			var moduleJson = @"{
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            var moduleJson = @"{
                                 'display': false,
                                 'fields': [
                                     {
@@ -418,7 +421,7 @@ namespace PrimeApps.App.Controllers
                                         'name': 'state',
                                         'order': 13,
                                         'picklist_id':" + picklistEntity.Id + "," +
-									   @"'primary': false,
+                             @"'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 2,
                                         'show_label':true,
@@ -463,238 +466,237 @@ namespace PrimeApps.App.Controllers
                                 'order': 99
                             }";
 
-			var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
-			var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+            var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			//Create module
-			var moduleEntity = _moduleHelper.CreateEntity(module);
-			var resultCreate = await _moduleRepository.Create(moduleEntity);
+            //Create module
+            var moduleEntity = _moduleHelper.CreateEntity(module);
+            var resultCreate = await _moduleRepository.Create(moduleEntity);
 
-			if (resultCreate < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-			//Create default views
-			try
-			{
-				var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
-				var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
+            //Create default views
+            try
+            {
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
+                var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
-				if (resultCreateViewAllRecords < 1)
-				{
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                if (resultCreateViewAllRecords < 1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-				}
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-			//Set warehouse database name
-			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            //Create dynamic table
+            try
+            {
+                var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
 
-			//Create dynamic table
-			try
-			{
-				var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
+                if (resultCreateTable != -1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-				if (resultCreateTable != -1)
-				{
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+            //Create dynamic table indexes
+            try
+            {
+                var resultCreateIndexes = await _moduleRepository.CreateIndexes(moduleEntity);
 
-			//Create dynamic table indexes
-			try
-			{
-				var resultCreateIndexes = await _moduleRepository.CreateIndexes(moduleEntity);
+                if (resultCreateIndexes != -1)
+                {
+                    await _moduleRepository.DeleteTable(moduleEntity);
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteTable(moduleEntity);
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-				if (resultCreateIndexes != -1)
-				{
-					await _moduleRepository.DeleteTable(moduleEntity);
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
+            //Create default permissions for the new module.
+            await _profileRepository.AddModuleAsync(moduleEntity.Id);
+            await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteTable(moduleEntity);
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+            _moduleHelper.AfterCreate(AppUser, moduleEntity);
 
-			//Create default permissions for the new module.
-			await _profileRepository.AddModuleAsync(moduleEntity.Id);
-			await _menuRepository.AddModuleToMenuAsync(moduleEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+        }
 
-			_moduleHelper.AfterCreate(AppUser, moduleEntity);
+        [Route("create"), HttpPost]
+        public async Task<IActionResult> Create([FromBody]JObject mail)
+        {
+            var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
+            var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            if (outlookModuleSetting == null || outlookEmailFieldSetting == null)
+                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "settings_not_found", message = "Outlook settings not found!"});
 
+            var findRequest = new FindRequest
+            {
+                Filters = new List<Filter>
+                {
+                    new Filter
+                    {
+                        Field = outlookEmailFieldSetting.Value,
+                        Operator = Operator.Is,
+                        Value = (string)mail["sender"],
+                        No = 1
+                    },
+                    new Filter
+                    {
+                        Field = outlookEmailFieldSetting.Value,
+                        Operator = Operator.Is,
+                        Value = (string)mail["recipient"],
+                        No = 1
+                    }
+                }
+            };
 
-		}
+            findRequest.LogicType = LogicType.Or;
 
-		[Route("create"), HttpPost]
-		public async Task<IActionResult> Create([FromBody]JObject mail)
-		{
-			var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
-			var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
+            var records = _recordRepository.Find(outlookModuleSetting.Value, findRequest);
 
-			if (outlookModuleSetting == null || outlookEmailFieldSetting == null)
-				return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "settings_not_found", message = "Outlook settings not found!" });
+            if (records.IsNullOrEmpty())
+                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "record_not_found", message = "Record not found!"});
 
-			var findRequest = new FindRequest
-			{
-				Filters = new List<Filter> {new Filter
-				{
-					Field = outlookEmailFieldSetting.Value,
-					Operator = Operator.Is,
-					Value = (string)mail["sender"],
-					No = 1
+            if (records.Count > 1)
+                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "too_many_records", message = "Too many records!"});
 
-				},
-				new Filter
-				{
-					Field = outlookEmailFieldSetting.Value,
-					Operator = Operator.Is,
-					Value = (string)mail["recipient"],
-					No = 1
-				}}
-			};
+            var module = await _moduleRepository.GetByName(outlookModuleSetting.Value);
+            mail["owner"] = AppUser.Id;
+            mail["related_module"] = 900000 + module.Id;
+            mail["related_to"] = records[0]["id"];
 
-			findRequest.LogicType = LogicType.Or;
+            int timezoneOffset = 180;
+            bool? normalize = false;
+            string locale = "";
+            var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
 
-			var records = _recordRepository.Find(outlookModuleSetting.Value, findRequest);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			if (records.IsNullOrEmpty())
-				return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "record_not_found", message = "Record not found!" });
+            var moduleEntity = await _moduleRepository.GetByName(module.Name);
 
-			if (records.Count > 1)
-				return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "too_many_records", message = "Too many records!" });
+            if (moduleEntity == null || mail == null)
+                return BadRequest();
 
-			var module = await _moduleRepository.GetByName(outlookModuleSetting.Value);
-			mail["owner"] = AppUser.Id;
-			mail["related_module"] = 900000 + module.Id;
-			mail["related_to"] = records[0]["id"];
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
 
-			int timezoneOffset = 180; bool? normalize = false; string locale = "";
-			var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+            if (resultBefore < 0 && !ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-			var moduleEntity = await _moduleRepository.GetByName(module.Name);
+            int resultCreate;
 
-			if (moduleEntity == null || mail == null)
-				return BadRequest();
+            try
+            {
+                resultCreate = await _recordRepository.Create(mail, moduleEntity);
 
-			var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
+                // If module is opportunities create stage history
+                if (module.Name == "opportunities")
+                    await _recordHelper.CreateStageHistory(mail);
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
-			if (resultBefore < 0 && !ModelState.IsValid)
-				return BadRequest(ModelState);
+                if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
 
-			//Set warehouse database name
-			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+                if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
-			int resultCreate;
+                throw;
+            }
 
-			try
-			{
-				resultCreate = await _recordRepository.Create(mail, moduleEntity);
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-				// If module is opportunities create stage history
-				if (module.Name == "opportunities")
-					await _recordHelper.CreateStageHistory(mail);
-			}
-			catch (PostgresException ex)
-			{
-				if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-					return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
+            //Check number auto fields and combinations and update record with combined values
+            var numberAutoFields = moduleEntity.Fields.Where(x => x.DataType == DataType.NumberAuto).ToList();
 
-				if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-					return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+            if (numberAutoFields.Count > 0)
+            {
+                var currentRecord = _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
+                var hasUpdate = false;
 
-				if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-					return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                foreach (var numberAutoField in numberAutoFields)
+                {
+                    var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null && (x.Combination.Field1 == numberAutoField.Name || x.Combination.Field2 == numberAutoField.Name)).ToList();
 
-				throw;
-			}
+                    if (combinationFields.Count > 0)
+                    {
+                        foreach (var combinationField in combinationFields)
+                        {
+                            _recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
+                        }
 
-			if (resultCreate < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                        hasUpdate = true;
+                    }
+                }
 
-			//Check number auto fields and combinations and update record with combined values
-			var numberAutoFields = moduleEntity.Fields.Where(x => x.DataType == DataType.NumberAuto).ToList();
+                if (hasUpdate)
+                {
+                    var recordUpdate = new JObject();
+                    recordUpdate["id"] = (int)mail["id"];
 
-			if (numberAutoFields.Count > 0)
-			{
-				var currentRecord = _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
-				var hasUpdate = false;
+                    var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null).ToList();
 
-				foreach (var numberAutoField in numberAutoFields)
-				{
-					var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null && (x.Combination.Field1 == numberAutoField.Name || x.Combination.Field2 == numberAutoField.Name)).ToList();
+                    foreach (var combinationField in combinationFields)
+                    {
+                        recordUpdate[combinationField.Name] = currentRecord[combinationField.Name];
+                    }
 
-					if (combinationFields.Count > 0)
-					{
-						foreach (var combinationField in combinationFields)
-						{
-							_recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
-						}
+                    await _recordRepository.Update(recordUpdate, moduleEntity);
+                }
+            }
 
-						hasUpdate = true;
-					}
-				}
+            //After create
+            _recordHelper.AfterCreate(moduleEntity, mail, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
 
-				if (hasUpdate)
-				{
-					var recordUpdate = new JObject();
-					recordUpdate["id"] = (int)mail["id"];
+            //Format records if has locale
+            if (!string.IsNullOrWhiteSpace(locale))
+            {
+                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
+                var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+                mail = _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
+                mail = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, mail, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
-					var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null).ToList();
+                if (normalize.HasValue && normalize.Value)
+                    mail = Model.Helpers.RecordHelper.NormalizeRecordValues(mail);
+            }
 
-					foreach (var combinationField in combinationFields)
-					{
-						recordUpdate[combinationField.Name] = currentRecord[combinationField.Name];
-					}
-
-					await _recordRepository.Update(recordUpdate, moduleEntity);
-				}
-			}
-
-			//After create
-			_recordHelper.AfterCreate(moduleEntity, mail, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
-
-			//Format records if has locale
-			if (!string.IsNullOrWhiteSpace(locale))
-			{
-				ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
-				var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-				mail = _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
-				mail = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, mail, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
-
-				if (normalize.HasValue && normalize.Value)
-					mail = Model.Helpers.RecordHelper.NormalizeRecordValues(mail);
-			}
-
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + mail["id"], mail);
-
-		}
-	}
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + mail["id"], mail);
+        }
+    }
 }

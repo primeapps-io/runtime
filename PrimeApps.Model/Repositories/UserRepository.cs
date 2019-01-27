@@ -21,7 +21,9 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
@@ -44,7 +46,6 @@ namespace PrimeApps.Model.Repositories
             //    if (_warehouse != null && _warehouse.DatabaseName != "0")
             //        BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser, user.Culture.Contains("tr") ? "tr" : "en"));
             //}
-
         }
 
         /// <summary>
@@ -73,64 +74,64 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<UserInfo> GetUserInfoAsync(int userId)
+        public async Task<UserInfo> GetUserInfoAsync(int userId, bool isActive = true)
         {
-            var userInfo = await DbContext.Users.Where(x => x.Id == userId && x.IsActive == true)
-                           .Include(x => x.Profile)
-                           .Include(x => x.Role)
-                           .Include(x => x.Groups)
-                           .ThenInclude(x => x.User)
-                           .Select(user => new UserInfo()
-                           {
-                               picture = user.Picture,
-                               email = user.Email,
-                               firstName = user.FirstName,
-                               lastName = user.LastName,
-                               fullName = user.FullName,
-                               phone = user.Phone,
-                               ID = user.Id,
-                               currency = user.Currency,
-                               createdAt = user.CreatedAt,
-                               profile = new ProfileDTO()
-                               {
-                                   ID = user.Profile.Id,
-                                   Description = user.Profile.Description,
-                                   Name = user.Profile.Name,
-                                   HasAdminRights = user.Profile.HasAdminRights,
-                                   IsPersistent = user.Profile.IsPersistent,
-                                   SendSMS = user.Profile.SendSMS,
-                                   SendEmail = user.Profile.SendEmail,
-                                   ExportData = user.Profile.ExportData,
-                                   ImportData = user.Profile.ImportData,
-                                   WordPdfDownload = user.Profile.WordPdfDownload,
-                                   LeadConvert = user.Profile.LeadConvert,
-                                   DocumentSearch = user.Profile.DocumentSearch,
-                                   Tasks = user.Profile.Tasks,
-                                   Calendar = user.Profile.Calendar,
-                                   Newsfeed = user.Profile.Newsfeed,
-                                   Report = user.Profile.Report,
-                                   Dashboard = user.Profile.Dashboard,
-                                   Home = user.Profile.Home,
-                                   CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
-                                   StartPage = user.Profile.StartPage,
-                                   Permissions = user.Profile.Permissions.Select(pm => new ProfilePermissionDTO()
-                                   {
-                                       ID = pm.Id,
-                                       ModuleId = pm.ModuleId,
-                                       Write = pm.Write,
-                                       Read = pm.Read,
-                                       Remove = pm.Remove,
-                                       Modify = pm.Modify,
-                                       Type = (int)pm.Type
-                                   })
-                               },
-                               role = new RoleInfo()
-                               {
-                                   RoleId = user.Role.Id,
-                                   UserId = user.Id
-                               },
-                               groups = user.Groups.Select(x => x.UserGroupId).ToList()
-                           }).SingleOrDefaultAsync();
+            var userInfo = await DbContext.Users.Where(x => x.Id == userId && x.IsActive == isActive)
+                .Include(x => x.Profile)
+                .Include(x => x.Role)
+                .Include(x => x.Groups)
+                .ThenInclude(x => x.User)
+                .Select(user => new UserInfo()
+                {
+                    picture = user.Picture,
+                    email = user.Email,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    fullName = user.FullName,
+                    phone = user.Phone,
+                    ID = user.Id,
+                    currency = user.Currency,
+                    createdAt = user.CreatedAt,
+                    profile = new ProfileDTO()
+                    {
+                        ID = user.Profile.Id,
+                        Description = user.Profile.Description,
+                        Name = user.Profile.Name,
+                        HasAdminRights = user.Profile.HasAdminRights,
+                        IsPersistent = user.Profile.IsPersistent,
+                        SendSMS = user.Profile.SendSMS,
+                        SendEmail = user.Profile.SendEmail,
+                        ExportData = user.Profile.ExportData,
+                        ImportData = user.Profile.ImportData,
+                        WordPdfDownload = user.Profile.WordPdfDownload,
+                        LeadConvert = user.Profile.LeadConvert,
+                        DocumentSearch = user.Profile.DocumentSearch,
+                        Tasks = user.Profile.Tasks,
+                        Calendar = user.Profile.Calendar,
+                        Newsfeed = user.Profile.Newsfeed,
+                        Report = user.Profile.Report,
+                        Dashboard = user.Profile.Dashboard,
+                        Home = user.Profile.Home,
+                        CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
+                        StartPage = user.Profile.StartPage,
+                        Permissions = user.Profile.Permissions.Select(pm => new ProfilePermissionDTO()
+                        {
+                            ID = pm.Id,
+                            ModuleId = pm.ModuleId,
+                            Write = pm.Write,
+                            Read = pm.Read,
+                            Remove = pm.Remove,
+                            Modify = pm.Modify,
+                            Type = (int)pm.Type
+                        })
+                    },
+                    role = new RoleInfo()
+                    {
+                        RoleId = user.Role.Id,
+                        UserId = user.Id
+                    },
+                    groups = user.Groups.Select(x => x.UserGroupId).ToList()
+                }).SingleOrDefaultAsync();
 
             //return account object.
             return userInfo;
@@ -235,6 +236,5 @@ namespace PrimeApps.Model.Repositories
             DbContext.Users.Remove(user);
             return await DbContext.SaveChangesAsync();
         }
-
     }
 }

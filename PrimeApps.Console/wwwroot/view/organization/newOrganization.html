@@ -2,7 +2,7 @@
     <form name="organizationForm" class="form-horizontal form-custom" ng-submit="saveOrganization(organizationForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">New Organization</h4>
+                <h4 class="modal-title">Create New Organization</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -26,17 +26,27 @@
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
+                                <div class="form-group" ng-class="{'has-error': organizationForm.$submitted && organizationForm.label.$invalid}">
+                                    <label class="col-sm-6 required-field">Organization Name <span class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           maxlength="200"
+                                           focus="true"
+                                           ng-change="generateOrganizationShortName($parent.$parent.organization)"
+                                           ng-model="$parent.$parent.organization.label">
+                                </div>
                                 <div class="form-group" style="position: relative;" ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                                    <label class="col-sm-6 required-field">*Organization Shortname: </label>
+                                    <label class="col-sm-6 required-field">Organization Identifier <span class="required-label">(required)</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-8 text-lowercase"
                                            required
                                            maxlength="50"
-                                           focus="true"
                                            ng-trim="false"
                                            ng-blur="organizationShortnameBlur($parent.$parent.organization)"
-                                           ng-change="checkOrganizationShortname($parent.$parent.organization)"
+                                           ng-change="checkOrganizationShortname($parent.$parent.organization); $parent.$parent.isOrganizationShortNameChanged = true;"
                                            ng-model="$parent.$parent.organization.name">
                                     <div ng-if="$parent.$parent.organizationShortnameChecking">
                                         <i class="fa fa-spinner fa-spin" style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
@@ -48,18 +58,17 @@
                                         <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;" class="fas fa-times"></i>
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': organizationForm.$submitted && organizationForm.label.$invalid}">
-                                    <label class="col-sm-6 required-field">*Organization Label: </label>
-                                    <input type="text"
-                                           name="label"
-                                           class="form-control ng-animate-disabled col-sm-8"
-                                           required
-                                           maxlength="200"
-                                           ng-model="$parent.$parent.organization.label">
-                                </div>
                                 <div class="form-group" ng-class="{'has-error': organizationForm.$submitted && organizationForm.icon.$invalid}">
-                                    <label class="col-sm-4 required-field">*Organization Icon: </label>
-                                    <input class="form-control ng-animate-disabled col-sm-8" type="file" name="icon" required nv-file-select="" uploader="uploader" />
+                                    <label class="col-sm-4 required-field">Organization Logo</label>
+                                    <div ng-show="uploader.isHTML5" class="col-sm-12 file-uploader">
+                                        <div nv-file-drop="" nv-file-over="" uploader="uploader" over-class="uploader-over" nv-file-select class="uploader-area drop-zone" style="float: right;">
+                                            <div class="">
+                                                <i class="fas fa-cloud-download-alt"></i>
+                                                <span>Choose a file or drag it here</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>
                                 </div>
                             </div>
                         </div>

@@ -43,7 +43,7 @@ namespace PrimeApps.App.Bpm.Steps
                 throw new NullReferenceException();
 
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+            var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode};
 
             var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
 
@@ -74,9 +74,11 @@ namespace PrimeApps.App.Bpm.Steps
                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                     using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
                     using (var _profileRepository = new ProfileRepository(databaseContext, _configuration))
+                    using (var _tagRepository = new TagRepository(databaseContext, _configuration))
+                    using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                     using (var _recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, _currentUser))
                     {
-                        _moduleRepository.CurrentUser = _picklistRepository.CurrentUser = _profileRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                        _moduleRepository.CurrentUser = _picklistRepository.CurrentUser = _profileRepository.CurrentUser = _recordRepository.CurrentUser = _tagRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
 
                         var data = JObject.FromObject(context.Workflow.Data);
 
@@ -138,7 +140,7 @@ namespace PrimeApps.App.Bpm.Steps
                         task["created_by"] = createTask["created_by_id"];
 
                         var modelState = new ModelStateDictionary();
-                        var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.Language, _moduleRepository, _picklistRepository, _profileRepository, appUser: appUser);
+                        var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.Language, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: appUser);
 
                         if (resultBefore < 0 && !modelState.IsValid)
                         {
@@ -153,7 +155,6 @@ namespace PrimeApps.App.Bpm.Steps
                         }
 
                         _recordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
-
                     }
                 }
             }

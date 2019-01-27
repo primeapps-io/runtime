@@ -25,19 +25,11 @@ namespace PrimeApps.Console.Controllers
             }
         }
 
-        public void SetCurrentUser(IRepositoryBaseTenant repository)
-        {
-            if (AppUser != null)
-            {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
-            }
-        }
-
         public void SetCurrentUser(IRepositoryBaseTenant repository, string previewMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                repository.CurrentUser = new CurrentUser {UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
             }
         }
 
@@ -45,7 +37,7 @@ namespace PrimeApps.Console.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id };
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id};
             }
         }
 
@@ -53,7 +45,7 @@ namespace PrimeApps.Console.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id };
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id};
             }
         }
 
@@ -83,7 +75,7 @@ namespace PrimeApps.Console.Controllers
             var email = HttpContext.User.FindFirst("email")?.Value;
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+            platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
 
             var platformUser = platformUserRepository.GetByEmail(email);
 

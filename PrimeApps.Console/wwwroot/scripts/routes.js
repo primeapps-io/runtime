@@ -1,4 +1,5 @@
-﻿﻿'use strict';
+﻿'use strict';
+
 angular.module('primeapps')
 
     .config(['$stateProvider', '$urlRouterProvider',
@@ -49,7 +50,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.apps', {
-                    url: 'apps?:organizationId',
+                    url: 'apps?:orgId',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/apps/apps.html',
@@ -71,7 +72,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.appsForm', {
-                    url: 'appForm?:organizationId',
+                    url: 'appForm?:orgId',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/appform/appForm.html',

@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task CreateAsync(TenantUser user);
         Task<ICollection<TenantUser>> GetAllAsync();
         Task<ICollection<TenantUser>> GetAllAsync(int take, int startFrom, int count);
-        Task<UserInfo> GetUserInfoAsync(int userId);
+        Task<UserInfo> GetUserInfoAsync(int userId, bool isActive = true);
         Task UpdateAsync(TenantUser usr);
         Task<TenantUser> GetById(int userId);
         TenantUser GetByIdSync(int userId);

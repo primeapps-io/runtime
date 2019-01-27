@@ -179,7 +179,7 @@ angular.module('primeapps')
         currency: {
             name: 'currency',
             label: {
-                en: 'Currency',
+                en: 'Money',
                 tr: 'Para'
             },
             operators: [

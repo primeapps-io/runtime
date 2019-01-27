@@ -30,7 +30,7 @@
                                                 required
                                                 ng-model="currentDependency.module"
                                                 ng-change="moduleChanged()"
-                                                ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' | filter:{display:true} track by o.name">
+                                                ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>

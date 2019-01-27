@@ -46,12 +46,13 @@ namespace PrimeApps.App.Helpers
         public ProcessHelper(IWorkflowHelper workflowHelper, ICalculationHelper calculationHelper, IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             _context = context;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _configuration = configuration;
             _workflowHelper = workflowHelper;
             _serviceScopeFactory = serviceScopeFactory;
             _calculationHelper = calculationHelper;
         }
+
         public ProcessHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
         {
             _configuration = configuration;
@@ -61,6 +62,7 @@ namespace PrimeApps.App.Helpers
             _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
         }
+
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
@@ -83,7 +85,6 @@ namespace PrimeApps.App.Helpers
 
                     if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected) || (operationType == OperationType.update && requestInsert != null && requestInsert.Status != Model.Enums.ProcessStatus.Rejected))
                         return;
-
 
 
                     var processes = await _processRepository.GetAll(module.Id, appUser.Id, true);
@@ -197,6 +198,7 @@ namespace PrimeApps.App.Helpers
                                                     mismatchedCount++;
                                             }
                                         }
+
                                         break;
                                     case Operator.NotContain:
                                         if (!(fieldValueString.Contains("|") || filterValueString.Contains("|")))
@@ -215,6 +217,7 @@ namespace PrimeApps.App.Helpers
                                                     mismatchedCount++;
                                             }
                                         }
+
                                         break;
                                     case Operator.StartsWith:
                                         if (!fieldValueString.Trim().ToLower(culture).StartsWith(filterValueString.Trim().ToLower(culture)))
@@ -312,7 +315,6 @@ namespace PrimeApps.App.Helpers
                                     approverModule = process.Module;
                                 else
                                 {
-
                                     approverModule = await _moduleRepository.GetByNameBasic(approverField.LookupType);
                                 }
 
@@ -321,7 +323,6 @@ namespace PrimeApps.App.Helpers
 
                                 if (approverLookupField.LookupType != "users")
                                 {
-
                                     approverLookupModule = await _moduleRepository.GetByNameBasic(approverLookupField.LookupType);
                                 }
 
@@ -479,7 +480,6 @@ namespace PrimeApps.App.Helpers
                                     emailData.Add("ExtraLeave", "The request form for leave of absence relating to employee" + " " + (string)record["calisan.ad_soyad"] + " " + "with the details below is submitted for your approval as the manager.");
                                 }
                             }
-
                         }
                         else
                         {
@@ -503,7 +503,6 @@ namespace PrimeApps.App.Helpers
                         }
                         else if (operationType == OperationType.delete)
                         {
-
                         }
 
                         var processRequest = new ProcessRequest
@@ -554,9 +553,7 @@ namespace PrimeApps.App.Helpers
                         {
                             ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
                         }
-
                     }
-
                 }
             }
         }
@@ -679,6 +676,7 @@ namespace PrimeApps.App.Helpers
                         if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
                             fieldCount++;
                     }
+
                     if (fieldCount == 4)
                         hasProcessFields = true;
 
@@ -688,10 +686,10 @@ namespace PrimeApps.App.Helpers
                         var picklistResult = await _picklistRepository.GetPicklistByLabelEn("Process Status List");
                         if (picklistResult == null)
                         {
-                            var picklist = new PicklistBindingModel { LabelTr = "Onay Durum Listesi", LabelEn = "Process Status List", Items = new List<PicklistItemBindingModel>() };
-                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Onay Bekliyor", LabelEn = "Waiting For Approval", Value = "waiting_for_approval", Order = 1 });
-                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Onaylandı", LabelEn = "Approved", Value = "approved", Order = 2 });
-                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Reddedildi", LabelEn = "Rejected", Value = "rejected", Order = 3 });
+                            var picklist = new PicklistBindingModel {LabelTr = "Onay Durum Listesi", LabelEn = "Process Status List", Items = new List<PicklistItemBindingModel>()};
+                            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Onay Bekliyor", LabelEn = "Waiting For Approval", Value = "waiting_for_approval", Order = 1});
+                            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Onaylandı", LabelEn = "Approved", Value = "approved", Order = 2});
+                            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Reddedildi", LabelEn = "Rejected", Value = "rejected", Order = 3});
 
                             var picklistEntity = PicklistHelper.CreateEntity(picklist);
                             var result = await picklistRepository.Create(picklistEntity);
@@ -701,6 +699,7 @@ namespace PrimeApps.App.Helpers
                         {
                             picklistId = picklistResult.Id;
                         }
+
                         var moduleChanges = new ModuleChanges();
                         var section = module.Fields.Where(x => x.Name == "created_by").FirstOrDefault().Section;
 
@@ -818,7 +817,6 @@ namespace PrimeApps.App.Helpers
                     return process;
                 }
             }
-
         }
 
         public async Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage)
@@ -921,7 +919,6 @@ namespace PrimeApps.App.Helpers
 
                             process.Approvers.Add(processApprover);
                         }
-
                     }
                 }
             }
@@ -1058,13 +1055,13 @@ namespace PrimeApps.App.Helpers
                         string url = "";
                         if (process.Module.Name == "timetrackers")
                         {
-                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                            var findTimetracker = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                             var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker)[0];
                             url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                         }
                         else if (process.Module.Name == "masraflar" && !oldExpense)
                         {
-                            var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                            var findExpense = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                             var expenseRecord = _recordRepository.Find("masraflar", findExpense)[0];
                             url = domain + "#/app/crm/expense?id=" + (int)expenseRecord["id"];
                         }
@@ -1109,13 +1106,10 @@ namespace PrimeApps.App.Helpers
                         }
                         else if (request.OperationType == OperationType.delete)
                         {
-
                         }
-
                     }
                     else
                     {
-
                         if (request.OperationType == OperationType.delete)
                         {
                             record = _recordRepository.GetById(process.Module, request.RecordId, !appUser.HasAdminProfile);
@@ -1145,6 +1139,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
                         }
+
                         if (!record["custom_approver_" + processOrder].IsNullOrEmpty())
                         {
                             request.ProcessStatusOrder++;
@@ -1188,13 +1183,13 @@ namespace PrimeApps.App.Helpers
                             string url = "";
                             if (process.Module.Name == "timetrackers")
                             {
-                                var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                var findTimetracker = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                                 var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker)[0];
                                 url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                             }
                             else if (process.Module.Name == "masraflar" && !oldExpense)
                             {
-                                var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                var findExpense = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                                 var expenseRecord = _recordRepository.Find("masraflar", findExpense)[0];
                                 url = domain + "#/app/crm/expense?user=" + (int)expenseRecord["created_by.id"] + "&id=" + (int)expenseRecord["id"];
                             }
@@ -1238,7 +1233,6 @@ namespace PrimeApps.App.Helpers
                             }
                             else if (request.OperationType == OperationType.delete)
                             {
-
                             }
                         }
                         else
@@ -1283,13 +1277,13 @@ namespace PrimeApps.App.Helpers
                             string url = "";
                             if (process.Module.Name == "timetrackers")
                             {
-                                var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                var findTimetracker = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                                 var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
                                 url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
                             else if (process.Module.Name == "masraflar" && !oldExpense)
                             {
-                                var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                var findExpense = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                                 var expenseRecord = _recordRepository.Find("masraflar", findExpense);
                                 url = domain + "#/app/crm/expense?user=" + (int)expenseRecord.First()["created_by"] + "&id=" + (int)expenseRecord.First()["id"];
                             }
@@ -1447,13 +1441,13 @@ namespace PrimeApps.App.Helpers
                     string url = "";
                     if (process.Module.Name == "timetrackers")
                     {
-                        var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                        var findTimetracker = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                         var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
                         url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                     }
                     else if (process.Module.Name == "masraflar" && !oldExpense)
                     {
-                        var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                        var findExpense = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                         var expenseRecord = _recordRepository.Find("masraflar", findExpense);
                         url = domain + "#/app/crm/expense?user=" + (int)expenseRecord.First()["created_by"] + "&id=" + (int)expenseRecord.First()["id"];
                     }
@@ -1498,7 +1492,6 @@ namespace PrimeApps.App.Helpers
 
         public async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
-
             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -1512,7 +1505,6 @@ namespace PrimeApps.App.Helpers
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-
                     var oldExpense = false;
 
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
@@ -1557,7 +1549,6 @@ namespace PrimeApps.App.Helpers
                         record = _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                         var approverMail = (string)record["custom_approver"];
                         user = await _userRepository.GetByEmail(approverMail);
-
                     }
 
                     //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
@@ -1627,14 +1618,14 @@ namespace PrimeApps.App.Helpers
                     {
                         using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                         {
-                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                            var findTimetracker = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                             var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
                             url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                         }
                     }
                     else if (process.Module.Name == "masraflar" && !oldExpense)
                     {
-                        var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                        var findExpense = new FindRequest {Filters = new List<Filter> {new Filter {Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1}}, Limit = 9999};
                         var expenseRecord = _recordRepository.Find("masraflar", findExpense);
                         url = domain + "#/app/crm/expense?user=" + (int)expenseRecord.First()["created_by"] + "&id=" + (int)expenseRecord.First()["id"];
                     }
@@ -1676,8 +1667,8 @@ namespace PrimeApps.App.Helpers
                     }
                     else if (request.OperationType == OperationType.delete)
                     {
-
                     }
+
                     if (process.Module.Name == "izinler")
                         await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
                 }
@@ -1797,12 +1788,23 @@ namespace PrimeApps.App.Helpers
         [Serializable]
         public class ProcessFilterNotMatchException : Exception
         {
-            public ProcessFilterNotMatchException() { }
-            public ProcessFilterNotMatchException(string message) : base(message) { }
-            public ProcessFilterNotMatchException(string message, Exception inner) : base(message, inner) { }
+            public ProcessFilterNotMatchException()
+            {
+            }
+
+            public ProcessFilterNotMatchException(string message) : base(message)
+            {
+            }
+
+            public ProcessFilterNotMatchException(string message, Exception inner) : base(message, inner)
+            {
+            }
+
             protected ProcessFilterNotMatchException(
                 System.Runtime.Serialization.SerializationInfo info,
-                System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+                System.Runtime.Serialization.StreamingContext context) : base(info, context)
+            {
+            }
         }
     }
 }

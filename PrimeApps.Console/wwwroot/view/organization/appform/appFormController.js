@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.nameValid = null;
             $scope.nameBlur = false;
 
-            $rootScope.currentOrgId = parseInt($stateParams.organizationId);
+            $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
             if (!$rootScope.currentOrgId && $rootScope.organizations) {
                 $state.go('studio.allApps');
@@ -19,10 +19,10 @@ angular.module('primeapps')
 
 
             $rootScope.breadcrumblist[0] = {
-                title: $rootScope.currentOrganization.name,
-                link: '#/apps?organizationId=' + $rootScope.currentOrgId
+                title: $rootScope.currentOrganization.label,
+                link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = {title: "App Form"};
+            $rootScope.breadcrumblist[1] = {title: "Create App"};
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
@@ -144,6 +144,13 @@ angular.module('primeapps')
                         $scope.nameValid = false;
                         $scope.nameChecking = false;
                     });
+            };
+
+            $scope.generateAppName = function () {
+                if (!$scope.appModel || !$scope.appModel.label || $scope.isAppNameChanged)
+                    return;
+
+                $scope.appModel.name = helper.getSlug($scope.appModel.label, '-');
             };
 
             $scope.save = function (newAppForm) {

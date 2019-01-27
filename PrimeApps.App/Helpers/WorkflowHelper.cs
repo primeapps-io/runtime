@@ -26,7 +26,6 @@ using System.Web;
 
 namespace PrimeApps.App.Helpers
 {
-
     public interface IWorkflowHelper
     {
         Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord = null);
@@ -46,7 +45,7 @@ namespace PrimeApps.App.Helpers
         public WorkflowHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration)
         {
             _context = context;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
         }
@@ -57,7 +56,6 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
 
             _currentUser = currentUser;
-
         }
 
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
@@ -77,9 +75,10 @@ namespace PrimeApps.App.Helpers
                 using (var _profileRepository = new ProfileRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                using (var _tagRepository = new TagRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
+                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
@@ -124,7 +123,6 @@ namespace PrimeApps.App.Helpers
                                         {
                                             if (((int)record[workflow.ChangedField + ".id"] == (int)previousRecord[workflow.ChangedField]))
                                                 continue;
-
                                         }
                                         else if (record[workflow.ChangedField + ".id"].IsNullOrEmpty() && previousRecord[workflow.ChangedField].IsNullOrEmpty())
                                         {
@@ -142,9 +140,7 @@ namespace PrimeApps.App.Helpers
                                         {
                                             continue;
                                         }
-
                                     }
-
                                 }
                                 else
                                 {
@@ -152,7 +148,6 @@ namespace PrimeApps.App.Helpers
                                         continue;
                                 }
                             }
-
                         }
 
                         lookupModuleNames = new List<string>();
@@ -265,6 +260,7 @@ namespace PrimeApps.App.Helpers
                                             if (fieldValueNumber != filterValueNumber)
                                                 mismatchedCount++;
                                         }
+
                                         break;
                                     case Operator.NotEqual:
                                         if (fieldValueBoolenParsed && filterValueBoolenParsed)
@@ -277,6 +273,7 @@ namespace PrimeApps.App.Helpers
                                             if (fieldValueNumber == filterValueNumber)
                                                 mismatchedCount++;
                                         }
+
                                         break;
                                     case Operator.Contains:
                                         if (!(fieldValueString.Contains("|") || filterValueString.Contains("|")))
@@ -295,6 +292,7 @@ namespace PrimeApps.App.Helpers
                                                     mismatchedCount++;
                                             }
                                         }
+
                                         break;
                                     case Operator.NotContain:
                                         if (!(fieldValueString.Contains("|") || filterValueString.Contains("|")))
@@ -313,6 +311,7 @@ namespace PrimeApps.App.Helpers
                                                     mismatchedCount++;
                                             }
                                         }
+
                                         break;
                                     case Operator.StartsWith:
                                         if (!fieldValueString.Trim().ToLower(culture).StartsWith(filterValueString.Trim().ToLower(culture)))
@@ -352,6 +351,7 @@ namespace PrimeApps.App.Helpers
                                         {
                                             mismatchedCount++;
                                         }
+
                                         break;
                                     case Operator.GreaterEqual:
                                         if (filterField.DataType == DataType.Date)
@@ -399,6 +399,7 @@ namespace PrimeApps.App.Helpers
                                         {
                                             mismatchedCount++;
                                         }
+
                                         break;
                                     case Operator.LessEqual:
                                         if (filterField.DataType == DataType.Date)
@@ -453,7 +454,6 @@ namespace PrimeApps.App.Helpers
                                 }
                                 else
                                 {
-
                                     if (firstModule == module.Name && firstModule != secondModule)
                                     {
                                         type = 2;
@@ -490,7 +490,6 @@ namespace PrimeApps.App.Helpers
 
                                         fieldUpdateRecords.Add(secondModuleName, (int)record[secondModule + ".id"]);
                                     }
-
                                 }
                             }
                             else
@@ -567,7 +566,6 @@ namespace PrimeApps.App.Helpers
                                             else
                                                 recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value];
                                         }
-
                                     }
 
                                     else if (type == 3 || type == 4)
@@ -575,9 +573,8 @@ namespace PrimeApps.App.Helpers
                                 }
 
 
-
                                 var modelState = new ModelStateDictionary();
-                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                 if (resultBefore < 0 && !modelState.IsValid)
                                 {
@@ -590,7 +587,6 @@ namespace PrimeApps.App.Helpers
 
                                 try
                                 {
-
                                     var resultUpdate = await _recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
 
                                     if (resultUpdate < 1)
@@ -662,7 +658,7 @@ namespace PrimeApps.App.Helpers
                             task["created_by"] = workflow.CreatedById;
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: appUser);
+                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {
@@ -781,7 +777,7 @@ namespace PrimeApps.App.Helpers
                                             {
                                                 var query = String.Join("&",
                                                     jsonData.Children().Cast<JProperty>()
-                                                    .Select(jp => jp.Name + "=" + HttpUtility.UrlEncode(jp.Value.ToString())));
+                                                        .Select(jp => jp.Name + "=" + HttpUtility.UrlEncode(jp.Value.ToString())));
 
                                                 await client.GetAsync(webHook.CallbackUrl + "?" + query);
                                             }
@@ -789,6 +785,7 @@ namespace PrimeApps.App.Helpers
                                             {
                                                 await client.GetAsync(webHook.CallbackUrl);
                                             }
+
                                             break;
                                     }
                                 }
@@ -863,14 +860,14 @@ namespace PrimeApps.App.Helpers
 
                             //domain = "http://localhost:5554/";
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
-							{
-								var app = await _appRepository.Get(appUser.AppId);
-								if (app != null)
-								{
-									domain = "http://" + app.Setting.AppDomain + "/";
-								}
-							}
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "http://" + app.Setting.AppDomain + "/";
+                                }
+                            }
 
                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
@@ -910,15 +907,14 @@ namespace PrimeApps.App.Helpers
                                         recipient = (string)record[recipient];
                                     }
                                 }
-                                email.AddRecipient(recipient);
 
+                                email.AddRecipient(recipient);
                             }
 
                             if (sendNotification.Schedule.HasValue)
                                 email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
                             email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
-
                         }
 
                         var workflowLog = new WorkflowLog
@@ -939,7 +935,6 @@ namespace PrimeApps.App.Helpers
                         {
                             ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
                         }
-
                     }
                 }
             }
@@ -1033,7 +1028,6 @@ namespace PrimeApps.App.Helpers
 
                                 else if (field.DataType == DataType.Tag)
                                 {
-
                                 }
                             }
 
@@ -1207,16 +1201,18 @@ namespace PrimeApps.App.Helpers
                             workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
                         else
                         {
-                            string[] emptyCC = new string[] { "" };
+                            string[] emptyCC = new string[] {""};
                             workflow.SendNotification.CCArray = emptyCC;
                         }
+
                         if (workflowModel.Actions.SendNotification.Bcc.Length > 0)
                             workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
                         else
                         {
-                            string[] emptyBcc = new string[] { "" };
+                            string[] emptyBcc = new string[] {""};
                             workflow.SendNotification.BccArray = emptyBcc;
                         }
+
                         //Bcc ve Cc silinip güncellendiğinde boş setlemiyordu.
                         //workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
                         //workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
@@ -1269,7 +1265,6 @@ namespace PrimeApps.App.Helpers
                         workflow.WebHook.CallbackUrl = workflowModel.Actions.WebHook.CallbackUrl;
                         workflow.WebHook.MethodType = workflowModel.Actions.WebHook.MethodType;
                         workflow.WebHook.Parameters = workflowModel.Actions.WebHook.Parameters;
-
                     }
                     else
                     {

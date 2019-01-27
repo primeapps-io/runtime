@@ -36,7 +36,10 @@ namespace PrimeApps.App.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                if (previewMode == "app")
+                    repository.CurrentUser = new CurrentUser {UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
+                else
+                    repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
             }
         }
 
@@ -50,7 +53,7 @@ namespace PrimeApps.App.Controllers
 
         private UserItem GetUser()
         {
-            var platformUser = (PlatformUser) HttpContext.Items["user"];
+            var platformUser = (PlatformUser)HttpContext.Items["user"];
             var tenant = platformUser.TenantsAsUser.Single().Tenant;
 
             var appUser = new UserItem
@@ -96,17 +99,17 @@ namespace PrimeApps.App.Controllers
 
             //if (tenantUser == null)
             //{
-                var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
-                tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
+            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode};
 
-               var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
+            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-               //cacheHelper.Set(cacheKeyTenantUser, tenantUser);
+            //cacheHelper.Set(cacheKeyTenantUser, tenantUser);
             //}
 
             appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
             appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
-            appUser.HasAdminProfile = previewMode == "app" ? true : tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
+            appUser.HasAdminProfile = previewMode == "app" || tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
             if (previewMode != "app" && tenant.License?.AnalyticsLicenseCount > 0)
             {
@@ -115,13 +118,13 @@ namespace PrimeApps.App.Controllers
 
                 //if (platformWarehouse == null)
                 //{
-                  //var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                  // var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+                //var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                // var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
-                    //cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
+                //cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
                 //}
 
-               // appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
+                // appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
             }
             else
             {

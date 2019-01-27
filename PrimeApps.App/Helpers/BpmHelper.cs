@@ -54,7 +54,7 @@ namespace PrimeApps.App.Helpers
 			_definitionLoader = definitionLoader;
 
 			_context = context;
-			_currentUser = UserHelper.GetCurrentUser(_context);
+			_currentUser = UserHelper.GetCurrentUser(_context, configuration);
 			_serviceScopeFactory = serviceScopeFactory;
 			_configuration = configuration;
 		}
