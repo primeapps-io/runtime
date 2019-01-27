@@ -58,7 +58,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             LayoutService.getPreviewToken()
                 .then(function (response) {
                     $scope.previewActivating = false;
-                    $window.open('http://localhost:5001?preview=' + encodeURIComponent(response.data), '_blank');
+                    $window.open(config.appUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
                 })
                 .catch(function (response) {
                     $scope.previewActivating = false;

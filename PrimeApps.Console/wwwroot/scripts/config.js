@@ -3,7 +3,8 @@
 angular.module('primeapps')
 
     .constant('config', {
-        apiUrl: 'http://localhost:5005/api/',
+        apiUrl: 'api/',
+        appUrl: 'http://localhost:5001',
         clientId: '00000000000000000000000000000000',
         planIdMembers: '7673E999-18FB-497F-A958-84DCA43031CC',
         planIdUsers: 'F89E4FBF-A50F-40BA-BBEC-FE027F3F1524'
