@@ -696,8 +696,11 @@ button:focus, select:focus {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 0px;
+  margin: 0px;
   padding-right: 20px;
   height: 80px;
+  list-style-type: none;
 }
 .primeapps .navbar {
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
@@ -1795,7 +1798,7 @@ button:focus, select:focus {
   display: none;
 }
 .primeapps #wrapper .setup-layout {
-  padding-top: 100px;
+  padding-top: 80px;
   margin-bottom: 50px;
 }
 .primeapps #wrapper .setup-layout .app-menu2 {
@@ -2377,6 +2380,30 @@ button:focus, select:focus {
 }
 .primeapps .colourfullx > div:nth-child(4n+4) .templatebox span:before {
   background: #E08340;
+}
+.primeapps .flex-betweenx {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
+  background-color: #ffffff !important;
+  padding: 10px 20px;
+}
+.primeapps .flex-betweenx > ul {
+  margin: 0px;
+  padding: 5px;
+  list-style-type: none;
+}
+.primeapps .flex-betweenx > ul li {
+  display: inline-block;
+}
+.primeapps .flex-betweenx > ul li .rigth-oval-toolbar-item {
+  margin-left: 5px;
+}
+@media (max-width: 767.98px) {
+  .primeapps .flex-betweenx {
+    display: block;
+  }
 }
 
 .placeholder {

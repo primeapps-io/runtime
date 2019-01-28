@@ -1,16 +1,13 @@
 <div id="wrapper" ng-class="toggleClass">
     <div id="navbar-wrapper" ng-class="toggleClass">
-        <nav class="navbar navbar-upper">
-            <div class="navbar-header top-header">
-                <ul class="breadcrumb">
-                    <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
-                        <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
-                        <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
-                    <li>
-                </ul>
-
-            </div>
-            <ul class="nav navbar-nav navbar-right">
+        <div class="flex-betweenx">
+            <ul class="breadcrumb">
+                <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
+                    <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
+                    <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
+                <li>
+            </ul>
+            <ul>
                 <li style="margin-left:  10px" ng-if="currentAppId">
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
@@ -38,7 +35,7 @@
                     </button>
                 </li>
             </ul>
-        </nav>
+        </div>
     </div>
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">

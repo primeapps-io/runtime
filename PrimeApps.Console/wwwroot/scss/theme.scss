@@ -893,8 +893,11 @@ button, select {
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding: 0px;
+    margin: 0px;
     padding-right: 20px;
     height: 80px;
+    list-style-type: none;
   }
 
   .navbar {
@@ -2360,7 +2363,7 @@ button, select {
     }
 
     .setup-layout {
-      padding-top: 100px;
+      padding-top: 80px;
       margin-bottom: 50px;
 
       .app-menu2 {
@@ -3068,6 +3071,34 @@ button, select {
       }
     }
   }
+  .flex-betweenx
+  {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
+    background-color: #ffffff !important;
+    padding: 10px 20px;
+    > ul{
+      margin: 0px;
+      padding: 5px;
+      list-style-type: none;
+      li{
+        display: inline-block;
+        .rigth-oval-toolbar-item
+        {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+  @media (max-width: 767.98px) {
+    .flex-betweenx {
+      display: block;
+      
+    }
+  }
+  
   
 }
 
