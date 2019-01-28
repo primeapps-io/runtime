@@ -278,12 +278,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (profile) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this profile ?",
+                        text: "Are you sure that you want to delete this profile?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -291,7 +291,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
                                     $scope.profiles.splice(profileToDeleteIndex, 1);
-                                    swal("Deleted!", "Your  profile has been deleted!", "success");
+                                    swal("Deleted!", "Profile is deleted successfully.", "success");
 
                                 })
                                 .catch(function () {

@@ -1,6 +1,6 @@
 <div class="setup-title">
     <h2>Overview</h2>
-    <button class="btn add-button"><i class="fas fa-cog"></i> Settings</button>
+    <button class="btn add-button" ng-click="gotoAppDetails()"><i class="fas fa-cog"></i> Settings</button>
 </div>
 <div class="tab-content">
     <table class="table">
@@ -12,7 +12,7 @@
                               images/primeapps/overview@3x.png 3x"
                          class="logo">
                 </div>
-                <h2 style="font-size: 20px; color: #0d6faa;">Welcome to XBrand CRM SaaS App</h2>
+                <h2 style="font-size: 20px; color: #0d6faa;">Welcome to {{currentApp.label}} App</h2>
             </div>
         </div>
     </table>

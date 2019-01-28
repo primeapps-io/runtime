@@ -59,12 +59,12 @@ angular.module('primeapps')
                                 var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
 
                                 if (helpside.modal_type == "modal") {
-                                    helpside.binding = module.label_tr_plural;
-                                    helpside.type = "Tanıtım Ekranı";
+                                    helpside.binding = module.label_en_plural;
+                                    helpside.type = "Introduction";
                                 }
                                 else {
-                                    helpside.binding = (module ? module['label_' + $rootScope.language + '_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
-                                    helpside.type = "Yardım Ekranı";
+                                    helpside.binding = (module ? module['label_en_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
+                                    helpside.type = "Help";
                                 }
                             }
                             else if (helpside.route_url) {
@@ -73,17 +73,17 @@ angular.module('primeapps')
                                 if (route)
                                     helpside.binding = route.name;
                                 else
-                                    helpside.binding = "Açılış Ekranı"
+                                    helpside.binding = "Welcome Screen";
                                 if (helpside.modal_type == "modal") {
-                                    helpside.type = "Tanıtım Ekranı (Diğer)";
+                                    helpside.type = "Introduction (Other)";
                                 }
                                 else {
-                                    helpside.type = "Yardım Ekranı (Diğer)";
+                                    helpside.type = "Help (Other)";
                                 }
                             }
                             else {
                                 helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
-                                helpside.type = "Bağımsız";
+                                helpside.type = "Help";
                             }
 
                             helpsides.push(helpside);

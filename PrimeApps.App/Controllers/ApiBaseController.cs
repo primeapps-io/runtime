@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -61,24 +59,22 @@ namespace PrimeApps.App.Controllers
             var email = context.HttpContext.User.FindFirst("email").Value;
             //var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
             //var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
-            var platformUser = new PlatformUser();
+            PlatformUser platformUser;
             //if (platformUser == null)
             //{
             var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+            platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
 
-            if (AppId != null && AppId != 0)
+            if (appId > 0)
             {
-                platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
+                platformUser = platformUserRepository.GetByEmailAndTenantId("app@primeapps.io", 1);
                 platformUser.TenantsAsUser.Single().Tenant.AppId = appId;
             }
             else
                 platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-
             // cacheHelper.Set(cacheKeyPlatformUser, platformUser);
             // }
-
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();

@@ -3,44 +3,42 @@
           novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Create your app from Scratch</h4>
+                <h4 class="modal-title">Create New App</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
-                        <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray"
-                                    ng-click="appFormModal.hide();"><i class="fas fa-times"></i>{{'Common.Cancel' |
-                                translate}}
-                            </button>
-                        </li>
-                        <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving"><i
-                                    class="fas fa-save"></i>{{'Common.Save' | translate}}
-                            </button>
-                        </li>
+                        <li><button type="button" class="btn add-button btn-radius btn-gray" ng-click="appFormModal.hide();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                        <li><button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="modal-dialog ">
             <div class="modal-content padding-0">
-
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
-                                <div class="form-group"
-                                     style="position: relative;"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
-                                    <label class="col-sm-4 required-field">*App Name: </label>
+                                <div class="form-group" ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+                                    <label class="col-sm-4 required-field">App Name <span class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           focus="true"
+                                           required
+                                           maxlength="50"
+                                           ng-change="generateAppName()"
+                                           ng-model="appModel.label">
+                                </div>
+                                <div class="form-group" style="position: relative;" ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
+                                    <label class="col-sm-4 required-field">App Identifier <span class="required-label">(required)</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-6 text-lowercase"
                                            required
                                            maxlength="50"
                                            ng-trim="false"
-                                           focus="true"
                                            ng-blur="checkNameBlur();"
-                                           ng-change="checkName(appModel.name)"
+                                           ng-change="checkName(appModel.name); $parent.$parent.isAppNameChanged=true;"
                                            ng-model="appModel.name"/>
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"
@@ -57,22 +55,11 @@
                                 </div>
 
                                 <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-                                    <label class="col-sm-4 required-field">*App Label: </label>
-                                    <input type="text"
-                                           name="label"
-                                           class="form-control ng-animate-disabled col-sm-8"
-                                           required
-                                           maxlength="50"
-                                           ng-model="appModel.label">
-                                </div>
-                                <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-                                    <label class="col-sm-4 required-field">*App Description: </label>
+                                    <label class="col-sm-4 required-field">App Description</label>
                                     <input type="text"
                                            name="description"
                                            class="form-control ng-animate-disabled col-sm-8"
-                                           required
                                            maxlength="50"
                                            ng-model="appModel.description">
                                 </div>
@@ -122,92 +109,8 @@
                                                     <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
                                                 </div>
                                             </div>
+                                            <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!--<div class="form-group">-->
-                                    <!--<form class="form-horizontal">-->
-
-                                        <!--<div class="form-group">-->
-                                            <!--<div class="col-sm-offset-3 col-sm-9">-->
-                                                <!--<span class="file-input btn btn-custom btn-sm btn-file">-->
-                                                    <!--{{'Setup.Settings.NewProfilePicture' | translate}}-->
-                                                <!--</span>-->
-                                                <!--<span class="file-input btn btn-custom btn-sm btn-file" ng-click="removeProfileImage()"> {{'Setup.Settings.RemoveProfileImage' | translate}}</span>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
-
-                                        <!--<div class="form-group" ng-show="uploader.queue.length > 0">-->
-                                            <!--<div class="col-sm-12">-->
-                                                <!--<table class="table">-->
-                                                    <!--<thead>-->
-                                                    <!--<tr>-->
-                                                        <!--<th></th>-->
-                                                        <!--<th ng-show="uploader.isHTML5">{{'Documents.Size' |-->
-                                                            <!--translate}}-->
-                                                        <!--</th>-->
-                                                        <!--<th ng-show="uploader.isHTML5">{{'Documents.Progress' |-->
-                                                            <!--translate}}-->
-                                                        <!--</th>-->
-                                                        <!--<th>{{'Documents.Result' | translate}}</th>-->
-                                                        <!--<th>{{'Documents.Actions' | translate}}</th>-->
-                                                    <!--</tr>-->
-                                                    <!--</thead>-->
-                                                    <!--<tbody>-->
-                                                    <!--<tr ng-repeat="item in uploader.queue">-->
-                                                        <!--<td>-->
-                                                            <!--<div class="cropArea">-->
-                                                                <!--<img-crop image="item.image"-->
-                                                                          <!--result-image="$parent.croppedImage"-->
-                                                                          <!--style="display: inline !important;"-->
-                                                                          <!--area-type="square"-->
-                                                                          <!--result-image-size="250"></img-crop>-->
-                                                            <!--</div>-->
-                                                        <!--</td>-->
-                                                        <!--<td ng-show="uploader.isHTML5" nowrap>{{item.file.size |-->
-                                                            <!--size}}-->
-                                                        <!--</td>-->
-                                                        <!--<td ng-show="uploader.isHTML5">-->
-                                                            <!--<div class="progress" style="margin-bottom: 0;">-->
-                                                                <!--<div class="progress-bar"-->
-                                                                     <!--ng-style="{'width': item.progress + '%'}"></div>-->
-                                                            <!--</div>-->
-                                                        <!--</td>-->
-                                                        <!--<td class="text-center">-->
-                                                            <!--<span ng-show="item.isSuccess"><i-->
-                                                                    <!--class="fa fa-check-circle icon-success"></i></span>-->
-                                                            <!--<span ng-show="item.isCancel"><i-->
-                                                                    <!--class="fa fa-ban icon-cancel"></i></span>-->
-                                                            <!--<span ng-show="item.isError"><i-->
-                                                                    <!--class="fa fa-exclamation-circle icon-error"></i></span>-->
-                                                        <!--</td>-->
-                                                        <!--<td nowrap>-->
-                                                            <!--<button type="button" class="btn btn-primary btn-xs"-->
-                                                                    <!--ng-click="item.upload()"-->
-                                                                    <!--ng-disabled="item.isReady || item.isUploading || item.isSuccess">-->
-                                                                <!--<span class="fa fa-upload"></span> {{'Documents.Upload'-->
-                                                                <!--| translate}}-->
-                                                            <!--</button>-->
-                                                            <!--<button type="button" class="btn btn-custom btn-xs"-->
-                                                                    <!--ng-click="item.cancel()"-->
-                                                                    <!--ng-disabled="!item.isUploading">-->
-                                                                <!--<span class="fa fa-ban"></span> {{'Documents.Cancel' |-->
-                                                                <!--translate}}-->
-                                                            <!--</button>-->
-                                                            <!--<button type="button" class="btn btn-custom btn-xs"-->
-                                                                    <!--ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">-->
-                                                                <!--<span class="fa fa-trash-o"></span> {{'Common.Cancel' |-->
-                                                                <!--translate}}-->
-                                                            <!--</button>-->
-                                                        <!--</td>-->
-                                                    <!--</tr>-->
-                                                    <!--</tbody>-->
-                                                <!--</table>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
-                                    <!--</form>-->
-                                <!--</div>-->
                             </div>
                         </div>
 

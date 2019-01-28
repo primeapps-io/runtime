@@ -8,25 +8,25 @@ angular.module('primeapps')
             $scope.nameValid = null;
             $scope.nameBlur = false;
 
-            $rootScope.currentOrgId = parseInt($stateParams.organizationId);
+            $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
             if (!$rootScope.currentOrgId && $rootScope.organizations) {
                 $state.go('studio.allApps');
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
 
             $rootScope.breadcrumblist[0] = {
-                title: $rootScope.currentOrganization.name,
-                link: '#/apps?organizationId=' + $rootScope.currentOrgId
+                title: $rootScope.currentOrganization.label,
+                link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = { title: "App Form" };
+            $rootScope.breadcrumblist[1] = {title: "Create App"};
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('studio.allApps');
                 return;
             }
@@ -119,14 +119,13 @@ angular.module('primeapps')
 
 
             $scope.openModal = function () {
-
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/appform/newAppForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/appform/newAppForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -180,6 +179,13 @@ angular.module('primeapps')
                 uploader.queue[0].image = null;
             };
 
+            $scope.generateAppName = function () {
+                if (!$scope.appModel || !$scope.appModel.label || $scope.isAppNameChanged)
+                    return;
+
+                $scope.appModel.name = helper.getSlug($scope.appModel.label, '-');
+            };
+
             $scope.save = function (newAppForm) {
                 if (!newAppForm.$valid)
                     return false;
@@ -187,6 +193,7 @@ angular.module('primeapps')
                 //$scope.appModel.logo = uploader;
                 $scope.appModel.template_id = 0;
                 $scope.appModel.status = 1;
+
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
                         $scope.appModel = {};

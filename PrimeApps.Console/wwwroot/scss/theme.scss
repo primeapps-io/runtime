@@ -1221,6 +1221,7 @@ button, select {
       .form-group {
         label {
           text-align: left !important;
+          padding-left: 1px;
         }
       }
 
@@ -1324,6 +1325,9 @@ button, select {
 
       }
 
+      .required-label{
+        color: #999;
+      }
     }
 
     .modal-header {
@@ -1340,6 +1344,12 @@ button, select {
         font-size: 16px;
         font-weight: bold;
         color: #0d6faa;
+      }
+      .list-inline {
+        li{
+          padding-left: 0;
+          padding-right: 0;
+        }
       }
     }
 
@@ -2817,13 +2827,6 @@ button, select {
       }
     }
   }
-  
-  
-  
-  
-  
-  
-  
 }
 
 .placeholder {

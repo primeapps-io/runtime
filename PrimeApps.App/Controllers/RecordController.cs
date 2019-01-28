@@ -32,19 +32,21 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private IProfileRepository _profileRepository;
         private IProcessRepository _processRepository;
+        private ITagRepository _tagRepository;
         private ISettingRepository _settingRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
         private IRecordHelper _recordHelper;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IProcessRepository processRepository, IProfileRepository profileRepository)
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IProcessRepository processRepository, IProfileRepository profileRepository)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _profileRepository = profileRepository;
             _processRepository = processRepository;
+            _tagRepository = tagRepository;
             _settingRepository = settingRepository;
             _warehouse = warehouse;
 
@@ -64,7 +66,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(string module, int id, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")] bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
+        public async Task<IActionResult> Get(string module, int id, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             JObject record;
             var moduleEntity = await _moduleRepository.GetByNameBasic(module);
@@ -176,6 +178,7 @@ namespace PrimeApps.App.Controllers
                     if (sensitiveFields.Contains(r.Key))
                         newRecord[r.Key] = null;
                 }
+
                 record = newRecord;
             }
 
@@ -290,10 +293,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }
@@ -316,6 +319,7 @@ namespace PrimeApps.App.Controllers
                             newRecord[i][propertyName] = null;
                     }
                 }
+
                 records = newRecord;
             }
 
@@ -333,7 +337,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
 
             if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                 return StatusCode(resultBefore, ModelState);
@@ -357,10 +361,10 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }
@@ -414,7 +418,7 @@ namespace PrimeApps.App.Controllers
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
             {
-                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
+                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
@@ -451,7 +455,7 @@ namespace PrimeApps.App.Controllers
             if (currentRecord == null)
                 return BadRequest("Record not found!");
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, true, currentRecord, AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser);
 
             //if ((bool)record["freeze"])
             //    return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -478,10 +482,10 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }
@@ -495,7 +499,7 @@ namespace PrimeApps.App.Controllers
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
             {
-                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
+                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
@@ -516,7 +520,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, ModelState, _warehouse);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, _settingRepository, ModelState, _warehouse);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -547,7 +551,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
 
                 if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                     return StatusCode(resultBefore, ModelState);
@@ -571,10 +575,10 @@ namespace PrimeApps.App.Controllers
                         return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                     throw;
                 }
@@ -585,7 +589,6 @@ namespace PrimeApps.App.Controllers
 
                 //After create
                 _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
-
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
@@ -605,7 +608,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, ModelState, _warehouse);
+                var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, _settingRepository, ModelState, _warehouse);
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                     return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -619,7 +622,6 @@ namespace PrimeApps.App.Controllers
                 await _recordRepository.Delete(record, moduleEntity);
 
                 _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
-
             }
 
             return Ok();
@@ -645,7 +647,7 @@ namespace PrimeApps.App.Controllers
                 if (currentRecord.IsNullOrEmpty())
                     return BadRequest("Record not found!");
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, true, currentRecord, AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser);
 
                 if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                     return StatusCode(resultBefore, ModelState);
@@ -670,11 +672,11 @@ namespace PrimeApps.App.Controllers
                         return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
 
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                     throw;
                 }
@@ -724,10 +726,10 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }
@@ -763,7 +765,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }
@@ -832,10 +834,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
 
                 throw;
             }

@@ -67,7 +67,7 @@ namespace PrimeApps.Auth
             if (location == string.Empty)
                 throw new ArgumentNullException("Authentication Certificate Location is not set!");
 
-            return new X509Certificate2(location, exportKey, X509KeyStorageFlags.Exportable);
+            return new X509Certificate2(location, exportKey, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
         }
 
         private void InitializeDatabase(IApplicationBuilder app)

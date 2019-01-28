@@ -116,9 +116,9 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this workflow ?",
+                    text: "Are you sure that you want to delete this workflow?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -129,7 +129,7 @@ angular.module('primeapps')
                                     $scope.id = null;
                                     //$state.reload();
                                     $scope.changePage(1);
-                                    swal("Deleted!", "Workflow has been deleted!", "success");
+                                    swal("Deleted!", "Workflow is deleted successfully.", "success");
                                 }
                             });
                     }

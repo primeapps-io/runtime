@@ -33,7 +33,7 @@ namespace PrimeApps.App.Helpers
 
             _configuration = configuration;
 
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
         }
 
         public AuditLogHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)

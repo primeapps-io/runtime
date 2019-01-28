@@ -14,14 +14,11 @@ namespace PrimeApps.Model.Repositories
         private TenantDBContext _dbContext;
         private IConfiguration _configuration;
 
-
         public int? TenantId { get; set; }
 
         public int? UserId { get; set; }
 
         public CurrentUser CurrentUser { get; set; }
-
-       
 
         public RepositoryBaseTenant(TenantDBContext dbContext, IConfiguration configuration)
         {

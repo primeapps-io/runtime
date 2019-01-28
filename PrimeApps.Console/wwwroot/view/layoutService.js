@@ -279,7 +279,7 @@ angular.module('primeapps')
                             $rootScope.breadcrumblist = [{}, {}, {}];
 
                         $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
-                        $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
+                        $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentApp.organization_id;
 
                         $rootScope.breadcrumblist[1] = {
                             title: result.data.label,

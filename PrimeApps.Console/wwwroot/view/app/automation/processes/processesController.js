@@ -775,12 +775,12 @@ angular.module('primeapps')
                         ModuleService.update(processModule, processModule.id).then(function () {
                             $scope.saving = false;
                             $scope.changeOffset(1);
-                            ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                            swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
                         });
                     } else {
                         $scope.saving = false;
                         $scope.changeOffset(1);
-                        ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                        swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
                     }
                 };
 
@@ -823,15 +823,15 @@ angular.module('primeapps')
                         } else {
                             swal({
                                 title: "Are you sure?",
-                                text: "Are you sure that you want to delete this approval process ?",
+                                text: "Are you sure that you want to delete this approval process?",
                                 icon: "warning",
-                                buttons: ['Cancel', 'Okey'],
+                                buttons: ['Cancel', 'Yes'],
                                 dangerMode: true
                             }).then(function (value) {
                                 if (value) {
                                     ProcessesService.delete(id)
                                         .then(function () {
-                                            swal("Deleted!", "Approval process has been deleted!", "success");
+                                            swal("Deleted!", "Approval process is deleted successfully.", "success");
                                             $scope.cancel();
                                             $scope.id = null;
                                             // $state.reload();

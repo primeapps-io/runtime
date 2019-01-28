@@ -274,12 +274,12 @@ angular.module('primeapps')
                 // var deleteModel = angular.copy($scope.actionButtons);
                 // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
                 // deleteModel.splice(actionButtonIndex, 1);
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this action button ?",
+                        text: "Are you sure that you want to delete this action button?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {

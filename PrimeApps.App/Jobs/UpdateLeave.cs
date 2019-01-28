@@ -24,10 +24,11 @@ namespace PrimeApps.App.Jobs
         private IConfiguration _configuration;
         private IHttpContextAccessor _context;
         private IServiceScopeFactory _serviceScopeFactory;
+
         public UpdateLeave(ICalculationHelper calculationHelper, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context)
         {
             _context = context;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _calculationHelper = calculationHelper;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
@@ -52,7 +53,7 @@ namespace PrimeApps.App.Jobs
                             using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                             using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {
-                                _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+                                _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = new CurrentUser {TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode};
 
                                 var warehouse = new Model.Helpers.Warehouse(_analyticRepository, _configuration);
 
@@ -65,7 +66,7 @@ namespace PrimeApps.App.Jobs
 
                                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                                 {
-                                    _moduleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+                                    _moduleRepository.CurrentUser = new CurrentUser {TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode};
 
                                     var izinTurleriModule = await _moduleRepository.GetByName("izin_turleri");
 
@@ -74,7 +75,7 @@ namespace PrimeApps.App.Jobs
 
                                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                     {
-                                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+                                        _recordRepository.CurrentUser = new CurrentUser {TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode};
 
                                         var module = await _moduleRepository.GetByName("calisanlar") ??
                                                      await _moduleRepository.GetByName("human_resources");
@@ -179,7 +180,6 @@ namespace PrimeApps.App.Jobs
                                     }
                                 }
                             }
-
                         }
                         //TODO: ex.InnerException.InnerException olabilir
                         catch (DataException ex)
