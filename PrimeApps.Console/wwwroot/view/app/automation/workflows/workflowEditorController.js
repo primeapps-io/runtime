@@ -41,6 +41,12 @@ angular.module('primeapps')
                                     window.myDiagram.model.linkDataArray = tempJson.linkDataArray;
                                     window.myDiagram.requestUpdate();
                                     window.myPaletteLevel1.requestUpdate();
+
+                                    var startNode = $filter('filter')(window.myDiagram.model.nodeDataArray, { ngModelName: 'start' }, true)[0];
+                                    if (startNode) {
+                                        $scope.workflowStartModel = angular.copy(startNode.data);
+                                        $scope.selectModule();
+                                    }
                                 }
                             });
                     }
@@ -65,9 +71,17 @@ angular.module('primeapps')
                         if (node.data && node.ngModelName) {
                             $scope.workflowModel[node.ngModelName] = {}; //clear for new value
 
-                            if ($scope.workflowStartModel === {} && !$scope.workflowStartModel.module) {
-                                $scope.workflowStartModel = processWorkflow();
+                            if (!$scope.workflowStartModel) {
+                                $scope.workflowStartModel = {};
+                                if (node.ngModelName !== 'start') {
+                                    var startNode = $filter('filter')(window.myDiagram.model.nodeDataArray, { ngModelName: 'start' }, true)[0];
+                                    if (!startNode)
+                                        return false;
 
+                                    //$scope.workflowStartModel = startNode.data;
+                                    //$scope.workflowStartModel = processWorkflow();
+
+                                }
                             }
 
                             switch (node.ngModelName) {
@@ -274,9 +288,12 @@ angular.module('primeapps')
 
                                 }
 
-                                if ($scope.id)
-                                    $scope.workflowStartModel = processWorkflow();
+                                if ($scope.id) {
+                                    var tempData = processWorkflow();
+                                    if (tempData)
+                                        $scope.workflowStartModel = tempData;
 
+                                }
                                 $scope.loadingFilter = false;
 
                             });
@@ -315,6 +332,9 @@ angular.module('primeapps')
 
                     for (var i = 0; i < $scope.workflowStartModel.filters.length; i++) {
                         var filter = $scope.workflowStartModel.filters[i];
+                        if (filter.field.name)
+                            filter.field = filter.field.name;
+
                         var field = $filter('filter')(workflowModel.module.fields, { name: filter.field }, true)[0];
                         var fieldValue = null;
 
