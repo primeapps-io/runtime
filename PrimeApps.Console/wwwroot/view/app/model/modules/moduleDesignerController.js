@@ -1389,24 +1389,31 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                moduleModel.order = 6;//TODO: add an order backend
+               //moduleModel.order = 6;//TODO: add an order backend
 
-                if (moduleModel.menu_icon)
+                if (moduleModel.menu_icon.value)
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
                     ModuleService.moduleCreate(moduleModel).then(function () {
                         $scope.saving = false;
-                        $state.go('studio.app.modules', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
+                        $state.go('studio.app.modules', {
+                            orgId: $rootScope.currentOrgId,
+                            appId: $rootScope.currentAppId
+                        });
                     });
                     $scope.editModal.hide();
                 }
                 else {
                     ModuleService.moduleUpdate(moduleModel, moduleModel.id).then(function () {
                         $scope.saving = false;
-                        $state.go('studio.app.modules', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
+                        $state.go('studio.app.modules', {
+                            orgId: $rootScope.currentOrgId,
+                            appId: $rootScope.currentAppId
+                        });
                     });
-                    $scope.editModal.hide();
+                    if ($scope.editModal)
+                        $scope.editModal.hide();
                 }
 
             }
