@@ -50,10 +50,11 @@
                         <ui-select-match placeholder="Please search an icon">
                             <div ng-bind-html="$select.selected.label || $select.selected"></div>
                         </ui-select-match>
-                        <ui-select-choices ng-options="icon in icons | filter:{ label:$select.search }">
+                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
                             <div ng-bind-html="icon.label"></div>
                         </ui-select-choices>
                     </ui-select>
+
 
 
                 </div>
