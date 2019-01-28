@@ -1402,7 +1402,7 @@ angular.module('primeapps')
                     $scope.editModal.hide();
                 }
                 else {
-                    ModuleService.update(moduleModel, moduleModel.id).then(function () {
+                    ModuleService.moduleUpdate(moduleModel, moduleModel.id).then(function () {
                         $scope.saving = false;
                         $state.go('studio.app.modules', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
                     });
