@@ -17,7 +17,7 @@ namespace PrimeApps.Console.Helpers
 {
     public interface IOrganizationHelper
     {
-        Task<ICollection<OrganizationUserModel>> CreateCollaorators(List<OrganizationUser> users, int organizationId);
+        Task<ICollection<OrganizationUserModel>> CreateCollaborators(List<OrganizationUser> users, int organizationId);
     }
 
     public class OrganizationHelper : IOrganizationHelper
@@ -34,7 +34,7 @@ namespace PrimeApps.Console.Helpers
 
         }
 
-        public async Task<ICollection<OrganizationUserModel>> CreateCollaorators(List<OrganizationUser> users, int organizationId)
+        public async Task<ICollection<OrganizationUserModel>> CreateCollaborators(List<OrganizationUser> users, int organizationId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
