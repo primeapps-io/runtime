@@ -1625,7 +1625,7 @@ namespace PrimeApps.Auth.UI
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
 
                         response["Success"] = true;
-                        response["identity_user_id"] = identityUser.Id;
+                        
                     }
                     catch (Exception ex)
                     {
@@ -1637,6 +1637,7 @@ namespace PrimeApps.Auth.UI
 
             }
 
+            response["identity_user_id"] = identityUser.Id;
             return response;
         }
     }
