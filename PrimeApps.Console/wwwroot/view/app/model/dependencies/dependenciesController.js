@@ -357,12 +357,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (dependency) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this dependency ?",
+                        text: "Are you sure that you want to delete this dependency?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -371,7 +371,7 @@ angular.module('primeapps')
                                     // var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
                                     // $scope.dependencies.splice(dependencyIndex, 1);
                                     $scope.changePage(1);
-                                    swal("Deleted!", "Your  dependency has been deleted!", "success");
+                                    swal("Deleted!", "Dependency is deleted successfully.", "success");
 
                                 })
                                 .catch(function () {

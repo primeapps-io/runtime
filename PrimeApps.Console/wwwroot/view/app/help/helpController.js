@@ -661,7 +661,7 @@ angular.module('primeapps')
                 }
                 help.show_type = 2;
                 help.module_type = 1;
-                help.name = $scope.helpModalObj.modulePicklist.label_tr_singular;
+                help.name = $scope.helpModalObj.modulePicklist.label_en_singular;
 
                 if ($scope.currentTemplate || $scope.id) {
 
@@ -960,12 +960,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (helpside) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this help ?",
+                        text: "Are you sure that you want to delete this help?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -973,7 +973,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var helpToDeleteIndex = helper.arrayObjectIndexOf($scope.helpsides, helpside);
                                     $scope.helpsides.splice(helpToDeleteIndex, 1);
-                                    swal("Deleted!", "Your  help has been deleted!", "success");
+                                    swal("Deleted!", "Help is deleted successfully.", "success");
 
                                 })
                                 .catch(function () {

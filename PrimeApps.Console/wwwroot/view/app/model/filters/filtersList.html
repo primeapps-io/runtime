@@ -6,8 +6,8 @@
     <table class="table" ng-show="loading">
         <thead>
             <tr>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th></th>
             </tr>
         </thead>
@@ -29,15 +29,15 @@
     <table ng-show="!loading" class="table">
         <thead>
             <tr>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(view)">
-                <td>{{view.parent_module['label_'+language+'_plural']}}</td>
                 <td>{{view['label_' + language]}}</td>
+                <td>{{view.parent_module['label_'+language+'_plural']}}</td>
                 <td class="text-right">
                     <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
                     <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->

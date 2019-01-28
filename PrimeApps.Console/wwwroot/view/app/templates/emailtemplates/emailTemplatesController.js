@@ -348,14 +348,14 @@ angular.module('primeapps')
                     $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
                     $scope.changePage(1);
-                    ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
+                    swal($filter('translate')('Template.SuccessMessage'), "", "success");
                 }
                 else {
                     result = EmailTemplatesService.create(template);
                     $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
                     $scope.changePage(1);
-                    ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
+                    swal($filter('translate')('Template.SuccessMessage'), "", "success");
                 }
 
                 // result.then(function (saveResponse) {
@@ -395,12 +395,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (template) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this email template ?",
+                        text: "Are you sure that you want to delete this email template?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -408,7 +408,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
                                     $scope.templates.splice(templateToDeleteIndex, 1);
-                                    swal("Deleted!", "Your  email template has been deleted!", "success");
+                                    swal("Deleted!", "Email template is deleted successfully.", "success");
 
                                 })
                                 .catch(function () {

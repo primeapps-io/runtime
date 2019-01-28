@@ -345,12 +345,12 @@ angular.module('primeapps')
 			};
 
 			$scope.delete = function (relation) {
-				const willDelete =
+				var willDelete =
 					swal({
 						title: "Are you sure?",
-						text: "Are you sure that you want to delete this relation ?",
+						text: "Are you sure that you want to delete this relation?",
 						icon: "warning",
-						buttons: ['Cancel', 'Okey'],
+						buttons: ['Cancel', 'Yes'],
 						dangerMode: true
 					}).then(function (value) {
 						if (value) {

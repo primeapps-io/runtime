@@ -240,12 +240,12 @@ angular.module('primeapps')
                 var profileSettingIndex = helper.arrayObjectIndexOf(deleteModel, profileSetting);
                 deleteModel.splice(profileSettingIndex, 1);
 
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this module profile setting ?",
+                        text: "Are you sure that you want to delete this module profile setting?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -253,7 +253,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
                                     $scope.profileSettings.splice(profileSettingIndex, 1);
-                                    swal("Deleted!", "Your  module profile setting has been deleted!", "success");
+                                    swal("Deleted!", "Profile setting is deleted successfully.", "success");
 
                                 })
                                 .catch(function () {

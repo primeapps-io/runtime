@@ -240,9 +240,9 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this team ?",
+                    text: "Are you sure that you want to delete this team?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -258,7 +258,7 @@ angular.module('primeapps')
                                     $scope.addNewTeamFormModal.hide();
                                     $scope.teamModel = {};
                                     $state.reload();
-                                    swal("Deleted!", "Team has been deleted!", "success");
+                                    swal("Deleted!", "Team is deleted successfully.", "success");
                                 }
                             })
                             .catch(function (result) {
@@ -271,9 +271,9 @@ angular.module('primeapps')
             $scope.deleteUser = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this member ?",
+                    text: "Are you sure that you want to delete this member?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -286,7 +286,7 @@ angular.module('primeapps')
                                     $scope.selectTeam($scope.teamId);
                                     $scope.getOrganizationUserList();
                                     $scope.selectedUser = {};
-                                    swal("Deleted!", "Member has been deleted!", "success");
+                                    swal("Deleted!", "Member is deleted successfully.", "success");
                                 }
                             })
                             .catch(function (error) {

@@ -74,12 +74,12 @@ angular.module('primeapps')
 			};
 
 			$scope.deleteView = function (id) {
-				const willDelete =
+				var willDelete =
 					swal({
 						title: "Are you sure?",
-						text: "Are you sure that you want to delete this filter ?",
+						text: "Are you sure that you want to delete this filter?",
 						icon: "warning",
-						buttons: ['Cancel', 'Okey'],
+						buttons: ['Cancel', 'Yes'],
 						dangerMode: true
 					}).then(function (value) {
 						if (value) {
@@ -87,7 +87,7 @@ angular.module('primeapps')
 								FiltersService.deleteView(id)
 									.then(function () {
 										$scope.changePage(1);
-										swal("Deleted!", "Your  filters has been deleted!", "success");
+										swal("Deleted!", "Filter is deleted successfully.", "success");
 									}).catch(function () {
 										$scope.customViews = $scope.customViewsState;
 
@@ -426,14 +426,8 @@ angular.module('primeapps')
 							}
 
 							viewState.active_view = response.data.id;
-
-							FiltersService.setViewState(viewState, $scope.module.id, viewState.id)
-								.then(function () {
-									success();
-								})
-								.finally(function () {
-									$scope.saving = false;
-								});
+							
+							success();
 						})
 						.catch(function (data) {
 							error(data.data, data.status);
@@ -457,7 +451,7 @@ angular.module('primeapps')
 
 				function success() {
 					//swal("Good job!", "You clicked the button!", "success");
-					swal("İşlem Başarıyla Gerçekleştirilmiştir!", "", "success");
+					swal("Filter is saved successfully.", "", "success");
 					//$state.go('studio.app.filters');
 					$scope.addNewFiltersModal.hide();
 					$scope.changePage(1);
@@ -472,7 +466,7 @@ angular.module('primeapps')
 							$scope.viewForm.filterLogic.$setValidity('filterLogicFilters', false);
 					}
 				}
-			}
+			};
 
 			$scope.validate = function (viewForm, wizardStep) {
 

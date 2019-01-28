@@ -1413,7 +1413,7 @@ angular.module('primeapps')
                     $scope.cancel();
                     $scope.changePage(1);
 
-                    ngToast.create({ content: $filter('translate')('Setup.Workflow.SubmitSuccess'), className: 'success' });
+                    swal($filter('translate')('Setup.Workflow.SubmitSuccess'), "", "success");
                 };
 
                 if (!$scope.id) {
@@ -1448,9 +1448,9 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this rule ?",
+                    text: "Are you sure that you want to delete this rule?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -1464,7 +1464,7 @@ angular.module('primeapps')
                                 $scope.id = null;
                                 $scope.changePage(1);
                                 //$state.reload();
-                                swal("Deleted!", "Rule has been deleted!", "success");
+                                swal("Deleted!", "Rule is deleted successfully.", "success");
                             });
                     }
                 });
