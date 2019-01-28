@@ -1258,11 +1258,16 @@ button, select {
             width: 100%;
             border: none;
             background: transparent;
+            
             input{
               background: transparent;
               height: 30px;
             }
             .tag-item{
+              margin: 0 2px 0 0;
+              font-size: 12px;
+              font-weight: bold;
+              line-height: 30px;
             }
           }
         }
@@ -2826,6 +2831,26 @@ button, select {
         }
       }
     }
+  }
+  .swal-modal{
+    .swal-title{
+      margin: 0;
+      padding: 0;
+    }
+    .swal-footer{
+      margin-top: 0;
+      text-align: center;
+    }
+    .swal-button{
+      padding: 5px 15px;
+      &:hover{
+        padding: 5px 20px;
+      }
+      &:focus{
+        box-shadow: none;
+      }
+    }
+    
   }
 }
 
