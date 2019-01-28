@@ -56,7 +56,7 @@
                             {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".xls,.xlsx" add-file="add-file" />
                         </span>
                         <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span>
-                        <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
+                        <a href="{{getDownloadUrlExcel(template)}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
                         <a class="btn btn-default clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
                     </div>
                 </div>

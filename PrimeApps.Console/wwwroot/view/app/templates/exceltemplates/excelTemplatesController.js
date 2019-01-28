@@ -70,7 +70,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 if (template) {
                     setCurrentTemplate(template);
-                    $scope.getDownloadUrlExcel();
+                   // $scope.getDownloadUrlExcel();
                 }
                 else {
                     $scope.template = [];

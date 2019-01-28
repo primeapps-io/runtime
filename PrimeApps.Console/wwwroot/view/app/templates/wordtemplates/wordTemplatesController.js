@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesWord';
 
-            $rootScope.breadcrumblist[2].title = 'Excel Templates';
+            $rootScope.breadcrumblist[2].title = 'Word Templates';
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -71,7 +71,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 if (template) {
                     setCurrentTemplate(template);
-                    $scope.getDownloadUrl();
+                   // $scope.getDownloadUrl(template);
                 }
                 else {
                     $scope.template = [];

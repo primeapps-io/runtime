@@ -55,7 +55,7 @@
                             {{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />
                         </span> 
                         <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span> 
-                        <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
+                        <a href="{{getDownloadUrl(template)}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
                         <a class="clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
                     </div>
                 </div>
