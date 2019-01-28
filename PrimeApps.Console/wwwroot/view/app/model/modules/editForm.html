@@ -48,13 +48,16 @@
 
                     <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
                         <ui-select-match placeholder="Please search an icon">
-                            <div ng-bind-html="$select.selected.label || $select.selected"></div>
+                            <div>
+                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                            </div>
                         </ui-select-match>
+
                         <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
                             <div ng-bind-html="icon.label"></div>
                         </ui-select-choices>
                     </ui-select>
-
 
 
                 </div>

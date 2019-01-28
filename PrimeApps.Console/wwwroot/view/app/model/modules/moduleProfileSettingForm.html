@@ -79,11 +79,13 @@
                             <div class="form-group">
                                 <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}:</label>
                                 <div class="col-sm-12">
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="currentProfileSetting.display" ng-value="true"> {{'Common.Yes' | translate}}
+                                    <label class="radio-inline newinput">
+                                        <input type="radio" name="templateStatus" ng-value="true" ng-model="currentProfileSetting.display" />
+                                        {{'Common.Yes' | translate}}<span></span>
                                     </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="currentProfileSetting.display" ng-value="false"> {{'Common.No' | translate}}
+                                    <label class="radio-inline newinput">
+                                        <input type="radio" name="templateStatus" ng-value="false" ng-model="currentProfileSetting.display" />
+                                        {{'Common.No' | translate}}<span></span>
                                     </label>
                                 </div>
                             </div>

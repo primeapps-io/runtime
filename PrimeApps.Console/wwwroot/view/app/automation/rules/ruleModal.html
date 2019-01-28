@@ -108,13 +108,15 @@
                                     <div class="form-group">
                                         <label class="col-sm-12">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
                                         <div class="form-group">
-                                            <label class="radio-inline" ng-show="workflowModel.operation.update">
+                                            <label class="radio-inline newinput" ng-show="workflowModel.operation.update">
                                                 <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
                                                 {{'Setup.Workflow.ExecutionFrequencies.OneTime' | translate}}
+                                                <span></span>
                                             </label>
-                                            <label class="radio-inline">
+                                            <label class="radio-inline newinput">
                                                 <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
                                                 {{'Setup.Workflow.ExecutionFrequencies.Continuous' | translate}}
+                                                <span></span>
                                             </label>
                                         </div>
                                     </div>
@@ -147,7 +149,7 @@
                             <div class="section" ng-show="$parent.wizardStep == 1">
                                 <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                 <div class="panel">
-                                   <!-- <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+                                    <!-- <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
                                     <div ng-show="!loadingFilter">
                                         <table class="filter-table">
                                             <thead>
@@ -163,7 +165,7 @@
                                                     <td>
                                                         <span class="filter-no">{{filter.no}}.</span>
                                                     </td>
-                                                    <td>
+                                                    <td class="form-group">
                                                         <select id="field"
                                                                 name="field"
                                                                 class="form-control ng-animate-disabled"
@@ -173,7 +175,7 @@
                                                             <option value="">{{'Common.Select' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td>
+                                                    <td class="form-group">
                                                         <select id="operator"
                                                                 name="operator"
                                                                 class="form-control ng-animate-disabled"
@@ -183,7 +185,7 @@
                                                             <option value="">{{'Common.Select' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td>
+                                                    <td class="form-group">
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -363,13 +365,11 @@
                                         <div style="margin-top: 50px" ng-show="showProcessFilter">
                                             <label class="col-sm-3">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
                                             <div class="col-sm-9">
-                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
+                                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}<span></span></label><br>
 
-                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
-
-                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
-
-                                                <label><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
+                                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}<span></span></label><br>
+                                                <label class="radio-inline newinput"><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}<span></span></label><br>
+                                                <label class="radio-inline newinput"><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}<span></span></label>
                                             </div>
                                         </div>
                                         <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
@@ -1200,13 +1200,15 @@
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
                                             <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.WebHookMethod' | translate}}:</label>
-                                            <label class="radio-inline">
+                                            <label class="radio-inline newinput">
                                                 <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="post">
                                                 POST
+                                                <span></span>
                                             </label>
-                                            <label class="radio-inline">
+                                            <label class="radio-inline newinput">
                                                 <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="get">
                                                 GET
+                                                <span></span>
                                             </label>
                                         </div>
                                         <div class="form-inline" style="margin-bottom: 30px;">

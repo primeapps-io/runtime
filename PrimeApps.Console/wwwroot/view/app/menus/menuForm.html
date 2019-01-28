@@ -82,7 +82,7 @@
                                 <h4>{{'Menu.MenuSummary'|translate}}</h4>
                                 <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
                                 <!--ng-show="!loading"-->
-                                <div  class="panel">
+                                <div class="panel">
                                     <div class="form-group">
                                         <label class="control-label col-sm-4 ">{{'Menu.MenuElementType'|translate}}:</label>
                                         <label class="radio-inline newinput">
@@ -109,12 +109,23 @@
                                         <input name="name" class="form-control col-sm-8" maxlength="50" ng-model="menu.menuItem" />
                                     </div>
 
+                                    <!--<div ng-show="!menu.display" class="form-group">-->
+                                    <!--<label class="control-label col-sm-4">{{'Menu.Icon' | translate}}:</label>-->
+                                    <!--<button type="button" data-container="form" class="form-control btn btn-default" name="icon"-->
+                                    <!--data-placeholder="{{'Menu.Icon' | translate}}-" ng-model="menu.menu_icon"-->
+                                    <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                    <!--bs-select><span class="caret"></span></button>-->
+                                    <!--</div>-->
                                     <div ng-show="!menu.display" class="form-group">
-                                        <label class="control-label col-sm-4">{{'Menu.Icon' | translate}}:</label>
-                                        <button type="button" data-container="form" class="form-control btn btn-default" name="icon"
-                                                data-placeholder="{{'Menu.Icon' | translate}}-" ng-model="menu.menu_icon"
-                                                data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                                bs-select><span class="caret"></span></button>
+                                        <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
+                                        <ui-select ng-model="menu.menu_icon">
+                                            <ui-select-match placeholder="Please search an icon">
+                                                <div ng-bind-html="$select.selected.label || $select.selected"></div>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                <div ng-bind-html="icon.label"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </div>
 
                                     <div class=" form-group">
@@ -137,11 +148,23 @@
                                                     <span class="menu-label">{{menuList.no+'. '+(!menuList.isEdit ? (menuList.name ) : "")}}</span>
                                                     <span ng-show="menuList.isEdit">
                                                         <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name" />
-                                                        <button style="width:120px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"
-                                                                data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"
-                                                                data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                                                bs-select><span class="caret"></span>
-                                                        </button>
+                                                        <!--<button style="width:120px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"-->
+                                                        <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"-->
+                                                        <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                                        <!--bs-select><span class="caret"></span>-->
+                                                        <!--</button>-->
+                                                          <ui-select ng-model="menuList.icon">
+                                                            <ui-select-match placeholder="Please search an icon">
+                                                                <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
+                                                            <div>
+                                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                            </div>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                <div ng-bind-html="icon.label"></div>
+                                                            </ui-select-choices>
+                                                        </ui-select>
                                                         <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
                                                             <button type="button" ng-click="update(menuList.no,menuList.icon)"><i class="fa fa-check"></i></button>
                                                         </div>
@@ -169,11 +192,23 @@
                                                             <span class="menu-label" ng-show="!menu.isEdit && menu.name">{{ menu.menuId + '.' + menu.no+'. '+ menu.name}}</span>
                                                             <span ng-show="menu.isEdit">
                                                                 <input class="form-control" maxlength="50" ng-model="menu.name" />
-                                                                <button style="width: 120px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"
-                                                                        data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"
-                                                                        data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                                                                        bs-select><span class="caret"></span>
-                                                                </button>
+                                                                <!--<button style="width: 120px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"-->
+                                                                <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"-->
+                                                                <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                                                <!--bs-select><span class="caret"></span>-->
+                                                                <!--</button>-->
+                                                                  <ui-select ng-model="menu.icon">
+                                                                    <ui-select-match placeholder="Please search an icon">
+                                                                        <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
+                                                                    <div>
+                                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                        <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                                    </div>
+                                                                    </ui-select-match>
+                                                                    <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                        <div ng-bind-html="icon.label"></div>
+                                                                    </ui-select-choices>
+                                                                </ui-select>
                                                                 <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
                                                                     <button type="button" class="btn btn-primary" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
                                                                 </div>

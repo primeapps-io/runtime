@@ -371,7 +371,9 @@ angular.module('primeapps')
                             break;
                     }
                 },
-
+                moduleUpdate: function (module, id) {
+                    return $http.put(config.apiUrl + 'module/update/' + id, module);
+                },
                 //moduleProfileSettings
                 getAllModuleProfileSettings: function () {
                     return $http.get(config.apiUrl + 'module_profile_settings/get_all');
@@ -868,7 +870,7 @@ angular.module('primeapps')
                                     lookupRecord = null;
                             }
                             else {
-                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                                 var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {
                                     primary: true,
                                     deleted: false
@@ -927,7 +929,7 @@ angular.module('primeapps')
 
                     var sortOrders = [];
 
-                    angular.forEach($rootScope.modules, function (moduleItem) {
+                    angular.forEach($rootScope.appModules, function (moduleItem) {
                         sortOrders.push(moduleItem.order);
                     });
 
@@ -1516,7 +1518,7 @@ angular.module('primeapps')
 
                     angular.forEach(moduleFields, function (field) {
                         if (field.data_type === 'lookup' && field.lookup_type !== 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0]);
+                            var lookupModule = angular.copy($filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -1599,7 +1601,7 @@ angular.module('primeapps')
 
                 processRelations: function (relations) {
                     angular.forEach(relations, function (relation) {
-                        var relatedModule = $filter('filter')($rootScope.modules, {name: relation.related_module}, true)[0];
+                        var relatedModule = $filter('filter')($rootScope.appModules, {name: relation.related_module}, true)[0];
 
                         if (!relatedModule || relatedModule.order === 0) {
                             relation.deleted = true;
