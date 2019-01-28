@@ -36,27 +36,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="profileSetting in profileSettings">
+            <tr ng-repeat="profileSetting in profileSettings" ng-click="showFormModal(profileSetting);">
                 <td>{{profileSetting.profileName}}</td>
                 <td>{{profileSetting.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(profileSetting);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="$event.stopPropagation();showFormModal(profileSetting)">{{'Common.Edit' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();delete(profileSetting)">{{'Common.Delete' | translate}} </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
             </tr>
