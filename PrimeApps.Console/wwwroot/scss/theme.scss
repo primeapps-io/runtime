@@ -95,12 +95,11 @@ $primeapps-color: #0D6FAA;
 .resultimg
 {
   width: 100% !important;
-  background: rgba(0,0,0,0.1);
   ~ .action-buttons-block {
     display: inline-block;
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: -40px;
+    top: 50%;
     transform: translate(0%, -50%);
 
     button {
@@ -1684,7 +1683,9 @@ button, select {
           display: flex;
           justify-content: center;
           align-items: center;
-
+          height: 100%;
+          padding-bottom: 20px;
+          
           img {
             width: 200px;
             max-width: 100%;

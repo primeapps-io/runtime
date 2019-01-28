@@ -29,7 +29,7 @@ namespace PrimeApps.Console.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
+                repository.CurrentUser = new CurrentUser {UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
             }
         }
 

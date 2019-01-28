@@ -15,7 +15,9 @@ namespace PrimeApps.Model.Repositories
     public class AppDraftRepository : RepositoryBaseConsole, IAppDraftRepository
     {
         public AppDraftRepository(ConsoleDBContext dbContext, IConfiguration configuration)
-           : base(dbContext, configuration) { }
+            : base(dbContext, configuration)
+        {
+        }
 
         public List<int> GetAppIdsByOrganizationId(int organizationId)
         {
@@ -45,6 +47,7 @@ namespace PrimeApps.Model.Repositories
             DbContext.Apps.Add(app);
             return await DbContext.SaveChangesAsync();
         }
+
         public async Task<int> Update(AppDraft app)
         {
             return await DbContext.SaveChangesAsync();
@@ -94,7 +97,7 @@ namespace PrimeApps.Model.Repositories
             var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
 
             var appCollabrator = await DbContext.AppCollaborators
-                .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (!string.IsNullOrEmpty(search) ? x.AppDraft.Label.Contains(search) : true) && (status != AppDraftStatus.NotSet ? x.AppDraft.Status == status : true))
+                .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.ToLower().Contains(search.ToLower())) && (status == AppDraftStatus.NotSet || x.AppDraft.Status == status))
                 .Select(x => x.AppDraft)
                 .Skip(50 * page)
                 .Take(50)
