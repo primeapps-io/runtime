@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location) {
+    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location', 'FileUploader', '$cookies', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.appModel = {};
@@ -60,7 +60,9 @@ angular.module('primeapps')
                 $scope.appModel.name = app.name;
                 $scope.appModel.label = app.label;
                 $scope.appModel.description = app.description;
-                //Logo gelecek
+                $scope.appModel.template_id = 0;
+                $scope.appModel.status = 1;
+                $scope.appModel.logo = app.logo;
             });
 
             $scope.save = function () {

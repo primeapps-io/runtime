@@ -6,7 +6,7 @@ namespace PrimeApps.Console.Helpers
 {
 	public static class MenuHelper
 	{
-		public static Menu CreateMenu(Menu menu, bool deleted = false)
+		public static Menu CreateMenu(Menu menu)
 		{
 			var newMenu = new Menu()
 			{

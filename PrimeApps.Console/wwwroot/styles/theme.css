@@ -69,13 +69,12 @@
       border-color: rgba(0, 0, 0, 0.25); }
 
 .resultimg {
-  width: 100% !important;
-  background: rgba(0, 0, 0, 0.1); }
+  width: 100% !important; }
   .resultimg ~ .action-buttons-block {
     display: inline-block;
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: -40px;
+    top: 50%;
     transform: translate(0%, -50%); }
     .resultimg ~ .action-buttons-block button {
       background: transparent;
@@ -807,6 +806,11 @@ button, select {
         .primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
           background: transparent;
           height: 30px; }
+        .primeapps .setup-modal .modal-content tags-input .host .tags .tag-item, .primeapps .module-modal .modal-content tags-input .host .tags .tag-item {
+          margin: 0 2px 0 0;
+          font-size: 12px;
+          font-weight: bold;
+          line-height: 30px; }
     .primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
       max-width: 100% !important; }
       .primeapps .setup-modal .modal-content .multiselect-container .multiselect, .primeapps .module-modal .modal-content .multiselect-container .multiselect {
@@ -1073,7 +1077,9 @@ button, select {
       .primeapps .page-container .app-layout-box .app-box .image {
         display: flex;
         justify-content: center;
-        align-items: center; }
+        align-items: center;
+        height: 100%;
+        padding-bottom: 20px; }
         .primeapps .page-container .app-layout-box .app-box .image img {
           width: 200px;
           max-width: 100%; }
@@ -1754,6 +1760,18 @@ button, select {
       color: #CCC; }
       .primeapps .menu-setup .arrow span i:hover {
         color: #000; }
+.primeapps .swal-modal .swal-title {
+  margin: 0;
+  padding: 0; }
+.primeapps .swal-modal .swal-footer {
+  margin-top: 0;
+  text-align: center; }
+.primeapps .swal-modal .swal-button {
+  padding: 5px 15px; }
+  .primeapps .swal-modal .swal-button:hover {
+    padding: 5px 20px; }
+  .primeapps .swal-modal .swal-button:focus {
+    box-shadow: none; }
 
 .placeholder {
   margin: 0 auto;

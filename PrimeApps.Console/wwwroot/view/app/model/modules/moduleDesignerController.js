@@ -10,7 +10,6 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
-
             $scope.templatesFields = ModuleService.getTemplateFields();
 
             $scope.id = $location.search().id;
@@ -105,7 +104,6 @@ angular.module('primeapps')
                         }
                     }
 
-
                     drakeRows = dragularService(container, {
                         scope: $scope,
                         nameSpace: 'rows',
@@ -153,7 +151,6 @@ angular.module('primeapps')
                         }
                     });
 
-
                     templateContainer.on('dragularenter', function (e) {
                         //console.log(e);
                     });
@@ -173,7 +170,6 @@ angular.module('primeapps')
                         $scope.refreshModule();
                     }, 0);
                 });
-
 
                 $scope.$watch('moduleChange', function (value) {
                     if (!value)
@@ -258,7 +254,6 @@ angular.module('primeapps')
                         });
                 };
 
-
                 var getRoundingTypes = function () {
                     var roundingType1 = {value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff')};
                     var roundingType2 = {value: 'down', label: $filter('translate')('Setup.Modules.RoundingTypeDown')};
@@ -310,7 +305,6 @@ angular.module('primeapps')
                     .then(function (deletedModules) {
                         $scope.deletedModules = deletedModules;
                     });
-
 
                 ModuleService.getPicklists($scope.module)
                     .then(function (picklists) {
@@ -410,15 +404,11 @@ angular.module('primeapps')
                     if (!$scope.module.detail_view_type)
                         $scope.module.detail_view_type = 'tab';
 
-
                     $scope.initModuleDesginer();
-
 
                 });
 
-
             }
-
 
             $scope.lookup = function (searchTerm) {
                 if (!$scope.currentLookupField.lookupType) {
@@ -448,7 +438,6 @@ angular.module('primeapps')
             $scope.setCurrentLookupField = function (field) {
                 $scope.currentLookupField = angular.copy(field);
             };
-
 
             $scope.refreshModule = function () {
                 ModuleService.refreshModule($scope.moduleLayout, $scope.module);
@@ -509,7 +498,6 @@ angular.module('primeapps')
                 field.permissions = [];
                 return field;
             };
-
 
             $scope.showFieldModal = function (row, column, field) {
                 $scope.currentRow = row;
@@ -646,7 +634,6 @@ angular.module('primeapps')
                     $scope.currentField.show_label = true;
                 }
             };
-
 
             $scope.dataTypeChanged = function () {
                 if (!$scope.currentField.dataType)
@@ -915,7 +902,6 @@ angular.module('primeapps')
                     $scope.saveModule();
             };
 
-
             $scope.saveField = function (fieldForm) {
                 if (!fieldForm.$valid) {
                     $timeout(function () {
@@ -938,7 +924,6 @@ angular.module('primeapps')
                         return;
                     }
                 }
-
 
                 $scope.showAdvancedOptions = false;
 
@@ -1094,7 +1079,6 @@ angular.module('primeapps')
                 $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
                 $scope.moduleChange = new Date();
             };
-
 
             $scope.cancelField = function () {
                 if ($scope.currentField.isNew) {
@@ -1388,7 +1372,8 @@ angular.module('primeapps')
                                             updateView(views);
 
                                         });
-                                } else {
+                                }
+                                else {
                                     updateView(cache.views, cacheKey);
                                 }
                             }
@@ -1404,23 +1389,28 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
+                moduleModel.order = 6;//TODO: add an order backend
+
+                if (moduleModel.menu_icon)
+                    moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
                     ModuleService.moduleCreate(moduleModel).then(function () {
                         $scope.saving = false;
+                        $state.go('studio.app.modules', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
                     });
+                    $scope.editModal.hide();
                 }
                 else {
                     ModuleService.update(moduleModel, moduleModel.id).then(function () {
                         $scope.saving = false;
+                        $state.go('studio.app.modules', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
                     });
+                    $scope.editModal.hide();
                 }
-
 
             }
 
-
         }
-
 
     ]);

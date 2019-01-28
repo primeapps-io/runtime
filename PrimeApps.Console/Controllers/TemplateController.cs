@@ -90,7 +90,7 @@ namespace PrimeApps.Console.Controllers
 		}
 
 		[Route("create_excel"), HttpPost]
-		public async Task<IActionResult> CreateExcel(TemplateBindingModel template)
+		public async Task<IActionResult> CreateExcel([FromBody]TemplateBindingModel template)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);

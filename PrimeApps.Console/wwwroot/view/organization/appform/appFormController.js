@@ -33,61 +33,89 @@ angular.module('primeapps')
 
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'upload.php'
-            });
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId
+                    },
+                    queueLimit: 1
+                })
+            ;
+
+            uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'imageFilter':
+                        ngToast.create({ content: $filter('translate')('Setup.Settings.ImageError'), className: 'warning' });
+                        break;
+                    case 'sizeFilter':
+                        ngToast.create({ content: $filter('translate')('Setup.Settings.SizeError'), className: 'warning' });
+                        break;
+                }
+            };
+
+            uploader.onAfterAddingFile = function (item) {
+                $scope.croppedImage = '';
+                var reader = new FileReader();
+
+                reader.onload = function (event) {
+                    $scope.$apply(function () {
+                        item.image = event.target.result;
+                    });
+                };
+                reader.readAsDataURL(item._file);
+            };
 
             uploader.filters.push({
                 name: 'imageFilter',
-                fn: function (item /*{File|FileLikeObject}*/, options) {
+                fn: function (item, options) {
                     var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                    return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                    return '|jpg|png|jpeg|bmp|'.indexOf(type) > -1;
                 }
             });
 
-
-            // an async filter
             uploader.filters.push({
-                name: 'asyncFilter',
-                fn: function (item /*{File|FileLikeObject}*/, options) {
-
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 5242880;//5 mb
                 }
             });
 
             // CALLBACKS
 
-            uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
-                console.info('onWhenAddingFileFailed', item, filter, options);
-            };
-            uploader.onAfterAddingFile = function (fileItem) {
-                console.info('onAfterAddingFile', fileItem);
-            };
-            uploader.onAfterAddingAll = function (addedFileItems) {
-                console.info('onAfterAddingAll', addedFileItems);
-            };
-            uploader.onBeforeUploadItem = function (item) {
-                console.info('onBeforeUploadItem', item);
-            };
-            uploader.onProgressItem = function (fileItem, progress) {
-                console.info('onProgressItem', fileItem, progress);
-            };
-            uploader.onProgressAll = function (progress) {
-                console.info('onProgressAll', progress);
-            };
-            uploader.onSuccessItem = function (fileItem, response, status, headers) {
-                console.info('onSuccessItem', fileItem, response, status, headers);
-            };
-            uploader.onErrorItem = function (fileItem, response, status, headers) {
-                console.info('onErrorItem', fileItem, response, status, headers);
-            };
-            uploader.onCancelItem = function (fileItem, response, status, headers) {
-                console.info('onCancelItem', fileItem, response, status, headers);
-            };
-            uploader.onCompleteItem = function (fileItem, response, status, headers) {
-                console.info('onCompleteItem', fileItem, response, status, headers);
-            };
-            uploader.onCompleteAll = function () {
-                console.info('onCompleteAll');
-            };
+            // uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
+            //     console.info('onWhenAddingFileFailed', item, filter, options);
+            // };
+            // uploader.onAfterAddingFile = function (fileItem) {
+            //     console.info('onAfterAddingFile', fileItem);
+            // };
+            // uploader.onAfterAddingAll = function (addedFileItems) {
+            //     console.info('onAfterAddingAll', addedFileItems);
+            // };
+            // uploader.onBeforeUploadItem = function (item) {
+            //     console.info('onBeforeUploadItem', item);
+            // };
+            // uploader.onProgressItem = function (fileItem, progress) {
+            //     console.info('onProgressItem', fileItem, progress);
+            // };
+            // uploader.onProgressAll = function (progress) {
+            //     console.info('onProgressAll', progress);
+            // };
+            // uploader.onSuccessItem = function (fileItem, response, status, headers) {
+            //     console.info('onSuccessItem', fileItem, response, status, headers);
+            // };
+            // uploader.onErrorItem = function (fileItem, response, status, headers) {
+            //     console.info('onErrorItem', fileItem, response, status, headers);
+            // };
+            // uploader.onCancelItem = function (fileItem, response, status, headers) {
+            //     console.info('onCancelItem', fileItem, response, status, headers);
+            // };
+            // uploader.onCompleteItem = function (fileItem, response, status, headers) {
+            //     console.info('onCompleteItem', fileItem, response, status, headers);
+            // };
+            // uploader.onCompleteAll = function () {
+            //     console.info('onCompleteAll');
+            // };
 
 
             $scope.openModal = function () {
@@ -146,6 +174,11 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.logoRemove = function () {
+                uploader.queue[0].remove();
+                uploader.queue[0].image = null;
+            };
+
             $scope.generateAppName = function () {
                 if (!$scope.appModel || !$scope.appModel.label || $scope.isAppNameChanged)
                     return;
@@ -163,14 +196,33 @@ angular.module('primeapps')
 
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
-                        ngToast.create({
-                            content: 'App ' + $scope.appModel.label + ' successfully created.',
-                            className: 'success'
-                        });
                         $scope.appModel = {};
                         $scope.appSaving = false;
                         $scope.appFormModal.hide();
-                        $state.go('studio.app.overview', {orgId: $rootScope.currentOrgId, appId: response.data});
+                        var header = {
+                            'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                            'Accept': 'application/json',
+                            'X-Organization-Id': $rootScope.currentOrgId,
+                            'X-App-Id': response.data.id
+                        };
+                        uploader.queue[0].uploader.headers = header;
+                        uploader.queue[0].headers = header;
+                        uploader.queue[0].upload();
+
+                        uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                            if (status === 200) {
+                                ngToast.create({ content: $filter('translate')('App successfully created.'), className: 'success' });
+                                $scope.updateApp = {};
+                                $scope.updateApp.description = response.data.description;
+                                $scope.updateApp.label = response.data.label;
+                                $scope.updateApp.name = response.data.name;
+                                $scope.updateApp.status = response.data.status;
+                                $scope.updateApp.template_id = response.data.templet_id;
+                                $scope.updateApp.logo = logoUrl;
+                                AppFormService.update(response.data.id, $scope.updateApp).then(function (response) {
+                                });
+                            }
+                        };
                     })
                     .catch(function () {
                         ngToast.create({
