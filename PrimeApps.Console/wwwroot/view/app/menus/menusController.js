@@ -291,8 +291,6 @@ angular.module('primeapps')
                         });
                     });
                 }
-                // else
-                //     $scope.menu = angular.copy(menu);
 
             }
 
@@ -505,6 +503,7 @@ angular.module('primeapps')
                             swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
+                            $scope.loading = false;
                         });
                     }
                     else {
