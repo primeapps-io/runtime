@@ -276,7 +276,7 @@ angular.module('primeapps')
                                         labelMenu.id = response.data[i].menu_items[j].id;
                                         labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
                                         labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
-                                        labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : '';
+                                        labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : 'fa fa-square';
                                         labelMenu.route = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.contains('modules/') ? '' : response.data[i].menu_items[j].route : '';
                                         menuList.items.push(labelMenu);
                                     }
@@ -320,7 +320,7 @@ angular.module('primeapps')
                 menuList.isDynamic = $scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
                 menuList.route = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
                 menuList.menuId = menuList.no;
-                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : '' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon : 'fa fa-square';
+                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.label : 'fa fa-square';
                 $scope.counter += 1;
                 menuList.parentId = 0;
                 menuList.items = [];
@@ -357,7 +357,7 @@ angular.module('primeapps')
                 menuItem.name = module != null ? $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural : '';
                 menuItem.menuName = module != null ? module.name : '';
                 menuItem.route = module != null ? module.route ? module.route : '' : '';
-                menuItem.icon = module != null ? module.menu_icon ? module.menu_icon : '' : '';
+                menuItem.icon = module != null ? module.menu_icon ? module.menu_icon : 'fa fa-square' : 'fa fa-square';
                 menuItem.no = labelNo;
                 menuItem.menuId = menu.no;
                 menuItem.menuNo = menuNo;
