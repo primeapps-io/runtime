@@ -12,11 +12,7 @@ angular.module('primeapps')
             $scope.loading = true;
 
             $scope.apps = [];
-            $scope.appsFilter = {
-                search: null,
-                page: null,
-                status: 0
-            };
+            $scope.appsFilter = null;
 
             AllAppsService.myApps($scope.appsFilter)
                 .then(function (response) {

@@ -13,7 +13,7 @@ angular.module('primeapps')
                 },
 
                 create: function (quoteTemplate) {
-                    return $http.post(config.apiUrl + 'template/create', quoteTemplate);
+                    return $http.post(config.apiUrl + 'template/create_excel', quoteTemplate);
                 },
                 update: function (quoteTemplate) {
                     return $http.put(config.apiUrl + 'template/update/' + quoteTemplate.id, quoteTemplate);
