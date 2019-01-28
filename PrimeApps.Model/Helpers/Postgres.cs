@@ -27,7 +27,11 @@ namespace PrimeApps.Model.Helpers
 
             if (tenantId < 0)
             {
-                builder.Remove("database");
+                //TODO: Added temporarily for Azure PostgreSQL bullshits. Delete this.
+                if (builder.ConnectionString.Contains("database.azure.com"))
+                    builder["database"] = "postgres";
+                else
+                    builder.Remove("database");
             }
             else
             {
