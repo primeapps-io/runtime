@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.workflowModel = {};
             $scope.workflowStartModel = {};
             $scope.$parent.menuTopTitle = "Automation";
-            $scope.$parent.activeMenu = 'automation';
+            //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflowEditor';
             $rootScope.subtoggleClass = 'full-toggled2';
             $scope.scheduleItems = WorkflowsService.getScheduleItems();

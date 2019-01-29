@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, RolesService, $http, config) {
 
             $scope.$parent.menuTopTitle = "Authorization";
-            $scope.$parent.activeMenu = 'authorization';
+            //$scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'roles';
             $rootScope.breadcrumblist[2].title = 'Roles';
             $scope.loading = true;

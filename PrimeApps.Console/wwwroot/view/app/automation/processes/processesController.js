@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.processes = [];
             $scope.$parent.processes = [];
             $scope.$parent.menuTopTitle = "Automation";
-            $scope.$parent.activeMenu = 'automation';
+            //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'processes';
             $rootScope.breadcrumblist[2].title = 'Approval Processes';
             $scope.hookParameters = [];

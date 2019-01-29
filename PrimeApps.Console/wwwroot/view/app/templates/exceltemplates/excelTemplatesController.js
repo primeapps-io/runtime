@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window) {
 
             $scope.$parent.menuTopTitle = "Templates";
-            $scope.$parent.activeMenu = 'templates';
+            //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
             $rootScope.breadcrumblist[2].title = 'Excel Templates';

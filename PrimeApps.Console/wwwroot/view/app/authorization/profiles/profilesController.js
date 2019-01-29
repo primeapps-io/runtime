@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
             $scope.$parent.menuTopTitle = "Authorization";
-            $scope.$parent.activeMenu = 'authorization';
+            //$scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'profiles';
 
             $rootScope.breadcrumblist[2].title = 'Profiles';

@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.workflows = [];
             $scope.$parent.workflows = [];
             $scope.$parent.menuTopTitle = "Automation";
-            $scope.$parent.activeMenu = 'automation';
+            //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";
             $rootScope.breadcrumblist[2].title = 'Workflows';
