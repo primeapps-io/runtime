@@ -6,7 +6,7 @@ angular.module('primeapps')
 		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location) {
 
 			$scope.$parent.menuTopTitle = "Models";
-			$scope.$parent.activeMenu = "model";
+			//$scope.$parent.activeMenu = "appMenu";
 			$scope.$parent.activeMenuItem = "relations";
 
 			$rootScope.breadcrumblist[2].title = 'Relations';

@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
 
             $scope.$parent.menuTopTitle = "Models";
-            $scope.$parent.activeMenu = 'model';
+
             $scope.$parent.activeMenuItem = 'modules';
 
             $scope.generator = function (limit) {

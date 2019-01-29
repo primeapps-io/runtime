@@ -27,5 +27,9 @@ angular.module('primeapps')
             };
 
             $scope.getBasicModules();
+
+            $rootScope.openSubMenu = function () {
+                $rootScope.subMenuOpen = 'model';
+            }
         }
     ]);
