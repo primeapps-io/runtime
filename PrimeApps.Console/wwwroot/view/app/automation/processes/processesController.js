@@ -121,6 +121,7 @@ angular.module('primeapps')
             setTaskFields();
 
             $scope.selectProcess = function (id) {
+                $scope.modalLoading = true;
                 ModuleService.getPickItemsLists(activityModule, false)
                     .then(function (picklistsActivity) {
                         $scope.picklistsActivity = picklistsActivity;
@@ -188,11 +189,11 @@ angular.module('primeapps')
                                             $scope.isEdit = true;
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
-                                            $scope.modalLoading = false; 
+                                            $scope.modalLoading = false;
                                         })
                                         .catch(function (err) {
                                             $scope.loading = false;
-                                            $scope.modalLoading = false; 
+                                            $scope.modalLoading = false;
                                         });
                                 });
                         }
@@ -861,8 +862,9 @@ angular.module('primeapps')
 
                 $scope.prosessFormModal.$promise.then(function () {
                     $scope.prosessFormModal.show();
+                    $scope.modalLoading = false;
                 });
-                $scope.modalLoading = false;
+
             };
 
             $scope.cancel = function () {

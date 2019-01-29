@@ -157,10 +157,10 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr ng-repeat="filter in filters">
-                                                        <td>
+                                                        <td class="form-group">
                                                             <span class="filter-no">{{filter.no}}.</span>
                                                         </td>
-                                                        <td>
+                                                        <td class="form-group">
                                                             <select id="field"
                                                                     name="field"
                                                                     class="form-control"
@@ -170,7 +170,7 @@
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
                                                         </td>
-                                                        <td>
+                                                        <td class="form-group">
                                                             <select id="operator"
                                                                     name="operator"
                                                                     class="form-control"
@@ -180,7 +180,7 @@
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
                                                         </td>
-                                                        <td>
+                                                        <td class="form-group">
                                                             <input type="text"
                                                                    class="form-control ng-animate-disabled"
                                                                    ng-model="filter.value"
@@ -360,7 +360,6 @@
                                             </table>
                                         </div>
                                         <div class="wizard-buttons text-right">
-                                            <button type="button" ng-click="cancel();" class="btn btn-custom">{{'Common.Cancel' | translate}}</button>
                                             <button type="button" class="btn btn-primary btn-w-sm" ng-click="$parent.wizardStep = 0">
                                                 <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous' | translate }}
                                             </button>
@@ -533,9 +532,6 @@
                                         </div>
                                     </div>
                                     <div class="wizard-buttons text-right">
-                                        <button type="button" ng-click="cancel();" class="btn btn-custom">
-                                            {{'Common.Cancel' | translate}}
-                                        </button>
                                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="$parent.wizardStep = 1">
                                             <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous' | translate}}
                                         </button>
