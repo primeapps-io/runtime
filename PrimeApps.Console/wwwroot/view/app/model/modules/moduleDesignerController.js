@@ -1389,9 +1389,9 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-               //moduleModel.order = 6;//TODO: add an order backend
+                //moduleModel.order = 6;//TODO: add an order backend
 
-                if (moduleModel.menu_icon.value)
+                if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
