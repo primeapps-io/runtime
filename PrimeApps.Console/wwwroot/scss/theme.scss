@@ -164,6 +164,10 @@ $primeapps-color: #0D6FAA;
     top: 0px !important;
   }
 }
+.disabled{
+  opacity: .5;
+  cursor: not-allowed !important;
+}
 .newinput {
   padding-left: 23px !important;
   padding-right: 20px !important;
@@ -219,6 +223,7 @@ $primeapps-color: #0D6FAA;
       }
     }
   }
+  
 
   input[type="checkbox"]
   {
@@ -1500,19 +1505,29 @@ button, select {
     background-color: inherit;
     padding-left: 30px;
     color: rgba(0, 0, 0, 0.5);
-
+    > li + li:before{
+      content: "/";
+      padding: 0px 0px 0px 5px;
+    }
     li {
-      font-size: 16px !important;
+      font-size: 14px !important;
       color: rgba(0, 0, 0, 0.5) !important;
       font-weight: bold !important;
-
+      span{
+        padding: 5px 10px;
+        line-height: 15px;
+      }
       a {
         color: rgba(0, 0, 0, 0.5) !important;
-        font-size: 14px !important;
+        font-size: 12px !important;
         font-weight: 400 !important;
-
+        padding: 5px 10px;
+        line-height: 15px;
+        border-radius: 2px;
+        text-decoration: none;
         &:hover {
           color: #0d6faa;
+          background: rgba(0,0,0,0.1);
         }
       }
     }
@@ -3098,7 +3113,15 @@ button, select {
       
     }
   }
-  
+  .shadowh{
+    @include hoverEffect();
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    &:hover
+    {
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+    }
+  }
   
 }
 

@@ -4,8 +4,8 @@
             <ul class="breadcrumb">
                 <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
                     <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
-                    <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
-                <li>
+                    <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a>
+                </li>
             </ul>
             <ul>
                 <li style="margin-left:  10px" ng-if="currentAppId">
@@ -18,12 +18,12 @@
                     </button>
                 </li>
                 <li>
-                    <button style="border:none" type="button" class="rigth-oval-toolbar-item">
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh">
                         <i class="fas fa-question"></i>
                     </button>
                 </li>
                 <li>
-                    <button style="border:none" type="button" class="rigth-oval-toolbar-item"
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh"
                             aria-hidden="true"
                             data-title="Test"
                             data-template-url="view/common/user-dropdown.html"
