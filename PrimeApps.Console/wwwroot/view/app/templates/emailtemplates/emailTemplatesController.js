@@ -7,7 +7,7 @@ angular.module('primeapps')
 
             $scope.templateModules = $filter('filter')($scope.$parent.modules, { deleted: false });
             $scope.$parent.menuTopTitle = "Templates";
-            $scope.$parent.activeMenu = 'templates';
+            //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
 
             $rootScope.breadcrumblist[2].title = 'Email Templates';

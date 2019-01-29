@@ -28,8 +28,8 @@ angular.module('primeapps')
 
             $scope.getBasicModules();
 
-            $rootScope.openSubMenu = function () {
-                $rootScope.subMenuOpen = 'model';
+            $rootScope.openSubMenu = function (name) {
+                $rootScope.subMenuOpen = name;
             }
         }
     ]);
