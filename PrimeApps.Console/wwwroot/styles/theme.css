@@ -1303,7 +1303,7 @@ button:focus, select:focus {
   padding: 10px;
 }
 .primeapps .page-container {
-  margin-top: 160px !important;
+  margin-top: 100px !important;
   margin-left: 20px !important;
   margin-right: 20px;
 }
@@ -1842,6 +1842,7 @@ button:focus, select:focus {
   display: none !important;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
+  position: relative;
   margin: 0;
   border-radius: 3px;
   border-bottom: solid 1px rgba(0, 0, 0, 0.05);
@@ -1878,6 +1879,13 @@ button:focus, select:focus {
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li {
   margin: 0;
 }
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a {
+  padding: 5px 0px;
+  font-size: 12px !important;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a i {
+  font-size: 14px;
+}
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li .costume-bage {
   height: 25px;
   width: 25px;
@@ -1900,17 +1908,27 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active {
   position: relative;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.03);
   border-color: transparent;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active > a {
   color: #0D6FAA;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.03);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul {
   display: block;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li {
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li:last-child {
+  border-color: transparent;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li a {
+  background: transparent;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active:before {
   margin-top: 0px;
@@ -1926,6 +1944,9 @@ button:focus, select:focus {
   border-style: solid;
   border-width: 10px 0 10px 10px;
   border-color: transparent transparent transparent #ffffff;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.sub-open:before {
+  display: none;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .submenu-togle {
   width: 60px;
