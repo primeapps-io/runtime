@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService) {
 
             $scope.$parent.menuTopTitle = "Templates";
-            $scope.$parent.activeMenu = 'templates';
+           // $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesWord';
 
             $rootScope.breadcrumblist[2].title = 'Word Templates';
