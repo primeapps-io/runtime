@@ -256,44 +256,17 @@ angular.module('primeapps')
                         ModuleService.getPickItemsLists($scope.module)
                             .then(function (picklists) {
                                 $scope.modulePicklists = picklists;
-                                $scope.filters = [];
-
-                                for (var i = 0; i < 5; i++) {
-                                    var filter = {};
-                                    filter.id = i;
-                                    filter.no = i + 1;
-
-                                    //if ($scope.workflowStartModel.filters && $scope.workflowStartModel.filters[i]) {
-                                    //    var field = $filter('filter')($scope.module.fields, { name: $scope.workflowStartModel.filters[i].field.name }, true)[0];
-
-                                    //    if (field)
-                                    //        $scope.workflowStartModel.filters[i].field = field;
-
-                                    //    if (field.data_type === 'picklist') {
-                                    //        var picklistValue = $filter('filter')($scope.modulePicklists[field.picklist_id], { id: $scope.workflowStartModel.filters[i].value }, true)[0];
-                                    //        filter.value = angular.copy(picklistValue);
-                                    //    }
-                                    //    else
-                                    //        filter.value = $scope.workflowStartModel.filters[i].value;
-                                    //}
-                                    //else {
-                                    filter.field = null;
-                                    filter.operator = null;
-                                    filter.value = null;
-                                    // }
-
-
-                                    $scope.filters.push(filter);
-
-
-                                }
 
                                 if ($scope.id) {
-                                    var tempData = processWorkflow();
+                                    var startNode = $filter('filter')(window.myDiagram.model.nodeDataArray, { ngModelName: 'start' }, true)[0];
+                                    var tempData = processWorkflow(startNode.data);
+
                                     if (tempData)
                                         $scope.workflowStartModel = tempData;
-
                                 }
+                                else
+                                    filterReload();
+
                                 $scope.loadingFilter = false;
 
                             });
@@ -306,32 +279,49 @@ angular.module('primeapps')
                     });
             };
 
+            var filterReload = function () {
 
-            var processWorkflow = function () {
+                $scope.filters = [];
+
+                for (var i = 0; i < 5; i++) {
+                    var filter = {};
+                    filter.id = i;
+                    filter.no = i + 1;
+                    filter.field = null;
+                    filter.operator = null;
+                    filter.value = null;
+
+                    $scope.filters.push(filter);
+                }
+            };
+
+            var processWorkflow = function (data) {
                 var workflowModel = {};
-                workflowModel.id = $scope.workflowStartModel.id;
-                workflowModel.created_by = $scope.workflowStartModel.created_by;
-                workflowModel.updated_by = $scope.workflowStartModel.updated_by;
-                workflowModel.created_at = $scope.workflowStartModel.created_at;
-                workflowModel.updated_at = $scope.workflowStartModel.updated_at;
-                workflowModel.deleted = $scope.workflowStartModel.deleted;
-                workflowModel.name = $scope.workflowStartModel.name;
-                workflowModel.code = $scope.workflowStartModel.code;
+                workflowModel.id = data.id;
+                workflowModel.created_by = data.created_by;
+                workflowModel.updated_by = data.updated_by;
+                workflowModel.created_at = data.created_at;
+                workflowModel.updated_at = data.updated_at;
+                workflowModel.deleted = data.deleted;
+                workflowModel.name = data.name;
+                workflowModel.code = data.code;
                 workflowModel.module = $scope.module;
-                workflowModel.active = $scope.workflowStartModel.active;
-                workflowModel.frequency = $scope.workflowStartModel.frequency || 'one_time';
+                workflowModel.active = data.active;
+                workflowModel.frequency = data.frequency || 'one_time';
                 workflowModel.operation = {};
-                window.diagramData = angular.fromJson($scope.workflowStartModel.diagram_json);
+                window.diagramData = angular.fromJson(data.diagram_json);
 
-                angular.forEach($scope.workflowStartModel.record_operations.split(','), function (operation) {
+                angular.forEach(data.record_operations.split(','), function (operation) {
                     workflowModel.operation[operation] = true;
                 });
 
                 if ($scope.workflowStartModel.filters) {
-                    $scope.workflowStartModel.filters = $filter('orderBy')($scope.workflowStartModel.filters, 'no');
+                    filterReload();
 
-                    for (var i = 0; i < $scope.workflowStartModel.filters.length; i++) {
-                        var filter = $scope.workflowStartModel.filters[i];
+                    $scope.workflowStartModel.filters = $filter('orderBy')(data.filters, 'no');
+
+                    for (var i = 0; i < data.filters.length; i++) {
+                        var filter = angular.copy(data.filters[i]);
                         if (filter.field.name)
                             filter.field = filter.field.name;
 
