@@ -70,7 +70,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
-                                <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
+                                <ui-select ng-model="currentProfileSetting.menu_icon" ng-disabled="ctrl.disabled">
                                     <ui-select-match placeholder="Please search an icon">
                                         <div>
                                             <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>

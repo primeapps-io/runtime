@@ -174,11 +174,10 @@ angular.module('primeapps')
                 }
 
                 var menuIcon;
-                if ($scope.currentProfileSetting.menu_icon) {
-                    menuIcon = $scope.currentProfileSetting.menu_icon;
-                } else {
+                if (angular.isObject($scope.currentProfileSetting.menu_icon))
+                    $scope.currentProfileSetting.menu_icon = $scope.currentProfileSetting.menu_icon.value;
+                else
                     menuIcon = $scope.module.menu_icon;
-                }
 
                 var obj = {
                     module_id: $scope.module.id,
