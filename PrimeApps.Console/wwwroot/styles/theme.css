@@ -141,6 +141,11 @@
   top: 0px !important;
 }
 
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
 .newinput {
   padding-left: 23px !important;
   padding-right: 20px !important;
@@ -1167,18 +1172,31 @@ button:focus, select:focus {
   padding-left: 30px;
   color: rgba(0, 0, 0, 0.5);
 }
+.primeapps .breadcrumb > li + li:before {
+  content: "/";
+  padding: 0px 0px 0px 5px;
+}
 .primeapps .breadcrumb li {
-  font-size: 16px !important;
+  font-size: 14px !important;
   color: rgba(0, 0, 0, 0.5) !important;
   font-weight: bold !important;
 }
+.primeapps .breadcrumb li span {
+  padding: 5px 10px;
+  line-height: 15px;
+}
 .primeapps .breadcrumb li a {
   color: rgba(0, 0, 0, 0.5) !important;
-  font-size: 14px !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
+  padding: 5px 10px;
+  line-height: 15px;
+  border-radius: 2px;
+  text-decoration: none;
 }
 .primeapps .breadcrumb li a:hover {
   color: #0d6faa;
+  background: rgba(0, 0, 0, 0.1);
 }
 .primeapps .scratch-page {
   display: flex;
@@ -2404,6 +2422,17 @@ button:focus, select:focus {
   .primeapps .flex-betweenx {
     display: block;
   }
+}
+.primeapps .shadowh {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+.primeapps .shadowh:hover {
+  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
 }
 
 .placeholder {

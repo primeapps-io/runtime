@@ -1,21 +1,23 @@
 <div class="page-container">
     <div class="row" ng-if="apps.length > 0 || appsFilter">
         <div class="col-sm-10">
-            <div class="search-input">
+            <div class="search-input shadowh">
                 <div class="search-input-icon">
                     <i class="fas fa-search"></i>
                 </div>
                 <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" class="form-control form-control-lg form-control-borderless app-search-input" type="search" placeholder="Search">
             </div>
         </div>
-        <div class="col-sm-2 search-select">
-            <i class="fas fa-angle-down"></i>
-            <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
-                <option value="">All Apps</option>
-                <option value="1">Draft</option>
-                <option value="2">Published</option>
-                <option value="3">Unpublished</option>
-            </select>
+        <div class="col-sm-2">
+            <div class="shadowh search-select">
+                <i class="fas fa-angle-down"></i>
+                <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
+                    <option value="">All Apps</option>
+                    <option value="1">Draft</option>
+                    <option value="2">Published</option>
+                    <option value="3">Unpublished</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="row" style="margin-top: 50px" ng-if="apps.length > 0">
@@ -46,7 +48,7 @@
                     </div>
                 </div>
                 <div class="app-info">
-                    <button class="btn btn-blue btn-radius btn-bold">
+                    <button class="btn btn-blue btn-radius btn-bold shadowh">
                         <i class="fas fa-plus"></i> Create New App
                     </button>
                 </div>
