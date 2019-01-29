@@ -1880,7 +1880,6 @@ button:focus, select:focus {
   margin: 0;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a {
-  padding: 5px 0px;
   font-size: 12px !important;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a i {
@@ -2175,8 +2174,9 @@ button:focus, select:focus {
 .primeapps .menu-setup .custom-menu .form-group {
   margin-bottom: 5px !important;
 }
-.primeapps .menu-setup .custom-menu .form-group .form-control {
+.primeapps .menu-setup .custom-menu .form-group .form-control, .primeapps .menu-setup .custom-menu .form-group .ui-select-bootstrap {
   width: auto;
+  background: #FFF;
 }
 .primeapps .menu-setup .custom-menu .custom-menu {
   padding-left: 30px;
@@ -2222,13 +2222,14 @@ button:focus, select:focus {
   display: inline-block;
   position: absolute;
   right: 10px;
+  top: 5px;
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a {
+.primeapps .menu-setup .custom-menu .action-buttons-block a, .primeapps .menu-setup .custom-menu .action-buttons-block button {
   background: rgba(13, 111, 170, 0.75);
-  width: 30px;
-  font-size: 12px;
-  height: 30px;
-  line-height: 30px;
+  width: 25px;
+  font-size: 10px;
+  height: 25px;
+  line-height: 25px;
   text-align: center;
   border: none;
   color: white;
@@ -2238,22 +2239,22 @@ button:focus, select:focus {
   text-decoration: none;
   display: inline-block;
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit {
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit {
   background: rgba(0, 0, 0, 0.25);
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit:hover {
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit:hover {
   background: rgba(0, 0, 0, 0.5);
   color: #FFF;
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete {
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete {
   background: rgba(206, 4, 4, 0.5);
   color: #FFF;
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover {
+.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete:hover {
   background: #ce0404;
   color: #FFF;
 }
-.primeapps .menu-setup .custom-menu .action-buttons-block a:hover {
+.primeapps .menu-setup .custom-menu .action-buttons-block a:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button:hover {
   background: #0d6faa;
   color: white;
 }
@@ -2470,6 +2471,40 @@ button:focus, select:focus {
 }
 .primeapps .shadowh:hover {
   box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-group:before, .primeapps .icon-search-list .ui-select-choices .ui-select-choices-group:after {
+  content: "";
+  display: table;
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row {
+  min-width: 45px;
+  min-height: 45px;
+  width: 10%;
+  overflow: hidden;
+  float: left;
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner {
+  min-height: 45px;
+  padding: 0px !important;
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner > div {
+  min-height: 45px;
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i {
+  width: 100%;
+  min-height: 45px;
+  position: relative;
+  text-indent: -9999px;
+}
+.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i:before {
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  line-height: 100%;
+  text-align: center;
+  z-index: 1;
+  text-indent: 0px;
 }
 
 .placeholder {
