@@ -3083,7 +3083,7 @@ button, select {
       margin: 0px;
       padding: 5px;
       list-style-type: none;
-      li{
+      > li{
         display: inline-block;
         .rigth-oval-toolbar-item
         {
