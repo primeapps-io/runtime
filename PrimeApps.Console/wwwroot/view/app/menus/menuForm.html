@@ -165,9 +165,9 @@
                                                                 <div ng-bind-html="icon.label"></div>
                                                             </ui-select-choices>
                                                         </ui-select>
-                                                        <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
+                                                        <span class="editable-buttons action-buttons-block" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}">
                                                             <button type="button" ng-click="update(menuList.no,menuList.icon)"><i class="fa fa-check"></i></button>
-                                                        </div>
+                                                        </span>
                                                     </span>
                                                     <span class="action-buttons-block">
                                                         <a ng-if="!menuList.isEdit" ng-click="edit(menuList.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">
@@ -209,9 +209,9 @@
                                                                         <div ng-bind-html="icon.label"></div>
                                                                     </ui-select-choices>
                                                                 </ui-select>
-                                                                <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
-                                                                    <button type="button" class="btn btn-primary" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
-                                                                </div>
+                                                                <span class="action-buttons-block editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
+                                                                    <button type="button" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
+                                                                </span>
                                                             </span>
                                                             <span class="action-buttons-block">
                                                                 <a ng-if="!menu.isEdit && menu.name" ng-click="edit(menuList.no,menu.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">

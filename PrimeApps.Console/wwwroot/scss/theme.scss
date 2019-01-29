@@ -2442,7 +2442,6 @@ button, select {
               li {
                 margin: 0;
                 a{
-                  padding: 5px 0px;
                   font-size: 12px !important;
                   i{
                     font-size: 14px;
@@ -2813,11 +2812,13 @@ button, select {
         background: rgba(0,0,0,.05);
         border-radius: 5px;
       }
+      
       .form-group {
         margin-bottom: 5px !important;
-        .form-control
+        .form-control,.ui-select-bootstrap
         {
           width: auto;
+          background: #FFF;
         }
       }
       .custom-menu{
@@ -2864,13 +2865,14 @@ button, select {
         display: inline-block;
         position: absolute;
         right: 10px;
+        top: 5px;
 
-        a {
+        a,button {
           background: rgba(13, 111, 170, 0.75);
-          width: 30px;
-          font-size: 12px;
-          height: 30px;
-          line-height: 30px;
+          width: 25px;
+          font-size: 10px;
+          height: 25px;
+          line-height: 25px;
           text-align: center;
           border: none;
           color: rgba(255, 255, 255, 1);
@@ -3158,6 +3160,47 @@ button, select {
     &:hover
     {
       box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+    }
+  }
+  .icon-search-list{
+    .ui-select-choices{
+      .ui-select-choices-group{
+        &:before,&:after{
+          content:'';
+          display: table;
+          
+        }
+      }
+      .ui-select-choices-row{
+        min-width: 45px;
+        min-height: 45px;
+        width: 10%;
+        overflow: hidden;
+        float: left;
+        .ui-select-choices-row-inner{
+          min-height: 45px;
+          padding: 0px !important;
+          > div{
+            min-height: 45px;
+          }
+          i{
+            width: 100%;
+            min-height: 45px;
+            position: relative;
+            text-indent: -9999px;
+            &:before{
+              transform: translate(-50%, -50%);
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              line-height: 100%;
+              text-align: center;
+              z-index: 1;
+              text-indent: 0px;
+            }
+          }
+        }
+      }
     }
   }
   
