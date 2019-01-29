@@ -1817,7 +1817,6 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout {
   padding-top: 80px;
-  margin-bottom: 50px;
 }
 .primeapps #wrapper .setup-layout .app-menu2 {
   -webkit-transition: all 0.5s ease;
@@ -1837,38 +1836,47 @@ button:focus, select:focus {
   padding: 20px 10px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   border-radius: 5px;
+  list-style-type: none;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
   display: none !important;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
-  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
   margin: 0;
+  border-radius: 3px;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a {
   font-family: Nunito;
   font-size: 14px !important;
   font-weight: bold;
-  width: 90%;
   color: rgba(0, 0, 0, 0.5);
   line-height: 20px;
   padding: 10px 0px;
   display: block;
   align-items: center;
   width: 100%;
+  text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a span {
-  margin-left: 10px;
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a:hover {
+  color: #0D6FAA;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a i {
   font-size: 18px;
-  width: 30px;
+  width: 40px;
   text-align: center;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul {
+  display: none;
+  font-size: 70%;
+  list-style-type: none;
+  padding: 0px;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li {
+  margin: 0;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li .costume-bage {
   height: 25px;
@@ -1881,7 +1889,7 @@ button:focus, select:focus {
   font-size: 12px;
   font-weight: bold;
   position: absolute;
-  right: 0px;
+  right: 5px;
   top: 50%;
   display: block;
   text-align: center;
@@ -1892,9 +1900,17 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active {
   position: relative;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: transparent;
 }
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active a {
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active > a {
   color: #0D6FAA;
+  background: rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul {
+  display: block;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active:before {
   margin-top: 0px;
@@ -1912,7 +1928,7 @@ button:focus, select:focus {
   border-color: transparent transparent transparent #ffffff;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .submenu-togle {
-  width: 50px;
+  width: 60px;
   padding: 20px;
   cursor: pointer;
   display: flex;
@@ -1955,10 +1971,10 @@ button:focus, select:focus {
   text-overflow: ellipsis;
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
-  width: calc(100% - 80px);
+  width: calc(100% - 90px);
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 {
-  width: 80px;
+  width: 90px;
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 .tooltip {
   display: block !important;

@@ -1,15 +1,45 @@
-<ul class="nav nav-pills nav-stacked setup-nav" ng-show="!appLoading">
-    <li ng-class="activeMenuItem === 'overview' ? appLoading ? 'active blocked' : 'active' :''">
+<ul class="setup-nav" ng-show="!appLoading">
+    <li>
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info" data-title="Overview" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
             <span>Overview</span>
         </a>
     </li>
-    <li>
+    <li ng-class="activeMenuItem === 'overview' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/modules" data-trigger="hover" data-type="info" data-title="Model" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Model</span>
         </a>
+        <ul class="">
+            <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/modules" data-trigger="hover" data-type="info" data-title="Modules"
+                   bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Modules</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='relations' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/relations" data-trigger="hover" data-type="info"
+                   data-title="Relations" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Relations</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/dependencies" data-trigger="hover" data-type="info"
+                   data-title="Dependencies" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Dependencies</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='filters' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/filters" data-trigger="hover" data-type="info" data-title="Filters"
+                   bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filters</span>
+                </a>
+            </li>
+        </ul>
     </li>
     <li>
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/templatesEmail" data-trigger="hover" data-type="info" data-title="Templates" bs-tooltip data-placement="right">
