@@ -164,13 +164,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.newOrganization = function () {
+            $scope.icons = LayoutService.getIcons();
             $scope.organizatioFormModal = $scope.organizatioFormModal || $modal({
-                scope: $scope,
-                templateUrl: 'view/organization/newOrganization.html',
-                animation: 'am-fade-and-slide-right',
-                backdrop: 'static',
-                show: false
-            });
+                    scope: $scope,
+                    templateUrl: 'view/organization/newOrganization.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
             $scope.organizatioFormModal.$promise.then(function () {
                 $scope.organizatioFormModal.show();
 
@@ -231,8 +232,13 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.saveOrganization = function (organizationForm) {
             if (!organizationForm.$valid)
                 return;
-
             $scope.organizationSaving = true;
+
+            if (!$scope.organization.icon)
+                $scope.organization.icon = 'fas fa-building';
+
+            if (angular.isObject($scope.organization.icon))
+                $scope.organization.icon = $scope.organization.icon.value;
 
             LayoutService.createOrganization($scope.organization)
                 .then(function (response) {
@@ -242,18 +248,18 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     getMyOrganizations();
                     $scope.changeOrganization(copyOrganization);
                     $scope.menuOpen[response.data] = true;
-                    ngToast.create({content: 'Organization ' + $scope.organization.label + ' successfully created.', className: 'success'});
+                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' successfully created.', className: 'success' });
                     $scope.organizationSaving = false;
                     $scope.organization = {};
                     $scope.organizatioFormModal.hide();
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.apps', {orgId: response.data});
+                    $state.go('studio.apps', { orgId: response.data });
 
                 })
                 .catch(function () {
-                    ngToast.create({content: 'Organization ' + $scope.organization.label + ' not created.', className: 'danger'});
+                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' not created.', className: 'danger' });
                     $scope.organizationSaving = false;
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
