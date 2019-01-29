@@ -12,145 +12,136 @@ using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
-	public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
-	{
-		public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+    public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
+    {
+        public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-		public async Task<Template> GetById(int id)
-		{
-			var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<Template> GetById(int id)
+        {
+            var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
 
-			return template;
-		}
+            return template;
+        }
 
-		public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
-		{
+        public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
+        {
+            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
 
-			var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
+            return template;
+        }
 
-			return template;
-		}
+        public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
+        {
+            var templates = DbContext.Templates
+                   .Include(x => x.Shares)
+                   .ThenInclude(x => x.TenantUser)
+                   .Include(x => x.Permissions)
+                   .Where(x => x.Code == null && x.Deleted == false);
 
-		public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
-		{
-			var templates = DbContext.Templates
-				   .Include(x => x.Shares)
-				   .ThenInclude(x => x.TenantUser)
-				   .Include(x => x.Permissions)
-				   .Where(x => x.Code == null && x.Deleted == false);
+            if (templateType != TemplateType.NotSet)
+                templates = templates.Where(x => x.TemplateType == templateType);
 
-			if (templateType != TemplateType.NotSet)
-				templates = templates.Where(x => x.TemplateType == templateType);
+            if (!string.IsNullOrEmpty(moduleName))
+                templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
 
-			if (!string.IsNullOrEmpty(moduleName))
-				templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
+            if (templateType == TemplateType.Email)
+            {
+                templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
+                || x.CreatedBy.Id == CurrentUser.UserId
+                || x.Shares.Any(j => j.UserId == CurrentUser.UserId));
 
-			if (templateType == TemplateType.Email)
-			{
-				templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
-				|| x.CreatedBy.Id == CurrentUser.UserId
-				|| x.Shares.Any(j => j.UserId == CurrentUser.UserId));
+                return await templates.ToListAsync();
+            }
+            else
+            {
+                templates = templates.OrderByDescending(x => x.CreatedAt);
 
-				return await templates.ToListAsync();
-			}
-			else
-			{
-				templates = templates.OrderByDescending(x => x.CreatedAt);
+                return await templates.ToListAsync();
+            }
+        }
 
-				return await templates.ToListAsync();
-			}
-		}
+        public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
+        {
+            var templates = DbContext.Templates
+                .Include(x => x.Shares)
+                .Include(x => x.Permissions)
+                .Where(x => x.Deleted == false);
 
-		public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
-		{
+            if (templateType != TemplateType.NotSet && excelType != TemplateType.NotSet)
+                templates = templates.Where(x => x.TemplateType == templateType || x.TemplateType == excelType);
 
-			var templates = DbContext.Templates
-				.Include(x => x.Shares)
-				.Include(x => x.Permissions)
-				.Where(x => x.Deleted == false);
+            if (!string.IsNullOrEmpty(moduleName))
+                templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
 
-			if (templateType != TemplateType.NotSet && excelType != TemplateType.NotSet)
-				templates = templates.Where(x => x.TemplateType == templateType || x.TemplateType == excelType);
+            templates = templates.OrderByDescending(x => x.CreatedAt);
 
-			if (!string.IsNullOrEmpty(moduleName))
-				templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
+            return await templates.ToListAsync();
+        }
 
-			templates = templates.OrderByDescending(x => x.CreatedAt);
+        public async Task<int> Create(Template template)
+        {
+            DbContext.Templates.Add(template);
 
-			return await templates.ToListAsync();
-		}
+            return await DbContext.SaveChangesAsync();
+        }
 
-		public async Task<int> Create(Template template)
-		{
-			DbContext.Templates.Add(template);
+        public async Task<int> CreateExcel(Template template)
+        {
+            DbContext.Templates.Add(template);
 
-			return await DbContext.SaveChangesAsync();
-		}
+            return await DbContext.SaveChangesAsync();
+        }
 
-		public async Task<int> CreateExcel(Template template)
-		{
-			DbContext.Templates.Add(template);
+        public async Task<int> Update(Template template)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
 
-			return await DbContext.SaveChangesAsync();
-		}
+        public async Task<int> DeleteSoft(Template template)
+        {
+            template.Deleted = true;
 
-		public async Task<int> Update(Template template)
-		{
-			return await DbContext.SaveChangesAsync();
-		}
+            return await DbContext.SaveChangesAsync();
+        }
 
-		public async Task<int> DeleteSoft(Template template)
-		{
-			template.Deleted = true;
+        public async Task<int> DeleteHard(Template template)
+        {
+            DbContext.Templates.Remove(template);
 
-			return await DbContext.SaveChangesAsync();
-		}
+            return await DbContext.SaveChangesAsync();
+        }
 
-		public async Task<int> DeleteHard(Template template)
-		{
-			DbContext.Templates.Remove(template);
+        public async Task<int> Count(TemplateType templateType)
+        {
+            var count = DbContext.Templates
+               .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
+            return count;
+        }
 
-			return await DbContext.SaveChangesAsync();
-		}
+        public async Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType)
+        {
+            var templates = DbContext.Templates
+                 .Where(x => !x.Deleted && x.TemplateType == templateType).OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit);
 
-		public async Task<int> Count(TemplateType templateType)
-		{
-			var count = DbContext.Templates
-			   .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
-			return count;
-		}
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
 
-		public async Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType)
-		{
-			var templates = GetPaginationGQuery(paginationModel, templateType)
-				.Skip(paginationModel.Offset * paginationModel.Limit)
-				.Take(paginationModel.Limit).ToList();
+                if (paginationModel.OrderType == "asc")
+                {
+                    templates = templates.OrderBy(x => propertyInfo.GetValue(x, null));
+                }
+                else
+                {
+                    templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
+                }
 
-			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-			{
-				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+            }
 
-				if (paginationModel.OrderType == "asc")
-				{
-					templates = templates.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-				}
-				else
-				{
-					templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-				}
-
-			}
-
-			return templates;
-
-		}
-
-		private IQueryable<Template> GetPaginationGQuery(PaginationModel paginationModel, TemplateType templateType, bool withIncludes = true)
-		{
-			return DbContext.Templates
-				 .Where(x => !x.Deleted && x.TemplateType == templateType).OrderByDescending(x => x.Id);
-
-		}
-	}
+            return await templates.ToListAsync();
+        }
+    }
 }
 

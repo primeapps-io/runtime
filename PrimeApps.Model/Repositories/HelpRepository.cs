@@ -26,16 +26,18 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count()
         {
-            var count = DbContext.Helps
-               .Where(x => !x.Deleted).Count();
+            var count = await DbContext.Helps
+               .Where(x => !x.Deleted).CountAsync();
+
             return count;
         }
 
         public async Task<ICollection<Help>> Find(PaginationModel paginationModel)
         {
-            var helps = GetPaginationGQuery(paginationModel)
+            var helps = DbContext.Helps
+                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -43,24 +45,16 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    helps = helps.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    helps = helps.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    helps = helps.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    helps = helps.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
 
             }
 
-            return helps;
-
-        }
-
-        private IQueryable<Help> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
-        {
-            return DbContext.Helps
-                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
-
+            return await helps.ToListAsync();
         }
 
         public async Task<Help> GetByIdBasic(int id)
@@ -163,7 +157,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Help>> GetCustomHelp(ModalType templateType, bool? customhelp = false)
         {
-            var templates =  DbContext.Helps
+            var templates = DbContext.Helps
                 .Where(x => x.Deleted == false)
                 .Where(x => x.ModalType == templateType);
 
@@ -172,7 +166,7 @@ namespace PrimeApps.Model.Repositories
 
             templates = templates.OrderByDescending(x => x.CreatedAt);
 
-            return await  templates.ToListAsync();
+            return await templates.ToListAsync();
         }
     }
 }
