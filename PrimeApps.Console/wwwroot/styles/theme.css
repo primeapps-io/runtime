@@ -2394,10 +2394,10 @@ button:focus, select:focus {
   padding: 5px;
   list-style-type: none;
 }
-.primeapps .flex-betweenx > ul li {
+.primeapps .flex-betweenx > ul > li {
   display: inline-block;
 }
-.primeapps .flex-betweenx > ul li .rigth-oval-toolbar-item {
+.primeapps .flex-betweenx > ul > li .rigth-oval-toolbar-item {
   margin-left: 5px;
 }
 @media (max-width: 767.98px) {
