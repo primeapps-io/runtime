@@ -1,131 +1,24 @@
 <div class="setup-title">
-    <h2>App Collaborators</h2>
+    <!--<h2>App Collaborators</h2>-->
 </div>
 
 <div class="tab-content">
-    <table class="table">
-        <div class="col-sm-12" style="margin-top: 100px; margin-bottom: 100px; display: flex;justify-content: center;">
+        <div class="col-sm-12" style="margin-bottom: 100px; display: flex;justify-content: center;">
             <div class="row">
                 <div class="col-sm-12" style="padding-bottom: 30px">
-                    <img class="padding-10" src="images/primeapps/overview.png"
+                    <img class="padding-10" src="images/primeapps/cooming-soon.svg"
                          srcset="images/primeapps/overview@2x.png 2x,
                               images/primeapps/overview@3x.png 3x"
                          class="logo">
                 </div>
-                <div><h2 style="font-size: 20px; color: #0d6faa;text-align: center;">Coming Soon</h2></div>
+                <div style="text-align: center;"><label style="font-size: 20px; color: #000000;opacity: 0.5;font-weight: bold !important;">We’re Redesigning Our Application</label></div>
+                <div style="text-align: center;"><label style="font-size: 16px; color: #000000;opacity: 0.5;">You will soon be able to reach this area. Please be patient.</label></div>
+                <div style="text-align: center;margin: 15px;">
+                    <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
+                            class="btn btn-radius btn-blue">
+                        Home Page
+                    </button>
+                </div>
             </div>
         </div>
-    </table>
-    <!--<div class="row">
-        <ui-select ng-model="selectedUser"
-                   on-select="selectUserForTeam($select.selected.user_id)">
-            <ui-select-match allow-clear="true" placeholder="Add collaborators and teams">
-                {{$select.selected.full_name}}
-            </ui-select-match>
-            <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
-                <span ng-bind-html="item.full_name | highlight: $select.search"></span>
-            </ui-select-choices>
-        </ui-select>
-        <table class="table" ng-show="!selectedTeam && loading">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Team member</th>
-                    <th>Organization</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in placeholderArray">
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-        <table class="table table-hover" ng-show="!selectedTeam && !loading">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Team member</th>
-                    <th>Organization</th>
-                    <th style="width: 50px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="team in teamArray">
-                    <td ng-click="selectTeam(team.id)" style="cursor:pointer;">
-                        <i class="{{team.icon}}"></i> {{team.name}}
-                    </td>
-                    <td>{{team.team_users ? team.team_users.length:0}}</td>
-                    <td>{{team.organizationName}}</td>
-                    <td class="text-right">
-                        <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                    class="btn btn-xs btn-default list-action-button"
-                                    placement="bottom-right"
-                                    data-animation="am-flip-x"
-                                    bs-dropdown
-                                    aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a ng-click="addNewTeam(team.id)">{{'Common.Edit' | translate}} </a>
-                                </li>
-                                <li>
-                                    <a ng-click="delete(team.id)">{{'Common.Delete' | translate}} </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="table-pagination" ng-show="!selectedTeam">
-            <div>
-                <nav aria-label="Page navigation">
-                    ar
-                    
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="requestModel.offset"
-                         page-size="requestModel.limit"
-                         total="pageTotal"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-chevron-right"
-                         text-prev-class="fas fa-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="fas fa-step-forward"
-                         paging-action="changePage(page)">
-                    </div>
-                </nav>
-            </div>
-            <div>
-                Total Teams {{pageTotal}}
-            </div>
-            <div>
-                <span class="pagination-span">Items per page  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option ng-selected="true" value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
-        </div>
-    </div>-->
 </div>
