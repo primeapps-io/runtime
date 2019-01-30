@@ -2528,6 +2528,9 @@ button:focus, select:focus {
   z-index: 1;
   text-indent: 0px;
 }
+.primeapps .width100 {
+  width: 100%;
+}
 
 .placeholder {
   margin: 0 auto;
