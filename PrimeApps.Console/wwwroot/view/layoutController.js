@@ -28,7 +28,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.navbar = angular.element(document.getElementById('navbar-wrapper'));
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
-        $scope.menuOpen = [];
+        $rootScope.menuOpen = [];
 
         var getMyOrganizations = function () {
             LayoutService.myOrganizations()
@@ -41,7 +41,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.changeOrganization = function (organization) {
-            $scope.menuOpen = [];
+            $rootScope.menuOpen = [];
             $rootScope.currentOrganization = organization;
         };
 

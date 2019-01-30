@@ -8,6 +8,9 @@ angular.module('primeapps')
 
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
+            $rootScope.menuOpen = [];
+            $rootScope.menuOpen[$scope.orgId] = true;
+            $rootScope.subMenuOpen = "";
 
             if (!$rootScope.currentAppId) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});

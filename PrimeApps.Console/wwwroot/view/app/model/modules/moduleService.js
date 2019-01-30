@@ -42,6 +42,9 @@ angular.module('primeapps')
                 getModules: function () {
                     return $http.get(config.apiUrl + 'module/get_all');
                 },
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'module/delete/' + id);
+                },
                 newField: function (dataType) {
 
                     var field = {};
@@ -61,6 +64,21 @@ angular.module('primeapps')
                     field.name = dataType.name;
                     field.isNew = true;
                     field.permissions = [];
+
+                    angular.forEach($rootScope.appProfiles, function (profile) {
+                        if (profile.is_persistent && profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
+
+                        if (profile.is_persistent && !profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Standard');
+
+                        field.permissions.push({
+                            profile_id: profile.id,
+                            profile_name: profile.name,
+                            type: 'full',
+                            profile_is_admin: profile.has_admin_rights
+                        });
+                    });
 
                     return field;
                 },
