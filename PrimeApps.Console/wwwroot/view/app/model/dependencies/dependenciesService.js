@@ -12,6 +12,10 @@ angular.module('primeapps')
                 find: function (id, data) {
                     return $http.post(config.apiUrl + 'dependency/find/' + id, data);
                 },
+
+                getDependency: function (id) {
+                    return $http.get(config.apiUrl + 'dependency/get_by_id/' + id);
+                },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
 
@@ -320,21 +324,6 @@ angular.module('primeapps')
 
                     return picklist;
                 },
-
-                processModule: function (module) {
-                    angular.forEach(module.fields, function (field) {
-                        if (field.combination) {
-                            field.data_type = 'combination';
-                            field.dataType = $rootScope.dataTypesExtended.combination;
-                            field.combinationField1 = field.combination.field1;
-                            field.combinationField2 = field.combination.field2;
-                            field.combinationCharacter = field.combination.combination_character;
-                        }
-                    });
-
-                    return module;
-                },
-
                 prepareDefaults: function (module) {
                     module.system_type = 'custom';
                     module.label_en_plural = defaultLabels.DefaultModuleNameEn;
@@ -595,321 +584,6 @@ angular.module('primeapps')
                     });
 
                     return moduleLayout;
-                },
-
-                refreshModule: function (moduleLayout, module) {
-                    var rows = moduleLayout.rows;
-                    var sections = [];
-                    var fields = [];
-                    var lastFieldOrder = 0;
-
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = rows[i];
-                        var section = row.section;
-                        section.order = i + 1;
-
-                        sections.push(section);
-
-                        delete row.hasPrimaryField;
-                        delete row.hasSystemRequiredField;
-
-                        for (var j = 0; j < row.columns.length; j++) {
-                            var column = row.columns[j];
-
-                            for (var k = 0; k < column.cells.length; k++) {
-                                var cell = column.cells[k];
-                                var field = cell.field;
-                                field.section = section.name;
-                                field.section_column = column.column.no;
-                                field.order = lastFieldOrder + 1;
-
-                                lastFieldOrder = field.order;
-                                fields.push(field);
-
-                                if (field.primary)
-                                    row.hasPrimaryField = true;
-
-                                if (field.systemRequired)
-                                    row.hasSystemRequiredField = true;
-                            }
-                        }
-                    }
-
-                    module.sections = sections;
-                    module.fields = fields;
-                },
-
-                prepareModule: function (module, picklistsModule, deletedModules) {
-                    var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
-
-                    if (module.name.indexOf('custom_module') > -1) {
-                        module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
-                        module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
-                        module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']);
-                        var allModules = $rootScope.modules.concat(deletedModules);
-                        var i = 2;
-
-                        while (true) {
-
-                            var findMatch = module.name.match(/(\D+)?\d/);
-                            var index = findMatch ? findMatch[0].length - 1 : -1;
-                            var newModuleName = index === 0 ? 'n' + module.name : module.name; // if first index value === 0, its starts_with number
-                            var existingModule = $filter('filter')(allModules, { name: newModuleName }, true)[0];
-
-                            if (!existingModule)
-                                break;
-
-                            if (i < 20) {
-                                module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + i;
-                                i++;
-                            }
-                            else {
-                                var dt = new Date();
-                                module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + dt.getTime();
-                            }
-                        }
-                    }
-
-                    module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
-                    module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
-
-                    angular.forEach(module.sections, function (section) {
-                        delete section.columns;
-
-                        if (section.name.indexOf('custom_section') > -1) {
-                            var newSectionName = helper.getSlug(section['label_' + $rootScope.language]);
-
-                            var sectionFields = $filter('filter')(module.fields, { section: section.name }, true);
-
-                            angular.forEach(sectionFields, function (sectionField) {
-                                sectionField.section = newSectionName;
-                            });
-
-                            var cleanSlug = angular.copy(newSectionName);
-                            var existingSection = $filter('filter')(module.sections, { name: cleanSlug }, true)[0];
-
-                            if (existingSection) {
-                                do {
-                                    var sectionNameNumber;
-
-                                    if (existingSection.name.indexOf('_') > -1) {
-                                        var slugParts = existingSection.name.split('_');
-                                        var lastPart = slugParts[slugParts.length - 1];
-                                        sectionNameNumber = lastPart.replace(/\D/g, '');
-                                        lastPart = lastPart.replace(/[0-9]/g, '');
-                                        slugParts.pop();
-                                        cleanSlug = slugParts.join('_') + '_' + lastPart;
-                                    }
-                                    else {
-                                        sectionNameNumber = existingSection.name.replace(/\D/g, '');
-                                        cleanSlug = existingSection.name.replace(/[0-9]/g, '');
-                                    }
-
-                                    var newSlug = '';
-
-                                    if (sectionNameNumber)
-                                        newSlug = cleanSlug + (parseInt(sectionNameNumber) + 1);
-                                    else
-                                        newSlug = cleanSlug + 2;
-
-                                    existingSection = $filter('filter')(module.sections, { name: newSlug }, true)[0];
-
-                                    if (!existingSection)
-                                        section.name = newSlug;
-                                }
-                                while (existingSection)
-                            }
-                            else
-                                section.name = newSectionName;
-                        }
-                        //permissions
-                        var sectionPermissions = angular.copy(section.permissions);
-                        var permissions = [];
-
-                        angular.forEach(sectionPermissions, function (permission) {
-                            if (permission.id || permission.type != 'full')
-                                permissions.push(permission);
-                        });
-
-                        if (permissions.length > 0)
-                            section.permissions = permissions;
-                        else
-                            section.permissions = undefined;
-                    });
-
-                    angular.forEach(module.fields, function (field) {
-                        if (field.data_type === 'combination') {
-                            field.data_type = 'text_single';
-                            field.display_form = false;
-                            field.combination = {};
-                            var field1Name = field.combinationField1;
-                            var field2Name = field.combinationField2;
-
-                            if (field1Name.indexOf('custom_field') > -1) {
-                                var field1 = $filter('filter')(module.fields, { name: field1Name }, true)[0];
-                                field1Name = helper.getSlug(field1['label_' + $rootScope.language]);
-                            }
-
-                            if (field2Name.indexOf('custom_field') > -1) {
-                                var field2 = $filter('filter')(module.fields, { name: field2Name }, true)[0];
-                                field2Name = helper.getSlug(field2['label_' + $rootScope.language]);
-                            }
-
-                            field.combination.field1 = field1Name;
-                            field.combination.field2 = field2Name;
-                            field.combination.combination_character = field.combinationCharacter;
-                            delete field.combinationCharacter;
-
-                            if (!field.validation)
-                                field.validation = {};
-
-                            field.validation.readonly = true;
-                            field.inline_edit = false;
-
-                            delete field.combinationField1;
-                            delete field.combinationField2;
-                        }
-
-                        if (field.data_type === 'number_auto') {
-                            if (!field.validation)
-                                field.validation = {};
-
-                            field.validation.readonly = true;
-                            field.inline_edit = false;
-                        }
-
-                        if (field.name === 'related_module') {
-                            field.picklist_id = field.picklist_original_id;
-                        }
-
-                        if (field.unique_combine && field.unique_combine.indexOf('custom_field') > -1) {
-                            var combinationField = $filter('filter')(module.fields, { name: field.unique_combine }, true)[0];
-                            field.unique_combine = helper.getSlug(combinationField['label_' + $rootScope.language]);
-                        }
-
-                        if (field.data_type === 'url' && (!field.validation || !field.validation.pattern)) {
-                            if (!field.validation)
-                                field.validation = {};
-
-                            field.validation.pattern = '^(https?|ftp)://.*$';
-                        }
-                        if (field.data_type === 'location') {
-                            if (!field.validation)
-                                field.validation = {};
-                            field.validation.readonly = true;
-                            field.inline_edit = false;
-                        }
-
-                        if (field.encrypted && field.encryption_authorized_users && field.encryption_authorized_users.length > 0) {
-                            var encryptionAuthorizedUsers = null;
-                            for (var j = 0; j < field.encryption_authorized_users.length; j++) {
-                                var user = field.encryption_authorized_users[j];
-                                if (encryptionAuthorizedUsers === null)
-                                    encryptionAuthorizedUsers = user.id;
-                                else
-                                    encryptionAuthorizedUsers += ',' + user.id;
-                            }
-                            field.encryption_authorized_users = encryptionAuthorizedUsers;
-                        }
-
-                        if (!field.encrypted || (field.encrypted && field.encryption_authorized_users.length < 1)) {
-                            field.encryption_authorized_users = null;
-                            field.encryption_authorized_users_list = null;
-                        }
-
-                        delete field.show_lock;
-
-                        //permissions
-                        var fieldPermissions = angular.copy(field.permissions);
-                        var permissions = [];
-
-                        angular.forEach(fieldPermissions, function (permission) {
-                            if (permission.id || permission.type != 'full')
-                                permissions.push(permission);
-                        });
-
-                        if (permissions.length > 0)
-                            field.permissions = permissions;
-                        else
-                            field.permissions = undefined;
-                    });
-
-                    angular.forEach(module.fields, function (field) {
-                        delete field.dataType;
-                        delete field.operators;
-                        delete field.systemRequired;
-                        delete field.systemReadonly;
-                        delete field.valueFormatted;
-
-                        if (field.name.indexOf('custom_field') > -1) {
-                            var slug = helper.getSlug(field['label_' + $rootScope.language]);
-
-                            if (systemFields.indexOf(slug) > -1)
-                                slug = slug + '_c';
-
-                            var cleanSlug = angular.copy(slug);
-                            var existingField = $filter('filter')(module.fields, { name: slug }, true)[0];
-
-                            if (existingField) {
-                                do {
-                                    var fieldNameNumber;
-
-                                    if (existingField.name.indexOf('_') > -1) {
-                                        var slugParts = existingField.name.split('_');
-                                        var lastPart = slugParts[slugParts.length - 1];
-                                        fieldNameNumber = lastPart.replace(/\D/g, '');
-                                        lastPart = lastPart.replace(/[0-9]/g, '');
-                                        slugParts.pop();
-                                        cleanSlug = slugParts.join('_') + '_' + lastPart;
-                                    }
-                                    else {
-                                        fieldNameNumber = existingField.name.replace(/\D/g, '');
-                                        cleanSlug = existingField.name.replace(/[0-9]/g, '');
-                                    }
-
-                                    var newSlug = '';
-
-                                    if (fieldNameNumber)
-                                        newSlug = cleanSlug + (parseInt(fieldNameNumber) + 1);
-                                    else
-                                        newSlug = cleanSlug + 2;
-
-                                    existingField = $filter('filter')(module.fields, { name: newSlug }, true)[0];
-
-                                    if (!existingField)
-                                        field.name = newSlug;
-                                }
-                                while (existingField);
-                            }
-                            else {
-                                field.name = slug;
-                            }
-                        }
-                    });
-
-                    delete module.relations;
-                    delete module.dependencies;
-                    delete module.calculations;
-
-                    return module;
-                },
-
-                getDeletedModules: function () {
-                    var deferred = $q.defer();
-                    var deletedModulesCache = $cache.get('modulesDeleted');
-
-                    if (deletedModulesCache) {
-                        deferred.resolve(deletedModulesCache);
-                    }
-                    else {
-                        $http.get(config.apiUrl + 'module/get_all_deleted')
-                            .then(function (response) {
-                                $cache.put('modulesDeleted', response.data);
-                                deferred.resolve(response.data);
-                            });
-                    }
-
-                    return deferred.promise;
                 },
 
                 getFields: function (module) {
@@ -1245,73 +919,78 @@ angular.module('primeapps')
                             $rootScope.appModules.splice($rootScope.appModules.indexOf(appModules), 1);
                     }
                 },
-                processDependencies: function (dependencies) {
-                    angular.forEach(dependencies, function (dependency) {
-                        dependency.parent_module = dependency.module;
-                        dependency.type = dependency.dependency_type;
-                        dependency.parentField = $filter('filter')(dependency.module.fields, {
-                            name: dependency.parent_field,
-                            deleted: '!true'
-                        })[0];
-                        dependency.childField = $filter('filter')(dependency.module.fields, {
-                            name: dependency.child_field,
-                            deleted: '!true'
-                        })[0];
-                        dependency.sectionField = $filter('filter')(dependency.module.sections, {
-                            name: dependency.child_section,
-                            deleted: '!true'
-                        })[0];
+                processDependencies: function (dependency) {//(dependencies) {
+                    // angular.forEach(dependencies, function (dependency) {
+                    // dependency.parent_module = dependency.module;
+                    dependency.type = dependency.dependency_type;
+                    // dependency.parentField = $filter('filter')(dependency.module.fields, {
+                    //     name: dependency.parent_field,
+                    //     deleted: '!true'
+                    // })[0];
+                    // dependency.childField = $filter('filter')(dependency.module.fields, {
+                    //     name: dependency.child_field,
+                    //     deleted: '!true'
+                    // })[0];
+                    // dependency.sectionField = $filter('filter')(dependency.module.sections, {
+                    //     name: dependency.child_section,
+                    //     deleted: '!true'
+                    // })[0];
 
-                        if (dependency.dependency_type === 'display') {
-                            dependency.dependencyType = 'display';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
+                    if (dependency.dependency_type === 'display') {
+                        dependency.dependencyType = 'display';
+                        dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
 
-                            if (dependency.values && !Array.isArray(dependency.values)) {
-                                var values = dependency.values.split(',');
-                                dependency.values = [];
+                        if (dependency.values && !Array.isArray(dependency.values)) {
+                            var values = dependency.values.split(',');
+                            dependency.values = [];
 
-                                angular.forEach(values, function (value) {
-                                    dependency.values.push(parseInt(value));
-                                });
-                            }
+                            angular.forEach(values, function (value) {
+                                dependency.values.push(parseInt(value));
+                            });
                         }
-                        else if (dependency.dependency_type === 'freeze') {
-                            dependency.dependencyType = 'freeze';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
+                    }
+                    else if (dependency.dependency_type === 'freeze') {
+                        dependency.dependencyType = 'freeze';
+                        dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
 
-                            if (dependency.values && !Array.isArray(dependency.values)) {
-                                var values = dependency.values.split(',');
-                                dependency.values = [];
+                        if (dependency.values && !Array.isArray(dependency.values)) {
+                            var values = dependency.values.split(',');
+                            dependency.values = [];
 
-                                angular.forEach(values, function (value) {
-                                    dependency.values.push(parseInt(value));
-                                });
-                            }
+                            angular.forEach(values, function (value) {
+                                dependency.values.push(parseInt(value));
+                            });
                         }
-                        else {
-                            dependency.dependencyType = 'value';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
+                    }
+                    else {
+                        dependency.dependencyType = 'value';
+                        dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
 
 
-                            if (dependency.field_map_parent) {
-                                dependency.field_map = {};
-                                dependency.field_map.parent_map_field = dependency.field_map_parent;
-                                dependency.field_map.child_map_field = dependency.field_map_child;
-                            }
-
-                            if (dependency.value_map && !dependency.value_maps) {
-                                dependency.value_maps = {};
-
-                                var valueMaps = dependency.value_map.split('|');
-
-                                angular.forEach(valueMaps, function (valueMap) {
-                                    var map = valueMap.split(';');
-                                    dependency.value_maps[map[0]] = map[1].split(',');
-                                });
-                            }
+                        if (dependency.field_map_parent) {
+                            dependency.field_map = {};
+                            dependency.field_map.parent_map_field = dependency.field_map_parent;
+                            dependency.field_map.child_map_field = dependency.field_map_child;
                         }
-                    });
-                    return dependencies;
+
+                        if (dependency.value_map && !dependency.value_maps) {
+                            dependency.value_maps = {};
+
+                            var valueMaps = dependency.value_map.split('|');
+
+                            angular.forEach(valueMaps, function (valueMap) {
+                                var map = valueMap.split(';');
+                                map[1] = map[1].split(',');
+                                for (var i = 0; i < map[1].length; i++) {
+                                    map[1][i] = parseInt(map[1][i]);
+                                }
+                                dependency.value_maps[map[0]] = map[1];
+                            });
+                        }
+                    }
+                    //});
+                    // return dependencies;
+                    return dependency;
                 }
             };
         }]);

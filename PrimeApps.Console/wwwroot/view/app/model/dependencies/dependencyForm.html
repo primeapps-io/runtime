@@ -17,7 +17,8 @@
         </div>
 
         <div class="modal-dialog scroll-style-4">
-            <div class="modal-content padding-0">
+            <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div ng-show="!modalLoading" class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
                         <div id="field-form-body" class="modal-body">
@@ -82,7 +83,7 @@
                                                     bs-select></button>
                                         </div>
                                     </div>
-                                    <div class="form-group" ng-show="currentDependency.dependencyType == 'display'">
+                                    <div class="form-group" ng-show="currentDependency.dependency_type == 'display'">
                                         <label class="col-sm-12 required-field">
                                             * {{'Setup.Modules.AffectedAreaType' | translate }}:
                                         </label>
@@ -155,7 +156,7 @@
                                         <div class="col-sm-12">
                                             <div class="value-map-container">
                                                 <div class="form-group" ng-repeat="option in parentPicklist">
-                                                    <label class="col-sm-4">{{option['label_'+language]}}: </label>
+                                                    <label class="col-sm-12">{{option['label_'+language]}}: </label>
                                                     <div class="col-sm-12 multiselect-container">
                                                         <button type="button"
                                                                 class="btn btn-default ng-animate-disabled multiselect"

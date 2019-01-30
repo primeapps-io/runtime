@@ -8,7 +8,7 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[0] = {title: 'All Apps'};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
-
+            $rootScope.menuOpen = [];
             $scope.loading = true;
 
             $scope.apps = [];
