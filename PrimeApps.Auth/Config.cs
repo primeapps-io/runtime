@@ -21,7 +21,17 @@ namespace PrimeApps.Auth
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "PrimeApps Api Auth")
+                new ApiResource("api1", "PrimeApps Api Auth"),
+                /*
+                new ApiResource
+                {
+                    Name = "api2",
+                    DisplayName = "Api2",
+
+                    // include the following using claims in access token (in addition to subject id)
+                    UserClaims = {JwtClaimTypes.Name, JwtClaimTypes.Email},
+                }
+                 */
             };
         }
 
