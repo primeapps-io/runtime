@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window) {
+    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window) {
 
             $scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
@@ -70,19 +70,19 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 if (template) {
                     setCurrentTemplate(template);
-                   // $scope.getDownloadUrlExcel();
+                    // $scope.getDownloadUrlExcel();
                 }
                 else {
                     $scope.template = [];
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewExcelTemplateFormModal.$promise.then(function () {
                     $scope.addNewExcelTemplateFormModal.show();
@@ -92,12 +92,12 @@ angular.module('primeapps')
             $scope.showTemplateGuideModal = function () {
                 $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.excelTemplateGuideModal.$promise.then(function () {
                     $scope.excelTemplateGuideModal.show();
@@ -160,7 +160,7 @@ angular.module('primeapps')
                     }
                 }
             }
-            ;
+                ;
 
             $scope.save = function (uploadForm) {
 

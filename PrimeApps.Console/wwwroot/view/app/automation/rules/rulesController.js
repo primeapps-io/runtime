@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('RulesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'RulesService', 'ModuleService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, operators, RulesService, ModuleService, LayoutService, $http, config) {
+    .controller('RulesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'RulesService', 'ModuleService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, RulesService, ModuleService, LayoutService, $http, config) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
@@ -85,12 +85,12 @@ angular.module('primeapps')
                     if (response.data) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
-                        $scope.loading = false; 
+                        $scope.loading = false;
                     }
                 });
 
             $scope.changePage = function (page) {
-                $scope.loading = true; 
+                $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 count();
@@ -99,9 +99,9 @@ angular.module('primeapps')
                     .then(function (response) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
-                        $scope.loading = false; 
+                        $scope.loading = false;
                     }).catch(function (err) {
-                        $scope.loading = false; 
+                        $scope.loading = false;
                     });
 
             };
@@ -1500,7 +1500,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        ngToast.create({ content: $filter('translate')('Setup.Workflow.MaximumHookWarning'), className: 'warning' });
+                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
@@ -1549,16 +1549,10 @@ angular.module('primeapps')
                 uploader_image.onWhenAddingFileFailed = function (item, filter, options) {
                     switch (filter.name) {
                         case 'imgFilter':
-                            ngToast.create({
-                                content: fileFilterWarring,
-                                className: 'warning'
-                            });
+                            swal(fileFilterWarring, "warning");
                             break;
                         case 'sizeFilter':
-                            ngToast.create({
-                                content: fileSizerWarring,
-                                className: 'warning'
-                            });
+                            swal(fileSizerWarring, "warning");
                             break;
                     }
                 };

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ComponentDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums, $localStorage) {
+    .controller('ComponentDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums, $localStorage) {
             $scope.modules = [];
             $scope.id = $state.params.id;
             $scope.orgId = $state.params.orgId;
@@ -44,7 +44,7 @@ angular.module('primeapps')
             ComponentsService.get($scope.id)
                 .then(function (response) {
                     if (!response.data) {
-                        ngToast.create({ content: 'Component Not Found !', className: 'danger' });
+                        swal('Component Not Found !', "error");   
                         $state.go('app.components');
                     }
 

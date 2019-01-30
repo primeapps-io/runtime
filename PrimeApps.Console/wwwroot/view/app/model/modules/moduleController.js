@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
-        function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
+    .controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
+        function ($rootScope, $scope, $filter, $state, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
 
             $scope.$parent.menuTopTitle = "Models";
 

@@ -442,8 +442,8 @@ angular.module('primeapps')
         };
     })
 
-    .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService',
-        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations) {
+    .directive('subTable', ['$rootScope', 'ngTableParams', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService',
+        function ($rootScope, ngTableParams, blockUI, $filter, $cache, helper, exportFile, operations) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -719,20 +719,12 @@ angular.module('primeapps')
                                 }
 
                                 if (!isFileSaverSupported) {
-                                    ngToast.create({
-                                        content: $filter('translate')('Module.ExportUnsupported'),
-                                        className: 'warning',
-                                        timeout: 8000
-                                    });
+                                    swal($filter('translate')('Module.ExportUnsupported'), "warning");
                                     return;
                                 }
 
                                 if ($scope.tableParams.total() > 3000) {
-                                    ngToast.create({
-                                        content: $filter('translate')('Module.ExportWarning'),
-                                        className: 'warning',
-                                        timeout: 8000
-                                    });
+                                    swal($filter('translate')('Module.ExportWarning'), "warning");
                                     return;
                                 }
 
@@ -741,11 +733,8 @@ angular.module('primeapps')
 
                                 ModuleService.getCSVData($scope, $scope.type)
                                     .then(function (csvData) {
-                                        ngToast.create({
-                                            content: $filter('translate')('Module.ExcelExportSuccess'),
-                                            className: 'success',
-                                            timeout: 5000
-                                        });
+                                        swal($filter('translate')('Module.ExcelExportSuccess'), "warning");
+
                                         exportFile.excel(csvData, fileName);
                                         $scope.exporting = false;
                                     });
@@ -1108,21 +1097,19 @@ angular.module('primeapps')
             });
         }])
 
-    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config', '$filter', 'blockUI',
-        function ($timeout, ngToast, ModuleService, $modal, $http, config, $filter, blockUI) {
+    .directive('customScripting', ['$timeout', 'ModuleService', '$modal', '$http', 'config', '$filter', 'blockUI',
+        function ($timeout, ModuleService, $modal, $http, config, $filter, blockUI) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
                     element.bind('click', function () {
                         scope.toast = function (message, type, timeout, dismissButton) {
                             $timeout(function () {
-                                ngToast.create({
-                                    content: message,
-                                    className: type,
-                                    timeout: timeout || 5000,
-                                    dismissButton: dismissButton || false,
-                                    dismissOnClick: !dismissButton,
-                                    dismissOnTimeout: !dismissButton
+                                swal(message, type, {
+                                    timer: timeout || 5000,
+                                    button: dismissButton || false,
+                                    closeOnClickOutside: !dismissButton,
+                                    //dismissOnTimeout: !dismissButton
                                 });
                             });
                         };
@@ -1144,8 +1131,8 @@ angular.module('primeapps')
             };
         }])
 
-    .directive('webHook', ['$http', 'ngToast', '$filter',
-        function ($http, ngToast, $filter) {
+    .directive('webHook', ['$http', '$filter',
+        function ($http, $filter) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
@@ -1171,10 +1158,10 @@ angular.module('primeapps')
 
                             $http.post(actionDetails.url, data)
                                 .then(function (data) {
-                                    ngToast.create({ content: $filter('translate')('Common.ProcessTriggerSuccess'), className: 'success' });
+                                    swal($filter('translate')('Common.ProcessTriggerSuccess'), "success");
                                 })
                                 .error(function () {
-                                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
+                                    swal($filter('translate')('Common.Error'), "error");
                                     scope.loading = false;
                                 });
                         }
@@ -1373,8 +1360,8 @@ angular.module('primeapps')
             };
         }])
 
-    .directive('trial', ['$rootScope', '$modal', '$http', 'config', '$filter', 'ngToast',
-        function ($rootScope, $modal, $http, config, $filter, ngToast) {
+    .directive('trial', ['$rootScope', '$modal', '$http', 'config', '$filter',
+        function ($rootScope, $modal, $http, config, $filter) {
             return {
                 restrict: 'EA',
                 templateUrl: 'view/app/trial/trial-box.html?v=' + version,
@@ -1554,11 +1541,7 @@ angular.module('primeapps')
                                                 requestMail.TemplateWithBody = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head> <title></title> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <style type="text/css"> body, .maintable { height: 100% !important; width: 100% !important; margin: 0; padding: 0; } img, a img { border: 0; outline: none; text-decoration: none; } .imagefix { display: block; } p { margin-top: 0; margin-right: 0; margin-left: 0; padding: 0; } .ReadMsgBody { width: 100%; } .ExternalClass { width: 100%; } .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; } img { -ms-interpolation-mode: bicubic; } body, table, td, p, a, li, blockquote { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; } </style> <style type="text/css"> @media only screen and (max-width: 600px) { .rtable { width: 100% !important; table-layout: fixed; } .rtable tr { height: auto !important; display: block; } .contenttd { max-width: 100% !important; display: block; } .contenttd:after { content: ""; display: table; clear: both; } .hiddentds { display: none; } .imgtable, .imgtable table { max-width: 100% !important; height: auto; float: none; margin: 0 auto; } .imgtable.btnset td { display: inline-block; } .imgtable img { width: 100%; height: auto; display: block; } table { float: none; table-layout: fixed; } } </style> <!--[if gte mso 9]><xml> <o:OfficeDocumentSettings> <o:AllowPNG/> <o:PixelsPerInch>96</o:PixelsPerInch> </o:OfficeDocumentSettings></xml><![endif]--></head><body style="overflow: auto; padding:0; margin:0; font-size: 14px; font-family: arial, helvetica, sans-serif; cursor:auto; background-color:#444545"> <table cellspacing="0" cellpadding="0" width="100%" bgcolor="#444545"> <tr> <td style="FONT-SIZE: 0px; HEIGHT: 20px; LINE-HEIGHT: 0"></td> </tr> <tr> <td valign="top"> <table class="rtable" style="WIDTH: 600px; MARGIN: 0px auto" cellspacing="0" cellpadding="0" width="600" align="center" border="0"> <tr> <td class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: transparent"> <table style="WIDTH: 100%" cellspacing="0" cellpadding="0" align="left"> <tr class="hiddentds"> <td style="FONT-SIZE: 0px; HEIGHT: 0px; WIDTH: 367px; LINE-HEIGHT: 0; mso-line-height-rule: exactly"></td> <td style="FONT-SIZE: 0px; HEIGHT: 0px; WIDTH: 233px; LINE-HEIGHT: 0; mso-line-height-rule: exactly"></td> </tr> <tr style="HEIGHT: 10px"> <th class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; VERTICAL-ALIGN: middle; BORDER-BOTTOM: medium none; FONT-WEIGHT: normal; PADDING-BOTTOM: 20px; TEXT-ALIGN: left; PADDING-TOP: 20px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 15px; BACKGROUND-COLOR: transparent"></th> <th class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; VERTICAL-ALIGN: middle; BORDER-BOTTOM: medium none; FONT-WEIGHT: normal; PADDING-BOTTOM: 20px; TEXT-ALIGN: left; PADDING-TOP: 20px; PADDING-LEFT: 15px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: transparent"></th> </tr> </table> </td> </tr> <tr> <td class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: #feffff"> <table style="WIDTH: 100%" cellspacing="0" cellpadding="0" align="left"> <tr class="hiddentds"> <td style="FONT-SIZE: 0px; HEIGHT: 0px; WIDTH: 600px; LINE-HEIGHT: 0; mso-line-height-rule: exactly"></td> </tr> <tr style="HEIGHT: 20px"> <th class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: medium none; FONT-WEIGHT: normal; PADDING-BOTTOM: 0px; TEXT-ALIGN: left; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: #1296f7"> <p style="FONT-SIZE: 36px; MARGIN-BOTTOM: 1em; FONT-FAMILY: arial, helvetica, sans-serif; MARGIN-TOP: 0px; COLOR: #fffeff; LINE-HEIGHT: 36px; BACKGROUND-COLOR: transparent; mso-line-height-rule: exactly" align="center"><br /> ' + requestMail.Subject + '</p> </th> </tr> </table> </td> </tr> <tr> <td class="contenttd" style="BORDER-TOP: #e73d11 5px solid; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: #feffff"> <table style="WIDTH: 100%" cellspacing="0" cellpadding="0" align="left"> <tr class="hiddentds"> <td style="FONT-SIZE: 0px; HEIGHT: 0px; WIDTH: 600px; LINE-HEIGHT: 0; mso-line-height-rule: exactly" colspan="2"></td> </tr> <tr style="HEIGHT: 71px"> <th class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; VERTICAL-ALIGN: middle; BORDER-BOTTOM: medium none; FONT-WEIGHT: normal; PADDING-BOTTOM: 5px; TEXT-ALIGN: left; PADDING-TOP: 5px; PADDING-LEFT: 15px; BORDER-LEFT: medium none; PADDING-RIGHT: 15px; BACKGROUND-COLOR: transparent" colspan="2"> <div> <p style="FONT-SIZE: 18px; MARGIN-BOTTOM: 1em; FONT-FAMILY: geneve, arial, helvetica, sans-serif; MARGIN-TOP: 0px; COLOR: #2d2d2d; TEXT-ALIGN: justify; PADDING-LEFT: 110px; LINE-HEIGHT: 29px; BACKGROUND-COLOR: transparent; mso-line-height-rule: exactly" align="justify"><strong><br />&#304;sim Soyisim</strong>:' + $scope.promotion.fullName + '<br /> <strong>Telefon Numaras&#305;</strong>:' + $scope.promotion.phoneNumber + '<br /> <strong>E-Posta</strong>: ' + $scope.promotion.email + '<br /> <strong>Uygulamay&#305; Kullanacak Ki&#351;i Say&#305;s&#305;</strong>: ' + $scope.promotion.useCount + '<br /> <strong>Sekt&ouml;r</strong> :' + $scope.promotion.sector.value + '<br /> <strong>M&uuml;&#351;teri Epostas&#305;</strong>: ' + $rootScope.user.email + '</p> </div> </th> </tr> </table> </td> </tr> <tr> <td class="contenttd" style="BORDER-TOP: #e73d11 5px solid; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: medium none; PADDING-RIGHT: 0px; BACKGROUND-COLOR: #feffff"> <table style="WIDTH: 100%" cellspacing="0" cellpadding="0" align="left"> <tr class="hiddentds"> <td style="FONT-SIZE: 0px; HEIGHT: 0px; WIDTH: 600px; LINE-HEIGHT: 0; mso-line-height-rule: exactly"></td> </tr> <tr style="HEIGHT: 20px"> <th class="contenttd" style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; VERTICAL-ALIGN: top; BORDER-BOTTOM: medium none; FONT-WEIGHT: normal; PADDING-BOTTOM: 20px; TEXT-ALIGN: left; PADDING-TOP: 20px; PADDING-LEFT: 15px; BORDER-LEFT: medium none; PADDING-RIGHT: 15px; BACKGROUND-COLOR: transparent"></th> </tr> </table> </td> </tr> </table> </td> </tr> <tr> <td style="FONT-SIZE: 0px; HEIGHT: 8px; LINE-HEIGHT: 0">&nbsp;</td> </tr> </table> <!-- Created with MailStyler 2.0.1.300 --></body></html>';
                                                 requestMail.ToAddresses = ["info@ofisim.com"];
                                                 $http.post(config.apiUrl + 'messaging/send_external_email', requestMail).then(function (response) {
-                                                    ngToast.create({
-                                                        content: $filter('translate')('Trial.RequestMessage'),
-                                                        className: 'success',
-                                                        timeout: 5000
-                                                    });
+                                                    swal($filter('translate')('Trial.RequestMessage'), "success");
                                                     $scope.promotionModal.hide();
                                                 })
                                             }
@@ -1579,8 +1562,8 @@ angular.module('primeapps')
             };
         }])
 
-    .directive('helpPage', ['$rootScope', '$modal', '$http', 'config', '$filter', 'ngToast', 'HelpService', '$sce', '$cache', '$localStorage',
-        function ($rootScope, $modal, $http, config, $filter, ngToast, HelpService, $sce, $cache, $localStorage) {
+    .directive('helpPage', ['$rootScope', '$modal', '$http', 'config', '$filter', 'HelpService', '$sce', '$cache', '$localStorage',
+        function ($rootScope, $modal, $http, config, $filter, HelpService, $sce, $cache, $localStorage) {
             return {
                 restrict: 'EA',
                 scope: {

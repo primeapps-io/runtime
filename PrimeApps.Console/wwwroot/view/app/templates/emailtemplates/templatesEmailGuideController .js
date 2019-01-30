@@ -2,11 +2,11 @@
 
 angular.module('primeapps')
 
-    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService',  '$http', 'config',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config) {
+    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config) {
 
-			var clone = $location.search().clone;
-			var id = $location.search().id;
+            var clone = $location.search().clone;
+            var id = $location.search().id;
             var module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             $scope.costumeDate = "this_day()";
             $scope.dateFormat = [
@@ -156,7 +156,7 @@ angular.module('primeapps')
 
             };
             if (!module) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                swal($filter('translate')('Common.NotFound'), "warning");
                 $state.go('app.dashboard');
                 return;
             }
@@ -518,7 +518,7 @@ angular.module('primeapps')
             };
 
             $scope.save = function () {
-				function validate() {
+                function validate() {
 
                     var isValid = true;
 					/**
@@ -528,8 +528,8 @@ angular.module('primeapps')
                      * Eğer clone = true ise yeni View create edilecektir
                      * Yeni View'in create edilmesi için id = false olmalıdır
                      * */
-					if (clone)
-						id = false;
+                    if (clone)
+                        id = false;
 
                     if ($scope.fields.selectedFields.length < 1) {
                         $scope.viewForm.$setValidity('field', false);

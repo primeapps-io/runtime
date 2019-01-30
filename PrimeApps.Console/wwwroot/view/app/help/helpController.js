@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state', '$cookies', 'helper',
-        function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache, $state, $cookies, helper) {
+    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state', '$cookies', 'helper',
+        function ($rootScope, $scope, HelpService, $filter, $window, $modal, config, $localStorage, $location, $cache, $state, $cookies, helper) {
             $scope.moduleFilter = $filter('filter')($scope.$parent.modules, { deleted: false });
             $scope.selectHelpRelation = 'any';
             $scope.isTimetrackerExist = false;
@@ -629,7 +629,7 @@ angular.module('primeapps')
                     $scope.saving = false;
                     $scope.addNewHelpFormModal.hide();
                     $scope.changePage(1);
-                    ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
+                    swal($filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), "success");
                 }
                 else {
                     HelpService.create(help).then(function () {
@@ -639,7 +639,7 @@ angular.module('primeapps')
                                 $scope.saving = false;
                                 $scope.addNewHelpFormModal.hide();
                                 $scope.changePage(1);
-                                ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
+                                swal($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), "success");
                             });
 
                     });
@@ -673,7 +673,7 @@ angular.module('primeapps')
                     }
                     HelpService.update(help);
                     $cache.removeAll();
-                    ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'), className: 'success' });
+                    swal($filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'), "success");
                 }
                 else {
                     HelpService.create(help).then(function () {
@@ -681,10 +681,8 @@ angular.module('primeapps')
                             .then(function (response) {
                                 $scope.helpTemplates = response.data;
                                 $cache.removeAll();
-                                ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'), className: 'success' });
-
+                                swal($filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'), "success");
                             });
-
                     });
                 }
             };
@@ -754,7 +752,7 @@ angular.module('primeapps')
                     $scope.changeOffset();
                     $scope.saving = false;
                     $scope.addNewHelpFormSideModal.hide();
-                    ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
+                    swal($filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), "success");
                 }
                 else {
                     $scope.moduleControl = false;
@@ -776,16 +774,13 @@ angular.module('primeapps')
                                     $scope.changeOffset();
                                     $scope.saving = false;
                                     $scope.addNewHelpFormSideModal.hide();
-                                    ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
+                                    swal($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), "success");
                                 });
                         });
                     }
                     else {
-                        ngToast.create({ content: $filter('translate')('Setup.HelpGuide.SomeModuleNotAvailable'), className: 'warning' });
-
+                        swal($filter('translate')('Setup.HelpGuide.SomeModuleNotAvailable'), "warning");
                     }
-
-
                 }
             };
 
@@ -883,7 +878,7 @@ angular.module('primeapps')
                     }
                     HelpService.update(help);
                     $cache.removeAll();
-                    ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'), className: 'success' });
+                    swal($filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'), "success");
                 }
                 else {
                     HelpService.create(help).then(function () {
@@ -892,7 +887,7 @@ angular.module('primeapps')
                                 $scope.helpTemplates = response.data;
                                 // createHelpList();
                                 // $state.reload();
-                                ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'), className: 'success' });
+                                swal($filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'), "success");
                             });
 
                     });
@@ -909,8 +904,7 @@ angular.module('primeapps')
                                 $scope.helpTemplates = response.data;
                                 $scope.helpModalObj.tinymceModel = null;
                             });
-                        ngToast.create({ content: $filter('translate')('Template.SuccessDelete'), className: 'success' });
-
+                        swal($filter('translate')('Template.SuccessDelete'), "success");
                     });
             };
 
@@ -921,12 +915,12 @@ angular.module('primeapps')
                     $scope.setContent(template);
 
                 $scope.addNewHelpFormModal = $scope.addNewHelpFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/help/helpPage.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/help/helpPage.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewHelpFormModal.$promise.then(function () {
                     $scope.addNewHelpFormModal.show();
@@ -940,12 +934,12 @@ angular.module('primeapps')
                     $scope.setContent(template);
 
                 $scope.addNewHelpFormSideModal = $scope.addNewHelpFormSideModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/help/helpPageSide.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/help/helpPageSide.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewHelpFormSideModal.$promise.then(function () {
                     $scope.addNewHelpFormSideModal.show();
@@ -988,4 +982,4 @@ angular.module('primeapps')
             };
         }
     ])
-;
+    ;

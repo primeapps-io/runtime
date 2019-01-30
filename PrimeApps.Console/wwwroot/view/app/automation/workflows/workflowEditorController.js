@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('WorkflowEditorController', ['$rootScope', '$scope', '$location', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', 'ModuleService', '$http', 'config', 'operators',
-        function ($rootScope, $scope, $location, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, ModuleService, $http, config, operators) {
+    .controller('WorkflowEditorController', ['$rootScope', '$scope', '$location', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', 'ModuleService', '$http', 'config', 'operators',
+        function ($rootScope, $scope, $location, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, ModuleService, $http, config, operators) {
             $scope.loading = true;
             $scope.saving = false;
             $scope.$parent.loadingFilter = false;
@@ -1158,7 +1158,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        ngToast.create({ content: $filter('translate')('Setup.BpmWorkflow.MaximumHookWarning'), className: 'warning' });
+                        swal($filter('translate')('Setup.BpmWorkflow.MaximumHookWarning'), "warning");
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
@@ -1717,8 +1717,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 $state.go('studio.app.workflows');
-                ngToast.create({ content: $filter('translate')('Setup.BpmWorkflow.SubmitSuccess'), className: 'success' });
-
+                swal($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'), "success");
             };
 
 

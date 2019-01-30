@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('CollaboratorsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', 'ngToast', '$cache', 'activityTypes', 'CollaboratorsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, ngToast, $cache, activityTypes, CollaboratorsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
+    .controller('CollaboratorsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'CollaboratorsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, CollaboratorsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
             $scope.collaboratorArray = [];
 
             $scope.$parent.menuTopTitle = "Organization";
@@ -29,9 +29,9 @@ angular.module('primeapps')
             $scope.generator(10);
 
             CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
-             $scope.$parent.collaboratorCount = response.data;
-             $scope.pageTotal = response.data;
-             });
+                $scope.$parent.collaboratorCount = response.data;
+                $scope.pageTotal = response.data;
+            });
 
             CollaboratorsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 $scope.collaboratorArray = response.data;
@@ -111,12 +111,12 @@ angular.module('primeapps')
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
@@ -146,7 +146,7 @@ angular.module('primeapps')
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
                         if (response.data) {
-                            ngToast.create({ content: 'Collaborator is saved successfully', className: 'success' });
+                            swal('Collaborator is saved successfully', "success");
                             $scope.collaboratorModel.email = "";
 
                             $scope.submitting = false;
@@ -156,7 +156,7 @@ angular.module('primeapps')
                         }
                     })
                     .catch(function () {
-                        getToastMsg('Common.Error', 'danger');
+                        swal($filter('translate')('Common.Error'), "error");
                         $scope.submitting = false;
                     });
 
@@ -182,13 +182,13 @@ angular.module('primeapps')
                 CollaboratorsService.update(updCollaborator)
                     .then(function (response) {
                         if (response.data) {
-                            ngToast.create({ content: 'Role is changed successfully', className: 'success' });
+                            swal('Role is changed successfully', "success");
                             $scope.getCollaborators();
                             $scope.updatingRole = false;
                         }
                     })
                     .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
+                        swal($filter('translate')('Common.Error'), "error");
                         $scope.updatingRole = false;
                         $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
@@ -212,7 +212,7 @@ angular.module('primeapps')
                 CollaboratorsService.delete(data)
                     .then(function (response) {
                         if (response.data) {
-                            ngToast.create({ content: 'Collaborator is deleted successfully', className: 'success' });
+                            swal('Collaborator is deleted successfully', "success");
 
                             $scope.selectedCollaborator = {};
                             $scope.$parent.selectedCollaborator = {};
@@ -224,19 +224,9 @@ angular.module('primeapps')
                         }
                     })
                     .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
+                        swal($filter('translate')('Common.Error'), "error");
                         $scope.removing = false;
                     });
             };
-
-            var getToastMsg = function (msg, type) {
-                if (!type) {
-                    type = 'success';
-                }
-                ngToast.create({
-                    content: $filter('translate')(msg),
-                    className: type
-                });
-            }
         }
     ]);

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
+    .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
             $scope.modalLoading = true;
             $scope.$parent.wizardStep = 0;
@@ -678,7 +678,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        ngToast.create({ content: $filter('translate')('Setup.Workflow.MaximumHookWarning'), className: 'warning' });
+                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");
                     }
                 }
             };
@@ -819,7 +819,7 @@ angular.module('primeapps')
                     .then(function (response) {
 
                         if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
-                            ngToast.create({ content: $filter('translate')('Setup.Workflow.ProcessCanNotDelete'), className: 'danger' });
+                            swal($filter('translate')('Setup.Workflow.ProcessCanNotDelete'), "error");
                             $scope.loading = false;
                         } else {
                             swal({

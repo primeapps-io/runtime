@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AuditTrailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'AuditTrailService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService,AuditTrailService, LayoutService, $http, config) {
+    .controller('AuditTrailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AuditTrailService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AuditTrailService, LayoutService, $http, config) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 

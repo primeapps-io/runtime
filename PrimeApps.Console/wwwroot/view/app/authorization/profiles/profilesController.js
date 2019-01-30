@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
+    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
             $scope.$parent.menuTopTitle = "Authorization";
             //$scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'profiles';
@@ -223,8 +223,7 @@ angular.module('primeapps')
                     $scope.saving = false;
                     $scope.profileFormModal.hide();
                     $scope.changePage(1);
-                    ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
-
+                    swal($filter('translate')('Setup.Profiles.SubmitSuccess'), "success");
                 }).catch(function () {
                     $scope.profileSubmit = false;
                 });
@@ -248,12 +247,12 @@ angular.module('primeapps')
             var cloneProfile = function (profile) {
                 var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
                 $scope.profile = profile;
-                delete  $scope.profile.name;
-                delete  $scope.profile.user_ids;
-                delete  $scope.profile.description;
-                delete  $scope.profile.is_persistent;
-                delete  $scope.profile.CreatedBy;
-                delete  $scope.profile.id;
+                delete $scope.profile.name;
+                delete $scope.profile.user_ids;
+                delete $scope.profile.description;
+                delete $scope.profile.is_persistent;
+                delete $scope.profile.CreatedBy;
+                delete $scope.profile.id;
                 var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                 $scope.profile.PageStart = setPageStart;
                 $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
@@ -266,12 +265,12 @@ angular.module('primeapps')
                     editProfile(profile);
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/authorization/profiles/profileForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/authorization/profiles/profileForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });

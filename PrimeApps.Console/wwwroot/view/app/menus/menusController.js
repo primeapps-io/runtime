@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
-        function ($rootScope, $scope, $filter, $state, ngToast, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
+    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
+        function ($rootScope, $scope, $filter, $state, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.$parent.activeMenu = 'app';
@@ -647,7 +647,7 @@ angular.module('primeapps')
                  * If choice value True and moduleItem was select, we will clear module picklist
                  * */
                 if ($scope.menu.display && $scope.menu.moduleItem)
-                // if (moduleDisplay && moduleItem)
+                    // if (moduleDisplay && moduleItem)
                     $scope.menu.moduleItem = '';
 
                 else {
@@ -842,7 +842,7 @@ angular.module('primeapps')
                 return ids;
             }
 
-//Menu Delete
+            //Menu Delete
             $scope.delete = function (id) {
                 //First delete Menu
                 var willDelete =
@@ -871,4 +871,4 @@ angular.module('primeapps')
         }
 
     ])
-;
+    ;

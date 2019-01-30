@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', 'ngToast', '$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, ngToast, $stateParams) {
+    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, $stateParams) {
             $scope.appModel = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
@@ -15,41 +15,41 @@ angular.module('primeapps')
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
 
             $rootScope.breadcrumblist[0] = {
                 title: $rootScope.currentOrganization.label,
                 link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = {title: "Create App"};
+            $rootScope.breadcrumblist[1] = { title: "Create App" };
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                swal($filter('translate')('Common.NotFound'), "warning");
                 $state.go('studio.allApps');
                 return;
             }
 
 
             var uploader = $scope.uploader = new FileUploader({
-                    url: 'storage/upload_logo',
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId
-                    },
-                    queueLimit: 1
-                })
-            ;
+                url: 'storage/upload_logo',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId
+                },
+                queueLimit: 1
+            })
+                ;
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
                     case 'imageFilter':
-                        ngToast.create({ content: $filter('translate')('Setup.Settings.ImageError'), className: 'warning' });
+                        swal($filter('translate')('Setup.Settings.ImageError'), "warning");
                         break;
                     case 'sizeFilter':
-                        ngToast.create({ content: $filter('translate')('Setup.Settings.SizeError'), className: 'warning' });
+                        swal($filter('translate')('Setup.Settings.SizeError'), "warning");
                         break;
                 }
             };
@@ -211,7 +211,7 @@ angular.module('primeapps')
 
                         uploader.onCompleteItem = function (fileItem, logoUrl, status) {
                             if (status === 200) {
-                                ngToast.create({ content: $filter('translate')('App successfully created.'), className: 'success' });
+                                swal($filter('translate')('App successfully created.'), "success");
                                 $scope.updateApp = {};
                                 $scope.updateApp.description = response.data.description;
                                 $scope.updateApp.label = response.data.label;
@@ -225,10 +225,7 @@ angular.module('primeapps')
                         };
                     })
                     .catch(function () {
-                        ngToast.create({
-                            content: 'App ' + $scope.appModel.label + ' not created.',
-                            className: 'danger'
-                        });
+                        swal('App ' + $scope.appModel.label + ' not created.', "error");
                         $scope.appSaving = false;
                     });
             };

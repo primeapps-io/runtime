@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
+    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
             $scope.templateModules = $filter('filter')($scope.$parent.modules, { deleted: false });
             $scope.$parent.menuTopTitle = "Templates";
@@ -364,7 +364,7 @@ angular.module('primeapps')
                 //         .then(function (listResponse) {
                 //             $scope.templates = listResponse.data;
                 //             $scope.template = saveResponse.data.id;
-                //             ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
+                //             swal($filter('translate')('Template.SuccessMessage'), "success");   
                 //         });
                 // });
             };
@@ -382,12 +382,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/emailtemplates/emailTemplatesForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/emailtemplates/emailTemplatesForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewEmailTemplateFormModal.$promise.then(function () {
                     $scope.addNewEmailTemplateFormModal.show();

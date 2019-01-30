@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', 'ngToast', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
-        function ($rootScope, $scope, $filter, ngToast, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
+        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
 
             $scope.actionButtons = [];
             $scope.generator = function (limit) {
@@ -358,10 +358,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        ngToast.create({
-                            content: $filter('translate')('Setup.Workflow.MaximumHookWarning'),
-                            className: 'warning'
-                        });
+                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");   
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];

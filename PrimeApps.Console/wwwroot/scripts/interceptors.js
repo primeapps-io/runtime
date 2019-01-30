@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', 'ngToast', '$cookies', '$rootScope',
-        function ($q, $injector, $window, $localStorage, $filter, ngToast, $cookies, $rootScope) {
+    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', '$cookies', '$rootScope',
+        function ($q, $injector, $window, $localStorage, $filter, $cookies, $rootScope) {
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
@@ -29,7 +29,7 @@ angular.module('primeapps')
 
                     var organizationId = $rootScope.currentOrgId ? $rootScope.currentOrgId : null;
 
-                    var appId = $rootScope.currentAppId !="undefined" &&  $rootScope.currentAppId  ? $rootScope.currentAppId : null;
+                    var appId = $rootScope.currentAppId != "undefined" && $rootScope.currentAppId ? $rootScope.currentAppId : null;
 
                     var tenantId = $cookies.get('tenant_id');
 
@@ -77,24 +77,23 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'danger'});
+                        swal($filter('translate')('Common.Forbidden'), "error");
+
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            ngToast.create({
-                                content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'),
-                                className: 'warning'
-                            });
+                            swal($filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), "warning");
                         }
 
                         return $q.reject(rejection);
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        ngToast.create({content: $filter('translate')('Common.NetworkError'), className: 'warning'});
+                        swal($filter('translate')('Common.NetworkError'), "warning");
+
                         return $q.reject(rejection);
                     }
 
@@ -102,7 +101,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    ngToast.create({content: $filter('translate')('Common.Error'), className: 'danger'});
+                    swal($filter('translate')('Common.Error'), "error");
 
                     return $q.reject(rejection);
                 }

@@ -2,15 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q', '$window',
-        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q, $window) {
+    .controller('AppController', ['$rootScope', '$scope', '$filter', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q', '$window',
+        function ($rootScope, $scope, $filter, $state, $cookies, $http, config, $localStorage, LayoutService, $q, $window) {
 
 
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
             if (!$rootScope.currentAppId) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                swal($filter('translate')('Common.NotFound'), "warning");
                 $state.go('studio.allApps');
                 return;
             }

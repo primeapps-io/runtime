@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
-    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
+angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
         angular.element($window).on('load resize', function () {
             if ($window.innerWidth < 1366) {
                 $scope.$apply(function () {
@@ -166,12 +166,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
             $scope.organizatioFormModal = $scope.organizatioFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/newOrganization.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                scope: $scope,
+                templateUrl: 'view/organization/newOrganization.html',
+                animation: 'am-fade-and-slide-right',
+                backdrop: 'static',
+                show: false
+            });
             $scope.organizatioFormModal.$promise.then(function () {
                 $scope.organizatioFormModal.show();
 
@@ -248,7 +248,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     getMyOrganizations();
                     $scope.changeOrganization(copyOrganization);
                     $scope.menuOpen[response.data] = true;
-                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' successfully created.', className: 'success' });
+                    swal('Organization ' + $scope.organization.label + ' successfully created.', "success");   
                     $scope.organizationSaving = false;
                     $scope.organization = {};
                     $scope.organizatioFormModal.hide();
@@ -259,7 +259,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 })
                 .catch(function () {
-                    ngToast.create({ content: 'Organization ' + $scope.organization.label + ' not created.', className: 'danger' });
+                    swal('Organization ' + $scope.organization.label + ' not created.', "error");   
                     $scope.organizationSaving = false;
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
