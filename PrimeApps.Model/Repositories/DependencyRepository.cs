@@ -66,7 +66,9 @@ namespace PrimeApps.Model.Repositories
 		public async Task<Dependency> GetById(int id)
 		{
 			var dependency = await GetDependencyQuery()
-				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+								.Include(x => x.Module).ThenInclude(module => module.Sections)
+								//.Include(x => x.Module).ThenInclude(module => module.Fields)
+								.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
 			return dependency;
 		}
@@ -112,8 +114,8 @@ namespace PrimeApps.Model.Repositories
 			if (id > 0)
 				dependencies = dependencies.Where(x => x.ModuleId == id);
 
-			dependencies = dependencies.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
-									   .Include(dependency => dependency.Module).ThenInclude(module => module.Fields);
+			dependencies = dependencies//.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
+						  .Include(dependency => dependency.Module).ThenInclude(module => module.Fields);
 
 			return dependencies.OrderByDescending(x => x.Id);
 

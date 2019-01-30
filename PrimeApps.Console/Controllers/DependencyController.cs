@@ -83,5 +83,11 @@ namespace PrimeApps.Console.Controllers
 			return await _dependencyRepository.GetAllDeleted();
 		}
 
+		[Route("get_by_id/{id:int}"), HttpGet]
+		public async Task<Dependency> GetById(int id)
+		{
+			return await _dependencyRepository.GetById(id);
+		}
+
 	}
 }
