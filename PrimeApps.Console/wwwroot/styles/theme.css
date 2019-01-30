@@ -1293,6 +1293,16 @@ button:focus, select:focus {
 .primeapps .form-group .form-control[disabled] {
   opacity: 0.5;
 }
+.primeapps .form-group.form-group-filtre {
+  margin-bottom: 0px !important;
+  padding: 0px 10px;
+  background: #FFF;
+  border-radius: 5px;
+}
+.primeapps .form-group.form-group-filtre .form-control {
+  height: 30px !important;
+  background: #FFF;
+}
 .primeapps .checkbox-inline input[type=checkbox] {
   position: relative !important;
   margin-left: 0px !important;
