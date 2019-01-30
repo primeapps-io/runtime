@@ -1910,6 +1910,9 @@ button:focus, select:focus {
   background: rgba(0, 0, 0, 0.03);
   border-color: transparent;
 }
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active .costume-bage {
+  background: #0D6FAA;
+}
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active > a {
   color: #0D6FAA;
   background: rgba(0, 0, 0, 0.03);
@@ -2353,7 +2356,7 @@ button:focus, select:focus {
   opacity: 1;
 }
 .primeapps .templatebox span.centerx i {
-  font-size: 50px;
+  font-size: 40px;
 }
 .primeapps .templatebox span.centerx.hover-buttons {
   opacity: 0;
@@ -2393,14 +2396,24 @@ button:focus, select:focus {
   opacity: 0.75;
   background: #0D6FAA;
 }
+.primeapps .templatebox span.centerx h3 {
+  font-size: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .primeapps .templatebox span.bottomx {
   position: relative;
   display: block;
   padding: 10px;
+  font-size: 12px;
 }
 .primeapps .templatebox span.bottomx h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .primeapps .templatebox .template-icon-top-right {
   position: absolute;

@@ -2477,6 +2477,10 @@ button, select {
               position: relative;
               background: rgba(0,0,0,0.03);
               border-color: transparent;
+              .costume-bage {
+                background: $primeapps-color;
+              }
+              
               > a {
                 color: $primeapps-color;
                 background: rgba(0,0,0,0.03);
@@ -2997,7 +3001,7 @@ button, select {
     span{
       &.centerx{
         i{
-          font-size: 50px;
+          font-size: 40px;
         }
         display: flex;
         justify-content: center;
@@ -3031,6 +3035,7 @@ button, select {
             {
               padding: 5px 20px;
             }
+            
           }
         }
         &:before{
@@ -3045,14 +3050,24 @@ button, select {
           opacity: 0.75;
           background: #0D6FAA;
         }
+        h3{
+          font-size: 20px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
       &.bottomx{
         position: relative;
         display: block;
         padding: 10px;
+        font-size: 12px;
         h3{
           margin: 0;
-          font-size: 18px;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
@@ -3147,6 +3162,10 @@ button, select {
       }
     }
   }
+  @media (max-width: 1199.98px) {
+    
+  }
+  
   @media (max-width: 767.98px) {
     .flex-betweenx {
       display: block;
