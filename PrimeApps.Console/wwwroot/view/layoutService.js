@@ -14,6 +14,7 @@ angular.module('primeapps')
                     return $q.all(promises).then(function (response) {
                         $rootScope.me = response[0].data;
                         $rootScope.organizations = response[1].data;
+                        $rootScope.currentOrgId = $filter('filter')($rootScope.organizations, {default: true}, true)[0].id;
 
                         if (!$rootScope.breadcrumblist) {
                             $rootScope.breadcrumblist = [{}, {}, {}];
@@ -276,7 +277,7 @@ angular.module('primeapps')
                         $rootScope.appProfiles = response[1].data;
                         var result = response[2];
                         $rootScope.currentApp = result.data;
-                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentApp.organization_id) } ,true)[0];
+                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 
                         if (!angular.isArray($rootScope.breadcrumblist))
                             $rootScope.breadcrumblist = [{}, {}, {}];

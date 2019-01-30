@@ -1,4 +1,5 @@
-﻿using IdentityServer4;
+﻿using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
@@ -21,7 +22,27 @@ namespace PrimeApps.Auth
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "PrimeApps Api Auth")
+                new ApiResource()
+                {
+                    Name = "api2",
+                    DisplayName = "Api2 Token EndPoint",
+                    Scopes =
+                    {
+                        new Scope("api2", "Api2 Token EndPoint"),
+                        new Scope(IdentityServerConstants.StandardScopes.OpenId),
+                        new Scope(IdentityServerConstants.StandardScopes.Email),
+                        new Scope(IdentityServerConstants.StandardScopes.Profile),
+                        new Scope(IdentityServerConstants.StandardScopes.OfflineAccess)
+                    },
+                    UserClaims =
+                    {
+                        "api2_sample",
+                        JwtClaimTypes.GivenName,
+                        JwtClaimTypes.FamilyName,
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Email,
+                    }
+                }
             };
         }
 
@@ -31,6 +52,23 @@ namespace PrimeApps.Auth
             // client credentials client
             return new List<Client>
             {
+                new Client
+                {
+                    ClientId = "service",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets =
+                    {
+                        new Secret("s3rv1c3".Sha256())
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api2"
+                    }
+                }
+                /*
                 // OpenID Connect hybrid flow and client credentials client (PrimeApps)
                 new Client
                 {
@@ -219,6 +257,8 @@ namespace PrimeApps.Auth
                     },
                     AccessTokenLifetime = 864000
                 }
+
+    */
             };
         }
     }

@@ -96,7 +96,7 @@ angular.module('primeapps')
                     $scope.componentForm.order = 0;
                 }
 
-                ComponentsService.create($scope.componentForm)
+                ComponentsService.update($scope.componentForm)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();

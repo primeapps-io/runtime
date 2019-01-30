@@ -166,18 +166,25 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
-            $scope.organizatioFormModal = $scope.organizatioFormModal || $modal({
+            $scope.organizationFormModal = $scope.organizationFormModal || $modal({
                 scope: $scope,
                 templateUrl: 'view/organization/newOrganization.html',
                 animation: 'am-fade-and-slide-right',
                 backdrop: 'static',
                 show: false
             });
-            $scope.organizatioFormModal.$promise.then(function () {
-                $scope.organizatioFormModal.show();
+            $scope.organizationFormModal.$promise.then(function () {
+                $scope.organizationFormModal.show();
 
             });
 
+        };
+        
+        $scope.closeNewOrganizationModal =function(){
+            $scope.organization = {};
+            $scope.organizationShortnameValid = null;
+            $scope.isOrganizationShortnameBlur = false;
+            $scope.organizationFormModal.hide();
         };
 
         $scope.organizationShortnameBlur = function (organization) {
@@ -252,7 +259,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     swal('Organization ' + $scope.organization.label + ' successfully created.', "success");   
                     $scope.organizationSaving = false;
                     $scope.organization = {};
-                    $scope.organizatioFormModal.hide();
+                    $scope.organizationFormModal.hide();
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 

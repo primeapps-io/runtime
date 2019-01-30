@@ -11,6 +11,9 @@ angular.module('primeapps')
                 create: function (data) {
                     return $http.post(config.apiUrl + 'component/create', data);
                 },
+                update: function (data) {
+                    return $http.put(config.apiUrl + 'component/update', data);
+                },
                 count: function () {
                     return $http.get(config.apiUrl + 'component/count');
                 },
@@ -22,6 +25,9 @@ angular.module('primeapps')
                 },
                 getApp: function (id) {
                     return $http.get(config.apiUrl + 'app/get/' + id);
+                },
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'component/delete/' + id);
                 }
             };
         }]);

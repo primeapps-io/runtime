@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AllAppsController', ['$rootScope', '$scope', '$state', 'AllAppsService',
-        function ($rootScope, $scope, $state, AllAppsService) {
+    .controller('AllAppsController', ['$rootScope', '$scope', '$state', '$filter', 'AllAppsService',
+        function ($rootScope, $scope, $state, $filter, AllAppsService) {
 
             $rootScope.breadcrumblist[0] = {title: 'All Apps'};
             $rootScope.breadcrumblist[1] = {};
@@ -36,7 +36,7 @@ angular.module('primeapps')
             };
 
             $scope.gotoAppForm = function () {
-                $state.go('studio.appsForm', {orgId: 1});
+                $state.go('studio.appsForm', { orgId:  $filter('filter')($rootScope.organizations, {default: true}, true)[0].id });
             }
         }
     ]);

@@ -19,6 +19,9 @@ namespace PrimeApps.Model.Entities.Console
         [Column("owner_id"), ForeignKey("Owner")]
         public int OwnerId { get; set; }
 
+        [Column("default")]
+        public bool Default { get; set; }
+
         public virtual ConsoleUser Owner { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }

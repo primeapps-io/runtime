@@ -97,7 +97,7 @@ namespace PrimeApps.Console.Controllers
             var component = await _componentRepository.Get(id);
 
             if (component == null)
-                return NotFound("Component not found!");
+                return Forbid("Component not found!");
 
             component.Name = model.Name ?? component.Name;
             component.Content = model.Content ?? component.Content;
@@ -117,7 +117,7 @@ namespace PrimeApps.Console.Controllers
             var component = await _componentRepository.Get(id);
 
             if (component == null)
-                return NotFound("Component not found!");
+                return Forbid("Component not found!");
 
             await _componentRepository.Delete(component);
 

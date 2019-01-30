@@ -38,6 +38,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Net.Http.Headers;
 using PrimeApps.Auth.Helpers;
+using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Auth.UI
 {
@@ -58,6 +60,8 @@ namespace PrimeApps.Auth.UI
         private IProfileRepository _profileRepository;
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
+        private IConsoleUserRepository _consoleUserRepository;
+        private IOrganizationRepository _organizationRepository;
         private IGiteaHelper _giteaHelper;
 
         public IBackgroundTaskQueue Queue { get; }
@@ -80,6 +84,8 @@ namespace PrimeApps.Auth.UI
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IRecordRepository recordRepository,
+            IConsoleUserRepository consoleUserRepository,
+            IOrganizationRepository organizationRepository,
             IGiteaHelper giteaHelper,
             IConfiguration configuration)
         {
@@ -98,6 +104,8 @@ namespace PrimeApps.Auth.UI
             _userRepository = userRepository;
             _profileRepository = profileRepository;
             _roleRepository = roleRepository;
+            _consoleUserRepository = consoleUserRepository;
+            _organizationRepository = organizationRepository;
             _recordRepository = recordRepository;
 
             Queue = queue;
@@ -1499,6 +1507,7 @@ namespace PrimeApps.Auth.UI
 
                     platformUser = await _platformUserRepository.GetWithTenants(model.Email);
                 }
+
                 if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
                 {
                     var tenantId = 0;
@@ -1625,13 +1634,51 @@ namespace PrimeApps.Auth.UI
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
 
                         response["Success"] = true;
-                        
+
                     }
                     catch (Exception ex)
                     {
                         DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
 
                         throw ex;
+                    }
+                }
+
+                if (identityUser != null && applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Console)
+                {
+                    var consoleUser = new Model.Entities.Console.ConsoleUser
+                    {
+                        Id = platformUser.Id,
+                        UserOrganizations = new List<OrganizationUser>()
+                    };
+
+                    var result = await _consoleUserRepository.Create(consoleUser);
+
+                    if (result >= 1)
+                    {
+                        var query = model.Email.Replace("@", "").Split(".");
+                        Array.Resize(ref query, query.Length - 1);
+                        var orgName = string.Join("", query);
+
+                        var organization = new Organization
+                        {
+                            Name = orgName,
+                            Label = model.FirstName + " " + model.LastName,
+                            OwnerId = consoleUser.Id,
+                            CreatedById = consoleUser.Id,
+                            Default = true,
+                            OrganizationUsers = new List<OrganizationUser>()
+                        };
+
+                        organization.OrganizationUsers.Add(new OrganizationUser
+                        {
+                            UserId = consoleUser.Id,
+                            Role = OrganizationRole.Administrator,
+                            CreatedById = consoleUser.Id,
+                            CreatedAt = DateTime.Now
+                        });
+
+                        await _organizationRepository.Create(organization);
                     }
                 }
 

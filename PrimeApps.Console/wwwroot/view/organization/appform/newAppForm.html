@@ -7,7 +7,7 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="appFormModal.hide();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
                             <button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
@@ -82,7 +82,7 @@
                                     <div ng-show="uploader.queue.length > 0">
                                         <div class="row">
                                             <div class="col-md-6 col-lg-6">
-                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg" />
+                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg"/>
                                                 <div class="action-buttons-block">
                                                     <button type="button" class="action-buttons-delete" ng-click="logoRemove();">
                                                         <i class="fas fa-trash"></i>
@@ -90,10 +90,10 @@
                                                 </div>
                                             </div>
                                             <!--<div class="col-xs-12" ng-repeat="item in uploader.queue" ng-show="false">-->
-                                                <!--<div class="cropArea cropArea2">-->
-                                                    <!--<label class="">Please crop your image: </label>-->
-                                                    <!--<img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>-->
-                                                <!--</div>-->
+                                            <!--<div class="cropArea cropArea2">-->
+                                            <!--<label class="">Please crop your image: </label>-->
+                                            <!--<img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>-->
+                                            <!--</div>-->
                                             <!--</div>-->
                                         </div>
                                     </div>

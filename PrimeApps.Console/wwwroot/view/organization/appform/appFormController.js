@@ -17,7 +17,6 @@ angular.module('primeapps')
             if ($rootScope.organizations)
                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
-
             $rootScope.breadcrumblist[0] = {
                 title: $rootScope.currentOrganization.label,
                 link: '#/apps?orgId=' + $rootScope.currentOrgId
@@ -30,7 +29,6 @@ angular.module('primeapps')
                 $state.go('studio.allApps');
                 return;
             }
-
 
             var uploader = $scope.uploader = new FileUploader({
                 url: 'storage/upload_logo',
@@ -117,7 +115,6 @@ angular.module('primeapps')
             //     console.info('onCompleteAll');
             // };
 
-
             $scope.openModal = function () {
                 $scope.appFormModal = $scope.appFormModal || $modal({
                     scope: $scope,
@@ -129,6 +126,14 @@ angular.module('primeapps')
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
+            };
+
+            $scope.closeModal = function () {
+                $scope.appModel = {}; 
+                $scope.appFormModal.hide(); 
+                $scope.logoRemove();
+                $scope.nameValid = null;
+                $scope.nameBlur = false;
             };
 
             $scope.checkNameBlur = function () {
@@ -175,8 +180,10 @@ angular.module('primeapps')
             };
 
             $scope.logoRemove = function () {
-                uploader.queue[0].remove();
-                uploader.queue[0].image = null;
+                if (uploader.queue[0]) {
+                    //uploader.queue[0].image = null;
+                    uploader.queue[0].remove();
+                }
             };
 
             $scope.generateAppName = function () {
@@ -196,9 +203,7 @@ angular.module('primeapps')
 
                 AppFormService.create($scope.appModel)
                     .then(function (response) {
-                        $scope.appModel = {};
-                        $scope.appSaving = false;
-                        $scope.appFormModal.hide();
+                        $rootScope.currentAppId = response.data.id;
                         var header = {
                             'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
                             'Accept': 'application/json',
@@ -211,7 +216,6 @@ angular.module('primeapps')
 
                         uploader.onCompleteItem = function (fileItem, logoUrl, status) {
                             if (status === 200) {
-                                swal($filter('translate')('App successfully created.'), "success");
                                 $scope.updateApp = {};
                                 $scope.updateApp.description = response.data.description;
                                 $scope.updateApp.label = response.data.label;
@@ -219,8 +223,17 @@ angular.module('primeapps')
                                 $scope.updateApp.status = response.data.status;
                                 $scope.updateApp.template_id = response.data.templet_id;
                                 $scope.updateApp.logo = logoUrl;
-                                AppFormService.update(response.data.id, $scope.updateApp).then(function (response) {
-                                });
+                                AppFormService.update($rootScope.currentAppId, $scope.updateApp)
+                                    .then(function (response) {
+                                        $scope.appSaving = false;
+                                        $scope.appFormModal.hide();
+                                        $scope.appModel = {};
+                                        $scope.logoRemove();
+                                        swal($filter('translate')('App successfully created.'), "success");
+                                        $scope.nameValid = null;
+                                        $scope.nameBlur = false;
+                                        $state.go('studio.app.overview', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
+                                    });
                             }
                         };
                     })
