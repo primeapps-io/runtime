@@ -1,5 +1,6 @@
 <ul class="setup-nav" ng-show="!appLoading">
-    <li>
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='overview' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info"
            data-title="Overview" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
@@ -140,7 +141,7 @@
         </a>
     </li>
     <li ng-click="openSubMenu('')"
-        ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
+        ng-class="activeMenuItem ==='components' ? 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
            data-title="Components" bs-tooltip data-placement="right">
             <i class="fas fa-shapes"></i>
@@ -170,14 +171,14 @@
             </li>
         </ul>
     </li>
-    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='menus' ?'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
            data-title="Menus" bs-tooltip data-placement="right">
             <i class="fas fa-bars"></i>
             <span>Menus</span>
         </a>
     </li>
-    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='help' ? 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
            data-title="Help &amp; Guides" bs-tooltip data-placement="right">
             <i class="fas fa-medkit"></i>
@@ -185,7 +186,7 @@
         </a>
     </li>
     <li ng-click="openSubMenu('')"
-        ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
+        ng-class="activeMenuItem ==='deployment' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info"
            data-title="Deployment" bs-tooltip data-placement="right">
             <i class="fas fa-play"></i>
@@ -274,7 +275,7 @@
         </ul>
     </li>
     <li ng-click="openSubMenu('')"
-        ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
+        ng-class="activeMenuItem ==='extensions' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info"
            data-title="Extensions" bs-tooltip data-placement="right">
             <i class="fas fa-plug"></i>
@@ -282,7 +283,7 @@
         </a>
     </li>
     <li ng-click="openSubMenu('')"
-        ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
+        ng-class="activeMenuItem ==='diagnostics' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/diagnostics" data-trigger="hover" data-type="info"
            data-title="Diagnostics" bs-tooltip data-placement="right">
             <i class="fas fa-diagnoses"></i>
