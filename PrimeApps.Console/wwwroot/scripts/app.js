@@ -15,8 +15,7 @@ angular.module('primeapps',
         'ngTable',
         'xeditable',
         'angularFileUpload',
-        'ui.bootstrap.showErrors',
-        'ngToast',
+        'ui.bootstrap.showErrors', 
         'blockUI',
         'vr.directives.slider',
         'ui.sortable',
@@ -41,8 +40,8 @@ angular.module('primeapps',
         'dndLists'
     ])
 
-    .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'ngToastProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',
-        function ($locationProvider, $compileProvider, $filterProvider, $controllerProvider, $provide, $httpProvider, $qProvider, $sceDelegateProvider, $translateProvider, tmhDynamicLocaleProvider, $datepickerProvider, ngToastProvider, blockUIConfig, $animateProvider, pluploadOptionProvider, config, uiSelectConfig) {
+    .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',
+        function ($locationProvider, $compileProvider, $filterProvider, $controllerProvider, $provide, $httpProvider, $qProvider, $sceDelegateProvider, $translateProvider, tmhDynamicLocaleProvider, $datepickerProvider, blockUIConfig, $animateProvider, pluploadOptionProvider, config, uiSelectConfig) {
             angular.module('primeapps').controller = $controllerProvider.register;
             angular.module('primeapps').service = $provide.service;
             angular.module('primeapps').factory = $provide.factory;
@@ -92,14 +91,6 @@ angular.module('primeapps',
 
             angular.extend($datepickerProvider.defaults, {
                 startWeek: 1
-            });
-
-            ngToastProvider.configure({
-                verticalPosition: 'top',
-                horizontalPosition: 'center',
-                className: 'info',
-                timeout: 5000,
-                dismissButton: true
             });
 
             blockUIConfig.autoBlock = false;
