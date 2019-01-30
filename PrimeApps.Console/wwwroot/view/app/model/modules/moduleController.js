@@ -78,10 +78,12 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            $scope.loading = true;
                             ModuleService.delete(module.id)
                                 .then(function () {
-                                    var moduleToDeleteIndex = helper.arrayObjectIndexOf($scope.modules, module);
-                                    $scope.modules.splice(moduleToDeleteIndex, 1);
+                                    $scope.pageTotal--;
+                                    $scope.changeOffset();
+                                    $scope.loading = false;
                                     swal("Deleted!", "Module is deleted successfully.", "success");
 
                                 })

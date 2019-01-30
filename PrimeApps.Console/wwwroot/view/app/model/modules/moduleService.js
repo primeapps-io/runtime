@@ -61,7 +61,7 @@ angular.module('primeapps')
                     field.editable = true;
                     field.show_label = true;
                     field.deleted = false;
-                    field.name = dataType.name;
+                    field.name = "custom_field" + dataType.name;
                     field.isNew = true;
                     field.permissions = [];
 

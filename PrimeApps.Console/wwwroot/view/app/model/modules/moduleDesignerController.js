@@ -164,10 +164,9 @@ angular.module('primeapps')
                     setDraggableLayout();
                 }, 0);
 
-                $scope.$on('dragulardrop', function (e, el,d) {
+                $scope.$on('dragulardrop', function (e, el) {
                     e.stopPropagation();
                     $timeout(function () {
-                        console.log(e,el,d);
                         $scope.refreshModule();
                     }, 0);
                 });
