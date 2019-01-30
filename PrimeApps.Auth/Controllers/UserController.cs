@@ -368,8 +368,8 @@ namespace PrimeApps.Auth.Controllers
             return false;
         }
 
-        [Route("token"), HttpPost]
-        public async Task<TokenResponse> GetToken(PasswordTokenRequest tokenRequest)
+        [Route("token"), HttpPost, Consumes("application/x-www-form-urlencoded")]
+        public async Task<TokenResponse> GetToken([FromForm]PasswordTokenRequest tokenRequest)
         {
             var httpClient = new HttpClient();
 
