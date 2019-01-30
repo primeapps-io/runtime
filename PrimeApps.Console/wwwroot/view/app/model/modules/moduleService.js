@@ -15,6 +15,9 @@ angular.module('primeapps')
                 profileSettingsCount: function (id) {
                     return $http.get(config.apiUrl + 'module_profile_settings/count/' + id);
                 },
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'module/delete/' + id);
+                },
                 profileSettingsFind: function (data) {
                     return $http.post(config.apiUrl + 'module_profile_settings/find', data);
                 },

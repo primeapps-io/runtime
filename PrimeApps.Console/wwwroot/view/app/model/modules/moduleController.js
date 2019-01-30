@@ -52,32 +52,44 @@ angular.module('primeapps')
             };
 
 
-            $scope.showDeleteForm = function (moduleId) {
-                $scope.selectedModuleId = moduleId;
+            // $scope.showDeleteForm = function (moduleId) {
+            //     $scope.selectedModuleId = moduleId;
+            //
+            //     $scope.deleteModal = $scope.deleteModal || $modal({
+            //         scope: $scope,
+            //         template: 'view/app/model/modules/deleteForm.html',
+            //         animation: 'am-fade-and-slide-right',
+            //         backdrop: 'static',
+            //         show: false
+            //     });
+            //
+            //     $scope.deleteModal.$promise.then(function () {
+            //         $scope.deleteModal.show();
+            //     });
+            // };
 
-                $scope.deleteModal = $scope.deleteModal || $modal({
-                    scope: $scope,
-                    template: 'view/app/model/modules/deleteForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+            $scope.delete = function (module) {
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this Module?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            ModuleService.delete(module.id)
+                                .then(function () {
+                                    var moduleToDeleteIndex = helper.arrayObjectIndexOf($scope.modules, module);
+                                    $scope.modules.splice(moduleToDeleteIndex, 1);
+                                    swal("Deleted!", "Module is deleted successfully.", "success");
 
-                $scope.deleteModal.$promise.then(function () {
-                    $scope.deleteModal.show();
-                });
-            };
+                                })
+                                .catch(function () {
 
-            $scope.delete = function () {
-                $scope.deleting = true;
-
-                ModuleService.delete($scope.selectedModuleId)
-                    .then(function () {
-                        $scope.changePage(1);
-                    })
-                    .catch(function () {
-                        $scope.deleteModal.hide();
+                                });
+                        }
                     });
-            }
+            };
         }
     ]);
