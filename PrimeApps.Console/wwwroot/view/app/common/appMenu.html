@@ -131,14 +131,16 @@
             </li>
         </ul>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
            data-title="Functions" bs-tooltip data-placement="right">
             <i class="fas fa-code"></i>
             <span>Functions</span>
         </a>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
            data-title="Components" bs-tooltip data-placement="right">
             <i class="fas fa-shapes"></i>
@@ -168,21 +170,22 @@
             </li>
         </ul>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
            data-title="Menus" bs-tooltip data-placement="right">
             <i class="fas fa-bars"></i>
             <span>Menus</span>
         </a>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')" ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
            data-title="Help &amp; Guides" bs-tooltip data-placement="right">
             <i class="fas fa-medkit"></i>
             <span>Help &amp; Guides</span>
         </a>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info"
            data-title="Deployment" bs-tooltip data-placement="right">
             <i class="fas fa-play"></i>
@@ -270,26 +273,52 @@
 
         </ul>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info"
            data-title="Extensions" bs-tooltip data-placement="right">
             <i class="fas fa-plug"></i>
             <span>Extensions</span>
         </a>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-click="openSubMenu('')"
+        ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/diagnostics" data-trigger="hover" data-type="info"
            data-title="Diagnostics" bs-tooltip data-placement="right">
             <i class="fas fa-diagnoses"></i>
             <span>Diagnostics</span>
         </a>
     </li>
-    <li ng-click="subMenuOpen =''" ng-class="activeMenuItem ==='settings' ? appLoading ? 'active blocked' : 'active' :''">
+    <li ng-class="subMenuOpen =='settings' ? 'active sub-open':''" ng-click="openSubMenu('settings')">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/appDetails" data-trigger="hover" data-type="info"
            data-title="Settings" bs-tooltip data-placement="right">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"
+                   data-title="App Details" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>App Details</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/appCollaborators" data-trigger="hover" data-type="info"
+                   data-title="Collaborators" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Collaborators</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='notifications' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/notifications" data-trigger="hover" data-type="info"
+                   data-title="Notifications" bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+        </ul>
     </li>
 </ul>
 
