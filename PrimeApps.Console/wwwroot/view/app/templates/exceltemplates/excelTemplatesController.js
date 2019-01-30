@@ -90,7 +90,7 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-                $scope.getDownloadUrl();
+               // $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
