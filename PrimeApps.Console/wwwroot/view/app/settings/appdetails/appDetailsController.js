@@ -2,13 +2,13 @@
 
 angular.module('primeapps')
 
-    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location', 'FileUploader', '$cookies', '$localStorage',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
+    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location', 'FileUploader', '$cookies', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.appModel = {};
             $scope.$parent.menuTopTitle = "Settings";
-            $scope.$parent.activeMenu = 'settings';
+            //$scope.$parent.activeMenu = 'settings';
             $scope.$parent.activeMenuItem = 'appDetails';
             $rootScope.breadcrumblist[2].title = 'App Details';
 
@@ -68,7 +68,7 @@ angular.module('primeapps')
             $scope.save = function () {
                 AppDetailsService.update($scope.appId, $scope.appModel)
                     .then(function (response) {
-                        ngToast.create({ content: $filter('translate')('Güncelleme Başarılı'), className: 'success' });
+                        swal($filter('translate')('Güncelleme Başarılı'), "success");
                     });
             };
         }

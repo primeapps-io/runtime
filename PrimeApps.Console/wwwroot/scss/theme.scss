@@ -395,7 +395,7 @@ button, select {
           background-color: rgba(13, 111, 170, 0.25);
           border-color: rgba(0, 0, 0, 0.25);
         }
-
+        
       }
     }
 
@@ -494,9 +494,13 @@ button, select {
         }
       }
       .template-field-text {
+        
         h4 {
           font-size: 14px !important;
           margin: 0px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
@@ -1645,7 +1649,16 @@ button, select {
         opacity: 0.5;
       }
     }
-
+    &.form-group-filtre{
+      margin-bottom: 0px !important;
+      padding: 0px 10px;
+      background: #FFF;
+      border-radius: 5px;
+      .form-control{
+        height: 30px !important;
+        background: #FFF;
+      }
+    }
   }
 
   .checkbox-inline input[type="checkbox"] {
@@ -1717,64 +1730,59 @@ button, select {
 
       .app-box {
         @include hoverEffect();
+        position: relative;
+        display: flex;
         height: 200px;
+        width: 100%;
         border-radius: 5px;
         box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
         background-color: #ffffff;
-        display: flex;
-        flex-direction: column;
-
-        .image {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-          padding-bottom: 20px;
-          
-          img {
-            width: 200px;
-            max-width: 100%;
+        align-items: center;
+        padding: 10px 30px;
+        justify-content: center;
+        .applogo
+        {
+          max-width: 100%;
+          max-height: 100%;
+          position: relative;
+          z-index: 1;
+          i {
+            font-size: 60px;
+            color: rgba(0, 0, 0, 0.25);
           }
         }
 
         .oval {
-          display: flex;
-          justify-content: flex-end;
-
+          z-index: 2;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          width: 20px;
+          height: 20px;
+          
           span {
             width: 20px;
             height: 20px;
             border-radius: 10px;
             box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-            margin: 15px;
+            display: block;
+            &.oval-green {
+              background-color: #92c549;
+            }
 
-          }
+            &.oval-orange {
+              background-color: #e08340;
+            }
 
-          .oval-green {
-            background-color: #92c549;
-          }
-
-          .oval-orange {
-            background-color: #e08340;
-          }
-
-          .oval-gray {
-            background-color: #bfbfbf;
-          }
-        }
-
-        .icon-image {
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          i {
-            font-size: 67px;
-            color: rgba(0, 0, 0, 0.25);
+            &.oval-gray {
+              background-color: #bfbfbf;
+            }
           }
         }
       }
+      
+      
+      
 
       .app-info {
 
@@ -2477,6 +2485,10 @@ button, select {
               position: relative;
               background: rgba(0,0,0,0.03);
               border-color: transparent;
+              .costume-bage {
+                background: $primeapps-color;
+              }
+              
               > a {
                 color: $primeapps-color;
                 background: rgba(0,0,0,0.03);
@@ -2729,14 +2741,23 @@ button, select {
         display: flex;
         align-items: center;
         text-align: left !important;
-        .template-field-icon,
+        .template-field-icon{
+          display: inline-block;
+          padding-left: 5px;
+        }
         .template-field-text
         {
           display: inline-block;
           padding-left: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
           h4
           {
             margin: 0px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
       }
@@ -2966,38 +2987,11 @@ button, select {
     p{
       margin-bottom: 0px;
     }
-    .imgfix {
-      position: relative;
-      overflow: hidden;
-      display: block;
-      .imgin{
-        position: absolute;
-        -ms-transform: translate(-50%,-50%);
-        -webkit-transform: translate(-50%,-50%);
-        transform: translate(-50%,-50%);
-        top: 50%;
-        left: 50%;
-        z-index: 1;
-      }
-      
-      &.imgy,&.imgk{
-        .imgin{
-          width: 100%;
-        }
-      }
-      .blank{
-        width: 100%;
-      }
-      &.imgd{
-        .imgin{
-          height: 100%;
-        }
-      }
-    }
+    
     span{
       &.centerx{
         i{
-          font-size: 50px;
+          font-size: 40px;
         }
         display: flex;
         justify-content: center;
@@ -3031,6 +3025,7 @@ button, select {
             {
               padding: 5px 20px;
             }
+            
           }
         }
         &:before{
@@ -3045,14 +3040,24 @@ button, select {
           opacity: 0.75;
           background: #0D6FAA;
         }
+        h3{
+          font-size: 20px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
       &.bottomx{
         position: relative;
         display: block;
         padding: 10px;
+        font-size: 12px;
         h3{
           margin: 0;
-          font-size: 18px;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
@@ -3085,6 +3090,37 @@ button, select {
       }
     }
   }
+  .imgfix {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    .imgin{
+      position: absolute;
+      -ms-transform: translate(-50%,-50%);
+      -webkit-transform: translate(-50%,-50%);
+      transform: translate(-50%,-50%);
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      text-align: center;
+    }
+
+    &.imgy,&.imgk{
+      .imgin{
+        width: 100%;
+      }
+    }
+    .blank{
+      width: 100%;
+    }
+    &.imgd{
+      .imgin{
+        height: 100%;
+      }
+    }
+  }
+  
+  
   .colourfullx{
     > div{
       
@@ -3147,6 +3183,10 @@ button, select {
       }
     }
   }
+  @media (max-width: 1199.98px) {
+    
+  }
+  
   @media (max-width: 767.98px) {
     .flex-betweenx {
       display: block;
@@ -3202,6 +3242,9 @@ button, select {
         }
       }
     }
+  }
+  .width100{
+    width: 100%;
   }
   
 }

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', 'ngToast', '$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, ngToast, $stateParams) {
+    .controller('AppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$location', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppsService, $window, $state, $modal, dragularService, $timeout, $interval, $location, $stateParams) {
 
             $scope.loading = true;
 
@@ -14,15 +14,15 @@ angular.module('primeapps')
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
 
-            $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.label};
+            $rootScope.breadcrumblist[0] = { title: $rootScope.currentOrganization.label };
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                swal($filter('translate')('Common.NotFound'), "warning");
                 $state.go('studio.allApps');
                 return;
             }

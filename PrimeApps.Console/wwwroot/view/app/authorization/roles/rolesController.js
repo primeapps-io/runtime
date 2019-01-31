@@ -2,23 +2,14 @@
 
 angular.module('primeapps')
 
-    .controller('RolesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'RolesService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, RolesService, $http, config) {
+    .controller('RolesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'RolesService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, RolesService, $http, config) {
 
             $scope.$parent.menuTopTitle = "Authorization";
             //$scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'roles';
             $rootScope.breadcrumblist[2].title = 'Roles';
             $scope.loading = true;
-
-            // if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {
-            //     ngToast.create({
-            //         content: $filter('translate')('Common.Forbidden'),
-            //         className: 'warning'
-            //     });
-            //     $state.go('app.dashboard');
-            //     return;
-            // }
 
             RolesService.getAll().then(function (response) {
                 $scope.roles = response.data;
@@ -95,12 +86,12 @@ angular.module('primeapps')
                 //    $scope.transferRoles = $filter('filter')($scope.transferRoles, {reports_to: '!' + reportsTo.id});
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/authorization/roles/roleDelete.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/authorization/roles/roleDelete.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.deleteModal.$promise.then(function () {
                     $scope.deleteModal.show();
@@ -120,10 +111,7 @@ angular.module('primeapps')
                             $scope.tree = $scope.rolesToTree(response.data);
 
                             $scope.roleDeleting = false;
-                            ngToast.create({
-                                content: $filter('translate')('Setup.Roles.DeleteSuccess'),
-                                className: 'success'
-                            });
+                            swal($filter('translate')('Setup.Roles.DeleteSuccess'), "success");
 
                             // LayoutService.getMyAccount(true);
 
@@ -139,7 +127,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (id, reportsTo) {
                 if (!reportsTo)
                     reportsTo = false;
-                
+
                 if (id) {
                     $scope.loading = true;
                     $scope.id = reportsTo ? undefined : id;//parseInt($location.search().id);
@@ -189,12 +177,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewRoleFormModal = $scope.addNewRoleFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/authorization/roles/roleForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/authorization/roles/roleForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewRoleFormModal.$promise.then(function () {
                     $scope.addNewRoleFormModal.show();

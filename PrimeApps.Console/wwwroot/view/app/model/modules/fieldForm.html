@@ -492,7 +492,8 @@
                                     <div class="form-group">
                                         <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}: </label>
                                         <div class="col-sm-8" style="padding-left: 0;">
-                                            <label class="checkbox-inline newinput">
+                                            <label class="checkbox-inline newinput"
+                                                   ng-class="currentField.validation.required || currentField.systemRequired ? 'disabled':''">
                                                 <input type="checkbox" ng-model="currentField.display_form"
                                                        ng-disabled="currentField.validation.required || currentField.systemRequired">
                                                 {{'Setup.Modules.DisplayForm' | translate}}
@@ -503,7 +504,8 @@
                                                 {{'Setup.Modules.DisplayDetail' | translate}}
                                                 <span></span>
                                             </label>
-                                            <label class="checkbox-inline newinput">
+                                            <label class="checkbox-inline newinput"
+                                                   ng-class="currentField.primary || currentField.encrypted ?'disabled':''">
                                                 <input type="checkbox" ng-model="currentField.display_list"
                                                        ng-disabled="currentField.primary || currentField.encrypted">
                                                 {{'Setup.Modules.DisplayList' | translate}}
@@ -513,7 +515,8 @@
                                     </div>
                                     <div class="form-group"
                                          ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' &&  currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'">
-                                        <label class="radio-inline newinput">
+                                        <label class="radio-inline newinput"
+                                               ng-class="!currentField.editable ? 'disabled':''">
                                             {{'Setup.Modules.InlineEdit' | translate}}:
                                             <input type="checkbox" ng-model="currentField.inline_edit"
                                                    ng-disabled="!currentField.editable">
@@ -523,7 +526,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-4 radio-inline newinput"
-                                               ng-if="currentField.dataType.name == 'text_single'">{{'Setup.Modules.ShowLabel'
+                                               ng-if="currentField.dataType.name == 'text_single'"
+                                               ng-class="currentField.default_value ? 'disabled':''">{{'Setup.Modules.ShowLabel'
                                             | translate}}:
                                             <input type="checkbox" name="show_label"
                                                    ng-disabled="currentField.default_value"
@@ -545,16 +549,19 @@
                                     </div>
                                     <div class="form-group"
                                          ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'  && currentField.dataType.name !='json' ">
-                                        <label ng-class="(!currentField.isNew && currentField.validation.unique != true) ? 'disabled': ''" class="newinput">{{'Setup.Modules.UniqueValue' | translate}}
-                                            <input ng-disabled="!currentField.isNew && currentField.validation.unique != true" type="checkbox" ng-model="currentField.validation.unique"
-                                                   >
+                                        <label ng-class="(!currentField.isNew && currentField.validation.unique != true) ? 'disabled': ''"
+                                               class="newinput">{{'Setup.Modules.UniqueValue' | translate}}
+                                            <input ng-disabled="!currentField.isNew && currentField.validation.unique != true"
+                                                   type="checkbox" ng-model="currentField.validation.unique"
+                                            >
                                             <span></span>
                                         </label>
 
                                     </div>
                                     <div class="form-group"
                                          ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-                                        <label class="col-sm-4 newinput">Şifreli Alan
+                                        <label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">Şifreli
+                                            Alan
                                             <input type="checkbox" ng-model="currentField.encrypted"
                                                    ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
                                             <span></span>
@@ -685,7 +692,9 @@
                                     </div>
                                     <div class="form-group"
                                          ng-show="!currentField.validation.readonly && !currentField.systemReadonly">
-                                        <label class="col-sm-4 newinput">{{'Setup.Modules.FieldRequired' | translate}}
+                                        <label class="col-sm-4 newinput"
+                                               ng-class="(currentField.systemRequired && currentField.validation.required) || currentField.primary || currentField.data_type === 'checkbox' || currentField.calendar_date_type ? 'disabled':''">{{'Setup.Modules.FieldRequired'
+                                            | translate}}
                                             <input type="checkbox"
                                                    ng-model="currentField.validation.required"
                                                    ng-change="requiredChanged()"
@@ -758,6 +767,58 @@
                                     </div>
 
 
+                                </div>
+                            </div>
+
+                            <div class="section">
+                                <h4> Permissions</h4>
+                                <div class="panel">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
+                                            <td>{{permission.profile_name}}</td>
+                                            <td class="text-center user-not-select ">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="permission.type"
+                                                           value="full"/>
+                                                    <span></span>
+                                                </label>
+
+                                            </td>
+                                            <td class="text-center user-not-select">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="permission.type"
+                                                           value="read_only"
+                                                           ng-disabled="permission.profile_is_admin"
+                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}"/>
+                                                    <span></span>
+                                                </label>
+                                            </td>
+                                            <td class="text-center user-not-select">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="permission.type"
+                                                           value="none"
+                                                           ng-disabled="permission.profile_is_admin"
+                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}"/>
+                                                    <span></span>
+                                                </label>
+
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

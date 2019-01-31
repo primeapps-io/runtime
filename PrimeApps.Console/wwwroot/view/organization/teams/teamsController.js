@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', 'ngToast', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, ngToast, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $stateParams) {
+    .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $stateParams) {
 
             $scope.loading = true;
 
@@ -90,7 +90,7 @@ angular.module('primeapps')
                         }
                     })
                     .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
+                        swal($filter('translate')('Common.Error'), "error");
                     });
             }
 
@@ -124,14 +124,14 @@ angular.module('primeapps')
                 TeamsService.userAddForTeam(id, $scope.selectedTeam)
                     .then(function (response) {
                         if (response.data) {
-                            ngToast.create({ content: 'Collaborator is added successfully', className: 'success' });
+                            swal('Collaborator is added successfully', "success");
                             $scope.selectTeam($scope.teamId);
                             $scope.getOrganizationUserList();
                             $scope.selectedUser = {};
                         }
                     })
                     .catch(function (error) {
-                        getToastMsg('Common.Error', 'danger');
+                        swal($filter('translate')('Common.Error'), "error");
                     });
 
             }
@@ -199,13 +199,13 @@ angular.module('primeapps')
                                     .then(function (response) {
                                         if (response.data) {
                                             $scope.submitting = false;
-                                            getToastMsg('Team created successfully', 'success');
+                                            swal('Team created successfully', "success");
                                             $scope.clearModels();
                                             $scope.changePage(1);
                                         }
                                     })
                                     .catch(function (error) {
-                                        getToastMsg('Common.Error', 'danger');
+                                        swal($filter('translate')('Common.Error'), "error");
                                         return false;
                                     });
                             }
@@ -213,20 +213,20 @@ angular.module('primeapps')
                                 TeamsService.update($scope.teamId, $scope.teamModel)
                                     .then(function (response) {
                                         if (response.data) {
-                                            getToastMsg('Common.Success', 'success');
+                                            swal($filter('translate')('Common.Success'), "success");
                                             $scope.clearModels();
                                             $scope.changePage(1);
                                         }
                                     })
                                     .catch(function (error) {
-                                        getToastMsg('Common.Error', 'danger');
+                                        swal($filter('translate')('Common.Error'), "error");
                                     });
                             }
                         }
                         else {
                             addNewTeamForm.name.$invalid = true;
                             $scope.submitting = false;
-                            getToastMsg('A team with the same name is available.', 'warning');
+                            swal('A team with the same name is available.', "warning");
                             return false;
                         }
                     })
@@ -262,7 +262,7 @@ angular.module('primeapps')
                                 }
                             })
                             .catch(function (result) {
-                                getToastMsg('Common.Error', 'danger');
+                                swal($filter('translate')('Common.Error'), "error");
                             });
                     }
                 });
@@ -290,7 +290,7 @@ angular.module('primeapps')
                                 }
                             })
                             .catch(function (error) {
-                                getToastMsg('Common.Error', 'danger');
+                                swal($filter('translate')('Common.Error'), "error");
                             });
                     }
                 })
@@ -308,12 +308,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -334,16 +334,5 @@ angular.module('primeapps')
                 $scope.addNewTeamFormModal.hide();
                 $scope.teamModel = {};
             };
-
-            var getToastMsg = function (msg, type) {
-                if (!type) {
-                    type = 'success';
-                }
-
-                ngToast.create({
-                    content: $filter('translate')(msg),
-                    className: type
-                });
-            }
         }
     ]);

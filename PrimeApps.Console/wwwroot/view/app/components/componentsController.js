@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ComponentsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums, $localStorage) {
+    .controller('ComponentsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypes', 'componentTypeEnums', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypes, componentTypeEnums, $localStorage) {
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
@@ -35,7 +35,6 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-
             $scope.components = [];
             $scope.loading = true;
             $scope.requestModel = {
@@ -43,14 +42,24 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            ComponentsService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
+            $scope.reload = function () {
+                ComponentsService.count()
+                    .then(function (response) {
+                        $scope.pageTotal = response.data;
 
-            ComponentsService.find($scope.requestModel).then(function (response) {
-                $scope.components = response.data;
-                $scope.loading = false;
-            });
+                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
+                            $scope.changeOffset($scope.requestModel.offset - 1);
+                        }
+
+                        ComponentsService.find($scope.requestModel)
+                            .then(function (response) {
+                                $scope.components = response.data;
+                                $scope.loading = false;
+                            });
+                    });
+            };
+
+            $scope.reload();
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
@@ -67,7 +76,6 @@ angular.module('primeapps')
                 $scope.changePage(1)
             };
 
-
             $scope.createModal = function () {
                 //$scope.modalLoading = true;
                 openModal();
@@ -77,7 +85,8 @@ angular.module('primeapps')
                             $scope.modules = response.data;
                             //$scope.modalLoading = false;
                         })
-                } else {
+                }
+                else {
                     //$scope.modalLoading = false;
                 }
             };
@@ -110,11 +119,30 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
+                        swal("Component is created successfully.", "", "success");
                         $state.go('studio.app.componentDetail', {id: response.data});
                     })
             };
 
             $scope.delete = function (id) {
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure that you want to delete this component?",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            if (id) {
+                                ComponentsService.delete(id)
+                                    .then(function (response) {
+                                        swal("Deleted!", "Component is deleted successfully.", "success");
+                                        $scope.reload();
+                                    });
+                            }
+                        }
+                    });
 
             }
         }

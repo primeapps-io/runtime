@@ -30,7 +30,9 @@ namespace PrimeApps.Model.Repositories
             get
             {
                 var dbConnection = _dbContext.Database.GetDbConnection();
-                dbConnection.ConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+
+                if (dbConnection.State != System.Data.ConnectionState.Open)
+                    dbConnection.ConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
 
                 _dbContext.UserId = CurrentUser != null ? CurrentUser.UserId : 0;
 

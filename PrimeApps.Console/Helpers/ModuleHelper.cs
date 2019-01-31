@@ -677,6 +677,8 @@ namespace PrimeApps.Console.Helpers
             dependencyEntity.Otherwise = dependencyModel.Otherwise;
             dependencyEntity.Clear = dependencyModel.Clear;
             dependencyEntity.ModuleId = moduleEntity.Id;
+            dependencyEntity.DependencyType = dependencyModel.DependencyType;
+
         }
 
 	    public Section NewSectionEntity(SectionBindingModel sectionModel)

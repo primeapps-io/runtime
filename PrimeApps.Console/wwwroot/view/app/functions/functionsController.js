@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('FunctionsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, FunctionsService, LayoutService, $http, config) {
+    .controller('FunctionsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, LayoutService, $http, config) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
@@ -66,12 +66,12 @@ angular.module('primeapps')
 
             var openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/components/functionFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/components/functionFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });

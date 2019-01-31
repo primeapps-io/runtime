@@ -27,7 +27,9 @@ namespace PrimeApps.Model.Repositories
             get
             {
                 var dbConnection = _dbContext.Database.GetDbConnection();
-                dbConnection.ConnectionString = _configuration.GetConnectionString("ConsoleDBConnection");
+
+                if (dbConnection.State != System.Data.ConnectionState.Open)
+                    dbConnection.ConnectionString = _configuration.GetConnectionString("ConsoleDBConnection");
 
                 _dbContext.UserId = CurrentUser != null ? CurrentUser.UserId : 0;
 

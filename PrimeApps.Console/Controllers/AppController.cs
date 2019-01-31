@@ -146,7 +146,7 @@ namespace PrimeApps.Console.Controllers
             app.Logo = model.Logo;
             app.Status = model.Status;
 
-            var result = _appDraftRepository.Update(app);
+            var result = await _appDraftRepository.Update(app);
 
             return Ok(result);
         }

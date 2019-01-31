@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('IdentityController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'IdentityService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService,IdentityService, LayoutService, $http, config) {
+    .controller('IdentityController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'IdentityService', 'LayoutService', '$http', 'config',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, IdentityService, LayoutService, $http, config) {
 
             $scope.$parent.menuTopTitle = "Identity";
             //$scope.$parent.activeMenu = 'identity';

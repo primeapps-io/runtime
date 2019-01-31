@@ -2,13 +2,13 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
+    .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
             $scope.loading = true;
             var module = $filter('filter')($scope.$parent.modules, { name: $stateParams.module }, true)[0];
 
             if (!module) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                swal($filter('translate')('Common.NotFound'), "warning");
                 $state.go('app.dashboard');
                 return;
             }
@@ -139,12 +139,12 @@ angular.module('primeapps')
                 $scope.currentProfileSettingState = angular.copy($scope.currentProfileSetting);
 
                 $scope.profileSettingsFormModal = $scope.profileSettingsFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.profileSettingsFormModal.$promise.then(function () {
                     $scope.profileSettingsFormModal.show();
@@ -193,12 +193,7 @@ angular.module('primeapps')
 
                 var success = function () {
                     getModuleProfileSettings();
-
-                    ngToast.create({
-                        content: $filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'),
-                        className: 'success'
-                    });
-
+                    swal($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'), "success"); 
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
                     $scope.changePage(1);
