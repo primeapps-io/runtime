@@ -90,13 +90,13 @@ angular.module('primeapps')
 										$scope.pageTotal = $scope.pageTotal - 1;
                                         toastr.success("Filter is deleted successfully.", "Deleted!");
                                     }).catch(function () {
-                                        $scope.customViews = $scope.customViewsState;
+                                    $scope.customViews = $scope.customViewsState;
 
-                                        if ($scope.addNewFiltersModal) {
-                                            $scope.addNewFiltersModal.hide();
-                                            $scope.saving = false;
-                                        }
-                                    });
+                                    if ($scope.addNewFiltersModal) {
+                                        $scope.addNewFiltersModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                             }
                             else {
                                 toastr.warning($filter('translate')('Setup.Modules.OneView'));
@@ -130,6 +130,7 @@ angular.module('primeapps')
                 }
                 else {
                     $scope.view = {};
+                    $scope.module = undefined;
                     //moduleChanged($scope.module, true);
                 }
                 $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
@@ -236,8 +237,8 @@ angular.module('primeapps')
                             }
                             dragular();
                         }).finally(function () {
-                            $scope.loading = false;
-                        });
+                        $scope.loading = false;
+                    });
                 });
             };
 
@@ -429,7 +430,7 @@ angular.module('primeapps')
                             viewState.active_view = response.data.id;
 
                             success();
-							$scope.pageTotal = $scope.pageTotal + 1;
+                            $scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function (data) {
                             error(data.data, data.status);

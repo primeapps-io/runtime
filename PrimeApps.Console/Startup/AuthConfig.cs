@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace PrimeApps.Console
 {
@@ -43,7 +45,19 @@ namespace PrimeApps.Console
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("api1");
                     options.Scope.Add("email");
-                    options.RemoteAuthenticationTimeout = TimeSpan.FromSeconds(20);
+                    options.RemoteAuthenticationTimeout = TimeSpan.FromSeconds(10);
+                    
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        if (context.Failure.Message.Contains("Correlation failed"))
+                            context.Response.Redirect("/");
+                        else
+                            context.Response.Redirect("/Error");
+
+                        context.HandleResponse();
+
+                        return Task.CompletedTask;
+                    };
                 });
         }
     }
