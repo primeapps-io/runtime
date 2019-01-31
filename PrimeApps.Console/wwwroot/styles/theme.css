@@ -1295,7 +1295,7 @@ button:focus, select:focus {
 }
 .primeapps .form-group.form-group-filtre {
   margin-bottom: 0px !important;
-  padding: 0px 10px;
+  padding: 0px 5px;
   background: #FFF;
   border-radius: 5px;
 }
@@ -1982,6 +1982,9 @@ button:focus, select:focus {
   -ms-transition: all 0.5s ease;
   z-index: 1;
 }
+.primeapps #wrapper .setup-layout .content-in2 .setup-title {
+  overflow: visible;
+}
 .primeapps #wrapper .setup-layout .setup-title {
   font-weight: bold;
   color: #0d6faa;
@@ -2097,9 +2100,17 @@ button:focus, select:focus {
   border-color: transparent !important;
   border-right-color: #0f1015 !important;
 }
+.primeapps .tooltip.tooltip-info.left .tooltip-arrow {
+  border-color: transparent !important;
+  border-left-color: #0f1015 !important;
+}
 .primeapps .tooltip.tooltip-info.top .tooltip-arrow {
   border-color: transparent !important;
   border-top-color: #0f1015 !important;
+}
+.primeapps .tooltip.tooltip-info.bottom .tooltip-arrow {
+  border-color: transparent !important;
+  border-bottom-color: #0f1015 !important;
 }
 @media (max-width: 1366px) {
   .primeapps .template-field .template-field-box {
@@ -2527,6 +2538,7 @@ button:focus, select:focus {
   min-height: 45px;
   position: relative;
   text-indent: -9999px;
+  font-size: 20px;
 }
 .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i:before {
   transform: translate(-50%, -50%);
@@ -2540,6 +2552,35 @@ button:focus, select:focus {
 }
 .primeapps .width100 {
   width: 100%;
+}
+.primeapps .filter {
+  position: relative;
+  padding-right: 30px;
+  z-index: 1;
+}
+.primeapps .filter span {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  text-align: center;
+  background: #0D6FAA;
+  color: #FFF;
+  line-height: 20px;
+  right: 25px;
+  top: -5px;
+  font-size: 10px;
+  z-index: 2;
+}
+.primeapps .filter a {
+  position: absolute;
+  right: 10px;
+  line-height: 30px;
+  color: rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+.primeapps .filter a:hover {
+  color: rgba(0, 0, 0, 0.75);
 }
 
 .placeholder {
