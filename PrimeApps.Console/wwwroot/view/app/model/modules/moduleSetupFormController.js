@@ -53,7 +53,7 @@ angular.module('primeapps')
                 module = $filter('filter')($rootScope.modules, { name: $scope.id || $scope.clone }, true)[0];
 
                 if (!module) {
-                    swal($filter('translate')('Common.NotFound'), "warning");
+                    toastr.warning($filter('translate')('Common.NotFound'));
                     $state.go('app.dashboard');
                     return;
                 }
@@ -62,7 +62,7 @@ angular.module('primeapps')
 
                 if ($scope.clone) {
                     if ($scope.clone === 'opportunity' || $scope.clone === 'activity') {
-                        swal($filter('translate')('Common.NotFound'), "warning");
+                        toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
                         return;
                     }
@@ -769,7 +769,7 @@ angular.module('primeapps')
                         deleted: false
                     }, true);
                     if (lookupcount.length > 11) {
-                        swal($filter('translate')('Setup.Modules.MaxLookupCount'), "warning");
+                        toastr.warning($filter('translate')('Setup.Modules.MaxLookupCount'));
                         return;
                     }
                 }
@@ -1083,7 +1083,7 @@ angular.module('primeapps')
                     ModuleSetupService.createPicklist($scope.picklistModel)
                         .then(function onSuccess(response) {
                             if (!response.data.id) {
-                                swal($filter('translate')('Common.NotFound'), "warning");
+                                toastr.warning($filter('translate')('Common.NotFound'));
                                 $scope.picklistSaving = false;
                                 return;
                             }
@@ -1289,7 +1289,7 @@ angular.module('primeapps')
                                 else
                                     $state.go('app.moduleForm', { type: $scope.module.name });
 
-                                swal($filter('translate')('Setup.Modules.SaveSuccess'), "success");
+                                toastr.success($filter('translate')('Setup.Modules.SaveSuccess'));
 
                                 if (!$scope.id || $scope.clone)
                                     getLookupTypes(true);

@@ -13,7 +13,7 @@ angular.module('primeapps')
             $rootScope.subMenuOpen = "";
 
             if (!$rootScope.currentAppId) {
-                swal($filter('translate')('Common.NotFound'), "warning");
+                toastr.warning($filter('translate')('Common.NotFound'));
                 $state.go('studio.allApps');
                 return;
             }

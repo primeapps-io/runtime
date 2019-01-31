@@ -146,7 +146,7 @@ angular.module('primeapps')
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
                         if (response.data) {
-                            swal('Collaborator is saved successfully', "success");
+                            toastr.success('Collaborator is saved successfully');
                             $scope.collaboratorModel.email = "";
 
                             $scope.submitting = false;
@@ -156,7 +156,7 @@ angular.module('primeapps')
                         }
                     })
                     .catch(function () {
-                        swal($filter('translate')('Common.Error'), "error");
+                        toastr.error($filter('translate')('Common.Error'));
                         $scope.submitting = false;
                     });
 
@@ -182,13 +182,13 @@ angular.module('primeapps')
                 CollaboratorsService.update(updCollaborator)
                     .then(function (response) {
                         if (response.data) {
-                            swal('Role is changed successfully', "success");
+                            toastr.success('Role is changed successfully');
                             $scope.getCollaborators();
                             $scope.updatingRole = false;
                         }
                     })
                     .catch(function (error) {
-                        swal($filter('translate')('Common.Error'), "error");
+                        toastr.error($filter('translate')('Common.Error'));
                         $scope.updatingRole = false;
                         $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
@@ -212,7 +212,7 @@ angular.module('primeapps')
                 CollaboratorsService.delete(data)
                     .then(function (response) {
                         if (response.data) {
-                            swal('Collaborator is deleted successfully', "success");
+                            toastr.success('Collaborator is deleted successfully');
 
                             $scope.selectedCollaborator = {};
                             $scope.$parent.selectedCollaborator = {};
@@ -224,7 +224,7 @@ angular.module('primeapps')
                         }
                     })
                     .catch(function (error) {
-                        swal($filter('translate')('Common.Error'), "error");
+                        toastr.error($filter('translate')('Common.Error'));
                         $scope.removing = false;
                     });
             };

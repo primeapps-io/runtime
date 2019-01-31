@@ -77,7 +77,7 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        swal($filter('translate')('Common.Forbidden'), "error");
+                        toastr.error($filter('translate')('Common.Forbidden'));
 
                         return $q.reject(rejection);
                     }
@@ -85,14 +85,14 @@ angular.module('primeapps')
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            swal($filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), "warning");
+                            toastr.warning($filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'));
                         }
 
                         return $q.reject(rejection);
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        swal($filter('translate')('Common.NetworkError'), "warning");
+                        toastr.warning($filter('translate')('Common.NetworkError'));
 
                         return $q.reject(rejection);
                     }
@@ -101,7 +101,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    swal($filter('translate')('Common.Error'), "error");
+                    toastr.error($filter('translate')('Common.Error'));
 
                     return $q.reject(rejection);
                 }

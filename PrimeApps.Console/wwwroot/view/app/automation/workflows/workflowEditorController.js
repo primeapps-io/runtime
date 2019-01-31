@@ -1158,7 +1158,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        swal($filter('translate')('Setup.BpmWorkflow.MaximumHookWarning'), "warning");
+                        toastr.warning($filter('translate')('Setup.BpmWorkflow.MaximumHookWarning'));
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
@@ -1717,7 +1717,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 $state.go('studio.app.workflows');
-                swal($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'), "success");
+                toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
             };
 
 

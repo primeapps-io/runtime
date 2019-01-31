@@ -226,7 +226,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 //  $state.go('studio.app.templatesWord');
-                swal($filter('translate')('Setup.Templates.SaveSuccess'), "", "success");
+                toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
             };
 
@@ -393,7 +393,7 @@ angular.module('primeapps')
                             WordTemplatesService.delete(id).then(function () {
                                 $scope.changePage(1);
                                 $scope.pageTotal = $scope.pageTotal - 1;
-                                swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
+                                toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
                                 $scope.templates = $scope.templatesState;
                                 if ($scope.addNewWordTemplateFormModal) {

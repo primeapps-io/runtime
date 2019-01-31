@@ -88,7 +88,7 @@ angular.module('primeapps')
                                     .then(function () {
                                         $scope.changePage(1);
 										$scope.pageTotal = $scope.pageTotal - 1;
-                                        swal("Deleted!", "Filter is deleted successfully.", "success");
+                                        toastr.success("Filter is deleted successfully.", "Deleted!");
                                     }).catch(function () {
                                         $scope.customViews = $scope.customViewsState;
 
@@ -99,7 +99,7 @@ angular.module('primeapps')
                                     });
                             }
                             else {
-                                swal($filter('translate')('Setup.Modules.OneView'), "", "warning");
+                                toastr.warning($filter('translate')('Setup.Modules.OneView'));
                                 return;
                             }
                         }
@@ -453,7 +453,7 @@ angular.module('primeapps')
 
                 function success() {
                     //swal("Good job!", "You clicked the button!", "success");
-                    swal("Filter is saved successfully.", "", "success");
+                    toastr.success("Filter is saved successfully.");
                     //$state.go('studio.app.filters');
                     $scope.addNewFiltersModal.hide();
                     $scope.changePage(1);

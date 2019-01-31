@@ -326,14 +326,14 @@ angular.module('primeapps')
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
                     if (!$scope.module) {
-                        swal($filter('translate')('Common.NotFound'), "warning");
+                        toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
                         return;
                     }
 
                     if ($scope.clone) {
                         if ($scope.clone === 'opportunity' || $scope.clone === 'activity') {
-                            swal($filter('translate')('Common.NotFound'), "warning");
+                            toastr.warning($filter('translate')('Common.NotFound'));
                             $state.go('app.dashboard');
                             return;
                         }
@@ -917,7 +917,7 @@ angular.module('primeapps')
                         deleted: false
                     }, true);
                     if (lookupcount.length > 11) {
-                        swal($filter('translate')('Setup.Modules.MaxLookupCount'), "warning");
+                        toastr.warning($filter('translate')('Setup.Modules.MaxLookupCount'));
                         return;
                     }
                 }
@@ -1224,7 +1224,7 @@ angular.module('primeapps')
                     ModuleService.createPicklist($scope.picklistModel)
                         .then(function onSuccess(response) {
                             if (!response.data.id) {
-                                swal($filter('translate')('Common.NotFound'), "warning");
+                                toastr.warning($filter('translate')('Common.NotFound'));
                                 $scope.picklistSaving = false;
                                 return;
                             }

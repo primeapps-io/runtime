@@ -84,7 +84,7 @@ angular.module('primeapps')
                                     $scope.pageTotal--;
                                     $scope.changeOffset();
                                     $scope.loading = false;
-                                    swal("Deleted!", "Module is deleted successfully.", "success");
+                                    toastr.success("Module is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {

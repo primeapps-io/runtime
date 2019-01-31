@@ -1413,7 +1413,7 @@ angular.module('primeapps')
                     $scope.cancel();
                     $scope.changePage(1);
 
-                    swal($filter('translate')('Setup.Workflow.SubmitSuccess'), "", "success");
+                    toastr.success($filter('translate')('Setup.Workflow.SubmitSuccess'));
                 };
 
                 if (!$scope.id) {
@@ -1464,7 +1464,7 @@ angular.module('primeapps')
                                 $scope.id = null;
                                 $scope.changePage(1);
                                 //$state.reload();
-                                swal("Deleted!", "Rule is deleted successfully.", "success");
+                                toastr.success("Rule is deleted successfully.", "Deleted!");
                             });
                     }
                 });
@@ -1500,7 +1500,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");
+                        toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
@@ -1549,10 +1549,10 @@ angular.module('primeapps')
                 uploader_image.onWhenAddingFileFailed = function (item, filter, options) {
                     switch (filter.name) {
                         case 'imgFilter':
-                            swal(fileFilterWarring, "warning");
+                            toastr.warning(fileFilterWarring);
                             break;
                         case 'sizeFilter':
-                            swal(fileSizerWarring, "warning");
+                            toastr.warning(fileSizerWarring);
                             break;
                     }
                 };

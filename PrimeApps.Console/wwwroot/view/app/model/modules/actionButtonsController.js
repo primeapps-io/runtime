@@ -239,7 +239,7 @@ angular.module('primeapps')
                             $scope.saving = false;
                             $scope.formModal.hide();
                             $scope.changePage(1);
-                            swal($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'), "", "success");
+                            toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
 
                         }).catch(function () {
@@ -256,7 +256,7 @@ angular.module('primeapps')
                             $scope.saving = false;
                             $scope.formModal.hide();
                             $scope.changePage(1);
-                            swal($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'), "", "success");
+                            toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
                         $scope.actionButtons = $scope.actionbuttonState;
@@ -288,7 +288,7 @@ angular.module('primeapps')
                                     // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
                                     // $scope.actionButtons.splice(actionButtonIndex, 1);
                                     $scope.changePage(1);
-                                    swal($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'), "", "success");
+                                    toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                 })
                                 .catch(function () {
                                     $scope.actionButtons = $scope.actionButtonState;
@@ -358,7 +358,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");   
+                        toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));   
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
