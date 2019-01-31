@@ -1363,14 +1363,15 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/manage/manage.html',
-                            controller: 'OrganizationFormController'
+                            controller: 'ManageController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/manage/manageService.js',
-                                cdnUrl + 'view/organization/manage/manageController.js'
+                                cdnUrl + 'view/organization/manage/manageController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
                     }

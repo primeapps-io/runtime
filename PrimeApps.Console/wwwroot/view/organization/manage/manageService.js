@@ -5,13 +5,11 @@ angular.module('primeapps')
     .factory('ManageService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
-                teamCount: function (id) {
-                    return $http.get(config.apiUrl + 'team/count/' + id);
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'organization/get/' + id);
                 },
-
-                collaboratorCount: function (id) {
-                    return $http.get(config.apiUrl + 'organization/count/' + id);
-                },
-
+                update: function (id, model) {
+                    return $http.put(config.apiUrl + 'organization/update/' + id, model);
+                }
             };
         }]);

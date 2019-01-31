@@ -2,22 +2,31 @@
 
 angular.module('primeapps')
 
-    .controller('ManageController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'OrganizationService',
-        function ($rootScope, $scope, $filter, $location, helper, OrganizationService) {
+    .controller('ManageController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'ManageService', 'ModuleService',
+        function ($rootScope, $scope, $filter, $location, helper, ManageService, ModuleService) {
 
-            // $scope.menuTopTitle ="XBrand CRM";
-            // $scope.activeMenu= 'organization';
-            // $scope.activeMenuItem = 'organization';
-            // $scope.tabTitle='organization';
+            $scope.orgModel = {};
+            $scope.icons = ModuleService.getIcons();
+            ManageService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
+                var data = response.data;
+                $scope.orgModel.icon = data.icon;
+                $scope.orgModel.label = data.label;
+                $scope.orgModel.icon = data.icon;
+                $scope.orgModel.name = data.name;
+            });
 
-            OrganizationService.teamCount($rootScope.currentOrgId)
-                .then(function (response) {
-                    $scope.$parent.teamCount = response.data;
-                });
+            $scope.changeIcon = function () {
+                $scope.orgModel.icon = $scope.orgModel.icon.value;
+            };
 
-            OrganizationService.collaboratorCount($rootScope.currentOrgId)
-                .then(function (response) {
-                    $scope.$parent.collaboratorCount = response.data;
-                });
+            $scope.save = function () {
+                if (angular.isObject($scope.orgModel.icon))
+                    $scope.orgModel.icon = $scope.orgModel.icon.value;
+
+                ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
+                    .then(function (response) {
+                        swal($filter('translate')('Güncelleme Başarılı'), "success");
+                    });
+            };
         }
     ]);
