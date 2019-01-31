@@ -30,6 +30,7 @@
                                            focus="true"
                                            required
                                            maxlength="50"
+                                           ng-blur="checkNameBlur();"
                                            ng-change="generateAppName()"
                                            ng-model="appModel.label">
                                 </div>
