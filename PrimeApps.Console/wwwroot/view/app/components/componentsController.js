@@ -48,7 +48,7 @@ angular.module('primeapps')
                         $scope.pageTotal = response.data;
 
                         if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.changeOffset($scope.requestModel.offset - 1);
+                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
 
                         ComponentsService.find($scope.requestModel)

@@ -54,7 +54,6 @@ namespace PrimeApps.Auth
                 })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<CustomProfileService>()
-                //.AddCustomTokenRequestValidator<CustomTokenRequestValidator>()
                 .AddSigningCredential(LoadCertificate(configuration));
 
             //InitializeDatabase(app);
