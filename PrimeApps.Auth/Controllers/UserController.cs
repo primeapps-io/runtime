@@ -315,7 +315,8 @@ namespace PrimeApps.Auth.Controllers
 			if (!ModelState.IsValid)
 				return Unauthorized();
 
-			var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+            var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
 			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
 
             var application = await _applicationRepository.GetByNameAsync(client);
