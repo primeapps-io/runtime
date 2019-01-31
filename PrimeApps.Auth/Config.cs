@@ -21,17 +21,7 @@ namespace PrimeApps.Auth
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "PrimeApps Api Auth"),
-                /*
-                new ApiResource
-                {
-                    Name = "api2",
-                    DisplayName = "Api2",
-
-                    // include the following using claims in access token (in addition to subject id)
-                    UserClaims = {JwtClaimTypes.Name, JwtClaimTypes.Email},
-                }
-                 */
+                new ApiResource("api1", "PrimeApps Api Auth")
             };
         }
 
@@ -220,6 +210,28 @@ namespace PrimeApps.Auth
                     RedirectUris = { "http://localhost:3000/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:3000/signout-callback-oidc" },
 
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AccessTokenLifetime = 864000
+                },
+                new Client
+                {
+                    ClientId = "sigortapro_api",
+                    ClientName = "SigortaPro",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
