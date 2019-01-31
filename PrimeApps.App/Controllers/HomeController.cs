@@ -51,7 +51,7 @@ namespace PrimeApps.App.Controllers
                 if (previewDB.Contains("app"))
                 {
                     var appId = int.Parse(previewDB.Split("app_id=")[1]);
-                    var app = await applicationRepository.Get(appId);
+                    var app = await applicationRepository.Get(1);
 
                     /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 

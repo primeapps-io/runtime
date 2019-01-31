@@ -28,7 +28,8 @@
                                         </select>
                                     </div>
 
-                                    <div class="table-container" ng-if="selectedModule ">
+                                    <div ng-if="loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div class="table-container" ng-if="$parent.$parent.selectedModule && !loading">
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -38,7 +39,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr ng-repeat="field in selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
+                                                <tr ng-repeat="field in $parent.$parent.selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
                                                     <td> {{field['label_' + language]}}</td>
                                                     <td>
                                                         <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
@@ -49,7 +50,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <table class="table" ng-repeat="lookupModule in selectedModule.lookupModules">
+                                        <table class="table" ng-repeat="lookupModule in $parent.$parent.selectedModule.lookupModules">
                                             <thead>
                                                 <tr>
                                                     <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
@@ -69,11 +70,11 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="module-select clearfix" ng-show="selectedModule && selectedModule.relatedModules && selectedModule.relatedModules.length ">
+                                    <div class="module-select clearfix" ng-show="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length ">
                                         <select name="selectedSubModule"
                                                 class="ng-animate-disabled col-sm-6 form-control"
                                                 ng-model="selectedSubModule"
-                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in selectedModule.relatedModules | filter:{name:'!users'} | orderBy:'order'">
+                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in $parent.$parent.selectedModule.relatedModules | filter:{name:'!users'} | orderBy:'order'">
                                             <option value="">{{'Setup.Templates.SelectSubModul' | translate}}</option>
                                         </select>
                                     </div>
@@ -122,25 +123,25 @@
                                 <div class="col-sm-5">
                                     <ul class="instructions-list" style="margin-top: 50px">
 
-                                        <li ng-if="selectedModule ">{{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label"><code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span
+                                        <li ng-if="$parent.$parent.selectedModule ">{{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label"><code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span
                                                 class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{#foreach ' + selectedModule.name + '}\}' }}"><i class="copy-icon fa fa-clipboard"></i></span></span>{{'Setup.Templates.TemplateGuide3' | translate}}
+                                                data-clipboard-text="{{ '{{#foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i class="copy-icon fa fa-clipboard"></i></span></span>{{'Setup.Templates.TemplateGuide3' | translate}}
                                             <span ng-bind-html="'Setup.Templates.TemplateGuide4' | translate"></span>
                                         </li>
-                                        <li ng-if="selectedModule">{{'Setup.Templates.TemplateGuide5' | translate}}
+                                        <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide5' | translate}}
                                         </li>
-                                        <li ng-if="selectedModule">
+                                        <li ng-if="$parent.$parent.selectedModule">
                                             {{'Setup.Templates.TemplateGuide6' | translate}}
 
                                             <label style="background-color:#f9f2f4;color:#ca2594;font-family:Consolas"><label>{{/ </label>{{'Setup.Templates.TemplateFieldName' | translate}}<label>}}</label></label> {{'Setup.Templates.TemplateGuide7' | translate}}
 
                                         </li>
-                                        <li ng-if="selectedModule">{{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label"><code>{{ "{{/foreach " + selectedModule.name + "}\}" }}</code><span
+                                        <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label"><code>{{ "{{/foreach " + $parent.$parent.selectedModule.name + "}\}" }}</code><span
                                                 class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{/foreach ' + selectedModule.name + '}\}' }}"><i
+                                                data-clipboard-text="{{ '{{/foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i
                                                 class="copy-icon fa fa-clipboard"></i></span></span> <span ng-bind-html="'Setup.Templates.TemplateGuide9' | translate"></span>
                                         </li>
-                                        <li ng-if="selectedModule && selectedModule.relatedModules && selectedModule.relatedModules.length">
+                                        <li ng-if="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length">
                                             {{'Setup.Templates.TemplateGuide10' | translate}}
                                         </li>
                                         <li ng-if="selectedSubModule">{{'Setup.Templates.TemplateGuide11' | translate}}<span class="foreach-label"><code>{{ "{{#foreach " + selectedSubModule.name + "}\}" }}</code><span

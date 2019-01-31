@@ -114,7 +114,7 @@ namespace PrimeApps.Console.Controllers
 
             var users = await _organizationUserRepository.GetByOrganizationId(model.OrganizationId);
 
-            var collaborators = await _organizationHelper.CreateCollaorators(users, model.OrganizationId);
+            var collaborators = await _organizationHelper.CreateCollaborators(users, model.OrganizationId);
 
             //if (model.OrderBy != null && model.OrderBy.ToLower() == "desc")
             //{
@@ -516,7 +516,7 @@ namespace PrimeApps.Console.Controllers
 
             var users = await _organizationUserRepository.GetByOrganizationId(organizationId);
 
-            var collaborators = await _organizationHelper.CreateCollaorators(users, organizationId);
+            var collaborators = await _organizationHelper.CreateCollaborators(users, organizationId);
             collaborators = collaborators.Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit).ToList();
 
@@ -546,7 +546,7 @@ namespace PrimeApps.Console.Controllers
         {
             var users = await _organizationUserRepository.GetByOrganizationId(organizationId);
 
-            var collaborators = await _organizationHelper.CreateCollaorators(users, organizationId);
+            var collaborators = await _organizationHelper.CreateCollaborators(users, organizationId);
 
             var count = collaborators != null ? collaborators.Count() : 0;
 

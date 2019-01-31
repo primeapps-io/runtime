@@ -27,10 +27,11 @@ angular.module('primeapps')
 
             };
             $scope.generator(10);
-            /*CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
-                $scope.$parent.collaboratorCount = response.data;
-                $scope.pageTotal = response.data;
-            });*/
+
+            CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
+             $scope.$parent.collaboratorCount = response.data;
+             $scope.pageTotal = response.data;
+             });
 
             CollaboratorsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 $scope.collaboratorArray = response.data;
@@ -110,12 +111,12 @@ angular.module('primeapps')
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
@@ -147,7 +148,7 @@ angular.module('primeapps')
                         if (response.data) {
                             ngToast.create({ content: 'Collaborator is saved successfully', className: 'success' });
                             $scope.collaboratorModel.email = "";
-                            
+
                             $scope.submitting = false;
                             $scope.userPassword = response.data.password;
                             $scope.showNewCollaboratorInfo = true;
@@ -161,7 +162,7 @@ angular.module('primeapps')
 
             }
 
-            $scope.close = function(){
+            $scope.close = function () {
                 $scope.getCollaborators();
                 $state.reload();
                 $scope.addNewCollaboratorModal.hide();
@@ -192,7 +193,7 @@ angular.module('primeapps')
                         $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
             }
-             
+
             $scope.delete = function (id) {
                 if (!id)
                     return false;
@@ -226,11 +227,12 @@ angular.module('primeapps')
                         getToastMsg('Common.Error', 'danger');
                         $scope.removing = false;
                     });
-            }
+            };
 
-
-
-            var getToastMsg = function (msg, type = 'success') {
+            var getToastMsg = function (msg, type) {
+                if (!type) {
+                    type = 'success';
+                }
                 ngToast.create({
                     content: $filter('translate')(msg),
                     className: type

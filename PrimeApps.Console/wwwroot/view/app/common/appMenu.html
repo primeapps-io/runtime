@@ -1,97 +1,292 @@
-<ul class="nav nav-pills nav-stacked setup-nav" ng-show="!appLoading">
-    <li ng-class="activeMenuItem === 'overview' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info" data-title="Overview" bs-tooltip data-placement="right">
+<ul class="setup-nav" ng-show="!appLoading">
+    <li>
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info"
+           data-title="Overview" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
             <span>Overview</span>
         </a>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/modules" data-trigger="hover" data-type="info" data-title="Model" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='model' ? 'active sub-open':''" ng-click="openSubMenu('model')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/modules" data-trigger="hover" data-type="info"
+           data-title="Model" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
             <span>Model</span>
         </a>
+
+        <ul class="">
+            <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/modules" data-trigger="hover" data-type="info"
+                   data-title="Modules"
+                   bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Modules</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='relations' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/relations" data-trigger="hover" data-type="info"
+                   data-title="Relations" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Relations</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/dependencies" data-trigger="hover" data-type="info"
+                   data-title="Dependencies" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Dependencies</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='filters' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/filters" data-trigger="hover" data-type="info"
+                   data-title="Filters"
+                   bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filters</span>
+                </a>
+            </li>
+        </ul>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/templatesEmail" data-trigger="hover" data-type="info" data-title="Templates" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''" ng-click="openSubMenu('templates')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/templatesEmail" data-trigger="hover" data-type="info"
+           data-title="Templates" bs-tooltip data-placement="right">
             <i class="fas fa-file-alt"></i>
             <span>Templates</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='templatesEmail' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesEmail" data-trigger="hover" data-type="info"
+                   data-title="Email Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Email Templates</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='templatesWord' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesWord" data-trigger="hover" data-type="info"
+                   data-title="Word Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Word Templates</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='templatesExcel' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesExcel" data-trigger="hover" data-type="info"
+                   data-title="Excel Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Excel Templates</span>
+                </a>
+            </li>
+
+        </ul>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/workflows" data-trigger="hover" data-type="info" data-title="Automation" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='automation' ? 'active sub-open':''" ng-click="openSubMenu('automation')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/workflows" data-trigger="hover" data-type="info"
+           data-title="Automation" bs-tooltip data-placement="right">
             <i class="fas fa-magic"></i>
             <span>Automation</span>
         </a>
-    </li>
 
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/reports" data-trigger="hover" data-type="info" data-title="Analytics" bs-tooltip data-placement="right">
+        <ul>
+            <li ng-class="activeMenuItem ==='workflows' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/workflows" data-trigger="hover" data-type="info"
+                   data-title="Workflows" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Workflows</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='rules' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/rules" data-trigger="hover" data-type="info"
+                   data-title="Business Rules" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Business Rules</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='processes' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/processes" data-trigger="hover" data-type="info"
+                   data-title="Approval Processes" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Approval Processes</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li ng-class="subMenuOpen =='analytics' ? 'active sub-open':''" ng-click="openSubMenu('analytics')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/reports" data-trigger="hover" data-type="info"
+           data-title="Analytics" bs-tooltip data-placement="right">
             <i class="fas fa-chart-area"></i>
             <span>Analytics</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='reports' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId }}/reports" data-trigger="hover" data-type="info"
+                   data-title="Reports" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='dashboards' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/dashboards" data-trigger="hover" data-type="info"
+                   data-title="Dashboards" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Dashboards</span>
+                </a>
+            </li>
+        </ul>
     </li>
     <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info" data-title="Functions" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
+           data-title="Functions" bs-tooltip data-placement="right">
             <i class="fas fa-code"></i>
             <span>Functions</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='components' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info" data-title="Components" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
+           data-title="Components" bs-tooltip data-placement="right">
             <i class="fas fa-shapes"></i>
             <span>Components</span>
         </a>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/profiles" data-trigger="hover" data-type="info" data-title="Authorization" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='authorization' ? 'active sub-open':''" ng-click="openSubMenu('authorization')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/profiles" data-trigger="hover" data-type="info"
+           data-title="Authorization" bs-tooltip data-placement="right">
             <i class="fas fa-random"></i>
             <span>Authorization</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='profiles' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/profiles" data-trigger="hover" data-type="info"
+                   data-title="Profiles" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Profiles</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='roles' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/roles" data-trigger="hover" data-type="info"
+                   data-title="Roles" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Roles</span>
+                </a>
+            </li>
+        </ul>
     </li>
     <li ng-class="activeMenuItem ==='menus' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info" data-title="Menus" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
+           data-title="Menus" bs-tooltip data-placement="right">
             <i class="fas fa-bars"></i>
             <span>Menus</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='help' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info" data-title="Help &amp; Guides" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
+           data-title="Help &amp; Guides" bs-tooltip data-placement="right">
             <i class="fas fa-medkit"></i>
             <span>Help &amp; Guides</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='deployment' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info" data-title="Deployment" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info"
+           data-title="Deployment" bs-tooltip data-placement="right">
             <i class="fas fa-play"></i>
             <span>Deployment</span>
         </a>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/identity" data-trigger="hover" data-type="info" data-title="Identity" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='identity' ? 'active sub-open':''" ng-click="openSubMenu('identity')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/identity" data-trigger="hover" data-type="info"
+           data-title="Identity" bs-tooltip data-placement="right">
             <i class="fas fa-ribbon"></i>
             <span>Identity</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='authentication' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/authentication" data-trigger="hover" data-type="info"
+                   data-title="Authentication" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Authentication</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='identity' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/identity" data-trigger="hover" data-type="info"
+                   data-title="Identity Provider" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Identity Provider</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='singleSingOn' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/singleSingOn" data-trigger="hover" data-type="info"
+                   data-title="Single Sign-On" bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Single Sign-On</span>
+                </a>
+            </li>
+        </ul>
     </li>
-    <li>
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/certificates" data-trigger="hover" data-type="info" data-title="Security" bs-tooltip data-placement="right">
+    <li ng-class="subMenuOpen =='security' ? 'active sub-open':''" ng-click="openSubMenu('security')">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/certificates" data-trigger="hover" data-type="info"
+           data-title="Security" bs-tooltip data-placement="right">
             <i class="fas fa-shield-alt"></i>
             <span>Security</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='certificates' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/certificates" data-trigger="hover" data-type="info"
+                   data-title="Certificates" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-large"></i>
+                    <span>Certificates</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='passwordPolicies' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/passwordPolicies" data-trigger="hover" data-type="info"
+                   data-title="Password Policies" bs-tooltip data-placement="right">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Password Policies</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='networkAccess' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/networkAccess" data-trigger="hover" data-type="info"
+                   data-title="Network Access" bs-tooltip data-placement="right">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Network Access</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='cors' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/cors" data-trigger="hover" data-type="info" data-title="Cors"
+                   bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Cors</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='auditTrail' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/auditTrail" data-trigger="hover" data-type="info"
+                   data-title="Audit Trail" bs-tooltip data-placement="right">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Audit Trail</span>
+                </a>
+            </li>
+
+        </ul>
     </li>
     <li ng-class="activeMenuItem ==='extensions' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info" data-title="Extensions" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info"
+           data-title="Extensions" bs-tooltip data-placement="right">
             <i class="fas fa-plug"></i>
             <span>Extensions</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='diagnostics' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/diagnostics" data-trigger="hover" data-type="info" data-title="Diagnostics" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/diagnostics" data-trigger="hover" data-type="info"
+           data-title="Diagnostics" bs-tooltip data-placement="right">
             <i class="fas fa-diagnoses"></i>
             <span>Diagnostics</span>
         </a>
     </li>
     <li ng-class="activeMenuItem ==='settings' ? appLoading ? 'active blocked' : 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/appDetails" data-trigger="hover" data-type="info" data-title="Settings" bs-tooltip data-placement="right">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/appDetails" data-trigger="hover" data-type="info"
+           data-title="Settings" bs-tooltip data-placement="right">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
         </a>

@@ -1,16 +1,13 @@
 <div id="wrapper" ng-class="toggleClass">
     <div id="navbar-wrapper" ng-class="toggleClass">
-        <nav class="navbar navbar-upper">
-            <div class="navbar-header top-header">
-                <ul class="breadcrumb">
-                    <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
-                        <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
-                        <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
-                    <li>
-                </ul>
-
-            </div>
-            <ul class="nav navbar-nav navbar-right">
+        <div class="flex-betweenx">
+            <ul class="breadcrumb">
+                <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
+                    <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
+                    <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a>
+                </li>
+            </ul>
+            <ul>
                 <li style="margin-left:  10px" ng-if="currentAppId">
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
@@ -21,7 +18,12 @@
                     </button>
                 </li>
                 <li>
-                    <button style="border:none" type="button" class="rigth-oval-toolbar-item"
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh">
+                        <i class="fas fa-question"></i>
+                    </button>
+                </li>
+                <li>
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh"
                             aria-hidden="true"
                             data-title="Test"
                             data-template-url="view/common/user-dropdown.html"
@@ -31,34 +33,9 @@
                             bs-popover aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-user"></i>
                     </button>
-
                 </li>
-                <li>
-                    <button style="border:none" type="button" class="rigth-oval-toolbar-item"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-plus"></i>
-                    </button>
-
-                    <ul class="dropdown-menu new-app" role="menu">
-                        <li>
-                            <a href="#anotherAction">
-                                Add New App
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#anotherAction">
-                                Add New Organization
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-
             </ul>
-        </nav>
+        </div>
     </div>
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
@@ -80,18 +57,18 @@
 
             <li class="sidebar-li">
                 <a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"
-                   href="#"><i class="fas fa-home"></i> <span>All Apps</span></a>
+                   href="#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
                 <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
                    data-placement="right"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="fas fa-home"></i><span> {{organization.label}} </span></a>
+                        class="{{organization.icon}}"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
-                           ng-class="currentPath == '/apps?organizationId='+organization.id  ? 'active' :'' "
-                           href="#/apps?organizationId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
+                           ng-class="currentPath == '/apps?orgId='+organization.id  ? 'active' :'' "
+                           href="#/apps?orgId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="People" bs-tooltip data-placement="right"
                            ng-class="currentPath == '/organization/'+organization.id+'/collaborators'  ? 'active' :'' "

@@ -52,6 +52,7 @@ namespace PrimeApps.App.Controllers
         private IServiceScopeFactory _serviceScopeFactory;
 
         public IBackgroundTaskQueue Queue { get; }
+
         public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _userRepository = userRepository;
@@ -110,12 +111,12 @@ namespace PrimeApps.App.Controllers
                 Response.Headers.Add("Content-Disposition", "attachment; filename=" + fileName); // force download
                 await blob.DownloadToStreamAsync(Response.Body);
                 return new EmptyResult();
-
             }
             catch (Exception)
             {
                 //on any exception do nothing, continue and return no content status code, because that file does not exist.
             }
+
             return NotFound();
         }
 
@@ -175,7 +176,10 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> ChangeCulture([FromBody]string culture)
         {
             /// if it's an unknown or an unsupported culture do nothing.
-            if (!Helpers.Constants.CULTURES.Contains(culture)) { return NotFound(); }
+            if (!Helpers.Constants.CULTURES.Contains(culture))
+            {
+                return NotFound();
+            }
 
             /// get user
             PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
@@ -198,7 +202,10 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> ChangeCurrency([FromBody]string currency)
         {
             /// if it's an unknown or an unsupported currency do nothing.
-            if (!Helpers.Constants.CURRENCIES.Contains(currency)) { return NotFound(); }
+            if (!Helpers.Constants.CURRENCIES.Contains(currency))
+            {
+                return NotFound();
+            }
 
             ///get user
             PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
@@ -227,6 +234,7 @@ namespace PrimeApps.App.Controllers
                     else
                         return BadRequest();
                 }
+
                 return Unauthorized();
             }
             catch (Exception ex)
@@ -252,7 +260,12 @@ namespace PrimeApps.App.Controllers
         {
             var acc = new AccountInfo();
             var apps = new List<UserAppInfo>();
-            acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
+            if (previewMode == "app")
+                acc.user = await _userRepository.GetUserInfoAsync(1, false);
+            else
+                acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
 
             if (acc.user != null)
             {
@@ -270,7 +283,7 @@ namespace PrimeApps.App.Controllers
                 acc.user.appId = AppUser.AppId;
                 acc.apps = apps;
 
-                if (acc.user.deactivated)
+                if (acc.user.deactivated && previewMode != "app")
                     throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
 
                 return Ok(acc);
@@ -293,7 +306,6 @@ namespace PrimeApps.App.Controllers
             {
                 info = adTenant,
                 email = accountOwner.Email
-
             };
 
             return Ok(data);
@@ -378,7 +390,7 @@ namespace PrimeApps.App.Controllers
 
         //TODO TenantId
         [Route("get_user"), HttpGet]
-        public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")] int tenantId)
+        public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")]int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -519,6 +531,7 @@ namespace PrimeApps.App.Controllers
 			}*/
             return Ok();
         }
+
         /*
 		[Route("UpdateActiveDirectoryEmail"), HttpGet]
         public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)

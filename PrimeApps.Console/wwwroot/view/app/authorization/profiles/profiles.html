@@ -36,33 +36,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="profile in profiles">
+            <tr ng-repeat="profile in profiles" ng-click="showFormModal(profile,false)">
                 <td class="profile-name">{{profile.name}}</td>
                 <td class="profile-description">{{profile.description}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(profile);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="$event.stopPropagation();showFormModal(profile,false)">{{'Common.Edit' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' | translate}} </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();delete(profile)">{{'Common.Delete' | translate}} </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
-
             </tr>
         </tbody>
     </table>

@@ -29,133 +29,131 @@
     </div>
 </div>
 
+<div class="setup-title">
+    <h2>Components</h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li></li>
+            <li>
+                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Component</button>
+            </li>
+        </ul>
+    </div>
+</div>
 <div class="tab-content">
-    <div class="col-sm-12" style="border: none ;">
-        <div class="setup-title">
-            <h2>Components</h2>
-            <div>
-                <ul class="list-unstyled list-inline">
-                    <li></li>
-                    <li>
-                        <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Component</button>
-                    </li>
-
-                </ul>
-
-            </div>
-
-        </div>
-
-        <div class="tab-content">
-
-            <table class="table" ng-show="loading">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Module Id</th>
-                        <th>Place</th>
-                        <th>Order</th>
-                        <th width="50"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <tr ng-repeat="item in placeholderArray">
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td class="text-center">
-                            <div class="animated-background"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <table class="table" ng-if="!loading">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Module Id</th>
-                        <th>Place</th>
-                        <th>Order</th>
-                        <th width="50"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="component in components" ui-sref="studio.app.componentDetail({id:component.id})">
-                        <td>{{component.name}}</td>
-                        <td>{{component.type}}</td>
-                        <td>{{component.module_id}}</td>
-                        <td>{{component.place}}</td>
-                        <td>{{component.order}}</td>
-                        <td class="text-center">
-                            <div class="action-buttons-block">
-                                <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                        class="btn btn-xs btn-default list-action-button"
-                                        placement="bottom-right"
-                                        data-animation="am-flip-x"
-                                        bs-dropdown
-                                        aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a ui-sref="studio.app.componentDetail({id:component.id})" ng-click="$event.stopPropagation()">{{'Common.Edit' | translate}} </a>
-                                    </li>
-                                    <li>
-                                        <a ng-click="$event.stopPropagation();delete(template)">{{'Common.Delete' | translate}} </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="row table-pagination">
-                <div class="col-sm-6">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <i class="fas fa-step-backward"></i>
-                                </a>
-                            </li>
-                            <li class="active"><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <i class="fas fa-step-forward"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+    <table class="table" ng-show="loading">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Module Id</th>
+            <th>Place</th>
+            <th>Order</th>
+            <th width="50"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td class="text-center">
+                <div class="animated-background"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-if="!loading && components.length !== 0">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Module Id</th>
+            <th>Place</th>
+            <th>Order</th>
+            <th width="50"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="component in components" ui-sref="studio.app.componentDetail({id:component.id})">
+            <td>{{component.name}}</td>
+            <td>{{component.type}}</td>
+            <td>{{component.module_id}}</td>
+            <td>{{component.place}}</td>
+            <td>{{component.order}}</td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                            class="btn btn-xs btn-default list-action-button"
+                            placement="bottom-right"
+                            data-animation="am-flip-x"
+                            bs-dropdown
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a ui-sref="studio.app.componentDetail({id:component.id})"
+                               ng-click="$event.stopPropagation()">{{'Common.Edit' | translate}} </a>
+                        </li>
+                        <li>
+                            <a ng-click="$event.stopPropagation();delete(template)">{{'Common.Delete' | translate}} </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
-                <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
-                    <select class="items-per-page-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select></div>
-            </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div>
+            Total Modules {{pageTotal}}
+        </div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
         </div>
     </div>
+
 </div>

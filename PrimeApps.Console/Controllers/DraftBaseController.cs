@@ -15,12 +15,13 @@ namespace PrimeApps.Console.Controllers
         public static int? AppId { get; set; }
         public static int? TenantId { get; set; }
         public static string PreviewMode { get; set; }
+        public static int OrganizationId { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
-            var organizationId = SetOrganization(context);
+            OrganizationId = SetOrganization(context);
 
-            if (organizationId <= 0)
+            if (OrganizationId <= 0)
                 context.Result = new UnauthorizedResult();
 
             TenantId = null;
@@ -44,7 +45,7 @@ namespace PrimeApps.Console.Controllers
             var appDraftRepository = (IAppDraftRepository)context.HttpContext.RequestServices.GetService(typeof(IAppDraftRepository));
             var tenantRepository = (ITenantRepository)context.HttpContext.RequestServices.GetService(typeof(ITenantRepository));
 
-            var appIds = appDraftRepository.GetAppIdsByOrganizationId(organizationId);
+            var appIds = appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
 
             if (tenantId != 0)
             {

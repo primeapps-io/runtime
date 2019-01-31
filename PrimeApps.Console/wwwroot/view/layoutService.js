@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce',
-        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
+    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce','icons',
+        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce,icons) {
             return {
                 getAll: function () {
                     var promises = [];
@@ -26,6 +26,9 @@ angular.module('primeapps')
                 },
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
+                },
+                getIcons: function () {
+                    return icons.icons;
                 },
                 myOrganizations: function () {
                     return $http.get(config.apiUrl + 'user/organizations');
@@ -279,7 +282,7 @@ angular.module('primeapps')
                             $rootScope.breadcrumblist = [{}, {}, {}];
 
                         $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
-                        $rootScope.breadcrumblist[0].link = '#/apps?organizationId=' + $rootScope.currentApp.organization_id;
+                        $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentApp.organization_id;
 
                         $rootScope.breadcrumblist[1] = {
                             title: result.data.label,

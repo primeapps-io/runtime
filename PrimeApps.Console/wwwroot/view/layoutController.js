@@ -30,7 +30,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.menuOpen = [];
 
-
         var getMyOrganizations = function () {
             LayoutService.myOrganizations()
                 .then(function (response) {
@@ -59,7 +58,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             LayoutService.getPreviewToken()
                 .then(function (response) {
                     $scope.previewActivating = false;
-                    $window.open('http://localhost:5001?preview=' + encodeURIComponent(response.data), '_blank');
+                    $window.open(config.appUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
                 })
                 .catch(function (response) {
                     $scope.previewActivating = false;
@@ -88,7 +87,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $anchorScroll();
         };
 
-
         var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
         $scope.isAvailableForSmallDevice = function () {
@@ -109,13 +107,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 if (currentUrl.charAt(index - 1) === ':') {
                     currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '?') {
+                }
+                else if (currentUrl.charAt(index - 1) === '?') {
                     currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '&') {
+                }
+                else if (currentUrl.charAt(index - 1) === '&') {
                     currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
                 }
             });
-
 
             if (canReload && url.includes(currentUrl)) {
                 $state.reload();
@@ -152,7 +151,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             angular.element($scope.appLauncher).toggleClass('toggled');
         };
 
-
         $scope.dropdownHide = function () {
             angular.element(document.getElementsByClassName('dropdown-menu'))[0].click();
             angular.element(document.getElementsByClassName('dropdown-menu'))[1].click();
@@ -162,8 +160,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.reloading = true;
         };
 
-
         $scope.newOrganization = function () {
+            $scope.icons = LayoutService.getIcons();
             $scope.organizatioFormModal = $scope.organizatioFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/organization/newOrganization.html',
@@ -221,11 +219,23 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 });
         };
 
+        $scope.generateOrganizationShortName = function (organization) {
+            if (!organization || !organization.label || $scope.isOrganizationShortNameChanged)
+                return;
+
+            organization.name = helper.getSlug(organization.label, '-');
+        };
+
         $scope.saveOrganization = function (organizationForm) {
             if (!organizationForm.$valid)
                 return;
-
             $scope.organizationSaving = true;
+
+            if (!$scope.organization.icon)
+                $scope.organization.icon = 'fas fa-building';
+
+            if (angular.isObject($scope.organization.icon))
+                $scope.organization.icon = $scope.organization.icon.value;
 
             LayoutService.createOrganization($scope.organization)
                 .then(function (response) {
@@ -242,7 +252,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.apps', { organizationId: response.data });
+                    $state.go('studio.apps', { orgId: response.data });
 
                 })
                 .catch(function () {
@@ -264,7 +274,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
             }
         });
-
 
         $scope.organizationSave = function (newOrganizationForm) {
             if (!newOrganizationForm.$valid)

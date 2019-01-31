@@ -1,19 +1,27 @@
 ﻿<div class="setup-title">
     <h2>App Details</h2>
-    <button class="btn add-button"><i class="fas fa-cog"></i> Settings</button>
 </div>
 <div class="tab-content" style="padding: 50px">
     <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="row">
             <div class="col-sm-3">
                 <div style="margin: auto;text-align: center;">
-                    <div ng-show="uploader.isHTML5" class="file-uploader">
+                    <div ng-if="uploader.isHTML5 && !appModel.logo" class="file-uploader">
                         <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
                              over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
                              style="float: right;">
                             <div class="">
                                 <i class="fas fa-cloud-download-alt"></i>
                                 <span>Choose a file or drag it here</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none;">
+                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
+                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
+                             style="float: right;">
+                            <div class="">
+                                <img ng-src="{{appModel.logo}}" style="max-width: 100%">
                             </div>
                         </div>
                     </div>
@@ -28,7 +36,17 @@
             </div>
             <div class="col-sm-9" style="border-left:solid 2px #dfdfdf ">
                 <div class="form-group">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">App Name:</label>
+                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Name:</label>
+                    <input type="text"
+                           name="label"
+                           style="margin-bottom: 20px;"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="appModel.label">
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Identifier:</label>
                     <input type="text"
                            name="name"
                            style="margin-bottom: 20px;"
@@ -43,17 +61,7 @@
                            ng-model="appModel.name" />
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">App Label:</label>
-                    <input type="text"
-                           name="label"
-                           style="margin-bottom: 20px;"
-                           class="form-control ng-animate-disabled col-sm-8"
-                           required
-                           maxlength="50"
-                           ng-model="appModel.label">
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">App Description:</label>
+                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Description:</label>
                     <input type="text"
                            name="description"
                            style="margin-bottom: 20px;"
@@ -64,7 +72,7 @@
                 </div>
                 <div class="col-sm-3">
                     <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" style="" ladda="saving">
-                        <i class="fas fa-sync margin-right-10"></i>Update info
+                        <i class="fas fa-sync margin-right-10"></i>Update
                     </button>
                 </div>
             </div>

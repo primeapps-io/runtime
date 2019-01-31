@@ -14,8 +14,8 @@ angular.module('primeapps')
             $scope.currentApp = $localStorage.get("current_app");
 
             /*if (!$scope.orgId || !$scope.appId) {
-                $state.go('studio.apps', { organizationId: $scope.orgId });
-            }*/
+             $state.go('studio.apps', { organizationId: $scope.orgId });
+             }*/
 
             $scope.modules = [];
 
@@ -26,11 +26,6 @@ angular.module('primeapps')
             $scope.componentTypes = componentTypes;
             $rootScope.breadcrumblist[2].title = 'Components';
 
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -40,19 +35,38 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            ComponentsService.count()
-                .then(function (response) {
-                    $scope.pageTotal = response.data;
-                    if ($scope.pageTotal > 0) {
-                        ComponentsService.find($scope.requestModel)
-                            .then(function (response) {
-                                $scope.components = response.data;
-                                $scope.loading = false;
-                            });
-                    } else {
-                        $scope.loading = false;
-                    }
+
+            $scope.components = [];
+            $scope.loading = true;
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
+            };
+
+            ComponentsService.count().then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+            ComponentsService.find($scope.requestModel).then(function (response) {
+                $scope.components = response.data;
+                $scope.loading = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+                ComponentsService.find(requestModel).then(function (response) {
+                    $scope.components = response.data;
+                    $scope.loading = false;
                 });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+
 
             $scope.createModal = function () {
                 //$scope.modalLoading = true;
@@ -70,12 +84,12 @@ angular.module('primeapps')
 
             var openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/components/componentFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/components/componentFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
@@ -96,7 +110,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
-                        $state.go('studio.app.componentDetail', { id: response.data });
+                        $state.go('studio.app.componentDetail', {id: response.data});
                     })
             };
 

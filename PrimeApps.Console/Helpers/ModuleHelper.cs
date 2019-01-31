@@ -620,17 +620,17 @@ namespace PrimeApps.Console.Helpers
 
         public void AfterCreate(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
+	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
 		}
 
         public void AfterUpdate(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
+	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
 		}
 
         public void AfterDelete(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
+	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
 		}
 
         public Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)

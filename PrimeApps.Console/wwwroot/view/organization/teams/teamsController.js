@@ -81,7 +81,9 @@ angular.module('primeapps')
                             var userList = response.data;
 
                             for (var i = 0; i < $scope.selectedTeam.team_users.length; i++) {
-                                userList.users = $filter('filter')(userList.users, function (value) { return value.user_id != $scope.selectedTeam.team_users[i].user_id });
+                                userList.users = $filter('filter')(userList.users, function (value) {
+                                    return value.user_id != $scope.selectedTeam.team_users[i].user_id
+                                });
                             }
                             $scope.orgranizationUserArray = angular.copy(userList.users);
                             $scope.loadingMembers = false;
@@ -238,9 +240,9 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this team ?",
+                    text: "Are you sure that you want to delete this team?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -256,7 +258,7 @@ angular.module('primeapps')
                                     $scope.addNewTeamFormModal.hide();
                                     $scope.teamModel = {};
                                     $state.reload();
-                                    swal("Deleted!", "Team has been deleted!", "success");
+                                    swal("Deleted!", "Team is deleted successfully.", "success");
                                 }
                             })
                             .catch(function (result) {
@@ -269,9 +271,9 @@ angular.module('primeapps')
             $scope.deleteUser = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this member ?",
+                    text: "Are you sure that you want to delete this member?",
                     icon: "warning",
-                    buttons: ['Cancel', 'Okey'],
+                    buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
@@ -284,7 +286,7 @@ angular.module('primeapps')
                                     $scope.selectTeam($scope.teamId);
                                     $scope.getOrganizationUserList();
                                     $scope.selectedUser = {};
-                                    swal("Deleted!", "Member has been deleted!", "success");
+                                    swal("Deleted!", "Member is deleted successfully.", "success");
                                 }
                             })
                             .catch(function (error) {
@@ -306,12 +308,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -333,7 +335,11 @@ angular.module('primeapps')
                 $scope.teamModel = {};
             };
 
-            var getToastMsg = function (msg, type = 'success') {
+            var getToastMsg = function (msg, type) {
+                if (!type) {
+                    type = 'success';
+                }
+
                 ngToast.create({
                     content: $filter('translate')(msg),
                     className: type

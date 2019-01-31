@@ -371,7 +371,9 @@ angular.module('primeapps')
                             break;
                     }
                 },
-
+                moduleUpdate: function (module, id) {
+                    return $http.put(config.apiUrl + 'module/update/' + id, module);
+                },
                 //moduleProfileSettings
                 getAllModuleProfileSettings: function () {
                     return $http.get(config.apiUrl + 'module_profile_settings/get_all');
@@ -622,6 +624,7 @@ angular.module('primeapps')
                 },
 
                 processModule2: function (module, modules) {
+                    var that = this;
                     if (!modules)
                         modules = $rootScope.appModules;
 
@@ -684,21 +687,27 @@ angular.module('primeapps')
                             if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
                                 var lookupModule = $filter('filter')(modules, {name: field.lookup_type}, true)[0];
 
+
                                 if (!lookupModule)
                                     continue;
 
-                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
+                                that.getModuleFields(lookupModule.name).then(function (lookupModuleFields) {
 
-                                if (!field.lookupModulePrimaryField)
-                                // field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                    var lookupModuleFields = lookupModuleFields.data;
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModuleFields, {primary_lookup: true}, true)[0];
+
+                                    if (!field.lookupModulePrimaryField)
+                                        field.lookupModulePrimaryField = $filter('filter')(lookupModuleFields, {primary: true}, true)[0];
 
                                     var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
-                                for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
-                                    var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
-                                    var operatorLookup = operators[operatorIdLookup];
-                                    field.operators.push(operatorLookup);
-                                }
+                                    for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
+                                        var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
+                                        var operatorLookup = operators[operatorIdLookup];
+                                        field.operators.push(operatorLookup);
+                                    }
+
+                                });
                             }
                             else {
                                 field.operators.push(operators.equals);
@@ -743,7 +752,7 @@ angular.module('primeapps')
                         }
                         var systemRequiredFields = angular.copy(this.getSystemRequiredFields());
 
-                        var systemRequiredFields = angular.copy(this.getSystemReadonlyFields());
+                        var systemReadonlyFields = angular.copy(this.getSystemReadonlyFields());
 
                         if (systemRequiredFields.all.indexOf(field.name) > -1 || (systemRequiredFields[module.name] && systemRequiredFields[module.name].indexOf(field.name) > -1))
                             field['systemRequired'] = true;
@@ -861,7 +870,7 @@ angular.module('primeapps')
                                     lookupRecord = null;
                             }
                             else {
-                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                                 var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {
                                     primary: true,
                                     deleted: false
@@ -920,7 +929,7 @@ angular.module('primeapps')
 
                     var sortOrders = [];
 
-                    angular.forEach($rootScope.modules, function (moduleItem) {
+                    angular.forEach($rootScope.appModules, function (moduleItem) {
                         sortOrders.push(moduleItem.order);
                     });
 
@@ -1509,7 +1518,7 @@ angular.module('primeapps')
 
                     angular.forEach(moduleFields, function (field) {
                         if (field.data_type === 'lookup' && field.lookup_type !== 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0]);
+                            var lookupModule = angular.copy($filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -1592,7 +1601,7 @@ angular.module('primeapps')
 
                 processRelations: function (relations) {
                     angular.forEach(relations, function (relation) {
-                        var relatedModule = $filter('filter')($rootScope.modules, {name: relation.related_module}, true)[0];
+                        var relatedModule = $filter('filter')($rootScope.appModules, {name: relation.related_module}, true)[0];
 
                         if (!relatedModule || relatedModule.order === 0) {
                             relation.deleted = true;
@@ -1846,84 +1855,70 @@ angular.module('primeapps')
                 },
 
                 getFieldsOperator: function (module, modules, counter) {
-                    if (!module)
-                        return {};
+                    var that = this;
+                    angular.forEach(module.fields, function (field) {
+                        field.dataType = dataTypes[field.data_type];
+                        field.operators = [];
+                        if (field.data_type === 'lookup') {
+                            if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
+                                var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
+                                that.getModuleFields(lookupModule.name).then(function (response) {
+                                    lookupModule.fields = response.data;
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
 
-                    if (counter >= module.fields.length)
-                        return module;
+                                    if (!field.lookupModulePrimaryField)
+                                        field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
-                    var field = module.fields[counter];
+                                    var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
-                    if (!field)
-                        this.getFieldsOperator(module, modules, counter + 1);
+                                    field.lookupModulePrimaryField.operators = [];
 
-                    field.dataType = {};
-                    field.dataType = dataTypes[field.data_type];
-                    field.operators = [];
-
-                    if (field.data_type === 'lookup') {
-                        if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
-                            var lookupModule = $filter('filter')(modules, {name: field.lookup_type}, true)[0];
-
-                            if (!lookupModule) {
-                                module.fields[counter] = field;
-                                return this.getFieldsOperator(module, modules, counter + 1);
+                                    for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
+                                        var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
+                                        var operatorLookup = operators[operatorIdLookup];
+                                        field.operators.push(operatorLookup);
+                                        field.lookupModulePrimaryField.operators.push(operatorLookup);
+                                    }
+                                });
+                            }
+                            else {
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+                                //TODO WHEN ADDED CUSTOM MODULES USER, PROFILES AND ROLES
+                                // if (field.lookup_type === 'users') {
+                                //     var lookupModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                                //that.getModuleFields(lookupModule.name).then(function (response) {
+                                //lookupModule.fields = response.data;
+                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                //});
+                                // }
+                                // else if (field.lookup_type === 'profiles') {
+                                //	lookupModule = $filter('filter')($rootScope.appModules, { name: 'profiles' }, true)[0];
+                                //	that.getModuleFields(lookupModule.name).then(function (response) {
+                                //		lookupModule.fields = response.data;
+                                //		field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                //	});
+                                //}
+                                //else if (field.lookup_type === 'roles') {
+                                //	lookupModule = $filter('filter')($rootScope.appModules, { name: 'roles' }, true)[0];
+                                //	that.getModuleFields(lookupModule.name).then(function (response) {
+                                //		lookupModule.fields = response.data;
+                                //		field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                //	});
+                                //}
                             }
 
-                            this.getModuleFields(lookupModule.name).then(function (response) {
-                                if (response.data) {
-                                    lookupModule.fields = response.data;
-                                    var tempPrimaryLookup = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true);
-
-                                    if (tempPrimaryLookup)
-                                        field.lookupModulePrimaryField = tempPrimaryLookup[0];
-                                    else//if (!field.lookupModulePrimaryField)
-                                    {
-                                        tempPrimaryLookup = $filter('filter')(lookupModule.fields, {primary: true}, true);
-
-                                        if (tempPrimaryLookup)
-                                            field.lookupModulePrimaryField = tempPrimaryLookup[0];
-                                    }
-
-                                    if (field.lookupModulePrimaryField) {
-                                        var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
-
-                                        for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
-                                            var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
-                                            var operatorLookup = operators[operatorIdLookup];
-                                            field.operators.push(operatorLookup);
-                                        }
-                                    }
-
-                                    module.fields[counter] = field;
-                                    return this.getFieldsOperator(module, modules, counter++);
-                                }
-                            }).catch(function (err) {
-                                console.log(err);
-                            });
                         }
                         else {
-                            field.operators.push(operators.equals);
-                            field.operators.push(operators.not_equal);
-                            field.operators.push(operators.empty);
-                            field.operators.push(operators.not_empty);
-
-                            module.fields[counter] = field;
-                            return this.getFieldsOperator(module, modules, counter + 1);
+                            for (var n = 0; n < field.dataType.operators.length; n++) {
+                                var operatorId = field.dataType.operators[n];
+                                var operator = operators[operatorId];
+                                field.operators.push(operator);
+                            }
                         }
-
-                    }
-                    else {
-                        for (var n = 0; n < field.dataType.operators.length; n++) {
-                            var operatorId = field.dataType.operators[n];
-                            var operator = operators[operatorId];
-                            field.operators.push(operator);
-                        }
-
-                        module.fields[counter] = field;
-                        return this.getFieldsOperator(module, modules, counter + 1);
-                    }
-
+                    });
                     return module;
                 },
 

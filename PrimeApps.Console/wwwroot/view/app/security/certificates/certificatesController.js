@@ -8,7 +8,7 @@ angular.module('primeapps')
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
             $scope.$parent.menuTopTitle = "Security";
-            $scope.$parent.activeMenu = 'security';
+            //$scope.$parent.activeMenu = 'security';
             $scope.$parent.activeMenuItem = 'certificates';
             $rootScope.breadcrumblist[2].title = 'Certificates';
 

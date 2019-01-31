@@ -1568,6 +1568,7 @@
       "RuleInformation": "İş Akışı Bilgisi",
       "FilterCriteria": "Filtre Kriterleri",
       "Actions": "Eylemler",
+      "DeleteLogs": "Önceden çalışmış olan tek seferlik akışlar için tekrar çalışmasına izin ver",
       "SummaryAndConfirmation": "İş Akışı Özeti ve Onay",
       "Name": "İş Akışı Adı",
       "Code": "İş Akışı Kodu",

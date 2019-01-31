@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
@@ -24,6 +25,7 @@ namespace PrimeApps.Console.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
+        private IAppProfileRepository _appProfileRepository;
         private IGiteaHelper _giteaHelper;
 
         public AppController(IConfiguration configuration,
@@ -32,6 +34,7 @@ namespace PrimeApps.Console.Controllers
             IAppDraftRepository appDraftRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
+            IAppProfileRepository appProfileRepository,
             IGiteaHelper giteaHelper)
         {
             Queue = queue;
@@ -39,9 +42,9 @@ namespace PrimeApps.Console.Controllers
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
-
-            _giteaHelper = giteaHelper;
             _permissionHelper = permissionHelper;
+            _appProfileRepository = appProfileRepository;
+            _giteaHelper = giteaHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -50,6 +53,7 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_appProfileRepository);
 
             base.OnActionExecuting(context);
         }
@@ -69,7 +73,7 @@ namespace PrimeApps.Console.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -86,24 +90,49 @@ namespace PrimeApps.Console.Controllers
                 OrganizationId = OrganizationId,
                 TempletId = model.TempletId,
                 Status = AppDraftStatus.Draft,
-                Collaborators = new List<AppCollaborator>()
             };
-
-            app.Collaborators.Add(new AppCollaborator { UserId = AppUser.Id, ProfileId = 1 });
 
             var result = await _appDraftRepository.Create(app);
 
             if (result < 0)
                 return BadRequest("An error occurred while creating an app");
 
+            //TODO: Create all default app profiles in a helper class. Now creating only admin profile
+            var appProfile = new AppProfile
+            {
+                AppId = app.Id,
+                Name = "Admin",
+                Description = "Admin",
+                SystemCode = "admin",
+                Order = 1,
+                Permissions = new List<AppProfilePermission>()
+            };
+
+            foreach (var platformFeature in (PlatformFeature[])Enum.GetValues(typeof(PlatformFeature)))
+            {
+                appProfile.Permissions.Add(new AppProfilePermission {Feature = platformFeature, Read = true, Write = true, Modify = true, Remove = true});
+            }
+
+            var resultAppProfile = await _appProfileRepository.Create(appProfile);
+
+            if (resultAppProfile < 0)
+                return BadRequest("An error occurred while creating an app");
+
+            app.Collaborators = new List<AppCollaborator> {new AppCollaborator {UserId = AppUser.Id, ProfileId = appProfile.Id}};
+
+            var resultUpdate = await _appDraftRepository.Update(app);
+
+            if (resultUpdate < 0)
+                return BadRequest("An error occurred while creating an app");
+
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser, Request.Cookies["gitea_token"]));
 
-            return Ok(app.Id);
+            return Ok(app);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -138,7 +167,7 @@ namespace PrimeApps.Console.Controllers
         }
 
         [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody] JObject request)
+        public async Task<IActionResult> Organizations([FromBody]JObject request)
         {
             var search = "";
             var page = 0;

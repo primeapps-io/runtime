@@ -75,8 +75,8 @@ angular.module('primeapps',
             var language = window.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
 
             if (!language) {
-                window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', 'tr');
-                language = 'tr';
+                window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', 'en');
+                language = 'en';
             }
             moment.locale(language);
 

@@ -2,10 +2,9 @@
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave();" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Şablon Yükle</h4>
+                <h4 class="modal-title">{{'Setup.Templates.UploadTemplate' | translate}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
-                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                         <li>
                             <button type="button" class="btn add-button btn-radius btn-gray " ng-disabled="saving" ng-click="addNewEmailTemplateFormModal.hide();">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
@@ -27,10 +26,10 @@
                         <div class="section" id="section1">
                             <div class="panel">
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>Modül</label>
+                                    <div class="col-sm-12">
+                                        <label>{{'Setup.Templates.Module' | translate}}</label>
                                     </div>
-                                    <div class="col-sm-9">
+                                    <div class="col-sm-12">
                                         <select class="form-control pull-left"
                                                 ng-change="setContent()"
                                                 ng-model="newtemplate.moduleName"
@@ -43,42 +42,45 @@
                                     <div class="col-sm-3">
                                         <label>{{'Template.TemplateName' | translate}}</label>
                                     </div>
-                                    <div class="col-sm-9">
+                                    <div class="col-sm-12">
                                         <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-12">
                                         <label>{{'Template.Subject' | translate}}</label>
                                     </div>
-                                    <div class="col-sm-9">
+                                    <div class="col-sm-12">
                                         <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3">
-                                        <label>{{'Template.Sharing' | translate}}</label>
+                                    <div class="col-sm-12">
+                                        <label>{{'Template.Sharing' | translate}}  </label>
                                     </div>
-                                    <div class="col-sm-9">
-                                        <label>
+                                    <div class="col-sm-12">
+                                        <label class="checkbox-inline newinput">
                                             <input type="radio" ng-model="newtemplate.sharing_type" value="me">
                                             {{'View.ShareMe' | translate}}
+                                            <span></span>
                                         </label><br />
-                                        <label>
+                                        <label class="checkbox-inline newinput">
                                             <input type="radio" ng-model="newtemplate.sharing_type" value="everybody">
                                             {{'View.ShareEveryone' | translate}}
+                                            <span></span>
                                         </label><br>
-                                        <label>
+                                        <label class="checkbox-inline newinput">
                                             <input type="radio" ng-model="newtemplate.sharing_type" value="custom">
                                             {{'View.ShareCustom' | translate}}
+                                            <span></span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-3"  ng-if="newtemplate.sharing_type === 'custom'">
+                                    <div class="col-sm-12" ng-if="newtemplate.sharing_type === 'custom'">
                                         <label>{{'Template.SharedUsers' | translate}}</label>
                                     </div>
-                                    <div class="col-sm-9" ng-if="newtemplate.sharing_type === 'custom'">
+                                    <div class="col-sm-12" ng-if="newtemplate.sharing_type === 'custom'">
                                         <tags-input name="shares"
                                                     class="shared-users-input shared-users"
                                                     ng-model="newtemplate.shares"
@@ -97,10 +99,10 @@
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div class="col-sm-12">
-                                    <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
-                                              mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
-                                              ng-model="newtemplate.tinymce_content" ng-required="true"
-                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
+                                        <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
+                                                  mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
+                                                  ng-model="newtemplate.tinymce_content" ng-required="true"
+                                                  mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
                                         <script type="text/ng-template" id="tag-mentions.tpl">
                                             <ul class="ment-tags">
                                                 <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"

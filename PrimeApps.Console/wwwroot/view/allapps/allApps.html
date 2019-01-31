@@ -1,39 +1,29 @@
 <div class="page-container">
-    <div class="row">
+    <div class="row" ng-if="apps.length > 0 || appsFilter">
         <div class="col-sm-10">
-            <div class="search-input">
+            <div class="search-input shadowh">
                 <div class="search-input-icon">
                     <i class="fas fa-search"></i>
                 </div>
-                <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)"
-                       class="form-control form-control-lg form-control-borderless app-search-input" type="search"
-                       placeholder="Search for a project">
-
+                <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" class="form-control form-control-lg form-control-borderless app-search-input" type="search" placeholder="Search">
             </div>
-
         </div>
-        <div class="col-sm-2 search-select">
-            <i class="fas fa-angle-down"></i>
-            <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
-                <option value="">All Apps</option>
-                <option value="1">Draft</option>
-                <option value="2">Published</option>
-                <option value="3">Unpublished</option>
-            </select>
+        <div class="col-sm-2">
+            <div class="shadowh search-select">
+                <i class="fas fa-angle-down"></i>
+                <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
+                    <option value="">All Apps</option>
+                    <option value="1">Draft</option>
+                    <option value="2">Published</option>
+                    <option value="3">Unpublished</option>
+                </select>
+            </div>
         </div>
-
     </div>
-    <div class="row" style="margin-top: 50px">
-        <!--<div  class="page-loading"><i class="fas fa-spinner fa-pulse"></i></div>-->
-
-        <div ng-if="apps.length>1">
+    <div class="row" style="margin-top: 50px" ng-if="apps.length > 0">
+        <div>
             <div class="col-sm-12">
                 <h4 class="h4-title blue-color font-bold">All Apps</h4>
-            </div>
-        </div>
-        <div ng-if="apps.length<1">
-            <div class="col-sm-12">
-                <h4 class="font-bold">No App Found</h4>
             </div>
         </div>
 
@@ -47,9 +37,23 @@
             </div>
         </div>
 
-        <div ng-if="apps.length>1">
-            <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps"
-                 ui-sref="studio.app.overview({appId:app.id, orgId:app.organization_id})" ng-show="!loading">
+        <div ng-show="!loading">
+            <div class="col-sm-6 col-md-3 app-layout-box am-fade" ui-sref="studio.appsForm({orgId:1})">
+                <div class="app-box">
+                    <div class="oval">
+
+                    </div>
+                    <div class="icon-image">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+                <div class="app-info">
+                    <button class="btn btn-blue btn-radius btn-bold shadowh">
+                        <i class="fas fa-plus"></i> Create New App
+                    </button>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps" ui-sref="studio.app.overview({appId:app.id, orgId:app.organization_id})">
                 <div class="app-box">
                     <div class="oval">
                     <span data-trigger="hover" data-type="success"
@@ -57,7 +61,7 @@
                           class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                     </div>
                     <div class="image">
-                        <img ng-src="{{app.logo}}" />
+                        <img ng-src="{{app.logo}}"/>
                     </div>
                 </div>
                 <div class="app-info">
@@ -66,16 +70,18 @@
                 </div>
             </div>
         </div>
-        <div ng-if="apps.length<1">
-            <div class="dashboard apps clearfix" style="padding: 0px !important;" >
+    </div>
+    <div class="row" ng-if="apps.length < 1 && !loading  && !appsFilter">
+        <div>
+            <div class="dashboard apps clearfix" style="padding: 0px !important;">
                 <div class="row">
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4 new-app-content">
                         <img src="images/primeapps/create-app-sceen-image.png"
-                             srcset="images/primeapps/create-app-sceen-image.png@2x.png 2x,
-                         images/primeapps/create-app-sceen-image.png@3x.png 3x">
-                        <button class="create-app-btn">
-                            Create your Application
+                             srcset="images/primeapps/create-app-sceen-image@2x.png 2x,
+                         images/primeapps/create-app-sceen-image@3x.png 3x">
+                        <button class="create-app-btn" ng-click="gotoAppForm()">
+                            Add your first app
                         </button>
                     </div>
                     <div class="col-sm-4"></div>

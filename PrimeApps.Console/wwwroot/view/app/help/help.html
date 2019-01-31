@@ -16,7 +16,7 @@
         <thead>
             <tr>
                 <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
-                <th>Yardım Ekranı Türü</th>
+                <th>Type</th>
                 <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
                 <th width="50"></th>
             </tr>
@@ -44,34 +44,21 @@
         <thead>
             <tr>
                 <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
-                <th>Yardım Ekranı Türü</th>
+                <th>Type</th>
                 <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
                 <th width="50"></th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="helpside in helpsides">
+            <tr ng-repeat="helpside in helpsides" ng-click="helpEdit(helpside)">
                 <td>{{helpside.name}}</td>
                 <td>{{helpside.type}}</td>
                 <td>{{helpside.binding}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(helpside);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="$event.stopPropagation();helpEdit(helpside)">Edit </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();delete(helpside)">Delete </a>
-                            </li>
-                        </ul>
                     </div>
                 </td>
             </tr>

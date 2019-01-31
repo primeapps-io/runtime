@@ -33,10 +33,9 @@ namespace PrimeApps.App.Helpers
         public AnalyticsHelper(IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             _context = context;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-
         }
 
         public async Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository)

@@ -27,12 +27,17 @@ namespace PrimeApps.Model.Helpers
 
             if (tenantId < 0)
             {
-                builder.Remove("database");
+                //TODO: Added temporarily for Azure PostgreSQL bullshits. Delete this.
+                if (builder.ConnectionString.Contains("database.azure.com"))
+                    builder["database"] = "postgres";
+                else
+                    builder.Remove("database");
             }
             else
             {
                 builder["database"] = database;
             }
+
             return builder.ConnectionString;
         }
 
@@ -55,6 +60,7 @@ namespace PrimeApps.Model.Helpers
             {
                 builder["database"] = databaseName;
             }
+
             return builder.ConnectionString;
         }
 
@@ -75,7 +81,6 @@ namespace PrimeApps.Model.Helpers
         /// <param name="appId"></param>
         /// <param name="templetId"></param>
         /// <returns></returns>
-
         public static async Task<bool> CreateDatabaseWithTemplet(string connectionString, int appId, int templetId)
         {
             return await CreateDatabaseWithTemplate(connectionString, $"app{appId}", $"templet{templetId}", "app");
@@ -94,7 +99,11 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\"";
+                        //TODO: Added temporarily for Azure PostgreSQL "permission denied for relation pg_database" bullshit. Delete this.
+                        if (connection.ConnectionString.Contains("database.azure.com"))
+                            command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{templateDbName}' AND pid <> pg_backend_pid(); CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
+                        else
+                            command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
 
                         intResult = await command.ExecuteNonQueryAsync();
                         result = intResult < 0;
@@ -102,7 +111,6 @@ namespace PrimeApps.Model.Helpers
 
                     connection.Close();
                 }
-
             }
             catch (Exception)
             {
@@ -111,6 +119,7 @@ namespace PrimeApps.Model.Helpers
 
             return result;
         }
+
         /// <summary>
         /// Drops a tenant database if exists.
         /// </summary>
@@ -169,8 +178,8 @@ namespace PrimeApps.Model.Helpers
                         {
                             dbs = dataReader.MultiResultToJArray();
                         }
-
                     }
+
                     connection.Close();
                 }
             }
@@ -198,8 +207,8 @@ namespace PrimeApps.Model.Helpers
                         {
                             dbs = dataReader.MultiResultToJArray();
                         }
-
                     }
+
                     connection.Close();
                 }
             }
@@ -228,19 +237,18 @@ namespace PrimeApps.Model.Helpers
 
                     if (intResult > -1) throw new Exception($"Template DB cannot be prepared for upgrade:{dbName}");
                 }
+
                 connection.Close();
             }
         }
 
         public static void FinalizeTemplateDatabaseUpgrade(string connectionString, string dbName, string externalConnectionString)
         {
-
             using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-
                     int intResult = 0;
 
 
@@ -284,8 +292,8 @@ namespace PrimeApps.Model.Helpers
                     intResult = command.ExecuteNonQuery();
 
                     if (intResult > -1) throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
-
                 }
+
                 connection.Close();
             }
         }
@@ -303,6 +311,7 @@ namespace PrimeApps.Model.Helpers
                     command.CommandText = sql;
                     result = command.ExecuteNonQuery();
                 }
+
                 connection.Close();
             }
 
@@ -326,6 +335,7 @@ namespace PrimeApps.Model.Helpers
                         result = reader.MultiResultToJArray();
                     }
                 }
+
                 connection.Close();
             }
 

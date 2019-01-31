@@ -1,5 +1,6 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="editForm" class="form-horizontal form-custom" ng-submit="saveSettings(editForm);" autocomplete="off" novalidate>
+    <form name="editForm" class="form-horizontal form-custom" ng-submit="saveSettings(editForm);" autocomplete="off"
+          novalidate>
         <div class="modal-header">
             <div class="flex-between">
                 <h4 class="modal-title">{{'Setup.Modules.ModuleSettings' | translate}}</h4>
@@ -20,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog">
+        <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
                     <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
@@ -42,12 +43,23 @@
                            maxlength="50"
                            ng-model="module['label_' + language + '_singular']">
                 </div>
-                <div class="form-group">
+                <div class="form-group icon-search-list">
                     <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
-                    <button type="button" data-container="form" class="form-control btn btn-default"
-                            data-placeholder="{{'Common.Icon' | translate}}-" ng-model="module.menu_icon"
-                            data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"
-                            bs-select><span class="caret"></span></button>
+
+                    <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
+                        <ui-select-match placeholder="Please search an icon">
+                            <div>
+                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                            </div>
+                        </ui-select-match>
+
+                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                            <div ng-bind-html="icon.label"></div>
+                        </ui-select-choices>
+                    </ui-select>
+
+
                 </div>
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.DisplayOnMenu' | translate}}: </label>
@@ -125,7 +137,7 @@
             </div>
 
             <div class="section" ng-show="editForm.$submitted && editForm.$invalid">
-                <div class="form-group" >
+                <div class="form-group">
                     <div class="col-sm-12">
                         <div class="callout callout-danger">
                             <p ng-if="editForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}</p>

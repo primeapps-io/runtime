@@ -56,16 +56,18 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count(int id)
         {
-            var count = DbContext.ModuleProfileSettings
-               .Where(x => !x.Deleted && x.ModuleId == id).Count();
+            var count = await DbContext.ModuleProfileSettings
+               .Where(x => !x.Deleted && x.ModuleId == id).CountAsync();
+
             return count;
         }
 
         public async Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel)
         {
-            var moduleProfilesSettings = GetPaginationGQuery(paginationModel)
+            var moduleProfilesSettings = DbContext.ModuleProfileSettings
+                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -73,23 +75,16 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    moduleProfilesSettings = moduleProfilesSettings.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
 
             }
-            
-            return moduleProfilesSettings;
 
-        }
-
-        private IQueryable<ModuleProfileSetting> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
-        {
-            return DbContext.ModuleProfileSettings
-                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
+            return await moduleProfilesSettings.ToListAsync();
         }
     }
 }

@@ -5,11 +5,12 @@ angular.module('primeapps')
     .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
+            $scope.modalLoading = true;
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
             $scope.$parent.menuTopTitle = "Automation";
-            $scope.$parent.activeMenu = 'automation';
+            //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'processes';
             $rootScope.breadcrumblist[2].title = 'Approval Processes';
             $scope.hookParameters = [];
@@ -120,6 +121,7 @@ angular.module('primeapps')
             setTaskFields();
 
             $scope.selectProcess = function (id) {
+                $scope.modalLoading = true;
                 ModuleService.getPickItemsLists(activityModule, false)
                     .then(function (picklistsActivity) {
                         $scope.picklistsActivity = picklistsActivity;
@@ -129,9 +131,9 @@ angular.module('primeapps')
                             $scope.workflowModel.active = true;
                             $scope.workflowModel.frequency = 'continuous';
                             $scope.workflowModel.trigger_time = 'instant';
-                            $scope.loading = false;
                             $scope.filteredModules = $rootScope.appModules;
-
+                            $scope.loading = false;
+                            $scope.modalLoading = false;
                             ModuleService.getAllProcess()
                                 .then(function (response) {
                                     var processes = response.data;
@@ -187,6 +189,11 @@ angular.module('primeapps')
                                             $scope.isEdit = true;
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
+                                            $scope.modalLoading = false;
+                                        })
+                                        .catch(function (err) {
+                                            $scope.loading = false;
+                                            $scope.modalLoading = false;
                                         });
                                 });
                         }
@@ -194,7 +201,7 @@ angular.module('primeapps')
             };
 
             $scope.selectModule = function (module) {
-                $scope.loadingFilter = true;
+                $scope.modalLoading = true;
                 $scope.isChosenModule = false;
 
                 ModuleService.getModuleFields(module.name)
@@ -264,7 +271,7 @@ angular.module('primeapps')
                                     $scope.filters.push(filter);
                                 }
 
-                                $scope.loadingFilter = false;
+                                $scope.modalLoading = false;
                             });
 
                         $scope.getUpdatableModules();
@@ -769,12 +776,12 @@ angular.module('primeapps')
                         ModuleService.update(processModule, processModule.id).then(function () {
                             $scope.saving = false;
                             $scope.changeOffset(1);
-                            ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                            swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
                         });
                     } else {
                         $scope.saving = false;
                         $scope.changeOffset(1);
-                        ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
+                        swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
                     }
                 };
 
@@ -817,18 +824,18 @@ angular.module('primeapps')
                         } else {
                             swal({
                                 title: "Are you sure?",
-                                text: "Are you sure that you want to delete this approval process ?",
+                                text: "Are you sure that you want to delete this approval process?",
                                 icon: "warning",
-                                buttons: ['Cancel', 'Okey'],
+                                buttons: ['Cancel', 'Yes'],
                                 dangerMode: true
                             }).then(function (value) {
                                 if (value) {
                                     ProcessesService.delete(id)
                                         .then(function () {
-                                            swal("Deleted!", "Approval process has been deleted!", "success");
+                                            swal("Deleted!", "Approval process is deleted successfully.", "success");
                                             $scope.cancel();
                                             $scope.id = null;
-                                           // $state.reload();
+                                            // $state.reload();
                                             $scope.changePage(1);
                                         });
                                 }
@@ -839,6 +846,7 @@ angular.module('primeapps')
 
             //Modal Start
             $scope.showFormModal = function (id) {
+                $scope.modalLoading = true;
                 if (id) {
                     $scope.id = id;
                     $scope.selectProcess(id);
@@ -854,6 +862,7 @@ angular.module('primeapps')
 
                 $scope.prosessFormModal.$promise.then(function () {
                     $scope.prosessFormModal.show();
+                    $scope.modalLoading = false;
                 });
 
             };

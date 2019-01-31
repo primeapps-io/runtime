@@ -7,9 +7,9 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>PRIMEAPPS</title>
-    @*<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />*@
-
+    <title>PrimeApps Identity</title>
+    <link rel="icon" href="~/images/favicon/primeapps.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />
 </head>
 <style>
     body {
@@ -26,29 +26,36 @@
         transform: translate(-50%, -70%);
     }
 
-        #fof .hgroup h1, #fof .hgroup h2 {
-            margin: 0;
-            padding: 0;
-            text-transform: uppercase;
-            font-family: sans-serif;
-        }
+    #fof .hgroup h1, #fof .hgroup h2 {
+        margin: 0;
+        padding: 0;
+        text-transform: uppercase;
+        font-family: sans-serif;
+    }
 
-        #fof h1 {
-            font-family: Montserrat,sans-serif,Arial;
-            font-weight: 700;
-            font-size: 55px;
-            color: white;
-            line-height: 1em;
-            letter-spacing: 7px;
-        }
-
-        #fof h3 {
-            font-family: Montserrat,sans-serif,Arial;
-            font-weight: 700;
-            color: white;
-            line-height: 1em;
-            letter-spacing: 3px;
-        }
+    #fof h1 {
+        font-family: Montserrat,sans-serif,Arial;
+        font-weight: 700;
+        font-size: 55px;
+        color: white;
+        line-height: 1em;
+        letter-spacing: 7px;
+    }
+    #fof h2 {
+        font-family: Montserrat,sans-serif,Arial;
+        font-weight: 700;
+        font-size: 45px;
+        color: white;
+        line-height: 0.8em;
+        letter-spacing: 7px;
+    }
+    #fof h3 {
+        font-family: Montserrat,sans-serif,Arial;
+        font-weight: 700;
+        color: white;
+        line-height: 1em;
+        letter-spacing: 3px;
+    }
 
         #fof p {
             font-family: Montserrat,sans-serif,Arial;
@@ -57,17 +64,17 @@
             line-height: 1em;
         }
 
-            #fof p:first-child {
-                margin-top: 0;
-            }
+    #fof p:first-child {
+        margin-top: 0;
+    }
 </style>
 <body>
     <div class="wrapper row2">
         <div id="container" class="clear">
 
             <div id="fof" class="clear">
-                <h1>PRIMEAPPS</h1>
-                <h1>AUTHENTICATION SERVER</h1>
+                <h1>PrimeApps</h1>
+                <h2>Identity Server</h2>
                 @if (!string.IsNullOrEmpty(ViewBag.UserName))
                 {
                     <h3>Logged in User</h3>
@@ -78,7 +85,7 @@
             </div>
         </div>
     </div>
-    @*<script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>*@
+    <script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

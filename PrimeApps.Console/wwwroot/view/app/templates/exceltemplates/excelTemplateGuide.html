@@ -29,7 +29,7 @@
                                     </div>
                                     <div ng-show="selectedModuleExcel">
                                         <span class="pull-left" style="margin-left: 5px;margin-top: 6px;">{{'Module.DownloadExcelTemplate' | translate }} :</span>
-                                        <div class="template-button pull-left" style="margin-left: 5px;" ng-click="getDownloadUrlExcel(selectedModuleExcel)">
+                                        <div class="template-button pull-left" style="margin-left: 5px;" ng-click="getDownloadUrl(selectedModuleExcel)">
                                         </div>
                                     </div>
                                 </div>
@@ -40,9 +40,9 @@
                                         <li>
                                             {{'Module.DownloadExcelButton' | translate }}
                                         </li>
-                                        <li>
-                                            <span ng-bind-html="'Module.OtherReport' | translate" />
-                                        </li>
+                                        <!--<li>-->
+                                            <!--<span ng-bind-html="'Module.OtherReport' | translate" />-->
+                                        <!--</li>-->
                                     </ul>
                                 </div>
                             </div>

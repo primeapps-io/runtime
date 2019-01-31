@@ -36,6 +36,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteSoftWidget(Widget widget);
         Task<int> DeleteHardWidget(Widget widget);
         Task<int> Count();
-        Task<ICollection<Report>> Find(PaginationModel paginationModel);
+        Task<ICollection<Report>> Find(PaginationModel paginationModel, bool withIncludes = true);
     }
 }

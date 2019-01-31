@@ -73,15 +73,15 @@ angular.module('primeapps',
 			var language = window.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
 
 			if (!language) {
-				window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', 'tr');
-				language = 'tr';
+				window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', 'en');
+				language = 'en';
 			}
 			moment.locale(language);
 
 			$translateProvider.useStaticFilesLoader({
 				prefix: cdnUrl + 'locales/',
 				suffix: '.json'
-			}).useLocalStorage().preferredLanguage('tr').useSanitizeValueStrategy(null);
+			}).useLocalStorage().preferredLanguage('en').useSanitizeValueStrategy(null);
 
 
 			var locale = window.localStorage['locale_key'] || language;

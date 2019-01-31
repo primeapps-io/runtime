@@ -41,34 +41,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="process in processes">
+            <tr ng-repeat="process in processes" ng-click="showFormModal(process.id)">
                 <td ng-click="showFormModal(process.id)" style="cursor:pointer;">{{process.name}}</td>
                 <td>{{process.module['label_'+language+'_plural']}}</td>
                 <td>{{process.operations}}</td>
                 <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button type="button" ng-click="$event.stopPropagation();" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(process.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href ng-click="showFormModal(process.id)">
-                                    {{'Common.Edit' | translate}}
-                                </a>
-                            </li>
-                            <li> 
-                                <a ng-click="$event.stopPropagation();delete(process.id);">
-                                    {{'Common.Delete' | translate}}
-                                </a>
-                            </li>
-
-                        </ul>
                     </div>
                 </td>
             </tr>

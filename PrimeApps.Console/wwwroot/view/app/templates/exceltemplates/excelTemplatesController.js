@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window) {
 
             $scope.$parent.menuTopTitle = "Templates";
-            $scope.$parent.activeMenu = 'templates';
+            //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
             $rootScope.breadcrumblist[2].title = 'Excel Templates';
@@ -64,26 +64,25 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
             $scope.showFormModal = function (template) {
-
                 if (template) {
                     setCurrentTemplate(template);
-                    $scope.getDownloadUrl();
+                   // $scope.getDownloadUrlExcel();
                 }
                 else {
                     $scope.template = [];
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewExcelTemplateFormModal.$promise.then(function () {
                     $scope.addNewExcelTemplateFormModal.show();
@@ -91,14 +90,14 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-
+                $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.excelTemplateGuideModal.$promise.then(function () {
                     $scope.excelTemplateGuideModal.show();
@@ -107,40 +106,39 @@ angular.module('primeapps')
 
             $scope.fileUpload = {
                 settings: {
-                    runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload_Excel',
-                    chunk_size: '256kb',
-                    multipart: true,
-                    unique_names: true,
+                    multi_selection: false,
+                    unique_names: false,
+                    url: 'storage/upload_template',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
                         'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $rootScope.currentAppId
+                        'X-App-Id': $scope.appId
                     },
                     filters: {
                         mime_types: [
-                            { title: 'Template Files', extensions: 'xls,xlsx' }
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
-                        max_file_size: '10mb'
+                        max_file_size: "50mb"
                     }
                 },
                 events: {
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
                         var template = {
-                            name: $scope.template.name,
-                            module: $scope.template.module.name,
+                            name: $scope.template.templateName,
+                            module: $scope.template.templateModule.name,
                             template_type: 'excel',
-                            content: resp.UniqueName,
-                            content_type: resp.ContentType,
-                            chunks: resp.Chunks,
+                            content: resp.unique_name,
+                            content_type: resp.content_type,
+                            chunks: resp.chunks,
                             subject: "Excel",
-                            active: $scope.template.active
+                            active: $scope.template.active,
+                            permissions: $scope.template.permissions
                         };
 
                         if (!$scope.template.id) {
-                            WordTemplatesService.create(template)
+                            ExcelTemplatesService.create(template)
                                 .then(function () {
                                     success();
                                 })
@@ -151,7 +149,7 @@ angular.module('primeapps')
                         else {
                             template.id = $scope.template.id;
 
-                            WordTemplatesService.update(template)
+                            ExcelTemplatesService.update(template)
                                 .then(function () {
                                     success();
                                 })
@@ -161,7 +159,8 @@ angular.module('primeapps')
                         }
                     }
                 }
-            };
+            }
+            ;
 
             $scope.save = function (uploadForm) {
 
@@ -182,7 +181,7 @@ angular.module('primeapps')
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
 
-                        WordTemplatesService.update(template)
+                        ExcelTemplatesService.update(template)
                             .then(function () {
                                 success();
                             })
@@ -216,27 +215,26 @@ angular.module('primeapps')
 
             var success = function () {
                 $scope.saving = false;
-                $state.go('studio.app.templatesWord');
+                $scope.addNewExcelTemplateFormModal.hide();
                 swal($filter('translate')('Setup.Templates.SaveSuccess'), "", "success");
                 $scope.addNewWordTemplateFormModal.hide();
             };
 
-            $scope.getDownloadUrlExcel = function (selectedModuleExcel) {
-                if (selectedModuleExcel) {
-                    var moduleName = selectedModuleExcel.name;
-                    $window.open("/attach/export_excel?module=" + moduleName + '&locale=' + $scope.language, "_blank");
-                    swal($filter('translate')('Module.ExcelDesktop'), "", "success");
-                    $scope.excelTemplateGuideModal.hide();
-                }
+            $scope.getDownloadUrlExcel = function (template) {
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            };
+
+            $scope.getDownloadUrl = function (template) {
+                return '/attach/export_excel?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
             };
 
             $scope.delete = function (id) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this excel template ?",
+                        text: "Are you sure that you want to delete this excel template?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {

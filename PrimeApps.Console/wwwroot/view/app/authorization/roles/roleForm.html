@@ -25,18 +25,18 @@
                                 <h4>{{'Setup.Roles.Title2' | translate}}</h4>
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-                                        <label class="col-sm-4 control-label">*{{'Setup.Roles.RoleName' | translate}}:</label>
-                                        <input name="name" class="form-control col-sm-8" maxlength="200" required ng-model="role.label" />
+                                        <label class="col-sm-12 control-label">*{{'Setup.Roles.RoleName' | translate}}:</label>
+                                        <input name="name" class="form-control col-sm-12" maxlength="200" required ng-model="role.label" />
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="col-sm-3 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
-                                        <textarea rows="3" name="description" class="form-control col-sm-8" maxlength="200" auto-grow ng-model="role.description"></textarea>
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
+                                        <textarea rows="3" name="description" class="form-control col-sm-12" maxlength="200" auto-grow ng-model="role.description"></textarea>
                                     </div>
 
                                     <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
-                                        <label class="col-sm-4 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
-                                        <ui-select name="reportsTo" class="form-control ng-animate-disabled col-sm-8"
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
+                                        <ui-select name="reportsTo" class="ng-animate-disabled"
                                                    on-select="roleUpdateChange()"
                                                    ng-model="role.reports_to"
                                                    ng-required="!role.master">
@@ -48,8 +48,8 @@
                                     </div>
 
                                     <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
-                                        <label class="col-sm-8 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
-                                        <div class="form-control ng-animate-disabled col-sm-8" style="padding-left: 0; background-color:white;">
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
+                                        <div class="form-control ng-animate-disabled col-sm-12" style="padding-left: 0; background-color:white;">
                                             <label class="radio-inline newinput"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data">{{'Setup.Roles.ShareDataYes' | translate}}<span></span></label>
                                             <label class="radio-inline newinput"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}<span></span></label>
                                         </div>

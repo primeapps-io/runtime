@@ -45,7 +45,7 @@ namespace PrimeApps.App.Bpm.Steps
                 throw new NullReferenceException();
 
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+            var currentUser = new CurrentUser {TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode};
 
             var request = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
 
@@ -54,16 +54,16 @@ namespace PrimeApps.App.Bpm.Steps
 
             var dataUpdateRequest = request["field_update"];
 
-			using (var scope = _serviceScopeFactory.CreateScope())
-			{
-				var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
-				using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
-				{
-					platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = currentUser;
+                using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                {
+                    platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = currentUser;
 
                     var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
                     var warehouseEntity = await platformWarehouseRepository.GetByTenantId(currentUser.TenantId);
@@ -77,6 +77,8 @@ namespace PrimeApps.App.Bpm.Steps
                     using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                     using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
                     using (var profileRepository = new ProfileRepository(databaseContext, _configuration))
+                    using (var tagRepository = new TagRepository(databaseContext, _configuration))
+                    using (var settingRepository = new SettingRepository(databaseContext, _configuration))
                     using (var recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, currentUser))
                     {
                         picklistRepository.CurrentUser = moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
@@ -232,9 +234,8 @@ namespace PrimeApps.App.Bpm.Steps
                             }
 
 
-
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {
@@ -256,7 +257,6 @@ namespace PrimeApps.App.Bpm.Steps
                                 // If module is opportunities create stage history
                                 if (fieldUpdateModule.Name == "opportunities")
                                     await recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
-
                             }
                             catch (Exception ex)
                             {

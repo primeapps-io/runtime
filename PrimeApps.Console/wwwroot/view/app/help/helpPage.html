@@ -2,7 +2,7 @@
     <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Tanıtım Ekranı Ekle</h4>
+                <h4 class="modal-title">Introduction</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -28,8 +28,14 @@
                             <div class="panel">
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div class="col-sm-5">
-                                        <p><label class="radio-inline"><input type="radio" style="margin-right: 5px" name="locale" value="modules" ng-model="helpModalObj.selectHelp" ng-change="radioButtonTemplateClear()">{{'Setup.HelpGuide.SelectModule' | translate}}</label></p>
-                                        <p><label class="radio-inline"><input type="radio" style="margin-right: 5px" name="locale" value="settings" ng-model="helpModalObj.selectHelp" ng-change="radioButtonTemplateClear()">{{'Setup.HelpGuide.Other' | translate}}</label></p>
+                                        <p><label class="radio-inline newinput">
+                                            <input type="radio" style="margin-right: 5px" name="locale" value="modules" ng-model="helpModalObj.selectHelp" ng-change="radioButtonTemplateClear()"/>
+                                            {{'Setup.HelpGuide.SelectModule' | translate}}<span></span>
+                                        </label></p>
+                                        <p><label class="radio-inline newinput">
+                                            <input type="radio" style="margin-right: 5px" name="locale" value="settings" ng-model="helpModalObj.selectHelp" ng-change="radioButtonTemplateClear()"/>
+                                            {{'Setup.HelpGuide.SelectModule' | translate}}<span></span>
+                                        </label></p>
                                     </div>
                                     <div class="col-sm-7" ng-show="helpModalObj.selectHelp == 'modules'">
                                         <select class="form-control pull-left"
@@ -50,7 +56,7 @@
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div class="col-sm-5">
-                                        <p><label class="radio-inline">Tanıtım Ekranının İsmi</label></p>
+                                        <p><label class="radio-inline">Introduction Name</label></p>
                                     </div>
                                     <div class="col-sm-7">
                                         <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />

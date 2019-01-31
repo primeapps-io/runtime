@@ -2,7 +2,7 @@
     <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Yardım Ekranı Ekle</h4>
+                <h4 class="modal-title">Help</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -27,54 +27,54 @@
                         <div class="section" id="section1">
                             <div class="panel">
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-4">
                                         <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenName' | translate}}</label></p>
                                     </div>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                         <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-4">
                                         <p><label class="radio-inline">{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</label></p>
                                     </div>
-                                    <div class="col-sm-7">
-                                        <label class="radio-inline">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="any" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Independent' | translate}}
+                                    <div class="col-sm-8">
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" style="margin-right: 5px" name="helpside" value="any" ng-model="helpModalObj.selectHelpRelation" ng-disabled="editDisable" />
+                                            {{'Setup.HelpGuide.Independent' | translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline" style="padding-right: 1px;">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="module" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Module' | translate}}
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" style="margin-right: 5px" name="helpside" value="module" ng-model="helpModalObj.selectHelpRelation" ng-disabled="editDisable" />
+                                            {{'Setup.HelpGuide.Module' | translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline">
-                                            <input name="helpside" type="radio" ng-model="helpModalObj.selectHelpRelation" value="other" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Other' | translate}}
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" style="margin-right: 5px" name="helpside" value="other" ng-model="helpModalObj.selectHelpRelation" ng-disabled="editDisable" />
+                                            {{'Setup.HelpGuide.Other' | translate}}<span></span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-4">
                                     </div>
-                                    <div class="col-sm-7 pull-right" ng-show="helpModalObj.selectHelpRelation==='module'">
-                                        <label class="radio-inline" style="padding-right:27px;margin-left: 1px; ">
+                                    <div class="col-sm-8 pull-right" ng-show="helpModalObj.selectHelpRelation==='module'">
+                                        <label class="radio-inline newinput" style="padding-right:27px;margin-left: 1px; ">
                                             <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="list" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.List' | translate}}
+                                            {{'Setup.HelpGuide.List' | translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline" style="padding-right:4px ">
+                                        <label class="radio-inline newinput" style="padding-right:4px ">
                                             <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="detail" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Detail' | translate}}
+                                            {{'Setup.HelpGuide.Detail' | translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline">
+                                        <label class="radio-inline newinput">
                                             <input name="help" type="radio" ng-model="helpModalObj.selectHelp" value="form" ng-disabled="editDisable">
-                                            {{'Setup.HelpGuide.Form' | translate}}
+                                            {{'Setup.HelpGuide.Form' | translate}} <span></span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-4">
                                     </div>
-                                    <div class="col-sm-7 pull-right">
+                                    <div class="col-sm-8 pull-right">
                                         <div ng-show="helpModalObj.selectHelp==='list' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
                                             <select class="form-control pull-left"
                                                     ng-model="helpModalObj.modulePicklist"
@@ -99,7 +99,7 @@
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
-                                        <div  ng-show="helpModalObj.selectHelpRelation==='other'">
+                                        <div ng-show="helpModalObj.selectHelpRelation==='other'">
                                             <select class="form-control"
                                                     ng-model="helpModalObj.routeModules"
                                                     ng-disabled="editDisable"

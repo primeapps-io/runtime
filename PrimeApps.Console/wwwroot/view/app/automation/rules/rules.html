@@ -42,34 +42,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="rule in rules">
+            <tr ng-repeat="rule in rules" ng-click="showFormModal(rule.id);">
                 <td ng-click="showFormModal(rule.id)" style="cursor:pointer;">{{rule.name}}</td>
                 <td>{{rule.module['label_'+language+'_plural']}}</td>
                 <td>{{rule.operations}}</td>
                 <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
+                        <button ng-click="$event.stopPropagation(); delete(rule.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href ng-click="$event.stopPropagation();showFormModal(rule.id)">
-                                    {{'Common.Edit' | translate}}
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation();delete(rule.id);">
-                                    {{'Common.Delete' | translate}}
-                                </a>
-                            </li>
-
-                        </ul>
                     </div>
                 </td>
             </tr>

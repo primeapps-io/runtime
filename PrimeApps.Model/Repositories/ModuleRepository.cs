@@ -36,9 +36,11 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Module>> Find(PaginationModel paginationModel)
         {
-            var modules = GetPaginationGQuery(paginationModel)
+            var modules = DbContext.Modules
+                 .Where(x => !x.Deleted && x.Order != 0)
+                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -46,19 +48,19 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    modules = modules.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    modules = modules.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    modules = modules.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    modules = modules.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
 
             }
 
-            return modules;
+            return await modules.ToListAsync();
 
         }
-       
+
         public async Task<ICollection<Module>> GetAllBasic()
         {
             var modules = await DbContext.Modules.Select(x => new Module
@@ -403,14 +405,6 @@ namespace PrimeApps.Model.Repositories
             var field = await DbContext.Fields
                 .FirstOrDefaultAsync(x => x.Name == fieldName && !x.Deleted);
             return field;
-        }
-
-        private IQueryable<Module> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
-        {
-            return DbContext.Modules
-                 .Where(x => !x.Deleted && x.Order != 0)
-                 .OrderByDescending(x => x.Id);
-
         }
 
         public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)

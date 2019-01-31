@@ -6,10 +6,10 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService) {
 
             $scope.$parent.menuTopTitle = "Templates";
-            $scope.$parent.activeMenu = 'templates';
+           // $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesWord';
 
-            $rootScope.breadcrumblist[2].title = 'Excel Templates';
+            $rootScope.breadcrumblist[2].title = 'Word Templates';
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -71,18 +71,18 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 if (template) {
                     setCurrentTemplate(template);
-                    $scope.getDownloadUrl();
+                   // $scope.getDownloadUrl(template);
                 }
                 else {
                     $scope.template = [];
                 }
                 $scope.addNewWordTemplateFormModal = $scope.addNewWordTemplateFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewWordTemplateFormModal.$promise.then(function () {
                     $scope.addNewWordTemplateFormModal.show();
@@ -91,34 +91,32 @@ angular.module('primeapps')
 
             $scope.fileUpload = {
                 settings: {
-                    runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload',
-                    chunk_size: '256kb',
-                    multipart: true,
-                    unique_names: true,
+                    multi_selection: false,
+                    unique_names: false,
+                    url: 'storage/upload_template',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
                         'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $rootScope.currentAppId
+                        'X-App-Id': $scope.appId
                     },
                     filters: {
                         mime_types: [
-                            { title: 'Template Files', extensions: 'doc,docx' }
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
-                        max_file_size: '10mb'
+                        max_file_size: "50mb"
                     }
                 },
                 events: {
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
                         var template = {
-                            name: $scope.template.name,
-                            module: $scope.template.module.name,
+                            name: $scope.template.templateName,
+                            module: $scope.template.templateModule.name,
                             template_type: 'module',
-                            content: resp.UniqueName,
-                            content_type: resp.ContentType,
-                            chunks: resp.Chunks,
+                            content: resp.unique_name,
+                            content_type: resp.content_type,
+                            chunks: resp.chunks,
                             subject: "Word",
                             active: $scope.template.active
                         };
@@ -145,7 +143,8 @@ angular.module('primeapps')
                         }
                     }
                 }
-            };
+            }
+            ;
 
             $scope.save = function (uploadForm) {
 
@@ -180,17 +179,17 @@ angular.module('primeapps')
             $scope.showTemplateGuideModal = function () {
 
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false,
-                    controller: function () {
-                        ModuleService.getModules().then(function (response) {
-                            $scope.modules = response.data;
-                        });
-                    }
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false//,
+                        //controller: function () {
+                        //    ModuleService.getModules().then(function (response) {
+                        //        $scope.modules = response.data;
+                        //    });
+                        //}
+                    });
 
                 $scope.wordTemplateGuideModal.$promise.then(function () {
                     $scope.wordTemplateGuideModal.show();
@@ -198,15 +197,7 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrl = function (template) {
-
-                if (template) {
-                    $scope.templateDownloadUrl = config.apiUrl + 'Document/download_template?templateId=' + template.id + '&access_token=' + window.localStorage.getItem('access_token'); //$localStorage.get('access_token');
-                    return $scope.templateDownloadUrl;
-                }
-                else {
-                    $scope.templateDownloadUrl = config.apiUrl + 'Document/download_template?templateId=' + $scope.template.id + '&access_token=' + window.localStorage.getItem('access_token'); //$localStorage.get('access_token');
-                    return $scope.templateDownloadUrl;
-                }
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId ;
             };
 
             $scope.clearTemplateFile = function () {
@@ -307,9 +298,13 @@ angular.module('primeapps')
             };
 
             $scope.moduleChanged = function (selectedModule) {
-                $scope.lookupModules = getLookupModules(selectedModule);
-                $scope.getModuleRelations(selectedModule);
-                $scope.selectedSubModule = null;
+                $scope.loading = true;
+                ModuleService.getModuleByName(selectedModule.name).then(function (response) {
+                    $scope.selectedModule = response.data;
+                    $scope.lookupModules = getLookupModules($scope.selectedModule);
+                    $scope.getModuleRelations($scope.selectedModule);
+                    $scope.selectedSubModule = null;
+                });
             };
 
             $scope.getModuleRelations = function (module) {
@@ -320,36 +315,51 @@ angular.module('primeapps')
 
                 if (module.name === 'quotes') {
                     var quoteProductsModule = $filter('filter')($scope.modules, { name: 'quote_products' }, true)[0];
-                    getLookupModules(quoteProductsModule);
-                    module.relatedModules.push(quoteProductsModule);
+                    ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
+                        quoteProductsModule = response.data;
+                        getLookupModules(quoteProductsModule);
+                        module.relatedModules.push(quoteProductsModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 }
 
                 if (module.name === 'sales_orders') {
                     var orderProductsModule = $filter('filter')($scope.modules, { name: 'order_products' }, true)[0];
-                    getLookupModules(orderProductsModule);
-                    module.relatedModules.push(orderProductsModule);
+                    ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
+                        orderProductsModule = response.data;
+                        getLookupModules(orderProductsModule);
+                        module.relatedModules.push(orderProductsModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 }
 
                 angular.forEach(module.relations, function (relation) {
                     var relatedModule = $filter('filter')($scope.modules, { name: relation.related_module }, true)[0];
+                    ModuleService.getModuleByName(relatedModule.name).then(function (response) {
+                        relatedModule = response.data;
+                        if (relation.deleted || !relatedModule || relatedModule.order === 0)
+                            return;
 
-                    if (relation.deleted || !relatedModule || relatedModule.order === 0)
-                        return;
+                        relatedModule = angular.copy(relatedModule);
 
-                    relatedModule = angular.copy(relatedModule);
+                        if (relation.relation_type === 'many_to_many') {
+                            angular.forEach(relatedModule.fields, function (field) {
+                                field.name = relation.related_module + '_id.' + field.name;
+                            });
+                        }
+                        else {
+                            getLookupModules(relatedModule);
+                        }
 
-                    if (relation.relation_type === 'many_to_many') {
-                        angular.forEach(relatedModule.fields, function (field) {
-                            field.name = relation.related_module + '_id.' + field.name;
-                        });
-                    }
-                    else {
-                        getLookupModules(relatedModule);
-                    }
-
-                    module.relatedModules.push(relatedModule);
+                        module.relatedModules.push(relatedModule);
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
                 });
 
+                $scope.loading = false;
                 addNoteModuleRelation(module);
             };
 
@@ -369,12 +379,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function (id) {
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this word template ?",
+                        text: "Are you sure that you want to delete this word template?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {

@@ -276,7 +276,7 @@ angular.module('primeapps')
                                         labelMenu.id = response.data[i].menu_items[j].id;
                                         labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
                                         labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
-                                        labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : '';
+                                        labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : 'fa fa-square';
                                         labelMenu.route = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.contains('modules/') ? '' : response.data[i].menu_items[j].route : '';
                                         menuList.items.push(labelMenu);
                                     }
@@ -291,8 +291,6 @@ angular.module('primeapps')
                         });
                     });
                 }
-                // else
-                //     $scope.menu = angular.copy(menu);
 
             }
 
@@ -322,7 +320,7 @@ angular.module('primeapps')
                 menuList.isDynamic = $scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
                 menuList.route = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
                 menuList.menuId = menuList.no;
-                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : '' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon : 'fa fa-square';
+                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.label : 'fa fa-square';
                 $scope.counter += 1;
                 menuList.parentId = 0;
                 menuList.items = [];
@@ -359,7 +357,7 @@ angular.module('primeapps')
                 menuItem.name = module != null ? $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural : '';
                 menuItem.menuName = module != null ? module.name : '';
                 menuItem.route = module != null ? module.route ? module.route : '' : '';
-                menuItem.icon = module != null ? module.menu_icon ? module.menu_icon : '' : '';
+                menuItem.icon = module != null ? module.menu_icon ? module.menu_icon : 'fa fa-square' : 'fa fa-square';
                 menuItem.no = labelNo;
                 menuItem.menuId = menu.no;
                 menuItem.menuNo = menuNo;
@@ -380,6 +378,7 @@ angular.module('primeapps')
 
             $scope.save = function (menu) {
 
+                $scope.saving = true;
                 var resultPromise;
                 $scope.loading = true;
                 //If update
@@ -452,6 +451,7 @@ angular.module('primeapps')
                                                 $scope.changePage(1);
                                             }).finally(function () {
                                                 $scope.loading = false;
+                                                $scope.saving = false;
                                             });
                                         else {
 
@@ -461,6 +461,7 @@ angular.module('primeapps')
                                         }
                                     }).finally(function () {
                                         $scope.loading = false;
+                                        $scope.saving = false;
                                     });
                                 }
                                 else {
@@ -484,6 +485,7 @@ angular.module('primeapps')
                                     $scope.changePage(1);
                                 }).finally(function () {
                                     $scope.loading = false;
+                                    $scope.saving = false;
                                 });
                             else {
 
@@ -493,6 +495,7 @@ angular.module('primeapps')
                             }
                         }).finally(function () {
                             $scope.loading = false;
+                            $scope.saving = false;
                         });
                     }
                     else if (menuUpdate) {
@@ -500,12 +503,14 @@ angular.module('primeapps')
                             swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
+                            $scope.loading = false;
                         });
                     }
                     else {
                         swal($filter('translate')('Menu.UpdateSucces'), "", "success");
                         $scope.addNewMenuFormModal.hide();
                         $scope.loading = false;
+                        $scope.saving = false;
                     }
                 }
                 //If first create
@@ -522,12 +527,13 @@ angular.module('primeapps')
                         MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
 
                             swal($filter('translate')('Menu.MenuSaving'), "", "success");
-                            $scope.loading = false;
+                            $scope.loading = true;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
                             $scope.pageTotal += 1;
                         }).finally(function () {
                             $scope.loading = false;
+                            $scope.saving = false;
                         });
                     });
                 }
@@ -724,59 +730,89 @@ angular.module('primeapps')
             };
 
             function updateMenuItem() {
+                var index = undefined;
+                var subIndex = undefined;
 
                 var copyMenuList = angular.copy($scope.menuLists);
                 angular.forEach(copyMenuList, function (menuItem) {
-                    var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
-                    var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label
-                    /** we sorted descending items, because when we splice the menuItem we need a index
-                     * items[{
-                     *    no    :1,2,3,4,5,6
-                     *    index:0,1,2,3,4,5
-                     * }]
-                     * example splice items 5,6, if we splice no:5
-                     * no    :1,2,3,4,6
-                     * index :0,1,2,3,4 than we cant match the index(4) === (no:6 -1)
-                     * -------------
-                     * splice items 5,6, if we splice no:6 match the index(5) === (no:6 -1)
-                     * no    :1,2,3,4,5
-                     * index :0,1,2,3,4 than we cant match the index(4) === (no:5 -1)
-                     */
-                    filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
-                    var index = undefined;
-                    var SubIndex = undefined;
-                    if (filterItem) {
-                        //angular.forEach(filterItem.items, function (subItem) {
-                        if (filterItem.items.length > 0) {
-                            var filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
-                            if (filterSubItem) {
-                                for (var i = 0; i < filterSubItem.length; i++) {
-                                    SubIndex = filterItem.items.findIndex(x => x.id === 0);//filterSubItem.no);
-                                    index = copyMenuList.findIndex(x => x.no === filterItem.no);
-                                    copyMenuList[index].items.splice(SubIndex, 1);
-                                }
+                    if (menuItem.items.length > 0)
+
+                        for (var i = 0; i < menuItem.items.length; i++) {
+                            if (menuItem.items[i].id === 0) {
+                                subIndex = menuItem.items.findIndex(function (el) {
+                                    return el.id === 0;
+                                });
+                                index = copyMenuList.findIndex(function (el) {
+                                    return el.no === menuItem.no;
+                                });
+                                i = subIndex - 1;
+                                copyMenuList[index].items.splice(subIndex, 1);
                             }
                         }
 
-                        index = copyMenuList.findIndex(x => x.no === filterItem.no);
+                    if (menuItem.id === 0) {
+                        index = copyMenuList.findIndex(function (el) {
+                            return el.no === menuItem.no;
+                        });
+                        i = index - 1;
                         copyMenuList.splice(index, 1); //we deleted this item, because this item will create
                     }
-                    // !filterItem -> we check this case previous step, with chield
-                    else if (!filterItem && filterSubItem.length > 0) {
-                        index = copyMenuList.findIndex(x => x.no === menuItem.no);
-                        for (var i = 0; i < copyMenuList[index].items.length; i++) {
-                            SubIndex = copyMenuList[index].items.findIndex(x => x.id === 0);
-                            copyMenuList[index].items.splice(SubIndex, 1);
-                        }
-                    }
-                    else if (filterItem && filterSubItem.length > 0) {
-                        index = copyMenuList.findIndex(x => x.no === menuItem.no);
-                        for (var i = 0; i < copyMenuList[index].items.length; i++) {
-                            SubIndex = copyMenuList[index].items.findIndex(x => x.id === 0);
-                            copyMenuList[index].items.splice(SubIndex, 1);
-                        }
-                    }
                 });
+
+                // var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
+                // var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label
+                // /** we sorted descending items, because when we splice the menuItem we need a index
+                //  */
+                // filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
+                // var index = undefined;
+                // var SubIndex = undefined;
+                // if (filterItem) {
+                //     //angular.forEach(filterItem.items, function (subItem) {
+                //     if (filterItem.items.length > 0) {
+                //         var filterSubItem = $filter('filter')(filterItem.items, { id: 0 }, true);
+                //         if (filterSubItem) {
+                //             for (var i = 0; i < filterSubItem.length; i++) {
+                //                 SubIndex = filterItem.items.findIndex(function (el) {
+                //                     return el.id === 0;
+                //                 });//(x => x.id === 0);//filterSubItem.no);
+                //                 index = copyMenuList.findIndex(function (el) {
+                //                     return el.no === filterItem.no;
+                //                 });//(x => x.no === filterItem.no);
+                //                 copyMenuList[index].items.splice(SubIndex, 1);
+                //             }
+                //         }
+                //     }
+                //
+                //     index = copyMenuList.findIndex(function (el) {
+                //         return el.no === filterItem.no;
+                //     });//(x => x.no === filterItem.no);
+                //     copyMenuList.splice(index, 1); //we deleted this item, because this item will create
+                // }
+                // // !filterItem -> we check this case previous step, with chield
+                // if (!filterItem && filterSubItem.length > 0) {
+                //     index = copyMenuList.findIndex(function (el) {
+                //         return el.no === menuItem.no;
+                //     });//x => x.no === menuItem.no);
+                //     for (var i = 0; i < copyMenuList[index].items.length; i++) {
+                //         SubIndex = copyMenuList[index].items.findIndex(function (el) {
+                //             return el.id === 0;
+                //         });//(x => x.id === 0);
+                //         copyMenuList[index].items.splice(SubIndex, 1);
+                //     }
+                // }
+                // if (filterItem && filterSubItem.length > 0) {
+                //     index = copyMenuList.findIndex(function (el) {
+                //         return el.id === 0;
+                //     });//(x => x.no === menuItem.no);
+                //     for (var i = 0; i < copyMenuList[index].items.length; i++) {
+                //         SubIndex = copyMenuList[index].items.findIndex(function (el) {
+                //             return el.id === 0;
+                //         });//(x => x.id === 0);
+                //         copyMenuList[index].items.splice(SubIndex, 1);
+                //     }
+                // }
+                // }
+                //);
                 return copyMenuList;
             }
 
@@ -806,15 +842,15 @@ angular.module('primeapps')
                 return ids;
             }
 
-            //Menu Delete
+//Menu Delete
             $scope.delete = function (id) {
                 //First delete Menu
-                const willDelete =
+                var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this menu ?",
+                        text: "Are you sure that you want to delete this menu?",
                         icon: "warning",
-                        buttons: ['Cancel', 'Okey'],
+                        buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
@@ -834,4 +870,5 @@ angular.module('primeapps')
             };
         }
 
-    ]);
+    ])
+;

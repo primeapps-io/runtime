@@ -27,6 +27,38 @@ namespace PrimeApps.Console.Storage
             ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
         }
 
+        public enum ObjectType
+        {
+            MAIL,
+            ATTACHMENT,
+            RECORD,
+            TEMPLATE,
+            ANALYTIC,
+            IMPORT,
+            NOTE,
+            LOGO,
+            PROFILEPICTURE,
+            NONE,
+            APPLOGO,
+            APPTEMPLATE
+        }
+
+        static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
+        {
+            {ObjectType.ATTACHMENT, "/attachments/"},
+            {ObjectType.RECORD, "/records/"},
+            {ObjectType.TEMPLATE, "/templates/"},
+            {ObjectType.ANALYTIC, "/analytics/"},
+            {ObjectType.IMPORT, "/imports/"},
+            {ObjectType.NOTE, "/notes/"},
+            {ObjectType.LOGO, "/logos/"},
+            {ObjectType.MAIL, "/mail/"},
+            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
+            {ObjectType.NONE, ""},
+            {ObjectType.APPLOGO, "/app_logo/"},
+            {ObjectType.APPTEMPLATE, "/app_template/"}
+        };
+
         /// <summary>
         /// Uploads a file stream into a bucket.
         /// </summary>
@@ -158,10 +190,17 @@ namespace PrimeApps.Console.Storage
         /// <returns></returns>
         public async Task CreateBucketIfNotExists(string bucket)
         {
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
+            string[] paths = bucket.Split('/');
+            string checkPath = "";
+
+            foreach (string path in paths)
             {
-                await _client.PutBucketAsync(bucket);
+                checkPath += $"{path}/";
+                bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, checkPath);
+                if (!exists)
+                {
+                    await _client.PutBucketAsync(checkPath);
+                }
             }
         }
         /// <summary>
@@ -181,18 +220,23 @@ namespace PrimeApps.Console.Storage
         /// <param name="key"></param>
         /// <param name="expires"></param>
         /// <returns></returns>
-        public async Task<string> GetShareLink(string bucket, string key, DateTime expires)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true)
         {
+            if (bucket.EndsWith('/'))
+                bucket = bucket.Remove(bucket.Length - 1, 1);
 
             GetPreSignedUrlRequest request =
-               new GetPreSignedUrlRequest()
-               {
-                   BucketName = bucket,
-                   Key = key,
-                   Expires = expires
-               };
+                new GetPreSignedUrlRequest()
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    Expires = expires,
+                    Protocol = protocol
+                };
 
-            return _client.GetPreSignedURL(request);
+            var preSignedUrl = _client.GetPreSignedURL(request);
+
+            return preSignedUrl;
         }
 
 
@@ -229,6 +273,18 @@ namespace PrimeApps.Console.Storage
                 Key = key
             };
             return await _client.DeleteObjectAsync(request);
+        }
+
+        public static string GetPath(string type, int organization,int appId , string extraPath = "")
+        {
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+
+            return $"organization{organization}{"/app" + appId}{pathMap[objectType]}{extraPath}";
+        }
+
+        public static ObjectType GetType(string type)
+        {
+            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
         }
     }
 }

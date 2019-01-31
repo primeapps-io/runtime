@@ -23,7 +23,6 @@ using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Notifications
 {
-
     public interface INotificationHelper
     {
         Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, int timezoneOffset);
@@ -49,7 +48,7 @@ namespace PrimeApps.App.Notifications
             _activityHelper = activityHelper;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+            _currentUser = UserHelper.GetCurrentUser(_context, configuration);
         }
 
         public NotificationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
@@ -62,6 +61,7 @@ namespace PrimeApps.App.Notifications
         }
 
         #region Create
+
         /// <summary>
         /// Creates all necessary notifications for the record.
         /// </summary>
@@ -80,6 +80,7 @@ namespace PrimeApps.App.Notifications
                     break;
             }
         }
+
         #endregion
 
         #region Update
@@ -127,8 +128,8 @@ namespace PrimeApps.App.Notifications
                     if (settings.Any(setting => setting.Key == "send_owner_changed_notification" && setting.Value == "true"))
                     {
                         string newOwner = record["owner"]?.ToString(),
-                        oldOwner = oldRecord["owner"]?.ToString(),
-                        id = record["id"]?.ToString();
+                            oldOwner = oldRecord["owner"]?.ToString(),
+                            id = record["id"]?.ToString();
 
                         bool isTask = false;
 
@@ -142,17 +143,16 @@ namespace PrimeApps.App.Notifications
 
                         //??WHAT IS THIS 
                         if (module.Name == "activities")
-                        {/// exceptional condition for tasks.
-							if (module.SystemType == Model.Enums.SystemType.System)
+                        {
+                            /// exceptional condition for tasks.
+                            if (module.SystemType == Model.Enums.SystemType.System)
                             {
-
                                 string activityType = record["activity_type"]?.ToString();
                                 if (activityType == "Görev" || activityType == "Task")
                                 {
                                     isTask = activityType == "task";
                                 }
                             }
-
                         }
 
                         if (isTask)
@@ -164,7 +164,6 @@ namespace PrimeApps.App.Notifications
 
                         await OwnerChangedDefault(appUser, record, oldRecord, module);
                     }
-
                 }
             }
         }
@@ -187,7 +186,7 @@ namespace PrimeApps.App.Notifications
                 using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration, cacheHelper))
                 {
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
-                    oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
+                        oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
                     newOwnerName = newOwner.GetFullName();
                     oldOwnerName = oldOwner.GetFullName();
@@ -207,10 +206,10 @@ namespace PrimeApps.App.Notifications
         public async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module)
         {
             string newOwnerId = record["owner"]?.ToString(),
-                   oldOwnerId = oldRecord["owner"]?.ToString(),
-                   oldOwnerName = string.Empty,
-                   newOwnerName = string.Empty,
-                   moduleName = appUser.TenantLanguage == "tr" ? module.LabelTrSingular : appUser.TenantLanguage == "en" ? module.LabelEnSingular : module.LabelEnSingular;
+                oldOwnerId = oldRecord["owner"]?.ToString(),
+                oldOwnerName = string.Empty,
+                newOwnerName = string.Empty,
+                moduleName = appUser.TenantLanguage == "tr" ? module.LabelTrSingular : appUser.TenantLanguage == "en" ? module.LabelEnSingular : module.LabelEnSingular;
             JObject moduleRecordPrimary;
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -224,7 +223,7 @@ namespace PrimeApps.App.Notifications
                     _recordRepository.CurrentUser = _currentUser;
 
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
-                                 oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
+                        oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
 
                     newOwnerName = newOwner.GetFullName();
@@ -254,13 +253,12 @@ namespace PrimeApps.App.Notifications
                     email.AddToQueue(appUser: appUser);
                 }
             }
-
-
         }
 
         #endregion
 
         #region Delete
+
         /// <summary>
         /// Deletes all notifications related to a module record according to its type.
         /// </summary>
@@ -279,6 +277,7 @@ namespace PrimeApps.App.Notifications
                     break;
             }
         }
+
         #endregion
 
         public async Task SendTaskNotification(JObject record, UserItem appUser, Module module)
@@ -331,6 +330,3 @@ namespace PrimeApps.App.Notifications
         }
     }
 }
-
-
-
