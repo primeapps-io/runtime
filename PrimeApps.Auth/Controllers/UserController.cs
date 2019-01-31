@@ -374,9 +374,8 @@ namespace PrimeApps.Auth.Controllers
             var httpClient = new HttpClient();
 
             tokenRequest.Address = _configuration["AppSettings:Authority"] + "/connect/token";
-            tokenRequest.Scope = "api1";
 
-            return await httpClient.RequestTokenAsync(tokenRequest);
+            return await httpClient.RequestPasswordTokenAsync(tokenRequest);
         }
 
         //Helpers
