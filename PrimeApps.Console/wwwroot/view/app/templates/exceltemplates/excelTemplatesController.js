@@ -49,7 +49,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                ExcelTemplatesService.find(requestModel, 3).then(function (response) {
+                ExcelTemplatesService.find(requestModel, 4).then(function (response) {
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
@@ -90,7 +90,7 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-               // $scope.getDownloadUrl();
+                // $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
@@ -160,7 +160,7 @@ angular.module('primeapps')
                     }
                 }
             }
-                ;
+            ;
 
             $scope.save = function (uploadForm) {
 
@@ -171,6 +171,7 @@ angular.module('primeapps')
 
                 if (!$scope.template.id) {
                     $scope.fileUpload.uploader.start();
+                    $scope.pageTotal = $scope.pageTotal + 1;
                 }
                 else {
                     if ($scope.templateFileCleared) {
@@ -216,6 +217,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 $scope.addNewExcelTemplateFormModal.hide();
+                $scope.changePage(1);
                 swal($filter('translate')('Setup.Templates.SaveSuccess'), "", "success");
                 $scope.addNewWordTemplateFormModal.hide();
             };
@@ -225,7 +227,7 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrl = function (template) {
-                return '/attach/export_excel?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+                return '/attach/export_excel?fileId=' + template.id + "&tempType=excel" + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId; //template.template_type
             };
 
             $scope.delete = function (id) {
@@ -240,6 +242,7 @@ angular.module('primeapps')
                         if (value) {
                             ExcelTemplatesService.delete(id).then(function () {
                                 $scope.changePage(1);
+                                $scope.pageTotal = $scope.pageTotal - 1;
                                 swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
                             }).catch(function () {
                                 $scope.templates = $scope.templatesState;

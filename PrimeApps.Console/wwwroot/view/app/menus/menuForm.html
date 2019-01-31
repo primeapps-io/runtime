@@ -227,7 +227,7 @@
                                                                     ng-model="menuModuleList"
                                                                     ng-change="selectModule(menu.menuId, menu.no, menuModuleList)"
                                                                     ng-show="!menu.isEdit && !menu.name"
-                                                                    ng-options="o as o['label_' + language + '_plural'] for o in appModules | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                                                    ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
                                                             <a ng-show="!menu.isEdit && !menu.name" class="action-icon delete-role-button" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">

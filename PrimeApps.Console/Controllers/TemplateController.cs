@@ -156,9 +156,6 @@ namespace PrimeApps.Console.Controllers
 		{
 			var templates = await _templateRepostory.Find(paginationModel, templateType);
 
-			//if (templates == null)
-			//	return NotFound();
-
 			return Ok(templates);
 		}
 	}

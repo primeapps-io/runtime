@@ -87,6 +87,7 @@ angular.module('primeapps')
                                 FiltersService.deleteView(id)
                                     .then(function () {
                                         $scope.changePage(1);
+										$scope.pageTotal = $scope.pageTotal - 1;
                                         swal("Deleted!", "Filter is deleted successfully.", "success");
                                     }).catch(function () {
                                         $scope.customViews = $scope.customViewsState;
@@ -428,6 +429,7 @@ angular.module('primeapps')
                             viewState.active_view = response.data.id;
 
                             success();
+							$scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function (data) {
                             error(data.data, data.status);

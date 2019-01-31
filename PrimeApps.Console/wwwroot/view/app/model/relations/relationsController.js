@@ -328,7 +328,8 @@ angular.module('primeapps')
 					RelationsService.createModuleRelation(relation, (relation.two_way) ? mainModuleId : $scope.module.id)
 						.then(function () {
 							success();
-						})
+							$scope.pageTotal = $scope.pageTotal + 1;						
+                        })
 						.catch(function () {
 							error();
 						});
@@ -361,6 +362,7 @@ angular.module('primeapps')
 									swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
 									//$scope.addNewRelationsFormModal.hide();
 									$scope.changePage(1);
+									$scope.pageTotal = $scope.pageTotal - 1;
 								})
 								.catch(function () {
 									$scope.relations = $scope.relationsState;
