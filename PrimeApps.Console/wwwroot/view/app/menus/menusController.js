@@ -320,7 +320,7 @@ angular.module('primeapps')
                 menuList.isDynamic = $scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
                 menuList.route = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
                 menuList.menuId = menuList.no;
-                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.label : 'fa fa-square';
+                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.value : 'fa fa-square';
                 $scope.counter += 1;
                 menuList.parentId = 0;
                 menuList.items = [];
@@ -856,6 +856,7 @@ angular.module('primeapps')
                         if (value) {
                             MenusService.delete(id).then(function () {
                                 $scope.changePage(1);
+								$scope.pageTotal = $scope.pageTotal - 1;
                                 swal($filter('translate')('Menu.DeleteSuccess'), "", "success");
                             }).catch(function () {
                                 $scope.menuList = $scope.menuListState;

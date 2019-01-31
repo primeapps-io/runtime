@@ -336,6 +336,7 @@ angular.module('primeapps')
                     DependenciesService.createModuleDependency(relationModel, $scope.module.id)
                         .then(function () {
                             success();
+							$scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function () {
                             error();
@@ -367,6 +368,7 @@ angular.module('primeapps')
                                     // var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
                                     // $scope.dependencies.splice(dependencyIndex, 1);
                                     $scope.changePage(1);
+									$scope.pageTotal = $scope.pageTotal - 1;
                                     swal("Deleted!", "Dependency is deleted successfully.", "success");
 
                                 })
