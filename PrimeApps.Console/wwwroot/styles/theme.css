@@ -550,7 +550,7 @@ button:focus, select:focus {
   align-items: center;
   color: #fff;
   font-size: 14px;
-  margin-right: 10px;
+  margin: 0px 5px;
 }
 .primeapps .page-loading {
   position: fixed;
@@ -1000,6 +1000,7 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
+  height: 100%;
 }
 .primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
   width: 100%;
@@ -1153,7 +1154,7 @@ button:focus, select:focus {
   align-items: center;
   color: #fff;
   font-size: 23px;
-  margin-right: 10px;
+  margin: 0px 5px;
 }
 .primeapps .user-dropdown .btn-logout {
   width: 100%;

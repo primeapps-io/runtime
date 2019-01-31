@@ -696,8 +696,7 @@ button, select {
       align-items: center;
       color: #fff;
       font-size: 14px;
-      margin-right: 10px;
-
+      margin: 0px 5px;
     }
   }
   
@@ -1285,6 +1284,7 @@ button, select {
 
     .modal-content {
       border: none;
+      height: 100%;
       .autocomplete
       {
         width: 100%;
@@ -1482,8 +1482,7 @@ button, select {
         align-items: center;
         color: #fff;
         font-size: 23px;
-        margin-right: 10px;
-
+        margin: 0px 5px;
       }
     }
 

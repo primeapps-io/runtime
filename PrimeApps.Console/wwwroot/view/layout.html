@@ -61,7 +61,7 @@
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
-                <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
+                <a data-trigger="hover" data-type="info" data-title="{{organization.label}}" bs-tooltip
                    data-placement="right"
                    href="#/apps?orgId={{organization.id}}"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
