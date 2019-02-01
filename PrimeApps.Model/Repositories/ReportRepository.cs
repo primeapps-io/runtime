@@ -55,7 +55,7 @@ namespace PrimeApps.Model.Repositories
 
             return await reports.ToListAsync();
         }
-        
+
         public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
         {
             var data = new JArray();
@@ -384,6 +384,14 @@ namespace PrimeApps.Model.Repositories
                 .OrderBy(x => x.Order);
 
             return reportCategories.ToList();
+        }
+        public async Task<ICollection<ReportCategory>> GetAllCategories()
+        {
+            var reportCategories = DbContext.ReportCategories
+                .Where(x => !x.Deleted)
+                .OrderBy(x => x.Order);
+         
+            return await reportCategories.ToListAsync();
         }
 
         public Task<int> CreateCategory(ReportCategory reportCategory)

@@ -347,7 +347,7 @@ angular.module('primeapps')
                         $scope.module.system_type = 'custom';
                         var sortOrders = [];
 
-                        angular.forEach($rootScope.modules, function (moduleItem) {
+                        angular.forEach($rootScope.appModules, function (moduleItem) {
                             sortOrders.push(moduleItem.order);
                         });
 
@@ -703,7 +703,7 @@ angular.module('primeapps')
                 $scope.currentField.temporary_default_value = null;
                 $scope.$broadcast('angucomplete-alt:clearInput', 'lookupDefaultValue');
 
-                var lookupModule = $filter('filter')($rootScope.modules, { name: $scope.currentField.lookupType.value }, true)[0];
+                var lookupModule = $filter('filter')($rootScope.appModules, { name: $scope.currentField.lookupType.value }, true)[0];
                 $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
             };
 
@@ -1355,13 +1355,13 @@ angular.module('primeapps')
                 //When update modelu primary key also change view lookup view.
                 var newPK = $filter('filter')($scope.module.fields, { primary: true }, true)[0];
                 if ($scope.currenyPK.name !== newPK.name) {
-                    for (var moduleKey = $rootScope.modules.length - 1; moduleKey >= 0; moduleKey--) {
-                        for (var fieldKey = $rootScope.modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
-                            if ($rootScope.modules[moduleKey].fields[fieldKey].lookup_type == $scope.module.name) {
-                                var cacheKey = $rootScope.modules[moduleKey].name;
+                    for (var moduleKey = $rootScope.appModules.length - 1; moduleKey >= 0; moduleKey--) {
+                        for (var fieldKey = $rootScope.appModules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
+                            if ($rootScope.appModules[moduleKey].fields[fieldKey].lookup_type == $scope.module.name) {
+                                var cacheKey = $rootScope.appModules[moduleKey].name;
                                 var cache = $cache.get(cacheKey + "_" + cacheKey);
                                 if (!cache) {
-                                    ModuleService.getViews($rootScope.modules[moduleKey].id, undefined, undefined)
+                                    ModuleService.getViews($rootScope.appModules[moduleKey].id, undefined, undefined)
                                         .then(function (views) {
                                             updateView(views);
 
