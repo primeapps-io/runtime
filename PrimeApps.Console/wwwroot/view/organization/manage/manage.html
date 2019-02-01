@@ -3,13 +3,13 @@
         <div class="col-sm-3">
             <h4 class="h4-title blue-color font-bold">Settings</h4>
         </div>
-        <div class="col-sm-1 pull-right">
-            <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" style="" ladda="saving">
-                <i class="fas fa-sync margin-right-10"></i>Save
+        <div class="pull-right" style="padding-left: 10px;">
+            <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" ladda="saving">
+                <i class="fas fa-save margin-right-10"></i>Save
             </button>
         </div>
-        <div class="col-sm-1 pull-right">
-            <button type="submit" ng-click="save();" class="btn btn-radius btn-red btn-logout" style="" ladda="saving">
+        <div class="pull-right">
+            <button type="submit" ng-click="" class="btn btn-radius btn-red btn-logout" style="" ladda="saving">
                 <i class="fas fa-sync margin-right-10"></i>Delete
             </button>
         </div>
@@ -19,12 +19,8 @@
                     <div class="col-sm-3" style="border-right: solid 2px #dfdfdf;">
                         <div style="margin: auto;text-align: center;">
                             <div class="file-uploader" style="background: none;">
-                                <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                                     over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
-                                     style="float: right;">
-                                    <div class="">
-                                        <i class="{{orgModel.icon}}"></i>
-                                    </div>
+                                <div class="organization-icon">
+                                    <i class="{{orgModel.icon}}"></i>
                                 </div>
                             </div>
                         </div>
@@ -36,31 +32,27 @@
                                         <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
                                     </div>
                                 </ui-select-match>
-
                                 <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
                                     <div ng-bind-html="icon.label"></div>
                                 </ui-select-choices>
 
                             </ui-select>
                         </div>
-                        <div style="text-align: center;padding-top: 37px;">
+                        <div style="text-align: center">
                             <label>Image must not exceed</label>
                             <label>512 px and 1 MB</label>
                         </div>
-                        <div style="text-align: center;padding-top: 10px;">
-                            <button class="btn btn-radius btn-red btn-logout"><i class="fas fa-trash"></i>Delete Logo</button>
-                        </div>
                     </div>
-                    <div class="col-sm-5">
-                        <div class="form-group">
-                            <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Organitation Name</label>
-                            <input type="text"
-                                   name="description"
-                                   style="margin-bottom: 20px;"
-                                   class="form-control ng-animate-disabled col-sm-8"
-                                   required
-                                   maxlength="50"
-                                   ng-model="orgModel.label">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="form-group bottom0">
+                            <div class="col-sm-6 col-md-5 col-lg-3"><label class="required-field" style="line-height: 40px">Organitation Name</label></div>
+                            <div class="col-sm-6 col-md-7 col-lg-9"><input type="text"
+                                                         name="description"
+                                                         class="form-control ng-animate-disabled col-sm-8"
+                                                         required
+                                                         maxlength="50"
+                                                         ng-model="orgModel.label">
+                            </div>
                         </div>
                     </div>
                 </div>
