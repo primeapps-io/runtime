@@ -3416,6 +3416,33 @@ button, select {
       border-radius: 100px;
     }
   }
+  .primetabs{
+    li{
+      text-align: center;
+      a{
+        
+        color: rgba(0,0,0,0.5);
+      }
+      &.active{
+        a{
+          background: #FFF;
+          font-weight: bold;
+          color: $primeapps-color;
+        }
+      }
+    }
+  }
+  .primetabs-content{
+    border: 1px solid rgba(0,0,0,0.1);
+    border-top: none;
+    padding: 20px;
+    .tab-pane{
+      display: none;
+      &.active{
+        display: block;
+      }
+    }
+  }
   .organization-icon {
     width: 100px;
     height: 100px;

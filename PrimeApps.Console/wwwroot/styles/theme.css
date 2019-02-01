@@ -2736,6 +2736,28 @@ button:focus, select:focus {
   color: #FFF;
   border-radius: 100px;
 }
+.primeapps .primetabs li {
+  text-align: center;
+}
+.primeapps .primetabs li a {
+  color: rgba(0, 0, 0, 0.5);
+}
+.primeapps .primetabs li.active a {
+  background: #FFF;
+  font-weight: bold;
+  color: #0D6FAA;
+}
+.primeapps .primetabs-content {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: none;
+  padding: 20px;
+}
+.primeapps .primetabs-content .tab-pane {
+  display: none;
+}
+.primeapps .primetabs-content .tab-pane.active {
+  display: block;
+}
 .primeapps .organization-icon {
   width: 100px;
   height: 100px;
