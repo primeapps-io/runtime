@@ -300,7 +300,7 @@ angular.module('primeapps')
             };
 
             $scope.moduleChanged = function (selectedModule) {
-                $scope.loading = true;
+                $scope.guideLoading = true;
                 ModuleService.getModuleByName(selectedModule.name).then(function (response) {
                     $scope.selectedModule = response.data;
                     $scope.lookupModules = getLookupModules($scope.selectedModule);
@@ -322,7 +322,7 @@ angular.module('primeapps')
                         getLookupModules(quoteProductsModule);
                         module.relatedModules.push(quoteProductsModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 }
 
@@ -333,7 +333,7 @@ angular.module('primeapps')
                         getLookupModules(orderProductsModule);
                         module.relatedModules.push(orderProductsModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 }
 
@@ -357,11 +357,11 @@ angular.module('primeapps')
 
                         module.relatedModules.push(relatedModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 });
 
-                $scope.loading = false;
+                $scope.guideLoading = false;
                 addNoteModuleRelation(module);
             };
 
