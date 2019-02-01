@@ -3,15 +3,11 @@
         <i ng-class="{'fa fa-plus-square-o': collapsed,'fa fa-minus-square-o': !collapsed}"></i>
     </a>
     <a ng-click="showFormModal(node.id)">{{node.title}}</a>
-    <span class="action-buttons">
-        <a ng-click="showFormModal(node.id, true)" class="action-icon add-role-button" data-nodrag>
-        {{'Common.Add' | translate}}
-        </a>
-        <!--href="#/app/setup/role?id=&reportsTo={{node.id}}"-->
-        <span ng-if="node.id != 'role_ceo'"> | </span>
-        <a id="deleteButton{{node.id}}" href class="action-icon delete-role-button" ng-click="showDeleteForm(node.id)" ng-if="node.id != 'role_ceo'" data-nodrag>
-            {{'Common.Delete' | translate}}
-        </a>
+    <span class="action-buttons-block">
+        <a class="action-buttons-edit" ng-click="showFormModal(node.id)" title="{{node.title}}"><i class="fas fa-pen"></i></a>
+        <!--<span ng-if="node.id != 'role_ceo'"> | </span>-->
+        <a class="action-buttons-delete" id="deleteButton{{node.id}}" href ng-click="showDeleteForm(node.id)" ng-if="node.id != 'role_ceo'" data-nodrag title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></a>
+        <a ng-click="showFormModal(node.id, true)" data-nodrag title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i></a>
     </span>
 </span>
 <ol ng-model="node.nodes" ng-class="{hidden: collapsed}" class="fa-ul" data-nodrag>
