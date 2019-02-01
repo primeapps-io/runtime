@@ -261,7 +261,7 @@ angular.module('primeapps')
                     function onLoadImage() {
                         var width = params.width || this.width / this.height * params.height;
                         var height = params.height || this.height / this.width * params.width;
-                        canvas.attr({width: width, height: height});
+                        canvas.attr({ width: width, height: height });
                         canvas[0].getContext('2d').drawImage(this, 0, 0, width, height);
                     }
                 }
@@ -397,7 +397,7 @@ angular.module('primeapps')
                     function ($scope) {
                         $scope.loading = true;
                         $scope.relatedModule.loading = true;
-                        $scope.module = $filter('filter')($rootScope.modules, {name: $scope.relatedModule.related_module}, true)[0];
+                        $scope.module = $filter('filter')($rootScope.modules, { name: $scope.relatedModule.related_module }, true)[0];
                         $scope.type = $scope.relatedModule.related_module;
                         $scope.readonly = $scope.relatedModule.readonly || false;
                         $scope.parentType = $scope.relatedModule.relation_field;
@@ -412,7 +412,7 @@ angular.module('primeapps')
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
                         $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
-                        var salesInvoiceModule = $filter('filter')($rootScope.modules, {name: 'sales_invoices'}, true);
+                        var salesInvoiceModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices' }, true);
                         if (salesInvoiceModule.length < 1)
                             $scope.salesInvoiceModule = false;
                         else {
@@ -459,7 +459,7 @@ angular.module('primeapps')
                             });
 
                             if ($scope.parentType === 'related_to') {
-                                var parentModule = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
+                                var parentModule = $filter('filter')($rootScope.modules, { name: $scope.parentModule }, true)[0];
                                 $scope.parentType = $scope.parentModule;
 
                                 filters.push({
@@ -656,12 +656,12 @@ angular.module('primeapps')
                                 }
 
                                 if (!isFileSaverSupported) {
-                                    swal($filter('translate')('Module.ExportUnsupported'), "warning");
+                                    toastr.warning($filter('translate')('Module.ExportUnsupported'));
                                     return;
                                 }
 
                                 if ($scope.tableParams.total() > 3000) {
-                                    swal($filter('translate')('Module.ExportWarning'), "warning");
+                                    toastr.warning($filter('translate')('Module.ExportWarning'));
                                     return;
                                 }
 
@@ -670,7 +670,7 @@ angular.module('primeapps')
 
                                 ModuleService.getCSVData($scope, $scope.type)
                                     .then(function (csvData) {
-                                        swal($filter('translate')('Module.ExcelExportSuccess'), "warning");
+                                        toastr.warning($filter('translate')('Module.ExcelExportSuccess'));
 
                                         exportFile.excel(csvData, fileName);
                                         $scope.exporting = false;
@@ -1077,27 +1077,27 @@ angular.module('primeapps')
                                 {
                                     title: ($rootScope.language === 'tr' ? 'Çok Büyük' : 'Very Big'),
                                     block: 'h2',
-                                    styles: {fontWeight: 'normal'}
+                                    styles: { fontWeight: 'normal' }
                                 },
                                 {
                                     title: ($rootScope.language === 'tr' ? 'Büyük' : 'Big'),
                                     block: 'h3',
-                                    styles: {fontWeight: 'normal'}
+                                    styles: { fontWeight: 'normal' }
                                 },
                                 {
                                     title: ($rootScope.language === 'tr' ? 'Normal' : 'Normal'),
                                     block: 'h4',
-                                    styles: {fontWeight: 'normal'}
+                                    styles: { fontWeight: 'normal' }
                                 },
                                 {
                                     title: ($rootScope.language === 'tr' ? 'Küçük' : 'Small'),
                                     block: 'h5',
-                                    styles: {fontWeight: 'normal'}
+                                    styles: { fontWeight: 'normal' }
                                 },
                                 {
                                     title: ($rootScope.language === 'tr' ? 'Çok Küçük' : 'Very Small'),
                                     block: 'h6',
-                                    styles: {fontWeight: 'normal'}
+                                    styles: { fontWeight: 'normal' }
                                 }
                             ]
                         }

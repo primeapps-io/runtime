@@ -235,7 +235,17 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
+
+                                $rootScope.breadcrumblist = [{}, {}, {}];
+                                $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
+                                $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentOrganization.id;
+                                $rootScope.breadcrumblist[1].title = "People";
+                                $rootScope.breadcrumblist[1].link = '#/organization/' + $rootScope.currentOrganization.id + '/collaborators';
+                                $rootScope.breadcrumblist[2].title = "Collaborators";
+
+
+
 
                                 if (!$rootScope.currentOrganization) {
                                     $state.go('studio.allApps');
@@ -1487,4 +1497,4 @@ angular.module('primeapps')
 
             $urlRouterProvider.otherwise('/all-apps');
         }])
-;
+    ;

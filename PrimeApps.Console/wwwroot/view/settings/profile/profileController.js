@@ -69,10 +69,10 @@ angular.module('primeapps')
                             $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
 
                             if (!emailChanged) {
-                                swal($filter('translate')('Setup.Settings.UpdateSuccess'), "", "success");
+                                toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
                             }
                             else
-                                swal($filter('translate')('Setup.Settings.UpdateSuccessEmail'), "", "success");
+                                toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
 
                         })
                         .catch(function () {

@@ -473,39 +473,46 @@ angular.module('primeapps')
                         } else {
                             workflowModel.field_update.updateOption = '1';
                             workflowModel.field_update.module = $filter('filter')(modules, { name: workflow.field_update.module }, true)[0];
-                            workflowModel.field_update.field = $filter('filter')(workflowModel.field_update.module.fields, { name: workflow.field_update.field }, true)[0];
-                            if (workflowModel.field_update.field.data_type === 'multiselect') {
-                                var picklistItems = workflow.field_update.value.split('|');
-                                workflow.field_update.value = [];
+                            ModuleService.getModuleFields(workflowModel.field_update.module.name)
+                                .then(function (response) {
+                                    if (response.data) {
+                                        workflowModel.field_update.module.fields = response.data;
 
-                                angular.forEach(picklistItems, function (picklistLabel) {
-                                    var picklist = $filter('filter')(picklistsModule[workflowModel.field_update.field.picklist_id], { labelStr: picklistLabel }, true)[0];
+                                        workflowModel.field_update.field = $filter('filter')(workflowModel.field_update.module.fields, { name: workflow.field_update.field }, true)[0];
+                                        if (workflowModel.field_update.field.data_type === 'multiselect') {
+                                            var picklistItems = workflow.field_update.value.split('|');
+                                            workflow.field_update.value = [];
 
-                                    if (picklist)
-                                        workflow.field_update.value.push(picklist.labelStr);
-                                });
-                            }
+                                            angular.forEach(picklistItems, function (picklistLabel) {
+                                                var picklist = $filter('filter')(picklistsModule[workflowModel.field_update.field.picklist_id], { labelStr: picklistLabel }, true)[0];
 
-                            if (workflowModel.field_update.field.data_type === 'tag') {
-                                var itemValue = workflow.field_update.value.split('|');
-                                workflow.field_update.value = [];
-                                angular.forEach(itemValue, function (item) {
-                                    workflow.field_update.value.push(item);
-                                });
-                            }
+                                                if (picklist)
+                                                    workflow.field_update.value.push(picklist.labelStr);
+                                            });
+                                        }
+
+                                        if (workflowModel.field_update.field.data_type === 'tag') {
+                                            var itemValue = workflow.field_update.value.split('|');
+                                            workflow.field_update.value = [];
+                                            angular.forEach(itemValue, function (item) {
+                                                workflow.field_update.value.push(item);
+                                            });
+                                        }
 
 
-                            var updateFieldRecordFake = {};
-                            updateFieldRecordFake[workflow.field_update.field] = workflow.field_update.value;
-                            ModuleService.processRecordField(updateFieldRecordFake, workflowModel.field_update.field, picklistUpdateModule);
-                            workflowModel.field_update.value = updateFieldRecordFake[workflow.field_update.field];
+                                        var updateFieldRecordFake = {};
+                                        updateFieldRecordFake[workflow.field_update.field] = workflow.field_update.value;
+                                        ModuleService.processRecordField(updateFieldRecordFake, workflowModel.field_update.field, picklistUpdateModule);
+                                        workflowModel.field_update.value = updateFieldRecordFake[workflow.field_update.field];
 
-                            if (workflowModel.field_update.field.data_type === 'lookup') {
-                                // if (workflowModel.field_update.field.lookup_type === 'users')
-                                //     workflowModel.field_update.value = [workflow.field_update.value];
-                                // else
-                                workflowModel.field_update.value = workflow.field_update.value;
-                            }
+                                        if (workflowModel.field_update.field.data_type === 'lookup') {
+                                            // if (workflowModel.field_update.field.lookup_type === 'users')
+                                            //     workflowModel.field_update.value = [workflow.field_update.value];
+                                            // else
+                                            workflowModel.field_update.value = workflow.field_update.value;
+                                        } 
+                                    }
+                                }); 
                         }
                     }
 

@@ -44,7 +44,7 @@ angular.module('primeapps')
             ComponentsService.get($scope.id)
                 .then(function (response) {
                     if (!response.data) {
-                        swal('Component Not Found !', "error");   
+                        toastr.error('Component Not Found !');   
                         $state.go('app.components');
                     }
 

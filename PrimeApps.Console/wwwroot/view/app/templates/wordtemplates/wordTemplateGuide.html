@@ -12,7 +12,7 @@
         </div>
 
         <div class="modal-dialog scroll-style-4">
-            <div ng-if="loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div ng-if="guideLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
             <div class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
@@ -29,7 +29,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="table-container" ng-if="$parent.$parent.selectedModule && !loading">
+                                    <div class="table-container" ng-if="$parent.$parent.selectedModule && !guideLoading">
                                         <table class="table">
                                             <thead>
                                                 <tr>

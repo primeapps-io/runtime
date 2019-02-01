@@ -156,7 +156,7 @@ angular.module('primeapps')
 
             };
             if (!module) {
-                swal($filter('translate')('Common.NotFound'), "warning");
+                toastr.warning($filter('translate')('Common.NotFound'));
                 $state.go('app.dashboard');
                 return;
             }

@@ -679,8 +679,7 @@ button, select {
       align-items: center;
       color: #fff;
       font-size: 14px;
-      margin-right: 10px;
-
+      margin: 0px 5px;
     }
   }
 
@@ -1264,7 +1263,9 @@ button, select {
 
     .modal-content {
       border: none;
-      .autocomplete {
+      height: 100%;
+      .autocomplete
+      {
         width: 100%;
       }
       tags-input {
@@ -1456,8 +1457,7 @@ button, select {
         align-items: center;
         color: #fff;
         font-size: 23px;
-        margin-right: 10px;
-
+        margin: 0px 5px;
       }
     }
 
@@ -2849,19 +2849,14 @@ button, select {
           background: #FFF;
         }
       }
-      .custom-menu {
-        padding-left: 30px;
-        font-size: 14px;
-        li {
-          background: transparent;
-          border-radius: 0px;
-        }
-      }
+      
       .menu-list {
         display: flex;
         align-items: center;
         position: relative;
         padding: 5px 110px 5px 10px;
+        margin-bottom: 0px !important;
+        margin-top: 5px !important;
       }
       .editable-buttons {
         display: inline-block;
@@ -2932,6 +2927,21 @@ button, select {
             color: rgba(255, 255, 255, 1);
           }
 
+        }
+      }
+      .custom-menu{
+        padding-left: 30px;
+        font-size: 14px;
+        li{
+          background: transparent;
+          border-radius: 0px;
+        }
+        .menu-list {
+          margin-top: 0px !important;
+          padding: 0px 110px 0px 0px;
+          .action-buttons-block{
+            top: -2px;
+          }
         }
       }
     }
@@ -3275,7 +3285,105 @@ button, select {
       }
     }
   }
+  .roleslist{
+    a{
+      text-decoration: none;
+      cursor: pointer;
+    }
+    ol{
+      li{
+        position: relative;
+        > span{
+          width: 100%;
+          display: block;
+          line-height: 25px;
+          background: rgba(0,0,0,0.03);
+          margin-bottom: 5px;
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-weight: bold;
+        }
+        &:before{
+          content: '';
+          position: absolute;
+          left: -15px;
+          top: 0px;
+          width: 1px;
+          height: 15px;
+          background: rgba(0,0,0,0.15);
+        }
+        &:after{
+          content: '';
+          position: absolute;
+          left: -15px;
+          top: 15px;
+          width: 10px;
+          height: 1px;
+          background: rgba(0,0,0,0.15);
+        }
+      }
+    }
+    > ol {
 
+      > li{
+        &:before,&:after{
+          display: none;
+        }
+      }
+    }
+    
+    .action-buttons-block {
+      display: inline-block;
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      width: auto;
+      line-height: 25px;
+
+      a,button {
+        background: rgba(13, 111, 170, 0.75);
+        width: 25px;
+        font-size: 10px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        border: none;
+        color: rgba(255, 255, 255, 1);
+        border-radius: 50%;
+        padding: 0px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        float: left;
+        margin-left: 2px;
+
+        &.action-buttons-edit {
+          background: rgba(0, 0, 0, 0.25);
+          &:hover {
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFF;
+          }
+        }
+
+        &.action-buttons-delete {
+          background: rgba(206, 4, 4, 0.5);
+          color: #FFF;
+          &:hover {
+            background: rgba(206, 4, 4, 1);
+            color: #FFF;
+          }
+        }
+
+        &:hover {
+          background: rgba(13, 111, 170, 1);
+          color: rgba(255, 255, 255, 1);
+        }
+
+
+      }
+    }
+  }
+  
 }
 
 .placeholder {

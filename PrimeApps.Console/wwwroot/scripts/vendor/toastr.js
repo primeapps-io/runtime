@@ -121,14 +121,14 @@
 
             // internal functions
 
-            function clearContainer (options) {
+            function clearContainer(options) {
                 var toastsToClear = $container.children();
                 for (var i = toastsToClear.length - 1; i >= 0; i--) {
                     clearToast($(toastsToClear[i]), options);
                 }
             }
 
-            function clearToast ($toastElement, options, clearOptions) {
+            function clearToast($toastElement, options, clearOptions) {
                 var force = clearOptions && clearOptions.force ? clearOptions.force : false;
                 if ($toastElement && (force || $(':focus', $toastElement).length === 0)) {
                     $toastElement[options.hideMethod]({
@@ -158,19 +158,17 @@
                     debug: false,
 
                     showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
-                    showDuration: 300,
+
                     showEasing: 'swing', //swing and linear are built into jQuery
                     onShown: undefined,
                     hideMethod: 'fadeOut',
-                    hideDuration: 1000,
-                    hideEasing: 'swing',
                     onHidden: undefined,
                     closeMethod: false,
                     closeDuration: false,
                     closeEasing: false,
                     closeOnHover: true,
 
-                    extendedTimeOut: 1000,
+
                     iconClasses: {
                         error: 'toast-error',
                         info: 'toast-info',
@@ -179,18 +177,26 @@
                     },
                     iconClass: 'toast-info',
                     positionClass: 'toast-top-right',
-                    timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
+
                     titleClass: 'toast-title',
                     messageClass: 'toast-message',
                     escapeHtml: false,
                     target: 'body',
-                    closeHtml: '<button type="button">&times;</button>',
                     closeClass: 'toast-close-button',
                     newestOnTop: true,
                     preventDuplicates: false,
-                    progressBar: false,
                     progressClass: 'toast-progress',
-                    rtl: false
+                    rtl: false,
+                    /////New value for studio
+                    closeButton: true,
+                    progressBar: true,
+                    onclick: null,
+                    showDuration: 0,
+                    hideDuration: 1000,
+                    timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
+                    extendedTimeOut: 0,
+                    hideEasing: 'linear',
+                    closeHtml: '<button><i class="fas fa-times"></i></button>'
                 };
             }
 
@@ -276,7 +282,7 @@
                     switch (map.iconClass) {
                         case 'toast-success':
                         case 'toast-info':
-                            ariaValue =  'polite';
+                            ariaValue = 'polite';
                             break;
                         default:
                             ariaValue = 'assertive';
@@ -321,7 +327,7 @@
                     $toastElement.hide();
 
                     $toastElement[options.showMethod](
-                        {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
+                        { duration: options.showDuration, easing: options.showEasing, complete: options.onShown }
                     );
 
                     if (options.timeOut > 0) {
@@ -438,7 +444,7 @@
                     clearTimeout(intervalId);
                     progressBar.hideEta = 0;
                     $toastElement.stop(true, true)[options.showMethod](
-                        {duration: options.showDuration, easing: options.showEasing}
+                        { duration: options.showDuration, easing: options.showEasing }
                     );
                 }
 

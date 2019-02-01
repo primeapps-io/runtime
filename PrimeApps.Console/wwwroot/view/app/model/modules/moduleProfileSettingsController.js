@@ -8,7 +8,7 @@ angular.module('primeapps')
             var module = $filter('filter')($scope.$parent.modules, { name: $stateParams.module }, true)[0];
 
             if (!module) {
-                swal($filter('translate')('Common.NotFound'), "warning");
+                toastr.warning($filter('translate')('Common.NotFound'));
                 $state.go('app.dashboard');
                 return;
             }
@@ -193,7 +193,7 @@ angular.module('primeapps')
 
                 var success = function () {
                     getModuleProfileSettings();
-                    swal($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'), "success"); 
+                    toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess')); 
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
                     $scope.changePage(1);
@@ -247,7 +247,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
                                     $scope.profileSettings.splice(profileSettingIndex, 1);
-                                    swal("Deleted!", "Profile setting is deleted successfully.", "success");
+                                    toastr.success("Profile setting is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {

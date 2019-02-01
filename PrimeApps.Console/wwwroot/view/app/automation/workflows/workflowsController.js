@@ -129,7 +129,7 @@ angular.module('primeapps')
                                     $scope.id = null;
                                     //$state.reload();
                                     $scope.changePage(1);
-                                    swal("Deleted!", "Workflow is deleted successfully.", "success");
+                                    toastr.success("Workflow is deleted successfully.", "Deleted!");
                                 }
                             });
                     }

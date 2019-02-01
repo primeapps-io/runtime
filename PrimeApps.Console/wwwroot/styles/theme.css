@@ -550,7 +550,7 @@ button:focus, select:focus {
   align-items: center;
   color: #fff;
   font-size: 14px;
-  margin-right: 10px;
+  margin: 0px 5px;
 }
 .primeapps .page-loading {
   position: fixed;
@@ -1000,6 +1000,7 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
+  height: 100%;
 }
 .primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
   width: 100%;
@@ -1153,7 +1154,7 @@ button:focus, select:focus {
   align-items: center;
   color: #fff;
   font-size: 23px;
-  margin-right: 10px;
+  margin: 0px 5px;
 }
 .primeapps .user-dropdown .btn-logout {
   width: 100%;
@@ -2240,19 +2241,13 @@ button:focus, select:focus {
   width: auto;
   background: #FFF;
 }
-.primeapps .menu-setup .custom-menu .custom-menu {
-  padding-left: 30px;
-  font-size: 14px;
-}
-.primeapps .menu-setup .custom-menu .custom-menu li {
-  background: transparent;
-  border-radius: 0px;
-}
 .primeapps .menu-setup .custom-menu .menu-list {
   display: flex;
   align-items: center;
   position: relative;
   padding: 5px 110px 5px 10px;
+  margin-bottom: 0px !important;
+  margin-top: 5px !important;
 }
 .primeapps .menu-setup .custom-menu .editable-buttons {
   display: inline-block;
@@ -2319,6 +2314,21 @@ button:focus, select:focus {
 .primeapps .menu-setup .custom-menu .action-buttons-block a:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button:hover {
   background: #0d6faa;
   color: white;
+}
+.primeapps .menu-setup .custom-menu .custom-menu {
+  padding-left: 30px;
+  font-size: 14px;
+}
+.primeapps .menu-setup .custom-menu .custom-menu li {
+  background: transparent;
+  border-radius: 0px;
+}
+.primeapps .menu-setup .custom-menu .custom-menu .menu-list {
+  margin-top: 0px !important;
+  padding: 0px 110px 0px 0px;
+}
+.primeapps .menu-setup .custom-menu .custom-menu .menu-list .action-buttons-block {
+  top: -2px;
 }
 .primeapps .menu-setup .arrow {
   display: inline-block;
@@ -2611,6 +2621,88 @@ button:focus, select:focus {
 }
 .primeapps .filter a:hover {
   color: rgba(0, 0, 0, 0.75);
+}
+.primeapps .roleslist a {
+  text-decoration: none;
+  cursor: pointer;
+}
+.primeapps .roleslist ol li {
+  position: relative;
+}
+.primeapps .roleslist ol li > span {
+  width: 100%;
+  display: block;
+  line-height: 25px;
+  background: rgba(0, 0, 0, 0.03);
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.primeapps .roleslist ol li:before {
+  content: "";
+  position: absolute;
+  left: -15px;
+  top: 0px;
+  width: 1px;
+  height: 15px;
+  background: rgba(0, 0, 0, 0.15);
+}
+.primeapps .roleslist ol li:after {
+  content: "";
+  position: absolute;
+  left: -15px;
+  top: 15px;
+  width: 10px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);
+}
+.primeapps .roleslist > ol > li:before, .primeapps .roleslist > ol > li:after {
+  display: none;
+}
+.primeapps .roleslist .action-buttons-block {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  width: auto;
+  line-height: 25px;
+}
+.primeapps .roleslist .action-buttons-block a, .primeapps .roleslist .action-buttons-block button {
+  background: rgba(13, 111, 170, 0.75);
+  width: 25px;
+  font-size: 10px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 0px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  float: left;
+  margin-left: 2px;
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-edit, .primeapps .roleslist .action-buttons-block button.action-buttons-edit {
+  background: rgba(0, 0, 0, 0.25);
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-edit:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-edit:hover {
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFF;
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-delete, .primeapps .roleslist .action-buttons-block button.action-buttons-delete {
+  background: rgba(206, 4, 4, 0.5);
+  color: #FFF;
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-delete:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-delete:hover {
+  background: #ce0404;
+  color: #FFF;
+}
+.primeapps .roleslist .action-buttons-block a:hover, .primeapps .roleslist .action-buttons-block button:hover {
+  background: #0d6faa;
+  color: white;
 }
 
 .placeholder {

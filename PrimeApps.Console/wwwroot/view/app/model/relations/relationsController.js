@@ -306,7 +306,7 @@ angular.module('primeapps')
 						createRelationManyToManyModule();
 					else {
 						$scope.loading = true;
-						swal($filter('translate')('Setup.Modules.RelationSaveSuccess'), "", "success");
+                        toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
 						$scope.saving = false;
 						$scope.addNewRelationsFormModal.hide();
 						$scope.changePage(1);
@@ -359,7 +359,7 @@ angular.module('primeapps')
 								.then(function () {
 									//var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
 									// $scope.relations.splice(relationToDeleteIndex, 1);
-									swal($filter('translate')('Setup.Modules.RelationDeleteSuccess'), "", "success");
+                                    toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
 									//$scope.addNewRelationsFormModal.hide();
 									$scope.changePage(1);
 									$scope.pageTotal = $scope.pageTotal - 1;
