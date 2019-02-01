@@ -10,6 +10,9 @@ angular.module('primeapps')
                 },
                 update: function (id, model) {
                     return $http.put(config.apiUrl + 'organization/update/' + id, model);
-                }
+                },
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'organization/delete/' + id);
+                },
             };
         }]);
