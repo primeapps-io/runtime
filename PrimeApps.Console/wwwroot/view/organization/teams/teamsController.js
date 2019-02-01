@@ -15,7 +15,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
-
+            $rootScope.breadcrumblist[2].title = "Teams";
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
