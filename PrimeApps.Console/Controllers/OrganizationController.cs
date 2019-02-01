@@ -344,6 +344,9 @@ namespace PrimeApps.Console.Controllers
 
             var organization = await _organizationRepository.Get(AppUser.Id, id);
 
+            organization.Label = model.Label;
+            organization.Icon = model.Icon;
+
             if (organization == null)
                 return NotFound(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 

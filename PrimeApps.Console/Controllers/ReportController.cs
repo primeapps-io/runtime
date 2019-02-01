@@ -64,9 +64,16 @@ namespace PrimeApps.Console.Controllers
 
             return Ok(report);
         }
- 
+        [Route("get_categories"), HttpGet]
+        public async Task<IActionResult> GetAllCategory()
+        {
+            var categories = await _reportRepository.GetAllCategories();
 
- 
-   
+            return Ok(categories);
+        }
+
+
+
+
     }
 }

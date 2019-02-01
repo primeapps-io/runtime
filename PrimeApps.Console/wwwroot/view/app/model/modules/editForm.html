@@ -95,13 +95,13 @@
                 <div class="form-group">
                     <label class="col-sm-4">{{'Setup.Modules.DisplayOnCalendar' | translate}}: </label>
                     <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline newinput"
+                        <label class="radio-inline newinput" ng-class="!hasCalendarDateFields()  ? 'disabled':'' "
                                title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">
                             <input type="radio" ng-model="module.display_calendar" ng-value="true"
                                    ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}
                             <span></span>
                         </label>
-                        <label class="radio-inline newinput">
+                        <label class="radio-inline newinput" ng-class="module.name === 'activities' ? 'disabled':''">
                             <input type="radio" ng-model="module.display_calendar" ng-value="false"
                                    ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}
                             <span></span>

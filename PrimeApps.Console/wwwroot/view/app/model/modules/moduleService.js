@@ -643,7 +643,41 @@ angular.module('primeapps')
 
                     return picklist;
                 },
+                processFields: function (fields) {
+                    for (var l = 0; l < fields.length; l++) {
+                        var field = fields[l];
+                        field.label = field['label_' + $rootScope.language];
+                        field.dataType = dataTypes[field.data_type];
+                        field.operators = [];
 
+                        if (field.data_type === 'lookup') {
+                            if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+
+                            }
+                            else {
+
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+
+
+                            }
+
+                        }
+                        else {
+                            for (var n = 0; n < field.dataType.operators.length; n++) {
+                                var operatorId = field.dataType.operators[n];
+                                var operator = operators[operatorId];
+                                field.operators.push(operator);
+                            }
+                        }
+
+
+                    }
+
+                    return fields;
+                },
                 processModule2: function (module, modules) {
                     var that = this;
                     if (!modules)

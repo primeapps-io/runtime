@@ -178,42 +178,6 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.reports', {
-                    url: '/reports?categoryId?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/reports/reportCategory.html',
-                            controller: 'ReportsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'scripts/vendor/angular-fusioncharts.js',
-                                cdnUrl + 'view/reports/reportsService.js',
-                                cdnUrl + 'view/reports/reportCategoryController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.report', {
-                    url: 'report',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/reports/createReport.html',
-                            controller: 'CreateReportController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/reports/reportsService.js',
-                                cdnUrl + 'view/reports/createReportController.js'
-                            ]);
-                        }]
-                    }
-                });
 
             //app.organization
             $stateProvider
@@ -235,7 +199,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
 
                                 $rootScope.breadcrumblist = [{}, {}, {}];
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
@@ -243,8 +207,6 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[1].title = "People";
                                 $rootScope.breadcrumblist[1].link = '#/organization/' + $rootScope.currentOrganization.id + '/collaborators';
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
-
-
 
 
                                 if (!$rootScope.currentOrganization) {
@@ -743,6 +705,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.app.warehouse', {
                     url: '/warehouse',
                     views: {
@@ -1439,6 +1402,32 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
+                .state('studio.app.report', {
+                    url: 'report?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/analytics/reports/report.html',
+                            controller: 'ReportController'
+                        }
+                    },
+                    report: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            $state.go('studio.app.overview', {
+                                orgId: $rootScope.currentOrgId,
+                                appId: $rootScope.currentAppId
+                            });
+                        }
+                    }],
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/analytics/reports/reportsService.js',
+                                cdnUrl + 'view/app/analytics/reports/reportController.js'
+                            ]);
+                        }]
+                    }
+                })
                 //settings
                 .state('studio.settings', {
                     url: 'settings',
@@ -1497,4 +1486,4 @@ angular.module('primeapps')
 
             $urlRouterProvider.otherwise('/all-apps');
         }])
-    ;
+;
