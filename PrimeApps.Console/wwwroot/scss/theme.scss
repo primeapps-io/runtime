@@ -1270,6 +1270,10 @@ button, select {
     .modal-content {
       border: none;
       height: 100%;
+      .tab-content{
+        box-shadow: none;
+        border: 1px solid rgba(0,0,0,0.05);
+      }
       .autocomplete
       {
         width: 100%;
@@ -3433,9 +3437,8 @@ button, select {
     }
   }
   .primetabs-content{
-    border: 1px solid rgba(0,0,0,0.1);
     border-top: none;
-    padding: 20px;
+    padding: 20px 0px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     .tab-pane{

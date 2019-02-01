@@ -1008,6 +1008,10 @@ button:focus, select:focus {
   border: none;
   height: 100%;
 }
+.primeapps .setup-modal .modal-content .tab-content, .primeapps .module-modal .modal-content .tab-content {
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
 .primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
   width: 100%;
 }
@@ -2748,9 +2752,8 @@ button:focus, select:focus {
   color: #0D6FAA;
 }
 .primeapps .primetabs-content {
-  border: 1px solid rgba(0, 0, 0, 0.1);
   border-top: none;
-  padding: 20px;
+  padding: 20px 0px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
