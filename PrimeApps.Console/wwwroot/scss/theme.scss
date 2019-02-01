@@ -1258,6 +1258,12 @@ button, select {
       margin: 0 auto !important;
       overflow-y: unset !important;
       padding: 0px;
+      .dragable{
+        padding: 0px 6px;
+        i{
+          line-height: 30px;
+        }
+      }
 
     }
 
@@ -3383,7 +3389,44 @@ button, select {
       }
     }
   }
-  
+  .uploadedfilename{
+    padding: 5px 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 25px;
+    text-align: left;
+    a{
+      cursor: pointer;
+    }
+    .uploadedfilename
+    {
+      font-weight: bold;
+    }
+    .clear-button{
+      width: 25px;
+      height: 25px;
+      text-align: center;
+      padding: 5px;
+      line-height: 15px;
+      font-size: 12px;
+      background: $primeapps-color;
+      color: #FFF;
+      border-radius: 100px;
+    }
+  }
+  .organization-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+    padding: 20px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 50px;
+  }
 }
 
 .placeholder {
@@ -3415,14 +3458,3 @@ button, select {
   position: relative;
 }
 
-.organization-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 50px;
-    background: rgba(0, 0, 0, 0.25);
-    color: #fff;
-    padding: 20px;
-    line-height: 60px;
-    text-align: center;
-    font-size: 50px;
-}
