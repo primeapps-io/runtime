@@ -51,7 +51,7 @@
                 <div class="form-group">
                     <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
                     <div>
-                        <div class="uploadedfilename">
+                        <div class="uploadedfilename" ng-show="fileUpload.uploader.files.length>0 || (template.id && !templateFileCleared )">
                             <span class="uploadedfilenamein" ng-hide="!fileUpload.uploader.files.length && template.id">{{fileUpload.uploader.files[0].name}}</span>
                             <a class="uploadedfilenamein" href="{{getDownloadUrl(template)}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
                             <a class="clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fas fa-trash"></i></a>
@@ -65,7 +65,6 @@
                                 </span>
                             </label>
                         </div>
-                        
                     </div>
                 </div>
 

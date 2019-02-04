@@ -109,6 +109,7 @@ angular.module('primeapps')
                     multi_selection: false,
                     unique_names: false,
                     url: 'storage/upload_template',
+                    chunk_size: '256kb',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
@@ -117,9 +118,9 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                            { title: "Template Files", extensions: "xls,xlsx" },
                         ],
-                        max_file_size: "50mb"
+                        max_file_size: "10mb"
                     }
                 },
                 events: {
