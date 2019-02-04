@@ -17,6 +17,7 @@ angular.module('primeapps')
             $scope.helpModalObj.selectHelpRelation = 'any';
             var location;
             $scope.loading = true;
+            $scope.tab = 1;
 
             if (!$scope.moduleFilter) {
                 HelpService.getBasicModules().then(function (result) {
@@ -915,12 +916,12 @@ angular.module('primeapps')
                     $scope.setContent(template);
 
                 $scope.addNewHelpFormModal = $scope.addNewHelpFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/help/helpPage.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/help/helpPage.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewHelpFormModal.$promise.then(function () {
                     $scope.addNewHelpFormModal.show();
@@ -934,12 +935,12 @@ angular.module('primeapps')
                     $scope.setContent(template);
 
                 $scope.addNewHelpFormSideModal = $scope.addNewHelpFormSideModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/help/helpPageSide.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/help/helpPageSide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewHelpFormSideModal.$promise.then(function () {
                     $scope.addNewHelpFormSideModal.show();
@@ -982,4 +983,4 @@ angular.module('primeapps')
             };
         }
     ])
-    ;
+;
