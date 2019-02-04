@@ -2853,6 +2853,13 @@ button, select {
         line-height: 50px;
       }
     }
+    .ui-select-match-text{
+      span{
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 30px;
+      }
+    }
   }
   .menu-setup {
     .custom-menu {
@@ -3412,6 +3419,7 @@ button, select {
     align-items: center;
     line-height: 25px;
     text-align: left;
+    border-radius: 2px;
     a{
       cursor: pointer;
     }
@@ -3469,6 +3477,14 @@ button, select {
     line-height: 60px;
     text-align: center;
     font-size: 50px;
+  }
+  .extra-info
+  {
+    color: rgba(0,0,0,0.25);
+    cursor: pointer;
+    &:hover{
+      color: rgba(0,0,0,0.5);
+    }
   }
 }
 

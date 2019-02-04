@@ -2248,6 +2248,11 @@ button:focus, select:focus {
   height: 60px;
   line-height: 50px;
 }
+.primeapps .ui-select-bootstrap .ui-select-match-text span {
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 30px;
+}
 .primeapps .menu-setup .custom-menu {
   font-size: 16px;
   font-weight: bold;
@@ -2734,6 +2739,7 @@ button:focus, select:focus {
   align-items: center;
   line-height: 25px;
   text-align: left;
+  border-radius: 2px;
 }
 .primeapps .uploadedfilename a {
   cursor: pointer;
@@ -2785,6 +2791,13 @@ button:focus, select:focus {
   line-height: 60px;
   text-align: center;
   font-size: 50px;
+}
+.primeapps .extra-info {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.primeapps .extra-info:hover {
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .placeholder {
