@@ -1268,6 +1268,13 @@ button, select {
           line-height: 30px;
         }
       }
+      .value-map-container{
+        max-height: inherit;
+        margin: 0px;
+        padding: 20px;
+        overflow-x: inherit;
+        overflow-y: inherit;
+      }
 
     }
 

@@ -153,25 +153,23 @@
                                     </div>
                                     <div class="form-group" ng-if="currentDependency.type === 'list_value' && currentDependency.parent_field && currentDependency.child_field">
                                         <label class="col-sm-12">{{'Setup.Modules.MappingOptions' | translate}}:</label>
-                                        <div class="col-sm-12">
-                                            <div class="value-map-container">
-                                                <div class="form-group" ng-repeat="option in parentPicklist">
-                                                    <label class="col-sm-12">{{option['label_'+language]}}: </label>
-                                                    <div class="col-sm-12 multiselect-container">
-                                                        <button type="button"
-                                                                class="btn btn-default ng-animate-disabled multiselect"
-                                                                name="values"
-                                                                ng-model="currentDependency.value_maps[option.id]"
-                                                                ng-required="true"
-                                                                data-icon-checkmark="fa fa-check"
-                                                                data-placeholder="{{'Common.Multiselect' | translate}}"
-                                                                data-html="1"
-                                                                data-multiple="1"
-                                                                data-max-length="2"
-                                                                data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                                bs-options="o.id as o['label_'+language] for o in option.childPicklist | orderBy:('label_'+language)"
-                                                                bs-select></button>
-                                                    </div>
+                                        <div class="col-sm-12 value-map-container">
+                                            <div class="form-group" ng-repeat="option in parentPicklist">
+                                                <label class="col-sm-12">{{option['label_'+language]}}: </label>
+                                                <div class="col-sm-12 multiselect-container">
+                                                    <button type="button"
+                                                            class="form-control ng-animate-disabled multiselect"
+                                                            name="values"
+                                                            ng-model="currentDependency.value_maps[option.id]"
+                                                            ng-required="true"
+                                                            data-icon-checkmark="fa fa-check"
+                                                            data-placeholder="{{'Common.Multiselect' | translate}}"
+                                                            data-html="1"
+                                                            data-multiple="1"
+                                                            data-max-length="2"
+                                                            data-max-length-html="{{'Common.Multiselected' | translate}}"
+                                                            bs-options="o.id as o['label_'+language] for o in option.childPicklist | orderBy:('label_'+language)"
+                                                            bs-select></button>
                                                 </div>
                                             </div>
                                         </div>

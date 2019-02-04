@@ -1009,6 +1009,13 @@ button:focus, select:focus {
 .primeapps .setup-modal .modal-body .dragable i, .primeapps .module-modal .modal-body .dragable i {
   line-height: 30px;
 }
+.primeapps .setup-modal .modal-body .value-map-container, .primeapps .module-modal .modal-body .value-map-container {
+  max-height: inherit;
+  margin: 0px;
+  padding: 20px;
+  overflow-x: inherit;
+  overflow-y: inherit;
+}
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
   height: 100%;
