@@ -2854,10 +2854,15 @@ button, select {
       }
     }
     .ui-select-match-text{
+      
       span{
-        font-weight: bold;
-        font-size: 12px;
+        font-family:"Nunito", sans-serif ;
+        font-size: 13px;
         line-height: 30px;
+        &:before{
+          display: inline-block;
+          font: normal normal normal 14px/1 FontAwesome;
+        }
       }
     }
   }

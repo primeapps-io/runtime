@@ -2249,9 +2249,13 @@ button:focus, select:focus {
   line-height: 50px;
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text span {
-  font-weight: bold;
-  font-size: 12px;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
   line-height: 30px;
+}
+.primeapps .ui-select-bootstrap .ui-select-match-text span:before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
 }
 .primeapps .menu-setup .custom-menu {
   font-size: 16px;
