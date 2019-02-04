@@ -73,11 +73,16 @@
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
 }
-.newupload .uploadlink:hover input ~ span, .newupload .uploadlink:focus input ~ span {
+.newupload .uploadlink input:hover ~ span, .newupload .uploadlink input:focus ~ span, .newupload .uploadlink input.nv-file-over ~ span {
   color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.25);
 }
-.newupload .uploadlink:hover input ~ span:before, .newupload .uploadlink:focus input ~ span:before {
+.newupload .uploadlink input:hover ~ span:before, .newupload .uploadlink input:focus ~ span:before, .newupload .uploadlink input.nv-file-over ~ span:before {
   border-color: rgba(0, 0, 0, 0.25);
+  left: 15px;
+  top: 15px;
+  width: calc(100% - 30px);
+  height: calc(100% - 30px);
 }
 
 .resultimg {
@@ -999,7 +1004,7 @@ button:focus, select:focus {
   padding: 0px;
 }
 .primeapps .setup-modal .modal-body .dragable, .primeapps .module-modal .modal-body .dragable {
-  padding: 0px 6px;
+  padding: 0px 6px !important;
 }
 .primeapps .setup-modal .modal-body .dragable i, .primeapps .module-modal .modal-body .dragable i {
   line-height: 30px;

@@ -75,17 +75,21 @@ $primeapps-color: #0D6FAA;
           @include hoverEffect();
         }
       }
-    }
-    &:hover, &:focus {
-      input {
+      &:hover, &:focus, &.nv-file-over {
         ~ span {
           color: rgba(0, 0, 0, 0.5);
+          background: rgba(0, 0, 0, 0.25);
           &:before {
             border-color: rgba(0, 0, 0, 0.25);
+            left: 15px;
+            top: 15px;
+            width: calc(100% - 30px);
+            height: calc(100% - 30px);
           }
         }
       }
     }
+    
   }
 }
 
@@ -1259,7 +1263,7 @@ button, select {
       overflow-y: unset !important;
       padding: 0px;
       .dragable{
-        padding: 0px 6px;
+        padding: 0px 6px !important;
         i{
           line-height: 30px;
         }
