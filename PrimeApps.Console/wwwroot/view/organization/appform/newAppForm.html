@@ -80,8 +80,19 @@
                                             class="required-label">(required)</span></label>
                                     <div class="newupload" ng-if="uploader.queue.length == 0">
                                         <label class="uploadlink">
-                                            <input type="file" nv-file-select uploader="uploader" nv-file-over
-                                                   over-class="file-drag-over" ng-disabled="croppedImage">
+
+                                            <div ng-show="uploader.isHTML5">
+                                                <div nv-file-drop="" uploader="uploader">
+                                                    <div nv-file-over="" uploader="uploader"
+                                                         over-class="another-file-over-class" class="well my-drop-zone">
+                                                        Another drop zone with its own settings
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="file" nv-file-select uploader="uploader"
+                                                   nv-file-over
+                                                   ng-disabled="croppedImage">
                                             <span>
                                                 <i class="fas fa-cloud-upload-alt"></i>
                                                 <small>Please choose a file or drag it here</small>
