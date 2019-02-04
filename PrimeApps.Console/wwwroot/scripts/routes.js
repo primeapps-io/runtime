@@ -1403,7 +1403,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.report', {
-                    url: 'report?:id',
+                    url: '/report?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/analytics/reports/report.html',
