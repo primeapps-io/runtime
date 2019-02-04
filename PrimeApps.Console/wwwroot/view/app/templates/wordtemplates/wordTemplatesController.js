@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService',
-        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService) {
+    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper',
+        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper) {
 
             $scope.$parent.menuTopTitle = "Templates";
             // $scope.$parent.activeMenu = 'templates';
@@ -70,6 +70,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (template) {
                 if (template) {
+                    // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrl(template);
                 }
@@ -89,65 +90,125 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.fileUpload = {
-                settings: {
-                    multi_selection: false,
-                    unique_names: false,
-                    url: 'storage/upload_template',
-                    chunk_size: '256kb',
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $scope.appId
-                    },
-                    filters: {
-                        mime_types: [
-                            { title: "Template Files", extensions: "doc,docx" },
-                        ],
-                        max_file_size: "10mb"
-                    }
+            // $scope.fileUpload = {
+            //     settings: {
+            //         multi_selection: false,
+            //         unique_names: false,
+            //         url: 'storage/upload_template',
+            //         chunk_size: '256kb',
+            //         queueLimit: 1,
+            //         headers: {
+            //             'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+            //             'Accept': 'application/json',
+            //             'X-Organization-Id': $rootScope.currentOrgId,
+            //             'X-App-Id': $scope.appId
+            //         },
+            //         filters: {
+            //             mime_types: [
+            //                 { title: "Template Files", extensions: "doc,docx" },
+            //             ],
+            //             max_file_size: "10mb"
+            //         }
+            //     },
+            //     events: {
+            //         fileUploaded: function (uploader, file, response) {
+            //             var resp = JSON.parse(response.response);
+            //             var template = {
+            //                 name: $scope.template.templateName,
+            //                 module: $scope.template.templateModule.name,
+            //                 template_type: 'module',
+            //                 content: resp.unique_name,
+            //                 content_type: resp.content_type,
+            //                 chunks: resp.chunks,
+            //                 subject: "Word",
+            //                 active: $scope.template.active
+            //             };
+            //
+            //             if (!$scope.template.id) {
+            //                 WordTemplatesService.create(template)
+            //                     .then(function () {
+            //                         success();
+            //                         $scope.changePage(1);
+            //                         $scope.pageTotal = $scope.pageTotal + 1;
+            //                     })
+            //                     .catch(function () {
+            //                         $scope.saving = false;
+            //                     });
+            //             }
+            //             else {
+            //                 template.id = $scope.template.id;
+            //
+            //                 WordTemplatesService.update(template)
+            //                     .then(function () {
+            //                         success();
+            //                     })
+            //                     .catch(function () {
+            //                         $scope.saving = false;
+            //                     });
+            //             }
+            //         }
+            //     }
+            // };
+            var fileUpload = $scope.fileUpload = new FileUploader({
+                url: 'storage/upload_template',
+                chunk_size: '256kb',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'X-App-Id': $scope.appId
                 },
-                events: {
-                    fileUploaded: function (uploader, file, response) {
-                        var resp = JSON.parse(response.response);
-                        var template = {
-                            name: $scope.template.templateName,
-                            module: $scope.template.templateModule.name,
-                            template_type: 'module',
-                            content: resp.unique_name,
-                            content_type: resp.content_type,
-                            chunks: resp.chunks,
-                            subject: "Word",
-                            active: $scope.template.active
-                        };
+                queueLimit: 1
+            });
 
-                        if (!$scope.template.id) {
-                            WordTemplatesService.create(template)
-                                .then(function () {
-                                    success();
-                                    $scope.changePage(1);
-                                    $scope.pageTotal = $scope.pageTotal + 1;
-                                })
-                                .catch(function () {
-                                    $scope.saving = false;
-                                });
-                        }
-                        else {
-                            template.id = $scope.template.id;
+            fileUpload.onAfterAddingFile = function (item) {
 
-                            WordTemplatesService.update(template)
-                                .then(function () {
-                                    success();
-                                })
-                                .catch(function () {
-                                    $scope.saving = false;
-                                });
-                        }
-                    }
+                var reader = new FileReader();
+
+                // reader.onload = function (event) {
+                //     $scope.$apply(function () {
+                //         item.template = event.target.result;
+                //     });
+                // };
+                reader.readAsDataURL(item._file);
+            };
+
+            fileUpload.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'docFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.DocumentTypeError'));
+                        break;
+                    case 'sizeFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
+                        break;
                 }
-            }
-            ;
+            };
+
+            fileUpload.filters.push({
+                name: 'docFilter',
+                fn: function (item, options) {
+                    var extension = helper.getFileExtension(item.name);
+                    return true ? (extension == 'docx' || extension == 'doc') : false;
+                }
+            });
+
+            fileUpload.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 10485760;//10 mb
+                }
+            });
+
+            $scope.remove = function () {
+                if (fileUpload.queue[0]) {
+                    fileUpload.queue[0].remove();
+                    $scope.templateFileCleared=true;
+                }
+                else {
+                    $scope.template.content = undefined;
+                    $scope.templateFileCleared=true;
+                }
+            };
 
             $scope.save = function (uploadForm) {
 
@@ -155,13 +216,31 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
+                var header = {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'X-App-Id': $scope.appId
+                };
 
                 if (!$scope.template.id) {
-                    $scope.fileUpload.uploader.start();
+                    fileUpload.queue[0].uploader.headers = header;
+                    fileUpload.queue[0].headers = header;
+                    fileUpload.queue[0].upload();
+                    fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
+                        uploadThenComplete(fileItem, tempInfo, status);
+                    };
+                    //$scope.fileUpload.uploader.start();
                 }
                 else {
                     if ($scope.templateFileCleared) {
-                        $scope.fileUpload.uploader.start();
+                        fileUpload.queue[0].uploader.headers = header;
+                        fileUpload.queue[0].headers = header;
+                        fileUpload.queue[0].upload();
+                        fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
+                            uploadThenComplete(fileItem, tempInfo, status);
+                        };
+                        //$scope.fileUpload.uploader.start();
                     }
                     else {
                         var template = angular.copy($scope.template);
@@ -186,12 +265,7 @@ angular.module('primeapps')
                     templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
-                    show: false//,
-                    //controller: function () {
-                    //    ModuleService.getModules().then(function (response) {
-                    //        $scope.modules = response.data;
-                    //    });
-                    //}
+                    show: false
                 });
 
                 $scope.wordTemplateGuideModal.$promise.then(function () {
@@ -404,6 +478,45 @@ angular.module('primeapps')
                             });
                         }
                     });
+            };
+
+            var uploadThenComplete = function (fileItem, tempInfo, status) {
+
+                if (status === 200) {
+
+                    var template = {
+                        name: $scope.template.templateName,
+                        module: $scope.template.templateModule.name,
+                        template_type: 'module',
+                        content: tempInfo.unique_name,
+                        content_type: tempInfo.content_type,
+                        chunks: tempInfo.chunks,
+                        subject: "Word",
+                        active: $scope.template.active
+                    };
+                    if (!$scope.template.id) {
+                        WordTemplatesService.create(template)
+                            .then(function () {
+                                success();
+                                $scope.changePage(1);
+                                $scope.pageTotal = $scope.pageTotal + 1;
+                            })
+                            .catch(function () {
+                                $scope.saving = false;
+                            });
+                    }
+                    else {
+                        template.id = $scope.template.id;
+
+                        WordTemplatesService.update(template)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                $scope.saving = false;
+                            });
+                    }
+                }
             };
         }
     ]);
