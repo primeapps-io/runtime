@@ -36,7 +36,7 @@ angular.module('primeapps')
 
                 ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
-                        swal($filter('translate')('Güncelleme Başarılı'), "success");
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
                     });
             };
 
