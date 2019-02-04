@@ -5,6 +5,7 @@ angular.module('primeapps')
     .controller('ProcessesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'ModuleService', 'ProcessesService', 'operators',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
+            $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
@@ -475,7 +476,7 @@ angular.module('primeapps')
                 if (isEdit && process.approver_type === 'staticApprover')
                     return;
 
-                var dynamicprocessModules = [];
+                $scope.dynamicprocessModules = [];
                 // var processObj = {};
 
                 var currentModule;
@@ -499,13 +500,16 @@ angular.module('primeapps')
                                 .then(function (response) {
                                     if (response)
                                         processObj.module.fields = response.data;
-                                });
 
-                            processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
-                            processObj.isSameModule = false;
-                            processObj.systemName = field.name;
-                            processObj.id = id;
-                        } else {
+                                    processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                    processObj.isSameModule = false;
+                                    processObj.systemName = field.name;
+                                    processObj.id = id;
+                                    $scope.dynamicprocessModules.push(processObj);
+                                    id++;
+                                });
+                        }
+                        else {
                             var tempModule = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             processObj.module = tempModule;
 
@@ -513,19 +517,19 @@ angular.module('primeapps')
                                 .then(function (response) {
                                     if (response)
                                         processObj.module.fields = response.data;
-                                });
 
-                            processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
-                            processObj.isSameModule = false;
-                            processObj.systemName = field.name;
-                            processObj.id = id;
+                                    processObj.name = field['label_' + $rootScope.language] + ' ' + '(' + processObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                    processObj.isSameModule = false;
+                                    processObj.systemName = field.name;
+                                    processObj.id = id;
+                                    $scope.dynamicprocessModules.push(processObj);
+                                    id++;
+                                });
                         }
-                        dynamicprocessModules.push(processObj);
-                        id++;
                     }
                 });
 
-                $scope.dynamicprocessModules = angular.copy(dynamicprocessModules);
+                //$scope.dynamicprocessModules = angular.copy(dynamicprocessModules);
             };
 
             $scope.firstApproverLookupChange = function (isEdit, process) {
@@ -535,7 +539,7 @@ angular.module('primeapps')
                 $scope.firstDynamicApproverFields = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
                 ModuleService.getModuleFields($scope.firstDynamicApproverFields.name)
                     .then(function (response) {
-                        if (response)
+                        if (response.data) 
                             $scope.firstDynamicApproverFields.fields = response.data;
                     });
 
@@ -551,6 +555,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.secondDynamicApproverFields = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
+
+                ModuleService.getModuleFields($scope.secondDynamicApproverFields.name)
+                    .then(function (response) {
+                        if (response)
+                            $scope.secondDynamicApproverFields.fields = response.data;
+                    });
 
                 if (!isEdit) {
                     if ($scope.workflowModel.second_approver_field)
