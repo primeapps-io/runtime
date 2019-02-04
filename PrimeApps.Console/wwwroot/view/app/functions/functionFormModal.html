@@ -1,0 +1,79 @@
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <div ng-if="modalLoading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+    <form ng-if="!modalLoading" name="functionFormValidation" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
+          novalidate>
+
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">Create Function</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="!editing ? $parent.$parent.$parent.function = {} : null; createFormModal.hide();" ng-disabled="saving">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="saving" style="margin-left: 5px">
+                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-dialog">
+            <div class="modal-content padding-0">
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group"
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
+                                    <label class="col-sm-4 required-field">* Name: </label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-6"
+                                           required
+                                           maxlength="200"
+                                           ng-disabled="editing"
+                                           focus="true"
+                                           ng-model="function.name" />
+                                </div>
+                                
+                                <div class="form-group"
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
+                                    <label class="col-sm-4 required-field">* Handler: </label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-6"
+                                           required
+                                           ng-disabled="editing"
+                                           focus="true"
+                                           ng-model="function.handler" />
+                                </div>
+
+                                <div class="form-group"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.type.$invalid}">
+                                    <label class="col-sm-4 required-field">* Runtime: </label>
+                                    <select
+                                            name="type"
+                                            class="form-control ng-animate-disabled col-sm-8"
+                                            required
+                                            ng-model="function.runtime"
+                                            ng-disabled="editing"
+                                            ng-options="o.value as o.name for o in runtimes">
+                                        <option value="">Select Runtime</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
