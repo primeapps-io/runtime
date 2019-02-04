@@ -111,7 +111,7 @@ angular.module('primeapps')
                             $scope.tree = $scope.rolesToTree(response.data);
 
                             $scope.roleDeleting = false;
-                            swal($filter('translate')('Setup.Roles.DeleteSuccess'), "success");
+                            toastr.success($filter('translate')('Setup.Roles.DeleteSuccess'));
 
                             // LayoutService.getMyAccount(true);
 
@@ -214,7 +214,7 @@ angular.module('primeapps')
                         if (roleChange)
                             successMess = 'Setup.Roles.LongSaveSuccess';
 
-                        swal($filter('translate')(successMess), "", "success");
+                        toastr.success($filter('translate')(successMess));
                         $scope.addNewRoleFormModal.hide();
                         $state.go('studio.app.roles');
                         $scope.loading = true;

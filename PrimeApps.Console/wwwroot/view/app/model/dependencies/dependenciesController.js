@@ -317,7 +317,7 @@ angular.module('primeapps')
 
                 var success = function () {
                     $scope.loading = true;
-                    swal($filter('translate')('Setup.Modules.DependencySaveSuccess'), "", "success");
+                    toastr.success($filter('translate')('Setup.Modules.DependencySaveSuccess'));
                     $scope.saving = false;
                     $scope.addNewDependencyModal.hide();
                     $scope.changePage(1);
@@ -369,7 +369,7 @@ angular.module('primeapps')
                                     // $scope.dependencies.splice(dependencyIndex, 1);
                                     $scope.changePage(1);
 									$scope.pageTotal = $scope.pageTotal - 1;
-                                    swal("Deleted!", "Dependency is deleted successfully.", "success");
+                                    toastr.success("Dependency is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {

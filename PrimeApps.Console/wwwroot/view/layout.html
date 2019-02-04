@@ -61,7 +61,7 @@
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
-                <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip
+                <a data-trigger="hover" data-type="info" data-title="{{organization.label}}" bs-tooltip
                    data-placement="right"
                    href="#/apps?orgId={{organization.id}}"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
@@ -76,7 +76,9 @@
                            href="#/organization/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"
-                           href="#"><i class="fas fa-cog"></i> <span> Manage</span></a></li>
+                           ng-class="currentPath.indexOf('manage/')>0  ? 'active' :'' "
+                           href="/#/manage"><i class="fas fa-cog"></i> <span> Manage</span></a>
+                    </li>
                 </ul>
             </li>
 

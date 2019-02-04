@@ -348,14 +348,14 @@ angular.module('primeapps')
                     $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
                     $scope.changePage(1);
-                    swal($filter('translate')('Template.SuccessMessage'), "", "success");
+                    toastr.success($filter('translate')('Template.SuccessMessage'));
                 }
                 else {
                     result = EmailTemplatesService.create(template);
                     $scope.saving = false;
                     $scope.addNewEmailTemplateFormModal.hide();
                     $scope.changePage(1);
-                    swal($filter('translate')('Template.SuccessMessage'), "", "success");
+                    toastr.success($filter('translate')('Template.SuccessMessage'));
                 }
 
                 // result.then(function (saveResponse) {
@@ -364,7 +364,7 @@ angular.module('primeapps')
                 //         .then(function (listResponse) {
                 //             $scope.templates = listResponse.data;
                 //             $scope.template = saveResponse.data.id;
-                //             swal($filter('translate')('Template.SuccessMessage'), "success");   
+                //             toastr.success($filter('translate')('Template.SuccessMessage'));
                 //         });
                 // });
             };
@@ -408,7 +408,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
                                     $scope.templates.splice(templateToDeleteIndex, 1);
-                                    swal("Deleted!", "Email template is deleted successfully.", "success");
+                                    toastr.success("Email template is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {

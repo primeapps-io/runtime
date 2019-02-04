@@ -12,153 +12,153 @@
         </div>
 
         <div class="modal-dialog scroll-style-4">
-            <div ng-if="loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div ng-if="guideLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
             <div class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
                         <div id="field-form-body" class="modal-body">
                             <div class="panel">
-                                <div class="col-sm-7">
-                                    <div class="module-select clearfix" style="margin-top: 50px">
-                                        <select name="selectedModule"
-                                                class="ng-animate-disabled col-sm-6 form-control"
-                                                ng-model="selectedModule"
-                                                ng-change="moduleChanged(selectedModule)"
-                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in modules | filter:{name:'!users', order: '!0'} | orderBy:'order'">
-                                            <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="table-container" ng-if="$parent.$parent.selectedModule && !loading">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{'Setup.Templates.FieldName' | translate}}</th>
-                                                    <th>{{'Setup.Templates.TagName' | translate}}</th>
-                                                    <th style="width: 30px;"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="field in $parent.$parent.selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
-                                                    <td> {{field['label_' + language]}}</td>
-                                                    <td>
-                                                        <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table class="table" ng-repeat="lookupModule in $parent.$parent.selectedModule.lookupModules">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
-                                                    <th style="width: 30px;"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
-                                                    <td> {{field['label_'+language]}}</td>
-                                                    <td>
-                                                        <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="module-select clearfix" ng-show="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length ">
-                                        <select name="selectedSubModule"
-                                                class="ng-animate-disabled col-sm-6 form-control"
-                                                ng-model="selectedSubModule"
-                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in $parent.$parent.selectedModule.relatedModules | filter:{name:'!users'} | orderBy:'order'">
-                                            <option value="">{{'Setup.Templates.SelectSubModul' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="table-container" ng-if="selectedSubModule">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{'Setup.Templates.FieldName' | translate}}</th>
-                                                    <th>{{'Setup.Templates.TagName' | translate}}</th>
-                                                    <th style="width: 30px;"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="field in selectedSubModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
-                                                    <td> {{field['label_'+language]}}</td>
-                                                    <td>
-                                                        <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table class="table" ng-repeat="lookupModule in selectedSubModule.lookupModules">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
-                                                    <th style="width: 30px;"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
-                                                    <td>{{field['label_'+language]}}</td>
-                                                    <td>
-                                                        <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                <div class="module-select clearfix form-group">
+                                    <select name="selectedModule form-control"
+                                            class="ng-animate-disabled col-sm-6 form-control"
+                                            ng-model="selectedModule"
+                                            ng-change="moduleChanged(selectedModule)"
+                                            ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in modules | filter:{name:'!users', order: '!0'} | orderBy:'order'">
+                                        <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
+                                    </select>
                                 </div>
-                                <div class="col-sm-5">
-                                    <ul class="instructions-list" style="margin-top: 50px">
-
-                                        <li ng-if="$parent.$parent.selectedModule ">{{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label"><code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span
-                                                class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{#foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i class="copy-icon fa fa-clipboard"></i></span></span>{{'Setup.Templates.TemplateGuide3' | translate}}
-                                            <span ng-bind-html="'Setup.Templates.TemplateGuide4' | translate"></span>
-                                        </li>
-                                        <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide5' | translate}}
-                                        </li>
-                                        <li ng-if="$parent.$parent.selectedModule">
-                                            {{'Setup.Templates.TemplateGuide6' | translate}}
-
-                                            <label style="background-color:#f9f2f4;color:#ca2594;font-family:Consolas"><label>{{/ </label>{{'Setup.Templates.TemplateFieldName' | translate}}<label>}}</label></label> {{'Setup.Templates.TemplateGuide7' | translate}}
-
-                                        </li>
-                                        <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label"><code>{{ "{{/foreach " + $parent.$parent.selectedModule.name + "}\}" }}</code><span
-                                                class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{/foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i
-                                                class="copy-icon fa fa-clipboard"></i></span></span> <span ng-bind-html="'Setup.Templates.TemplateGuide9' | translate"></span>
-                                        </li>
-                                        <li ng-if="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length">
-                                            {{'Setup.Templates.TemplateGuide10' | translate}}
-                                        </li>
-                                        <li ng-if="selectedSubModule">{{'Setup.Templates.TemplateGuide11' | translate}}<span class="foreach-label"><code>{{ "{{#foreach " + selectedSubModule.name + "}\}" }}</code><span
-                                                class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{#foreach ' + selectedSubModule.name + '}\}' }}"><i
-                                                class="copy-icon fa fa-clipboard"></i></span></span> {{'Setup.Templates.TemplateGuide12' | translate}}
-                                        </li>
-                                        <li ng-if="selectedSubModule ">
-                                            {{'Setup.Templates.TemplateGuide13' | translate}}
-                                        </li>
-                                        <li ng-if="selectedSubModule "> {{'Setup.Templates.TemplateGuide14' | translate}}<span
-                                                class="foreach-label"><code>{{ "{{/foreach " + selectedSubModule.name + "}\}" }}</code><span
-                                                class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
-                                                data-clipboard-text="{{ '{{/foreach ' + selectedSubModule.name + '}\}' }}"><i
-                                                class="copy-icon fa fa-clipboard"></i></span></span><span ng-bind-html="'Setup.Templates.TemplateGuide15' | translate"></span>
-                                        </li>
-                                    </ul>
+                                <div class="row" ng-if="!guideLoading && $parent.$parent.selectedModule">
+                                    <div class="col-sm-7">
+                                        <div class="tab-content">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{'Setup.Templates.FieldName' | translate}}</th>
+                                                        <th>{{'Setup.Templates.TagName' | translate}}</th>
+                                                        <th style="width: 30px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="field in $parent.$parent.selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
+                                                        <td> {{field['label_' + language]}}</td>
+                                                        <td>
+                                                            <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table" ng-repeat="lookupModule in $parent.$parent.selectedModule.lookupModules">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
+                                                        <th style="width: 30px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
+                                                        <td> {{field['label_'+language]}}</td>
+                                                        <td>
+                                                            <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div style="margin-top: 20px;" class="module-select clearfix form-group" ng-show="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length ">
+                                            <select name="selectedSubModule"
+                                                    class="ng-animate-disabled col-sm-6 form-control"
+                                                    ng-model="selectedSubModule"
+                                                    ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in $parent.$parent.selectedModule.relatedModules | filter:{name:'!users'} | orderBy:'order'">
+                                                <option value="">{{'Setup.Templates.SelectSubModul' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="tab-content" ng-if="selectedSubModule">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{'Setup.Templates.FieldName' | translate}}</th>
+                                                        <th>{{'Setup.Templates.TagName' | translate}}</th>
+                                                        <th style="width: 30px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="field in selectedSubModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
+                                                        <td> {{field['label_'+language]}}</td>
+                                                        <td>
+                                                            <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table" ng-repeat="lookupModule in selectedSubModule.lookupModules">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
+                                                        <th style="width: 30px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
+                                                        <td>{{field['label_'+language]}}</td>
+                                                        <td>
+                                                            <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}"><i class="copy-icon fa fa-clipboard"></i></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <ul class="instructions-list list-unstyled">
+                                            <li ng-if="$parent.$parent.selectedModule ">{{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label"><code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span
+                                                    class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
+                                                    data-clipboard-text="{{ '{{#foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i class="copy-icon fa fa-clipboard"></i></span></span>{{'Setup.Templates.TemplateGuide3' | translate}}
+                                                <span ng-bind-html="'Setup.Templates.TemplateGuide4' | translate"></span>
+                                            </li>
+                                            <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide5' | translate}}
+                                            </li>
+                                            <li ng-if="$parent.$parent.selectedModule">
+                                                {{'Setup.Templates.TemplateGuide6' | translate}}
+    
+                                                <label style="background-color:#f9f2f4;color:#ca2594;font-family:Consolas"><label>{{/ </label>{{'Setup.Templates.TemplateFieldName' | translate}}<label>}}</label></label> {{'Setup.Templates.TemplateGuide7' | translate}}
+    
+                                            </li>
+                                            <li ng-if="$parent.$parent.selectedModule">{{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label"><code>{{ "{{/foreach " + $parent.$parent.selectedModule.name + "}\}" }}</code><span
+                                                    class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
+                                                    data-clipboard-text="{{ '{{/foreach ' + $parent.$parent.selectedModule.name + '}\}' }}"><i
+                                                    class="copy-icon fa fa-clipboard"></i></span></span> <span ng-bind-html="'Setup.Templates.TemplateGuide9' | translate"></span>
+                                            </li>
+                                            <li ng-if="$parent.$parent.selectedModule && $parent.$parent.selectedModule.relatedModules && $parent.$parent.selectedModule.relatedModules.length">
+                                                {{'Setup.Templates.TemplateGuide10' | translate}}
+                                            </li>
+                                            <li ng-if="selectedSubModule">{{'Setup.Templates.TemplateGuide11' | translate}}<span class="foreach-label"><code>{{ "{{#foreach " + selectedSubModule.name + "}\}" }}</code><span
+                                                    class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
+                                                    data-clipboard-text="{{ '{{#foreach ' + selectedSubModule.name + '}\}' }}"><i
+                                                    class="copy-icon fa fa-clipboard"></i></span></span> {{'Setup.Templates.TemplateGuide12' | translate}}
+                                            </li>
+                                            <li ng-if="selectedSubModule ">
+                                                {{'Setup.Templates.TemplateGuide13' | translate}}
+                                            </li>
+                                            <li ng-if="selectedSubModule "> {{'Setup.Templates.TemplateGuide14' | translate}}<span
+                                                    class="foreach-label"><code>{{ "{{/foreach " + selectedSubModule.name + "}\}" }}</code><span
+                                                    class="copy-button" title="{{'Common.Copy' | translate}}" ngclipboard
+                                                    data-clipboard-text="{{ '{{/foreach ' + selectedSubModule.name + '}\}' }}"><i
+                                                    class="copy-icon fa fa-clipboard"></i></span></span><span ng-bind-html="'Setup.Templates.TemplateGuide15' | translate"></span>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>

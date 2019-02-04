@@ -678,7 +678,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");
+                        toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
             };
@@ -776,12 +776,12 @@ angular.module('primeapps')
                         ModuleService.update(processModule, processModule.id).then(function () {
                             $scope.saving = false;
                             $scope.changeOffset(1);
-                            swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
+                            toastr.success($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'));
                         });
                     } else {
                         $scope.saving = false;
                         $scope.changeOffset(1);
-                        swal($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), "", "success");
+                        toastr.success($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'));
                     }
                 };
 
@@ -819,7 +819,7 @@ angular.module('primeapps')
                     .then(function (response) {
 
                         if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
-                            swal($filter('translate')('Setup.Workflow.ProcessCanNotDelete'), "error");
+                            toastr.error($filter('translate')('Setup.Workflow.ProcessCanNotDelete'));
                             $scope.loading = false;
                         } else {
                             swal({
@@ -832,7 +832,7 @@ angular.module('primeapps')
                                 if (value) {
                                     ProcessesService.delete(id)
                                         .then(function () {
-                                            swal("Deleted!", "Approval process is deleted successfully.", "success");
+                                            toastr.success("Approval process is deleted successfully.", "Deleted!");
                                             $scope.cancel();
                                             $scope.id = null;
                                             // $state.reload();

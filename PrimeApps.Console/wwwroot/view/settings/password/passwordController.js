@@ -23,7 +23,7 @@ angular.module('primeapps')
                             $scope.passwordForm.confirm.$setPristine();
                             $scope.passwordForm.$setPristine();
                             $scope.passwordUpdating = false;
-                            swal($filter('translate')('Setup.Settings.PasswordSuccess'), "", "success");
+                            toastr.success($filter('translate')('Setup.Settings.PasswordSuccess'));
                         })
                         .catch(function (response) {
                             if (response.status === 400)

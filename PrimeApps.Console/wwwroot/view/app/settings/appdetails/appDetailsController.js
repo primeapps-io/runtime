@@ -68,7 +68,7 @@ angular.module('primeapps')
             $scope.save = function () {
                 AppDetailsService.update($scope.appId, $scope.appModel)
                     .then(function (response) {
-                        swal($filter('translate')('Güncelleme Başarılı'), "success");
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
                     });
             };
         }

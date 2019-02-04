@@ -88,18 +88,18 @@ angular.module('primeapps')
                                     .then(function () {
                                         $scope.changePage(1);
 										$scope.pageTotal = $scope.pageTotal - 1;
-                                        swal("Deleted!", "Filter is deleted successfully.", "success");
+                                        toastr.success("Filter is deleted successfully.", "Deleted!");
                                     }).catch(function () {
-                                        $scope.customViews = $scope.customViewsState;
+                                    $scope.customViews = $scope.customViewsState;
 
-                                        if ($scope.addNewFiltersModal) {
-                                            $scope.addNewFiltersModal.hide();
-                                            $scope.saving = false;
-                                        }
-                                    });
+                                    if ($scope.addNewFiltersModal) {
+                                        $scope.addNewFiltersModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
                             }
                             else {
-                                swal($filter('translate')('Setup.Modules.OneView'), "", "warning");
+                                toastr.warning($filter('translate')('Setup.Modules.OneView'));
                                 return;
                             }
                         }
@@ -130,6 +130,7 @@ angular.module('primeapps')
                 }
                 else {
                     $scope.view = {};
+                    $scope.module = undefined;
                     //moduleChanged($scope.module, true);
                 }
                 $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
@@ -236,8 +237,8 @@ angular.module('primeapps')
                             }
                             dragular();
                         }).finally(function () {
-                            $scope.loading = false;
-                        });
+                        $scope.loading = false;
+                    });
                 });
             };
 
@@ -429,7 +430,7 @@ angular.module('primeapps')
                             viewState.active_view = response.data.id;
 
                             success();
-							$scope.pageTotal = $scope.pageTotal + 1;
+                            $scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function (data) {
                             error(data.data, data.status);
@@ -453,7 +454,7 @@ angular.module('primeapps')
 
                 function success() {
                     //swal("Good job!", "You clicked the button!", "success");
-                    swal("Filter is saved successfully.", "", "success");
+                    toastr.success("Filter is saved successfully.");
                     //$state.go('studio.app.filters');
                     $scope.addNewFiltersModal.hide();
                     $scope.changePage(1);

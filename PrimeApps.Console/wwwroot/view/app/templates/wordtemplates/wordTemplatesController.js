@@ -94,6 +94,7 @@ angular.module('primeapps')
                     multi_selection: false,
                     unique_names: false,
                     url: 'storage/upload_template',
+                    chunk_size: '256kb',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
@@ -102,9 +103,9 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                            { title: "Template Files", extensions: "doc,docx" },
                         ],
-                        max_file_size: "50mb"
+                        max_file_size: "10mb"
                     }
                 },
                 events: {
@@ -226,7 +227,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 //  $state.go('studio.app.templatesWord');
-                swal($filter('translate')('Setup.Templates.SaveSuccess'), "", "success");
+                toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
             };
 
@@ -300,7 +301,7 @@ angular.module('primeapps')
             };
 
             $scope.moduleChanged = function (selectedModule) {
-                $scope.loading = true;
+                $scope.guideLoading = true;
                 ModuleService.getModuleByName(selectedModule.name).then(function (response) {
                     $scope.selectedModule = response.data;
                     $scope.lookupModules = getLookupModules($scope.selectedModule);
@@ -322,7 +323,7 @@ angular.module('primeapps')
                         getLookupModules(quoteProductsModule);
                         module.relatedModules.push(quoteProductsModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 }
 
@@ -333,7 +334,7 @@ angular.module('primeapps')
                         getLookupModules(orderProductsModule);
                         module.relatedModules.push(orderProductsModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 }
 
@@ -357,11 +358,11 @@ angular.module('primeapps')
 
                         module.relatedModules.push(relatedModule);
                     }).finally(function () {
-                        $scope.loading = false;
+                        $scope.guideLoading = false;
                     });
                 });
 
-                $scope.loading = false;
+                $scope.guideLoading = false;
                 addNoteModuleRelation(module);
             };
 
@@ -393,7 +394,7 @@ angular.module('primeapps')
                             WordTemplatesService.delete(id).then(function () {
                                 $scope.changePage(1);
                                 $scope.pageTotal = $scope.pageTotal - 1;
-                                swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
+                                toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
                                 $scope.templates = $scope.templatesState;
                                 if ($scope.addNewWordTemplateFormModal) {

@@ -109,6 +109,7 @@ angular.module('primeapps')
                     multi_selection: false,
                     unique_names: false,
                     url: 'storage/upload_template',
+                    chunk_size: '256kb',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
                         'Accept': 'application/json',
@@ -117,9 +118,9 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                            { title: "Template Files", extensions: "xls,xlsx" },
                         ],
-                        max_file_size: "50mb"
+                        max_file_size: "10mb"
                     }
                 },
                 events: {
@@ -218,7 +219,7 @@ angular.module('primeapps')
                 $scope.saving = false;
                 $scope.addNewExcelTemplateFormModal.hide();
                 $scope.changePage(1);
-                swal($filter('translate')('Setup.Templates.SaveSuccess'), "", "success");
+                toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
             };
 
@@ -243,7 +244,7 @@ angular.module('primeapps')
                             ExcelTemplatesService.delete(id).then(function () {
                                 $scope.changePage(1);
                                 $scope.pageTotal = $scope.pageTotal - 1;
-                                swal($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "", "success");
+                                toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
                                 $scope.templates = $scope.templatesState;
 

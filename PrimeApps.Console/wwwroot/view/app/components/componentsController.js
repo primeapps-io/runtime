@@ -48,7 +48,7 @@ angular.module('primeapps')
                         $scope.pageTotal = response.data;
 
                         if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.changeOffset($scope.requestModel.offset - 1);
+                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
 
                         ComponentsService.find($scope.requestModel)
@@ -119,7 +119,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
-                        swal("Component is created successfully.", "", "success");
+                        toastr.success("Component is created successfully.");
                         $state.go('studio.app.componentDetail', {id: response.data});
                     })
             };
@@ -137,7 +137,7 @@ angular.module('primeapps')
                             if (id) {
                                 ComponentsService.delete(id)
                                     .then(function (response) {
-                                        swal("Deleted!", "Component is deleted successfully.", "success");
+                                        toastr.success("Component is deleted successfully.", "Deleted!");
                                         $scope.reload();
                                     });
                             }

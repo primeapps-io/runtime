@@ -49,12 +49,11 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Organization>> GetByUserId(int userId)
+        public async Task<List<OrganizationUser>> GetByUserId(int userId)
         {
             return await DbContext.OrganizationUsers
                 .Include(x => x.Organization)
                 .Where(x => x.UserId == userId && !x.Organization.Deleted)
-                .Select(x => x.Organization)
                 .ToListAsync();
         }
 

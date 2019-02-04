@@ -26,6 +26,19 @@
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
+                                <ul class="nav nav-tabs primetabs">
+                                    <li class="col-xs-6 active"><a href="#tab1" data-toggle="tab">{{'Setup.HelpGuide.SelectModule' | translate}}</a></li>
+                                    <li class="col-xs-6"><a href="#tab2" data-toggle="tab">Other</a></li>
+                                </ul>
+                                <div class="primetabs-content">
+                                    <div id="tab1" class="tab-pane fade in active">
+                                        
+                                        <p>Some content.</p>
+                                    </div>
+                                    <div id="tab2" class="tab-pane fade">
+                                        <p>Some content in menu 1.</p>
+                                    </div>
+                                </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div class="col-sm-5">
                                         <p><label class="radio-inline newinput">
@@ -34,7 +47,7 @@
                                         </label></p>
                                         <p><label class="radio-inline newinput">
                                             <input type="radio" style="margin-right: 5px" name="locale" value="settings" ng-model="helpModalObj.selectHelp" ng-change="radioButtonTemplateClear()"/>
-                                            {{'Setup.HelpGuide.SelectModule' | translate}}<span></span>
+                                            Other<span></span>
                                         </label></p>
                                     </div>
                                     <div class="col-sm-7" ng-show="helpModalObj.selectHelp == 'modules'">

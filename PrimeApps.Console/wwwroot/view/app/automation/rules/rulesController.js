@@ -128,6 +128,7 @@ angular.module('primeapps')
 
 
             var selectRule = function () {
+                $scope.modalLoading = true;
                 ModuleService.getPickItemsLists(activityModule, false)
                     .then(function (picklistsActivity) {
                         $scope.picklistsActivity = picklistsActivity;
@@ -171,12 +172,12 @@ angular.module('primeapps')
 
                                                 $scope.filters.push(filter);
                                             }
-
+                                            
                                             if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
                                                 $scope.picklistsModule = picklists;
                                                 $scope.getSendNotificationUpdatableModules($scope.module);
                                                 $scope.getDynamicFieldUpdateModules($scope.module);
-                                                //TODO
+
                                                 $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                 $scope.getUpdatableModules();
                                                 $scope.generateHookModules();
@@ -202,7 +203,6 @@ angular.module('primeapps')
                                                             $scope.picklistsModule = picklistUpdateModule;
                                                             $scope.getSendNotificationUpdatableModules($scope.module);
                                                             $scope.getDynamicFieldUpdateModules($scope.module);
-                                                            //TODO
                                                             $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                             $scope.getUpdatableModules();
                                                             $scope.generateHookModules();
@@ -216,6 +216,7 @@ angular.module('primeapps')
                                             $scope.lastStepClicked = true;
                                             $scope.loading = false;
                                             $scope.modalLoading = false;
+
                                         });
                                     $scope.modalLoading = false;
                                 });
@@ -1413,7 +1414,7 @@ angular.module('primeapps')
                     $scope.cancel();
                     $scope.changePage(1);
 
-                    swal($filter('translate')('Setup.Workflow.SubmitSuccess'), "", "success");
+                    toastr.success($filter('translate')('Setup.Workflow.SubmitSuccess'));
                 };
 
                 if (!$scope.id) {
@@ -1464,7 +1465,7 @@ angular.module('primeapps')
                                 $scope.id = null;
                                 $scope.changePage(1);
                                 //$state.reload();
-                                swal("Deleted!", "Rule is deleted successfully.", "success");
+                                toastr.success("Rule is deleted successfully.", "Deleted!");
                             });
                     }
                 });
@@ -1500,7 +1501,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(parameter);
                     }
                     else {
-                        swal($filter('translate')('Setup.Workflow.MaximumHookWarning'), "warning");
+                        toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
                 var lastHookParameter = $scope.hookParameters[$scope.hookParameters.length - 1];
@@ -1549,10 +1550,10 @@ angular.module('primeapps')
                 uploader_image.onWhenAddingFileFailed = function (item, filter, options) {
                     switch (filter.name) {
                         case 'imgFilter':
-                            swal(fileFilterWarring, "warning");
+                            toastr.warning(fileFilterWarring);
                             break;
                         case 'sizeFilter':
-                            swal(fileSizerWarring, "warning");
+                            toastr.warning(fileSizerWarring);
                             break;
                     }
                 };

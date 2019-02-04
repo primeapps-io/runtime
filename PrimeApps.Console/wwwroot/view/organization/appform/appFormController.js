@@ -25,7 +25,7 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
-                swal($filter('translate')('Common.NotFound'), "warning");
+                toastr.warning($filter('translate')('Common.NotFound'));
                 $state.go('studio.allApps');
                 return;
             }
@@ -44,10 +44,10 @@ angular.module('primeapps')
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
                     case 'imageFilter':
-                        swal($filter('translate')('Setup.Settings.ImageError'), "warning");
+                        toastr.warning($filter('translate')('Setup.Settings.ImageError'));
                         break;
                     case 'sizeFilter':
-                        swal($filter('translate')('Setup.Settings.SizeError'), "warning");
+                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
                         break;
                 }
             };
@@ -229,7 +229,7 @@ angular.module('primeapps')
                                         $scope.appFormModal.hide();
                                         $scope.appModel = {};
                                         $scope.logoRemove();
-                                        swal($filter('translate')('App successfully created.'), "success");
+                                        toastr.success($filter('translate')('App successfully created.'));
                                         $scope.nameValid = null;
                                         $scope.nameBlur = false;
                                         $state.go('studio.app.overview', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
@@ -238,7 +238,7 @@ angular.module('primeapps')
                         };
                     })
                     .catch(function () {
-                        swal('App ' + $scope.appModel.label + ' not created.', "error");
+                        toastr.error('App ' + $scope.appModel.label + ' not created.');
                         $scope.appSaving = false;
                     });
             };

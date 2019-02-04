@@ -223,6 +223,7 @@ namespace PrimeApps.Console.Controllers
                 Label = organization.Label,
                 Icon = organization.Icon,
                 OwnerId = organization.OwnerId,
+                Default = organization.Default,
                 Teams = organization.Teams.Where(x => !x.Deleted).Select(x =>
                     new TeamModel
                     {
@@ -343,6 +344,9 @@ namespace PrimeApps.Console.Controllers
 
             var organization = await _organizationRepository.Get(AppUser.Id, id);
 
+            organization.Label = model.Label;
+            organization.Icon = model.Icon;
+
             if (organization == null)
                 return NotFound(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
@@ -358,6 +362,9 @@ namespace PrimeApps.Console.Controllers
 
             if (organization == null)
                 return NotFound(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, organization.Id, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
 
             await _organizationRepository.Delete(organization);
 

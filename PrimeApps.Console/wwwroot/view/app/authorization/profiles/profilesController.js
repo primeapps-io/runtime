@@ -223,7 +223,7 @@ angular.module('primeapps')
                     $scope.saving = false;
                     $scope.profileFormModal.hide();
                     $scope.changePage(1);
-                    swal($filter('translate')('Setup.Profiles.SubmitSuccess'), "success");
+                    toastr.success($filter('translate')('Setup.Profiles.SubmitSuccess'));
                 }).catch(function () {
                     $scope.profileSubmit = false;
                 });
@@ -290,7 +290,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
                                     $scope.profiles.splice(profileToDeleteIndex, 1);
-                                    swal("Deleted!", "Profile is deleted successfully.", "success");
+                                    toastr.success('Profile is deleted successfully.', 'Deleted!');
 
                                 })
                                 .catch(function () {

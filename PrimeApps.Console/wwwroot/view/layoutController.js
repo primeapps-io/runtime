@@ -253,7 +253,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     getMyOrganizations();
                     $scope.changeOrganization(copyOrganization);
                     $scope.menuOpen[response.data] = true;
-                    swal('Organization ' + $scope.organization.label + ' successfully created.', "success");   
+                    toastr.success('Organization ' + $scope.organization.label + ' successfully created.');   
                     $scope.organizationSaving = false;
                     $scope.organization = {};
                     $scope.organizationFormModal.hide();
@@ -264,7 +264,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 })
                 .catch(function () {
-                    swal('Organization ' + $scope.organization.label + ' not created.', "error");   
+                    toastr.error('Organization ' + $scope.organization.label + ' not created.');   
                     $scope.organizationSaving = false;
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;

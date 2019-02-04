@@ -36,6 +36,7 @@
                                            name="label"
                                            class="form-control ng-animate-disabled col-sm-8"
                                            required
+                                           ng-blur="organizationShortnameBlur($parent.$parent.organization)"
                                            maxlength="200"
                                            focus="true"
                                            ng-change="generateOrganizationShortName($parent.$parent.organization)"

@@ -34,8 +34,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
-                    <div class="col-sm-12" ng-init="template.active = true">
+                    <label class="control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
+                    <div ng-init="template.active = true">
                         <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
                             {{'Setup.Templates.TemplateActive' | translate}}<span></span>
@@ -51,20 +51,26 @@
                 <div class="form-group">
                     <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
                     <div>
-                        <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
-                            {{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />
-                        </span> 
-                        <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span> 
-                        <a href="{{getDownloadUrl(template)}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
-                        <a class="clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
+                        <div class="uploadedfilename" ng-show="fileUpload.uploader.files.length>0 || (template.id && !templateFileCleared )">
+                            <span class="uploadedfilenamein" ng-hide="!fileUpload.uploader.files.length && template.id">{{fileUpload.uploader.files[0].name}}</span>
+                            <a class="uploadedfilenamein" href="{{getDownloadUrl(template)}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
+                            <a class="clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && template.id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fas fa-trash"></i></a>
+                        </div>
+                        <div class="newupload" ng-hide="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
+                            <label class="uploadlink" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
+                                <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file">
+                                <span>
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <small>Please choose a file or drag it here  </small>
+                                </span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
-                    <div class="col-sm-offset-3 col-sm-9">
-                        <div class="callout callout-danger">
-                            <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                        </div>
+                    <div class="callout callout-danger">
+                        <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
                     </div>
                 </div>
             </div>
