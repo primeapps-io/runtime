@@ -275,6 +275,11 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Component>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
 
+            //Functions
+            modelBuilder.Entity<Function>().HasIndex(x => x.Name);
+            modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
+            modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
+
             //ConversionMapping
             modelBuilder.Entity<ConversionMapping>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ConversionMapping>().HasIndex(x => x.UpdatedAt);
@@ -542,6 +547,7 @@ namespace PrimeApps.Model.Context
         public DbSet<Calculation> Calculations { get; set; }
         public DbSet<Dependency> Dependencies { get; set; }
         public DbSet<Component> Components { get; set; }
+        public DbSet<Function> Functions { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldCombination> FieldCombinations { get; set; }
         public DbSet<FieldValidation> FieldValidations { get; set; }

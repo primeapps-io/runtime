@@ -35,8 +35,6 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $scope.components = [];
-            $scope.loading = true;
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
@@ -65,10 +63,11 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                ComponentsService.find(requestModel).then(function (response) {
-                    $scope.components = response.data;
-                    $scope.loading = false;
-                });
+                ComponentsService.find(requestModel)
+                    .then(function (response) {
+                        $scope.components = response.data;
+                        $scope.loading = false;
+                    });
 
             };
 

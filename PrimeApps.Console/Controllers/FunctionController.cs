@@ -6,7 +6,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Console.Models;
+using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,20 +27,38 @@ namespace PrimeApps.Console.Controllers
     {
         private IFunctionHelper _functionHelper;
         private IConfiguration _configuration;
+        private IFunctionRepository _functionRepository;
         private string _kubernetesClusterRootUrl;
 
-        public FunctionController(IFunctionHelper functionHelper, IConfiguration configuration)
+        public FunctionController(IFunctionHelper functionHelper, IConfiguration configuration, IFunctionRepository functionRepository)
         {
             _functionHelper = functionHelper;
             _configuration = configuration;
+            _functionRepository = functionRepository;
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-
+            SetCurrentUser(_functionRepository, PreviewMode, AppId, TenantId);
             base.OnActionExecuting(context);
+        }
+
+        [Route("count"), HttpGet]
+        public async Task<IActionResult> Count()
+        {
+            var count = await _functionRepository.Count();
+
+            return Ok(count);
+        }
+
+        [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        {
+            var components = await _functionRepository.Find(paginationModel); ;
+
+            return Ok(components);
         }
 
         [Route("get/{name}"), HttpGet]
@@ -80,6 +101,18 @@ namespace PrimeApps.Console.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var functionObj = new Function()
+            {
+                Name = function.Name,
+                Runtime = function.Runtime,
+                Handler = function.Handler
+            };
+
+            var createResult = await _functionRepository.Create(functionObj);
+
+            if (createResult < 0)
+                return BadRequest("An error occurred while creating an function");
 
             var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
