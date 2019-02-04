@@ -75,7 +75,7 @@
 }
 .newupload .uploadlink input:hover ~ span, .newupload .uploadlink input:focus ~ span, .newupload .uploadlink input.nv-file-over ~ span {
   color: rgba(0, 0, 0, 0.5);
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.15);
 }
 .newupload .uploadlink input:hover ~ span:before, .newupload .uploadlink input:focus ~ span:before, .newupload .uploadlink input.nv-file-over ~ span:before {
   border-color: rgba(0, 0, 0, 0.25);
