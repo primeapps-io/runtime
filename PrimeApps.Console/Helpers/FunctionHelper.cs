@@ -36,18 +36,22 @@ namespace PrimeApps.Console.Helpers
 
         public JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null)
         {
-            var function = new JObject();
-            function["kind"] = "Function";
-            function["apiVersion"] = "kubeless.io/v1beta1";
-            function["metadata"] = new JObject();
+            var function = new JObject
+            {
+                ["kind"] = "Function",
+                ["apiVersion"] = "kubeless.io/v1beta1",
+                ["metadata"] = new JObject()
+            };
             function["metadata"]["name"] = model.Name;
             function["metadata"]["namespace"] = "default";
-            function["spec"] = new JObject();
-            function["spec"]["function"] = "";
-            function["spec"]["deps"] = !string.IsNullOrWhiteSpace(model.Dependencies) ? model.Dependencies : "";
-            function["spec"]["handler"] = model.Handler;
-            function["spec"]["runtime"] = model.Runtime.GetAttributeOfType<EnumMemberAttribute>().Value;
-            function["spec"]["function-content-type"] = model.ContentType.GetAttributeOfType<EnumMemberAttribute>().Value;
+            function["spec"] = new JObject
+            {
+                ["function"] = "",
+                ["deps"] = !string.IsNullOrWhiteSpace(model.Dependencies) ? model.Dependencies : "",
+                ["handler"] = model.Handler,
+                ["runtime"] = model.Runtime.GetAttributeOfType<EnumMemberAttribute>().Value,
+                ["function-content-type"] = model.ContentType.GetAttributeOfType<EnumMemberAttribute>().Value
+            };
             function["timeout"] = "180";
 
             if (functionCurrent != null && !functionCurrent.IsNullOrEmpty())

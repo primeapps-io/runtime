@@ -2,9 +2,15 @@
 
 angular.module('primeapps')
 
-    .factory('FunctionsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper',   '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper,  $cache, dataTypes, systemFields) {
+    .factory('FunctionsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields',
+        function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
             return {
+                count: function () {
+                    return $http.get(config.apiUrl + 'functions/count');
+                },
+                find: function (request) {
+                    return $http.post(config.apiUrl + 'functions/find', request);
+                },
                 get: function (name) {
                     return $http.get(config.apiUrl + 'functions/get/' + name);
                 },
@@ -28,12 +34,13 @@ angular.module('primeapps')
                 getAll: function () {
                     return $http.get(config.apiUrl + 'functions/get_all');
                 },
-                getPods: function (name){
+                getPods: function (name) {
                     return $http.get(config.apiUrl + 'functions/get_pods/' + name);
                 },
-                getLogs: function (name){
+                getLogs: function (name) {
                     return $http.get(config.apiUrl + 'functions/get_logs/' + name);
-                }
+                },
+
             };
         }]);
 
