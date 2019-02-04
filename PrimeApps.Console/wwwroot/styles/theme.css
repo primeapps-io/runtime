@@ -73,11 +73,16 @@
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
 }
-.newupload .uploadlink:hover input ~ span, .newupload .uploadlink:focus input ~ span {
+.newupload .uploadlink input:hover ~ span, .newupload .uploadlink input:focus ~ span, .newupload .uploadlink input.nv-file-over ~ span {
   color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.15);
 }
-.newupload .uploadlink:hover input ~ span:before, .newupload .uploadlink:focus input ~ span:before {
+.newupload .uploadlink input:hover ~ span:before, .newupload .uploadlink input:focus ~ span:before, .newupload .uploadlink input.nv-file-over ~ span:before {
   border-color: rgba(0, 0, 0, 0.25);
+  left: 15px;
+  top: 15px;
+  width: calc(100% - 30px);
+  height: calc(100% - 30px);
 }
 
 .resultimg {
@@ -999,10 +1004,17 @@ button:focus, select:focus {
   padding: 0px;
 }
 .primeapps .setup-modal .modal-body .dragable, .primeapps .module-modal .modal-body .dragable {
-  padding: 0px 6px;
+  padding: 0px 6px !important;
 }
 .primeapps .setup-modal .modal-body .dragable i, .primeapps .module-modal .modal-body .dragable i {
   line-height: 30px;
+}
+.primeapps .setup-modal .modal-body .value-map-container, .primeapps .module-modal .modal-body .value-map-container {
+  max-height: inherit;
+  margin: 0px;
+  padding: 20px;
+  overflow-x: inherit;
+  overflow-y: inherit;
 }
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
@@ -2236,6 +2248,15 @@ button:focus, select:focus {
   height: 60px;
   line-height: 50px;
 }
+.primeapps .ui-select-bootstrap .ui-select-match-text span {
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  line-height: 30px;
+}
+.primeapps .ui-select-bootstrap .ui-select-match-text span:before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+}
 .primeapps .menu-setup .custom-menu {
   font-size: 16px;
   font-weight: bold;
@@ -2722,6 +2743,7 @@ button:focus, select:focus {
   align-items: center;
   line-height: 25px;
   text-align: left;
+  border-radius: 2px;
 }
 .primeapps .uploadedfilename a {
   cursor: pointer;
@@ -2773,6 +2795,13 @@ button:focus, select:focus {
   line-height: 60px;
   text-align: center;
   font-size: 50px;
+}
+.primeapps .extra-info {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.primeapps .extra-info:hover {
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .placeholder {

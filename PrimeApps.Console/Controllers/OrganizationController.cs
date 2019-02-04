@@ -363,6 +363,9 @@ namespace PrimeApps.Console.Controllers
             if (organization == null)
                 return NotFound(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
+            if (organization.Default)
+                return BadRequest("Default organization cannot be deleted.");
+
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, organization.Id, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
