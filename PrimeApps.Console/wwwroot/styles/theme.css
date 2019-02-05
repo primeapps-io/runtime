@@ -2202,6 +2202,15 @@ button:focus, select:focus {
 .primeapps .module-form-setup .draggable-form .form-group {
   padding: 5px 40px 4px 5px;
 }
+.primeapps .module-form-setup .draggable-form .form-group .fa-arrows {
+  margin-top: 0px;
+  color: rgba(0, 0, 0, 0.25);
+  line-height: 16px;
+}
+.primeapps .module-form-setup .draggable-form .subpanel-heading .action-buttons .action-icon {
+  font-size: 14px;
+  margin-right: 5px;
+}
 .primeapps .ui-select-bootstrap {
   height: 40px;
   line-height: 40px;
@@ -2867,6 +2876,30 @@ button:focus, select:focus {
 .primeapps .categorylist .new-actions button:hover, .primeapps .categorylist .new-actions a:hover {
   background: #0d6faa;
   color: #FFF;
+}
+.primeapps .action-button2-plus, .primeapps .action-button2-delete {
+  width: 26px;
+  height: 26px;
+  line-height: 27px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  background: rgba(13, 111, 170, 0.5);
+  display: inline-block;
+  color: #FFF;
+  text-align: center;
+  border-radius: 50%;
+  margin: 7px 0px;
+}
+.primeapps .action-button2-plus:hover, .primeapps .action-button2-delete:hover {
+  background: #0d6faa;
+}
+.primeapps .action-button2-delete {
+  background: #E78D8F;
+}
+.primeapps .action-button2-delete:hover {
+  background: #ce0404;
 }
 
 .placeholder {
