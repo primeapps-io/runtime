@@ -70,7 +70,7 @@ angular.module('primeapps')
                 $scope.loading = true;
                 ProfilesService.find($scope.requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
+                    $scope.profilesCopy = $scope.profiles;
                     $scope.profile = {};
 
                     $scope.profile.has_admin_rights = false;
@@ -115,7 +115,6 @@ angular.module('primeapps')
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                    $scope.profilesCopy = angular.copy($scope.profiles);
                     $scope.profile = {};
 
                     $scope.profile.has_admin_rights = false;
@@ -247,9 +246,7 @@ angular.module('primeapps')
             var cloneProfile = function (profile) {
                 var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
                 $scope.profile = profile;
-                delete $scope.profile.name;
                 delete $scope.profile.user_ids;
-                delete $scope.profile.description;
                 delete $scope.profile.is_persistent;
                 delete $scope.profile.CreatedBy;
                 delete $scope.profile.id;
@@ -259,18 +256,43 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (profile, isCopy) {
+                $scope.profile = {};
+
+                $scope.profile.has_admin_rights = false;
+                $scope.profile.is_persistent = false;
+                $scope.profile.business_intelligence = false;
+                $scope.profile.send_email = false;
+                $scope.profile.send_sms = false;
+                $scope.profile.export_data = false;
+                $scope.profile.import_data = false;
+                $scope.profile.word_pdf_download = false;
+                $scope.profile.lead_convert = false;
+                $scope.profile.document_search = false;
+                $scope.profile.tasks = false;
+                $scope.profile.calendar = false;
+                $scope.profile.newsfeed = false;
+                $scope.profile.report = false;
+                $scope.profile.dashboard = true;
+                $scope.profile.home = false;
+                $scope.profile.collective_annual_leave = false;
+                $scope.profile.permissions = $filter('filter')($scope.profilesCopy, { is_persistent: true, has_admin_rights: true })[0].permissions;
+                //Create
+                var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                $scope.profile.PageStart = dashboard;
+
+
                 if (isCopy == true)
                     cloneProfile(profile);
                 if (isCopy == false)
                     editProfile(profile);
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/authorization/profiles/profileForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/authorization/profiles/profileForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });
