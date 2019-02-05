@@ -904,7 +904,7 @@ button:focus, select:focus {
   width: 2px;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.05);
-  height: 100vh;
+  height: calc(100vh - 135px);
 }
 .primeapps .modal .megalist > div.modal-menu ul li {
   white-space: nowrap;
@@ -955,13 +955,12 @@ button:focus, select:focus {
   margin: 10px;
   border-radius: 5px;
   box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 .primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
   position: relative;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
   position: relative;
@@ -1107,27 +1106,27 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal.modal-400, .primeapps .module-modal.modal-400 {
   width: 400px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .setup-modal.modal-500, .primeapps .module-modal.modal-500 {
   width: 500px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .setup-modal.modal-600, .primeapps .module-modal.modal-600 {
   width: 600px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .setup-modal.modal-700, .primeapps .module-modal.modal-700 {
   width: 700px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .setup-modal.modal-800, .primeapps .module-modal.modal-800 {
   width: 800px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .setup-modal.modal-900, .primeapps .module-modal.modal-900 {
   width: 900px !important;
-  max-width: 100% !important;
+  max-width: calc(100% - 20px) !important;
 }
 .primeapps .user-dropdown {
   padding: 20px;
@@ -2117,11 +2116,17 @@ button:focus, select:focus {
   padding: 5px 10px !important;
   font-size: 12px !important;
   font-weight: bold !important;
-  white-space: nowrap;
+  max-width: inherit !important;
+}
+.primeapps .tooltip.tooltip-info.right .tooltip-inner {
+  text-align: left;
 }
 .primeapps .tooltip.tooltip-info.right .tooltip-arrow {
   border-color: transparent !important;
   border-right-color: #0f1015 !important;
+}
+.primeapps .tooltip.tooltip-info.left .tooltip-inner {
+  text-align: right;
 }
 .primeapps .tooltip.tooltip-info.left .tooltip-arrow {
   border-color: transparent !important;
@@ -2775,7 +2780,7 @@ button:focus, select:focus {
 }
 .primeapps .primetabs-content {
   border-top: none;
-  padding: 20px 0px;
+  padding-top: 20px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }

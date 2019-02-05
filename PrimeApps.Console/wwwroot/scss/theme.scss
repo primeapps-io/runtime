@@ -1139,7 +1139,7 @@ button, select {
             width: 2px;
             border-radius: 3px;
             background: rgba(0, 0, 0, 0.05);
-            height: 100vh;
+            height: calc(100vh - 135px);
           }
 
           ul {
@@ -1204,13 +1204,12 @@ button, select {
     margin: 10px;
     border-radius: 5px;
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 
     .form-custom {
       position: relative;
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
 
     .modal-header {
@@ -1394,32 +1393,32 @@ button, select {
 
     &.modal-400 {
       width: 400px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-500 {
       width: 500px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-600 {
       width: 600px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-700 {
       width: 700px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-800 {
       width: 800px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-900 {
       width: 900px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
   }
 
@@ -2699,17 +2698,22 @@ button, select {
         padding: 5px 10px !important;
         font-size: 12px !important;
         font-weight: bold !important;
-        white-space: nowrap;
-
+        max-width: inherit !important;
       }
 
       &.right {
+        .tooltip-inner {
+          text-align: left;
+        }
         .tooltip-arrow {
           border-color: transparent !important;
           border-right-color: #0f1015 !important;
         }
       }
       &.left {
+        .tooltip-inner {
+          text-align: right;
+        }
         .tooltip-arrow {
           border-color: transparent !important;
           border-left-color: #0f1015 !important;
@@ -3462,7 +3466,7 @@ button, select {
   }
   .primetabs-content{
     border-top: none;
-    padding: 20px 0px;
+    padding-top: 20px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     .tab-pane{
