@@ -113,6 +113,7 @@
 .resultimg ~ .action-buttons-block button.action-buttons-delete {
   background: #E78D8F;
   color: #FFF;
+  font-size: 10px;
 }
 .resultimg ~ .action-buttons-block button.action-buttons-delete:hover {
   background: #ce0404;
@@ -830,6 +831,7 @@ button:focus, select:focus {
 .primeapps .table tbody tr .action-buttons-block button.action-buttons-delete {
   background: rgba(206, 4, 4, 0.5);
   color: #FFF;
+  font-size: 10px;
 }
 .primeapps .table tbody tr .action-buttons-block button.action-buttons-delete:hover {
   background: #ce0404;
@@ -2200,6 +2202,15 @@ button:focus, select:focus {
 .primeapps .module-form-setup .draggable-form .form-group {
   padding: 5px 40px 4px 5px;
 }
+.primeapps .module-form-setup .draggable-form .form-group .fa-arrows {
+  margin-top: 0px;
+  color: rgba(0, 0, 0, 0.25);
+  line-height: 16px;
+}
+.primeapps .module-form-setup .draggable-form .subpanel-heading .action-buttons .action-icon {
+  font-size: 14px;
+  margin-right: 5px;
+}
 .primeapps .ui-select-bootstrap {
   height: 40px;
   line-height: 40px;
@@ -2342,6 +2353,7 @@ button:focus, select:focus {
 .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete {
   background: rgba(206, 4, 4, 0.5);
   color: #FFF;
+  font-size: 10px;
 }
 .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete:hover {
   background: #ce0404;
@@ -2807,6 +2819,87 @@ button:focus, select:focus {
 }
 .primeapps .extra-info:hover {
   color: rgba(0, 0, 0, 0.5);
+}
+.primeapps .categorylist > li {
+  position: relative;
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 5px;
+  line-height: 30px;
+  margin-bottom: 5px;
+}
+.primeapps .categorylist > li > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.primeapps .categorylist > li .form-control {
+  height: 30px !important;
+}
+.primeapps .categorylist > li:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.primeapps .categorylist .new-actions {
+  display: inline-block;
+  padding-left: 10px;
+}
+.primeapps .categorylist .new-actions button, .primeapps .categorylist .new-actions a {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  background: rgba(13, 111, 170, 0.5);
+  color: white;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  font-size: 10px;
+  text-align: center;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+}
+.primeapps .categorylist .new-actions button.delete-btn, .primeapps .categorylist .new-actions a.delete-btn {
+  background: #E78D8F;
+  color: #FFF;
+}
+.primeapps .categorylist .new-actions button.delete-btn:hover, .primeapps .categorylist .new-actions a.delete-btn:hover {
+  background: #ce0404;
+  color: #FFF;
+}
+.primeapps .categorylist .new-actions button.edit-btn, .primeapps .categorylist .new-actions a.edit-btn {
+  background: rgba(0, 0, 0, 0.25);
+}
+.primeapps .categorylist .new-actions button.edit-btn:hover, .primeapps .categorylist .new-actions a.edit-btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+.primeapps .categorylist .new-actions button:hover, .primeapps .categorylist .new-actions a:hover {
+  background: #0d6faa;
+  color: #FFF;
+}
+.primeapps .action-button2-plus, .primeapps .action-button2-delete {
+  width: 26px;
+  height: 26px;
+  line-height: 27px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  background: rgba(13, 111, 170, 0.5);
+  display: inline-block;
+  color: #FFF;
+  text-align: center;
+  border-radius: 50%;
+  margin: 7px 0px;
+}
+.primeapps .action-button2-plus:hover, .primeapps .action-button2-delete:hover {
+  background: #0d6faa;
+}
+.primeapps .action-button2-delete {
+  background: #E78D8F;
+}
+.primeapps .action-button2-delete:hover {
+  background: #ce0404;
 }
 
 .placeholder {

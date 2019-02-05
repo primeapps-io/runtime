@@ -121,6 +121,7 @@ $primeapps-color: #0D6FAA;
       &.action-buttons-delete {
         background: #E78D8F;
         color: #FFF;
+        font-size: 10px;
         &:hover {
           background: rgba(206, 4, 4, 1);
           color: #FFF;
@@ -1025,6 +1026,7 @@ button, select {
             &.action-buttons-delete {
               background: rgba(206, 4, 4, 0.5);
               color: #FFF;
+              font-size: 10px;
               &:hover {
                 background: rgba(206, 4, 4, 1);
                 color: #FFF;
@@ -2802,6 +2804,20 @@ button, select {
     .draggable-form {
       .form-group {
         padding: 5px 40px 4px 5px;
+        .fa-arrows
+        {
+          margin-top: 0px;
+          color: rgba(0,0,0,0.25);
+          line-height: 16px;
+        }
+      }
+      .subpanel-heading{
+        .action-buttons{
+          .action-icon{
+            font-size: 14px;
+            margin-right: 5px;
+          }
+        }
       }
     }
   }
@@ -2953,6 +2969,7 @@ button, select {
           &.action-buttons-delete {
             background: rgba(206, 4, 4, 0.5);
             color: #FFF;
+            font-size: 10px;
             &:hover {
               background: rgba(206, 4, 4, 1);
               color: #FFF;
@@ -3493,6 +3510,86 @@ button, select {
     cursor: pointer;
     &:hover{
       color: rgba(0,0,0,0.5);
+    }
+  }
+  .categorylist{
+    > li{
+      position: relative;
+      padding: 5px 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 5px;
+      line-height: 30px;
+      margin-bottom: 5px;
+      > div{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .form-control{
+        height: 30px !important;
+      }
+      &:hover{
+        background: rgba(0,0,0,0.05);
+      }
+    }
+    .new-actions{
+      display: inline-block;
+      padding-left: 10px;
+      button,a {
+        @include hoverEffect;
+        background: rgba(13, 111, 170, 0.5);
+        color: rgba(255, 255, 255, 1);
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 10px;
+        text-align: center;
+        border: none;
+        border-radius: 50%;
+        display:inline-block;
+        
+        &.delete-btn {
+          background: #E78D8F;
+          color: #FFF;
+          &:hover {
+            background: rgba(206, 4, 4, 1);
+            color: #FFF;
+          }
+        }
+        &.edit-btn {
+          background: rgba(0,0,0,0.25);
+          &:hover {
+            background: rgba(0,0,0,0.5);
+          }
+        }
+        
+        &:hover {
+          background: rgba(13, 111, 170, 1);
+          color: #FFF;
+        }
+      }
+    }
+    
+  }
+  .action-button2-plus,.action-button2-delete{
+    width: 26px;
+    height: 26px;
+    line-height: 27px;
+    @include hoverEffect;
+    background: rgba(13, 111, 170, 0.5);
+    display: inline-block;
+    color: #FFF;
+    text-align: center;
+    border-radius: 50%;
+    margin: 7px 0px;
+    &:hover{
+      background: rgba(13, 111, 170, 1);
+    }
+  }
+  .action-button2-delete{
+    background: #E78D8F;
+    &:hover{
+      background: rgba(206, 4, 4, 1);
     }
   }
 }

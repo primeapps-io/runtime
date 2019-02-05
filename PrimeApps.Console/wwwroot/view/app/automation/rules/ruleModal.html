@@ -1213,7 +1213,7 @@
                                         <div class="form-inline" style="margin-bottom: 30px;">
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}:</label>
                                         </div>
-                                        <div class="form-inline">
+                                        <div>
                                             <div class="form-group">
                                                 <table class="filter-table">
                                                     <thead>
@@ -1250,8 +1250,8 @@
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
-                                                                <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fa fa-plus-square"></i></a>
+                                                                <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
+                                                                <a class="action-button2-plus" href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
                                                             </td>
                                                         </tr>
                                                     </tbody>
