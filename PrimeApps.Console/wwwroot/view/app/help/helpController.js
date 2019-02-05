@@ -90,32 +90,38 @@ angular.module('primeapps')
                     Label: $filter('translate')('Setup.HelpGuide.Form'),
                 }];
 
-            $scope.routeModule = [
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.FirstScreen'),
-                    "value": "firstscreen"
-                },
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.Dashboard'),
-                    "value": "/app/dashboard"
-                },
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.Newsfeed'),
-                    "value": "/app/newsfeed"
-                },
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.Report'),
-                    "value": "/app/reports"
-                },
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.Tasks'),
-                    "value": "/app/tasks"
-                },
-                {
-                    "name": $filter('translate')('Setup.HelpGuide.Calendar'),
-                    "value": "/app/calendar"
-                }
-            ];
+            // $scope.routeModule = [
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.FirstScreen'),
+            //         "value": "firstscreen",
+            //         "type": 2
+            //     },
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.Dashboard'),
+            //         "value": "/app/dashboard",
+            //         "type": 2
+            //     },
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.Newsfeed'),
+            //         "value": "/app/newsfeed",
+            //         "type": 2
+            //     },
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.Report'),
+            //         "value": "/app/reports",
+            //         "type": 2
+            //     },
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.Tasks'),
+            //         "value": "/app/tasks",
+            //         "type": 2
+            //     },
+            //     {
+            //         "name": $filter('translate')('Setup.HelpGuide.Calendar'),
+            //         "value": "/app/calendar",
+            //         "type": 2
+            //     }
+            // ];
 
             $scope.helpModalObj.routeModuleSide = [
                 {
@@ -170,8 +176,40 @@ angular.module('primeapps')
                     "name": $filter('translate')('Setup.Nav.ApprovelProcess'),
                     "value": "/app/setup/approvel_process"
                 },
-
             ];
+
+            $scope.moduleFilter.push(
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.FirstScreen'),
+                    "value": "firstscreen",
+                    "type": "other"
+                },
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Dashboard'),
+                    "value": "/app/dashboard",
+                    "type": "other"
+                },
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Newsfeed'),
+                    "value": "/app/newsfeed",
+                    "type": "other"
+                },
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Report'),
+                    "value": "/app/reports",
+                    "type": "other"
+                },
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Tasks'),
+                    "value": "/app/tasks",
+                    "type": "other"
+                },
+                {
+                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Calendar'),
+                    "value": "/app/calendar",
+                    "type": "other"
+                }
+            );
 
             var dialog_uid = plupload.guid();
             var uploadSuccessCallback,
@@ -483,7 +521,7 @@ angular.module('primeapps')
                         $scope.helpModalObj.selectHelp = "modules";
                     }
                     if (helpTemplate.modal_type == "modal" && helpTemplate.route_url) {
-                        var currentHelpModuleOther = $filter('filter')($scope.routeModule, { value: helpTemplate.route_url })[0];
+                        var currentHelpModuleOther = $filter('filter')($scope.moduleFilter, { value: helpTemplate.route_url })[0];
                         $scope.helpModalObj.routeModules = currentHelpModuleOther;
                         $scope.helpModalObj.selectHelp = "settings";
                     }
@@ -529,7 +567,7 @@ angular.module('primeapps')
                     }
                 }
                 else {
-                    if ($scope.helpModalObj.modulePicklist) {
+                    if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.type != "other") {
                         HelpService.getModuleType($scope.modalType, 'modulelist', $scope.helpModalObj.modulePicklist.id)
                             .then(function (response) {
                                 $scope.helpTemplates = response.data;
@@ -549,13 +587,14 @@ angular.module('primeapps')
                     else {
                         $scope.helpModalObj.tinymceModel = null;
                         $scope.currentTemplate = null;
+                        $scope.setContentSettingsModul();
                     }
                 }
             };
 
             $scope.setContentSettingsModul = function () {
-                if ($scope.helpModalObj.routeModules) {
-                    HelpService.getByType($scope.modalType, null, $scope.helpModalObj.routeModules.value)
+                if ($scope.helpModalObj.modulePicklist.type === "other") {
+                    HelpService.getByType($scope.modalType, null, $scope.helpModalObj.modulePicklist.value)
                         .then(function (response) {
                             $scope.helpTemplates = response.data;
 
@@ -586,7 +625,7 @@ angular.module('primeapps')
             $scope.helpModalSave = function () {
                 var help = {};
                 $scope.saving = true;
-                if ($scope.helpModalObj.selectHelp === 'modules') {
+                if ($scope.helpModalObj.selectHelp === 'modules' && $scope.helpModalObj.modulePicklist.type != "other") {
                     var help = {};
                     help.module_id = $scope.helpModalObj.modulePicklist.id;
                     help.route_url = null;
@@ -607,8 +646,8 @@ angular.module('primeapps')
                     var help = {};
 
                     help.module_id = null;
-                    help.route_url = $scope.helpModalObj.routeModules.value;
-                    if ($scope.helpModalObj.routeModules.value === "firstscreen") {
+                    help.route_url = $scope.helpModalObj.modulePicklist.value;
+                    if ($scope.helpModalObj.modulePicklist.value === "firstscreen") {
                         help.first_screen = true;
                     }
                     help.template = $scope.helpModalObj.tinymceModel;
@@ -737,7 +776,7 @@ angular.module('primeapps')
 
                 else if ($scope.helpModalObj.selectHelpRelation === 'other') {
                     help.module_id = null;
-                    help.route_url = $scope.helpModalObj.routeModules.value;
+                    help.route_url = $scope.helpModalObj.modulePicklist.value;
                     help.first_screen = false;
                     help.template = $scope.helpModalObj.tinymceModel;
                     help.modal_type = 2;
@@ -852,8 +891,8 @@ angular.module('primeapps')
 
                 else if ($scope.helpModalObj.selectHelpRelation === 'other') {
                     help.module_id = null;
-                    help.route_url = $scope.helpModalObj.routeModules.value;
-                    if ($scope.helpModalObj.routeModules.value === "firstscreen") {
+                    help.route_url = $scope.helpModalObj.modulePicklist.value;
+                    if ($scope.helpModalObj.modulePicklist.value === "firstscreen") {
                         help.first_screen = true;
                     }
                     help.template = $scope.helpModalObj.tinymceModel;
