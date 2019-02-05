@@ -56,5 +56,21 @@ angular.module('primeapps')
             };
 
 
+            $scope.openCategoryModal = function () {
+
+                $scope.categoryModal = $scope.categoryModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/analytics/reports/categoryModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.categoryModal.$promise.then(function () {
+                    $scope.categoryModal.show();
+                });
+            }
+
+
         }
     ]);
