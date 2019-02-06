@@ -539,7 +539,7 @@ angular.module('primeapps')
                 $scope.firstDynamicApproverFields = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.first_approver_lookup.lookup_type }, true)[0];
                 ModuleService.getModuleFields($scope.firstDynamicApproverFields.name)
                     .then(function (response) {
-                        if (response.data) 
+                        if (response.data)
                             $scope.firstDynamicApproverFields.fields = response.data;
                     });
 
@@ -820,6 +820,7 @@ angular.module('primeapps')
                         })
                         .catch(function () {
                             $scope.saving = false;
+                            toastr.warning($filter('translate')('Common.Error'));
                         });
                 }
             };
@@ -861,6 +862,8 @@ angular.module('primeapps')
                     $scope.id = id;
                     $scope.selectProcess(id);
                 }
+                else
+                    $scope.modalLoading = false;
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({
                     scope: $scope,
@@ -871,7 +874,7 @@ angular.module('primeapps')
                 });
 
                 $scope.prosessFormModal.$promise.then(function () {
-                    $scope.prosessFormModal.show(); 
+                    $scope.prosessFormModal.show();
                 });
 
             };

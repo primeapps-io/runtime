@@ -1764,11 +1764,11 @@ angular.module('primeapps')
                 $scope.modalLoading = true;
 
                 if (id) {
-                    $scope.id = id;
-
-                    selectRule();
-
+                    $scope.id = id; 
+                    selectRule(); 
                 }
+                else
+                    $scope.modalLoading = false;
 
                 $scope.ruleFormModal = $scope.ruleFormModal || $modal({
                     scope: $scope,
@@ -1780,8 +1780,7 @@ angular.module('primeapps')
 
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
-                });
-               // $scope.modalLoading = false;
+                }); 
             };
 
             $scope.cancel = function () {
