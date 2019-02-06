@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="modal-dialog">
-        <div ng-if="loadingFilter" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div class="modal-content view-form" style="height:unset !important;">
             <form name="$parent.$parent.workflowForm" ng-submit="save()" class="form-horizontal form-custom" autocomplete="off" novalidate>
                 <div class="panel">
