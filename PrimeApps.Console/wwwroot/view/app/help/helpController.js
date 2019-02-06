@@ -522,7 +522,7 @@ angular.module('primeapps')
                     }
                     if (helpTemplate.modal_type == "modal" && helpTemplate.route_url) {
                         var currentHelpModuleOther = $filter('filter')($scope.moduleFilter, { value: helpTemplate.route_url })[0];
-                        $scope.helpModalObj.routeModules = currentHelpModuleOther;
+                        $scope.helpModalObj.modulePicklist = currentHelpModuleOther;
                         $scope.helpModalObj.selectHelp = "settings";
                     }
                     if (helpTemplate.modal_type == "side_modal") {

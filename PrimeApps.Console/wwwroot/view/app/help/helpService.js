@@ -53,7 +53,7 @@ angular.module('primeapps')
                             helpside.binding = '';
                             helpside.tpye = '';
 
-                            if (helpside.module_id) {
+                            if (helpside.modal_type = "modal") {
 
                                 var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
                                 var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
@@ -67,20 +67,20 @@ angular.module('primeapps')
                                     helpside.type = "Help";
                                 }
                             }
-                            else if (helpside.route_url) {
-                                var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
-
-                                if (route)
-                                    helpside.binding = route.name;
-                                else
-                                    helpside.binding = "Welcome Screen";
-                                if (helpside.modal_type == "modal") {
-                                    helpside.type = "Introduction (Other)";
-                                }
-                                else {
-                                    helpside.type = "Help (Other)";
-                                }
-                            }
+                            // else if (helpside.route_url) {
+                            //     var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
+                            //
+                            //     if (route)
+                            //         helpside.binding = route.name;
+                            //     else
+                            //         helpside.binding = "Welcome Screen";
+                            //     if (helpside.modal_type == "modal") {
+                            //         helpside.type = "Introduction";
+                            //     }
+                            //     else {
+                            //         helpside.type = "Help";
+                            //     }
+                            // }
                             else {
                                 helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
                                 helpside.type = "Help";
