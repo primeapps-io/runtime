@@ -172,7 +172,7 @@ angular.module('primeapps')
 
                                                 $scope.filters.push(filter);
                                             }
-                                            
+
                                             if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
                                                 $scope.picklistsModule = picklists;
                                                 $scope.getSendNotificationUpdatableModules($scope.module);
@@ -218,7 +218,7 @@ angular.module('primeapps')
                                             $scope.modalLoading = false;
 
                                         });
-                                    $scope.modalLoading = false;
+                                    // $scope.modalLoading = false;
                                 });
                         }
                     });
@@ -1781,7 +1781,7 @@ angular.module('primeapps')
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
                 });
-                $scope.modalLoading = false;
+               // $scope.modalLoading = false;
             };
 
             $scope.cancel = function () {

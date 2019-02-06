@@ -871,8 +871,7 @@ angular.module('primeapps')
                 });
 
                 $scope.prosessFormModal.$promise.then(function () {
-                    $scope.prosessFormModal.show();
-                    $scope.modalLoading = false;
+                    $scope.prosessFormModal.show(); 
                 });
 
             };
