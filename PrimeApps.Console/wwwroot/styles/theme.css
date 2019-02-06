@@ -1,15 +1,29 @@
+@charset "UTF-8";
 .scroll-style-4::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background-color: #F5F5F5;
 }
-
 .scroll-style-4::-webkit-scrollbar {
   width: 7px;
   background-color: #F5F5F5;
 }
-
 .scroll-style-4::-webkit-scrollbar-thumb {
+  background-color: #0D6FAA;
+  border: 0px solid #555555;
+  border-radius: 5px;
+}
+
+.scroll-style-5::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #25282B;
+}
+.scroll-style-5::-webkit-scrollbar {
+  width: 7px;
+  background-color: #25282B;
+}
+.scroll-style-5::-webkit-scrollbar-thumb {
   background-color: #0D6FAA;
   border: 0px solid #555555;
   border-radius: 5px;
@@ -981,6 +995,20 @@ button:focus, select:focus {
   padding-right: 20px;
   overflow-x: hidden;
 }
+.primeapps .setup-modal .modal-dialog::-webkit-scrollbar-track, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+.primeapps .setup-modal .modal-dialog::-webkit-scrollbar, .primeapps .module-modal .modal-dialog::-webkit-scrollbar {
+  width: 7px;
+  background-color: #F5F5F5;
+}
+.primeapps .setup-modal .modal-dialog::-webkit-scrollbar-thumb, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-thumb {
+  background-color: #0D6FAA;
+  border: 0px solid #555555;
+  border-radius: 5px;
+}
 .primeapps .setup-modal .modal-dialog input[type=radio]:checked + span:after, .primeapps .module-modal .modal-dialog input[type=radio]:checked + span:after {
   width: 10px;
   height: 10px;
@@ -1709,16 +1737,16 @@ button:focus, select:focus {
 }
 .primeapps #wrapper #sidebar-wrapper {
   width: 250px;
+  min-height: 100vh;
   left: 0px;
   margin-left: 0px;
-  overflow-x: inherit;
-  overflow-y: inherit;
   z-index: 1000;
-  background: url("../images/primeapps/menu_background.png") !important;
+  background-image: url("../images/primeapps/menu_background.png");
   background-repeat: repeat !important;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-nav {
   position: relative;
+  margin-bottom: 60px;
 }
 .primeapps #wrapper #sidebar-wrapper .sidebar-nav .sidebar-brand {
   padding: 20px 10px !important;
@@ -1788,6 +1816,11 @@ button:focus, select:focus {
 .primeapps #wrapper #sidebar-wrapper .sidebar-li a {
   padding: 10px;
 }
+.primeapps #wrapper #sidebar-wrapper .footer {
+  margin: 0px;
+  bottom: 0px;
+  position: fixed;
+}
 .primeapps #wrapper #sidebar-wrapper .footer .menu-togle {
   display: flex;
   align-items: center;
@@ -1797,6 +1830,10 @@ button:focus, select:focus {
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background: #000;
   text-align: center;
   margin-left: 0px;
 }
@@ -1865,15 +1902,15 @@ button:focus, select:focus {
   top: 5%;
   z-index: 2;
 }
+.primeapps #wrapper .setup-layout .app-menu2 .tooltip {
+  display: none !important;
+}
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
   background: #fff;
   padding: 20px 10px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   list-style-type: none;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
-  display: none !important;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
   position: relative;
@@ -2060,6 +2097,9 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu span, .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu h2 {
   display: none;
+}
+.primeapps #wrapper .setup-layout.full-toggled2 .backopen .fa-long-arrow-alt-left:before {
+  content: "";
 }
 .primeapps #wrapper .nav-pills > li.active > a, .primeapps #wrapper .nav-pills > li.active > a:hover, .primeapps #wrapper .nav-pills > li.active > a:focus {
   background: initial !important;
