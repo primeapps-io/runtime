@@ -18,6 +18,16 @@ angular.module('primeapps')
             var location;
             $scope.loading = true;
             $scope.tab = 1;
+            $scope.helpModalObj.relationType = false;
+
+            $scope.relationTypeShow = function () {
+                if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.id)
+                    $scope.helpModalObj.relationType = true;
+                else {
+                    $scope.helpModalObj.relationType = false;
+                    $scope.helpModalObj.selectHelp = null;
+                }
+            };
 
             if (!$scope.moduleFilter) {
                 HelpService.getBasicModules().then(function (result) {
@@ -510,110 +520,28 @@ angular.module('primeapps')
             }
 
             $scope.setContent = function (helpTemplate) {
-                if (helpTemplate) {
+                if (helpTemplate.modal_type === "modal") {
+                    var currentHelpModule = $filter('filter')($scope.$parent.modules, { id: helpTemplate.module_id })[0];
+                    $scope.helpModalObj.modulePicklist = currentHelpModule;
                     $scope.helpModalObj.helpName = helpTemplate.name;
                     $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                    $scope.currentTemplate = helpTemplate;
-
-                    if (helpTemplate.modal_type == "modal" && helpTemplate.module_id) {
+                }
+                else {
+                    if (helpTemplate.module_id) {
                         var currentHelpModule = $filter('filter')($scope.$parent.modules, { id: helpTemplate.module_id })[0];
-                        $scope.helpModalObj.modulePicklist = currentHelpModule;
-                        $scope.helpModalObj.selectHelp = "modules";
+                        $scope.helpModalObj.relationType = true;
+                        if (helpTemplate.module_type === "module_form")
+                            $scope.helpModalObj.selectHelp = 'form';
+                        else if (helpTemplate.module_type === "module_list")
+                            $scope.helpModalObj.selectHelp = 'list';
+                        else
+                            $scope.helpModalObj.selectHelp = 'detail';
                     }
-                    if (helpTemplate.modal_type == "modal" && helpTemplate.route_url) {
-                        var currentHelpModuleOther = $filter('filter')($scope.moduleFilter, { value: helpTemplate.route_url })[0];
-                        $scope.helpModalObj.modulePicklist = currentHelpModuleOther;
-                        $scope.helpModalObj.selectHelp = "settings";
-                    }
-                    if (helpTemplate.modal_type == "side_modal") {
-                        if ($scope.helpTemplatesSide && !helpTemplate.module_id && !helpTemplate.route_url) {
-                            $scope.helpModalObj.helpName = helpTemplate.name;
-                            $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                        }
-
-                        else if (helpTemplate && helpTemplate.module_id) {
-                            $scope.helpModalObj.selectHelpRelation = 'module';
-                            if (helpTemplate.module_type == "module_list") {
-                                $scope.helpModalObj.selectHelp = 'list';
-                                $scope.helpModalObj.helpName = helpTemplate.name;
-                                $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                                var selectListModule = $filter('filter')($scope.moduleFilter, { id: helpTemplate.module_id })[0];
-                                $scope.helpModalObj.modulePicklist = selectListModule;
-                            }
-                            else if (helpTemplate.module_type == "module_detail") {
-                                $scope.helpModalObj.selectHelp = 'detail';
-                                $scope.helpModalObj.helpName = helpTemplate.name;
-                                $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                                var selectDetailModule = $filter('filter')($scope.moduleFilter, { id: $scope.helpTemplate.module_id })[0];
-                                $scope.helpModalObj.moduleDetail = selectDetailModule;
-                            }
-                            else {
-                                $scope.helpModalObj.selectHelp = 'form';
-                                $scope.helpModalObj.helpName = helpTemplate.name;
-                                $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                                var selectFormModule = $filter('filter')($scope.moduleFilter, { id: helpTemplate.module_id })[0];
-                                $scope.helpModalObj.moduleForm = selectFormModule;
-                            }
-                        }
-
-                        else {
-                            $scope.helpModalObj.selectHelpRelation = 'other';
-                            $scope.helpModalObj.helpName = helpTemplate.name;
-                            $scope.helpModalObj.tinymceModel = helpTemplate.template;
-                            var selectOtherPicklist = $filter('filter')($scope.helpModalObj.routeModuleSide, { value: helpTemplate.route_url })[0];
-                            $scope.helpModalObj.routeModules = selectOtherPicklist;
-
-                        }
-                    }
-                }
-                else {
-                    if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.type != "other") {
-                        HelpService.getModuleType($scope.modalType, 'modulelist', $scope.helpModalObj.modulePicklist.id)
-                            .then(function (response) {
-                                $scope.helpTemplates = response.data;
-
-                                if ($scope.helpTemplates) {
-                                    $scope.helpModalObj.helpName = $scope.helpTemplates.name;
-                                    $scope.helpModalObj.tinymceModel = $scope.helpTemplates.template;
-                                    $scope.currentTemplate = $scope.helpTemplates;
-                                }
-                                else {
-                                    $scope.helpModalObj.tinymceModel = null;
-                                    $scope.currentTemplate = null;
-                                    $scope.helpModalObj.helpName = null;
-                                }
-                            });
-                    }
-                    else {
-                        $scope.helpModalObj.tinymceModel = null;
-                        $scope.currentTemplate = null;
-                        $scope.setContentSettingsModul();
-                    }
+                    $scope.helpModalObj.modulePicklist = currentHelpModule;
+                    $scope.helpModalObj.helpName = helpTemplate.name;
+                    $scope.helpModalObj.tinymceModel = helpTemplate.template;
                 }
             };
-
-            $scope.setContentSettingsModul = function () {
-                if ($scope.helpModalObj.modulePicklist.type === "other") {
-                    HelpService.getByType($scope.modalType, null, $scope.helpModalObj.modulePicklist.value)
-                        .then(function (response) {
-                            $scope.helpTemplates = response.data;
-
-                            if ($scope.helpTemplates) {
-                                $scope.helpModalObj.tinymceModel = $scope.helpTemplates.template;
-                                $scope.currentTemplate = $scope.helpTemplates;
-                            }
-                            else {
-                                $scope.helpModalObj.tinymceModel = null;
-                                $scope.currentTemplate = null;
-                            }
-                        });
-                }
-                else {
-                    $scope.helpModalObj.tinymceModel = null;
-                    $scope.currentTemplate = null;
-                }
-            };
-
 
             $scope.radioButtonTemplateClear = function () {
                 if ($scope.helpModalObj.selectHelp === 'modules')
@@ -687,51 +615,11 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.helpModalDraftSave = function () {
-                var help = {};
-
-                help.module_id = $scope.helpModalObj.modulePicklist.id;
-                help.route_url = null;
-                help.template = $scope.helpModalObj.tinymceModel;
-                if (location === "helpside") {
-                    help.modal_type = 2;
-                }
-                else {
-                    help.modal_type = 1;
-                }
-                help.show_type = 2;
-                help.module_type = 1;
-                help.name = $scope.helpModalObj.modulePicklist.label_en_singular;
-
-                if ($scope.currentTemplate || $scope.id) {
-
-                    if ($scope.id) {
-                        help.id = $scope.id;
-                    }
-                    else {
-                        help.id = $scope.helpTemplates.id;
-                    }
-                    HelpService.update(help);
-                    $cache.removeAll();
-                    toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'));
-                }
-                else {
-                    HelpService.create(help).then(function () {
-                        HelpService.getByType($scope.modalType)
-                            .then(function (response) {
-                                $scope.helpTemplates = response.data;
-                                $cache.removeAll();
-                                toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'));
-                            });
-                    });
-                }
-            };
-
             $scope.helpSideSave = function () {
                 var help = {};
                 $scope.saving = true;
 
-                if ($scope.helpModalObj.selectHelpRelation === 'any') {
+                if (!$scope.helpModalObj.modulePicklist) {
                     help.module_id = null;
                     help.route_url = null;
                     help.template = $scope.helpModalObj.tinymceModel;
@@ -741,40 +629,8 @@ angular.module('primeapps')
                     help.name = $scope.helpModalObj.helpName;
 
                 }
-                else if ($scope.helpModalObj.selectHelp === 'list') {
-                    help.module_id = $scope.helpModalObj.modulePicklist.id;
-                    help.route_url = null;
-                    help.first_screen = false;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    help.modal_type = 2;
-                    help.show_type = 1;
-                    help.module_type = 1;
-                    help.name = $scope.helpModalObj.helpName;
-                }
 
-                else if ($scope.helpModalObj.selectHelp === 'detail') {
-                    help.module_id = $scope.helpModalObj.moduleDetail.id;
-                    help.route_url = null;
-                    help.first_screen = false;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    help.modal_type = 2;
-                    help.show_type = 1;
-                    help.module_type = 2;
-                    help.name = $scope.helpModalObj.helpName;
-                }
-
-                else if ($scope.helpModalObj.selectHelp === 'form') {
-                    help.module_id = $scope.helpModalObj.moduleForm.id;
-                    help.route_url = null;
-                    help.first_screen = false;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    help.modal_type = 2;
-                    help.show_type = 1;
-                    help.module_type = 3;
-                    help.name = $scope.helpModalObj.helpName;
-                }
-
-                else if ($scope.helpModalObj.selectHelpRelation === 'other') {
+                else if ($scope.helpModalObj.modulePicklist.type === 'other') {
                     help.module_id = null;
                     help.route_url = $scope.helpModalObj.modulePicklist.value;
                     help.first_screen = false;
@@ -785,6 +641,41 @@ angular.module('primeapps')
                     help.name = $scope.helpModalObj.helpName;
                 }
 
+                else {
+                    if ($scope.helpModalObj.selectHelp === 'list') {
+                        help.module_id = $scope.helpModalObj.modulePicklist.id;
+                        help.route_url = null;
+                        help.first_screen = false;
+                        help.template = $scope.helpModalObj.tinymceModel;
+                        help.modal_type = 2;
+                        help.show_type = 1;
+                        help.module_type = 1;
+                        help.name = $scope.helpModalObj.helpName;
+                    }
+
+                    else if ($scope.helpModalObj.selectHelp === 'detail') {
+                        help.module_id = $scope.helpModalObj.modulePicklist.id;
+                        help.route_url = null;
+                        help.first_screen = false;
+                        help.template = $scope.helpModalObj.tinymceModel;
+                        help.modal_type = 2;
+                        help.show_type = 1;
+                        help.module_type = 2;
+                        help.name = $scope.helpModalObj.helpName;
+                    }
+
+                    else ($scope.helpModalObj.selectHelp === 'form')
+                    {
+                        help.module_id = $scope.helpModalObj.modulePicklist.id;
+                        help.route_url = null;
+                        help.first_screen = false;
+                        help.template = $scope.helpModalObj.tinymceModel;
+                        help.modal_type = 2;
+                        help.show_type = 1;
+                        help.module_type = 3;
+                        help.name = $scope.helpModalObj.helpName;
+                    }
+                }
 
                 if ($scope.currentTemplate) {
                     help.id = $scope.currentTemplate.id;
@@ -821,116 +712,6 @@ angular.module('primeapps')
                     else {
                         toastr.warning($filter('translate')('Setup.HelpGuide.SomeModuleNotAvailable'));
                     }
-                }
-            };
-
-            $scope.helpSideDraftSave = function () {
-                var help = {};
-
-                if ($scope.helpModalObj.selectHelpRelation === 'any') {
-                    help.module_id = null;
-                    help.route_url = null;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    if (location === "helpside") {
-                        help.modal_type = 2;
-                    }
-                    else {
-                        help.modal_type = 1;
-                    }
-                    help.show_type = 2;
-                    help.module_type = 1;
-                    help.name = $scope.helpModalObj.helpName;
-
-                }
-
-                else if ($scope.helpModalObj.selectHelp === 'list') {
-                    help.module_id = $scope.helpModalObj.modulePicklist.id;
-                    help.route_url = null;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    if (location === "helpside") {
-                        help.modal_type = 2;
-                    }
-                    else {
-                        help.modal_type = 1;
-                    }
-                    help.show_type = 2;
-                    help.module_type = 1;
-                    help.name = $scope.helpModalObj.helpName;
-
-                }
-
-                else if ($scope.helpModalObj.selectHelp === 'detail') {
-                    help.module_id = $scope.helpModalObj.moduleDetail.id;
-                    help.route_url = null;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    if (location === "helpside") {
-                        help.modal_type = 2;
-                    }
-                    else {
-                        help.modal_type = 1;
-                    }
-                    help.show_type = 2;
-                    help.module_type = 2;
-                    help.name = $scope.helpModalObj.helpName;
-                }
-
-                else if ($scope.helpModalObj.selectHelp === 'form') {
-                    help.module_id = $scope.helpModalObj.moduleForm.id;
-                    help.route_url = null;
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    if (location === "helpside") {
-                        help.modal_type = 2;
-                    }
-                    else {
-                        help.modal_type = 1;
-                    }
-                    help.show_type = 2;
-                    help.module_type = 3;
-                    help.name = $scope.helpModalObj.helpName;
-                }
-
-                else if ($scope.helpModalObj.selectHelpRelation === 'other') {
-                    help.module_id = null;
-                    help.route_url = $scope.helpModalObj.modulePicklist.value;
-                    if ($scope.helpModalObj.modulePicklist.value === "firstscreen") {
-                        help.first_screen = true;
-                    }
-                    help.template = $scope.helpModalObj.tinymceModel;
-                    if (location === "helpside") {
-                        help.modal_type = 2;
-                    }
-                    else {
-                        help.modal_type = 1;
-                    }
-                    help.show_type = 2;
-                    help.module_type = 1;
-                    help.name = $scope.helpModalObj.helpName;
-                }
-
-
-                if ($scope.currentTemplate || $scope.id) {
-
-                    if ($scope.id) {
-                        help.id = $scope.id;
-                    }
-                    else {
-                        help.id = $scope.helpTemplates.id;
-                    }
-                    HelpService.update(help);
-                    $cache.removeAll();
-                    toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'));
-                }
-                else {
-                    HelpService.create(help).then(function () {
-                        HelpService.getByType($scope.modalType)
-                            .then(function (response) {
-                                $scope.helpTemplates = response.data;
-                                // createHelpList();
-                                // $state.reload();
-                                toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'));
-                            });
-
-                    });
                 }
             };
 
