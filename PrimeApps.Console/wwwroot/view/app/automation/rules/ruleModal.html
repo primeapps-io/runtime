@@ -394,7 +394,7 @@
                                         <h2>{{'Setup.Workflow.SendNotification' | translate}}</h2>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
                                             <label class="col-sm-12 required-field">
-                                                <span class="required-field">*</span>{{'Setup.Outlook.RecipientsEmailAdressField' | translate}}:
+                                                {{'Setup.Outlook.RecipientsEmailAdressField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                             </label>
                                             <select class="form-control"
                                                     name="sendNotificationModule"
@@ -526,7 +526,7 @@
                                         </div>
                                         <div>
                                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectNotification.$invalid}">
-                                                <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.Subject' | translate}}:</label>
+                                                <label class="col-sm-12">{{'Setup.Workflow.Subject' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                                 <input name="subjectNotification"
                                                        mentio
                                                        tabindex="2"
@@ -549,7 +549,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
-                                            <label class="col-sm-12 "><span class="required-field">*</span> {{'Setup.Workflow.Message' | translate}}:</label>
+                                            <label class="col-sm-12 ">{{'Setup.Workflow.Message' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
 
                                             <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
                                                       mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
@@ -605,7 +605,7 @@
                                     <div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
                                         <h2>{{'Setup.Workflow.AssignTask' | translate}}</h2>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
-                                            <label class="col-sm-12"><span class="required-field">*</span> {{taskFields.owner['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.owner['label_' + language]}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <tags-input name="owner"
                                                         class="form-control"
                                                         ng-model="workflowModel.create_task.owner"
@@ -628,7 +628,7 @@
                                             </tags-input>
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectTask.$invalid}">
-                                            <label class="col-sm-12"><span class="required-field">*</span> {{taskFields.subject['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.subject['label_' + language]}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <input name="subjectTask"
                                                    class="form-control"
                                                    tabindex="2"
@@ -641,7 +641,7 @@
                                                    ui-mask="{{taskFields.subject.validation.mask}}" />
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.dueDate.$invalid}">
-                                            <label class="col-sm-12"><span class="required-field">*</span> {{taskFields.task_due_date['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.task_due_date['label_' + language]}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <select class="form-control"
                                                     name="dueDate"
                                                     tabindex="3"
@@ -715,7 +715,7 @@
                                         <div class="form-group "
                                              ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateOption.$invalid}">
                                             <label class="col-sm-12">
-                                                <span class="required-field">*</span>{{'Setup.Workflow.UpdateType' | translate}}:
+                                                {{'Setup.Workflow.UpdateType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                             </label>
                                             <select class="form-control"
                                                     name="updateOption"
@@ -733,7 +733,7 @@
                                                 <div class="form-group clearfix"
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.firstModule.$invalid}">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">*</span> {{'Setup.Workflow.ModuleUpdateFrom' | translate}}:
+                                                        {{'Setup.Workflow.ModuleUpdateFrom' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select class="form-control"
                                                             name="firstModule"
@@ -1194,11 +1194,11 @@
                                     <div ng-show="$parent.tab == 3 && $parent.wizardStep == 2">
                                         <h2> <h2>{{'Setup.Workflow.WebHook' | translate}}</h2></h2>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
-                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.WebHookUrl' | translate}}:</label>
+                                            <label class="col-sm-12">{{'Setup.Workflow.WebHookUrl' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <input type="url" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid(workflowForm)" placeholder="http://" />
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
-                                            <label class="col-sm-12"><span class="required-field">*</span> {{'Setup.Workflow.WebHookMethod' | translate}}:</label>
+                                            <label class="col-sm-12">{{'Setup.Workflow.WebHookMethod' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <label class="radio-inline newinput">
                                                 <input name="methodType" type="radio" ng-model="workflowModel.webHook.methodType" value="post">
                                                 POST
