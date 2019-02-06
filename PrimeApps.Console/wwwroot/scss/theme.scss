@@ -1,19 +1,40 @@
-.scroll-style-4::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
-  border-radius: 10px;
-  background-color: #F5F5F5;
+.scroll-style-4{
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #0D6FAA;
+    border: 0px solid #555555;
+    border-radius: 5px;
+  }
+}
+.scroll-style-5{
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background-color: #25282B;
+  }
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: #25282B;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #0D6FAA;
+    border: 0px solid #555555;
+    border-radius: 5px;
+  }
 }
 
-.scroll-style-4::-webkit-scrollbar {
-  width: 7px;
-  background-color: #F5F5F5;
-}
-
-.scroll-style-4::-webkit-scrollbar-thumb {
-  background-color: #0D6FAA;
-  border: 0px solid #555555;
-  border-radius: 5px;
-}
 
 @mixin hoverEffect() {
   -webkit-transition: all 0.5s ease;
@@ -1232,6 +1253,24 @@ button, select {
       padding-right: 20px;
       overflow-x: hidden;
 
+      &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+        border-radius: 10px;
+        background-color: #F5F5F5;
+      }
+
+      &::-webkit-scrollbar {
+        width: 7px;
+        background-color: #F5F5F5;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #0D6FAA;
+        border: 0px solid #555555;
+        border-radius: 5px;
+      }
+      
+
       input[type="radio"]:checked + span:after {
         width: 10px;
         height: 10px;
@@ -2177,16 +2216,15 @@ button, select {
     #sidebar-wrapper {
 
       width: 250px;
+      min-height: 100vh;
       left: 0px;
       margin-left: 0px;
-      overflow-x: inherit; //scroll kapalı halı
-      overflow-y: inherit;
       z-index: 1000;
-      background: url("../images/primeapps/menu_background.png") !important;
+      background-image: url("../images/primeapps/menu_background.png");
       background-repeat: repeat !important;
-
       .sidebar-nav {
         position: relative;
+        margin-bottom: 60px;
 
         .sidebar-brand {
           padding: 20px 10px !important;
@@ -2278,6 +2316,9 @@ button, select {
       }
 
       .footer {
+        margin: 0px;
+        bottom: 0px;
+        position: fixed;
         .menu-togle {
           display: flex;
           align-items: center;
@@ -2287,6 +2328,10 @@ button, select {
             color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #000;
             text-align: center;
             margin-left: 0px;
           }
@@ -2387,6 +2432,9 @@ button, select {
         position: sticky;
         top: 5%;
         z-index: 2;
+        .tooltip {
+          display: none !important;
+        }
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
@@ -2394,9 +2442,7 @@ button, select {
           border-radius: 5px;
           list-style-type: none;
 
-          .tooltip {
-            display: none !important;
-          }
+          
 
           li {
             //border-bottom: solid 1px rgba(0, 0, 0, 0.05);
@@ -2575,6 +2621,7 @@ button, select {
       }
 
       &.full-toggled2 {
+        
         .content-in2 {
           width: calc(100% - 90px);
         }
@@ -2626,6 +2673,13 @@ button, select {
 
           span, h2 {
             display: none;
+          }
+        }
+        .backopen{
+          .fa-long-arrow-alt-left{
+            &:before{
+              content: "\f30b";
+            }
           }
         }
       }

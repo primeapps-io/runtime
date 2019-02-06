@@ -3,21 +3,14 @@
         <div class="menu app-menu2">
             <div class="sidemenu setup-title">
                 <h2><span>{{ menuTopTitle }}</span></h2>
+                <button class="btn btn-radius btn-gray backopen" ng-click="toggledSubMenu()" data-trigger="hover" data-type="info"
+                    data-title="Open" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-left"></i> <span>Close</span></button>
             </div>
             <ng-include ng-show="activeMenu==='app'"   src="'view/app/common/appMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='model'" src="'view/app/common/modelMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='automation'" src="'view/app/common/automationMenu.html'"></ng-include>
-    
-            <ng-include ng-show="activeMenu==='templates'" src="'view/app/common/templatesMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='analytics'" src="'view/app/common/analyticsMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='authorization'" src="'view/app/common/authorizationMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='security'" src="'view/app/common/securityMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='identity'" src="'view/app/common/identityMenu.html'"></ng-include>
-            <ng-include ng-show="activeMenu==='settings'" src="'view/app/common/settingsMenu.html'"></ng-include>
-            <div class="submenu-togle" ng-click="toggledSubMenu()">
-                <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>
-                <i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>
-            </div>
+            <!--<div class="submenu-togle" ng-click="toggledSubMenu()">-->
+                <!--<i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>-->
+                <!--<i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>-->
+            <!--</div>-->
         </div>
         
         <div class="content-in2">
