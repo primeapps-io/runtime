@@ -37,12 +37,15 @@ angular.module('primeapps')
 
 
             $scope.save = function () {
+                $scope.saving = true;
                 if (angular.isObject($scope.orgModel.icon))
                     $scope.orgModel.icon = $scope.orgModel.icon.value;
 
                 ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
+                        $rootScope.currentOrganization.label = $scope.orgModel.label;
                         toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.saving = false;
                     });
             };
 

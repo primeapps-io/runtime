@@ -1639,6 +1639,15 @@ button, select {
     }
   }
 
+  .btn-yellow {
+    background-color: rgba(255, 157, 0, 0.75);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba(13, 111, 170, 1);
+    }
+  }
+
   .btn-gray {
     background-color: rgba(0, 0, 0, 0.25);
     color: #fff;
