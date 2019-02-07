@@ -7,6 +7,12 @@ angular.module('primeapps')
 
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons();
+
+            $rootScope.breadcrumblist[1].link = "";
+            $rootScope.breadcrumblist[1].title = 'Manage';
+            $rootScope.breadcrumblist[2] = {};
+            $rootScope.breadcrumblist[3] = {};
+
             $scope.orgDeleteDisabled = false;
 
             ManageService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
@@ -23,7 +29,7 @@ angular.module('primeapps')
             };
 
             $scope.deleteButtonControl = function () {
-                var currentOrg = $filter('filter')($rootScope.organizations, { id: $scope.$parent.$parent.$parent.currentOrgId }, true)[0];
+                var currentOrg = $filter('filter')($rootScope.organizations, {id: $scope.$parent.$parent.$parent.currentOrgId}, true)[0];
                 if (currentOrg.role != 'administrator' || currentOrg.default === true)
                     $scope.orgDeleteDisabled = true;
             };
