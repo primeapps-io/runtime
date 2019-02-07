@@ -27,11 +27,11 @@
                         <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                         <div class="panel">
                             <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-                                <label class="col-sm-12 control-label">*{{'Setup.Profiles.ProfileName' | translate}}:</label>
+                                <label class="col-sm-12 control-label">{{'Setup.Profiles.ProfileName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <input type="text" name="name" class="form-control col-sm-8" maxlength="50" required ng-model="profile.name" ng-change="profileForm['name'].$setValidity('unique', true)" ng-disabled="profile.is_persistent" />
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-12 control-label">{{'Setup.Profiles.ProfileDescription' | translate}}</label>
+                                <label class="col-sm-12 control-label">{{'Setup.Profiles.ProfileDescription' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <textarea rows="2" name="description" class="form-control col-sm-8" maxlength="255" auto-grow ng-model="profile.description" ng-disabled="profile.is_persistent"></textarea>
                             </div>
                             <div class="form-group">
@@ -98,7 +98,7 @@
                                     </label>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-                                    <label class="col-sm-12">*{{'Setup.Profiles.StarPage' | translate}}:</label>
+                                    <label class="col-sm-12">{{'Setup.Profiles.StarPage' | translate}}</label>
                                     <select class="form-control"
                                             ng-model="profile.PageStart"
                                             ng-change="SetStartPage()"

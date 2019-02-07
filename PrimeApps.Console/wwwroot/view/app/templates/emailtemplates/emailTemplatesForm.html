@@ -26,7 +26,7 @@
                         <div class="section" id="section1">
                             <div class="panel">
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Setup.Templates.Module' | translate}}</label>
+                                    <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select class="form-control pull-left"
                                             ng-change="setContent()"
                                             ng-model="newtemplate.moduleName"
@@ -35,15 +35,15 @@
                                     </select>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.TemplateName' | translate}}</label>
+                                    <label>{{'Template.TemplateName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.Subject' | translate}}</label>
+                                    <label>{{'Template.Subject' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div><label>{{'Template.Sharing' | translate}}</label></div>
+                                    <div><label>{{'Template.Sharing' | translate}} </label></div>
                                     <label class="checkbox-inline newinput">
                                         <input type="radio" ng-model="newtemplate.sharing_type" value="me">
                                         {{'View.ShareMe' | translate}}

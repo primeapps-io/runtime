@@ -28,7 +28,7 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                    <label class="col-sm-12 required-field"> {{'Setup.HelpGuide.HelpScreenName' | translate}}</label>
+                                    <label class="col-sm-12 required-field"> {{'Setup.HelpGuide.HelpScreenName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />
                                 </div>
                                 <div class="form-group"
