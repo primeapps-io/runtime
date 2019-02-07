@@ -179,7 +179,7 @@ namespace PrimeApps.Console.Helpers
 			var systemCodes = appTemplate.Name.Split(" ");
 			foreach (var systemCode in systemCodes)
 			{
-				template.Subject += systemCode.ToLower() + "_";
+				template.SystemCode += systemCode.ToLower() + "_";
 			}
 
 			return template;

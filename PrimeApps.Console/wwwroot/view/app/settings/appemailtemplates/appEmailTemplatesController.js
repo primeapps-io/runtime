@@ -217,7 +217,7 @@ angular.module('primeapps')
                 template.content = $scope.template.tinymce_content;
                 template.active = $scope.template.active;
                 template.language = $scope.template.language;
-                var mailInfo = '{ "MailSenderName":' + $scope.template.mail_sender_name + ', "MailSenderEmail":' + $scope.template.mail_sender_email + '}';
+                var mailInfo = '{ "MailSenderName":"' + $scope.template.mail_sender_name + '", "MailSenderEmail":"' + $scope.template.mail_sender_email + '"}';
                 template.settings = mailInfo;
 
                 if ($scope.currentTemplate) {
