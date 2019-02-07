@@ -1,54 +1,60 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="formname" class="form-horizontal form-custom" ng-submit="save(formname);" autocomplete="off" novalidate>
-        <div class="modal-header">
-            <div class="flex-between">
-                <h4 class="modal-title">Report Categories </h4>
-                <div>
-                    <ul class="list-unstyled list-inline">
-                         <li><button type="button" class="btn add-button btn-radius btn-gray" ng-click="categoryModal.hide()"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                        <li><button type="button" class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i>{{'Common.Add' | translate}}</button></li>
-                     </ul>
-                </div>
+    <div class="modal-header">
+        <div class="flex-between">
+            <h4 class="modal-title">Report Categories </h4>
+            <div>
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <button type="button" class="btn add-button btn-radius btn-gray"
+                                ng-click="categoryModal.hide()"><i class="fas fa-times"></i>{{'Common.Cancel' |
+                            translate}}
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" ng-click="categoryAddShow=true"
+                                class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i>{{'Common.Add'
+                            | translate}}
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="modal-dialog scroll-style-4">
-           <ul class="list-unstyled categorylist">
-               <li>
-                   <div>
-                       <span>Kategori 1</span>
-                       <span class="new-actions">
-                            <a href="#" class="edit-btn" title="Edit"><i class="fas fa-pen"></i></a>
-                            <a href="#" class="delete-btn" title="Delete"><i class="fas fa-trash"></i></a>
+    </div>
+    <div class="modal-dialog scroll-style-4">
+        <ul class="list-unstyled categorylist">
+            <li ng-if="categoryAddShow ===true">
+                <div class="form-group bottom0">
+                    <input name="category_{{category.id}}" ng-model="category.name" class="form-control"
+                           placeholder="Please fill your category name"/>
+                    <span class="new-actions">
+                            <button ng-click="saveCategory(category)" ladda="category.saving" class="apply-btn"
+                                    title="Apply"><i
+                                    class="fas fa-check"></i></button>
                         </span>
-                   </div>
-               </li>
-               <li>
-                   <div>
-                       <span>Kategori 1</span>
-                       <span class="new-actions">
-                            <a href="#" class="edit-btn" title="Edit"><i class="fas fa-pen"></i></a>
-                            <a href="#" class="delete-btn" title="Delete"><i class="fas fa-trash"></i></a>
+                </div>
+            </li>
+            <li ng-repeat="category in reportCategory">
+                <div ng-if="category.edit !=true">
+                    <span>{{ category.name }}</span>
+                    <span class="new-actions">
+                            <button ng-click="category.edit = true" class="edit-btn" title="Edit"><i
+                                    class="fas fa-pen"></i></button>
+                            <button ladda="category.deleted" ng-click="deleteCategory($index,category)" class="delete-btn" title="Delete"><i
+                                    class="fas fa-trash"></i></button>
                         </span>
-                   </div>
-               </li>
-               <li>
-                   <div>
-                       <span>Kategori 1</span>
-                       <span class="new-actions">
-                            <a href="#" class="edit-btn" title="Edit"><i class="fas fa-pen"></i></a>
-                            <a href="#" class="delete-btn" title="Delete"><i class="fas fa-trash"></i></a>
+                </div>
+
+                <div class="form-group bottom0" ng-if="category.edit ===true">
+                    <input name="category_{{category.id}}" ng-model="category.name" class="form-control"
+                           placeholder="Please fill your category name"/>
+                    <span class="new-actions">
+                            <button ng-click="saveCategory(category)" ladda="category.saving" class="apply-btn"
+                                    title="Apply"><i
+                                    class="fas fa-check"></i></button>
                         </span>
-                   </div>
-               </li>
-               <li>
-                   <div class="form-group bottom0">
-                       <input name="xx" class="form-control" placeholder="Please fill your category name" />
-                       <span class="new-actions">
-                            <a href="#" class="apply-btn" title="Apply"><i class="fas fa-check"></i></a>
-                        </span>
-                   </div>
-               </li>
-           </ul>
-        </div>
-    </form>
+                </div>
+            </li>
+
+        </ul>
+    </div>
 </div>

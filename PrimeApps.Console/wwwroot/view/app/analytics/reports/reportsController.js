@@ -100,6 +100,50 @@ angular.module('primeapps')
                 });
             }
 
+            $scope.saveCategory = function (category) {
+
+                category.saving = true;
+
+                $timeout(function () {
+                    category.saving = false;
+                    category.edit = false;
+                }, 2000);
+            };
+
+            $scope.deleteCategory = function (index, category) {
+                category.deleted = true;
+
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: " ",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+
+                            $timeout(function () {
+                                category.deleted = false;
+                                $rootScope.reportCategory.splice(index, 1);
+
+                                $rootScope.$apply(function () {
+                                });
+
+                            }, 1000)
+
+                        } else {
+                            category.deleted = false;
+                            $scope.$apply(function () {
+
+                            });
+
+                        }
+
+
+                    });
+
+            }
 
         }
     ]);
