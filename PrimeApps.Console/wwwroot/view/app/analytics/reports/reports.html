@@ -1,16 +1,15 @@
 <div class="setup-title">
-    <h2>Reports</h2>
+    <h2>{{'Report.Title' | translate}}</h2>
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn btn-radius btn-gray" ng-click="openCategoryModal()"><i
-                        class="fas fa-list"></i> Category Manage
+                <button class="btn btn-radius btn-gray" ng-click="openCategoryModal()">
+                    <i class="fas fa-list"></i> {{'Report.CategoryManage' | translate}}
                 </button>
             </li>
             <li>
-                <button class="btn add-button" ui-sref="studio.app.report({orgId:$parent.orgId,appId:$parent.appId})"><i
-                        class="fas fa-plus"></i> Add New
-                    Reports
+                <button class="btn add-button" ui-sref="studio.app.report({orgId:$parent.orgId,appId:$parent.appId})">
+                    <i class="fas fa-plus"></i> {{'Report.NewReport' | translate}}
                 </button>
             </li>
         </ul>
@@ -21,75 +20,58 @@
 
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>Report Name</th>
-            <th>Report Category</th>
-            <th>Report Type</th>
-        </tr>
+            <tr>
+                <th>{{'Report.ReportName' | translate}}</th>
+                <th>{{'Report.ReportCategory' | translate}}</th>
+                <th>{{'Report.ReportType' | translate}}</th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
 
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
 
 
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>Report Name</th>
-            <th>Report Category</th>
-            <th>Report Type</th>
-        </tr>
+            <tr>
+                <th>{{'Report.ReportName' | translate}}</th>
+                <th>{{'Report.ReportCategory' | translate}}</th>
+                <th>{{'Report.ReportType' | translate}}</th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']">
+            <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']">
 
-            <td>{{ report.name }}
-            </td>
-            <td>{{report.category.name}}
-            </td>
-            <td>{{ report.report_type}}
-            </td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a>
-                                {{'Common.Edit' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" confirm-click action="delete(relation)" placement="left"
-                               confirm-message="{{'Common.AreYouSure' | translate}}"
-                               confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                {{'Common.Remove' | translate}}
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-            </td>
-        </tr>
+                <td>
+                    {{report.name}}
+                </td>
+                <td>
+                    {{report.category.name}}
+                </td>
+                <td>
+                    {{ report.report_type}}
+                </td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(report.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">
