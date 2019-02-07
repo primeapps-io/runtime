@@ -44,6 +44,7 @@ angular.module('primeapps')
                 ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
+                        $rootScope.currentOrganization.icon = $scope.orgModel.icon;
                         toastr.success($filter('translate')('Güncelleme Başarılı'));
                         $scope.saving = false;
                     });
