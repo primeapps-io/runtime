@@ -53,7 +53,7 @@ function init() {
     var GradientLightGray = $(go.Brush, "Linear", { 0: "White", 1: "#DADADA" });
 
     var ActivityNodeFill = $(go.Brush, "Linear", { 0: "OldLace", 1: "PapayaWhip" });
-    var ActivityNodeStroke = "#CDAA7D";
+    var ActivityNodeStroke = "#CDAA7D"; 
     var ActivityMarkerStrokeWidth = 1.5;
     var ActivityNodeWidth = 120;
     var ActivityNodeHeight = 80;
@@ -412,7 +412,7 @@ function init() {
                             name: "SHAPE",
                             fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                             parameter1: 10, // corner size
-                            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                            portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
                             fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
                         },
                         new go.Binding("fill", "color"),
@@ -558,7 +558,7 @@ function init() {
                         strokeWidth: 1,
                         name: "SHAPE",
                         desiredSize: new go.Size(EventNodeSize, EventNodeSize),
-                        portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                        portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
                         fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
                     },
                     // allows the color to be determined by the node data
