@@ -27,7 +27,7 @@ function init() {
         currentFile.textContent = "Sorry! No web storage support. If you're using Internet Explorer / Microsoft Edge, you must load the page from a server for local storage to work.";
     }
 
-// setup the menubar
+    // setup the menubar
     jQuery("#menuui").menu();
     jQuery(function () {
         jQuery("#menuui").menu({ position: { my: "left top", at: "left top+30" } });
@@ -53,7 +53,7 @@ function init() {
     var GradientLightGray = $(go.Brush, "Linear", { 0: "White", 1: "#DADADA" });
 
     var ActivityNodeFill = $(go.Brush, "Linear", { 0: "OldLace", 1: "PapayaWhip" });
-    var ActivityNodeStroke = "#CDAA7D"; 
+    var ActivityNodeStroke = "#CDAA7D";
     var ActivityMarkerStrokeWidth = 1.5;
     var ActivityNodeWidth = 120;
     var ActivityNodeHeight = 80;
@@ -355,8 +355,8 @@ function init() {
     function makeSubButton(sub) {
         if (sub)
             return [$("SubGraphExpanderButton"),
-                { margin: 2, visible: false },
-                new go.Binding("visible", "isSubProcess")];
+            { margin: 2, visible: false },
+            new go.Binding("visible", "isSubProcess")];
         return [];
     }
 
@@ -421,14 +421,14 @@ function init() {
                                 return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth;
                             })
                     ),
-//        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
-//          { margin: 3,
-//            stretch: go.GraphObject.Fill,
+                    //        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+                    //          { margin: 3,
+                    //            stretch: go.GraphObject.Fill,
                     //            stroke: ActivityNodeStroke,
-//            parameter1: 8, fill: null, visible: false
-//          },
-//          new go.Binding("visible", "isTransaction")
-//         ),
+                    //            parameter1: 8, fill: null, visible: false
+                    //          },
+                    //          new go.Binding("visible", "isTransaction")
+                    //         ),
                     // task icon
                     $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
                         {
@@ -1174,8 +1174,8 @@ function init() {
                     return s ? new go.Point(5, 0) : new go.Point(0, 0);
                 })),
             $(go.TextBlock, { // this is a Link label
-                    name: "Label", editable: true, text: "label", segmentOffset: new go.Point(-10, -10), visible: false
-                },
+                name: "Label", editable: true, text: "label", segmentOffset: new go.Point(-10, -10), visible: false
+            },
                 new go.Binding("text", "text").makeTwoWay(),
                 new go.Binding("visible", "visible").makeTwoWay())
         );
@@ -1214,8 +1214,8 @@ function init() {
             $(go.Shape, { toArrow: "Triangle", scale: 1, fill: "white", stroke: "black" }),
             $(go.Shape, { fromArrow: "Circle", scale: 1, visible: true, stroke: "black", fill: "white" }),
             $(go.TextBlock, {
-                    editable: true, text: "label"
-                }, // Link label
+                editable: true, text: "label"
+            }, // Link label
                 new go.Binding("text", "text").makeTwoWay())
         );
 
@@ -1309,16 +1309,16 @@ function init() {
         }
     });
 
-//  uncomment this if you want a subprocess to expand on drop.  We decided we didn't like this behavior
-//  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
-//    // e.subject is the collection that was just dropped
-//    e.subject.each(function(part) {
-//        if (part instanceof go.Node && part.data.item === "end") {
-//          part.move(new go.Point(part.location.x  + 350, part.location.y))
-//        }
-//      });
-//    myDiagram.commandHandler.expandSubGraph();
-//  });
+    //  uncomment this if you want a subprocess to expand on drop.  We decided we didn't like this behavior
+    //  myDiagram.addDiagramListener("ExternalObjectsDropped", function(e) {
+    //    // e.subject is the collection that was just dropped
+    //    e.subject.each(function(part) {
+    //        if (part instanceof go.Node && part.data.item === "end") {
+    //          part.move(new go.Point(part.location.x  + 350, part.location.y))
+    //        }
+    //      });
+    //    myDiagram.commandHandler.expandSubGraph();
+    //  });
 
     // change the title to indicate that the diagram has been modified
     window.myDiagram.addDiagramListener("Modified", function (e) {
@@ -1377,7 +1377,7 @@ function init() {
             copiesArrayObjects: true,
             nodeDataArray: [
                 // -------------------------- Event Nodes
-                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true, ngModelName:"start" }, //"Start"
+                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true, ngModelName: "start" }, //"Start"
                 //{ key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message", sidebar: false }, //"Message" // BpmnTaskMessage
                 { key: 103, category: "event", text: "Timer", eventType: 3, eventDimension: 3, item: "Timer", sidebar: true }, //"Timer"
                 { key: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "End", sidebar: false }, //"End"
@@ -1408,14 +1408,14 @@ function init() {
         });  // end model
 
     // an activity with a boundary event:
-//        {
-//          key: 1,
-//          category: "activity",
-//          text: "Message",
-//          taskType: 1,
-//          item: "Message Task",
-//          boundaryEventArray: [{ "portId": "be0", alignmentIndex: 0, eventType: 2, color: "white" }]   // portId # and alignmentIndex should match
-//        },
+    //        {
+    //          key: 1,
+    //          category: "activity",
+    //          text: "Message",
+    //          taskType: 1,
+    //          item: "Message Task",
+    //          boundaryEventArray: [{ "portId": "be0", alignmentIndex: 0, eventType: 2, color: "white" }]   // portId # and alignmentIndex should match
+    //        },
 
     /*window.myPaletteLevel2.model = $(go.GraphLinksModel,
         {

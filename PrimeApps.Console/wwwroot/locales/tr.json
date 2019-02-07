@@ -1579,6 +1579,8 @@
       "RelatedField": "İlgili Alan",
       "Logs": "Logs",
       "WhenFieldChanged": "Sadece ilgili alandaki değer değiştiğinde çalıştır",
+      "NotEmptyModel": "Diagram boş olamaz.",
+      "MustBeStartNode": "Başlangıç eklenmesi zorunludur.",
       "RuleTriggers": {
         "insert": "Oluşturulduğunda",
         "update": "Düzenlendiğinde",
