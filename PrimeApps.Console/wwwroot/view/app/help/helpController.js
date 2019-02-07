@@ -22,8 +22,10 @@ angular.module('primeapps')
             $scope.editDisable = false;
 
             $scope.relationTypeShow = function () {
-                if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.id)
+                if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.id){
                     $scope.helpModalObj.relationType = true;
+                    $scope.helpModalObj.selectHelp = 'list';
+                }
                 else {
                     $scope.helpModalObj.relationType = false;
                     $scope.helpModalObj.selectHelp = null;
