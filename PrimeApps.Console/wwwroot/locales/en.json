@@ -58,7 +58,7 @@
     "SelectCityFirst": "Select City First -->",
     "Paging": "{{from}} to {{to}}",
     "Refresh": "Refresh",
-    "Required": "Required",
+    "Required": "required",
     "FullScreen": "Full Screen",
     "ExitFullScreen": "Exit Full Screen",
     "Attachments": "Attachments",

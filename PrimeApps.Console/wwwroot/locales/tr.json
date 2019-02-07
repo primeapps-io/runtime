@@ -57,7 +57,7 @@
     "EmptyMessage": "Kayıt bulunmamaktadır.",
     "SelectCityFirst": "Önce İl Seçiniz -->",
     "Paging": "{{from}} &ndash; {{to}} arası",
-    "Required": "Zorunlu",
+    "Required": "zorunlu",
     "Refresh": "Yenile",
     "FullScreen": "Ekranı Büyüt",
     "ExitFullScreen": "Ekranı Küçült",

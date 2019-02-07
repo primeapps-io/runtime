@@ -224,7 +224,7 @@ angular.module('primeapps')
             };
 
             var setMenuList = function (id) {
-                $scope.loading = true;
+               // $scope.loading = true;
                 $scope.menuLists = [];
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
@@ -291,7 +291,6 @@ angular.module('primeapps')
                         });
                     });
                 }
-
             }
 
             $scope.validate = function (menuForm) {

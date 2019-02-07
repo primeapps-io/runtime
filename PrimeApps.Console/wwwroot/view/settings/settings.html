@@ -2,7 +2,7 @@
     <div class="row clearfix">
         <div class="menu app-menu2">
             <div class="sidemenu setup-title">
-                <h2><span>{{ menuTopTitle }}</span></h2>
+                <h2><span>{{$parent.$parent.me.full_name}}</span></h2>
             </div>
             <ng-include   src="'view/settings/common/settingsMenu.html'"></ng-include>
             <div class="submenu-togle" ng-click="toggledSubMenu()">

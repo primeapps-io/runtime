@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ProfileController', ['$rootScope', '$scope', 'SettingService', '$filter', '$modal',
-        function ($rootScope, $scope, SettingService, $filter, $modal) {
+    .controller('ProfileController', ['$rootScope', '$scope', 'SettingService', '$filter', '$modal','AuthService','blockUI',
+        function ($rootScope, $scope, SettingService, $filter, $modal,AuthService,blockUI) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
