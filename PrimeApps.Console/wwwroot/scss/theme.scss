@@ -2432,16 +2432,17 @@ button, select {
         position: sticky;
         top: 5%;
         z-index: 2;
-        .tooltip {
-          display: none !important;
-        }
+        
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
           list-style-type: none;
-
+          
+          .tooltip {
+            display: none !important;
+          }
           
 
           li {
@@ -2617,6 +2618,12 @@ button, select {
             text-overflow: ellipsis;
           }
         }
+        .backclose{
+          display: block;
+        }
+        .backopen{
+          display: none;
+        }
 
       }
 
@@ -2675,12 +2682,11 @@ button, select {
             display: none;
           }
         }
+        .backclose{
+          display: none;
+        }
         .backopen{
-          .fa-long-arrow-alt-left{
-            &:before{
-              content: "\f30b";
-            }
-          }
+          display: block;
         }
       }
 

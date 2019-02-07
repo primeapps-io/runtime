@@ -1,4 +1,3 @@
-@charset "UTF-8";
 .scroll-style-4::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -1902,15 +1901,15 @@ button:focus, select:focus {
   top: 5%;
   z-index: 2;
 }
-.primeapps #wrapper .setup-layout .app-menu2 .tooltip {
-  display: none !important;
-}
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
   background: #fff;
   padding: 20px 10px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   list-style-type: none;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
+  display: none !important;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
   position: relative;
@@ -2067,6 +2066,12 @@ button:focus, select:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.primeapps #wrapper .setup-layout .setup-title .backclose {
+  display: block;
+}
+.primeapps #wrapper .setup-layout .setup-title .backopen {
+  display: none;
+}
 .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
   width: calc(100% - 90px);
 }
@@ -2098,8 +2103,11 @@ button:focus, select:focus {
 .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu span, .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu h2 {
   display: none;
 }
-.primeapps #wrapper .setup-layout.full-toggled2 .backopen .fa-long-arrow-alt-left:before {
-  content: "";
+.primeapps #wrapper .setup-layout.full-toggled2 .backclose {
+  display: none;
+}
+.primeapps #wrapper .setup-layout.full-toggled2 .backopen {
+  display: block;
 }
 .primeapps #wrapper .nav-pills > li.active > a, .primeapps #wrapper .nav-pills > li.active > a:hover, .primeapps #wrapper .nav-pills > li.active > a:focus {
   background: initial !important;
