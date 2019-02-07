@@ -1761,6 +1761,9 @@ button:focus, select:focus {
 .primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip {
   display: none !important;
 }
+.primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip .tooltip-inner {
+  white-space: nowrap;
+}
 .primeapps #wrapper #sidebar-wrapper ul {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
@@ -1917,6 +1920,9 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
   display: none !important;
+}
+.primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip .tooltip-inner {
+  white-space: nowrap;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
   position: relative;

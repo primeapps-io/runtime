@@ -2242,6 +2242,9 @@ button, select {
 
         .tooltip {
           display: none !important;
+          .tooltip-inner {
+            white-space: nowrap;
+          }
         }
 
       }
@@ -2454,6 +2457,9 @@ button, select {
           
           .tooltip {
             display: none !important;
+            .tooltip-inner {
+              white-space: nowrap;
+            }
           }
           
 
