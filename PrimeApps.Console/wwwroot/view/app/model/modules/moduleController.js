@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
         function ($rootScope, $scope, $filter, $state, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
 
-            $scope.$parent.menuTopTitle = "Models";
+            //$scope.$parent.menuTopTitle = "Models";
 
             $scope.$parent.activeMenuItem = 'modules';
 

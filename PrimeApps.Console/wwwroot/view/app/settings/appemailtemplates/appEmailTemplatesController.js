@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, AppEmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
             $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
-            $scope.$parent.menuTopTitle = "Settings";
+            //$scope.$parent.menuTopTitle = "Settings";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'appEmailTemplates';
 
@@ -217,7 +217,7 @@ angular.module('primeapps')
                 template.content = $scope.template.tinymce_content;
                 template.active = $scope.template.active;
                 template.language = $scope.template.language;
-                var mailInfo = '{ "MailSenderName":' + $scope.template.mail_sender_name + ', "MailSenderEmail":' + $scope.template.mail_sender_email + '}';
+                var mailInfo = '{ "MailSenderName":"' + $scope.template.mail_sender_name + '", "MailSenderEmail":"' + $scope.template.mail_sender_email + '"}';
                 template.settings = mailInfo;
 
                 if ($scope.currentTemplate) {

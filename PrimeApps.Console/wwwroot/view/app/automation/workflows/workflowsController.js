@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.$parent.loadingFilter = false;
             $scope.workflows = [];
             $scope.$parent.workflows = [];
-            $scope.$parent.menuTopTitle = "Automation";
+            //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";

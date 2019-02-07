@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window, FileUploader) {
 
-            $scope.$parent.menuTopTitle = "Templates";
+            //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
@@ -189,7 +189,7 @@ angular.module('primeapps')
             fileUpload.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
                     case 'excelFilter':
-                        ngToast.create({ content: $filter('translate')('Data.Import.FormatError'), className: 'warning' });
+                        toast.warning($filter('translate')('Data.Import.FormatError'));
                         break;
                     case 'sizeFilter':
                         toastr.warning($filter('translate')('Setup.Settings.SizeError'));

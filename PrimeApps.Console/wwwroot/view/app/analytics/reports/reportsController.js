@@ -7,7 +7,7 @@ angular.module('primeapps')
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-            $scope.$parent.menuTopTitle = "Analytics";
+            //$scope.$parent.menuTopTitle = "Analytics";
             //$scope.$parent.activeMenu = 'analytics';
             $scope.$parent.activeMenuItem = 'reports';
 
@@ -30,6 +30,11 @@ angular.module('primeapps')
                 limit: "10",
                 offset: 0
             };
+
+            ReportsService.getAllCategory().then(function (result) {
+                $rootScope.reportCategory = result.data;
+            });
+
 
             ReportsService.count().then(function (response) {
                 $scope.pageTotal = response.data;
@@ -68,6 +73,30 @@ angular.module('primeapps')
 
                 $scope.categoryModal.$promise.then(function () {
                     $scope.categoryModal.show();
+                });
+            };
+
+            $scope.openReportDetail = function () {
+                $scope.reportModal = $scope.reportModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/analytics/reports/report.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false,
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/analytics/reports/reportsService.js',
+                                cdnUrl + 'view/app/analytics/reports/reportController.js'
+                            ]);
+                        }]
+                    },
+                    controller: 'ReportController'
+
+                });
+
+                $scope.reportModal.$promise.then(function () {
+                    $scope.reportModal.show();
                 });
             }
 

@@ -15,7 +15,7 @@ angular.module('primeapps',
         'ngTable',
         'xeditable',
         'angularFileUpload',
-        'ui.bootstrap.showErrors', 
+        'ui.bootstrap.showErrors',
         'blockUI',
         'vr.directives.slider',
         'ui.sortable',
@@ -50,7 +50,7 @@ angular.module('primeapps',
             angular.module('primeapps').value = $provide.value;
             angular.module('primeapps').constant = $provide.constant;
             angular.module('primeapps').provider = $provide.provider;
-           // $locationProvider.html5Mode(true).hashPrefix('*');
+            // $locationProvider.html5Mode(true).hashPrefix('*');
 
             $locationProvider.hashPrefix('');
             var whiteList = [];
@@ -143,10 +143,10 @@ angular.module('primeapps',
                 return;
             }
 
-
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 try {
                     $rootScope.currentPath = $location.$$url;
+                    $window.scrollTo(0, 0);
 
                 }
                 catch (error) {

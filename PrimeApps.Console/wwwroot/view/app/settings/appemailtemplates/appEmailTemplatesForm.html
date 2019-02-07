@@ -2,7 +2,7 @@
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Templates.UploadTemplate' | translate}}</h4>
+                <h4 class="modal-title">{{template.isNew ?('Template.Title' | translate) :('Template.UpdateTemplate' | translate)}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
@@ -51,25 +51,25 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.language.$invalid}">
-                                    <label class="col-sm-12 required-field">Language</label>
+                                    <label class="col-sm-12 required-field">{{'Setup.Settings.Language' | translate}}</label>
                                     <div ng-init="template.isNew ? template.language = 'tr' : template.language = template.language">
                                         <label class="radio-inline newinput">
-                                            <input name="language" type="radio" ng-model="template.language" value="tr">Tr<span></span>
+                                            <input name="language" type="radio" ng-model="template.language" value="tr">{{'Setup.Settings.Turkish' | translate}}<span></span>
                                         </label>
                                         <label class="radio-inline newinput">
                                             <input name="language" type="radio" ng-model="template.language" value="en">
-                                            En<span></span>
+                                            {{'Setup.Settings.English' | translate}}<span></span>
                                         </label>
                                     </div>
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.mail_sender_name.$invalid}">
-                                    <label>Mail Sender Name<span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label>{{'Setup.Messaging.EMail.Alias' | translate}}<span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input name="mail_sender_name" class="form-control" placeholder="{{'Setup.Messaging.EMail.Alias' | translate}}" type="text" ng-maxlength="25" ng-model="template.mail_sender_name" required />
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.mail_sender_email.$invalid}">
-                                    <label>Mail Sender Email<span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label>{{'Setup.Messaging.EMail.Address' | translate}}<span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input name="mail_sender_email" class="form-control" placeholder="{{'Setup.Messaging.EMail.Address' | translate}}" type="email" ng-maxlength="255" ng-model="template.mail_sender_email" required />
                                 </div>
 

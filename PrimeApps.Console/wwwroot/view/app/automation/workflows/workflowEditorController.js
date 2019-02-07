@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
             $scope.workflowStartModel = {};
-            $scope.$parent.menuTopTitle = "Automation";
+           // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflowEditor';
             $rootScope.subtoggleClass = 'full-toggled2';
@@ -1690,7 +1690,22 @@ angular.module('primeapps')
                 var bpmModel = $scope.workflowModel;
                 var startModel = $scope.workflowStartModel;
 
-                if (diagram) {
+                if (diagram.nodeDataArray.length > 0 && diagram.linkDataArray.length > 0) {
+                    var startControl = $filter('filter')(diagram.nodeDataArray, { item: 'Start' }, true)[0];
+
+                    if (!startControl) {
+                        toastr.warning($filter('translate')('Setup.BpmWorkflow.MustBeStartNode'));
+                        $scope.saving = false;
+                        return;
+                    }
+                    else {
+                        if (!$scope.workflowStartModel.module && !$scope.workflowStartModel.name && !$scope.workflowStartModel.code) {
+                            toastr.warning($filter('translate')('Setup.BpmWorkflow.MustBeStartNode'));//TODO translate
+                            $scope.saving = false;
+                            return;
+                        }
+                    }
+
                     var data = {};
                     data.active = startModel.active;
                     data.name = startModel.name;
@@ -1791,6 +1806,10 @@ angular.module('primeapps')
                                 }
                             });
                     }
+                }
+                else {
+                    toastr.warning($filter('translate')('Setup.BpmWorkflow.NotEmptyModel'));
+                    $scope.saving = false;
                 }
             };
 
