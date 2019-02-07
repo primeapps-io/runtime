@@ -24,14 +24,16 @@ namespace PrimeApps.Console.Controllers
 		private readonly IRecordRepository _recordRepository;
 		private readonly IModuleRepository _moduleRepository;
 		private IConfiguration _configuration;
+		private IPlatformRepository _platformRepository;
 
-		public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration)
+		public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPlatformRepository platformRepository)
 		{
 			_templateRepostory = templateRepostory;
 			_userRepository = userRepository;
 			_recordRepository = recordRepository;
 			_moduleRepository = moduleRepository;
 			_configuration = configuration;
+			_platformRepository = platformRepository;
 		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -39,7 +41,7 @@ namespace PrimeApps.Console.Controllers
 			SetContext(context);
 			SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
 			SetCurrentUser(_templateRepostory, PreviewMode, TenantId, AppId);
-
+			SetCurrentUser(_platformRepository);
 			base.OnActionExecuting(context);
 		}
 
@@ -118,7 +120,7 @@ namespace PrimeApps.Console.Controllers
 			if (templateEntity == null)
 				return NotFound();
 
-			await TemplateHelper.UpdateEntity(template, templateEntity, _userRepository);
+			await TemplateHelper.UpdateEntity(template, templateEntity, _userRepository, null, null);
 			await _templateRepostory.Update(templateEntity);
 
 			if (template.Chunks > 0)
@@ -143,20 +145,70 @@ namespace PrimeApps.Console.Controllers
 		[Route("count"), HttpGet]
 		public async Task<IActionResult> Count([FromUri]TemplateType templateType)
 		{
-			var count = await _templateRepostory.Count(templateType);
-
-			//if (count < 1)
-			//	return NotFound(count);
+			var count = 0;
+			if (templateType > 0)
+			{
+				count = await _templateRepostory.Count(templateType);
+			}
+			else
+			{
+				count = await _platformRepository.Count(AppId);
+			}
 
 			return Ok(count);
 		}
 
 		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType)
+		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType = 0)
 		{
-			var templates = await _templateRepostory.Find(paginationModel, templateType);
+			if (templateType > 0)
+			{
+				var templates = await _templateRepostory.Find(paginationModel, templateType);
+				return Ok(templates);
+			}
+			else
+			{
+				var templates = await _platformRepository.Find(paginationModel, AppId);
+				return Ok(templates);
+			}
 
-			return Ok(templates);
+		}
+
+		[Route("create_app_email_template"), HttpPost]
+		public async Task<IActionResult> CreateAppEmailTemplate([FromBody]AppTemplateBindingModel template)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var templateEntity = await TemplateHelper.CreateEntityAppTemplate(template, AppId);
+			var result = await _platformRepository.CreateAppTemplate(templateEntity);
+
+			if (result < 1)
+				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+			var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+		}
+
+		[Route("update_app_email_template/{id:int}"), HttpPut]
+		public async Task<IActionResult> UpdateAppEmailTemplate(int id, [FromBody]AppTemplateBindingModel template)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if (!template.Deleted)
+			{
+				var templateEntity = await _platformRepository.GetAppTemplateById(id);
+
+				if (templateEntity == null)
+					return NotFound();
+
+				await TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
+				await _platformRepository.UpdateAppTemplate(templateEntity);
+				return Ok(templateEntity);
+			}
+			else
+				return BadRequest("Deleted value can't be true");
 		}
 	}
 }
