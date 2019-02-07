@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, FiltersService, $http, config, $modal, ModuleService) {
 
 
-            $scope.$parent.menuTopTitle = "Models";
+            //$scope.$parent.menuTopTitle = "Models";
             //$scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'filters';
 

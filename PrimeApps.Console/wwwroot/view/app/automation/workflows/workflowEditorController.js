@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
             $scope.workflowStartModel = {};
-            $scope.$parent.menuTopTitle = "Automation";
+           // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflowEditor';
             $rootScope.subtoggleClass = 'full-toggled2';

@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('PasswordController', ['$rootScope', '$scope', '$filter', '$modal', 'SettingService',
         function ($rootScope, $scope, $filter, $modal, SettingService) {
 
-            $scope.$parent.menuTopTitle = "Settings";
+           // $scope.$parent.menuTopTitle = "Settings";
             $scope.$parent.activeMenuItem = 'password';
 
             $scope.changePassword = function (passwordModel) {

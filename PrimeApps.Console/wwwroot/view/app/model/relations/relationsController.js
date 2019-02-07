@@ -5,7 +5,7 @@ angular.module('primeapps')
 	.controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService', '$location',
 		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location) {
 
-			$scope.$parent.menuTopTitle = "Models";
+			//$scope.$parent.menuTopTitle = "Models";
 			//$scope.$parent.activeMenu = "appMenu";
 			$scope.$parent.activeMenuItem = "relations";
 

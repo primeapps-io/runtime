@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, AppEmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
             $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
-            $scope.$parent.menuTopTitle = "Settings";
+            //$scope.$parent.menuTopTitle = "Settings";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'appEmailTemplates';
 

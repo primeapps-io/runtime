@@ -71,9 +71,6 @@ angular.module('primeapps')
                 }
 
             ];
-            ReportsService.getAllCategory().then(function (result) {
-                $scope.reportCategory = result.data;
-            });
 
             $scope.wizardStep = 0;
             $scope.lookupUser = helper.lookupUser;
