@@ -835,7 +835,7 @@ angular.module('primeapps')
                         } else {
                             swal({
                                 title: "Are you sure?",
-                                text: "Are you sure that you want to delete this approval process?",
+                                text: " ",
                                 icon: "warning",
                                 buttons: ['Cancel', 'Yes'],
                                 dangerMode: true

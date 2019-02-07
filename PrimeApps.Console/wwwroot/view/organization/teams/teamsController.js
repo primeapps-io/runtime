@@ -240,7 +240,7 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this team?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
@@ -271,7 +271,7 @@ angular.module('primeapps')
             $scope.deleteUser = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this member?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true

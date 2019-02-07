@@ -2448,6 +2448,9 @@ button, select {
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
           list-style-type: none;
+          //max-height: calc(100vh - 160px);
+          //overflow-y: auto;
+          //overflow-x: hidden;
           
           .tooltip {
             display: none !important;
@@ -2876,8 +2879,17 @@ button, select {
         .fa-arrows
         {
           margin-top: 0px;
-          color: rgba(0,0,0,0.25);
-          line-height: 16px;
+          color: #FFF;
+          position: absolute;
+          left: 5px;
+          width: 20px;
+          height: 20px;
+          background: rgba(0,0,0,0.5);
+          border-radius: 20px;
+          margin-top: -10px;
+          top: 50%;
+          line-height: 20px;
+          text-align: center;
         }
       }
       .subpanel-heading{
@@ -3660,6 +3672,14 @@ button, select {
     &:hover{
       background: rgba(206, 4, 4, 1);
     }
+  }
+  .swal-icon
+  {
+    width: 60px;
+    height: 60px;
+  }
+  .swal-icon--warning__body{
+    height: 30px;
   }
 }
 
