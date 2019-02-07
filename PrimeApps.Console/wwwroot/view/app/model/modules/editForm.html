@@ -24,7 +24,7 @@
         <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
+                    <label class="col-sm-4 required-field">  {{'Setup.Modules.PluralName' | translate}} <span class="required-label">(required)</span> </label>
                     <input type="text"
                            name="labelPlural"
                            class="form-control ng-animate-disabled col-sm-8"
@@ -35,7 +35,7 @@
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.SingularName' | translate}}</label>
+                    <label class="col-sm-4 required-field">  {{'Setup.Modules.SingularName' | translate}} <span class="required-label">(required)</span></label>
                     <input type="text"
                            name="labelSingular"
                            class="form-control ng-animate-disabled col-sm-8"
