@@ -12,7 +12,7 @@ angular.module('primeapps')
             $scope.teamModel = {};
             $scope.teamId;
 
-            $scope.$parent.menuTopTitle = "Organization";
+            //$scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
             $rootScope.breadcrumblist[2].title = "Teams";

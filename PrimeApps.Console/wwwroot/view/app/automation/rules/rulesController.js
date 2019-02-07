@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.$parent.tab = 0;
             $scope.rules = [];
             $scope.$parent.rules = [];
-            $scope.$parent.menuTopTitle = "Automation";
+            //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'rules';
             $scope.workflowModel = {};
