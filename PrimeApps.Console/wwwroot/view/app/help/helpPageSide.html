@@ -36,6 +36,7 @@
                                     <label class="col-sm-12 required-field">  {{'Setup.HelpGuide.Module' | translate}}</label>
                                     <select class="form-control pull-left"
                                             ng-model="helpModalObj.modulePicklist"
+                                            ng-disabled="editDisable"
                                             ng-change="relationTypeShow();"
                                             ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                         <option value="">Module Independent</option>

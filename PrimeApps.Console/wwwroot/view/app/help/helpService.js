@@ -50,7 +50,6 @@ angular.module('primeapps')
                     for (var i = 0; i < helpsidesData.length; i++) {
                         var helpside = helpsidesData[i];
                         helpside.binding = '';
-                        helpside.tpye = '';
                         if (helpside.modal_type == "modal") {
                             var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
                             var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
