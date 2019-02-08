@@ -100,7 +100,7 @@
                         </div>
                         <div ng-show="workflowStartModel.module">
                             <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
-                            <div ng-if="!loadingFilter">
+                            <div class=" table-responsive" ng-if="!loadingFilter">
                                 <table class="filter-table">
                                     <thead>
                                         <tr>
@@ -1062,7 +1062,7 @@
                             </label>
                         </div>
                         <div class="form-inline">
-                            <div class="form-group">
+                            <div class="form-group table-responsive">
                                 <!--TODO webHook parameters-->
                                 <table class="filter-table">
                                     <thead>

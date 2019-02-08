@@ -653,6 +653,9 @@ button:focus, select:focus {
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
 }
+.primeapps #sidebar-wrapper .tooltip {
+  position: fixed;
+}
 .primeapps #sidebar-wrapper .tooltip.tooltip-info .tooltip-inner {
   background: #0f1015 !important;
   color: #FFF;
@@ -1917,9 +1920,13 @@ button:focus, select:focus {
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   list-style-type: none;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
   display: none !important;
+  position: fixed;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip .tooltip-inner {
   white-space: nowrap;
@@ -2086,10 +2093,10 @@ button:focus, select:focus {
   display: none;
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
-  width: calc(100% - 90px);
+  width: calc(100% - 100px);
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 {
-  width: 90px;
+  width: 100px;
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 .tooltip {
   display: block !important;
@@ -2099,6 +2106,7 @@ button:focus, select:focus {
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
   justify-content: center;
+  text-align: center;
 }
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a span {
   display: none;
