@@ -94,19 +94,19 @@ namespace PrimeApps.Model.Repositories
 			return 0;
 		}
 
-		public async Task<int> Count(int? appId)
+		public async Task<int> Count(int appId)
 		{
 			//Only show Email templates
 			var count = DbContext.AppTemplates
 			   .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId).Count();
-			//&& x.Active 
+			
 			return count;
 		}
 
 		public async Task<ICollection<AppTemplate>> Find(PaginationModel paginationModel, int? appId)
 		{
 			var templates = DbContext.AppTemplates
-				 .Where(x => !x.Deleted  && x.Type == AppTemplateType.Email && x.AppId == appId).OrderByDescending(x => x.Id) //&& x.Active
+				 .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId).OrderByDescending(x => x.Id) //&& x.Active
 				.Skip(paginationModel.Offset * paginationModel.Limit)
 				.Take(paginationModel.Limit);
 
@@ -145,6 +145,13 @@ namespace PrimeApps.Model.Repositories
 			DbContext.AppTemplates.Add(template);
 
 			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<App> AppGetByName(string appName)
+		{
+			var app = DbContext.Apps.FirstOrDefaultAsync(x => !x.Deleted && x.Name == appName);
+
+			return await app;
 		}
 	}
 }

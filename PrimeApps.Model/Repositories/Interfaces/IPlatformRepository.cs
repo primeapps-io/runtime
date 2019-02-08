@@ -17,12 +17,14 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> AppUpdate(App app);
 		Task<int> AppDeleteSoft(App app);
 		Task<int> AppDeleteHard(App app);
-		Task<int> Count(int? appId);
+		Task<int> Count(int appId);
 		Task<ICollection<AppTemplate>> Find(PaginationModel paginationModel, int? appId);
 		Task<AppTemplate> GetAppTemplateById(int id);
 
 		Task<int> UpdateAppTemplate(AppTemplate template);
 
 		Task<int> CreateAppTemplate(AppTemplate template);
+
+		Task<App> AppGetByName(string appName);
 	}
 }

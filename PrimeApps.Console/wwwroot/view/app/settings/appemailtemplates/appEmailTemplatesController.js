@@ -175,11 +175,11 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            AppEmailTemplatesService.count().then(function (response) {
+            AppEmailTemplatesService.count($scope.currentApp.name).then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            AppEmailTemplatesService.find($scope.requestModel).then(function (response) {
+            AppEmailTemplatesService.$scope.currentApp.name($scope.requestModel, $scope.currentApp.name).then(function (response) {
                 $scope.templates = response.data;
             }).finally(function () {
                 $scope.loading = false;
@@ -190,9 +190,9 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                AppEmailTemplatesService.find(requestModel).then(function (response) {
+                AppEmailTemplatesService.find(requestModel, $scope.currentApp.name).then(function (response) {
                     $scope.templates = response.data;
-                    AppEmailTemplatesService.count().then(function (response) {
+                    AppEmailTemplatesService.count($scope.currentApp.name).then(function (response) {
                         $scope.pageTotal = response.data;
                     });
 

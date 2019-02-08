@@ -27,13 +27,11 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            //3 templateType Module
-            WordTemplatesService.count(3).then(function (response) {
+            WordTemplatesService.count("module").then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            //3 templateType Module
-            WordTemplatesService.find($scope.requestModel, 3).then(function (response) {
+            WordTemplatesService.find($scope.requestModel, "module").then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
                     template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
@@ -50,7 +48,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                WordTemplatesService.find(requestModel, 3).then(function (response) {
+                WordTemplatesService.find(requestModel, "module").then(function (response) {
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {

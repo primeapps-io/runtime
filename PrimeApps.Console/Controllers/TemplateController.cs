@@ -145,32 +145,15 @@ namespace PrimeApps.Console.Controllers
 		[Route("count"), HttpGet]
 		public async Task<IActionResult> Count([FromUri]TemplateType templateType)
 		{
-			var count = 0;
-			if (templateType > 0)
-			{
-				count = await _templateRepostory.Count(templateType);
-			}
-			else
-			{
-				count = await _platformRepository.Count(AppId);
-			}
-
+			var count = await _templateRepostory.Count(templateType);
 			return Ok(count);
 		}
 
 		[Route("find"), HttpPost]
 		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType = 0)
 		{
-			if (templateType > 0)
-			{
-				var templates = await _templateRepostory.Find(paginationModel, templateType);
-				return Ok(templates);
-			}
-			else
-			{
-				var templates = await _platformRepository.Find(paginationModel, AppId);
-				return Ok(templates);
-			}
+			var templates = await _templateRepostory.Find(paginationModel, templateType);
+			return Ok(templates);
 
 		}
 
@@ -209,6 +192,22 @@ namespace PrimeApps.Console.Controllers
 			}
 			else
 				return BadRequest("Deleted value can't be true");
+		}
+
+		[Route("count_app_email_template"), HttpGet]
+		public async Task<IActionResult> CountAppTemplate([FromUri]string currentAppName)
+		{
+			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
+			var count = await _platformRepository.Count(app.Id);
+			return Ok(count);
+		}
+
+		[Route("find_app_email_template"), HttpPost]
+		public async Task<IActionResult> FindAppTemplate([FromBody]PaginationModel paginationModel, [FromUri]string currentAppName)
+		{
+			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
+			var templates = await _platformRepository.Find(paginationModel, app.Id);
+			return Ok(templates);
 		}
 	}
 }

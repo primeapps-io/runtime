@@ -26,13 +26,11 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            //4 templateType Module
-            ExcelTemplatesService.count(4).then(function (response) {
+            ExcelTemplatesService.count("excel").then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            //4 templateType Module
-            ExcelTemplatesService.find($scope.requestModel, 4).then(function (response) {
+            ExcelTemplatesService.find($scope.requestModel, "excel").then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
                     template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
@@ -49,7 +47,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                ExcelTemplatesService.find(requestModel, 4).then(function (response) {
+                ExcelTemplatesService.find(requestModel, "excel").then(function (response) {
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
