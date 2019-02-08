@@ -27,7 +27,7 @@
                 <h4>Section Info</h4>
                 <div class="form-group"
                      ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.SectionName' | translate}}:</label>
+                    <label class="col-sm-4 required-field"> {{'Setup.Modules.SectionName' | translate}} <span class="required-label">(required)</span>  :</label>
                     <input type="text"
                            name="label"
                            class="form-control ng-animate-disabled col-sm-8"
