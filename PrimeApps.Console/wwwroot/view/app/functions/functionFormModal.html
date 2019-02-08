@@ -10,7 +10,7 @@
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                         <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="!editing ? $parent.$parent.$parent.function = {} : null; createFormModal.hide();" ng-disabled="saving">
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()" ng-disabled="saving">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
                             </button>
                         </li>
@@ -35,39 +35,62 @@
                                     <label class="col-sm-4 required-field">* Name: </label>
                                     <input type="text"
                                            name="name"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
                                            required
-                                           maxlength="200"
+                                           maxlength="100"
+                                           ng-blur="functionNameBlur($parent.$parent.function)"
+                                           ng-change="checkFunctionName($parent.$parent.function)"
                                            ng-disabled="editing"
                                            focus="true"
-                                           ng-model="function.name" />
-                                </div>
-                                
-                                <div class="form-group"
-                                     style="position: relative;"
-                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
-                                    <label class="col-sm-4 required-field">* Handler: </label>
-                                    <input type="text"
-                                           name="name"
-                                           class="form-control ng-animate-disabled col-sm-6"
-                                           required
-                                           ng-disabled="editing"
-                                           focus="true"
-                                           ng-model="function.handler" />
+                                           ng-model="function.name"/>
+                                    <div ng-if="functionNameChecking">
+                                        <i class="fa fa-spinner fa-spin"
+                                           style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
+                                    </div>
+                                    <div ng-if="functionNameValid">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
+                                           class="fa-sidebar-icon fas fa-check"></i>
+                                    </div>
+                                    <div ng-if="functionNameValid === false">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
+                                           class="fas fa-times"></i>
+                                    </div>
                                 </div>
 
                                 <div class="form-group"
-                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.type.$invalid}">
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
+                                    <label class="col-sm-4 required-field">* Handler: </label>
+                                    <input type="text"
+                                           name="handler"
+                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                           required
+                                           placeholder="module.handler"
+                                           ng-change="checkFunctionHandler($parent.$parent.function)"
+                                           ng-model="function.handler"/>
+                                </div>
+
+                                <div class="form-group"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
                                     <label class="col-sm-4 required-field">* Runtime: </label>
                                     <select
-                                            name="type"
+                                            name="runtime"
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
                                             ng-model="function.runtime"
-                                            ng-disabled="editing"
+                                            ng-change="changeRuntime()"
                                             ng-options="o.value as o.name for o in runtimes">
                                         <option value="">Select Runtime</option>
                                     </select>
+                                </div>
+                                <div class="form-group"
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.dependencies.$invalid}">
+                                    <label class="col-sm-4 required-field">Dependencies: </label>
+                                    <textarea style="min-height:200px !important;padding-top: 10px;padding-bottom: 10px;"
+                                              name="dependencies"
+                                              class="form-control ng-animate-disabled col-sm-6"
+                                              ng-model="function.dependencies"></textarea>
                                 </div>
                             </div>
                         </div>

@@ -78,7 +78,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="function in functions" ui-sref="studio.app.functionDetail({id:function.id})">
+        <tr ng-repeat="function in functions" ui-sref="studio.app.functionDetail({name:function.name})">
             <td>{{function.name}}</td>
             <td>{{function.runtime}}</td>
             <td>{{function.handler}}</td>
@@ -95,11 +95,11 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a ui-sref="studio.app.functionDetail({id:function.id})"
+                            <a ui-sref="studio.app.functionDetail({name:function.name})"
                                ng-click="$event.stopPropagation()">{{'Common.Edit' | translate}} </a>
                         </li>
                         <li>
-                            <a ng-click="$event.stopPropagation();delete(function.id)">{{'Common.Remove' | translate}} </a>
+                            <a ng-click="$event.stopPropagation();delete(function.name)">{{'Common.Remove' | translate}} </a>
                         </li>
                     </ul>
                 </div>

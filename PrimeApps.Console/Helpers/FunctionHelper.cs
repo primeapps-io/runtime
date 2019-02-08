@@ -192,8 +192,8 @@ namespace PrimeApps.Console.Helpers
                 if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
                     return null;
 
-                if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+                /*if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
+                    return content;*/
 
                 logs = content;
             }

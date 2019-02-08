@@ -40,6 +40,11 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.closeModal = function () {
+                $scope.component = {};
+                $scope.createFormModal.hide();
+            };
+
             $scope.reload = function () {
                 ComponentsService.count()
                     .then(function (response) {

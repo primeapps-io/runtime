@@ -572,7 +572,7 @@ namespace PrimeApps.Console.Controllers
             if (string.IsNullOrEmpty(name))
                 return BadRequest(ModelState);
 
-            var result = await _organizationRepository.IsOrganizationNameAvailableAsync(name);
+            var result = await _organizationRepository.IsOrganizationNameAvailable(name);
 
             return Ok(result);
         }

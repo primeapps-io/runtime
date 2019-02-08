@@ -11,6 +11,9 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
 
+            $scope.functionNameValid = null;
+            $scope.isFunctionNameBlur = false;
+
             $scope.runtimes = [
                 {id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}"},
                 {id: 2, name: "python (2.7)", value: "python2.7", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
@@ -30,6 +33,21 @@ angular.module('primeapps')
                     editorCodeSample: "package io.kubeless;\r\n\r\nimport io.kubeless.Event;\r\nimport io.kubeless.Context;\r\n\r\npublic class {{handler.class}} {\r\n    public String {{handler.method}}(io.kubeless.Event event, io.kubeless.Context context) {\r\n        return \"Hello world!\";\r\n    }\r\n}"
                 }
             ];
+
+            $scope.closeModal = function () {
+                $scope.function = {};
+                $scope.createFormModal.hide();
+            };
+
+            $scope.changeRuntime = function () {
+                if (!$scope.function.runtime) {
+                    $scope.function.dependencies = "";
+                }
+                else {
+                    var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
+                    $scope.function.dependencies = runtime.editorDependencySample;
+                }
+            };
 
             $scope.currentApp = $localStorage.get("current_app");
 
@@ -87,7 +105,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage(1);
             };
 
             $scope.createModal = function () {
@@ -122,7 +140,7 @@ angular.module('primeapps')
                     })
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (name) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -132,8 +150,8 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            if (id) {
-                                FunctionsService.delete(id)
+                            if (name) {
+                                FunctionsService.delete(name)
                                     .then(function (response) {
                                         toastr.success("Function is deleted successfully.", "Deleted!");
                                         $scope.reload();
@@ -141,6 +159,73 @@ angular.module('primeapps')
                             }
                         }
                     });
+            };
+
+            $scope.closeFunctionModal = function () {
+                $scope.function = {};
+                $scope.functionNameValid = null;
+                $scope.isFunctionNameBlur = false;
+                $scope.createFormModal.hide();
+            };
+
+            $scope.functionNameBlur = function (name) {
+                if ($scope.isFunctionNameBlur && $scope.functionNameValid)
+                    return;
+
+                $scope.isFunctionNameBlur = true;
+                $scope.checkFunctionName(name ? name : "");
+            };
+
+            $scope.checkFunctionName = function (func) {
+                if (!func || !func.name)
+                    return;
+
+                func.name = func.name.replace(/\s/g, '');
+                func.name = func.name.replace(/[^a-zA-Z0-9\-]/g, '');
+
+                if (!$scope.isFunctionNameBlur)
+                    return;
+
+                $scope.functionNameChecking = true;
+                $scope.functionNameValid = null;
+
+                if (!func.name || func.name === '') {
+                    $scope.functionNameChecking = false;
+                    $scope.functionNameValid = false;
+                    return;
+                }
+
+                FunctionsService.isFunctionNameUnique(func.name)
+                    .then(function (response) {
+                        $scope.functionNameChecking = false;
+                        if (response.data) {
+                            $scope.functionNameValid = true;
+                        }
+                        else {
+                            $scope.functionNameValid = false;
+                        }
+                    })
+                    .catch(function () {
+                        $scope.functionNameValid = false;
+                        $scope.functionNameChecking = false;
+                    });
+            };
+
+            $scope.checkFunctionHandler = function (func) {
+                if (func.handler) {
+                    func.handler = func.handler.replace(/\s/g, '');
+                    func.handler = func.handler.replace(/[^a-zA-Z\.]/g, '');
+                    var dotIndex = func.handler.indexOf('.');
+                    if (dotIndex > -1) {
+                        if (dotIndex == 0) {
+                            func.handler = func.handler.split('.').join('');
+                        }
+                        else {
+                            func.handler = func.handler.split('.').join('');
+                            func.handler = func.handler.slice(0, dotIndex) + "." + func.handler.slice(dotIndex);
+                        }
+                    }
+                }
             }
         }
     ]);

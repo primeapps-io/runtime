@@ -11,8 +11,11 @@ angular.module('primeapps')
                 find: function (request) {
                     return $http.post(config.apiUrl + 'functions/find', request);
                 },
-                get: function (name) {
-                    return $http.get(config.apiUrl + 'functions/get/' + name);
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'functions/get/' + id);
+                },
+                getByName: function (name) {
+                    return $http.get(config.apiUrl + 'functions/get_by_name/' + name);
                 },
                 run: function (name, type, request) {
                     if (type === 'post') {
@@ -40,7 +43,9 @@ angular.module('primeapps')
                 getLogs: function (name) {
                     return $http.get(config.apiUrl + 'functions/get_logs/' + name);
                 },
-
+                isFunctionNameUnique: function (name) {
+                    return $http.get(config.apiUrl + 'functions/is_unique_name?name=' + name);
+                }
             };
         }]);
 

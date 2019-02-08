@@ -25,7 +25,6 @@ angular.module('primeapps')
                 });
 
             $stateProvider
-
                 .state('studio.allApps', {
                     url: 'all-apps',
                     views: {
@@ -835,7 +834,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.functionDetail', {
-                    url: '/functionDetail?:id',
+                    url: '/functionDetail?:name',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/functions/functionDetail.html',

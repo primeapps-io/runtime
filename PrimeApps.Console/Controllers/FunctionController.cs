@@ -19,6 +19,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -61,13 +62,24 @@ namespace PrimeApps.Console.Controllers
             return Ok(components);
         }
 
-        [Route("get/{name}"), HttpGet]
+        [Route("get/{id}"), HttpGet]
+        public async Task<IActionResult> Get(int id)
+        {
+            var function = await _functionRepository.Get(id);
+
+            if (function == null)
+                return BadRequest();
+
+            return Ok(function);
+        }
+
+        [Route("get_by_name/{name}"), HttpGet]
         public async Task<IActionResult> Get(string name)
         {
-            var function = await _functionHelper.Get(name);
+            var function = await _functionRepository.Get(name);
 
-            if (function.IsNullOrEmpty())
-                return NotFound();
+            if (function == null)
+                return BadRequest();
 
             return Ok(function);
         }
@@ -105,6 +117,9 @@ namespace PrimeApps.Console.Controllers
             var functionObj = new Function()
             {
                 Name = function.Name,
+                Dependencies = function.Dependencies,
+                Content = function.ContentType == FunctionContentType.Text ? function.Function : "",
+                ContentType = function.ContentType,
                 Runtime = function.Runtime,
                 Handler = function.Handler
             };
@@ -134,7 +149,7 @@ namespace PrimeApps.Console.Controllers
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
             }
 
-            return Created($"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{function.Name}", result);
+            return Ok(functionObj.Id);
         }
 
         [Route("update/{name}"), HttpPut]
@@ -142,6 +157,23 @@ namespace PrimeApps.Console.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var func = await _functionRepository.Get(function.Name);
+
+            if (func == null)
+                return BadRequest("Function not found.");
+
+            func.Name = function.Name;
+            func.Dependencies = function.Dependencies;
+            func.Content = function.ContentType == FunctionContentType.Text ? function.Function : "";
+            func.ContentType = function.ContentType;
+            func.Runtime = function.Runtime;
+            func.Handler = function.Handler;
+
+            var updateResult = await _functionRepository.Update(func);
+
+            if (updateResult < 0)
+                return BadRequest("An error occurred while update function");
 
             var functionObj = await _functionHelper.Get(name);
 
@@ -182,6 +214,16 @@ namespace PrimeApps.Console.Controllers
 
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
+
+            var function = await _functionRepository.Get(name);
+
+            if (function == null)
+                return BadRequest();
+
+            var deleteResult = await _functionRepository.Delete(function);
+
+            if (deleteResult < 0)
+                return BadRequest("An error occurred while deleting an function");
 
             JObject result;
 
@@ -238,11 +280,32 @@ namespace PrimeApps.Console.Controllers
         public async Task<IActionResult> GetLogs(string podName)
         {
             var logs = await _functionHelper.GetLogs(podName);
+            var response = new HttpResponseMessage();
 
             if (logs == null)
-                return NotFound();
+                return BadRequest();
+
+            if (logs.Contains("code\":400"))
+            {
+                var result = JObject.Parse(logs);
+                return BadRequest(result["message"].ToString());
+            }
+
+            logs = ConvertHelper.ASCIIToHTML(logs);
 
             return Ok(logs);
         }
+
+        [Route("is_unique_name"), HttpGet]
+        public async Task<IActionResult> IsUniqueName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(ModelState);
+
+            var result = await _functionRepository.IsFunctionNameAvailable(name);
+
+            return Ok(result);
+        }
+
     }
 }

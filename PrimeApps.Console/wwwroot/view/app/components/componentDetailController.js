@@ -20,10 +20,9 @@ angular.module('primeapps')
 
             $scope.componentPlaces = componentPlaces;
             $scope.componentTypes = componentTypes;
-            $scope.componentForm = {};
             $scope.loading = true;
             //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
             $scope.giteaUrl = giteaUrl;
 
             /*$scope.aceOption = {
@@ -38,16 +37,17 @@ angular.module('primeapps')
              };*/
 
             if (!$scope.id) {
-                $state.go('app.components');
+                $state.go('studio.app.components');
             }
 
             ComponentsService.get($scope.id)
                 .then(function (response) {
                     if (!response.data) {
-                        toastr.error('Component Not Found !');   
-                        $state.go('app.components');
+                        toastr.error('Component Not Found !');
+                        $state.go('studio.app.components');
                     }
 
+                    $scope.componentCopy = angular.copy(response.data);
                     $scope.component = response.data;
                     $scope.componentTypeName = $scope.component.type;
                     $scope.component.place = componentPlaceEnums[$scope.component.place];
@@ -55,22 +55,26 @@ angular.module('primeapps')
                     $scope.loading = false;
                 });
 
+            $scope.closeModal = function () {
+                $scope.component = angular.copy($scope.componentCopy);
+                $scope.createFormModal.hide();
+            };
 
             var openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/components/componentFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/components/componentFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
             };
 
             $scope.edit = function () {
-               //$scope.modalLoading = true;
+                //$scope.modalLoading = true;
                 $scope.editing = true;
 
                 openModal();
@@ -80,7 +84,8 @@ angular.module('primeapps')
                             $scope.modules = response.data;
                             //$scope.modalLoading = false;
                         })
-                } else {
+                }
+                else {
                     //$scope.modalLoading = false;
                 }
             };
@@ -91,16 +96,17 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
-                if ($scope.componentForm.type === 2) {
-                    $scope.componentForm.place = 0;
-                    $scope.componentForm.order = 0;
+                if ($scope.component.type === 2) {
+                    $scope.component.place = 0;
+                    $scope.component.order = 0;
                 }
 
-                ComponentsService.update($scope.componentForm)
+                ComponentsService.update($scope.component)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         $scope.editing = false;
+                        $scope.componentCopy = angular.copy($scope.component);
                     })
             }
         }

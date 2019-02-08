@@ -21,11 +21,24 @@ namespace PrimeApps.Model.Repositories
                .Where(x => !x.Deleted)
                .CountAsync();
         }
+        public async Task<bool> IsFunctionNameAvailable(string name)
+        {
+            return await DbContext.Functions
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync() == null;
+        }
 
         public async Task<Function> Get(int id)
         {
             return await DbContext.Functions
                .Where(x => !x.Deleted && x.Id == id)
+               .FirstOrDefaultAsync();
+        }
+
+        public async Task<Function> Get(string name)
+        {
+            return await DbContext.Functions
+               .Where(x => !x.Deleted && x.Name == name)
                .FirstOrDefaultAsync();
         }
 
@@ -65,10 +78,13 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.SaveChangesAsync();
         }
+
         public async Task<int> Delete(Function organization)
         {
             organization.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
+
+
     }
 }

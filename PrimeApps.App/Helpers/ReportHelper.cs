@@ -25,7 +25,6 @@ namespace PrimeApps.App.Helpers
         ReportViewModel MapToViewModel(Report report);
         List<ReportViewModel> MapToViewModel(ICollection<Report> reports);
         ReportCategory CreateCategoryEntity(ReportCategoryBindingModel reportCategoryModel);
-
         ReportCategory UpdateCategoryEntity(ReportCategoryBindingModel reportCategoryModel, ReportCategory reportCategory);
         Chart CreateChartEntity(ChartBindingModel chartModel, int reportId);
         Chart UpdateChartEntity(ChartBindingModel chartModel, Chart chart);

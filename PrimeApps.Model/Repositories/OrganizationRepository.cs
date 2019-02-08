@@ -27,7 +27,7 @@ namespace PrimeApps.Model.Repositories
             return orgId != 0;
         }
 
-        public async Task<bool> IsOrganizationNameAvailableAsync(string name)
+        public async Task<bool> IsOrganizationNameAvailable(string name)
         {
             return await DbContext.Organizations
                 .Where(x => x.Name == name)
