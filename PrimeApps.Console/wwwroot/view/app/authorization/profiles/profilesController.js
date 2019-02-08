@@ -256,35 +256,36 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (profile, isCopy) {
-                $scope.profile = {};
-
-                $scope.profile.has_admin_rights = false;
-                $scope.profile.is_persistent = false;
-                $scope.profile.business_intelligence = false;
-                $scope.profile.send_email = false;
-                $scope.profile.send_sms = false;
-                $scope.profile.export_data = false;
-                $scope.profile.import_data = false;
-                $scope.profile.word_pdf_download = false;
-                $scope.profile.lead_convert = false;
-                $scope.profile.document_search = false;
-                $scope.profile.tasks = false;
-                $scope.profile.calendar = false;
-                $scope.profile.newsfeed = false;
-                $scope.profile.report = false;
-                $scope.profile.dashboard = true;
-                $scope.profile.home = false;
-                $scope.profile.collective_annual_leave = false;
-                $scope.profile.permissions = $filter('filter')($scope.profilesCopy, { is_persistent: true, has_admin_rights: true })[0].permissions;
-                //Create
-                var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
-                $scope.profile.PageStart = dashboard;
-
-
                 if (isCopy == true)
                     cloneProfile(profile);
-                if (isCopy == false)
+                else if (isCopy == false)
                     editProfile(profile);
+
+                else {
+                    $scope.profile = {};
+
+                    $scope.profile.has_admin_rights = false;
+                    $scope.profile.is_persistent = false;
+                    $scope.profile.business_intelligence = false;
+                    $scope.profile.send_email = false;
+                    $scope.profile.send_sms = false;
+                    $scope.profile.export_data = false;
+                    $scope.profile.import_data = false;
+                    $scope.profile.word_pdf_download = false;
+                    $scope.profile.lead_convert = false;
+                    $scope.profile.document_search = false;
+                    $scope.profile.tasks = false;
+                    $scope.profile.calendar = false;
+                    $scope.profile.newsfeed = false;
+                    $scope.profile.report = false;
+                    $scope.profile.dashboard = true;
+                    $scope.profile.home = false;
+                    $scope.profile.collective_annual_leave = false;
+                    $scope.profile.permissions = $filter('filter')($scope.profilesCopy, { is_persistent: true, has_admin_rights: true })[0].permissions;
+                    //Create
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                    $scope.profile.PageStart = dashboard;
+                }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
                         scope: $scope,
