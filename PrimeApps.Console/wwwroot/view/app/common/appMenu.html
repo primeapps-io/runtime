@@ -1,7 +1,7 @@
 <ul class="setup-nav scroll-style-4" ng-show="!appLoading">
     <li ng-click="openSubMenu('')"
         ng-class="activeMenuItem ==='overview' ?  'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info"
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="click" data-type="info"
            data-title="Overview" bs-tooltip data-placement="right">
             <i class="fas fa-info-circle"></i>
             <span>Overview</span>
@@ -126,7 +126,7 @@
             <li ng-class="activeMenuItem ==='dashboards' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/dashboards" data-trigger="hover" data-type="info"
                    data-title="Dashboards" bs-tooltip data-placement="right">
-                    <i class="fas fa-paperclip"></i>
+                    <i class="fas fa-chart-line"></i>
                     <span>Dashboards</span>
                 </a>
             </li>
