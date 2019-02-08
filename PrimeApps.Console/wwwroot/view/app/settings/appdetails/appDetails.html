@@ -21,7 +21,8 @@
                              over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
                              style="float: right;">
                             <div class="">
-                                <img ng-src="{{appModel.logo}}" style="max-width: 100%">
+                                <img ng-src="{{appModel.logo}}" style="max-width: 100%" ng-show="uploader.queue.length === 0">
+                                <img ng-src="{{uploader.queue[0].image}}" ng-show="uploader.queue.length > 0" class="resultimg"/>
                             </div>
                         </div>
                     </div>
@@ -31,8 +32,7 @@
                     <label>512 px and 1 MB</label>
                 </div>
                 <div style="text-align: center;padding-top: 10px;">
-                    <button class="btn btn-radius btn-red btn-logout"><i class="fas fa-trash"></i>Delete Logo</button>
-                </div>
+                    <input type="file" nv-file-select="" uploader="uploader" ng-disabled="croppedImage"></div>
             </div>
             <div class="col-sm-9" style="border-left:solid 2px #dfdfdf ">
                 <div class="form-group">
