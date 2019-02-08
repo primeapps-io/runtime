@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.$parent.tab = 0;
             $scope.rules = [];
             $scope.$parent.rules = [];
-            $scope.$parent.menuTopTitle = "Automation";
+            //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'rules';
             $scope.workflowModel = {};
@@ -172,7 +172,7 @@ angular.module('primeapps')
 
                                                 $scope.filters.push(filter);
                                             }
-                                            
+
                                             if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
                                                 $scope.picklistsModule = picklists;
                                                 $scope.getSendNotificationUpdatableModules($scope.module);
@@ -218,7 +218,7 @@ angular.module('primeapps')
                                             $scope.modalLoading = false;
 
                                         });
-                                    $scope.modalLoading = false;
+                                    // $scope.modalLoading = false;
                                 });
                         }
                     });
@@ -1449,7 +1449,7 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this rule?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
@@ -1764,11 +1764,11 @@ angular.module('primeapps')
                 $scope.modalLoading = true;
 
                 if (id) {
-                    $scope.id = id;
-
-                    selectRule();
-
+                    $scope.id = id; 
+                    selectRule(); 
                 }
+                else
+                    $scope.modalLoading = false;
 
                 $scope.ruleFormModal = $scope.ruleFormModal || $modal({
                     scope: $scope,
@@ -1780,8 +1780,7 @@ angular.module('primeapps')
 
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
-                });
-                $scope.modalLoading = false;
+                }); 
             };
 
             $scope.cancel = function () {

@@ -12,7 +12,7 @@ angular.module('primeapps')
             $scope.teamModel = {};
             $scope.teamId;
 
-            $scope.$parent.menuTopTitle = "Organization";
+            //$scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
             $rootScope.breadcrumblist[2].title = "Teams";
@@ -240,7 +240,7 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this team?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
@@ -271,7 +271,7 @@ angular.module('primeapps')
             $scope.deleteUser = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this member?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true

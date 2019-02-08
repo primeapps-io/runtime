@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories
     public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
     {
         public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
-
+		
         public async Task<Template> GetById(int id)
         {
             var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
@@ -113,7 +113,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count(TemplateType templateType)
         {
-            var count = DbContext.Templates
+			var count = DbContext.Templates
                .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
             return count;
         }

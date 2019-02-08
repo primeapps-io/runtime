@@ -1,34 +1,20 @@
 <div class="setup-title">
-    <h2>Help</h2>
-    <div>
-        <ul class="list-unstyled list-inline">
-            <li>
-                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>New Introduction</button>
-            </li>
-            <li>
-                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i>New Help</button>
-            </li>
-        </ul>
-    </div>
+    <h2>{{'Common.EmailTemplate' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Templates.AddNewEmailTemplate' | translate}}</button>
 </div>
+
 <div class="tab-content">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
-                <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
-                <th>Type</th>
-                <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
-                <th width="50"></th>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>Subject</th>
+                <th>Language</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
                 <td class="text-center">
-                    <div>
-                        <div class="animated-background"></div>
-                    </div>
-                </td>
-                <td>
                     <div class="animated-background"></div>
                 </td>
                 <td>
@@ -43,24 +29,16 @@
     <table class="table" ng-show="!loading">
         <thead>
             <tr>
-                <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
-                <th>Type</th>
-                <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
-                <th width="50"></th>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>Subject</th>
+                <th>Language</th>
             </tr>
         </thead>
-        <tbody>
-            <tr ng-repeat="helpside in helpsides" ng-click="helpEdit(helpside)">
-                <td>{{helpside.name}}</td>
-                <td>{{helpside.type}}</td>
-                <td>{{helpside.binding}}</td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(helpside);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
+        <tbody ng-show="!loading">
+            <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
+                <td>{{template.name}}</td>
+                <td>{{template.subject}}</td>
+                <td>{{template.language}}</td>
             </tr>
         </tbody>
     </table>
@@ -87,7 +65,7 @@
             </nav>
         </div>
         <div>
-            Total Help {{pageTotal}}
+            Total Email Templates {{pageTotal}}
         </div>
         <div>
             <span class="pagination-span">Items per page  </span>

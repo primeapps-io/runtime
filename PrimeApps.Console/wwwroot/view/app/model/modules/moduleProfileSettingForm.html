@@ -28,7 +28,7 @@
                         <div class="panel">
                             <div class="form-group"
                                  ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}:</label>
+                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <tags-input name="profiles"
                                             tabindex="999"
                                             class="form-control"
@@ -49,7 +49,7 @@
                             </div>
                             <div class="form-group"
                                  ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModulePluralName' | translate}}</label>
+                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModulePluralName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <input type="text"
                                        name="labelPlural"
                                        class="form-control ng-animate-disabled col-sm-8"
@@ -60,7 +60,7 @@
                             </div>
                             <div class="form-group"
                                  ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleSingularName' | translate}}</label>
+                                <label class="col-sm-12 required-field">{{'Setup.Modules.ModuleSingularName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <input type="text"
                                        name="labelSingular"
                                        class="form-control ng-animate-disabled col-sm-8"

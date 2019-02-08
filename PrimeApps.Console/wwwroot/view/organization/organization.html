@@ -1,16 +1,20 @@
 <div class="setup-layout" ng-class="subtoggleClass">
     <div class="row clearfix">
         <div class="menu collaborators-left-menu app-menu2">
-            <div class="setup-title">
+            <div class="sidemenu setup-title">
                 <h2>People</h2>
+                <button class="btn btn-radius btn-gray backclose" ng-click="toggledSubMenu()" data-trigger="hover" data-type="info"
+                        data-title="Close" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-left"></i></button>
+                <button class="btn btn-radius btn-gray backopen" ng-click="toggledSubMenu()" data-trigger="hover" data-type="info"
+                        data-title="Open" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-right"></i></button>
             </div>
             <ng-include ng-class="activeMenu==='organization' ?  'am-fade-and-slide-right':''" ng-if="activeMenu==='organization'" src="'view/organization/common/organizationMenu.html'"></ng-include>
             <ng-include ng-class="activeMenu==='teams' ?  'am-fade-and-slide-right':''" ng-if="activeMenu==='teams'" src="'view/organization/common/teamsMenu.html'"></ng-include>
             <ng-include ng-class="activeMenu==='collaborator' ?  'am-fade-and-slide-right':''" ng-if="activeMenu==='collaborator'" src="'view/organization/common/collaboratorsMenu.html'"></ng-include>
-            <div class="submenu-togle" ng-click="toggledSubMenu()">
-                <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>
-                <i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>
-            </div>
+            <!--<div class="submenu-togle" ng-click="toggledSubMenu()">-->
+                <!--<i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>-->
+                <!--<i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>-->
+            <!--</div>-->
         </div>
         <div class="content-in2">
             <div ui-view="app"></div>

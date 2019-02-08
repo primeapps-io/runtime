@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.$parent.loadingFilter = false;
             $scope.workflows = [];
             $scope.$parent.workflows = [];
-            $scope.$parent.menuTopTitle = "Automation";
+            //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflows';
             $rootScope.subtoggleClass = "";
@@ -116,7 +116,7 @@ angular.module('primeapps')
             $scope.delete = function (id) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure that you want to delete this workflow?",
+                    text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true

@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
             $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
-            $scope.$parent.menuTopTitle = "Templates";
+            //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
 
@@ -398,7 +398,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this email template?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

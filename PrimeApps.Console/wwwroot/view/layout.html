@@ -37,7 +37,7 @@
             </ul>
         </div>
     </div>
-    <div id="sidebar-wrapper">
+    <div id="sidebar-wrapper" class="scroll-style-5">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
                 <a href="#/app" class="logo">
@@ -76,7 +76,7 @@
                            href="#/organization/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"
-                           ng-class="currentPath.indexOf('manage/')>0  ? 'active' :'' "
+                           ng-class="currentPath.indexOf('manage')>0  ? 'active' :'' "
                            href="/#/manage"><i class="fas fa-cog"></i> <span> Manage</span></a>
                     </li>
                 </ul>
@@ -90,7 +90,7 @@
             </li>
 
         </ul>
-        <div class="footer" style="bottom: 0;position: absolute;">
+        <div class="footer">
             <div class="menu-togle" ng-click="toggleLeftMenu()">
                 <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close"
                    bs-tooltip data-placement="top"></i>

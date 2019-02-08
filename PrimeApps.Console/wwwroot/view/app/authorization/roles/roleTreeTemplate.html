@@ -2,7 +2,7 @@
     <a href ng-click="toggle(this)" ng-if="node.nodes && node.nodes.length > 0" data-nodrag>
         <i ng-class="{'fa fa-plus-square-o': collapsed,'fa fa-minus-square-o': !collapsed}"></i>
     </a>
-    <a ng-click="showFormModal(node.id)">{{node.title}}</a>
+    <a ng-click="showFormModal(node.id)" data-nodrag>{{node.title}}</a>
     <span class="action-buttons-block">
         <a class="action-buttons-edit" ng-click="showFormModal(node.id)" title="{{node.title}}"><i class="fas fa-pen"></i></a>
         <!--<span ng-if="node.id != 'role_ceo'"> | </span>-->

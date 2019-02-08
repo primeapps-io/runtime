@@ -1,4 +1,4 @@
-<ul class="setup-nav" ng-show="!appLoading">
+<ul class="setup-nav scroll-style-4" ng-show="!appLoading">
     <li ng-click="openSubMenu('')"
         ng-class="activeMenuItem ==='overview' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="hover" data-type="info"
@@ -319,22 +319,57 @@
                     <span>Notifications</span>
                 </a>
             </li>
+
+            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
+                   data-title="Email Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-at"></i>
+                    <span>Email Templates</span>
+                </a>
+            </li>
+
         </ul>
     </li>
 </ul>
 
 <ul class="setup-nav" ng-show="appLoading">
-    <li><a><div class="animated-background" ></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
-    <li><a><div class="animated-background"></div></a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
+    <li><a>
+        <div class="animated-background"></div>
+    </a></li>
 </ul>

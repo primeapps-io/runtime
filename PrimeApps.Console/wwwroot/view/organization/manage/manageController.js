@@ -7,6 +7,12 @@ angular.module('primeapps')
 
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons();
+
+            $rootScope.breadcrumblist[1].link = "";
+            $rootScope.breadcrumblist[1].title = 'Manage';
+            $rootScope.breadcrumblist[2] = {};
+            $rootScope.breadcrumblist[3] = {};
+
             $scope.orgDeleteDisabled = false;
 
             ManageService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
@@ -23,7 +29,7 @@ angular.module('primeapps')
             };
 
             $scope.deleteButtonControl = function () {
-                var currentOrg = $filter('filter')($rootScope.organizations, { id: $scope.$parent.$parent.$parent.currentOrgId }, true)[0];
+                var currentOrg = $filter('filter')($rootScope.organizations, {id: $scope.$parent.$parent.$parent.currentOrgId}, true)[0];
                 if (currentOrg.role != 'administrator' || currentOrg.default === true)
                     $scope.orgDeleteDisabled = true;
             };
@@ -31,12 +37,16 @@ angular.module('primeapps')
 
 
             $scope.save = function () {
+                $scope.saving = true;
                 if (angular.isObject($scope.orgModel.icon))
                     $scope.orgModel.icon = $scope.orgModel.icon.value;
 
                 ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
-                        swal($filter('translate')('Güncelleme Başarılı'), "success");
+                        $rootScope.currentOrganization.label = $scope.orgModel.label;
+                        $rootScope.currentOrganization.icon = $scope.orgModel.icon;
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.saving = false;
                     });
             };
 
@@ -44,7 +54,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this Organization?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

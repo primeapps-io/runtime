@@ -1,5 +1,7 @@
 ﻿using PrimeApps.Console.Models;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace PrimeApps.Console.Helpers
 	{
 		public static async Task<Template> CreateEntity(TemplateBindingModel templateModel, IUserRepository userRepository)
 		{
+
 			var template = new Template
 			{
 				Module = templateModel.Module,
@@ -43,6 +46,7 @@ namespace PrimeApps.Console.Helpers
 			await CreateTemplateRelations(templateModel, template, userRepository);
 
 			return template;
+
 		}
 
 		public static async Task<Template> CreateEntityExcel(TemplateBindingModel templateModel, IUserRepository userRepository)
@@ -80,53 +84,65 @@ namespace PrimeApps.Console.Helpers
 			return template;
 		}
 
-		public static async Task UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
+		public static async Task UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository, AppTemplateBindingModel appTemplateModel, AppTemplate appTemplate, bool isAppTemplate = false)
 		{
-			template.Name = templateModel.Name;
-			template.Subject = templateModel.Subject;
-			template.Content = templateModel.Content;
-			template.Language = templateModel.Language;
-			template.SharingType = templateModel.SharingType;
-			template.Active = templateModel.Active;
-			template.Module = templateModel.Module;
-			template.UpdatedAt = DateTime.UtcNow;
-
-			if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
+			if (!isAppTemplate)
 			{
-				//New Permissions
-				foreach (var permissionModel in templateModel.Permissions)
-				{
-					if (!permissionModel.Id.HasValue)
-					{
-						if (template.Permissions == null)
-							template.Permissions = new List<TemplatePermission>();
+				template.Name = templateModel.Name;
+				template.Subject = templateModel.Subject;
+				template.Content = templateModel.Content;
+				template.Language = templateModel.Language;
+				template.SharingType = templateModel.SharingType;
+				template.Active = templateModel.Active;
+				template.Module = templateModel.Module;
+				template.UpdatedAt = DateTime.UtcNow;
 
-						var permissionEntity = new TemplatePermission
+				if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
+				{
+					//New Permissions
+					foreach (var permissionModel in templateModel.Permissions)
+					{
+						if (!permissionModel.Id.HasValue)
 						{
-							ProfileId = permissionModel.ProfileId,
-							Type = permissionModel.Type
-						};
+							if (template.Permissions == null)
+								template.Permissions = new List<TemplatePermission>();
 
-						template.Permissions.Add(permissionEntity);
+							var permissionEntity = new TemplatePermission
+							{
+								ProfileId = permissionModel.ProfileId,
+								Type = permissionModel.Type
+							};
+
+							template.Permissions.Add(permissionEntity);
+						}
 					}
-				}
 
-				//Existing Permissions
-				if (template.Permissions != null && template.Permissions.Count > 0)
-				{
-					foreach (var permissionEntity in template.Permissions)
+					//Existing Permissions
+					if (template.Permissions != null && template.Permissions.Count > 0)
 					{
-						var permissionModel = templateModel.Permissions.FirstOrDefault(x => x.Id == permissionEntity.Id);
+						foreach (var permissionEntity in template.Permissions)
+						{
+							var permissionModel = templateModel.Permissions.FirstOrDefault(x => x.Id == permissionEntity.Id);
 
-						if (permissionModel == null)
-							continue;
+							if (permissionModel == null)
+								continue;
 
-						permissionEntity.Type = permissionModel.Type;
+							permissionEntity.Type = permissionModel.Type;
+						}
 					}
 				}
-			}
 
-			await CreateTemplateRelations(templateModel, template, userRepository);
+				await CreateTemplateRelations(templateModel, template, userRepository);
+			}
+			else// if (isAppTemplate)
+			{
+				appTemplate.Name = appTemplateModel.Name;
+				appTemplate.Subject = appTemplateModel.Subject;
+				appTemplate.Content = appTemplateModel.Content;
+				appTemplate.Language = appTemplateModel.Language;
+				appTemplate.Active = appTemplateModel.Active;
+				appTemplate.UpdatedAt = DateTime.UtcNow;
+			}
 		}
 
 		private static async Task CreateTemplateRelations(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
@@ -143,6 +159,30 @@ namespace PrimeApps.Console.Helpers
 						template.Shares.Add(sharedUser.SharedTemplates.FirstOrDefault(x => x.UserId == userId && x.TemplateId == template.Id));
 				}
 			}
+		}
+
+		public static async Task<AppTemplate> CreateEntityAppTemplate(AppTemplateBindingModel appTemplate, int? appId)
+		{
+
+			var template = new AppTemplate
+			{
+				Name = appTemplate.Name,
+				Subject = appTemplate.Subject,
+				Content = appTemplate.Content,
+				Language = appTemplate.Language,
+				Active = appTemplate.Active,
+				Settings = appTemplate.Settings,
+				Type = AppTemplateType.Email,
+				AppId = (int)appId
+			};
+
+			var systemCodes = appTemplate.Name.Split(" ");
+			foreach (var systemCode in systemCodes)
+			{
+				template.SystemCode += systemCode.ToLower() + "_";
+			}
+
+			return template;
 		}
 	}
 }

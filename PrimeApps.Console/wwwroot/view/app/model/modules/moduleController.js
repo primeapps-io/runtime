@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
         function ($rootScope, $scope, $filter, $state, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
 
-            $scope.$parent.menuTopTitle = "Models";
+            //$scope.$parent.menuTopTitle = "Models";
 
             $scope.$parent.activeMenuItem = 'modules';
 
@@ -72,7 +72,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this Module?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

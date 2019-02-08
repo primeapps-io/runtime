@@ -47,56 +47,20 @@ angular.module('primeapps')
                 process: function (helpsidesData, modules, routes, helpEnums) {
                     var helpsides = [];
 
-                    var helpProcess = function () {
-                        for (var i = 0; i < helpsidesData.length; i++) {
-                            var helpside = helpsidesData[i];
-                            helpside.binding = '';
-                            helpside.tpye = '';
-
-                            if (helpside.module_id) {
-
-                                var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
-                                var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
-
-                                if (helpside.modal_type == "modal") {
-                                    helpside.binding = module.label_en_plural;
-                                    helpside.type = "Introduction";
-                                }
-                                else {
-                                    helpside.binding = (module ? module['label_en_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
-                                    helpside.type = "Help";
-                                }
-                            }
-                            else if (helpside.route_url) {
-                                var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
-
-                                if (route)
-                                    helpside.binding = route.name;
-                                else
-                                    helpside.binding = "Welcome Screen";
-                                if (helpside.modal_type == "modal") {
-                                    helpside.type = "Introduction (Other)";
-                                }
-                                else {
-                                    helpside.type = "Help (Other)";
-                                }
-                            }
-                            else {
-                                helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
-                                helpside.type = "Help";
-                            }
-
-                            helpsides.push(helpside);
+                    for (var i = 0; i < helpsidesData.length; i++) {
+                        var helpside = helpsidesData[i];
+                        helpside.binding = '';
+                        if (helpside.modal_type == "modal") {
+                            var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
+                            var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
+                            helpside.binding = module.label_en_plural;
+                            helpside.type = "Introduction";
                         }
-                    };
-                    if (!modules) {
-                        this.getBasicModules().then(function (result) {
-                            modules = result.data;
-                            helpProcess();
-                        });
-                    }
-                    else {
-                        helpProcess();
+                        else {
+                            helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
+                            helpside.type = "Help";
+                        }
+                        helpsides.push(helpside);
                     }
                     return helpsides;
                 }
