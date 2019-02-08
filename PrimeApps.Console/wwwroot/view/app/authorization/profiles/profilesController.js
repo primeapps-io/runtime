@@ -186,8 +186,9 @@ angular.module('primeapps')
                 return isValid;
             }
 
-            $scope.submit = function () {
-                validate();
+            $scope.submit = function (profileForm) {
+                if (!profileForm.$valid)
+                    return;
 
                 // if ($scope.profileForm.$valid) {
                 $scope.profileSubmit = true;
@@ -311,6 +312,7 @@ angular.module('primeapps')
                         if (value) {
                             ProfilesService.delete(profile.id)
                                 .then(function () {
+                                    $scope.changePage(1);
                                     var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
                                     $scope.profiles.splice(profileToDeleteIndex, 1);
                                     toastr.success('Profile is deleted successfully.', 'Deleted!');
