@@ -14,5 +14,6 @@ angular.module('primeapps')
                 getAllCategory: function () {
                     return $http.get(config.apiUrl + 'report/get_categories');
                 }
+
             };
         }]);

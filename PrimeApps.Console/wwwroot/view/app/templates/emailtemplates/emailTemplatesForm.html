@@ -1,5 +1,5 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave();" autocomplete="off" novalidate>
+    <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
                 <h4 class="modal-title">{{'Setup.Templates.UploadTemplate' | translate}}</h4>
@@ -11,9 +11,7 @@
                             </button>
                         </li>
                         <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="saving">
-                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
-                            </button>
+                            <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -25,25 +23,27 @@
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Setup.Templates.Module' | translate}}</label>
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
+                                    <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select class="form-control pull-left"
                                             ng-change="setContent()"
+                                            ng-required="true"
+                                            name="module"
                                             ng-model="newtemplate.moduleName"
                                             ng-options="o as o['label_' + language + '_singular'] for o in templateModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.TemplateName' | translate}}</label>
+                                    <label>{{'Template.TemplateName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.Subject' | translate}}</label>
+                                    <label>{{'Template.Subject' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div><label>{{'Template.Sharing' | translate}}</label></div>
+                                    <div><label>{{'Template.Sharing' | translate}} </label></div>
                                     <label class="checkbox-inline newinput">
                                         <input type="radio" ng-model="newtemplate.sharing_type" value="me">
                                         {{'View.ShareMe' | translate}}
@@ -81,9 +81,10 @@
                                         </tags-input>
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymce.$invalid}">
                                     <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                               mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
+                                              name="tinymce"
                                               ng-model="newtemplate.tinymce_content" ng-required="true"
                                               mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
                                     <script type="text/ng-template" id="tag-mentions.tpl">

@@ -1374,6 +1374,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.appEmailTemplates', {
+                    url: '/appEmailTemplates',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplates.html',
+                            controller: 'AppEmailTemplatesController'
+                        }
+                    },
+                    resolve: {
+                        templatesEmail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplatesController.js',
+                                cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplatesService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.moduleactions', {
                     url: '/actionButtons?:id',
                     views: {
@@ -1402,7 +1428,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.report', {
-                    url: 'report?:id',
+                    url: '/report?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/analytics/reports/report.html',

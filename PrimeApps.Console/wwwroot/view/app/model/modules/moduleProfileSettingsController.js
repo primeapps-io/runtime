@@ -139,12 +139,12 @@ angular.module('primeapps')
                 $scope.currentProfileSettingState = angular.copy($scope.currentProfileSetting);
 
                 $scope.profileSettingsFormModal = $scope.profileSettingsFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.profileSettingsFormModal.$promise.then(function () {
                     $scope.profileSettingsFormModal.show();
@@ -153,8 +153,8 @@ angular.module('primeapps')
 
             //submit
             $scope.save = function (moduleProfileSettingForm) {
-                // if (!moduleProfileSettingForm.$valid)
-                //     return;
+                if (!moduleProfileSettingForm.$valid)
+                    return;
 
                 $scope.saving = true;
                 var profileSetting = angular.copy($scope.currentProfileSetting);
@@ -193,7 +193,7 @@ angular.module('primeapps')
 
                 var success = function () {
                     getModuleProfileSettings();
-                    toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess')); 
+                    toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'));
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
                     $scope.changePage(1);
@@ -237,7 +237,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this module profile setting?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
@@ -245,6 +245,7 @@ angular.module('primeapps')
                         if (value) {
                             ModuleService.deleteModuleProfileSetting(profileSetting.id)
                                 .then(function () {
+                                    $scope.changePage(1);
                                     var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
                                     $scope.profileSettings.splice(profileSettingIndex, 1);
                                     toastr.success("Profile setting is deleted successfully.", "Deleted!");

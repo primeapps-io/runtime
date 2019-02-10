@@ -36,7 +36,7 @@
     </ul>
 </div>-->
 <div class="tab-content" ng-show="!selectedTeam">
-    <div ng-show="loading">
+    <div class="table-responsive" ng-show="loading">
         <table class="table" >
             <thead>
                 <tr>
@@ -61,7 +61,7 @@
             </tbody>
         </table>
     </div>
-    <div ng-show="!loading">
+    <div class="table-responsive" ng-show="!loading">
         <table class="table table-hover">
             <thead>
             <tr>
@@ -169,7 +169,7 @@
         </ui-select-choices>
     </ui-select>
     <div class="tab-content" style="margin-top: 30px;">
-        <div ng-show="loadingMembers">
+        <div class="table-responsive" ng-show="loadingMembers">
             <table class="table" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
                 <thead>
                     <tr>
@@ -185,7 +185,7 @@
                 </tbody>
             </table>
         </div>
-        <div ng-show="!loadingMembers">
+        <div class="table-responsive" ng-show="!loadingMembers">
             <div ng-show="selectedTeam.team_users.length < 1" style="padding:10px"><p>No member available.</p></div>
             <table class="table table-hover" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
                 <thead>

@@ -1,19 +1,40 @@
-.scroll-style-4::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
-  border-radius: 10px;
-  background-color: #F5F5F5;
+.scroll-style-4{
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #0D6FAA;
+    border: 0px solid #555555;
+    border-radius: 5px;
+  }
+}
+.scroll-style-5{
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background-color: #25282B;
+  }
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: #25282B;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #0D6FAA;
+    border: 0px solid #555555;
+    border-radius: 5px;
+  }
 }
 
-.scroll-style-4::-webkit-scrollbar {
-  width: 7px;
-  background-color: #F5F5F5;
-}
-
-.scroll-style-4::-webkit-scrollbar-thumb {
-  background-color: #0D6FAA;
-  border: 0px solid #555555;
-  border-radius: 5px;
-}
 
 @mixin hoverEffect() {
   -webkit-transition: all 0.5s ease;
@@ -78,7 +99,7 @@ $primeapps-color: #0D6FAA;
       &:hover, &:focus, &.nv-file-over {
         ~ span {
           color: rgba(0, 0, 0, 0.5);
-          background: rgba(0, 0, 0, 0.25);
+          background: rgba(0, 0, 0, 0.15);
           &:before {
             border-color: rgba(0, 0, 0, 0.25);
             left: 15px;
@@ -121,6 +142,7 @@ $primeapps-color: #0D6FAA;
       &.action-buttons-delete {
         background: #E78D8F;
         color: #FFF;
+        font-size: 10px;
         &:hover {
           background: rgba(206, 4, 4, 1);
           color: #FFF;
@@ -792,6 +814,7 @@ button, select {
       @include hoverEffect();
     }
     .tooltip {
+      position: fixed;
       &.tooltip-info {
         .tooltip-inner {
           background: #0f1015 !important;
@@ -1025,6 +1048,7 @@ button, select {
             &.action-buttons-delete {
               background: rgba(206, 4, 4, 0.5);
               color: #FFF;
+              font-size: 10px;
               &:hover {
                 background: rgba(206, 4, 4, 1);
                 color: #FFF;
@@ -1139,7 +1163,7 @@ button, select {
             width: 2px;
             border-radius: 3px;
             background: rgba(0, 0, 0, 0.05);
-            height: 100vh;
+            height: calc(100vh - 135px);
           }
 
           ul {
@@ -1204,13 +1228,12 @@ button, select {
     margin: 10px;
     border-radius: 5px;
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 
     .form-custom {
       position: relative;
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
 
     .modal-header {
@@ -1230,6 +1253,24 @@ button, select {
       width: 100% !important;
       padding-right: 20px;
       overflow-x: hidden;
+
+      &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+        border-radius: 10px;
+        background-color: #F5F5F5;
+      }
+
+      &::-webkit-scrollbar {
+        width: 7px;
+        background-color: #F5F5F5;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #0D6FAA;
+        border: 0px solid #555555;
+        border-radius: 5px;
+      }
+      
 
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -1267,6 +1308,13 @@ button, select {
         i{
           line-height: 30px;
         }
+      }
+      .value-map-container{
+        max-height: inherit;
+        margin: 0px;
+        padding: 20px;
+        overflow-x: inherit;
+        overflow-y: inherit;
       }
 
     }
@@ -1358,11 +1406,11 @@ button, select {
 
       }
 
-      .required-label {
-        color: #999;
-      }
-    }
 
+    }
+    .required-label {
+      color: #999;
+    }
     .modal-header {
       padding: 0px;
       padding-right: 20px;
@@ -1387,32 +1435,32 @@ button, select {
 
     &.modal-400 {
       width: 400px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-500 {
       width: 500px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-600 {
       width: 600px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-700 {
       width: 700px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-800 {
       width: 800px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
 
     &.modal-900 {
       width: 900px !important;
-      max-width: 100% !important;
+      max-width: calc(100% - 20px) !important;
     }
   }
 
@@ -1585,6 +1633,15 @@ button, select {
 
   .btn-blue {
     background-color: rgba(13, 111, 170, 0.75);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba(13, 111, 170, 1);
+    }
+  }
+
+  .btn-yellow {
+    background-color: rgba(255, 157, 0, 0.75);
     color: #fff;
 
     &:hover {
@@ -2169,16 +2226,15 @@ button, select {
     #sidebar-wrapper {
 
       width: 250px;
+      min-height: 100vh;
       left: 0px;
       margin-left: 0px;
-      overflow-x: inherit; //scroll kapalı halı
-      overflow-y: inherit;
       z-index: 1000;
-      background: url("../images/primeapps/menu_background.png") !important;
+      background-image: url("../images/primeapps/menu_background.png");
       background-repeat: repeat !important;
-
       .sidebar-nav {
         position: relative;
+        margin-bottom: 60px;
 
         .sidebar-brand {
           padding: 20px 10px !important;
@@ -2187,6 +2243,9 @@ button, select {
 
         .tooltip {
           display: none !important;
+          .tooltip-inner {
+            white-space: nowrap;
+          }
         }
 
       }
@@ -2270,6 +2329,9 @@ button, select {
       }
 
       .footer {
+        margin: 0px;
+        bottom: 0px;
+        position: fixed;
         .menu-togle {
           display: flex;
           align-items: center;
@@ -2279,6 +2341,10 @@ button, select {
             color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #000;
             text-align: center;
             margin-left: 0px;
           }
@@ -2379,16 +2445,25 @@ button, select {
         position: sticky;
         top: 5%;
         z-index: 2;
+        
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
           list-style-type: none;
-
+          max-height: calc(100vh - 160px);
+          overflow-y: auto;
+          overflow-x: hidden;
+          
           .tooltip {
             display: none !important;
+            position: fixed;
+            .tooltip-inner {
+              white-space: nowrap;
+            }
           }
+          
 
           li {
             //border-bottom: solid 1px rgba(0, 0, 0, 0.05);
@@ -2563,16 +2638,23 @@ button, select {
             text-overflow: ellipsis;
           }
         }
+        .backclose{
+          display: block;
+        }
+        .backopen{
+          display: none;
+        }
 
       }
 
       &.full-toggled2 {
+        
         .content-in2 {
-          width: calc(100% - 90px);
+          width: calc(100% - 100px);
         }
 
         .app-menu2 {
-          width: 90px;
+          width: 100px;
 
           .tooltip {
             display: block !important;
@@ -2588,6 +2670,7 @@ button, select {
 
             a {
               justify-content: center;
+              text-align: center;
 
               i {
 
@@ -2620,8 +2703,13 @@ button, select {
             display: none;
           }
         }
+        .backclose{
+          display: none;
+        }
+        .backopen{
+          display: block;
+        }
       }
-
     }
 
     .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
@@ -2692,17 +2780,22 @@ button, select {
         padding: 5px 10px !important;
         font-size: 12px !important;
         font-weight: bold !important;
-        white-space: nowrap;
-
+        max-width: inherit !important;
       }
 
       &.right {
+        .tooltip-inner {
+          text-align: left;
+        }
         .tooltip-arrow {
           border-color: transparent !important;
           border-right-color: #0f1015 !important;
         }
       }
       &.left {
+        .tooltip-inner {
+          text-align: right;
+        }
         .tooltip-arrow {
           border-color: transparent !important;
           border-left-color: #0f1015 !important;
@@ -2791,6 +2884,29 @@ button, select {
     .draggable-form {
       .form-group {
         padding: 5px 40px 4px 5px;
+        .fa-arrows
+        {
+          margin-top: 0px;
+          color: #FFF;
+          position: absolute;
+          left: 5px;
+          width: 20px;
+          height: 20px;
+          background: rgba(0,0,0,0.5);
+          border-radius: 20px;
+          margin-top: -10px;
+          top: 50%;
+          line-height: 20px;
+          text-align: center;
+        }
+      }
+      .subpanel-heading{
+        .action-buttons{
+          .action-icon{
+            font-size: 14px;
+            margin-right: 5px;
+          }
+        }
       }
     }
   }
@@ -2844,6 +2960,18 @@ button, select {
       .form-control {
         height: 60px;
         line-height: 50px;
+      }
+    }
+    .ui-select-match-text{
+      
+      span{
+        font-family:"Nunito", sans-serif ;
+        font-size: 13px;
+        line-height: 30px;
+        &:before{
+          display: inline-block;
+          font: normal normal normal 14px/1 FontAwesome;
+        }
       }
     }
   }
@@ -2930,6 +3058,7 @@ button, select {
           &.action-buttons-delete {
             background: rgba(206, 4, 4, 0.5);
             color: #FFF;
+            font-size: 10px;
             &:hover {
               background: rgba(206, 4, 4, 1);
               color: #FFF;
@@ -3405,6 +3534,7 @@ button, select {
     align-items: center;
     line-height: 25px;
     text-align: left;
+    border-radius: 2px;
     a{
       cursor: pointer;
     }
@@ -3442,7 +3572,7 @@ button, select {
   }
   .primetabs-content{
     border-top: none;
-    padding: 20px 0px;
+    padding-top: 20px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     .tab-pane{
@@ -3462,6 +3592,102 @@ button, select {
     line-height: 60px;
     text-align: center;
     font-size: 50px;
+  }
+  .extra-info
+  {
+    color: rgba(0,0,0,0.25);
+    cursor: pointer;
+    &:hover{
+      color: rgba(0,0,0,0.5);
+    }
+  }
+  .categorylist{
+    > li{
+      position: relative;
+      padding: 5px 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 5px;
+      line-height: 30px;
+      margin-bottom: 5px;
+      > div{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .form-control{
+        height: 30px !important;
+      }
+      &:hover{
+        background: rgba(0,0,0,0.05);
+      }
+    }
+    .new-actions{
+      display: inline-block;
+      padding-left: 10px;
+      button,a {
+        @include hoverEffect;
+        background: rgba(13, 111, 170, 0.5);
+        color: rgba(255, 255, 255, 1);
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 10px;
+        text-align: center;
+        border: none;
+        border-radius: 50%;
+        display:inline-block;
+        
+        &.delete-btn {
+          background: #E78D8F;
+          color: #FFF;
+          &:hover {
+            background: rgba(206, 4, 4, 1);
+            color: #FFF;
+          }
+        }
+        &.edit-btn {
+          background: rgba(0,0,0,0.25);
+          &:hover {
+            background: rgba(0,0,0,0.5);
+          }
+        }
+        
+        &:hover {
+          background: rgba(13, 111, 170, 1);
+          color: #FFF;
+        }
+      }
+    }
+    
+  }
+  .action-button2-plus,.action-button2-delete{
+    width: 26px;
+    height: 26px;
+    line-height: 27px;
+    @include hoverEffect;
+    background: rgba(13, 111, 170, 0.5);
+    display: inline-block;
+    color: #FFF;
+    text-align: center;
+    border-radius: 50%;
+    margin: 7px 0px;
+    &:hover{
+      background: rgba(13, 111, 170, 1);
+    }
+  }
+  .action-button2-delete{
+    background: #E78D8F;
+    &:hover{
+      background: rgba(206, 4, 4, 1);
+    }
+  }
+  .swal-icon
+  {
+    width: 60px;
+    height: 60px;
+  }
+  .swal-icon--warning__body{
+    height: 30px;
   }
 }
 

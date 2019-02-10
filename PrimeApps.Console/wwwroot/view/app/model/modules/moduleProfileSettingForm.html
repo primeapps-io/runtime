@@ -26,9 +26,8 @@
                     <div id="field-form-body" class="modal-body">
                         <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                         <div class="panel">
-                            <div class="form-group"
-                                 ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}}:</label>
+                            <div class="form-group" ng-class="{'has-error': profileForm.$submitted && profileForm.profiles.$invalid}">
+                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleProfileSettingProfiles' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <tags-input name="profiles"
                                             tabindex="999"
                                             class="form-control"
@@ -47,31 +46,29 @@
                                                    max-results-to-show="9999"></auto-complete>
                                 </tags-input>
                             </div>
-                            <div class="form-group"
-                                 ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModulePluralName' | translate}}</label>
+                            <div class="form-group" ng-class="{'has-error': profileForm.$submitted && profileForm.labelPlural.$invalid}">
+                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModulePluralName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <input type="text"
                                        name="labelPlural"
                                        class="form-control ng-animate-disabled col-sm-8"
-                                       required
+                                       ng-required="true"
                                        maxlength="50"
                                        focus="currentLabelState"
                                        ng-model="currentProfileSetting.pluralName">
                             </div>
-                            <div class="form-group"
-                                 ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                <label class="col-sm-4 required-field">{{'Setup.Modules.ModuleSingularName' | translate}}</label>
+                            <div class="form-group" ng-class="{'has-error': profileForm.$submitted && profileForm.labelSingular.$invalid}">
+                                <label class="col-sm-12 required-field">{{'Setup.Modules.ModuleSingularName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                 <input type="text"
                                        name="labelSingular"
                                        class="form-control ng-animate-disabled col-sm-8"
-                                       required
+                                       ng-required="true"
                                        maxlength="50"
                                        ng-model="currentProfileSetting.singularName">
                             </div>
                             <div class="form-group icon-search-list">
                                 <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
                                 <ui-select ng-model="currentProfileSetting.menu_icon" ng-disabled="ctrl.disabled">
-                                    <ui-select-match placeholder="Please search an icon">
+                                    <ui-select-match placeholder="Please search an icon">s
                                         <div>
                                             <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
                                             <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
@@ -93,6 +90,11 @@
                                         <input type="radio" name="templateStatus" ng-value="false" ng-model="currentProfileSetting.display" />
                                         {{'Common.No' | translate}}<span></span>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="profileForm.$submitted && profileForm.$invalid">
+                                <div class="callout callout-danger">
+                                    <p ng-if="profileForm.$error.required">{{'Module.RequiredError' | translate}}</p>
                                 </div>
                             </div>
                         </div>

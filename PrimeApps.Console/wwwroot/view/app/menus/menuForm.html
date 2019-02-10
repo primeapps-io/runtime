@@ -32,7 +32,7 @@
                                 <h4>{{'Menu.MenuInformation'|translate}}</h4>
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
-                                        <label class="control-label"><span class="required-field">*</span>{{'Menu.MenuName'|translate}}:</label>
+                                        <label class="control-label">{{'Menu.MenuName'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <input name="name_menu" class="form-control" maxlength="50" required ng-model="menu.name" />
                                     </div>
 
@@ -49,7 +49,7 @@
                                     </div>
 
                                     <div ng-show="!menu.default" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
-                                        <label class="control-label"><span class="required-field">*</span>{{'Setup.Nav.Tabs.Profiles'|translate}}:</label>
+                                        <label class="control-label">{{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <select class="form-control"
                                                 name="profile_name"
                                                 ng-model="menu.profile"
@@ -132,7 +132,7 @@
                                         <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
                                     </div>
                                     <legend />
-                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                     <div ng-show="menuLists.length >0" class="menu-setup" style="margin-top:50px; ">
                                         <ul ng-model="menuLists" class="custom-menu list-unstyled">
                                             <li ng-repeat="menuList in $parent.menuLists">

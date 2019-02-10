@@ -2,7 +2,7 @@
     <h2>Workflows</h2>
     <button class="btn add-button" ui-sref="studio.app.workflowEditor"><i class="fas fa-plus"></i> {{'Setup.BpmWorkflow.NewRule' | translate}}</button>
 </div>
-<div class="tab-content">
+<div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -10,22 +10,16 @@
                 <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
                 <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
+                <th width="70"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
             </tr>
 
         </tbody>
@@ -37,7 +31,7 @@
                 <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
                 <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
-                <th style="min-width: 110px;"></th>
+                <th width="70"></th>
             </tr>
         </thead>
         <tbody>

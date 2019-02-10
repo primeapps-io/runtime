@@ -44,8 +44,8 @@
                                 <div class="panel">
                                     <div class="form-group"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.label.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.FieldName' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.FieldName' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <input type="text"
                                                name="label"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -56,8 +56,8 @@
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.dataType.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.FieldType' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field">{{'Setup.Modules.FieldType' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <select name="dataType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -73,8 +73,8 @@
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'lookup' && !currentField.systemReadonly"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.LookupType' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.LookupType' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <select name="lookupType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -89,8 +89,8 @@
                                          ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.picklistType.$invalid}"
                                          ng-show="!currentField.systemReadonly">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistType' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.PicklistType' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <select name="picklistType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -122,8 +122,8 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField1.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.CombinationField1' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.CombinationField1' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <select name="combinationField1"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -134,8 +134,8 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField2.$invalid}">
-                                        <label class="col-sm-4 required-field">* {{'Setup.Modules.CombinationField2' |
-                                            translate}}: </label>
+                                        <label class="col-sm-4 required-field">{{'Setup.Modules.CombinationField2' |
+                                            translate}} <span class="required-label">(required)</span> : </label>
                                         <select name="combinationField2"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -443,10 +443,13 @@
                                          ng-show="!currentField.validation.readonly">
                                         <label class="col-sm-4"><label
                                                 ng-if="!currentField.show_label && !currentField.editable"
-                                                style="color:#b30000">* {{'Setup.Modules.Placeholder' |
-                                            translate}}:</label><label
-                                                ng-show="currentField.show_label || currentField.editable">{{'Setup.Modules.Placeholder'
-                                            | translate}}:</label></label>
+                                                style="color:#b30000">{{'Setup.Modules.Placeholder' |
+                                            translate}} <span class="required-label">(required)</span> :</label>
+
+                                            <label
+                                                    ng-show="currentField.show_label || currentField.editable">{{'Setup.Modules.Placeholder'
+                                                | translate}}:</label>
+                                        </label>
                                         <textarea class="form-control ng-animate-disabled"
                                                   ng-model="currentField.placeholder"
                                                   ng-disabled="currentField.default_value || currentField.show_label"
@@ -772,7 +775,7 @@
 
                             <div class="section">
                                 <h4> Permissions</h4>
-                                <div class="panel">
+                                <div class="panel table-responsive">
                                     <table class="table">
                                         <thead>
                                         <tr>

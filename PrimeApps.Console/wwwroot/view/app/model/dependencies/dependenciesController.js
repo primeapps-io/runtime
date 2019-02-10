@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService', 'ModuleService', '$timeout', '$location',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout, $location) {
 
-            $scope.$parent.menuTopTitle = "Models";
+            //$scope.$parent.menuTopTitle = "Models";
             //$scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "dependencies";
 
@@ -357,7 +357,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this dependency?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

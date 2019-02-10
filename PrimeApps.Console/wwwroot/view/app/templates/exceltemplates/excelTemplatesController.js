@@ -2,10 +2,10 @@
 
 angular.module('primeapps')
 
-    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window',
-        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window) {
+    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window, FileUploader) {
 
-            $scope.$parent.menuTopTitle = "Templates";
+            //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
@@ -26,13 +26,11 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            //4 templateType Module
-            ExcelTemplatesService.count(4).then(function (response) {
+            ExcelTemplatesService.count("excel").then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-            //4 templateType Module
-            ExcelTemplatesService.find($scope.requestModel, 4).then(function (response) {
+            ExcelTemplatesService.find($scope.requestModel, "excel").then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
                     template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
@@ -49,7 +47,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                ExcelTemplatesService.find(requestModel, 4).then(function (response) {
+                ExcelTemplatesService.find(requestModel, "excel").then(function (response) {
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
@@ -104,64 +102,124 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.fileUpload = {
-                settings: {
-                    multi_selection: false,
-                    unique_names: false,
-                    url: 'storage/upload_template',
-                    chunk_size: '256kb',
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $scope.appId
-                    },
-                    filters: {
-                        mime_types: [
-                            { title: "Template Files", extensions: "xls,xlsx" },
-                        ],
-                        max_file_size: "10mb"
-                    }
+            // $scope.fileUpload = {
+            //     settings: {
+            //         multi_selection: false,
+            //         unique_names: false,
+            //         url: 'storage/upload_template',
+            //         chunk_size: '256kb',
+            //         headers: {
+            //             'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+            //             'Accept': 'application/json',
+            //             'X-Organization-Id': $rootScope.currentOrgId,
+            //             'X-App-Id': $scope.appId
+            //         },
+            //         filters: {
+            //             mime_types: [
+            //                 { title: "Template Files", extensions: "xls,xlsx" },
+            //             ],
+            //             max_file_size: "10mb"
+            //         }
+            //     },
+            //     events: {
+            //         fileUploaded: function (uploader, file, response) {
+            //             var resp = JSON.parse(response.response);
+            //             var template = {
+            //                 name: $scope.template.templateName,
+            //                 module: $scope.template.templateModule.name,
+            //                 template_type: 'excel',
+            //                 content: resp.unique_name,
+            //                 content_type: resp.content_type,
+            //                 chunks: resp.chunks,
+            //                 subject: "Excel",
+            //                 active: $scope.template.active,
+            //                 permissions: $scope.template.permissions
+            //             };
+            //
+            //             if (!$scope.template.id) {
+            //                 ExcelTemplatesService.create(template)
+            //                     .then(function () {
+            //                         success();
+            //                     })
+            //                     .catch(function () {
+            //                         $scope.saving = false;
+            //                     });
+            //             }
+            //             else {
+            //                 template.id = $scope.template.id;
+            //
+            //                 ExcelTemplatesService.update(template)
+            //                     .then(function () {
+            //                         success();
+            //                     })
+            //                     .catch(function () {
+            //                         $scope.saving = false;
+            //                     });
+            //             }
+            //         }
+            //     }
+            // };
+
+            var fileUpload = $scope.fileUpload = new FileUploader({
+                url: 'storage/upload_template',
+                chunk_size: '256kb',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'X-App-Id': $scope.appId
                 },
-                events: {
-                    fileUploaded: function (uploader, file, response) {
-                        var resp = JSON.parse(response.response);
-                        var template = {
-                            name: $scope.template.templateName,
-                            module: $scope.template.templateModule.name,
-                            template_type: 'excel',
-                            content: resp.unique_name,
-                            content_type: resp.content_type,
-                            chunks: resp.chunks,
-                            subject: "Excel",
-                            active: $scope.template.active,
-                            permissions: $scope.template.permissions
-                        };
+                queueLimit: 1
+            });
 
-                        if (!$scope.template.id) {
-                            ExcelTemplatesService.create(template)
-                                .then(function () {
-                                    success();
-                                })
-                                .catch(function () {
-                                    $scope.saving = false;
-                                });
-                        }
-                        else {
-                            template.id = $scope.template.id;
+            fileUpload.onAfterAddingFile = function (item) {
 
-                            ExcelTemplatesService.update(template)
-                                .then(function () {
-                                    success();
-                                })
-                                .catch(function () {
-                                    $scope.saving = false;
-                                });
-                        }
-                    }
+                var reader = new FileReader();
+
+                // reader.onload = function (event) {
+                //     $scope.$apply(function () {
+                //         item.template = event.target.result;
+                //     });
+                // };
+                reader.readAsDataURL(item._file);
+            };
+
+            fileUpload.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'excelFilter':
+                        toastr.warning($filter('translate')('Data.Import.FormatError'));
+                        break;
+                    case 'sizeFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
+                        break;
                 }
-            }
-            ;
+            };
+
+            fileUpload.filters.push({
+                name: 'excelFilter',
+                fn: function (item, options) {
+                    var extension = helper.getFileExtension(item.name);
+                    return true ? (extension == 'xls' || extension == 'xlsx') : false;
+                }
+            });
+
+            fileUpload.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 10485760;//10 mb
+                }
+            });
+
+            $scope.remove = function () {
+                if (fileUpload.queue[0]) {
+                    fileUpload.queue[0].remove();
+                    $scope.templateFileCleared = true;
+                }
+                else {
+                    $scope.template.content = undefined;
+                    $scope.templateFileCleared = true;
+                }
+            };
 
             $scope.save = function (uploadForm) {
 
@@ -169,14 +227,32 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
+                var header = {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'X-App-Id': $scope.appId
+                };
 
                 if (!$scope.template.id) {
-                    $scope.fileUpload.uploader.start();
+                    //$scope.fileUpload.uploader.start();
+                    fileUpload.queue[0].uploader.headers = header;
+                    fileUpload.queue[0].headers = header;
+                    fileUpload.queue[0].upload();
+                    fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
+                        uploadThenComplete(fileItem, tempInfo, status);
+                    };
                     $scope.pageTotal = $scope.pageTotal + 1;
                 }
                 else {
                     if ($scope.templateFileCleared) {
-                        $scope.fileUpload.uploader.start();
+                        //$scope.fileUpload.uploader.start();
+                        fileUpload.queue[0].uploader.headers = header;
+                        fileUpload.queue[0].headers = header;
+                        fileUpload.queue[0].upload();
+                        fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
+                            uploadThenComplete(fileItem, tempInfo, status);
+                        };
                     }
                     else {
                         var template = angular.copy($scope.template);
@@ -235,7 +311,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this excel template?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
@@ -255,6 +331,45 @@ angular.module('primeapps')
                             });
                         }
                     });
+            };
+
+            var uploadThenComplete = function (fileItem, tempInfo, status) {
+
+                if (status === 200) {
+                    var template = {
+                        name: $scope.template.templateName,
+                        module: $scope.template.templateModule.name,
+                        template_type: 'excel',
+                        content: tempInfo.unique_name,
+                        content_type: tempInfo.content_type,
+                        chunks: tempInfo.chunks,
+                        subject: "Excel",
+                        active: $scope.template.active,
+                        permissions: $scope.template.permissions
+                    };
+
+                    if (!$scope.template.id) {
+                        ExcelTemplatesService.create(template)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                $scope.saving = false;
+                            });
+                    }
+                    else {
+                        template.id = $scope.template.id;
+
+                        ExcelTemplatesService.update(template)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                $scope.saving = false;
+                            });
+                    }
+
+                }
             };
 
         }

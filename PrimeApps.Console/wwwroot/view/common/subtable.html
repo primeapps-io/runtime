@@ -79,7 +79,7 @@
 <div class="clearfix" ng-if="!isEmpty && !loading"></div>
 
 <div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">
-    <div class="clearfix" block-ui="{{'tableBlockUISubTable' + cacheKey}}">
+    <div class="clearfix table-responsive" block-ui="{{'tableBlockUISubTable' + cacheKey}}">
         <table template-header="view/common/tableheader.html" template-pagination="view/common/pagination.html" ng-table="tableParams" class="table table-hover">
             <tbody>
                 <tr ng-repeat="record in $data">

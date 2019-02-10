@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.id = $state.params.id;
             $scope.orgId = $state.params.orgId;
 
-            $scope.$parent.menuTopTitle = $scope.currentApp.label
+            $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
 

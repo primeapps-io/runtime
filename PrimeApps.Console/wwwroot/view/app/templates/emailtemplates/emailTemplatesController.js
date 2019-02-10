@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
             $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
-            $scope.$parent.menuTopTitle = "Templates";
+            //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
 
@@ -321,7 +321,10 @@ angular.module('primeapps')
                 $scope.changePage(1);
             };
 
-            $scope.templateSave = function () {
+            $scope.templateSave = function (uploadForm) {
+                if (!uploadForm.$valid)
+                    return;
+
                 $scope.saving = true;
                 var template = {};
                 template.module = $scope.newtemplate.moduleName.name;
@@ -398,7 +401,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this email template?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
@@ -406,6 +409,7 @@ angular.module('primeapps')
                         if (value) {
                             EmailTemplatesService.delete(template.id)
                                 .then(function () {
+                                    $scope.changePage(1);
                                     var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
                                     $scope.templates.splice(templateToDeleteIndex, 1);
                                     toastr.success("Email template is deleted successfully.", "Deleted!");
