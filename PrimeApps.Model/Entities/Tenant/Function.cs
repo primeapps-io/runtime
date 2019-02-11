@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
+using System.Collections.Generic;
 
 namespace PrimeApps.Model.Entities.Tenant
 {
@@ -9,8 +10,11 @@ namespace PrimeApps.Model.Entities.Tenant
 
     public class Function : BaseEntity
     {
-        [Column("name"), Required, StringLength(200)]
+        [Column("name"), Required, StringLength(100)]
         public string Name { get; set; }
+
+        [Column("label"), StringLength(300)]
+        public string Label { get; set; }
 
         [Column("dependencies")]
         public string Dependencies { get; set; }
@@ -24,7 +28,12 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("runtime"), Required]
         public FunctionRuntime Runtime { get; set; }
 
+        [JsonProperty("status"), Column("status")]
+        public PublishStatus Status { get; set; }
+
         [Column("content_type"), Required]
         public FunctionContentType ContentType { get; set; }
+
+        public virtual ICollection<DeploymentFunction> Deployments { get; set; }
     }
 }

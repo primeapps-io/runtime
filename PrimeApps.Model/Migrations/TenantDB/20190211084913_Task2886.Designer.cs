@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    [Migration("20190204081741_Task2886")]
+    [Migration("20190211084913_Task2886")]
     partial class Task2886
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -721,6 +721,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("Place")
                         .HasColumnName("place");
 
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
                     b.Property<int>("Type")
                         .HasColumnName("type");
 
@@ -1062,6 +1065,124 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("dependencies");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnName("component_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<int>("PublishStatus")
+                        .HasColumnName("publish_status");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComponentId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("EndTime");
+
+                    b.HasIndex("PublishStatus");
+
+                    b.HasIndex("StartTime");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("deployments_component");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentFunction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<int>("FunctionId")
+                        .HasColumnName("function_id");
+
+                    b.Property<int>("PublishStatus")
+                        .HasColumnName("publish_status");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("EndTime");
+
+                    b.HasIndex("FunctionId");
+
+                    b.HasIndex("PublishStatus");
+
+                    b.HasIndex("StartTime");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("deployments_function");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Document", b =>
@@ -1514,13 +1635,20 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("handler");
 
+                    b.Property<string>("Label")
+                        .HasColumnName("label")
+                        .HasMaxLength(300);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnName("name")
-                        .HasMaxLength(200);
+                        .HasMaxLength(100);
 
                     b.Property<int>("Runtime")
                         .HasColumnName("runtime");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -1534,7 +1662,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("Label");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("Runtime");
 
@@ -4715,6 +4846,40 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Dependencies")
                         .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentComponent", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Component", "Component")
+                        .WithMany("Deployments")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentFunction", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Function", "Function")
+                        .WithMany("Deployments")
+                        .HasForeignKey("FunctionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")

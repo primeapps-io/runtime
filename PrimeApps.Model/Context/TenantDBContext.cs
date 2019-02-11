@@ -276,7 +276,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
 
             //Functions
-            modelBuilder.Entity<Function>().HasIndex(x => x.Identifier).IsUnique();
+            modelBuilder.Entity<Function>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<Function>().HasIndex(x => x.Label);
             modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
             modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
@@ -538,6 +538,20 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.Deleted);
+
+            //DeploymentFunction
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.Status);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.PublishStatus);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.FunctionId);
+
+            //DeploymentComponent
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.PublishStatus);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
         }
 
         public DbSet<TenantUser> Users { get; set; }
@@ -548,7 +562,9 @@ namespace PrimeApps.Model.Context
         public DbSet<Calculation> Calculations { get; set; }
         public DbSet<Dependency> Dependencies { get; set; }
         public DbSet<Component> Components { get; set; }
+        public DbSet<DeploymentComponent> DeploymentsComponent { get; set; }
         public DbSet<Function> Functions { get; set; }
+        public DbSet<DeploymentFunction> DeploymentsFunction { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldCombination> FieldCombinations { get; set; }
         public DbSet<FieldValidation> FieldValidations { get; set; }
