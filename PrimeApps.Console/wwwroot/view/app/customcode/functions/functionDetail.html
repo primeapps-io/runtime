@@ -1,0 +1,87 @@
+<div ng-if="!loading" class="tab-content">
+    <div class="col-sm-12" style="border: none ;">
+        <div class="setup-liste-header row">
+            <div class="col-sm-12">
+                <div class="setup-title">
+                    <h2>{{function.name}} <i class="fas fa-edit" style="padding-left:10px;cursor: pointer;" ng-click="edit()"></i></h2>
+                    <div>
+                        <i class="fas fa-bolt" style="font-size: 20px;cursor: pointer;padding-right: 20px;" ng-click="runModal()"></i>
+                        <i class="fas fa-terminal" style="font-size: 20px;cursor: pointer;" ng-click="openTerminal()"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="ui grid">
+                <div class="sixteen wide column content">
+                    <h4 class="ui top attached header" style="background-color: #f0f0f0;font-weight: bold;padding-bottom: 5px;padding: 10px;border: 1px solid #d4d4d5 !important;margin-bottom: 0px;border-bottom-color: transparent !important;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                        Quick Guide
+                    </h4>
+                    <div class="ui attached guide table segment" style="border: 1px solid #d4d4d5;padding-left: 10px;">
+                        <div class="item">
+                            <h3>Clone this repository
+                                <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+                            </h3>
+                            <div class="ui action small input" style="font-size: 17px;color: #4890bc;background: #f7f7f7 !important;padding: 18px;">
+                                {{giteaUrl}}/{{organization.name}}/test1.git
+                            </div>
+                        </div>
+                        <div class="ui divider"></div>
+                        <div class="item">
+                            <h3>Creating a new repository on the command line</h3>
+                            <div class="markdown">
+								<pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 0;">
+                                    <code>
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{component.name}}.git</span>
+git push -u origin master</code>
+                                </pre>
+                            </div>
+                        </div>
+                        <div class="ui divider"></div>
+                        <div class="item" style="padding-bottom: 15px;">
+                            <h3>Pushing an existing repository from the command line</h3>
+                            <div class="markdown">
+								<pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 0;">
+                                    <code>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{component.name}}.git</span>
+git push -u origin master</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-if="!loading" class="tab-content" ng-show="$parent.showConsole" id="logger">
+    <div class="col-sm-12" style="border: none;position: absolute;bottom: 0;left: 0px;z-index: 99;width: 99.1%;padding-left: 0;padding-right: 0;background: #c8c9ca;">
+        <div class="setup-liste-header row" style="margin-left: 0;margin-right: 0;">
+            <div class="col-sm-12">
+                <div class="setup-title" style="height: 30px;">
+                    <h2>Logs</h2>
+                    <div>
+                        <i class="fas fa-refresh" style="font-size: 15px;cursor: pointer;" ng-class="refreshLogs ? 'fa-spin' : ''" ng-click="getLogs()"></i>
+                        <i class="fas fa-chevron-down" style="font-size: 15px;cursor: pointer;padding-left:20px;" ng-click="$parent.showConsole = !$parent.showConsole;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="ui grid">
+                <div class="sixteen wide column content" style="padding:0px;">
+                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black;">
+                        <pre id="logArea" data-ng-bind-html="asHtml()" style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;max-height: 300px !important;min-height: 100px;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

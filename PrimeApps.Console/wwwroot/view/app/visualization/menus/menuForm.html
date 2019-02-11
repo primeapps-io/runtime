@@ -1,0 +1,254 @@
+<div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
+    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-disabled="saving" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                        </li>
+                        <li>
+                            <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-dialog scroll-style-4">
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div class="modal-body view-form">
+                        <div class="megalist">
+                            <div class="modal-menu">
+                                <ul class="list-unstyled">
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
+                                </ul>
+                            </div>
+                            <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+                            <div class="section" id="section1" ng-show="wizardStep == 0">  <!--&& !loading">-->
+                                <h4>{{'Menu.MenuInformation'|translate}}</h4>
+                                <div class="panel">
+                                    <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
+                                        <label class="control-label">{{'Menu.MenuName'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                        <input name="name_menu" class="form-control" maxlength="50" required ng-model="menu.name" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}:</label>
+                                        <textarea rows="2" name="menu_description" class="form-control" maxlength="200" auto-grow ng-model="menu.description"></textarea>
+                                    </div>
+
+                                    <div class=" form-group">
+
+                                        <label class="control-label newinput">
+                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
+                                        </label>
+                                    </div>
+
+                                    <div ng-show="!menu.default" class="form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
+                                        <label class="control-label">{{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                        <select class="form-control"
+                                                name="profile_name"
+                                                ng-model="menu.profile"
+                                                ng-required="!menu.default"
+                                                ng-options="o as o['name'] for o in newProfiles | filter:{deleted:'!true'}">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group text-right">
+                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm) ? wizardStep = 1 : false;">
+                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
+                                        </button>
+                                    </div>
+
+                                    <div class="form-group" ng-show="menuForm.$submitted && (menuForm.profile_name.$error.required || menuForm.name_menu.$error.required)">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="(menuForm.name_menu.$error.required && menuForm.profile_name.$error.required)">{{'Menu.RequiredError' | translate}}</p>
+                                            <p ng-if="!menuForm.name_menu.$error.required && menuForm.profile_name.$error.required">{{'Menu.ProfileRequiredError' | translate}}</p>
+                                            <p ng-if="!menuForm.profile_name.$error.required && menuForm.name_menu.$error.required">{{'Menu.MenuNameRequiredError' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section" id="section2" ng-show="wizardStep == 1">
+                                <!--&& !loading ">-->
+                                <h4>{{'Menu.MenuSummary'|translate}}</h4>
+                                <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+                                <!--ng-show="!loading"-->
+                                <div class="panel">
+                                    <div class="form-group">
+                                        <div>
+                                            <label class="control-label">{{'Menu.MenuElementType'|translate}}:</label>
+                                        </div>
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}<span></span>
+                                        </label>
+                                        <label class="radio-inline newinput">
+                                            <input type="radio" ng-change="radioChange()" ng-model="menu.display" ng-value="true"> {{'Menu.CurrentMenu'|translate}}<span></span>
+                                        </label>
+                                    </div>
+
+                                    <div ng-show="menu.display" class="form-group">
+                                        <label class="control-label">{{'Menu.Modules'|translate}}:</label>
+                                        <select
+                                                class="form-control ng-animate-disabled"
+                                                name="module_name"
+                                                ng-model="menu.moduleItem"
+                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div ng-show="!menu.display" class="form-group">
+                                        <label class="control-label">{{'Menu.CategoryName' | translate}}:</label>
+                                        <input name="name" class="form-control " maxlength="50" ng-model="menu.menuItem" />
+                                    </div>
+
+                                    <!--<div ng-show="!menu.display" class="form-group">-->
+                                    <!--<label class="control-label col-sm-4">{{'Menu.Icon' | translate}}:</label>-->
+                                    <!--<button type="button" data-container="form" class="form-control btn btn-default" name="icon"-->
+                                    <!--data-placeholder="{{'Menu.Icon' | translate}}-" ng-model="menu.menu_icon"-->
+                                    <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                    <!--bs-select><span class="caret"></span></button>-->
+                                    <!--</div>-->
+                                    <div ng-show="!menu.display" class="form-group icon-search-list">
+                                        <label class="control-label">{{'Common.Icon' | translate}}:</label>
+                                        <ui-select ng-model="menu.menu_icon">
+                                            <ui-select-match placeholder="Please search an icon">
+                                                <div ng-bind-html="$select.selected.label || $select.selected"></div>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                <div ng-bind-html="icon.label"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
+                                    </div>
+                                    <legend />
+                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-show="menuLists.length >0" class="menu-setup" style="margin-top:50px; ">
+                                        <ul ng-model="menuLists" class="custom-menu list-unstyled">
+                                            <li ng-repeat="menuList in $parent.menuLists">
+                                                <div class="form-group menu-list">
+                                                <span class="action-buttons arrow">
+                                                    <span ng-if="!$first" class="" ng-click="up($index,menuList.no)"> <i class="fa fa-angle-up" aria-hidden="true"></i></span>
+                                                    <span ng-if="!$last" class="" ng-click="down($index,menuList.no)"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                                </span>
+
+                                                    <span class="menu-label">{{menuList.no+'. '+(!menuList.isEdit ? (menuList.name ) : "")}}</span>
+                                                    <span ng-show="menuList.isEdit">
+                                                        <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name" />
+                                                        <!--<button style="width:120px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"-->
+                                                        <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"-->
+                                                        <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                                        <!--bs-select><span class="caret"></span>-->
+                                                        <!--</button>-->
+                                                          <ui-select ng-model="menuList.icon">
+                                                            <ui-select-match placeholder="Please search an icon">
+                                                                <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
+                                                            <div>
+                                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                            </div>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                <div ng-bind-html="icon.label"></div>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+                                                        <span class="editable-buttons action-buttons-block" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}">
+                                                            <button type="button" ng-click="update(menuList.no,menuList.icon)"><i class="fa fa-check"></i></button>
+                                                        </span>
+                                                    </span>
+                                                    <span class="action-buttons-block">
+                                                        <a ng-if="menuList.menuModuleType === 'Tanım Giriş' && !menuList.isEdit" ng-click="addModule(menuList.no)" data-nodrag title="{{'Common.Add' | translate}}">
+                                                            <i class="fas fa-plus"></i>
+                                                        </a>
+                                                        <a ng-if="!menuList.isEdit" ng-click="edit(menuList.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a ng-show="!menuList.isEdit" href class="action-buttons-delete" ng-click="remove_(menuList.menuId, menu.no, $index, menuList.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                            
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                        
+                                                    </span>
+                                                </div>
+                                                <ul class="list-unstyled custom-menu" ng-model="menuList.items">
+                                                    <li ng-repeat="menu in menuList.items">
+                                                        <div class="form-group menu-list">
+                                                            <span class="action-buttons arrow">
+                                                                <span ng-if="!$first && menu.name" class="" ng-click="up($index,menuList.no,menu.no)"><i class="fa fa-angle-up" aria-hidden="true"></i> </span>
+                                                                <span ng-if="!$last && menu.name" class="" ng-click="down($index,menuList.no,menu.no)"> <i class=" fa fa-angle-down" aria-hidden="true"></i> </span>
+                                                            </span>
+                                                            <span class="menu-label" ng-show="!menu.isEdit && menu.name">{{ menu.menuId + '.' + menu.no+'. '+ menu.name}}</span>
+                                                            <span ng-show="menu.isEdit">
+                                                                <input class="form-control" maxlength="50" ng-model="menu.name" />
+                                                                <!--<button style="width: 120px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"-->
+                                                                <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"-->
+                                                                <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
+                                                                <!--bs-select><span class="caret"></span>-->
+                                                                <!--</button>-->
+                                                                  <ui-select ng-model="menu.icon">
+                                                                    <ui-select-match placeholder="Please search an icon">
+                                                                        <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
+                                                                    <div>
+                                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                        <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                                    </div>
+                                                                    </ui-select-match>
+                                                                    <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                        <div ng-bind-html="icon.label"></div>
+                                                                    </ui-select-choices>
+                                                                </ui-select>
+                                                                <span class="action-buttons-block editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;">
+                                                                    <button type="button" ng-click="update(menuList.no,menu.icon,menu.no)"><i class="fa fa-check"></i></button>
+                                                                </span>
+                                                            </span>
+                                                            <span class="action-buttons-block">
+                                                                <a ng-if="!menu.isEdit && menu.name" ng-click="edit(menuList.no,menu.no)" class="action-buttons-edit" data-nodrag title="{{'Common.Edit' | translate}}">
+                                                                     <i class="fas fa-pen"></i>
+                                                                </a>
+                                                                <a ng-show="!menu.isEdit && menu.name" href class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </span>
+                                                            <select style="margin-bottom: 10px;"
+                                                                    class="form-control ng-animate-disabled"
+                                                                    name="name"
+                                                                    ng-model="menuModuleList"
+                                                                    ng-change="selectModule(menu.menuId, menu.no, menuModuleList)"
+                                                                    ng-show="!menu.isEdit && !menu.name"
+                                                                    ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                                                <option value="">{{'Common.Select' | translate}}</option>
+                                                            </select>
+                                                            <span ng-show="!menu.isEdit && !menu.name" class="action-buttons-block">
+                                                                <a  class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="form-group text-right">
+                                        <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
