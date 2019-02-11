@@ -2139,6 +2139,9 @@ button:focus, select:focus {
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-text, .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .costume-bage {
   display: none;
 }
+.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-info {
+  justify-content: center;
+}
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
   justify-content: center;
   text-align: center;
