@@ -24,35 +24,35 @@ angular.module('primeapps')
             $scope.dataTypes = ModuleService.getDataTypes();
             $scope.lookupUser = helper.lookupUser;
             $scope.calendarColors = [
-                { dark: '#b8c110', light: '#e9ebb9' },
-                { dark: '#01a0e4', light: '#b3e2f5' },
-                { dark: '#61b033', light: '#d0e6c3' },
-                { dark: '#ee6d1a', light: '#fad2bb' },
-                { dark: '#e21550', light: '#f5bacb' },
-                { dark: '#b62f7c', light: '#e8c1d7' },
-                { dark: '#643a8c', light: '#d1c5db' },
-                { dark: '#174c9c', light: '#bacae0' },
-                { dark: '#00995e', light: '#b4e0ce' },
-                { dark: '#e83a21', light: '#f7c4be' }
+                {dark: '#b8c110', light: '#e9ebb9'},
+                {dark: '#01a0e4', light: '#b3e2f5'},
+                {dark: '#61b033', light: '#d0e6c3'},
+                {dark: '#ee6d1a', light: '#fad2bb'},
+                {dark: '#e21550', light: '#f5bacb'},
+                {dark: '#b62f7c', light: '#e8c1d7'},
+                {dark: '#643a8c', light: '#d1c5db'},
+                {dark: '#174c9c', light: '#bacae0'},
+                {dark: '#00995e', light: '#b4e0ce'},
+                {dark: '#e83a21', light: '#f7c4be'}
             ];
             $scope.addressTypes = [
-                { name: 'country', value: $filter('translate')('Common.Country') },
-                { name: 'city', value: $filter('translate')('Common.City') },
-                { name: 'disrict', value: $filter('translate')('Common.Disrict') },
-                { name: 'street', value: $filter('translate')('Common.Street') }
+                {name: 'country', value: $filter('translate')('Common.Country')},
+                {name: 'city', value: $filter('translate')('Common.City')},
+                {name: 'disrict', value: $filter('translate')('Common.Disrict')},
+                {name: 'street', value: $filter('translate')('Common.Street')}
             ];
             $scope.lookupSearchTypes = [
-                { name: 'starts_with', value: $filter('translate')('Filter.StartsWith') },
-                { name: 'contains', value: $filter('translate')('Filter.Contains') }
+                {name: 'starts_with', value: $filter('translate')('Filter.StartsWith')},
+                {name: 'contains', value: $filter('translate')('Filter.Contains')}
             ];
             $scope.viewTypes = [
-                { name: 'dropdown', value: $filter('translate')('Common.Dropdown') },
-                { name: 'radio', value: $filter('translate')('Common.Radio') },
-                { name: 'checkbox', value: $filter('translate')('Common.Checkbox') }
+                {name: 'dropdown', value: $filter('translate')('Common.Dropdown')},
+                {name: 'radio', value: $filter('translate')('Common.Radio')},
+                {name: 'checkbox', value: $filter('translate')('Common.Checkbox')}
             ];
             $scope.positions = [
-                { name: 'left', value: $filter('translate')('Common.Left') },
-                { name: 'right', value: $filter('translate')('Common.Right') }
+                {name: 'left', value: $filter('translate')('Common.Left')},
+                {name: 'right', value: $filter('translate')('Common.Right')}
             ];
             var module = {};
 
@@ -215,7 +215,7 @@ angular.module('primeapps')
                         .then(function (picklists) {
                             $scope.lookupTypes = picklists['900000'];
 
-                            var hasUserLookType = $filter('filter')($scope.lookupTypes, { name: 'users' }, true).length > 0;
+                            var hasUserLookType = $filter('filter')($scope.lookupTypes, {name: 'users'}, true).length > 0;
 
                             if (!hasUserLookType) {
                                 var userLookType = {};
@@ -255,9 +255,9 @@ angular.module('primeapps')
                 };
 
                 var getRoundingTypes = function () {
-                    var roundingType1 = { value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff') };
-                    var roundingType2 = { value: 'down', label: $filter('translate')('Setup.Modules.RoundingTypeDown') };
-                    var roundingType3 = { value: 'up', label: $filter('translate')('Setup.Modules.RoundingTypeUp') };
+                    var roundingType1 = {value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff')};
+                    var roundingType2 = {value: 'down', label: $filter('translate')('Setup.Modules.RoundingTypeDown')};
+                    var roundingType3 = {value: 'up', label: $filter('translate')('Setup.Modules.RoundingTypeUp')};
 
                     $scope.roundingTypes = [];
                     $scope.roundingTypes.push(roundingType1);
@@ -311,7 +311,7 @@ angular.module('primeapps')
                         $scope.picklistsModule = picklists;
                     });
 
-                $scope.currenyPK = $filter('filter')($scope.module.fields, { primary: true }, true)[0];
+                $scope.currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
                 $scope.loading = false;
             };
 
@@ -363,8 +363,8 @@ angular.module('primeapps')
                             }
                         });
 
-                        var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, { deleted: '!true' }, true));
-                        var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, { deleted: '!true' }, true));
+                        var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, {deleted: '!true'}, true));
+                        var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, {deleted: '!true'}, true));
                         var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at'];
                         var sectionNames = [];
 
@@ -373,10 +373,10 @@ angular.module('primeapps')
                             delete section.id;
                             var newName = 'custom_section' + i + 1;
 
-                            var sectionName = $filter('filter')(sectionNames, { name: section.name }, true)[0];
+                            var sectionName = $filter('filter')(sectionNames, {name: section.name}, true)[0];
 
                             if (!sectionName)
-                                sectionNames.push({ name: section.name, newName: newName });
+                                sectionNames.push({name: section.name, newName: newName});
 
                             section.name = newName;
                         }
@@ -389,7 +389,7 @@ angular.module('primeapps')
                                 field.name = 'custom_field' + j + 1;
                             }
 
-                            var sectionName = $filter('filter')(sectionNames, { name: field.section }, true)[0];
+                            var sectionName = $filter('filter')(sectionNames, {name: field.section}, true)[0];
 
                             field.section = sectionName.newName;
                         }
@@ -473,8 +473,8 @@ angular.module('primeapps')
                 if ($scope.module.name === 'activities')
                     return true;
 
-                var startDateField = $filter('filter')($scope.module.fields, { calendar_date_type: 'start_date' }, true)[0];
-                var endDateField = $filter('filter')($scope.module.fields, { calendar_date_type: 'end_date' }, true)[0];
+                var startDateField = $filter('filter')($scope.module.fields, {calendar_date_type: 'start_date'}, true)[0];
+                var endDateField = $filter('filter')($scope.module.fields, {calendar_date_type: 'end_date'}, true)[0];
 
                 return startDateField && endDateField;
             };
@@ -509,7 +509,7 @@ angular.module('primeapps')
                 }
                 else {
                     if (field.data_type === 'lookup')
-                        field.lookupType = $filter('filter')($scope.lookupTypes, { value: field.lookup_type }, true)[0];
+                        field.lookupType = $filter('filter')($scope.lookupTypes, {value: field.lookup_type}, true)[0];
 
                     $scope.currentFieldState = angular.copy(field);
 
@@ -556,14 +556,14 @@ angular.module('primeapps')
                                 if (field.default_value) {
                                     if (field.data_type === 'picklist') {
                                         field.default_value = parseInt(field.default_value);
-                                        field.default_value = $filter('filter')($scope.defaulPicklistValues, { id: parseInt(field.default_value) }, true)[0];
+                                        field.default_value = $filter('filter')($scope.defaulPicklistValues, {id: parseInt(field.default_value)}, true)[0];
                                     }
                                     else if (field.data_type === 'multiselect') {
                                         var picklistIds = field.default_value.split(';');
                                         var values = [];
 
                                         angular.forEach(picklistIds, function (picklistId) {
-                                            var picklistRecord = $filter('filter')($scope.defaulPicklistValues, { id: parseInt(picklistId) }, true)[0];
+                                            var picklistRecord = $filter('filter')($scope.defaulPicklistValues, {id: parseInt(picklistId)}, true)[0];
                                             picklistRecord.labelStr = picklistRecord['label_' + $rootScope.user.tenant_language];
                                             values.push(picklistRecord);
                                         });
@@ -584,7 +584,7 @@ angular.module('primeapps')
                     if (field.encrypted && field.encryption_authorized_users_list.length > 0) {
                         var userList = [];
                         for (var k = 0; k < field.encryption_authorized_users_list.length; k++) {
-                            var user = $filter('filter')($rootScope.users, { id: parseInt(field.encryption_authorized_users_list[k]) }, true)[0];
+                            var user = $filter('filter')($rootScope.users, {id: parseInt(field.encryption_authorized_users_list[k])}, true)[0];
                             userList.push(user);
                         }
                         console.log(userList)
@@ -596,7 +596,7 @@ angular.module('primeapps')
                 $scope.currentField = field;
                 $scope.currentFieldState = angular.copy(field);
                 $scope.showAdvancedOptions = false;
-                $scope.currentField.dataType = $filter('filter')($scope.dataTypes, { name: $scope.currentField.data_type }, true)[0];
+                $scope.currentField.dataType = $filter('filter')($scope.dataTypes, {name: $scope.currentField.data_type}, true)[0];
                 $scope.setMultilineDataType();
 
                 $scope.fieldModal = $scope.fieldModal || $modal({
@@ -703,8 +703,8 @@ angular.module('primeapps')
                 $scope.currentField.temporary_default_value = null;
                 $scope.$broadcast('angucomplete-alt:clearInput', 'lookupDefaultValue');
 
-                var lookupModule = $filter('filter')($rootScope.appModules, { name: $scope.currentField.lookupType.value }, true)[0];
-                $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                var lookupModule = $filter('filter')($rootScope.appModules, {name: $scope.currentField.lookupType.value}, true)[0];
+                $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
             };
 
             $scope.calendarDateTypeChanged = function () {
@@ -773,7 +773,7 @@ angular.module('primeapps')
                     });
 
                     angular.element(picklistContainer).on('dragulardrop', function () {
-                        var picklistSortOrder = $filter('filter')($scope.sortOrderTypes, { value: 'order' }, true)[0];
+                        var picklistSortOrder = $filter('filter')($scope.sortOrderTypes, {value: 'order'}, true)[0];
                         $scope.currentField.picklist_sortorder = picklistSortOrder;
                     });
 
@@ -894,7 +894,7 @@ angular.module('primeapps')
                 $scope.moduleLabelNotChanged = false;
 
                 if ($scope.module.calendar_color_dark)
-                    $scope.module.calendar_color_light = $filter('filter')($scope.calendarColors, { dark: $scope.module.calendar_color_dark }, true)[0].light;
+                    $scope.module.calendar_color_light = $filter('filter')($scope.calendarColors, {dark: $scope.module.calendar_color_dark}, true)[0].light;
 
                 if (!$scope.isModuleSaving)
                     $scope.editModal.hide();
@@ -958,22 +958,20 @@ angular.module('primeapps')
                 if ($scope.currentField.isNew) {
                     delete $scope.currentField.isNew;
 
-                    var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
-                    var field = angular.copy($scope.currentField);
-                    field.data_type = field.dataType.name;
-                    field.section = $scope.currentRow.section.name;
-                    field.section_column = $scope.currentColumn.column.no;
-                    field['label_' + otherLanguage] = field['label_' + $rootScope.language];
-                    field.validation.readonly = false;
+                    //var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
+                    // var field = angular.copy($scope.currentField);
+                    //field.data_type = field.dataType.name;
+                    //field.section = $scope.currentRow.section.name;
+                    // field.section_column = $scope.currentColumn.column.no;
+                    // field['label_' + otherLanguage] = field['label_' + $rootScope.language];
+                    // field.validation.readonly = false;
+                    //
+                    // $scope.module.fields.push(field);
+                    // $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
+                    // $scope.fieldModal.hide();
+                    // $scope.moduleChange = new Date();
+                }
 
-                    $scope.module.fields.push(field);
-                    $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
-                    $scope.fieldModal.hide();
-                    $scope.moduleChange = new Date();
-                }
-                else {
-                    $scope.fieldModal.hide();
-                }
 
                 if ($scope.currentField.dataType.name === 'lookup' && $scope.currentField.lookup_type !== 'users' && $scope.currentField.default_value)
                     $scope.currentField.default_value = $scope.currentField.default_value.id;
@@ -995,7 +993,7 @@ angular.module('primeapps')
                             moduleField.calendar_date_type = null;
                     }
                 }
-
+                $scope.fieldModal.hide();
             };
 
             $scope.saveSection = function (sectionForm) {
@@ -1020,7 +1018,7 @@ angular.module('primeapps')
             };
 
             $scope.deleteField = function (fieldName) {
-                var field = $filter('filter')($scope.module.fields, { name: fieldName }, true)[0];
+                var field = $filter('filter')($scope.module.fields, {name: fieldName}, true)[0];
 
                 if (field.name.indexOf('custom_field') > -1) {
                     var fieldIndex = helper.arrayObjectIndexOf($scope.module.fields, field);
@@ -1043,8 +1041,8 @@ angular.module('primeapps')
             };
 
             $scope.deleteSection = function (sectionName) {
-                var section = $filter('filter')($scope.module.sections, { name: sectionName }, true)[0];
-                var sectionFields = $filter('filter')($scope.module.fields, { section: section.name }, true);
+                var section = $filter('filter')($scope.module.sections, {name: sectionName}, true)[0];
+                var sectionFields = $filter('filter')($scope.module.fields, {section: section.name}, true);
 
                 if (section.name.indexOf('custom_section') > -1) {
                     var sectionIndex = helper.arrayObjectIndexOf($scope.module.sections, section);
@@ -1190,9 +1188,9 @@ angular.module('primeapps')
                 var existingPicklist = null;
 
                 if ($rootScope.language === 'tr')
-                    existingPicklist = $filter('filter')($scope.picklists, { label_tr: $scope.picklistModel.label }, true)[0];
+                    existingPicklist = $filter('filter')($scope.picklists, {label_tr: $scope.picklistModel.label}, true)[0];
                 else
-                    existingPicklist = $filter('filter')($scope.picklists, { label_en: $scope.picklistModel.label }, true)[0];
+                    existingPicklist = $filter('filter')($scope.picklists, {label_en: $scope.picklistModel.label}, true)[0];
 
                 if (!$scope.picklistModel.id && existingPicklist) {
                     picklistForm.$setValidity('unique', false);
@@ -1304,7 +1302,7 @@ angular.module('primeapps')
                 var allowedFields = ['created_by', 'created_at', 'updated_by', 'updated_at', 'owner'];
 
                 angular.forEach($scope.module.fields, function (field) {
-                    var section = $filter('filter')($scope.module.sections, { name: field.section }, true)[0];
+                    var section = $filter('filter')($scope.module.sections, {name: field.section}, true)[0];
 
                     if (!section.display_form && field.validation.required && allowedFields.indexOf(field.name) < 0)
                         $scope.notValidFields.push(field);
@@ -1331,7 +1329,7 @@ angular.module('primeapps')
                 angular.forEach(views, function (view, key) {
                     angular.forEach(view.fields, function (_field, key) {
                         if (_field.field.split(".")[1] == $scope.module.name) {
-                            var primaryField = $filter('filter')($scope.module.fields, { primary: true }, true)[0];
+                            var primaryField = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
                             _field.field = _field.field.replace(_field.field.split(".")[2], primaryField.name);
                             ModuleService.updateView(view, view.id, undefined);
                         }
@@ -1353,7 +1351,7 @@ angular.module('primeapps')
                     return;
                 }
                 //When update modelu primary key also change view lookup view.
-                var newPK = $filter('filter')($scope.module.fields, { primary: true }, true)[0];
+                var newPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
                 if ($scope.currenyPK.name !== newPK.name) {
                     for (var moduleKey = $rootScope.appModules.length - 1; moduleKey >= 0; moduleKey--) {
                         for (var fieldKey = $rootScope.appModules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
@@ -1376,7 +1374,7 @@ angular.module('primeapps')
                 }
 
                 $scope.saving = true;
-                var deletedFields = $filter('filter')($scope.module.fields, { deleted: true }, true);
+                var deletedFields = $filter('filter')($scope.module.fields, {deleted: true}, true);
                 ModuleService.refreshModule($scope.moduleLayout, $scope.module);
 
                 if (deletedFields.length)
