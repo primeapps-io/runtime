@@ -1,10 +1,10 @@
 .scroll-style-4::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background-color: #F5F5F5;
 }
 .scroll-style-4::-webkit-scrollbar {
-  width: 7px;
+  width: 5px;
   background-color: #F5F5F5;
 }
 .scroll-style-4::-webkit-scrollbar-thumb {
@@ -14,12 +14,12 @@
 }
 
 .scroll-style-5::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background-color: #25282B;
 }
 .scroll-style-5::-webkit-scrollbar {
-  width: 7px;
+  width: 5px;
   background-color: #25282B;
 }
 .scroll-style-5::-webkit-scrollbar-thumb {
@@ -797,8 +797,11 @@ button:focus, select:focus {
   background: #FFF;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
 }
+.primeapps .table-responsive {
+  border-color: transparent !important;
+}
 .primeapps .table {
-  border: none;
+  border-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   background: transparent;
 }
@@ -998,12 +1001,12 @@ button:focus, select:focus {
   overflow-x: hidden;
 }
 .primeapps .setup-modal .modal-dialog::-webkit-scrollbar-track, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background-color: #F5F5F5;
 }
 .primeapps .setup-modal .modal-dialog::-webkit-scrollbar, .primeapps .module-modal .modal-dialog::-webkit-scrollbar {
-  width: 7px;
+  width: 5px;
   background-color: #F5F5F5;
 }
 .primeapps .setup-modal .modal-dialog::-webkit-scrollbar-thumb, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-thumb {

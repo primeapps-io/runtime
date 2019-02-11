@@ -1,12 +1,12 @@
 .scroll-style-4{
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
     background-color: #F5F5F5;
   }
 
   &::-webkit-scrollbar {
-    width: 7px;
+    width: 5px;
     background-color: #F5F5F5;
   }
 
@@ -18,13 +18,13 @@
 }
 .scroll-style-5{
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
     background-color: #25282B;
   }
 
   &::-webkit-scrollbar {
-    width: 7px;
+    width: 5px;
     background-color: #25282B;
   }
 
@@ -988,9 +988,11 @@ button, select {
     background: #FFF;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   }
-
+  .table-responsive{
+    border-color: transparent !important;
+  }
   .table {
-    border: none;
+    border-color: transparent;
 
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     background: transparent;
@@ -1255,13 +1257,13 @@ button, select {
       overflow-x: hidden;
 
       &::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
         border-radius: 10px;
         background-color: #F5F5F5;
       }
 
       &::-webkit-scrollbar {
-        width: 7px;
+        width: 5px;
         background-color: #F5F5F5;
       }
 
