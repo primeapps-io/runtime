@@ -149,7 +149,7 @@
                                 <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                 <div class="panel">
                                      <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                    <div ng-show="!loadingFilter">
+                                    <div class=" table-responsive" ng-show="!loadingFilter">
                                         <table class="filter-table">
                                             <thead>
                                                 <tr>
@@ -1214,7 +1214,7 @@
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}:</label>
                                         </div>
                                         <div>
-                                            <div class="form-group">
+                                            <div class="form-group table-responsive">
                                                 <table class="filter-table">
                                                     <thead>
                                                         <tr>
@@ -1279,7 +1279,7 @@
                             <div class="section" ng-show="$parent.wizardStep == 3">
                                 <h4>{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</h4>
                                 <div class="panel">
-                                    <div>
+                                    <div class="table-responsive">
                                         <h5 class="text-center summary-header">{{'Setup.Workflow.SummaryFor' | translate:{name: workflowModel.name} }}</h5>
                                         <span class="summary-label">{{'Setup.Workflow.Module' | translate}}:</span>
                                         <p class="summary-content">{{workflowModel.module['label_' + language + '_singular']}}</p>

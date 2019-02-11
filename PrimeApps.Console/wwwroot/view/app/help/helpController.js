@@ -22,7 +22,7 @@ angular.module('primeapps')
             $scope.editDisable = false;
 
             $scope.relationTypeShow = function () {
-                if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.id){
+                if ($scope.helpModalObj.modulePicklist && $scope.helpModalObj.modulePicklist.id) {
                     $scope.helpModalObj.relationType = true;
                     $scope.helpModalObj.selectHelp = 'list';
                 }
@@ -567,7 +567,10 @@ angular.module('primeapps')
                     $scope.setContentSettingsModul();
             };
 
-            $scope.helpModalSave = function () {
+            $scope.helpModalSave = function (HelpPage) {
+                if (!HelpPage.$valid)
+                    return;
+
                 var help = {};
                 $scope.saving = true;
                 if ($scope.helpModalObj.selectHelp === 'modules' && $scope.helpModalObj.modulePicklist.type != "other") {
@@ -632,7 +635,10 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.helpSideSave = function () {
+            $scope.helpSideSave = function (HelpPage) {
+                if (!HelpPage.$valid)
+                    return;
+
                 var help = {};
                 $scope.saving = true;
 
@@ -805,6 +811,7 @@ angular.module('primeapps')
                         if (value) {
                             HelpService.delete(helpside.id)
                                 .then(function () {
+                                    $scope.changePage(1);
                                     var helpToDeleteIndex = helper.arrayObjectIndexOf($scope.helpsides, helpside);
                                     $scope.helpsides.splice(helpToDeleteIndex, 1);
                                     toastr.success("Help is deleted successfully.", "Deleted!");

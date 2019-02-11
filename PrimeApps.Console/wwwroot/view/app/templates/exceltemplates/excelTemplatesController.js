@@ -187,7 +187,7 @@ angular.module('primeapps')
             fileUpload.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
                     case 'excelFilter':
-                        toast.warning($filter('translate')('Data.Import.FormatError'));
+                        toastr.warning($filter('translate')('Data.Import.FormatError'));
                         break;
                     case 'sizeFilter':
                         toastr.warning($filter('translate')('Setup.Settings.SizeError'));

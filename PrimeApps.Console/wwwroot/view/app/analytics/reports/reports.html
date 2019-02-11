@@ -1,29 +1,29 @@
 <div class="setup-title">
-    <h2>{{'Report.Title' | translate}}</h2>
+    <h2>{{'Setup.Report.Title' | translate}}</h2>
     <div>
         <ul class="list-unstyled list-inline">
             <li>
                 <button class="btn btn-radius btn-gray" ng-click="openCategoryModal()">
-                    <i class="fas fa-list"></i> {{'Report.CategoryManage' | translate}}
+                    <i class="fas fa-list"></i> {{'Setup.Report.CategoryManage' | translate}}
                 </button>
             </li>
             <li>
                 <button class="btn add-button" ui-sref="studio.app.report({orgId:$parent.orgId,appId:$parent.appId})">
-                    <i class="fas fa-plus"></i> {{'Report.NewReport' | translate}}
+                    <i class="fas fa-plus"></i> {{'Setup.Report.NewReport' | translate}}
                 </button>
             </li>
         </ul>
     </div>
 </div>
 
-<div class="tab-content">
+<div class="tab-content table-responsive">
 
     <table class="table" ng-show="loading">
         <thead>
             <tr>
-                <th>{{'Report.ReportName' | translate}}</th>
-                <th>{{'Report.ReportCategory' | translate}}</th>
-                <th>{{'Report.ReportType' | translate}}</th>
+                <th>{{'Setup.Report.ReportName' | translate}}</th>
+                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+                <th>{{'Setup.Report.ReportType' | translate}}</th>
             </tr>
         </thead>
         <tbody>
@@ -47,9 +47,9 @@
     <table class="table" ng-show="!loading">
         <thead>
             <tr>
-                <th>{{'Report.ReportName' | translate}}</th>
-                <th>{{'Report.ReportCategory' | translate}}</th>
-                <th>{{'Report.ReportType' | translate}}</th>
+                <th>{{'Setup.Report.ReportName' | translate}}</th>
+                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+                <th>{{'Setup.Report.ReportType' | translate}}</th>
             </tr>
         </thead>
         <tbody>

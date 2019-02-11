@@ -321,7 +321,10 @@ angular.module('primeapps')
                 $scope.changePage(1);
             };
 
-            $scope.templateSave = function () {
+            $scope.templateSave = function (uploadForm) {
+                if (!uploadForm.$valid)
+                    return;
+
                 $scope.saving = true;
                 var template = {};
                 template.module = $scope.newtemplate.moduleName.name;
@@ -406,6 +409,7 @@ angular.module('primeapps')
                         if (value) {
                             EmailTemplatesService.delete(template.id)
                                 .then(function () {
+                                    $scope.changePage(1);
                                     var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
                                     $scope.templates.splice(templateToDeleteIndex, 1);
                                     toastr.success("Email template is deleted successfully.", "Deleted!");

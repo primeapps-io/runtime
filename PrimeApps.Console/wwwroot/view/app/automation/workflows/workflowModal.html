@@ -19,11 +19,11 @@
                     <div ng-show="SelectedNodeItem.item == 'Start'">
                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
                             <label class="col-sm-12">{{'Setup.BpmWorkflow.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                            <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowStartModel.name" />
+                            <input name="workflowName" class="form-control" maxlength="200" required ng-change="workflowCodeGenerate();" ng-model="workflowStartModel.name" />
                         </div>
                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowCode.$invalid}">
                             <label class="col-sm-12">{{'Setup.BpmWorkflow.Code' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                            <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowStartModel.code" />
+                            <input name="workflowCode" class="form-control" maxlength="100" required ng-model="workflowStartModel.code" ng-disabled="true"/>
                         </div>
                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                             <label class="col-sm-12">{{'Setup.BpmWorkflow.Module' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
@@ -100,7 +100,7 @@
                         </div>
                         <div ng-show="workflowStartModel.module">
                             <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
-                            <div ng-if="!loadingFilter">
+                            <div class=" table-responsive" ng-if="!loadingFilter">
                                 <table class="filter-table">
                                     <thead>
                                         <tr>
@@ -1062,7 +1062,7 @@
                             </label>
                         </div>
                         <div class="form-inline">
-                            <div class="form-group">
+                            <div class="form-group table-responsive">
                                 <!--TODO webHook parameters-->
                                 <table class="filter-table">
                                     <thead>

@@ -814,6 +814,7 @@ button, select {
       @include hoverEffect();
     }
     .tooltip {
+      position: fixed;
       &.tooltip-info {
         .tooltip-inner {
           background: #0f1015 !important;
@@ -2451,12 +2452,13 @@ button, select {
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
           list-style-type: none;
-          //max-height: calc(100vh - 160px);
-          //overflow-y: auto;
-          //overflow-x: hidden;
+          max-height: calc(100vh - 160px);
+          overflow-y: auto;
+          overflow-x: hidden;
           
           .tooltip {
             display: none !important;
+            position: fixed;
             .tooltip-inner {
               white-space: nowrap;
             }
@@ -2648,11 +2650,11 @@ button, select {
       &.full-toggled2 {
         
         .content-in2 {
-          width: calc(100% - 90px);
+          width: calc(100% - 100px);
         }
 
         .app-menu2 {
-          width: 90px;
+          width: 100px;
 
           .tooltip {
             display: block !important;
@@ -2668,6 +2670,7 @@ button, select {
 
             a {
               justify-content: center;
+              text-align: center;
 
               i {
 
@@ -2707,7 +2710,6 @@ button, select {
           display: block;
         }
       }
-
     }
 
     .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {

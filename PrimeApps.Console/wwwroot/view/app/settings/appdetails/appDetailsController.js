@@ -12,6 +12,63 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'appDetails';
             $rootScope.breadcrumblist[2].title = 'App Details';
 
+            var uploader = $scope.uploader = new FileUploader({
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId
+                    },
+                    queueLimit: 1
+                })
+            ;
+
+            uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'imageFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.ImageError'));
+                        break;
+                    case 'sizeFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
+                        break;
+                }
+            };
+
+            uploader.onAfterAddingFile = function (item) {
+                $scope.croppedImage = '';
+                var reader = new FileReader();
+                $scope.appModel.logo = item.file.name;
+
+                reader.onload = function (event) {
+                    $scope.$apply(function () {
+                        item.image = event.target.result;
+                    });
+                };
+                reader.readAsDataURL(item._file);
+            };
+
+            uploader.filters.push({
+                name: 'imageFilter',
+                fn: function (item, options) {
+                    var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                    return '|jpg|png|jpeg|bmp|'.indexOf(type) > -1;
+                }
+            });
+
+            uploader.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 5242880;//5 mb
+                }
+            });
+
+            $scope.logoRemove = function () {
+                if (uploader.queue[0]) {
+                    //uploader.queue[0].image = null;
+                    uploader.queue[0].remove();
+                }
+            };
+
             // $scope.checkNameBlur = function () {
             //     $scope.nameBlur = true;
             //     $scope.checkName($scope.appModel.name);
@@ -66,10 +123,24 @@ angular.module('primeapps')
             });
 
             $scope.save = function () {
-                AppDetailsService.update($scope.appId, $scope.appModel)
-                    .then(function (response) {
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
-                    });
+                var header = {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'X-App-Id': $scope.appId
+                };
+                uploader.queue[0].uploader.headers = header;
+                uploader.queue[0].headers = header;
+                uploader.queue[0].upload();
+                uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                    if (status === 200) {
+                        $scope.appModel.logo = logoUrl;
+                        AppDetailsService.update($scope.appId, $scope.appModel)
+                            .then(function (response) {
+                                toastr.success($filter('translate')('Güncelleme Başarılı'));
+                            });
+                    }
+                };
             };
         }
     ]);

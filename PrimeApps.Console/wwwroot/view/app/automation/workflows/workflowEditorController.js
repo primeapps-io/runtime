@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
             $scope.workflowStartModel = {};
-           // $scope.$parent.menuTopTitle = "Automation";
+            // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'workflowEditor';
             $rootScope.subtoggleClass = 'full-toggled2';
@@ -1472,7 +1472,7 @@ angular.module('primeapps')
 
             $scope.saveNodeData = function () {
                 $scope.saving = true;
-
+                $scope.modalLoading = true;
                 var diagram = window.myDiagram.model;
                 var currentNode = $scope.currentObj.subject.part.data;
                 var bpmModel = $scope.workflowModel;
@@ -1599,15 +1599,15 @@ angular.module('primeapps')
                         }
                         else if (workflowModel.send_notification_ccmodule && workflowModel.customCC) {
                             workflowModel.cc = [];
-                            if (workflowModel.send_notification_ccmodule.module.name === bpmModel.module.name && workflowModel.send_notification_ccmodule.isSameModule) {
+                            if (workflowModel.send_notification_ccmodule.module.name === startModel.module.name && workflowModel.send_notification_ccmodule.isSameModule) {
                                 data[currentNode.ngModelName].cc.push(workflowModel.customCC.name);
                             }
-                            else if (workflowModel.send_notification_ccmodule.module.name === bpmModel.module.name && !workflowModel.send_notification_ccmodule.isSameModule) {
-                                var sameModuleLookupsCC = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
+                            else if (workflowModel.send_notification_ccmodule.module.name === startModel.module.name && !workflowModel.send_notification_ccmodule.isSameModule) {
+                                var sameModuleLookupsCC = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
                                 data[currentNode.ngModelName].cc.push($filter('filter')(sameModuleLookupsCC, { name: workflowModel.send_notification_ccmodule.systemName }, true)[0].name + '.' + workflowModel.customCC.name);
                             }
                             else {
-                                var lookupsCC = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
+                                var lookupsCC = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_ccmodule.module.name }, true);
                                 data[currentNode.ngModelName].cc.push($filter('filter')(lookupsCC, { name: workflowModel.send_notification_ccmodule.systemName }, true)[0].name + '.' + workflowModel.customCC.name);
                             }
                         }
@@ -1621,15 +1621,15 @@ angular.module('primeapps')
                         }
                         else if (workflowModel.send_notification_bccmodule && workflowModel.customBcc) {
                             workflowModel.bcc = [];
-                            if (workflowModel.send_notification_bccmodule.module.name === bpmModel.module.name && workflowModel.send_notification_bccmodule.isSameModule) {
+                            if (workflowModel.send_notification_bccmodule.module.name === startModel.module.name && workflowModel.send_notification_bccmodule.isSameModule) {
                                 data[currentNode.ngModelName].bcc.push(workflowModel.customBcc.name);
                             }
-                            else if (workflowModel.send_notification_bccmodule.module.name === bpmModel.module.name && !workflowModel.send_notification_bccmodule.isSameModule) {
-                                var sameModuleLookupsBcc = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
+                            else if (workflowModel.send_notification_bccmodule.module.name === startModel.module.name && !workflowModel.send_notification_bccmodule.isSameModule) {
+                                var sameModuleLookupsBcc = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
                                 data[currentNode.ngModelName].bcc.push($filter('filter')(sameModuleLookupsBcc, { name: workflowModel.send_notification_bccmodule.systemName }, true)[0].name + '.' + workflowModel.customBcc.name);
                             }
                             else {
-                                var lookupsBcc = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
+                                var lookupsBcc = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_bccmodule.module.name }, true);
                                 data[currentNode.ngModelName].bcc.push($filter('filter')(lookupsBcc, { name: workflowModel.send_notification_bccmodule.systemName }, true)[0].name + '.' + workflowModel.customBcc.name);
                             }
                         }
@@ -1646,15 +1646,15 @@ angular.module('primeapps')
                             if (!data[currentNode.ngModelName].recipients)
                                 data[currentNode.ngModelName].recipients = [];
 
-                            if (workflowModel.send_notification_module.module.name === bpmModel.module.name && workflowModel.send_notification_module.isSameModule) {
+                            if (workflowModel.send_notification_module.module.name === startModel.module.name && workflowModel.send_notification_module.isSameModule) {
                                 data[currentNode.ngModelName].recipients.push(workflowModel.customRecipient.name);
                             }
-                            else if (workflowModel.send_notification_module.module.name === bpmModel.module.name && !workflowModel.send_notification_module.isSameModule) {
-                                var sameModuleLookups = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
+                            else if (workflowModel.send_notification_module.module.name === startModel.module.name && !workflowModel.send_notification_module.isSameModule) {
+                                var sameModuleLookups = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
                                 data[currentNode.ngModelName].recipients.push($filter('filter')(sameModuleLookups, { name: workflowModel.send_notification_module.systemName }, true)[0].name + '.' + workflowModel.customRecipient.name);
                             }
                             else {
-                                var lookups = $filter('filter')(bpmModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
+                                var lookups = $filter('filter')(startModel.module.fields, { lookup_type: workflowModel.send_notification_module.module.name }, true);
 
                                 data[currentNode.ngModelName].recipients.push($filter('filter')(lookups, { name: workflowModel.send_notification_module.systemName }, true)[0].name + '.' + workflowModel.customRecipient.name);
                             }
@@ -1678,6 +1678,7 @@ angular.module('primeapps')
 
                 setTimeout(function () {
                     $scope.saving = false;
+                    $scope.modalLoading = false;
                     $scope.triggerBpm();
                     $scope.$digest();
                     $scope.cancel();
@@ -1819,6 +1820,15 @@ angular.module('primeapps')
                 toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
             };
 
+            $scope.workflowCodeGenerate = function () {
+                if (!$scope.workflowStartModel.name)
+                    $scope.workflowStartModel.code = '';
+                else {
+                    var tempCode = $scope.workflowStartModel.name.trim();
+                    $scope.workflowStartModel.code = tempCode.replace(/ /g, '_');
+                }
+
+            };
 
         }
     ]);
