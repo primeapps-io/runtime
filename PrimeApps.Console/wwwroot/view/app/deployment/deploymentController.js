@@ -8,8 +8,8 @@ angular.module('primeapps')
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
             $scope.$parent.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'deployment';
-            $rootScope.breadcrumblist[2].title = 'Deployment';
+            $scope.$parent.activeMenuItem = 'deployments';
+            $rootScope.breadcrumblist[2].title = 'Deployments';
 
 
 

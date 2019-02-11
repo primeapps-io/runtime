@@ -186,12 +186,37 @@
         </a>
     </li>
     <li ng-click="openSubMenu('')"
-        ng-class="activeMenuItem ==='deployment' ?  'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployment" data-trigger="hover" data-type="info"
-           data-title="Deployment" bs-tooltip data-placement="right">
+        ng-class="activeMenuItem ==='deployments' ?  'active' :''">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployments" data-trigger="hover" data-type="info"
+           data-title="Deployments" bs-tooltip data-placement="right">
             <i class="fas fa-play"></i>
-            <span>Deployment</span>
+            <span>Deployments</span>
         </a>
+        <ul>
+            <li ng-class="activeMenuItem ==='appDeployment' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/appDeployment" data-trigger="hover" data-type="info"
+                   data-title="App" bs-tooltip data-placement="right">
+                    <i class="fas fa-rocket"></i>
+                    <span>App</span>
+                </a>
+            </li>
+            
+            <li ng-class="activeMenuItem ==='componentsDeployment' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/componentsDeployment" data-trigger="hover" data-type="info"
+                   data-title="Components" bs-tooltip data-placement="right">
+                    <i class="fas fa-shapes"></i>
+                    <span>Components</span>
+                </a>
+            </li>
+
+            <li ng-class="activeMenuItem ==='functionsDeployment' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/functionsDeployment" data-trigger="hover" data-type="info"
+                   data-title="Functions" bs-tooltip data-placement="right">
+                    <i class="fas fa-code"></i>
+                    <span>Functions</span>
+                </a>
+            </li>
+        </ul>
     </li>
     <li ng-class="subMenuOpen =='identity' ? 'active sub-open':''" ng-click="openSubMenu('identity')">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/identity" data-trigger="hover" data-type="info"

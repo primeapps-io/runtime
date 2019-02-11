@@ -176,7 +176,6 @@ angular.module('primeapps')
                     }
                 })
 
-
             //app.organization
             $stateProvider
                 .state('studio.organization', {
@@ -990,8 +989,8 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.deployment', {
-                    url: '/deployment',
+                .state('studio.app.deployments', {
+                    url: '/deployments',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/deployment/deployment.html',
@@ -1011,6 +1010,84 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/deployment/deploymentController.js',
                                 cdnUrl + 'view/app/deployment/deploymentService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.componentsdeployment', {
+                    url: '/componentsDeployment',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            controller: 'PasswordPoliciesController'
+                        }
+                    },
+                    resolve: {
+                        passwordpolicies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.functionsdeployment', {
+                    url: '/functionsDeployment',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/deployment/functions/functionsDeployment.html',
+                            controller: 'FunctionsDeploymentController'
+                        }
+                    },
+                    resolve: {
+                        functionsdeployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/deployment/functions/functionsDeploymentController.js',
+                                cdnUrl + 'view/app/deployment/functions/functionsDeploymentService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.appdeployment', {
+                    url: '/passwordPolicies',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            controller: 'PasswordPoliciesController'
+                        }
+                    },
+                    resolve: {
+                        passwordpolicies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
                             ]);
                         }]
                     }

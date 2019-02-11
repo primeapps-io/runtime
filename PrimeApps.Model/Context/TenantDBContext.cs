@@ -276,7 +276,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
 
             //Functions
-            modelBuilder.Entity<Function>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<Function>().HasIndex(x => x.Identifier).IsUnique();
+            modelBuilder.Entity<Function>().HasIndex(x => x.Label);
             modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
             modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
 
