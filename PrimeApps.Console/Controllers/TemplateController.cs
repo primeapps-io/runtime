@@ -158,12 +158,12 @@ namespace PrimeApps.Console.Controllers
 		}
 
 		[Route("create_app_email_template"), HttpPost]
-		public async Task<IActionResult> CreateAppEmailTemplate([FromBody]AppTemplateBindingModel template)
+		public async Task<IActionResult> CreateAppEmailTemplate([FromBody]AppTemplateBindingModel template, [FromUri]string currentAppName)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-
-			var templateEntity = await TemplateHelper.CreateEntityAppTemplate(template, AppId);
+			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
+			var templateEntity = await TemplateHelper.CreateEntityAppTemplate(template, app.Id);
 			var result = await _platformRepository.CreateAppTemplate(templateEntity);
 
 			if (result < 1)
