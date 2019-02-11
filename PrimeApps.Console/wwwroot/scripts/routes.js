@@ -196,7 +196,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
 
                                 $rootScope.breadcrumblist = [{}, {}, {}];
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
@@ -387,12 +387,12 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.filters', {
-                    url: '/filters?:id',
+                .state('studio.app.views', {
+                    url: '/views?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/model/filters/filtersList.html',
-                            controller: 'FiltersController'
+                            templateUrl: cdnUrl + 'view/app/visualization/views/viewsList.html',
+                            controller: 'ViewsController'
                         }
                     },
                     resolve: {
@@ -406,9 +406,9 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/model/filters/filtersService.js',
+                                cdnUrl + 'view/app/visualization/views/viewsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js',
-                                cdnUrl + 'view/app/model/filters/filtersController.js'
+                                cdnUrl + 'view/app/visualization/views/viewsController.js'
                             ]);
                         }]
                     }
@@ -544,16 +544,16 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.workflows', {
-                    url: '/workflows',
+                .state('studio.app.advancedworkflows', {
+                    url: '/advancedworkflows',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/automation/workflows/workflows.html',
-                            controller: 'WorkflowsController'
+                            templateUrl: cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflows.html',
+                            controller: 'AdvancedWorkflowsController'
                         }
                     },
                     resolve: {
-                        workflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        advancedworkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
@@ -563,8 +563,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/automation/workflows/workflowsController.js',
-                                cdnUrl + 'view/app/automation/workflows/workflowsService.js'
+                                cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflowsController.js',
+                                cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflowsService.js'
                             ]);
                         }]
                     }
@@ -574,7 +574,7 @@ angular.module('primeapps')
                     url: '/workflowEditor?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/automation/workflows/workflowEditor.html',
+                            templateUrl: cdnUrl + 'view/app/processautomation/advancedworkflows/advancedworkflowEditor.html',
                             controller: 'WorkflowEditorController'
                         }
                     },
@@ -589,8 +589,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/automation/workflows/workflowEditorController.js',
-                                cdnUrl + 'view/app/automation/workflows/workflowsService.js',
+                                cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflowEditorController.js',
+                                cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflowsService.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMN.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'
                             ]);
@@ -598,16 +598,16 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.rules', {
-                    url: '/rules',
+                .state('studio.app.simpleworkflows', {
+                    url: '/simpleworkflows',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/automation/rules/rules.html',
-                            controller: 'RulesController'
+                            templateUrl: cdnUrl + 'view/app/processautomation/simpleworkflows/simpleWorkflows.html',
+                            controller: 'SimpleWorkflowsController'
                         }
                     },
                     resolve: {
-                        rules: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        simpleworkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
@@ -617,18 +617,18 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/automation/rules/rulesController.js',
-                                cdnUrl + 'view/app/automation/rules/rulesService.js'
+                                cdnUrl + 'view/app/processautomation/simpleworkflows/simpleWorkflowsController.js',
+                                cdnUrl + 'view/app/processautomation/simpleworkflows/simpleWorkflowsService.js'
                             ]);
                         }]
                     }
                 })
 
                 .state('studio.app.processes', {
-                    url: '/processes',
+                    url: '/approvalprocesses',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/automation/processes/processes.html',
+                            templateUrl: cdnUrl + 'view/app/processautomation/processes/processes.html',
                             controller: 'ProcessesController'
                         }
                     },
@@ -643,8 +643,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/automation/processes/processesController.js',
-                                cdnUrl + 'view/app/automation/processes/processesService.js'
+                                cdnUrl + 'view/app/processautomation/processes/processesController.js',
+                                cdnUrl + 'view/app/processautomation/processes/processesService.js'
                             ]);
                         }]
                     }
@@ -654,7 +654,7 @@ angular.module('primeapps')
                     url: '/reports',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/analytics/reports/reports.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/reports/reports.html',
                             controller: 'ReportsController'
                         }
                     },
@@ -669,8 +669,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/reports/reportsController.js',
-                                cdnUrl + 'view/app/analytics/reports/reportsService.js'
+                                cdnUrl + 'view/app/visualization/reports/reportsController.js',
+                                cdnUrl + 'view/app/visualization/reports/reportsService.js'
                             ]);
                         }]
                     }
@@ -680,7 +680,7 @@ angular.module('primeapps')
                     url: '/dashboards',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/analytics/dashboards/dashboards.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/dashboards/dashboards.html',
                             controller: 'DashboardsController'
                         }
                     },
@@ -695,8 +695,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/dashboards/dashboardsController.js',
-                                cdnUrl + 'view/app/analytics/dashboards/dashboardsService.js'
+                                cdnUrl + 'view/app/visualization/dashboards/dashboardsController.js',
+                                cdnUrl + 'view/app/visualization/dashboards/dashboardsService.js'
                             ]);
                         }]
                     }
@@ -706,7 +706,7 @@ angular.module('primeapps')
                     url: '/warehouse',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/analytics/warehouse/warehouse.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/warehouse/warehouse.html',
                             controller: 'WarehouseController'
                         }
                     },
@@ -721,8 +721,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/warehouse/warehouseController.js',
-                                cdnUrl + 'view/app/analytics/warehouse/warehouseService.js'
+                                cdnUrl + 'view/app/visualization/warehouse/warehouseController.js',
+                                cdnUrl + 'view/app/visualization/warehouse/warehouseService.js'
                             ]);
                         }]
                     }
@@ -732,7 +732,7 @@ angular.module('primeapps')
                     url: '/bi',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/analytics/bi/bi.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/bi/bi.html',
                             controller: 'BiController'
                         }
                     },
@@ -747,8 +747,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/bi/biController.js',
-                                cdnUrl + 'view/app/analytics/bi/biService.js'
+                                cdnUrl + 'view/app/visualization/bi/biController.js',
+                                cdnUrl + 'view/app/visualization/bi/biService.js'
                             ]);
                         }]
                     }
@@ -758,7 +758,7 @@ angular.module('primeapps')
                     url: '/components',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/components/components.html',
+                            templateUrl: cdnUrl + 'view/app/customcode/components/components.html',
                             controller: 'ComponentsController'
                         }
                     },
@@ -773,8 +773,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/components/componentsController.js',
-                                cdnUrl + 'view/app/components/componentsService.js'
+                                cdnUrl + 'view/app/customcode/components/componentsController.js',
+                                cdnUrl + 'view/app/customcode/components/componentsService.js'
                             ]);
                         }]
                     }
@@ -784,7 +784,7 @@ angular.module('primeapps')
                     url: '/componentDetail?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/components/componentDetail.html',
+                            templateUrl: cdnUrl + 'view/app/customcode/components/componentDetail.html',
                             controller: 'ComponentDetailController'
                         }
                     },
@@ -799,8 +799,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/components/componentDetailController.js',
-                                cdnUrl + 'view/app/components/componentsService.js'
+                                cdnUrl + 'view/app/customcode/components/componentDetailController.js',
+                                cdnUrl + 'view/app/customcode/components/componentsService.js'
                             ]);
                         }]
                     }
@@ -810,7 +810,7 @@ angular.module('primeapps')
                     url: '/functions',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/functions/functions.html',
+                            templateUrl: cdnUrl + 'view/app/customcode/functions/functions.html',
                             controller: 'FunctionsController'
                         }
                     },
@@ -825,8 +825,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/functions/functionsController.js',
-                                cdnUrl + 'view/app/functions/functionsService.js'
+                                cdnUrl + 'view/app/customcode/functions/functionsController.js',
+                                cdnUrl + 'view/app/customcode/functions/functionsService.js'
                             ]);
                         }]
                     }
@@ -836,7 +836,7 @@ angular.module('primeapps')
                     url: '/functionDetail?:name',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/functions/functionDetail.html',
+                            templateUrl: cdnUrl + 'view/app/customcode/functions/functionDetail.html',
                             controller: 'FunctionDetailController'
                         }
                     },
@@ -851,8 +851,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/functions/functionDetailController.js',
-                                cdnUrl + 'view/app/functions/functionsService.js'
+                                cdnUrl + 'view/app/customcode/functions/functionDetailController.js',
+                                cdnUrl + 'view/app/customcode/functions/functionsService.js'
                             ]);
                         }]
                     }
@@ -862,7 +862,7 @@ angular.module('primeapps')
                     url: '/profiles',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/authorization/profiles/profiles.html',
+                            templateUrl: cdnUrl + 'view/app/accesscontrol/profiles/profiles.html',
                             controller: 'ProfilesController'
                         }
                     },
@@ -877,8 +877,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/authorization/profiles/profilesController.js',
-                                cdnUrl + 'view/app/authorization/profiles/profilesService.js'
+                                cdnUrl + 'view/app/accesscontrol/profiles/profilesController.js',
+                                cdnUrl + 'view/app/accesscontrol/profiles/profilesService.js'
                             ]);
                         }]
                     }
@@ -914,7 +914,7 @@ angular.module('primeapps')
                     url: '/roles',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/authorization/roles/roles.html',
+                            templateUrl: cdnUrl + 'view/app/accesscontrol/roles/roles.html',
                             controller: 'RolesController'
                         }
                     },
@@ -929,8 +929,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/authorization/roles/rolesController.js',
-                                cdnUrl + 'view/app/authorization/roles/rolesService.js'
+                                cdnUrl + 'view/app/accesscontrol/roles/rolesController.js',
+                                cdnUrl + 'view/app/accesscontrol/roles/rolesService.js'
                             ]);
                         }]
                     }
@@ -940,7 +940,7 @@ angular.module('primeapps')
                     url: '/menus',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/menus/menus.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/menus/menus.html',
                             controller: 'MenusController'
                         }
                     },
@@ -955,9 +955,9 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/menus/menusController.js',
-                                cdnUrl + 'view/app/menus/menusService.js',
-                                cdnUrl + 'view/app/authorization/profiles/profilesService.js'
+                                cdnUrl + 'view/app/visualization/menus/menusController.js',
+                                cdnUrl + 'view/app/visualization/menus/menusService.js',
+                                cdnUrl + 'view/app/accesscontrol/profiles/profilesService.js'
                             ]);
                         }]
                     }
@@ -989,11 +989,11 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.deployments', {
-                    url: '/deployments',
+                .state('studio.app.deployment', {
+                    url: '/deployment',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/deployment/deployment.html',
+                            templateUrl: cdnUrl + 'view/app/deployments/deployment/deployment.html',
                             controller: 'DeploymentController'
                         }
                     },
@@ -1008,18 +1008,18 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/deployment/deploymentController.js',
-                                cdnUrl + 'view/app/deployment/deploymentService.js'
+                                cdnUrl + 'view/app/deployments/deployment/deploymentController.js',
+                                cdnUrl + 'view/app/deployments/deployment/deploymentService.js'
                             ]);
                         }]
                     }
                 })
 
-                .state('studio.app.componentsdeployment', {
+				.state('studio.app.componentsdeployment', {
                     url: '/componentsDeployment',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpolicies.html',
                             controller: 'PasswordPoliciesController'
                         }
                     },
@@ -1034,18 +1034,18 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesService.js'
                             ]);
                         }]
                     }
                 })
 
-                .state('studio.app.functionsdeployment', {
+				.state('studio.app.functionsdeployment', {
                     url: '/functionsDeployment',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/deployment/functions/functionsDeployment.html',
+                            templateUrl: cdnUrl + 'view/app/deployments/functions/functionsDeployment.html',
                             controller: 'FunctionsDeploymentController'
                         }
                     },
@@ -1060,18 +1060,18 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/deployment/functions/functionsDeploymentController.js',
-                                cdnUrl + 'view/app/deployment/functions/functionsDeploymentService.js'
+                                cdnUrl + 'view/app/deployments/functions/functionsDeploymentController.js',
+                                cdnUrl + 'view/app/deployments/functions/functionsDeploymentService.js'
                             ]);
                         }]
                     }
                 })
 
-                .state('studio.app.appdeployment', {
+				.state('studio.app.appdeployment', {
                     url: '/passwordPolicies',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpolicies.html',
                             controller: 'PasswordPoliciesController'
                         }
                     },
@@ -1086,8 +1086,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesService.js'
                             ]);
                         }]
                     }
@@ -1097,7 +1097,7 @@ angular.module('primeapps')
                     url: '/diagnostics',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/diagnostics/diagnostics.html',
+                            templateUrl: cdnUrl + 'view/app/manage/diagnostics/diagnostics.html',
                             controller: 'DiagnosticsController'
                         }
                     },
@@ -1112,8 +1112,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/diagnostics/diagnosticsController.js',
-                                cdnUrl + 'view/app/diagnostics/diagnosticsService.js'
+                                cdnUrl + 'view/app/manage/diagnostics/diagnosticsController.js',
+                                cdnUrl + 'view/app/manage/diagnostics/diagnosticsService.js'
                             ]);
                         }]
                     }
@@ -1123,7 +1123,7 @@ angular.module('primeapps')
                     url: '/extensions',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/extensions/extensions.html',
+                            templateUrl: cdnUrl + 'view/app/manage/extensions/extensions.html',
                             controller: 'ExtensionsController'
                         }
                     },
@@ -1138,8 +1138,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/extensions/extensionsController.js',
-                                cdnUrl + 'view/app/extensions/extensionsService.js'
+                                cdnUrl + 'view/app/manage/extensions/extensionsController.js',
+                                cdnUrl + 'view/app/manage/extensions/extensionsService.js'
                             ]);
                         }]
                     }
@@ -1149,7 +1149,7 @@ angular.module('primeapps')
                     url: '/certificates',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/certificates/certificates.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/certificates/certificates.html',
                             controller: 'CertificatesController'
                         }
                     },
@@ -1164,8 +1164,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/certificates/certificatesController.js',
-                                cdnUrl + 'view/app/security/certificates/certificatesService.js'
+                                cdnUrl + 'view/app/manage/security/certificates/certificatesController.js',
+                                cdnUrl + 'view/app/manage/security/certificates/certificatesService.js'
                             ]);
                         }]
                     }
@@ -1175,7 +1175,7 @@ angular.module('primeapps')
                     url: '/passwordPolicies',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpolicies.html',
                             controller: 'PasswordPoliciesController'
                         }
                     },
@@ -1190,8 +1190,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
-                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesService.js'
                             ]);
                         }]
                     }
@@ -1201,7 +1201,7 @@ angular.module('primeapps')
                     url: '/auditTrail',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/audittrail/audittrail.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/audittrail/audittrail.html',
                             controller: 'AuditTrailController'
                         }
                     },
@@ -1216,8 +1216,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/audittrail/auditTrailController.js',
-                                cdnUrl + 'view/app/security/audittrail/auditTrailService.js'
+                                cdnUrl + 'view/app/manage/security/audittrail/auditTrailController.js',
+                                cdnUrl + 'view/app/manage/security/audittrail/auditTrailService.js'
                             ]);
                         }]
                     }
@@ -1227,7 +1227,7 @@ angular.module('primeapps')
                     url: '/cors',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/cors/cors.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/cors/cors.html',
                             controller: 'CorsController'
                         }
                     },
@@ -1242,8 +1242,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/cors/corsController.js',
-                                cdnUrl + 'view/app/security/cors/corsService.js'
+                                cdnUrl + 'view/app/manage/security/cors/corsController.js',
+                                cdnUrl + 'view/app/manage/security/cors/corsService.js'
                             ]);
                         }]
                     }
@@ -1253,7 +1253,7 @@ angular.module('primeapps')
                     url: '/networkAccess',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/security/networkaccess/networkaccess.html',
+                            templateUrl: cdnUrl + 'view/app/manage/security/networkaccess/networkaccess.html',
                             controller: 'NetworkAccessController'
                         }
                     },
@@ -1268,8 +1268,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/security/networkaccess/networkaccessController.js',
-                                cdnUrl + 'view/app/security/networkaccess/networkaccessService.js'
+                                cdnUrl + 'view/app/manage/security/networkaccess/networkaccessController.js',
+                                cdnUrl + 'view/app/manage/security/networkaccess/networkaccessService.js'
                             ]);
                         }]
                     }
@@ -1279,7 +1279,7 @@ angular.module('primeapps')
                     url: '/authentication',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/identity/authentication/authentication.html',
+                            templateUrl: cdnUrl + 'view/app/manage/identity/authentication/authentication.html',
                             controller: 'AuthenticationController'
                         }
                     },
@@ -1294,8 +1294,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/identity/authentication/authenticationController.js',
-                                cdnUrl + 'view/app/identity/authentication/authenticationService.js'
+                                cdnUrl + 'view/app/manage/identity/authentication/authenticationController.js',
+                                cdnUrl + 'view/app/manage/identity/authentication/authenticationService.js'
                             ]);
                         }]
                     }
@@ -1305,7 +1305,7 @@ angular.module('primeapps')
                     url: '/identity',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/identity/identityprovider/identity.html',
+                            templateUrl: cdnUrl + 'view/app/manage/identity/identityprovider/identity.html',
                             controller: 'IdentityController'
                         }
                     },
@@ -1320,8 +1320,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/identity/identityprovider/identityController.js',
-                                cdnUrl + 'view/app/identity/identityprovider/identityService.js'
+                                cdnUrl + 'view/app/manage/identity/identityprovider/identityController.js',
+                                cdnUrl + 'view/app/manage/identity/identityprovider/identityService.js'
                             ]);
                         }]
                     }
@@ -1331,7 +1331,7 @@ angular.module('primeapps')
                     url: '/singleSingOn',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/identity/singlesingon/singleSignOn.html',
+                            templateUrl: cdnUrl + 'view/app/manage/identity/singlesingon/singleSignOn.html',
                             controller: 'SingleSingOnController'
                         }
                     },
@@ -1346,8 +1346,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/identity/singlesingon/singleSignOnController.js',
-                                cdnUrl + 'view/app/identity/singlesingon/singleSignOnService.js'
+                                cdnUrl + 'view/app/manage/identity/singlesingon/singleSignOnController.js',
+                                cdnUrl + 'view/app/manage/identity/singlesingon/singleSignOnService.js'
                             ]);
                         }]
                     }
@@ -1357,7 +1357,7 @@ angular.module('primeapps')
                     url: '/appDetails',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/settings/appdetails/appDetails.html',
+                            templateUrl: cdnUrl + 'view/app/manage/appdetails/appDetails.html',
                             controller: 'AppDetailsController'
                         }
                     },
@@ -1372,8 +1372,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/settings/appdetails/appDetailsController.js',
-                                cdnUrl + 'view/app/settings/appdetails/appDetailsService.js'
+                                cdnUrl + 'view/app/manage/appdetails/appDetailsController.js',
+                                cdnUrl + 'view/app/manage/appdetails/appDetailsService.js'
                             ]);
                         }]
                     }
@@ -1383,7 +1383,7 @@ angular.module('primeapps')
                     url: '/appCollaborators',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/settings/collaborators/appCollaborators.html',
+                            templateUrl: cdnUrl + 'view/app/manage/collaborators/appCollaborators.html',
                             controller: 'AppCollaboratorsController'
                         }
                     },
@@ -1398,8 +1398,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/settings/collaborators/appCollaboratorsController.js',
-                                cdnUrl + 'view/app/settings/collaborators/appCollaboratorsService.js'
+                                cdnUrl + 'view/app/manage/collaborators/appCollaboratorsController.js',
+                                cdnUrl + 'view/app/manage/collaborators/appCollaboratorsService.js'
                             ]);
                         }]
                     }
@@ -1428,7 +1428,7 @@ angular.module('primeapps')
                     url: '/notifications',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/settings/notifications/notifications.html',
+                            templateUrl: cdnUrl + 'view/app/manage/notifications/notifications.html',
                             controller: 'NotificationsController'
                         }
                     },
@@ -1443,8 +1443,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/settings/notifications/notificationsController.js',
-                                cdnUrl + 'view/app/settings/notifications/notificationsService.js'
+                                cdnUrl + 'view/app/manage/notifications/notificationsController.js',
+                                cdnUrl + 'view/app/manage/notifications/notificationsService.js'
                             ]);
                         }]
                     }
@@ -1454,7 +1454,7 @@ angular.module('primeapps')
                     url: '/appEmailTemplates',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplates.html',
+                            templateUrl: cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplates.html',
                             controller: 'AppEmailTemplatesController'
                         }
                     },
@@ -1469,8 +1469,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplatesController.js',
-                                cdnUrl + 'view/app/settings/appemailtemplates/appEmailTemplatesService.js'
+                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesController.js',
+                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesService.js'
                             ]);
                         }]
                     }
@@ -1507,7 +1507,7 @@ angular.module('primeapps')
                     url: '/report?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/analytics/reports/report.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/reports/report.html',
                             controller: 'ReportController'
                         }
                     },
@@ -1522,8 +1522,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/reports/reportsService.js',
-                                cdnUrl + 'view/app/analytics/reports/reportController.js'
+                                cdnUrl + 'view/app/visualization/reports/reportsService.js',
+                                cdnUrl + 'view/app/visualization/reports/reportController.js'
                             ]);
                         }]
                     }
