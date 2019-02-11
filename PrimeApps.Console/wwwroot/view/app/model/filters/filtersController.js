@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, FiltersService, $http, config, $modal, ModuleService) {
 
 
-            $scope.$parent.menuTopTitle = "Models";
+            //$scope.$parent.menuTopTitle = "Models";
             //$scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'filters';
 
@@ -77,7 +77,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this filter?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

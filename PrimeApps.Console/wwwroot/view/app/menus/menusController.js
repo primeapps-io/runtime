@@ -224,7 +224,7 @@ angular.module('primeapps')
             };
 
             var setMenuList = function (id) {
-                $scope.loading = true;
+               // $scope.loading = true;
                 $scope.menuLists = [];
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
@@ -291,7 +291,6 @@ angular.module('primeapps')
                         });
                     });
                 }
-
             }
 
             $scope.validate = function (menuForm) {
@@ -848,7 +847,7 @@ angular.module('primeapps')
                 var willDelete =
                     swal({
                         title: "Are you sure?",
-                        text: "Are you sure that you want to delete this menu?",
+                        text: " ",
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true

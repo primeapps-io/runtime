@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, CollaboratorsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
             $scope.collaboratorArray = [];
 
-            $scope.$parent.menuTopTitle = "Organization";
+           // $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
             $scope.updatingRole = false;

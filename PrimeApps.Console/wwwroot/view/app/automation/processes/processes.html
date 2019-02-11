@@ -2,7 +2,7 @@
     <h2>{{'Setup.Nav.ApprovelProcess' | translate}}</h2>
     <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.ApprovelProcess.NewApprovelProcess' | translate}}</button>
 </div>
-<div class="tab-content">
+<div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -10,24 +10,17 @@
                 <th>{{'Setup.Workflow.Module' | translate}}</th>
                 <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.Workflow.Status' | translate}}</th>
+                <th style="width: 70px;"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
+                <td><div class="animated-background"></div></td>
             </tr>
-
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
@@ -37,7 +30,7 @@
                 <th>{{'Setup.Workflow.Module' | translate}}</th>
                 <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
                 <th>{{'Common.Active' | translate}}</th>
-                <th style="min-width: 110px;"></th>
+                <th style="width: 70px;"></th>
             </tr>
         </thead>
         <tbody>

@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div class="tab-content" ng-if="!loading && components.length === 0">
+<div class="tab-content table-responsive" ng-if="!loading && components.length === 0">
     <table class="table">
         <div class="col-sm-12" style="margin-top: 100px; margin-bottom: 100px; display: flex;justify-content: center;">
             <div class="row">
@@ -31,42 +31,29 @@
     </table>
 </div>
 
-<div class="tab-content">
+<div class="tab-content table-responsive">
+
     <table class="table" ng-show="loading">
         <thead>
         <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Module Id</th>
-            <th>Place</th>
-            <th>Order</th>
-            <th width="50"></th>
+            <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
+            <th>{{'Setup.Workflow.Module' | translate}}</th>
+            <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+            <th>{{'Setup.Workflow.Status' | translate}}</th>
+            <th style="width: 70px;"></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
         <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
+            <td><div class="animated-background"></div></td>
+            <td><div class="animated-background"></div></td>
+            <td><div class="animated-background"></div></td>
+            <td><div class="animated-background"></div></td>
+            <td><div class="animated-background"></div></td>
         </tr>
         </tbody>
     </table>
+    
     <table class="table" ng-if="!loading && components.length !== 0">
         <thead>
         <tr>
@@ -75,7 +62,7 @@
             <th>Module Id</th>
             <th>Place</th>
             <th>Order</th>
-            <th width="50"></th>
+            <th style="width: 70px;"></th>
         </tr>
         </thead>
         <tbody>
@@ -87,23 +74,9 @@
             <td>{{component.order}}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
+                    <button ng-click="$event.stopPropagation();delete(component.id)" type="button" class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
                     </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ui-sref="studio.app.componentDetail({id:component.id})"
-                               ng-click="$event.stopPropagation()">{{'Common.Edit' | translate}} </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation();delete(component.id)">{{'Common.Remove' | translate}} </a>
-                        </li>
-                    </ul>
                 </div>
             </td>
         </tr>

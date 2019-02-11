@@ -2,7 +2,7 @@
     <h2>Profiles</h2>
     <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Profiles</button>
 </div>
-<div class="tab-content">
+<div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -41,9 +41,22 @@
                 <td class="profile-description">{{profile.description}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(profile);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
+                        <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' | translate}} </a>
+                            </li>
+                            <li>
+                                <a ng-click="$event.stopPropagation();delete(profile)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
             </tr>

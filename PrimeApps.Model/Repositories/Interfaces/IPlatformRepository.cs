@@ -3,6 +3,7 @@ using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -16,5 +17,14 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> AppUpdate(App app);
 		Task<int> AppDeleteSoft(App app);
 		Task<int> AppDeleteHard(App app);
+		Task<int> Count(int appId);
+		Task<ICollection<AppTemplate>> Find(PaginationModel paginationModel, int? appId);
+		Task<AppTemplate> GetAppTemplateById(int id);
+
+		Task<int> UpdateAppTemplate(AppTemplate template);
+
+		Task<int> CreateAppTemplate(AppTemplate template);
+
+		Task<App> AppGetByName(string appName);
 	}
 }

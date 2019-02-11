@@ -5,7 +5,7 @@ angular.module('primeapps')
 	.controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService', '$location',
 		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location) {
 
-			$scope.$parent.menuTopTitle = "Models";
+			//$scope.$parent.menuTopTitle = "Models";
 			//$scope.$parent.activeMenu = "appMenu";
 			$scope.$parent.activeMenuItem = "relations";
 
@@ -349,7 +349,7 @@ angular.module('primeapps')
 				var willDelete =
 					swal({
 						title: "Are you sure?",
-						text: "Are you sure that you want to delete this relation?",
+						text: " ",
 						icon: "warning",
 						buttons: ['Cancel', 'Yes'],
 						dangerMode: true
