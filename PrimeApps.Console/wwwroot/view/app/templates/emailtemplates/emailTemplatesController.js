@@ -10,6 +10,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
             $rootScope.breadcrumblist[2].title = 'Email Templates';
+            $scope.moduleDisabled = false;
 
             $scope.loading = true;
             $scope.newtemplate = {};
@@ -416,12 +417,14 @@ angular.module('primeapps')
                 if (template) {
                     $scope.setTemplate(template);
                     $scope.currentTemplate = template;
+                    $scope.moduleDisabled = true;
                 }
                 else {
                     $scope.newtemplate = {};
                     $scope.newtemplate.system_type = 'custom';
                     $scope.newtemplate.sharing_type = 'me';
                     $scope.currentTemplate = null;
+                    $scope.moduleDisabled = false;
                 }
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({

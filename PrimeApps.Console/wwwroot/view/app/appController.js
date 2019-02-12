@@ -32,7 +32,33 @@ angular.module('primeapps')
             $scope.getBasicModules();
 
             $rootScope.openSubMenu = function (name) {
-                $rootScope.subMenuOpen = name;
+                if ($rootScope.subMenuOpen == name)
+                    $rootScope.subMenuOpen = "";
+                else
+                    $rootScope.subMenuOpen = name;
+                $scope.activeMenuItem = "";
             }
+            setTimeout( function() {
+                $('.setup-nav > li').each(function(){
+                    var t = null;
+                    var li = $(this);
+                    li.hover(function(){
+                        t = setTimeout(function(){
+                            li.find("ul").slideDown(300);
+                            t = null;
+                        }, 300);
+                    }, function(){
+                        if (t){
+                            clearTimeout(t);
+                            t = null;
+                        }
+                        else
+                            li.find("ul").slideUp(200);
+                    });
+                });
+            }, 200);
+
+                
+           
         }
     ]);

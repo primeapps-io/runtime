@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields', 'icons', 'systemReadonlyFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields, icons, systemReadonlyFields) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields', 'icons2', 'systemReadonlyFields',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields, icons2, systemReadonlyFields) {
 
             return {
                 count: function () {
@@ -31,7 +31,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
                 getIcons: function () {
-                    return icons.icons;
+                    return icons2.icons;
                 },
                 getSystemRequiredFields: function () {
                     return systemRequiredFields;
@@ -42,9 +42,9 @@ angular.module('primeapps')
                 getModules: function () {
                     return $http.get(config.apiUrl + 'module/get_all');
                 },
-                delete: function (id) {
-                    return $http.delete(config.apiUrl + 'module/delete/' + id);
-                },
+                // delete: function (id) {
+                //     return $http.delete(config.apiUrl + 'module/delete/' + id);
+                // },
                 newField: function (dataType) {
 
                     var field = {};

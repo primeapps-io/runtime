@@ -29,6 +29,8 @@ angular.module('primeapps')
 
             ModuleService.count().then(function (response) {
                 $scope.pageTotal = response.data;
+                $rootScope.appModules.length = response.data;
+                console.log($rootScope)
             });
 
             ModuleService.find($scope.requestModel).then(function (response) {
@@ -82,6 +84,7 @@ angular.module('primeapps')
                             ModuleService.delete(module.id)
                                 .then(function () {
                                     $scope.pageTotal--;
+                                    $rootScope.appModules.length = $scope.pageTotal;
                                     $scope.changeOffset();
                                     $scope.loading = false;
                                     toastr.success("Module is deleted successfully.", "Deleted!");

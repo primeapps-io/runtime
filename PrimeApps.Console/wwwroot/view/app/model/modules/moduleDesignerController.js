@@ -598,7 +598,7 @@ angular.module('primeapps')
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, {name: $scope.currentField.data_type}, true)[0];
                 $scope.setMultilineDataType();
-
+                var url = angular.copy(window.location.hash);
                 $scope.fieldModal = $scope.fieldModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/modules/fieldForm.html',
@@ -608,7 +608,34 @@ angular.module('primeapps')
                 });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
+                    $timeout(function () {
+                        var scroolElement = document.querySelectorAll(".modal-dialog");
+                        var mainNavLinks = document.querySelectorAll(".modal-menu a");
+
+                        $('a[href^="#"]').on('click', function (e) {
+                            var urlHash = url + this.hash;
+                            window.location.hash = urlHash;
+                            e.preventDefault();
+
+                        });
+
+                        scroolElement[0].addEventListener("scroll", function (event) {
+                            var fromTop = scroolElement[0].scrollTop + 30;
+                            mainNavLinks.forEach(function (link) {
+                                var section = document.querySelector(link.hash);
+
+                                if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+                                    link.classList.add("active");
+                                } else {
+                                    link.classList.remove("active");
+                                }
+
+                            });
+                        });
+                    }, 100)
                 });
+
+
             };
 
             $scope.multiselectEncryptionUsers = function () {

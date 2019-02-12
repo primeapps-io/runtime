@@ -48,15 +48,15 @@ function init() {
 
     // constants for design choices
 
-    var GradientYellow = $(go.Brush, "Linear", { 0: "LightGoldenRodYellow", 1: "#FFFF66" });
-    var GradientLightGreen = $(go.Brush, "Linear", { 0: "#E0FEE0", 1: "PaleGreen" });
-    var GradientLightGray = $(go.Brush, "Linear", { 0: "White", 1: "#DADADA" });
+    var GradientYellow = "rgba(0, 0, 0, 0.05)"; //Gateway
+    var GradientLightGreen = "rgba(0, 0, 0, 0.05)";//Start and Stop
+    var GradientLightGray = "rgba(0, 0, 0, 0.05)";//Data nodes
 
-    var ActivityNodeFill = $(go.Brush, "Linear", { 0: "OldLace", 1: "PapayaWhip" });
-    var ActivityNodeStroke = "#CDAA7D";
+    var ActivityNodeFill = "rgba(0, 0, 0, 0.05)";//normal tasklar
+    var ActivityNodeStroke = "rgba(0, 0, 0, 0)";
     var ActivityMarkerStrokeWidth = 1.5;
-    var ActivityNodeWidth = 120;
-    var ActivityNodeHeight = 80;
+    var ActivityNodeWidth = 135;
+    var ActivityNodeHeight = 70;
     var ActivityNodeStrokeWidth = 1;
     var ActivityNodeStrokeWidthIsCall = 4;
 
@@ -66,19 +66,19 @@ function init() {
     var EventNodeSize = 42;
     var EventNodeInnerSize = EventNodeSize - 6;
     var EventNodeSymbolSize = EventNodeInnerSize - 14;
-    var EventEndOuterFillColor = "pink";
+    var EventEndOuterFillColor = "rgba(0, 0, 0, 0.05)";
     var EventBackgroundColor = GradientLightGreen;
-    var EventSymbolLightFill = "white";
-    var EventSymbolDarkFill = "dimgray";
-    var EventDimensionStrokeColor = "green";
-    var EventDimensionStrokeEndColor = "red";
+    var EventSymbolLightFill = "rgba(0, 0, 0, 0.5)";
+    var EventSymbolDarkFill = "rgba(0, 0, 0, 0.5)";
+    var EventDimensionStrokeColor = "rgba(0, 0, 0, 0)";
+    var EventDimensionStrokeEndColor = "rgba(0, 0, 0, 0)";
     var EventNodeStrokeWidthIsEnd = 4;
 
     var GatewayNodeSize = 80;
     var GatewayNodeSymbolSize = 45;
     var GatewayNodeFill = GradientYellow;
-    var GatewayNodeStroke = "darkgoldenrod";
-    var GatewayNodeSymbolStroke = "darkgoldenrod";
+    var GatewayNodeStroke = "rgba(0, 0, 0, 0)";
+    var GatewayNodeSymbolStroke = "rgba(0, 0, 0, 0.5)";
     var GatewayNodeSymbolFill = GradientYellow;
     var GatewayNodeSymbolStrokeWidth = 3;
 
@@ -383,6 +383,25 @@ function init() {
         ); // end activity markers horizontal panel
     }
 
+    function geoFunc(geoname) { //For Activity
+        var geo = icons[geoname];
+        if (geo === undefined) geo = icons["start"];  //TODO use this for an unknown icon name
+        if (typeof geo === "string") {
+            geo = go.Geometry.parse(geo, true);  // fill each geometry
+        }
+
+        return geo;
+    }
+
+    function geoFunc2(geoname) { //For event
+        var geo = icons[geoname];
+        if (geo === undefined) geo = icons["start"];  //TODO use this for an unknown icon name
+        if (typeof geo === "string") {
+            geo = go.Geometry.parse(geo, true);  // fill each geometry
+        }
+
+        return geo;
+    }
     var activityNodeTemplate =
         $(go.Node, "Spot",
             {
@@ -407,7 +426,7 @@ function init() {
                 },
                 new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
                 $(go.Panel, "Spot",
-                    $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
+                    $(go.Shape, "Rectangle",  // the outside rounded rectangle
                         {
                             name: "SHAPE",
                             fill: ActivityNodeFill, stroke: ActivityNodeStroke,
@@ -421,43 +440,44 @@ function init() {
                                 return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth;
                             })
                     ),
-                    //        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
-                    //          { margin: 3,
-                    //            stretch: go.GraphObject.Fill,
-                    //            stroke: ActivityNodeStroke,
-                    //            parameter1: 8, fill: null, visible: false
-                    //          },
-                    //          new go.Binding("visible", "isTransaction")
-                    //         ),
                     // task icon
                     $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
                         {
-                            alignment: new go.Spot(0, 0, 5, 5), alignmentFocus: go.Spot.TopLeft,
+                            alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
                             width: 22, height: 22
                         },
                         new go.Binding("fill", "taskType", nodeActivityTaskTypeColorConverter),
                         new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)
-                    ), // end Task Icon
-                    makeMarkerPanel(false, 1) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
-                ),  // end main body rectangles spot panel
-                $(go.TextBlock,  // the center text
+                    ),
+                    $(go.Shape,
+                        {
+                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 22, height: 20,
+
+                        },
+                        new go.Binding("geometry", "icon", geoFunc)),
+
+                    //makeMarkerPanel(false, 1) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
+                ),
+                $(go.TextBlock,
                     {
-                        alignment: go.Spot.Center, textAlign: "center", margin: 12,
+                        alignment: go.Spot.Bottom, textAlign: "center", margin: 8, font: "bold 12px Nunito",
                         editable: true
                     },
                     new go.Binding("text").makeTwoWay())
-            )  // end Auto Panel
+            )
         );  // end go.Node, which is a Spot Panel with bound itemArray
 
     // ------------------------------- template for Activity / Task node in Palette  -------------------------------
 
-    var palscale = 2;
+    var palscale = 1;
     var activityNodeTemplateForPalette =
-        $(go.Node, "Vertical",
+        $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE",
                 locationSpot: go.Spot.Center,
-                selectionAdorned: false
+                selectionAdorned: false,
+                minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight)
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             $(go.Panel, "Spot",
@@ -465,37 +485,35 @@ function init() {
                     name: "PANEL",
                     desiredSize: new go.Size(ActivityNodeWidth / palscale, ActivityNodeHeight / palscale)
                 },
-                $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
+                $(go.Shape, "Rectangle",  // the outside rounded rectangle
                     {
                         name: "SHAPE",
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                         parameter1: 10 / palscale  // corner size (default 10)
-                    },
-                    new go.Binding("strokeWidth", "isCall",
-                        function (s) {
-                            return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth;
-                        })),
-                $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
+                    }),
+                $(go.Shape, "Rectangle",  // the inner "Transaction" rounded rectangle
                     {
-                        margin: 3,
                         stretch: go.GraphObject.Fill,
                         stroke: ActivityNodeStroke,
                         parameter1: 8 / palscale, fill: null, visible: false
                     },
                     new go.Binding("visible", "isTransaction")),
                 // task icon
-                $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
+
+                $(go.Shape,
                     {
-                        alignment: new go.Spot(0, 0, 5, 5), alignmentFocus: go.Spot.TopLeft,
-                        width: 22 / palscale, height: 22 / palscale
+                        margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
+                        width: 20, height: 20
                     },
-                    new go.Binding("fill", "taskType", nodeActivityTaskTypeColorConverter),
-                    new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)),
-                makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
-            ), // End Spot panel
+                    new go.Binding("geometry", "icon", geoFunc)),
+
+            ),
             $(go.TextBlock,  // the center text
-                { alignment: go.Spot.Center, textAlign: "center", margin: 2 },
-                new go.Binding("text"))
+                { alignment: go.Spot.Bottom, textAlign: "center", margin: 8, font: "bold 12px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize },
+                new go.Binding("text").makeTwoWay()),
+            makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
+
+
         );  // End Node
 
     var subProcessGroupTemplateForPalette =
@@ -539,60 +557,43 @@ function init() {
     //------------------------------------------  Event Node Template  ----------------------------------------------
 
     var eventNodeTemplate =
-        $(go.Node, "Vertical",
+        $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE",
                 locationSpot: go.Spot.Center,
-                toolTip: tooltiptemplate
+                toolTip: tooltiptemplate,
+                minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight)
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
-            new go.Binding("layerName", "isSelected", function (s) {
-                return s ? "Foreground" : "";
-            }).ofObject(),
+            new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
             // can be resided according to the user's desires
             { resizable: false, resizeObjectName: "SHAPE" },
             $(go.Panel, "Spot",
-                $(go.Shape, "Circle",  // Outer circle
+                $(go.Shape, "Rectangle",  // Outer circle
                     {
                         strokeWidth: 1,
                         name: "SHAPE",
                         desiredSize: new go.Size(EventNodeSize, EventNodeSize),
-                        portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
-                        fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
-                    },
-                    // allows the color to be determined by the node data
-                    new go.Binding("fill", "eventDimension", function (s) {
-                        return (s === 8) ? EventEndOuterFillColor : EventBackgroundColor;
+                        portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                        fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
+                        name: "SHAPE",
+                        fill: ActivityNodeFill, stroke: ActivityNodeStroke,
+                        parameter1: 10
                     }),
-                    new go.Binding("strokeWidth", "eventDimension", function (s) {
-                        return s === 8 ? EventNodeStrokeWidthIsEnd : 1;
-                    }),
-                    new go.Binding("stroke", "eventDimension", nodeEventDimensionStrokeColorConverter),
-                    new go.Binding("strokeDashArray", "eventDimension", function (s) {
-                        return (s === 3 || s === 6) ? [4, 2] : null;
-                    }),
-                    new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-                ),  // end main shape
-                $(go.Shape, "Circle",  // Inner circle
-                    { alignment: go.Spot.Center, desiredSize: new go.Size(EventNodeInnerSize, EventNodeInnerSize), fill: null },
-                    new go.Binding("stroke", "eventDimension", nodeEventDimensionStrokeColorConverter),
-                    new go.Binding("strokeDashArray", "eventDimension", function (s) {
-                        return (s === 3 || s === 6) ? [4, 2] : null;
-                    }), // dashes for non-interrupting
-                    new go.Binding("visible", "eventDimension", function (s) {
-                        return s > 3 && s <= 7;
-                    }) // inner  only visible for 4 thru 7
-                ),
-                $(go.Shape, "NotAllowed",
-                    { alignment: go.Spot.Center, desiredSize: new go.Size(EventNodeSymbolSize, EventNodeSymbolSize), stroke: "black" },
-                    new go.Binding("figure", "eventType", nodeEventTypeConverter),
-                    new go.Binding("fill", "eventDimension", nodeEventDimensionSymbolFillConverter)
-                )
-            ),  // end Auto Panel
+                $(go.Shape,
+                    {
+                        //TODO icon
+                        //geometry: go.Geometry.parse("M424.4 214.7L72.4 6.6C43.8 - 10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4 - 18.5 31.5-64.1 0-82.6z", true),
+                        margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20
+                    }, ),
+            ),
+
             $(go.TextBlock,
-                { alignment: go.Spot.Center, textAlign: "center", margin: 5, editable: true },
+                { alignment: go.Spot.Bottom, textAlign: "center", margin: 8, editable: true },
                 new go.Binding("text").makeTwoWay())
+
         ); // end go.Node Vertical
 
     //------------------------------------------  Gateway Node Template   ----------------------------------------------
@@ -1270,6 +1271,10 @@ function init() {
                     // make sure the selected Parts no longer belong to any Group
                     var ok = window.myDiagram.commandHandler.addTopLevelParts(window.myDiagram.selection, true);
                     if (!ok) window.myDiagram.currentTool.doCancel();
+                    //var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
+                    //scope.currentObj = e;
+                    //scope.toogleSideMenu(true);
+
                 },
                 linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
                 "SelectionMoved": relayoutDiagram,  // defined below
@@ -1291,13 +1296,38 @@ function init() {
         scope.toogleSideMenu(false);
     });
 
+    //window.myDiagram.addModelChangedListener(function (evt) {
+    //    if (!evt.isTransactionFinished) return;
+    //    var txn = evt.object;  // a Transaction
+    //    if (txn === null) return;
+    //    // iterate over all of the actual ChangedEvents of the Transaction
+    //    txn.changes.each(function (e) {
+    //        // ignore any kind of change other than adding/removing a node
+    //        if (e.modelChange !== "nodeDataArray") return;
+    //        // record node insertions and removals
+    //        if (e.change === go.ChangedEvent.Insert) {
+    //            console.log(evt.propertyName + " added node with key: " + e.newValue.key);
+    //        } else if (e.change === go.ChangedEvent.Remove) {
+    //            console.log(evt.propertyName + " removed node with key: " + e.oldValue.key);
+    //        }
+    //    }); 
+    //});
+
+    //window.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+    //    console.log("Eleman oluşturuldu.", e);
+    //    var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
+    //    scope.currentObj = e;
+    //    scope.toogleSideMenu(true);
+    //})
+
     window.myDiagram.addDiagramListener("SelectionDeleted", function (e) {
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         delete scope.workflowModel[scope.currentObj.subject.part.data.ngModelName];
 
         scope.toogleSideMenu(false);
     });
-    window.myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
+
+    //window.myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
 
     window.myDiagram.addDiagramListener("LinkDrawn", function (e) {
         if (e.subject.fromNode.category === "annotation") {
@@ -1377,19 +1407,20 @@ function init() {
             copiesArrayObjects: true,
             nodeDataArray: [
                 // -------------------------- Event Nodes
-                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, item: "Start", sidebar: true, ngModelName: "start" }, //"Start"
+                { key: 101, category: "event", text: "Start", eventType: 1, eventDimension: 1, icon: "start", item: "Start", sidebar: true, ngModelName: "start" }, //"Start"
                 //{ key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message", sidebar: false }, //"Message" // BpmnTaskMessage
-                { key: 103, category: "event", text: "Timer", eventType: 3, eventDimension: 3, item: "Timer", sidebar: true }, //"Timer"
-                { key: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, item: "End", sidebar: false }, //"End"
+                { key: 103, category: "event", text: "Timer", eventType: 1, eventDimension: 3, icon: "timer", item: "Timer", sidebar: true }, //"Timer"
+                { key: 104, category: "event", text: "End", eventType: 1, eventDimension: 8, icon: "end", item: "End", sidebar: false }, //"End"
                 //{ key: 107, category: "event", text: "Message", eventType: 2, eventDimension: 8, item: "End Message", sidebar: false },//"End Message" // BpmnTaskMessage
                 //{ key: 108, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, item: "Terminate", sidebar: false }, //"Terminate"
                 // -------------------------- Task/Activity Nodes
-                { key: 131, category: "activity", text: "Notification", item: "Notification Task", taskType: 1, sidebar: true, ngModelName: "send_notification" }, //"Notification Task"
-                { key: 132, category: "activity", text: "Create Task", item: "User Task", taskType: 2, sidebar: true, ngModelName: "create_task" }, //"User Task"
-                { key: 133, category: "activity", text: "WebHook", item: "WebHook Task", taskType: 4, sidebar: true, ngModelName: "webHook" }, //"WebHook Task"
-                { key: 135, category: "activity", text: "Data Update", item: "Data Task", taskType: 6, sidebar: true, ngModelName: "field_update" },
-                { key: 136, category: "activity", text: "Function", item: "Function Task", taskType: 7, sidebar: true, ngModelName: "function" },
-                { key: 137, category: "activity", text: "Data Read", item: "Data Read Task", taskType: 6, sidebar: true, ngModelName: "data_read" },
+                { key: 131, category: "activity", text: "Notification", item: "Notification Task", icon: "notification", taskType: 0, sidebar: true, ngModelName: "send_notification" }, //"Notification Task"
+                { key: 132, category: "activity", text: "Create Task", item: "User Task", icon: "task", taskType: 0, sidebar: true, ngModelName: "create_task" }, //"User Task"
+                { key: 133, category: "activity", text: "WebHook", item: "WebHook Task", icon: "hook", taskType: 0, sidebar: true, ngModelName: "webHook" }, //"WebHook Task"
+                { key: 135, category: "activity", text: "Data Update", item: "Data Task", icon: "update", taskType: 0, sidebar: true, ngModelName: "field_update" },
+                { key: 136, category: "activity", text: "Function", item: "Function Task", icon: "function", taskType: 0, sidebar: true, ngModelName: "function" },
+                { key: 137, category: "activity", text: "Data Read", item: "Data Read Task", icon: "read", taskType: 0, sidebar: true, ngModelName: "data_read" },
+
                 // subprocess and start and end
                 //{ key: 134, category: "subprocess", loc: "0 0", text: "Subprocess", isGroup: true, isSubProcess: true, taskType: 0 },
                 //{ key: -802, category: "event", loc: "0 0", group: 134, text: "Start", eventType: 1, eventDimension: 1, item: "Start" },
@@ -1400,10 +1431,10 @@ function init() {
                 //{ key: 301, category: "dataobject", text: "Data\nObject", item: "Data Object" },
                 //{ key: 302, category: "datastore", text: "Data\nStorage", item: "Data Storage" },
                 //{ key: 401, category: "privateProcess", text: "Black Box", item: "Black Box" },
-                { key: 501, text: "Pool 1", isGroup: true, category: "Pool", item: "Pool" },
-                { key: "Lane5", text: "Lane 1", isGroup: true, group: 501, color: "lightyellow", category: "Lane", item: "Lane" },
-                { key: "Lane6", text: "Lane 2", isGroup: true, group: 501, color: "lightgreen", category: "Lane", item: "Lane" },
-                { key: 701, category: "annotation", text: "note", item: "Note" }
+                //{ key: 501, text: "Pool 1", isGroup: true, category: "Pool", item: "Pool" },
+                //{ key: "Lane5", text: "Lane 1", isGroup: true, group: 501, color: "lightyellow", category: "Lane", item: "Lane" },
+                //  { key: "Lane6", text: "Lane 2", isGroup: true, group: 501, color: "lightgreen", category: "Lane", item: "Lane" },
+                { key: 701, category: "annotation", icon: "read", text: "note", item: "Note" }
             ]  // end nodeDataArray
         });  // end model
 

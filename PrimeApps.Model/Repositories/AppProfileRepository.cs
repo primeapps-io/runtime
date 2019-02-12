@@ -31,5 +31,11 @@ namespace PrimeApps.Model.Repositories
             appProfile.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
+
+        public async Task<AppProfile> GetByAppId(int id)
+        {
+            return await DbContext.AppProfiles.Where(x => x.AppId == id && !x.Deleted)
+                .FirstOrDefaultAsync();
+        }
     }
 }

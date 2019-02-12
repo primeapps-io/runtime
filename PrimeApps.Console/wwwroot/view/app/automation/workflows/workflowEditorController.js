@@ -289,13 +289,20 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response) {
                             activityModule.fields = response.data;
-                            $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                            $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                            $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                            $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                            $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                            $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                            $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+
+                            ModuleService.getPickItemsLists(activityModule, false)
+                                .then(function (pickList) {
+                                    if (pickList)
+                                        $scope.picklistsActivity = pickList.data;
+
+                                    $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+                                    $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+                                    $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+                                    $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+                                    $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+                                    $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+                                    $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+                                });
                         }
                     });
             };
@@ -376,6 +383,7 @@ angular.module('primeapps')
             };
 
             var processWorkflow = function (data) {
+                $scope.modalLoading = true;
                 var workflowModel = {};
                 workflowModel.id = data.id;
                 workflowModel.created_by = data.created_by;
@@ -455,6 +463,7 @@ angular.module('primeapps')
                         $scope.filters[i] = filter;
                     }
                 }
+                $scope.modalLoading = false;
                 return workflowModel;
             };
 
@@ -1490,7 +1499,7 @@ angular.module('primeapps')
                         data.id = $scope.id;
                         data.filters = [];
 
-                        var filters = $scope.filters;
+                        var filters = angular.copy($scope.filters);
 
                         if (filters && filters.length) {
                             angular.forEach(filters, function (filterItem) {
