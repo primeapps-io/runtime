@@ -1,0 +1,121 @@
+<div class="setup-title">
+    <h2>Actions</h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li></li>
+            <li>
+                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewActionButton' | translate}}
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="tab-content table-responsive">
+    <div class="empty-message" ng-if="actionButtons.length < 1 && !loading ">
+        {{'Setup.Modules.NoActionButton' | translate}}
+    </div>
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading && actionButtons.length > 0">
+        <thead>
+            <tr>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="actionButton in actionButtons | filter:{hidden:'!true'} | orderBy:'created_at'" ng-click="showFormModal(actionButton)">
+                <td>{{actionButton.parent_module['label_' + language + '_plural']}}</td>
+                <td>{{actionButton.name}}</td>
+                <td ng-if="actionButton.action_type == 'ModalFrame'">Modal</td>
+                <td ng-if="actionButton.action_type == 'Webhook'">Webhook</td>
+                <td>{{actionButton.url}}</td>
+                <td ng-if="actionButton.trigger == 'Detail'">{{'Setup.Modules.Detail' | translate}}</td>
+                <td ng-if="actionButton.trigger == 'Form'">Form</td>
+                <td ng-if="actionButton.trigger == 'All'">{{'Setup.Modules.All' | translate}}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(actionButton);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div>
+            Total Action Buttons {{pageTotal}}
+        </div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+    </div>
+</div>
