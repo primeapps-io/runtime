@@ -598,7 +598,7 @@ angular.module('primeapps')
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, {name: $scope.currentField.data_type}, true)[0];
                 $scope.setMultilineDataType();
-
+                var url = angular.copy(window.location.hash);
                 $scope.fieldModal = $scope.fieldModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/modules/fieldForm.html',
@@ -608,7 +608,13 @@ angular.module('primeapps')
                 });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
+                    $timeout(function () {
+                        $rootScope.scrollTab();
+
+                    }, 100)
                 });
+
+
             };
 
             $scope.multiselectEncryptionUsers = function () {
