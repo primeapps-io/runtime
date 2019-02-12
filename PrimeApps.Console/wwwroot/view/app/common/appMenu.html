@@ -1,4 +1,4 @@
-<ul class="setup-nav scroll-style-6" ng-show="!appLoading">
+<ul class="setup-nav scroll-style-6" ng-show="!appLoading" xmlns="http://www.w3.org/1999/html">
     <li ng-click="openSubMenu('')"
         ng-class="activeMenuItem ==='overview' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/overview" data-trigger="click" data-type="info"
@@ -113,6 +113,13 @@
                     <span>Menus</span>
                 </a>
             </li>
+            <li ng-class="activeMenuItem ==='buttons' ?'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/actionButtons?id={{module.id}}" data-trigger="hover" data-type="info"
+                   data-title="Buttons" bs-tooltip data-placement="right">
+                    <i class="fas fa-caret-square-right"></i>
+                    <span>{{'Setup.Modules.ActionButtons' | translate}}</span>
+                </a>
+            </li>
         </ul>
     </li>
     <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''" ng-click="openSubMenu('templates')">
@@ -173,7 +180,7 @@
                 ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
                    data-title="Functions" bs-tooltip data-placement="right">
-                    <i class="fas fa-terminal"></i>
+                    <i class="fas fa-file-code"></i>
                     <span>Functions</span>
                 </a>
             </li>
@@ -242,7 +249,7 @@
             <li ng-class="activeMenuItem ==='functionsDeployment' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/functionsDeployment" data-trigger="hover" data-type="info"
                    data-title="Functions" bs-tooltip data-placement="right">
-                    <i class="fas fa-terminal"></i>
+                    <i class="fas fa-file-code"></i>
                     <span>Functions</span>
                 </a>
             </li>
@@ -283,7 +290,7 @@
                     <span>Notifications</span>
                 </a>
             </li>
-            <li ng-class="subMenuOpen =='security' ? 'active':''" >
+            <li ng-class="subMenuOpen =='security' ? 'active':''">
                 <!--ng-click="openSubMenu('security')"-->
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/certificates" data-trigger="hover" data-type="info"
                    data-title="Security" bs-tooltip data-placement="right">
@@ -326,15 +333,6 @@
 </ul>
 
 <ul class="setup-nav" ng-show="appLoading">
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
     <li><a>
         <div class="animated-background"></div>
     </a></li>

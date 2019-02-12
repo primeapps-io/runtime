@@ -1016,7 +1016,7 @@ angular.module('primeapps')
                     }
                 })
 
-				.state('studio.app.componentsdeployment', {
+                .state('studio.app.componentsdeployment', {
                     url: '/componentsDeployment',
                     views: {
                         'app': {
@@ -1042,7 +1042,7 @@ angular.module('primeapps')
                     }
                 })
 
-				.state('studio.app.functionsdeployment', {
+                .state('studio.app.functionsdeployment', {
                     url: '/functionsDeployment',
                     views: {
                         'app': {
@@ -1068,7 +1068,7 @@ angular.module('primeapps')
                     }
                 })
 
-				.state('studio.app.appdeployment', {
+                .state('studio.app.appdeployment', {
                     url: '/passwordPolicies',
                     views: {
                         'app': {
@@ -1481,7 +1481,7 @@ angular.module('primeapps')
                     url: '/actionButtons?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/model/modules/actionButtons.html',
+                            templateUrl: cdnUrl + 'view/app/visualization/buttons/actionButtons.html',
                             controller: 'ActionButtonsController'
                         }
                     },
@@ -1496,8 +1496,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/model/modules/actionButtonsController.js',
-                                cdnUrl + 'view/app/model/modules/actionButtonsService.js',
+                                cdnUrl + 'view/app/visualization/buttons/actionButtonsController.js',
+                                cdnUrl + 'view/app/visualization/buttons/actionButtonsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
