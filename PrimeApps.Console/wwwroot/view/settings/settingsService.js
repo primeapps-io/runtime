@@ -11,6 +11,7 @@ angular.module('primeapps')
                         first_name: user.firstName,
                         last_name: user.lastName,
                         email: user.email,
+                        profile_picture : user.picture
                         // password: user.password,
                         //picture: user.picture,
                         // phone: user.phone

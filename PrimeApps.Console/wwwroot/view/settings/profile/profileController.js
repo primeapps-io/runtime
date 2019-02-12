@@ -43,7 +43,7 @@ angular.module('primeapps')
                 $scope.uploadImage = true;
                 $scope.croppedImage = '';
                 var reader = new FileReader();
-                $scope.userModel.logo = item.file.name;
+                $scope.userModel.picture = item.file.name;
 
                 reader.onload = function (event) {
                     $scope.$apply(function () {
@@ -116,31 +116,34 @@ angular.module('primeapps')
 
                 function editUser() {
                     $scope.userUpdating = true;
-                    if($scope.uploadImage)
+                    if ($scope.uploadImage)
                         uploader.queue[0].upload();
 
+                    uploader.onCompleteItem = function (fileItem, pictureUrl, status) {
+                        if (status === 200) {
+                            $scope.userModel.picture = pictureUrl;
+                            SettingService.editUser(userModel)
+                                .then(function () {
+                                    $scope.userModel.firstName = userModel.firstName;
+                                    $scope.userModel.lastName = userModel.lastName;
+                                    $scope.userModel.email = userModel.email;
+                                    $scope.userModel.picture = userModel.picture;
+                                    $scope.userUpdating = false;
+                                    $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
 
-                    SettingService.editUser(userModel)
-                        .then(function () {
-                            $scope.userModel.firstName = userModel.firstName;
-                            $scope.userModel.lastName = userModel.lastName;
-                            $scope.userModel.email = userModel.email;
-                            $scope.userUpdating = false;
-                            $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
+                                    if (!emailChanged) {
+                                        toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
+                                    }
+                                    else
+                                        toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
 
-                            if (!emailChanged) {
-                                toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
-                            }
-                            else
-                                toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
-
-                        })
-                        .catch(function () {
-                            $scope.userUpdating = false;
-                        });
+                                })
+                                .catch(function () {
+                                    $scope.userUpdating = false;
+                                });
+                        }
+                    };
                 }
             };
-
-
         }
     ]);

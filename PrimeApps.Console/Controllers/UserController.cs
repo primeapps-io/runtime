@@ -64,7 +64,8 @@ namespace PrimeApps.Console.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 FullName = user.GetFullName(),
-                Phone = user.Setting.Phone
+                Phone = user.Setting.Phone,
+                Picture = user.ProfilePicture
             };
 
             return Ok(me);
