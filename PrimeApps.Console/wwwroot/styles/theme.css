@@ -995,6 +995,7 @@ button:focus, select:focus {
 .primeapps .modal .megalist .section:last-child {
   border: none;
   margin-bottom: 0px;
+  min-height: calc(100vh - 135px);
 }
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;

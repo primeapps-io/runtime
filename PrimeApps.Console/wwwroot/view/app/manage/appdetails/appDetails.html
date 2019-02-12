@@ -9,16 +9,6 @@
         <div class="row">
             <div class="col-sm-3">
                 <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && !appModel.logo" class="file-uploader">
-                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
-                             style="float: right;">
-                            <div class="">
-                                <i class="fas fa-cloud-download-alt"></i>
-                                <span>Choose a file or drag it here</span>
-                            </div>
-                        </div>
-                    </div>
                     <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none;">
                         <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
                              over-class="uploader-over" nv-file-select class="uploader-area drop-zone"

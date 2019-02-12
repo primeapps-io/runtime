@@ -2,16 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Console.Models;
+using PrimeApps.Console.Storage;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -25,14 +29,16 @@ namespace PrimeApps.Console.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private ITeamRepository _teamRepository;
+        private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _teamRepository = teamRepository;
             _configuration = configuration;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -128,6 +134,51 @@ namespace PrimeApps.Console.Controllers
             await _platformUserRepository.UpdateAsync(platformUser);
 
             return Ok(platformUser);
+        }
+
+        [Route("upload_profile_picture/{id:int}"), HttpPost]
+        public async Task<IActionResult> UploadProfilePicture(int id)
+        {
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPathPictures("profilepicture", id);
+
+            if (parser.Success)
+            {
+                //if succesfully parsed, then continue to thread.
+                if (parser.FileContents.Length <= 0)
+                {
+                    //if file is invalid, then stop thread and return bad request status code.
+                    return BadRequest();
+                }
+
+                var uniqueName = string.Empty;
+                //get the file name from parser
+                if (parser.Parameters.ContainsKey("name"))
+                {
+                    uniqueName = parser.Parameters["name"];
+                }
+
+                if (string.IsNullOrEmpty(uniqueName))
+                {
+                    var ext = Path.GetExtension(parser.Filename);
+                    uniqueName = Guid.NewGuid() + ext;
+                }
+
+                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, fileName, stream);
+                }
+
+                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+
+                //return content type.
+                return Ok(logo);
+            }
+
+            //this is not a valid request so return fail.
+            return Ok("Fail");
         }
     }
 }

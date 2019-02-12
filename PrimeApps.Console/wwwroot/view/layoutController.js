@@ -176,8 +176,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             });
 
         };
-        
-        $scope.closeNewOrganizationModal =function(){
+
+        $scope.closeNewOrganizationModal = function () {
             $scope.organization = {};
             $scope.organizationShortnameValid = null;
             $scope.isOrganizationShortnameBlur = false;
@@ -253,7 +253,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     getMyOrganizations();
                     $scope.changeOrganization(copyOrganization);
                     $scope.menuOpen[response.data] = true;
-                    toastr.success('Organization ' + $scope.organization.label + ' successfully created.');   
+                    toastr.success('Organization ' + $scope.organization.label + ' successfully created.');
                     $scope.organizationSaving = false;
                     $scope.organizationFormModal.hide();
                     $scope.organizations.push(copyOrganization);
@@ -261,11 +261,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.apps', { orgId: response.data });
+                    $state.go('studio.apps', {orgId: response.data});
 
                 })
                 .catch(function () {
-                    toastr.error('Organization ' + $scope.organization.label + ' not created.');   
+                    toastr.error('Organization ' + $scope.organization.label + ' not created.');
                     $scope.organizationSaving = false;
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
@@ -287,7 +287,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.organizationSave = function (newOrganizationForm) {
             if (!newOrganizationForm.$valid)
                 return false;
-        }
+        };
+
+
     }
 
 ]);

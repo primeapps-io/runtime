@@ -289,7 +289,6 @@ angular.module('primeapps')
                                         }
                                     }
 
-
                                     //custom menü
                                     $rootScope.customMenu = false;
                                     var menu = response[10].data;
@@ -361,6 +360,11 @@ angular.module('primeapps')
                                         }
                                     }
 
+                                    //if activities module not exist, calendar and task modules hided
+                                    $rootScope.isActivityModuleExist = false;
+                                    if ($filter('filter')($rootScope.modules, { name: 'activities' }, true).length > 0) {
+                                        $rootScope.isActivityModuleExist = true;
+                                    }
 
                                     //holidays
                                     var holidaysModule = $filter('filter')($rootScope.modules, { name: 'holidays' }, true)[0];

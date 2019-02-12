@@ -8,7 +8,7 @@
                 </li>
             </ul>
             <ul>
-                <li style="margin-left:  10px" ng-if="currentAppId">
+                <li style="margin-left:  10px" ng-show="!appLoading && currentAppId && appModules.length > 0">
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
                             ng-click="preview()"
