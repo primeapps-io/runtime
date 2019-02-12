@@ -1,5 +1,8 @@
 ﻿<div class="setup-title">
     <h2>App Details</h2>
+    <button type="submit" ng-click="save();" class="btn btn-radius btn-blue" style="" ladda="saving">
+        <i class="fas fa-sync margin-right-10"></i>Update
+    </button>
 </div>
 <div class="tab-content" style="padding: 50px">
     <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
@@ -31,8 +34,13 @@
                     <label>Logo</label>
                     <label>512 px and 1 MB</label>
                 </div>
-                <div style="text-align: center;padding-top: 10px;">
-                    <input type="file" nv-file-select="" uploader="uploader" ng-disabled="croppedImage"></div>
+                <div class="text-center">
+                    <label class="newinput">
+                        <input type="file" nv-file-select="" uploader="uploader" ng-disabled="croppedImage">
+                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                    </label>
+                </div>
+                    
             </div>
             <div class="col-sm-9" style="border-left:solid 2px #dfdfdf ">
                 <div class="form-group">
@@ -69,11 +77,6 @@
                            required
                            maxlength="50"
                            ng-model="appModel.description">
-                </div>
-                <div class="col-sm-3">
-                    <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" style="" ladda="saving">
-                        <i class="fas fa-sync margin-right-10"></i>Update
-                    </button>
                 </div>
             </div>
         </div>

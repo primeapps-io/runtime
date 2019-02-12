@@ -13,37 +13,27 @@
 
         <div class="modal-dialog scroll-style-4">
             <div class="modal-content padding-0">
-                <div class="modal-contanier">
+                <div class="modal-container">
                     <div class="modal-body">
                         <div id="field-form-body" class="modal-body">
                             <div class="panel">
-
-                                <div class="col-sm-7">
-                                    <div class="module-select clearfix" style="margin-top: 50px">
-                                        <select name="selectedModuleExcel"
-                                                class="ng-animate-disabled col-sm-6 form-control"
-                                                ng-model="selectedModuleExcel"
-                                                ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in appModules | filter:{name:'!users'} | orderBy:'order'">
-                                            <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div ng-show="selectedModuleExcel">
-                                        <span class="pull-left" style="margin-left: 5px;margin-top: 6px;">{{'Module.DownloadExcelTemplate' | translate }} :</span>
-                                        <div class="template-button pull-left" style="margin-left: 5px;" ng-click="getDownloadUrl(selectedModuleExcel)">
+                                <h4>{{'Setup.Templates.TemplateGuide1' | translate}}</h4>
+                                <p>{{'Module.DownloadExcelButton' | translate }}</p>
+                                <div class="module-select clearfix form-group">
+                                    <select name="selectedModuleExcel"
+                                            class="ng-animate-disabled col-sm-6 form-control"
+                                            ng-model="selectedModuleExcel"
+                                            ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in appModules | filter:{name:'!users'} | orderBy:'order'">
+                                        <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div ng-show="selectedModuleExcel">
+                                            <button class="btn btn-blue btn-radius" ng-click="getDownloadUrl(selectedModuleExcel)" type="button"><i class="fas fa-download"></i> {{'Module.DownloadExcelTemplate' | translate }}</button>
+                                            
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="col-sm-5">
-                                    <ul class="instructions-list" style="margin-top: 50px">
-                                        <li>{{'Setup.Templates.TemplateGuide1' | translate}}</li>
-                                        <li>
-                                            {{'Module.DownloadExcelButton' | translate }}
-                                        </li>
-                                        <!--<li>-->
-                                            <!--<span ng-bind-html="'Module.OtherReport' | translate" />-->
-                                        <!--</li>-->
-                                    </ul>
                                 </div>
                             </div>
                         </div>

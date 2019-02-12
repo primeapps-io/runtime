@@ -26,7 +26,7 @@
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
                                     <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select class="form-control pull-left"
-                                            ng-change="setContent()"
+                                            ng-change="changeModule();"
                                             ng-required="true"
                                             name="module"
                                             ng-model="newtemplate.moduleName"
@@ -92,7 +92,7 @@
                                             <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
                                                 class="list-group-item clearfix"
                                                 ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                {{tag.label}}
+                                                {{tag.name}}
                                             </li>
                                         </ul>
                                     </script>
