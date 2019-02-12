@@ -110,7 +110,7 @@
                                     <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
                                     <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
                                 </a>
-                                <a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
+                                <a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-show="item.display" ng-hide="(item.route == 'calendar' && !isActivityModuleExist) || (item.route == 'tasks' && !isActivityModuleExist)" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
                                     <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
                                     <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
                                 </a>
@@ -233,14 +233,14 @@
                         <span class="sidebar-menu-label">{{'Layout.Menu.Analytics' | translate}}</span>
                     </a>
                 </li>
-                <li ng-if="user.profile.tasks">
+                <li ng-if="user.profile.tasks && isActivityModuleExist">
                     <a href="#/app/tasks" ng-click="routingPrism('#/app/tasks')" class="text-uppercase"
                        ng-class="{'active': currentPath === '/app/tasks'}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Tasks' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-check-square-o"></i></div>
                         <span class="sidebar-menu-label">{{tasksNamePlural ? tasksNamePlural.value : ('Layout.Menu.Tasks' | translate)}}</span>
                     </a>
                 </li>
-                <li ng-if="user.profile.calendar">
+                <li ng-if="user.profile.calendar && isActivityModuleExist">
                     <a href="#/app/calendar" ng-click="routingPrism('#/app/calendar')"
                        ng-class="{'active': currentPath === '/app/calendar'}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Calendar' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-calendar"></i></div>
