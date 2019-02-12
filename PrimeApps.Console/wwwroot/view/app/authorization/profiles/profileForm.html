@@ -32,7 +32,7 @@
                             </div>
                             <div class="form-group" ng-class="{'has-error': profileForm.$submitted && profileForm.description.$invalid}">
                                 <label class="col-sm-12 control-label">{{'Setup.Profiles.ProfileDescription' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
-                                <textarea rows="2" name="description" ng-required="true" class="form-control col-sm-8" maxlength="255" auto-grow ng-model="profile.description" ng-disabled="profile.is_persistent"></textarea>
+                                <textarea rows="2" name="description" ng-required="true" ng-change="descriptionChange()" style="{{requiredColor}}" class="form-control col-sm-8" maxlength="255" auto-grow ng-model="profile.description" ng-disabled="profile.is_persistent"></textarea>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-12 control-label">{{'Setup.Profiles.Permissions' | translate}} :</label>

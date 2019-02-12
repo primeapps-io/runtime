@@ -28,6 +28,21 @@
   border-radius: 5px;
 }
 
+.scroll-style-6::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+.scroll-style-6::-webkit-scrollbar {
+  width: 5px;
+  background-color: #F5F5F5;
+}
+.scroll-style-6::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 0px solid #555555;
+  border-radius: 5px;
+}
+
 .wrt:before,
 .wrt:after {
   content: " ";
@@ -255,6 +270,16 @@
 .newinput input[type=checkbox]:disabled ~ span {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.newinput input[type=file] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.newinput input[type=file] ~ span {
+  position: relative;
 }
 .newinput input[disabled=disabled] {
   cursor: not-allowed;
@@ -1349,13 +1374,19 @@ button:focus, select:focus {
   border-radius: 2px;
   background-color: rgba(0, 0, 0, 0.05);
   border: none;
-  padding-left: 10px;
+  padding: 10px;
+  line-height: 20px;
   font-weight: 400;
-  height: 40px !important;
-  max-width: none !important;
+  height: 40px;
+  max-width: 100% !important;
 }
 .primeapps .form-group .form-control[disabled] {
   opacity: 0.5;
+}
+.primeapps .form-group textarea.form-control {
+  line-height: 25px;
+  max-height: 180px;
+  min-height: 60px;
 }
 .primeapps .form-group.form-group-filtre {
   margin-bottom: 0px !important;
@@ -1694,6 +1725,7 @@ button:focus, select:focus {
   width: 100%;
   border: 2px dashed #c2c2c2;
   padding: 20px;
+  border-radius: 5px;
 }
 .primeapps .file-uploader .uploader-over {
   border: 2px dashed #000 !important;
@@ -2107,6 +2139,9 @@ button:focus, select:focus {
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-text, .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .costume-bage {
   display: none;
 }
+.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-info {
+  justify-content: center;
+}
 .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
   justify-content: center;
   text-align: center;
@@ -2174,6 +2209,10 @@ button:focus, select:focus {
   font-weight: bold;
   font-size: 12px;
   border-radius: 100px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
 }
 .primeapps .btn i {
   padding: 0px 5px;

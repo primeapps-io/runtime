@@ -2,15 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
-        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
+    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies', 'ModuleService',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies, ModuleService) {
 
             $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
             //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
-
             $rootScope.breadcrumblist[2].title = 'Email Templates';
+            $scope.moduleDisabled = false;
 
             $scope.loading = true;
             $scope.newtemplate = {};
@@ -18,6 +18,42 @@ angular.module('primeapps')
             $scope.newtemplate.sharing_type = 'me';
             var uploadSuccessCallback,
                 uploadFailedCallback;
+
+            $scope.getTagTextRaw = function (item) {
+                if (item.name.indexOf("seperator") >= 0) {
+
+                } else {
+                    return '<i style="color:#0f1015;font-style:normal">' + '{' + item.name + '}' + '</i>';
+                }
+            };
+
+            $scope.changeModule = function () {
+
+                var moduleName = $scope.newtemplate.moduleName.name;
+                ModuleService.getModuleByName(moduleName).then(function (response) {
+                    $scope.module = response.data;
+                    $scope.moduleFields = EmailTemplatesService.getFields($scope.module);
+
+                    $scope.searchTags = function (term) {
+                        var tagsList = [];
+                        angular.forEach($scope.moduleFields, function (item) {
+                            if (item.name == "seperator")
+                                return;
+
+                            if (item.name.match('seperator'))
+                                item.name = item.label;
+
+                            if (item.name && item.name.indexOf(term) >= 0) {
+                                tagsList.push(item);
+                            }
+                        });
+
+                        $scope.tags = tagsList;
+                        return tagsList;
+                    };
+                });
+            };
+
 
             var dialog_uid = plupload.guid();
             /// set default email field if available.
@@ -230,6 +266,11 @@ angular.module('primeapps')
             $scope.tinymceOptions('tinymceTemplate');
             $scope.tinymceOptions('tinymceTemplateEdit');
 
+            $scope.addCustomField = function ($event, customField) {
+                /// adds custom fields to the html template.
+                tinymce.activeEditor.execCommand('mceInsertContent', false, "{" + customField.name + "}");
+            };
+
             $scope.addressType = function (type) {
                 return $filter('translate')("EMail." + type);
             };
@@ -376,21 +417,23 @@ angular.module('primeapps')
                 if (template) {
                     $scope.setTemplate(template);
                     $scope.currentTemplate = template;
+                    $scope.moduleDisabled = true;
                 }
                 else {
                     $scope.newtemplate = {};
                     $scope.newtemplate.system_type = 'custom';
                     $scope.newtemplate.sharing_type = 'me';
                     $scope.currentTemplate = null;
+                    $scope.moduleDisabled = false;
                 }
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/templates/emailtemplates/emailTemplatesForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/templates/emailtemplates/emailTemplatesForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewEmailTemplateFormModal.$promise.then(function () {
                     $scope.addNewEmailTemplateFormModal.show();
