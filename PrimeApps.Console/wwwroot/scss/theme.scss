@@ -1250,6 +1250,7 @@ button, select {
         &:last-child {
           border: none;
           margin-bottom: 0px;
+          min-height: calc(100vh - 135px);
         }
       }
     }

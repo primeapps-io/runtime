@@ -29,9 +29,9 @@
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <li><a>Properties </a></li>
-                                <li><a>Validation </a></li>
-            
+                                <li><a class="active" href="#properties">Properties </a></li>
+                                <li><a href="#validation">Validation </a></li>
+                                <li><a href="#permissions">Permissions </a></li>
                             </ul>
                         </div>
                         <div>
@@ -559,8 +559,8 @@
                                     </div>
                                     <div class="form-group"
                                          ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-                                        <label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">Şifreli
-                                            Alan
+                                        <label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">
+                                            Şifreli Alan
                                             <input type="checkbox" ng-model="currentField.encrypted"
                                                    ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
                                             <span></span>
@@ -768,8 +768,7 @@
 
                                 </div>
                             </div>
-
-                            <div class="section">
+                            <div class="section" id="permissions">
                                 <h4> Permissions</h4>
                                 <div class="panel table-responsive">
                                     <table class="table">
