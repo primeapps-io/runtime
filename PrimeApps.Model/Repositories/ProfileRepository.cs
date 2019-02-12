@@ -439,6 +439,7 @@ namespace PrimeApps.Model.Repositories
         private async Task<List<ProfileWithUsersDTO>> GetPaginationQuery(PaginationModel paginationModel)
         {
             return await DbContext.Profiles
+                               .Where(x => !x.Deleted)
                                .Select(x => new ProfileWithUsersDTO()
                                {
                                    ID = x.Id,

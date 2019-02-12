@@ -232,7 +232,7 @@ angular.module('primeapps')
 
                 }
                 else {
-                    AppEmailTemplatesService.create(template).then(function () {
+                    AppEmailTemplatesService.create(template, $scope.currentApp.name).then(function () {
                         $scope.saving = false;
                         $scope.addNewEmailTemplateFormModal.hide();
                         $scope.changePage(1);

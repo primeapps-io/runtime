@@ -463,7 +463,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesController.js',
-                                cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesService.js'
+                                cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesService.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
                     }
