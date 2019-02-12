@@ -595,8 +595,9 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/automation/workflows/workflowEditorController.js',
                                 cdnUrl + 'view/app/automation/workflows/workflowsService.js',
+                                cdnUrl + 'scripts/vendor/bpm/icons.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMN.js',
-                                cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'
+                                cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'                                
                             ]);
                         }]
                     }

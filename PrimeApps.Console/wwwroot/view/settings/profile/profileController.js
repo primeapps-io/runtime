@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ProfileController', ['$rootScope', '$scope', 'SettingService', '$filter', '$modal','AuthService','blockUI',
-        function ($rootScope, $scope, SettingService, $filter, $modal,AuthService,blockUI) {
+    .controller('ProfileController', ['$rootScope', '$scope', 'SettingService', '$filter', '$modal', 'AuthService', 'blockUI', 'FileUploader',
+        function ($rootScope, $scope, SettingService, $filter, $modal, AuthService, blockUI, FileUploader) {
 
             //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
@@ -17,6 +17,63 @@ angular.module('primeapps')
             $scope.userModel.email = user.email; //$rootScope.user.email;
             $scope.selectedLanguage = angular.copy($scope.language);
             // $scope.selectedLocale = angular.copy($rootScope.locale);
+
+            var uploader = $scope.uploader = new FileUploader({
+                    url: 'api/user/upload_profile_picture/' + $rootScope.me.id,
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json'
+                    },
+                    queueLimit: 1
+                })
+            ;
+
+            uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'imageFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.ImageError'));
+                        break;
+                    case 'sizeFilter':
+                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
+                        break;
+                }
+            };
+
+            uploader.onAfterAddingFile = function (item) {
+                $scope.uploadImage = true;
+                $scope.croppedImage = '';
+                var reader = new FileReader();
+                $scope.userModel.logo = item.file.name;
+
+                reader.onload = function (event) {
+                    $scope.$apply(function () {
+                        item.image = event.target.result;
+                    });
+                };
+                reader.readAsDataURL(item._file);
+            };
+
+            uploader.filters.push({
+                name: 'imageFilter',
+                fn: function (item, options) {
+                    var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                    return '|jpg|png|jpeg|bmp|'.indexOf(type) > -1;
+                }
+            });
+
+            uploader.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 5242880;//5 mb
+                }
+            });
+
+            $scope.logoRemove = function () {
+                if (uploader.queue[0]) {
+                    //uploader.queue[0].image = null;
+                    uploader.queue[0].remove();
+                }
+            };
 
             /// email configuration
             // $scope.emailModel = angular.copy($rootScope.system.messaging.PersonalEMail);
@@ -50,7 +107,7 @@ angular.module('primeapps')
                                 }
 
                                 editUser();
-                            })
+                            });
                     }
                     else {
                         editUser();
@@ -59,6 +116,9 @@ angular.module('primeapps')
 
                 function editUser() {
                     $scope.userUpdating = true;
+                    if($scope.uploadImage)
+                        uploader.queue[0].upload();
+
 
                     SettingService.editUser(userModel)
                         .then(function () {
