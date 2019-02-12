@@ -1,12 +1,12 @@
 .scroll-style-4{
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
     background-color: #F5F5F5;
   }
 
   &::-webkit-scrollbar {
-    width: 7px;
+    width: 5px;
     background-color: #F5F5F5;
   }
 
@@ -18,18 +18,37 @@
 }
 .scroll-style-5{
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
     background-color: #25282B;
   }
 
   &::-webkit-scrollbar {
-    width: 7px;
+    width: 5px;
     background-color: #25282B;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #0D6FAA;
+    border: 0px solid #555555;
+    border-radius: 5px;
+  }
+}
+
+.scroll-style-6{
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.25);
     border: 0px solid #555555;
     border-radius: 5px;
   }
@@ -284,6 +303,17 @@ $primeapps-color: #0D6FAA;
       }
 
     }
+  }
+  input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    ~ span {
+      position: relative;
+    }
+    
   }
   input[disabled="disabled"] {
     cursor: not-allowed;
@@ -988,9 +1018,11 @@ button, select {
     background: #FFF;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   }
-
+  .table-responsive{
+    border-color: transparent !important;
+  }
   .table {
-    border: none;
+    border-color: transparent;
 
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     background: transparent;
@@ -1218,6 +1250,7 @@ button, select {
         &:last-child {
           border: none;
           margin-bottom: 0px;
+          min-height: calc(100vh - 135px);
         }
       }
     }
@@ -1255,13 +1288,13 @@ button, select {
       overflow-x: hidden;
 
       &::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.10);
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
         border-radius: 10px;
         background-color: #F5F5F5;
       }
 
       &::-webkit-scrollbar {
-        width: 7px;
+        width: 5px;
         background-color: #F5F5F5;
       }
 
@@ -1680,17 +1713,25 @@ button, select {
       margin: 0px;
       font-weight: bold !important;
     }
-
+    
     .form-control {
       border-radius: 2px;
       background-color: rgba(0, 0, 0, 0.05);
       border: none;
-      padding-left: 10px;
+      padding: 10px;
+      line-height: 20px;
       font-weight: 400;
-      height: 40px !important;
-      max-width: none !important;
+      height: 40px;
+      max-width: 100% !important;
       &[disabled] {
         opacity: 0.5;
+      }
+    }
+    textarea{
+      &.form-control {
+        line-height: 25px;
+        max-height: 180px;
+        min-height: 60px;
       }
     }
     &.form-group-filtre {
@@ -2140,6 +2181,7 @@ button, select {
       width: 100%;
       border: 2px dashed #c2c2c2;
       padding: 20px;
+      border-radius: 5px;
     }
 
     .uploader-over {
@@ -2667,6 +2709,9 @@ button, select {
             .user-text, .costume-bage {
               display: none;
             }
+            .user-info{
+              justify-content: center;
+            }
 
             a {
               justify-content: center;
@@ -2759,7 +2804,7 @@ button, select {
     font-weight: bold;
     font-size: 12px;
     border-radius: 100px;
-
+    @include hoverEffect;
     i {
       padding: 0px 5px;
     }

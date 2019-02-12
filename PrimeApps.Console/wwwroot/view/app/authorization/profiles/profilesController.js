@@ -186,9 +186,18 @@ angular.module('primeapps')
                 return isValid;
             }
 
+            $scope.descriptionChange = function () {
+                if ($scope.profile.description)
+                    $scope.requiredColor = "";
+                else
+                    $scope.requiredColor = 'background-color:#f8dada';
+            };
+
             $scope.submit = function (profileForm) {
-                if (!profileForm.$valid)
+                if (!profileForm.$valid) {
+                    $scope.requiredColor = 'background-color:#f8dada';
                     return;
+                }
 
                 // if ($scope.profileForm.$valid) {
                 $scope.profileSubmit = true;
@@ -257,6 +266,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (profile, isCopy) {
+                $scope.requiredColor = "";
                 if (isCopy == true)
                     cloneProfile(profile);
                 else if (isCopy == false)

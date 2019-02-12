@@ -35,6 +35,7 @@ angular.module('primeapps')
             };
 
             uploader.onAfterAddingFile = function (item) {
+                $scope.uploadImage = true;
                 $scope.croppedImage = '';
                 var reader = new FileReader();
                 $scope.appModel.logo = item.file.name;
@@ -123,24 +124,36 @@ angular.module('primeapps')
             });
 
             $scope.save = function () {
-                var header = {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
-                    'Accept': 'application/json',
-                    'X-Organization-Id': $rootScope.currentOrgId,
-                    'X-App-Id': $scope.appId
-                };
-                uploader.queue[0].uploader.headers = header;
-                uploader.queue[0].headers = header;
-                uploader.queue[0].upload();
-                uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                    if (status === 200) {
-                        $scope.appModel.logo = logoUrl;
-                        AppDetailsService.update($scope.appId, $scope.appModel)
-                            .then(function (response) {
-                                toastr.success($filter('translate')('Güncelleme Başarılı'));
-                            });
-                    }
-                };
+                $scope.saving = true;
+                if ($scope.uploadImage) {
+                    var header = {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId,
+                        'X-App-Id': $scope.appId
+                    };
+                    uploader.queue[0].uploader.headers = header;
+                    uploader.queue[0].headers = header;
+                    uploader.queue[0].upload();
+
+                    uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                        if (status === 200) {
+                            $scope.appModel.logo = logoUrl;
+                            AppDetailsService.update($scope.appId, $scope.appModel)
+                                .then(function (response) {
+                                    toastr.success($filter('translate')('Güncelleme Başarılı'));
+                                    $scope.saving = false;
+                                });
+                        }
+                    };
+                }
+                else {
+                    AppDetailsService.update($scope.appId, $scope.appModel)
+                        .then(function (response) {
+                            toastr.success($filter('translate')('Güncelleme Başarılı'));
+                            $scope.saving = false;
+                        });
+                }
             };
         }
     ]);
