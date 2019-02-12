@@ -71,7 +71,7 @@
             <li ng-class="activeMenuItem ==='advancedworkflows' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedworkflows" data-trigger="hover" data-type="info"
                    data-title="Advanced Workflows" bs-tooltip data-placement="right">
-                    <i class="fas fa-share-alt"></i>
+                    <i class="fas fa-project-diagram"></i>
                     <span>Advanced Workflows</span>
                 </a>
             </li>
@@ -210,7 +210,7 @@
             <span>Help &amp; Guides</span>
         </a>
     </li>
-    <li  ng-class="subMenuOpen =='deployments' ? 'active sub-open':''" ng-click="openSubMenu('deployments')"
+    <li ng-class="subMenuOpen =='deployments' ? 'active sub-open':''" ng-click="openSubMenu('deployments')"
         ng-class="activeMenuItem ==='deployments' ?  'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/componentsDeployment" data-trigger="hover" data-type="info"
            data-title="Deployments" bs-tooltip data-placement="right">
@@ -283,49 +283,13 @@
                     <span>Notifications</span>
                 </a>
             </li>
-            <li ng-class="subMenuOpen =='security' ? 'active sub-open':''" ng-click="openSubMenu('security')">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/security/certificates" data-trigger="hover" data-type="info"
+            <li ng-class="subMenuOpen =='security' ? 'active':''" >
+                <!--ng-click="openSubMenu('security')"-->
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/certificates" data-trigger="hover" data-type="info"
                    data-title="Security" bs-tooltip data-placement="right">
                     <i class="fas fa-shield-alt"></i>
                     <span>Security</span>
                 </a>
-                <ul>
-                    <li ng-class="activeMenuItem ==='certificates' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/certificates" data-trigger="hover" data-type="info"
-                           data-title="Certificates" bs-tooltip data-placement="right">
-                            <i class="fas fa-certificate"></i>
-                            <span>Certificates</span>
-                        </a>
-                    </li>
-                    <li ng-class="activeMenuItem ==='passwordPolicies' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/passwordPolicies" data-trigger="hover" data-type="info"
-                           data-title="Password Policies" bs-tooltip data-placement="right">
-                            <i class="fas fa-key"></i>
-                            <span>Password Policies</span>
-                        </a>
-                    </li>
-                    <li ng-class="activeMenuItem ==='networkAccess' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/networkAccess" data-trigger="hover" data-type="info"
-                           data-title="Network Access" bs-tooltip data-placement="right">
-                            <i class="fas fa-project-diagram"></i>
-                            <span>Network Access</span>
-                        </a>
-                    </li>
-                    <li ng-class="activeMenuItem ==='cors' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/cors" data-trigger="hover" data-type="info" data-title="Cors"
-                           bs-tooltip data-placement="right">
-                            <i class="fas fa-sliders-h"></i>
-                            <span>Cors</span>
-                        </a>
-                    </li>
-                    <li ng-class="activeMenuItem ==='auditTrail' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/auditTrail" data-trigger="hover" data-type="info"
-                           data-title="Audit Trail" bs-tooltip data-placement="right">
-                            <i class="fas fa-sliders-h"></i>
-                            <span>Audit Trail</span>
-                        </a>
-                    </li>
-                </ul>
             </li>
             <li ng-class="subMenuOpen =='identity' ? 'active sub-open':''" ng-click="openSubMenu('identity')">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/authentication" data-trigger="hover" data-type="info"
@@ -333,31 +297,6 @@
                     <i class="fas fa-key"></i>
                     <span>Identity</span>
                 </a>
-                <ul>
-                    <li ng-class="activeMenuItem ==='authentication' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/authentication" data-trigger="hover" data-type="info"
-                           data-title="Authentication" bs-tooltip data-placement="right">
-                            <i class="fas fa-check"></i>
-                            <span>Authentication</span>
-                        </a>
-                    </li>
-
-                    <li ng-class="activeMenuItem ==='identity' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/identity" data-trigger="hover" data-type="info"
-                           data-title="Identity Provider" bs-tooltip data-placement="right">
-                            <i class="fas fa-id-card"></i>
-                            <span>Identity Provider</span>
-                        </a>
-                    </li>
-
-                    <li ng-class="activeMenuItem ==='singleSingOn' ? 'active' :''">
-                        <a href="/#/org/{{ orgId}}/app/{{ appId}}/singleSingOn" data-trigger="hover" data-type="info"
-                           data-title="Single Sign-On" bs-tooltip data-placement="right">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Single Sign-On</span>
-                        </a>
-                    </li>
-                </ul>
             </li>
             <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
