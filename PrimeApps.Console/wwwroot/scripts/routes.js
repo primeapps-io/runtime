@@ -1009,8 +1009,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/deployments/deployment/deploymentController.js',
-                                cdnUrl + 'view/app/deployments/deployment/deploymentService.js'
+                                /*cdnUrl + 'view/app/deployments/deployment/deploymentController.js',
+                                cdnUrl + 'view/app/deployments/deployment/deploymentService.js'*/
                             ]);
                         }]
                     }

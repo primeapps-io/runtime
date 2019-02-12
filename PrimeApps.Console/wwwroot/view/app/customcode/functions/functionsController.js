@@ -136,7 +136,11 @@ angular.module('primeapps')
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         toastr.success("Function is created successfully.");
-                        $state.go('studio.app.functionDetail', {id: response.data});
+                        $state.go('studio.app.functionDetail', {name: $scope.function.name});
+                    })
+                    .catch(function (response) {
+                        $scope.saving = false;
+                        toastr.error("Function isn't created successfully. Message: " + response.data.message);
                     })
             };
 

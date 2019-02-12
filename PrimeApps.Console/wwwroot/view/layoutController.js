@@ -255,8 +255,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.menuOpen[response.data] = true;
                     toastr.success('Organization ' + $scope.organization.label + ' successfully created.');   
                     $scope.organizationSaving = false;
-                    $scope.organization = {};
                     $scope.organizationFormModal.hide();
+                    $scope.organizations.push(copyOrganization);
+                    $scope.organization = {};
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 

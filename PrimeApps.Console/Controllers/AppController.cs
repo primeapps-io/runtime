@@ -25,7 +25,6 @@ namespace PrimeApps.Console.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
-        private IAppProfileRepository _appProfileRepository;
         private IGiteaHelper _giteaHelper;
 
         public AppController(IConfiguration configuration,
@@ -34,7 +33,6 @@ namespace PrimeApps.Console.Controllers
             IAppDraftRepository appDraftRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
-            IAppProfileRepository appProfileRepository,
             IGiteaHelper giteaHelper)
         {
             Queue = queue;
@@ -43,7 +41,6 @@ namespace PrimeApps.Console.Controllers
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _permissionHelper = permissionHelper;
-            _appProfileRepository = appProfileRepository;
             _giteaHelper = giteaHelper;
         }
 
@@ -53,7 +50,6 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
-            SetCurrentUser(_appProfileRepository);
 
             base.OnActionExecuting(context);
         }
@@ -89,7 +85,7 @@ namespace PrimeApps.Console.Controllers
                 Logo = model.Logo,
                 OrganizationId = OrganizationId,
                 TempletId = model.TempletId,
-                Status = AppDraftStatus.Draft,
+                Status = PublishStatus.Draft,
             };
 
             var result = await _appDraftRepository.Create(app);
@@ -97,28 +93,7 @@ namespace PrimeApps.Console.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an app");
 
-            //TODO: Create all default app profiles in a helper class. Now creating only admin profile
-            var appProfile = new AppProfile
-            {
-                AppId = app.Id,
-                Name = "Admin",
-                Description = "Admin",
-                SystemCode = "admin",
-                Order = 1,
-                Permissions = new List<AppProfilePermission>()
-            };
-
-            foreach (var platformFeature in (PlatformFeature[])Enum.GetValues(typeof(PlatformFeature)))
-            {
-                appProfile.Permissions.Add(new AppProfilePermission {Feature = platformFeature, Read = true, Write = true, Modify = true, Remove = true});
-            }
-
-            var resultAppProfile = await _appProfileRepository.Create(appProfile);
-
-            if (resultAppProfile < 0)
-                return BadRequest("An error occurred while creating an app");
-
-            app.Collaborators = new List<AppCollaborator> {new AppCollaborator {UserId = AppUser.Id, ProfileId = appProfile.Id}};
+            app.Collaborators = new List<AppCollaborator> { new AppCollaborator { UserId = AppUser.Id, Profile = ProfileEnum.Manager } };
 
             var resultUpdate = await _appDraftRepository.Update(app);
 
@@ -171,7 +146,7 @@ namespace PrimeApps.Console.Controllers
         {
             var search = "";
             var page = 0;
-            var status = AppDraftStatus.NotSet;
+            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -182,7 +157,7 @@ namespace PrimeApps.Console.Controllers
                     page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (AppDraftStatus)int.Parse(request["status"].ToString());
+                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
 

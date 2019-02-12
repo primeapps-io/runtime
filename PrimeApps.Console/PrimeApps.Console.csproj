@@ -32,6 +32,7 @@
     <Folder Include="wwwroot\view\app\customcode\scripts\" />
     <Folder Include="wwwroot\view\app\deployments\app\" />
     <Folder Include="wwwroot\view\app\deployments\scripts\" />
+      <Folder Include="wwwroot\view\app\deployment\components" />
     <Folder Include="wwwroot\view\app\manage\tenants\" />
   </ItemGroup>
 </Project>

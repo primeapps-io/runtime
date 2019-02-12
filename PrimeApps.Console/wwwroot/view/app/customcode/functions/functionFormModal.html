@@ -32,7 +32,7 @@
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
-                                    <label class="col-sm-4 required-field">* Name: </label>
+                                    <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-6 text-lowercase"
@@ -56,11 +56,21 @@
                                            class="fas fa-times"></i>
                                     </div>
                                 </div>
-
+                                <div class="form-group"
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.label.$invalid}">
+                                    <label class="col-sm-4 required-field">Label <span class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                           required
+                                           maxlength="100"
+                                           ng-model="function.label"/>
+                                </div>
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
-                                    <label class="col-sm-4 required-field">* Handler: </label>
+                                    <label class="col-sm-4 required-field">Handler <span class="required-label">(required)</span></label>
                                     <input type="text"
                                            name="handler"
                                            class="form-control ng-animate-disabled col-sm-6 text-lowercase"
@@ -72,7 +82,7 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
-                                    <label class="col-sm-4 required-field">* Runtime: </label>
+                                    <label class="col-sm-4 required-field">Runtime <span class="required-label">(required)</span></label>
                                     <select
                                             name="runtime"
                                             class="form-control ng-animate-disabled col-sm-8"

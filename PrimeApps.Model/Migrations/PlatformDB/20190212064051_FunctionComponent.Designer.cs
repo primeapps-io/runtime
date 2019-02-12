@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    partial class PlatformDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190212064051_FunctionComponent")]
+    partial class FunctionComponent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -398,10 +400,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnName("last_name");
-
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
-                        .HasColumnName("profile_picture");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");

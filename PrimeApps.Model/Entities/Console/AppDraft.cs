@@ -31,16 +31,16 @@ namespace PrimeApps.Model.Entities.Console
         public bool UseTenantSettings { get; set; }
 
         [Column("status")]
-        public AppDraftStatus Status { get; set; }
+        public PublishStatus Status { get; set; }
         
         public virtual Templet Templet { get; set; }
         
         public virtual AppDraftSetting Setting { get; set; }
-        
+
         public virtual Organization Organization { get; set; }
         
         public virtual ICollection<AppCollaborator> Collaborators { get; set; }
 
-        public virtual ICollection<AppProfile> Profiles { get; set; }
+        public virtual ICollection<Deployment> Deployments { get; set; }
     }
 }

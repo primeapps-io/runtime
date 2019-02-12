@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    [Migration("20190211084913_Task2886")]
+    [Migration("20190212063715_Task2886")]
     partial class Task2886
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1088,9 +1088,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<DateTime>("EndTime")
                         .HasColumnName("end_time");
 
-                    b.Property<int>("PublishStatus")
-                        .HasColumnName("publish_status");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");
 
@@ -1114,8 +1111,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("EndTime");
-
-                    b.HasIndex("PublishStatus");
 
                     b.HasIndex("StartTime");
 
@@ -1147,9 +1142,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("FunctionId")
                         .HasColumnName("function_id");
 
-                    b.Property<int>("PublishStatus")
-                        .HasColumnName("publish_status");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");
 
@@ -1173,8 +1165,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("EndTime");
 
                     b.HasIndex("FunctionId");
-
-                    b.HasIndex("PublishStatus");
 
                     b.HasIndex("StartTime");
 

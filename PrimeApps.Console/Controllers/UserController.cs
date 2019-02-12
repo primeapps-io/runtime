@@ -69,7 +69,7 @@ namespace PrimeApps.Console.Controllers
         {
             var search = "";
             var page = 0;
-            var status = AppDraftStatus.NotSet;
+            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -80,7 +80,7 @@ namespace PrimeApps.Console.Controllers
                     page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (AppDraftStatus)int.Parse(request["status"].ToString());
+                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
             var apps = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);

@@ -543,14 +543,12 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.StartTime);
             modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.Status);
-            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.PublishStatus);
             modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.FunctionId);
 
             //DeploymentComponent
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.StartTime);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
-            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.PublishStatus);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
         }
 

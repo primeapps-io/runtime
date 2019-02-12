@@ -5,8 +5,11 @@ namespace PrimeApps.Console.Models
 {
     public class FunctionBindingModel
     {
-        [Required, StringLength(200)]
+        [Required, StringLength(100)]
         public string Name { get; set; }
+
+        [Required, StringLength(300)]
+        public string Label { get; set; }
 
         public string Dependencies { get; set; }
 
@@ -20,5 +23,8 @@ namespace PrimeApps.Console.Models
 
         [Required]
         public FunctionContentType ContentType { get; set; }
+
+        [Required]
+        public PublishStatus Status { get; set; }
     }
 }

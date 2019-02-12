@@ -1,19 +1,17 @@
-﻿using Newtonsoft.Json;
-using PrimeApps.Model.Enums;
+﻿using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace PrimeApps.Model.Entities.Tenant
+namespace PrimeApps.Model.Entities.Console
 {
-    [Table("deployments_function")]
-
-    public class DeploymentFunction : BaseEntity
+    [Table("deployments")]
+    public class Deployment : BaseEntity
     {
-        [Column("function_id"), Required, ForeignKey("Function")]
-        public int FunctionId { get; set; }
+        [Column("app_id"), Required, ForeignKey("AppDraft")]
+        public int AppId { get; set; }
 
         [Column("status"), Required]
         public DeploymentStatus Status { get; set; }
@@ -26,7 +24,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("end_time")]
         public DateTime EndTime { get; set; }
-        
-        public virtual Function Function { get; set; }
+
+        public virtual AppDraft AppDraft { get; set; }
     }
 }

@@ -31,5 +31,8 @@ namespace PrimeApps.Model.Common.Component
 
         [JsonProperty("order"), DataMember(Name = "order")]
         public int Order { get; set; }
+
+        [JsonProperty("status"), DataMember(Name = "status")]
+        public PublishStatus Status { get; set; }
     }
 }

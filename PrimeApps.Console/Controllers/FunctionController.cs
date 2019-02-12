@@ -117,11 +117,13 @@ namespace PrimeApps.Console.Controllers
             var functionObj = new Function()
             {
                 Name = function.Name,
+                Label = function.Label,
                 Dependencies = function.Dependencies,
                 Content = function.ContentType == FunctionContentType.Text ? function.Function : "",
                 ContentType = function.ContentType,
                 Runtime = function.Runtime,
-                Handler = function.Handler
+                Handler = function.Handler,
+                Status = PublishStatus.Draft
             };
 
             var createResult = await _functionRepository.Create(functionObj);
@@ -164,11 +166,13 @@ namespace PrimeApps.Console.Controllers
                 return BadRequest("Function not found.");
 
             func.Name = function.Name;
+            func.Label = function.Label;
             func.Dependencies = function.Dependencies;
             func.Content = function.ContentType == FunctionContentType.Text ? function.Function : "";
             func.ContentType = function.ContentType;
             func.Runtime = function.Runtime;
             func.Handler = function.Handler;
+            func.Status = function.Status;
 
             var updateResult = await _functionRepository.Update(func);
 

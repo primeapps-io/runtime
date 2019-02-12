@@ -21,9 +21,9 @@
                          class="logo">
 
                     <!--<div class="padding-10" ng-click="createModal()">-->
-                        <!--<button class="btn btn-radius btn-blue col-sm-12">-->
-                            <!--<i class="fas fa-plus"></i> Create your first Function-->
-                        <!--</button>-->
+                    <!--<button class="btn btn-radius btn-blue col-sm-12">-->
+                    <!--<i class="fas fa-plus"></i> Create your first Function-->
+                    <!--</button>-->
                     <!--</div>-->
                 </div>
             </div>
@@ -36,10 +36,10 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Type</th>
-            <th>Module Id</th>
-            <th>Place</th>
-            <th>Order</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Version</th>
+            <th>Status</th>
             <th width="50"></th>
         </tr>
         </thead>
@@ -71,39 +71,19 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Runtime</th>
-            <th>Handler</th>
-            <th>Creation Time</th>
-            <th width="50"></th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Version</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="function in functions">
-            <td>{{function.name}}</td>
-            <td>{{function.runtime}}</td>
-            <td>{{function.handler}}</td>
-            <td>{{getTime(function.created_at)}}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ui-sref="studio.app.functionDetail({name:function.name})"
-                               ng-click="$event.stopPropagation()">{{'Common.Edit' | translate}} </a>
-                        </li>
-                        <li>
-                            <a ng-click="$event.stopPropagation();delete(function.name)">{{'Common.Remove' | translate}} </a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
+        <tr ng-repeat="deployment in deployments">
+            <td>{{deployment.function.name}}</td>
+            <td>{{getTime(deployment.start_time)}}</td>
+            <td>{{getTime(deployment.end_time)}}</td>
+            <td>{{deployment.version}}</td>
+            <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
         </tr>
         </tbody>
     </table>

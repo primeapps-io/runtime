@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('FunctionDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage', '$sce',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage, $sce) {
+    .controller('FunctionDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage', '$sce', '$window',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage, $sce, $window) {
 
             $scope.name = $state.params.name;
             $scope.orgId = $state.params.orgId;
@@ -70,6 +70,17 @@ angular.module('primeapps')
                     $scope.loading = false;
                 });
 
+            angular.element($window).bind('resize', function () {
+
+                var layout = document.getElementsByClassName("setup-layout");
+                var logger = document.getElementById("log-screen");
+                logger.style.width = (layout[0].offsetWidth - 15) + "px";
+
+                // manuall $digest required as resize event
+                // is outside of angular
+                $scope.$digest();
+
+            });
             $scope.closeModal = function () {
                 $scope.function = angular.copy($scope.functionCopy);
                 $scope.createFormModal.hide();
@@ -122,14 +133,14 @@ angular.module('primeapps')
             };
 
             $scope.openTerminal = function () {
+                var layout = document.getElementsByClassName("setup-layout");
+                var logger = document.getElementById("log-screen");
+                logger.style.width = (layout[0].offsetWidth - 15) + "px";
+
                 $scope.showConsole = !$scope.showConsole;
                 if (!$scope.logs) {
                     $scope.getLogs();
                 }
-                $timeout(function () {
-                    window.scrollTo(0, document.body.scrollHeight);
-                }, 100);
-
             };
 
             $scope.getLogs = function () {
@@ -206,6 +217,28 @@ angular.module('primeapps')
                         $scope.createFormModal.hide();
                         $scope.editing = false;
                     });
-            }
+            };
+
+            $scope.runDeployment = function () {
+                $scope.deploying = true;
+
+                var request = {
+                    name: $scope.name,
+                    function: $scope.record.code
+                };
+
+                FunctionsService.update($scope.record.name, request)
+                    .then(function (response) {
+                        $scope.saving = false;
+                        $scope.function = response.data;
+                        $scope.functionName = $scope.record.name;
+                        //setAceOption($scope.record.runtime);
+                        toastr.success("Function successfully updated.", "Updated!");
+                    })
+                    .catch(function (response) {
+                        $scope.saving = false;
+                        toastr.error($filter('translate')('Common.Error'), "Error!");
+                    });
+            };
         }
     ]);

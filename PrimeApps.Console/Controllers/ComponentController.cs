@@ -77,7 +77,8 @@ namespace PrimeApps.Console.Controllers
                 ModuleId = model.ModuleId,
                 Type = model.Type,
                 Place = model.Place,
-                Order = model.Order
+                Order = model.Order,
+                Status = PublishStatus.Draft
             };
 
             var result = await _componentRepository.Create(component);
@@ -105,6 +106,7 @@ namespace PrimeApps.Console.Controllers
             component.Type = model.Type != ComponentType.NotSet ? model.Type : component.Type;
             component.Place = model.Place != ComponentPlace.NotSet ? model.Place : component.Place;
             component.Order = model.Order != 0 ? model.Order : component.Order;
+            component.Status = model.Status;
 
             await _componentRepository.Update(component);
 

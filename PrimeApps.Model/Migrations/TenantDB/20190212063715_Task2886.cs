@@ -8,58 +8,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "status",
-                schema: "public",
-                table: "components",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.CreateTable(
-                name: "deployments_component",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    created_by = table.Column<int>(nullable: false),
-                    updated_by = table.Column<int>(nullable: true),
-                    created_at = table.Column<DateTime>(nullable: false),
-                    updated_at = table.Column<DateTime>(nullable: true),
-                    deleted = table.Column<bool>(nullable: false),
-                    component_id = table.Column<int>(nullable: false),
-                    status = table.Column<int>(nullable: false),
-                    publish_status = table.Column<int>(nullable: false),
-                    version = table.Column<string>(nullable: false),
-                    start_time = table.Column<DateTime>(nullable: false),
-                    end_time = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_deployments_component", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_deployments_component_components_component_id",
-                        column: x => x.component_id,
-                        principalSchema: "public",
-                        principalTable: "components",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_deployments_component_users_created_by",
-                        column: x => x.created_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_deployments_component_users_updated_by",
-                        column: x => x.updated_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateTable(
                 name: "functions",
                 schema: "public",
@@ -114,7 +62,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     deleted = table.Column<bool>(nullable: false),
                     function_id = table.Column<int>(nullable: false),
                     status = table.Column<int>(nullable: false),
-                    publish_status = table.Column<int>(nullable: false),
                     version = table.Column<string>(nullable: false),
                     start_time = table.Column<DateTime>(nullable: false),
                     end_time = table.Column<DateTime>(nullable: false)
@@ -146,48 +93,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_component_id",
-                schema: "public",
-                table: "deployments_component",
-                column: "component_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_created_by",
-                schema: "public",
-                table: "deployments_component",
-                column: "created_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_end_time",
-                schema: "public",
-                table: "deployments_component",
-                column: "end_time");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_publish_status",
-                schema: "public",
-                table: "deployments_component",
-                column: "publish_status");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_start_time",
-                schema: "public",
-                table: "deployments_component",
-                column: "start_time");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_status",
-                schema: "public",
-                table: "deployments_component",
-                column: "status");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_component_updated_by",
-                schema: "public",
-                table: "deployments_component",
-                column: "updated_by");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_deployments_function_created_by",
                 schema: "public",
                 table: "deployments_function",
@@ -204,12 +109,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 schema: "public",
                 table: "deployments_function",
                 column: "function_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_deployments_function_publish_status",
-                schema: "public",
-                table: "deployments_function",
-                column: "publish_status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_deployments_function_start_time",
@@ -270,21 +169,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "deployments_component",
-                schema: "public");
-
-            migrationBuilder.DropTable(
                 name: "deployments_function",
                 schema: "public");
 
             migrationBuilder.DropTable(
                 name: "functions",
                 schema: "public");
-
-            migrationBuilder.DropColumn(
-                name: "status",
-                schema: "public",
-                table: "components");
         }
     }
 }

@@ -112,9 +112,6 @@ namespace PrimeApps.Model.Context
 
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
-            //AppCollaborator
-            modelBuilder.Entity<AppCollaborator>().HasIndex(x => x.ProfileId);
-
             //AppDraft
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.Name);
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.CreatedAt);
@@ -151,17 +148,18 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
 
-            //AppProfile
-            modelBuilder.Entity<AppProfile>().HasIndex(x => x.Name);
-            modelBuilder.Entity<AppProfile>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<AppProfile>().HasIndex(x => x.SystemCode);
-            modelBuilder.Entity<AppProfile>().HasIndex(x => x.CreatedAt);
-            modelBuilder.Entity<AppProfile>().HasIndex(x => x.UpdatedAt);
+            //Deployment
+            modelBuilder.Entity<Deployment>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Deployment>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<Deployment>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<Deployment>().HasIndex(x => x.Status);
             
+
         }
         public DbSet<ConsoleUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
+        public DbSet<Deployment> Deployments { get; set; }
         public DbSet<AppCollaborator> AppCollaborators { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }
@@ -169,7 +167,5 @@ namespace PrimeApps.Model.Context
         public DbSet<TeamUser> TeamUsers { get; set; }
         public DbSet<Templet> Templets { get; set; }
         public DbSet<TempletCategory> TempletCategories { get; set; }
-        public DbSet<AppProfile> AppProfiles { get; set; }
-        public DbSet<AppProfilePermission> AppProfilesPermissions { get; set; }
     }
 }
