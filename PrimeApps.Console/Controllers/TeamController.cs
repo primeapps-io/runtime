@@ -227,5 +227,13 @@ namespace PrimeApps.Console.Controllers
 
             return Ok(result);
         }
+
+        [Route("get_by_organization_id/{organizationId:int}"), HttpGet]
+        public async Task<IActionResult> GetByOrganizationId(int organizationId)
+        {
+            var teams = await _teamRepository.GetByOrganizationId(organizationId);
+
+            return Ok(teams);
+        }
     }
 }

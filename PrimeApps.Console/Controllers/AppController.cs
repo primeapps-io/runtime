@@ -23,6 +23,7 @@ namespace PrimeApps.Console.Controllers
         private IConfiguration _configuration;
         private IPlatformUserRepository _platformUserRepository;
         private IAppDraftRepository _appDraftRepository;
+        private ICollaboratorsRepository _collaboratorRepository;
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
         private IAppProfileRepository _appProfileRepository;
@@ -32,6 +33,7 @@ namespace PrimeApps.Console.Controllers
             IBackgroundTaskQueue queue,
             IPlatformUserRepository platformUserRepository,
             IAppDraftRepository appDraftRepository,
+            ICollaboratorsRepository collaboratorRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
             IAppProfileRepository appProfileRepository,
@@ -41,6 +43,7 @@ namespace PrimeApps.Console.Controllers
             _configuration = configuration;
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
+            _collaboratorRepository = collaboratorRepository;
             _organizationRepository = organizationRepository;
             _permissionHelper = permissionHelper;
             _appProfileRepository = appProfileRepository;
@@ -54,6 +57,7 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
             SetCurrentUser(_appProfileRepository);
+            SetCurrentUser(_collaboratorRepository);
 
             base.OnActionExecuting(context);
         }
@@ -211,6 +215,35 @@ namespace PrimeApps.Console.Controllers
             var app = await _appDraftRepository.GetAppCollaborators(id);
 
             return Ok(app);
+        }
+
+        [Route("app_collaborator_add"), HttpPost]
+        public async Task<IActionResult> TeamUserAdd([FromBody]AppCollaborator item)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (item == null)
+                return NotFound();
+            
+            var result = await _collaboratorRepository.AppCollaboratorAdd(item);
+
+            return Ok(result);
+        }
+
+        [Route("app_collaborator_delete/{id:int}"), HttpDelete]
+        public async Task<IActionResult> AppCollaboratorDelete(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var appCollaborator = await _collaboratorRepository.GetById(id);
+            var result = await _collaboratorRepository.Delete(appCollaborator);
+
+            return Ok(result);
         }
     }
 }
