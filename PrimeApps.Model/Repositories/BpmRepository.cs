@@ -66,9 +66,17 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<BpmWorkflow>> FindForStudio(PaginationModel paginationModel)
         {
-            var bpm = await DbContext.BpmWorkflows.OrderByDescending(x => x.Id)
+            var bpm = DbContext.BpmWorkflows.Select(x => new BpmWorkflow
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Module = x.Module,
+                RecordOperations = x.RecordOperations,
+                Active = x.Active,
+                Deleted = x.Deleted
+            }).Where(x => !x.Deleted).OrderByDescending(x => x.Id)
                .Skip(paginationModel.Offset * paginationModel.Limit)
-               .Take(paginationModel.Limit).ToListAsync();
+               .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -76,16 +84,16 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    bpm = bpm.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    bpm = bpm.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    bpm = bpm.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    bpm = bpm.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
             }
 
-            return bpm;
-             
+            return await bpm.ToListAsync();
+
         }
 
         public async Task<int> Count()
@@ -161,7 +169,7 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
-        
+
         private IQueryable<BpmWorkflow> GetBpmWorkflowQuery()
         {
             return DbContext.BpmWorkflows

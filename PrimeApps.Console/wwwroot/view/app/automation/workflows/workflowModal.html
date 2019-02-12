@@ -99,6 +99,7 @@
                             </label>
                         </div>
                         <div ng-show="workflowStartModel.module">
+                            <div ng-show="loadingFilter" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                             <h5 class="subpanel-heading">{{'Setup.Workflow.FilterCriteria' | translate}}</h5>
                             <div class=" table-responsive" ng-if="!loadingFilter">
                                 <table class="filter-table">
