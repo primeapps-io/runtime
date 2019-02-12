@@ -63,18 +63,18 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Module>> GetAllBasic()
         {
-            var modules = await DbContext.Modules.Select(x => new Module
-            {
-                Id = x.Id,
-                Name = x.Name,
-                LabelEnPlural = x.LabelEnPlural,
-                LabelEnSingular = x.LabelEnSingular,
-                LabelTrSingular = x.LabelTrSingular,
-                LabelTrPlural = x.LabelTrPlural,
-                Order = x.Order,
-                Display = x.Display
-            })
-             .Where(x => !x.Deleted)
+            var modules = await DbContext.Modules.Where(x => !x.Deleted)
+                .Select(x => new Module
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    LabelEnPlural = x.LabelEnPlural,
+                    LabelEnSingular = x.LabelEnSingular,
+                    LabelTrSingular = x.LabelTrSingular,
+                    LabelTrPlural = x.LabelTrPlural,
+                    Order = x.Order,
+                    Display = x.Display
+                })
              .ToListAsync();
 
             return modules;
