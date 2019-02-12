@@ -2540,12 +2540,15 @@ button, select {
               }
             }
             ul {
-              display: none;
               font-size: 70%;
               list-style-type: none;
               padding: 0px;
+              transition: all 0.3s;
+              transform-origin: top center;
+              transform: scale(1,0);
               li {
                 margin: 0;
+                display: none;
                 a {
                   font-size: 12px !important;
                   i {
@@ -2592,10 +2595,11 @@ button, select {
                 border-top-right-radius: 3px;
               }
               ul {
-                display: block;
+                transform: scale(1);
                 li {
                   background: transparent;
                   border-color: rgba(0, 0, 0, 0.05);
+                  display:block;
                   &:last-child {
                     border-color: transparent;
                   }

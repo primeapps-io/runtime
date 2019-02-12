@@ -1996,13 +1996,16 @@ button:focus, select:focus {
   text-align: center;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul {
-  display: none;
   font-size: 70%;
   list-style-type: none;
   padding: 0px;
+  transition: all 0.3s;
+  transform-origin: top center;
+  transform: scale(1, 0);
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li {
   margin: 0;
+  display: none;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a {
   font-size: 12px !important;
@@ -2045,11 +2048,12 @@ button:focus, select:focus {
   border-top-right-radius: 3px;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul {
-  display: block;
+  transform: scale(1);
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li {
   background: transparent;
   border-color: rgba(0, 0, 0, 0.05);
+  display: block;
 }
 .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li:last-child {
   border-color: transparent;
