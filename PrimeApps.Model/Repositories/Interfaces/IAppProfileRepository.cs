@@ -12,5 +12,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Create(AppProfile app);
         Task<int> Update(AppProfile app);
         Task<int> Delete(AppProfile app);
+        Task<AppProfile> GetByAppId(int id);
     }
 }

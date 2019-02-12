@@ -29,6 +29,7 @@
                                             ng-change="changeModule();"
                                             ng-required="true"
                                             name="module"
+                                            ng-disabled="moduleDisabled"
                                             ng-model="newtemplate.moduleName"
                                             ng-options="o as o['label_' + language + '_singular'] for o in templateModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                         <option value="">{{'Common.Select' | translate}}</option>
