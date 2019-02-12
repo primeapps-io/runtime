@@ -1248,9 +1248,9 @@ button, select {
         border-radius: 0px;
         border-bottom: 5px solid rgba(0, 0, 0, 0.05);
         &:last-child {
-          min-height: calc(100vh - 135px);
           border: none;
           margin-bottom: 0px;
+          min-height: calc(100vh - 135px);
         }
       }
     }
@@ -2541,15 +2541,12 @@ button, select {
               }
             }
             ul {
+              display: none;
               font-size: 70%;
               list-style-type: none;
               padding: 0px;
-              transition: all 0.3s;
-              transform-origin: top center;
-              transform: scale(1,0);
               li {
                 margin: 0;
-                display: none;
                 a {
                   font-size: 12px !important;
                   i {
@@ -2596,11 +2593,10 @@ button, select {
                 border-top-right-radius: 3px;
               }
               ul {
-                transform: scale(1);
+                display: block;
                 li {
                   background: transparent;
                   border-color: rgba(0, 0, 0, 0.05);
-                  display:block;
                   &:last-child {
                     border-color: transparent;
                   }
