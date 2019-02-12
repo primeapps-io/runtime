@@ -8,8 +8,14 @@
             <div class="col-sm-4">
                 <div style="margin: auto;text-align: center;">
                     <div class="file-uploader" style="background: none;">
-                        <div class="organization-icon">
+                        <div ng-show="uploader.queue.length === 0" class="organization-icon">
                             <i class="fas fa-user"></i>
+                        </div>
+                        <div ng-show="uploader.queue.length > 0" style="width: 100px;border-radius: 50px;overflow: hidden">
+                            <span class="imgfix imgy">
+                               <img class="imgin" ng-src="{{uploader.queue[0].image}}" alt="" />
+                               <img class="blank" src="images/primeapps/blank_k.png" alt="" />
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -17,8 +23,11 @@
                     <label>Image must not exceed</label>
                     <label>512 px and 1 MB</label>
                 </div>
-                <div style="text-align: center;padding-top: 10px;">
-                    <button class="btn btn-radius btn-red btn-logout"><i class="fas fa-trash"></i>Delete Logo</button>
+                <div class="text-center">
+                    <label class="newinput">
+                        <input type="file" nv-file-select="" uploader="uploader" ng-disabled="croppedImage">
+                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                    </label>
                 </div>
             </div>
             <div class="col-sm-8" style="border-left: solid 2px #dfdfdf;">

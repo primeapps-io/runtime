@@ -267,51 +267,6 @@ namespace PrimeApps.Console.Controllers
         //    return BadRequest("Couldn't Create Document!");
         //}
 
-        //[Route("upload_profile_picture"), HttpPost]
-        //public async Task<IActionResult> UploadProfilePicture()
-        //{
-        //    HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-        //    StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
-
-        //    if (parser.Success)
-        //    {
-        //        //if succesfully parsed, then continue to thread.
-        //        if (parser.FileContents.Length <= 0)
-        //        {
-        //            //if file is invalid, then stop thread and return bad request status code.
-        //            return BadRequest();
-        //        }
-
-        //        var uniqueName = string.Empty;
-
-        //        //get the file name from parser
-        //        if (parser.Parameters.ContainsKey("name"))
-        //        {
-        //            uniqueName = parser.Parameters["name"];
-        //        }
-
-        //        if (string.IsNullOrEmpty(uniqueName))
-        //        {
-        //            var ext = Path.GetExtension(parser.Filename);
-        //            uniqueName = Guid.NewGuid() + ext;
-        //        }
-
-        //        var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
-
-        //        using (Stream stream = new MemoryStream(parser.FileContents))
-        //        {
-        //            await _storage.Upload(bucketName, fileName, stream);
-        //        }
-
-        //        var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-
-        //        return Ok(profilePicture);
-        //    }
-
-        //    //this is not a valid request so return fail.
-        //    return Ok("Fail");
-        //}
-
         [Route("upload_logo"), HttpPost]
         public async Task<IActionResult> UploadLogo()
         {
