@@ -53,6 +53,16 @@
   clear: both;
 }
 
+.list-yanla::after, .list-yanla:before {
+  content: " ";
+  display: table;
+  width: 100%;
+}
+.list-yanla > li {
+  float: left;
+  margin-left: 10px;
+}
+
 .newupload .uploadlink {
   position: relative;
   width: 100%;
@@ -1244,6 +1254,12 @@ button:focus, select:focus {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.primeapps .avatarx {
+  width: 40px;
+  border-radius: 50px;
+  overflow: hidden;
+  display: inline-block;
+}
 .primeapps .top-header {
   display: flex;
   align-items: center;
@@ -1508,9 +1524,11 @@ button:focus, select:focus {
 }
 .primeapps .page-container .app-layout-box .app-info {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  margin-top: 23px;
+  margin-top: 10px;
+  height: 50px;
+  justify-content: center;
 }
 .primeapps .page-container .app-layout-box .app-info h3 {
   line-height: 20px;
@@ -1530,7 +1548,7 @@ button:focus, select:focus {
   padding: 3px;
   font-size: 14px;
   font-weight: 400;
-  line-height: 25px;
+  line-height: 20px;
   color: rgba(0, 0, 0, 0.5);
   white-space: nowrap;
   overflow: hidden;
@@ -2653,10 +2671,14 @@ button:focus, select:focus {
 .primeapps .templatebox:hover span.centerx:before {
   opacity: 0.95;
 }
+.primeapps .roundedx {
+  border-radius: 1000px;
+}
 .primeapps .imgfix {
   position: relative;
   overflow: hidden;
   display: block;
+  width: 100%;
 }
 .primeapps .imgfix .imgin {
   position: absolute;
@@ -2706,7 +2728,7 @@ button:focus, select:focus {
   display: inline-block;
 }
 .primeapps .flex-betweenx > ul > li .rigth-oval-toolbar-item {
-  margin-left: 5px;
+  margin-left: 0px;
 }
 @media (max-width: 767.98px) {
   .primeapps .flex-betweenx {

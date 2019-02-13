@@ -1,13 +1,13 @@
 <div id="wrapper" ng-class="toggleClass">
     <div id="navbar-wrapper" ng-class="toggleClass">
         <div class="flex-betweenx">
-            <ul class="breadcrumb">
+            <ul class="breadcrumb ">
                 <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
                     <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
                     <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a>
                 </li>
             </ul>
-            <ul>
+            <ul class="list-unstyled list-yanla">
                 <li style="margin-left:  10px" ng-show="!appLoading && currentAppId && appModules.length > 0">
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
@@ -35,7 +35,7 @@
                     </button>
                 </li>
                 <li ng-show="me.picture">
-                    <a class="shadowh" style="width: 40px;border-radius: 50px;overflow: hidden;display: inline-block"
+                    <a class="shadowh avatarx"
                        aria-hidden="true"
                        data-title="Test"
                        data-template-url="view/common/user-dropdown.html"
