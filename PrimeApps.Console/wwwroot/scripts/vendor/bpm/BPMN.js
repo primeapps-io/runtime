@@ -444,14 +444,14 @@ function init() {
                     $(go.Shape, "BpmnTaskScript",    // will be None, Script, Manual, Service, etc via converter
                         {
                             alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
-                            width: 22, height: 22
+                            width: 22, height: 22, cursor: "move"
                         },
                         new go.Binding("fill", "taskType", nodeActivityTaskTypeColorConverter),
                         new go.Binding("figure", "taskType", nodeActivityTaskTypeConverter)
                     ),
                     $(go.Shape,
                         {
-                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 22, height: 20,
+                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 22, height: 20, cursor: "move"
 
                         },
                         new go.Binding("geometry", "icon", geoFunc)),
@@ -461,7 +461,7 @@ function init() {
                 $(go.TextBlock,
                     {
                         alignment: go.Spot.Bottom, textAlign: "center", margin: 8, font: "bold 12px Nunito",
-                        editable: true
+                        editable: true, cursor: "move"
                     },
                     new go.Binding("text").makeTwoWay())
             )
@@ -477,7 +477,8 @@ function init() {
                 locationSpot: go.Spot.Center,
                 selectionAdorned: false,
                 minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight)
+                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                cursor: "move"
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             $(go.Panel, "Spot",
@@ -491,18 +492,10 @@ function init() {
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                         parameter1: 10 / palscale  // corner size (default 10)
                     }),
-                $(go.Shape, "Rectangle",  // the inner "Transaction" rounded rectangle
-                    {
-                        stretch: go.GraphObject.Fill,
-                        stroke: ActivityNodeStroke,
-                        parameter1: 8 / palscale, fill: null, visible: false
-                    },
-                    new go.Binding("visible", "isTransaction")),
-                // task icon
-
+              
                 $(go.Shape,
                     {
-                        margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
+                        margin: 5, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
                         width: 20, height: 20
                     },
                     new go.Binding("geometry", "icon", geoFunc)),
@@ -576,22 +569,31 @@ function init() {
                         strokeWidth: 1,
                         name: "SHAPE",
                         desiredSize: new go.Size(EventNodeSize, EventNodeSize),
-                        portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                        portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
                         fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
                         name: "SHAPE",
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                         parameter1: 10
+                    },
+                    {
+                        mouseEnter: function (e, obj) {
+                            $(go.Shape, {
+                                margin: 1, fill: "red", strokeWidth: 1, width: 10, height: 10, cursor: "pointer",
+                                geometryString: "M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z",
+                                alignment: go.Spot.TopRight,
+                                
+                            })} 
                     }),
                 $(go.Shape,
                     {
                         //TODO icon
-                        //geometry: go.Geometry.parse("M424.4 214.7L72.4 6.6C43.8 - 10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4 - 18.5 31.5-64.1 0-82.6z", true),
-                        margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20
-                    }, ),
+                       // geometryString: "M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z",
+                        margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20, cursor: "move"
+                    }, new go.Binding("geometry", "icon", geoFunc)),
             ),
 
             $(go.TextBlock,
-                { alignment: go.Spot.Bottom, textAlign: "center", margin: 8, editable: true },
+                { alignment: go.Spot.Bottom, textAlign: "center", margin: 8, editable: true, font: "bold 12px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move" },
                 new go.Binding("text").makeTwoWay())
 
         ); // end go.Node Vertical
