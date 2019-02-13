@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .factory('ManageService', ['$rootScope', '$http', 'config',
+    .factory('OrgSettingsService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
                 get: function (id) {

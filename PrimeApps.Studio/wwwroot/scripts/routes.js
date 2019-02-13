@@ -104,7 +104,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.organizationForm', {
-                    url: 'organization?:id',
+                    url: 'org?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/organizationform/organizationform.html',
@@ -179,7 +179,7 @@ angular.module('primeapps')
             //app.organization
             $stateProvider
                 .state('studio.organization', {
-                    url: 'organization/:organizationId',
+                    url: 'org/:organizationId',
                     abstract: true,
                     views: {
                         'app': {
@@ -1407,19 +1407,19 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.manage', {
-                    url: 'manage',
+                .state('studio.orgSettings', {
+                    url: 'orgsettings',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/organization/manage/manage.html',
-                            controller: 'ManageController'
+                            templateUrl: cdnUrl + 'view/organization/orgsettings/orgSettings.html',
+                            controller: 'OrgSettingsController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/manage/manageService.js',
-                                cdnUrl + 'view/organization/manage/manageController.js',
+                                cdnUrl + 'view/organization/orgsettings/orgSettingsService.js',
+                                cdnUrl + 'view/organization/orgsettings/orgSettingsController.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]

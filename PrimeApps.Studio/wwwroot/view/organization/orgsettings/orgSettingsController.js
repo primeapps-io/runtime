@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ManageController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'ManageService', 'ModuleService', '$state',
-        function ($rootScope, $scope, $filter, $location, helper, ManageService, ModuleService, $state) {
+    .controller('OrgSettingsController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'OrgSettingsService', 'ModuleService', '$state',
+        function ($rootScope, $scope, $filter, $location, helper, OrgSettingsService, ModuleService, $state) {
 
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons(2);
@@ -15,7 +15,7 @@ angular.module('primeapps')
 
             $scope.orgDeleteDisabled = false;
 
-            ManageService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
+            OrgSettingsService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
                 var data = response.data;
                 $scope.orgModel.icon = data.icon;
                 $scope.orgModel.label = data.label;
@@ -25,7 +25,7 @@ angular.module('primeapps')
             });
 
             var getMyOrganizations = function () {
-                ManageService.myOrganizations()
+                OrgSettingsService.myOrganizations()
                     .then(function (response) {
                         if (response.data) {
                             $rootScope.organizations = response.data;
@@ -52,7 +52,7 @@ angular.module('primeapps')
                 if (angular.isObject($scope.orgModel.icon))
                     $scope.orgModel.icon = $scope.orgModel.icon.value;
 
-                ManageService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
+                OrgSettingsService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
                         $rootScope.currentOrganization.icon = $scope.orgModel.icon;
@@ -71,7 +71,7 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            ManageService.delete(orgId)
+                            OrgSettingsService.delete(orgId)
                                 .then(function () {
                                     toastr.success("Organization is deleted successfully.", "Deleted!");
                                     getMyOrganizations();
