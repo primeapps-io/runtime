@@ -385,8 +385,8 @@ function init() {
 
     var myKey;
     var myDeleteActive = false;
+
     function DeleteNode(e, obj) {
-        myDeleteActive = true;
         var cmdhnd = window.myDiagram.commandHandler;
         var node = window.myDiagram.findNodeForKey(myKey);
         window.myDiagram.remove(node);
@@ -396,7 +396,7 @@ function init() {
         myKey = obj.Zd.key;
         var icon = new go.Shape();
         var shape = obj.findObject("SHAPE");
-        icon.geometryString = "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z";
+        icon.geometryString = "M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z";
         icon.name = "Delete"
         icon.fill = "red";
         icon.stroke = "red";
@@ -404,7 +404,6 @@ function init() {
         icon.width = 18;
         icon.height = 18;
         icon.alignment = go.Spot.TopRight;
-        //a.margin=new go.Margin(0,0,5,0);
         icon.alignmentFocus = go.Spot.TopRight;
         icon.cursor = "pointer";
         icon.click = DeleteNode;
@@ -412,33 +411,21 @@ function init() {
     };
 
     function mouseLeave(e, obj) {
-        // obj.fill="rgba(0, 0, 0, 0.05)";
-        // obj.stroke="rgba(0, 0, 0, 0)";
         var a = obj.findObject("Delete");
         obj.remove(a);
-        // Return the TextBlock's stroke to its default
-
     };
 
     function geoFunc(geoname) { //For Activity
         var geo = icons[geoname];
         if (geo === undefined) geo = icons["start"];  //TODO use this for an unknown icon name
         if (typeof geo === "string") {
-            geo = go.Geometry.parse(geo, true);  // fill each geometry
+            geo = icons[geoname] = go.Geometry.parse(geo, true);  // fill each geometry
         }
 
         return geo;
     }
 
-    function geoFunc2(geoname) { //For event
-        var geo = icons[geoname];
-        if (geo === undefined) geo = icons["start"];  //TODO use this for an unknown icon name
-        if (typeof geo === "string") {
-            geo = go.Geometry.parse(geo, true);  // fill each geometry
-        }
 
-        return geo;
-    }
     var activityNodeTemplate =
         $(go.Node, "Spot",
             {
@@ -588,7 +575,7 @@ function init() {
 
     //------------------------------------------  Event Node Template  ----------------------------------------------
 
-    var eventNodeTemplate =
+    var eventNodeTemplateForPalette =
         $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE",
@@ -613,16 +600,48 @@ function init() {
                         name: "SHAPE",
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                         parameter1: 10
-                    },
+                    }),
+                $(go.Shape,
                     {
-                        mouseEnter: function (e, obj) {
-                            $(go.Shape, {
-                                margin: 1, fill: "red", strokeWidth: 1, width: 10, height: 10, cursor: "pointer",
-                                geometryString: "M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z",
-                                alignment: go.Spot.TopRight,
+                        //TODO icon
+                        // geometryString: "M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z",
+                        margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20, cursor: "move"
+                    }, new go.Binding("geometry", "icon", geoFunc)),
+            ),
 
-                            })
-                        }
+            $(go.TextBlock,
+                { alignment: go.Spot.Bottom, textAlign: "center", margin: 8, editable: true, font: "bold 12px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move" },
+                new go.Binding("text").makeTwoWay())
+
+        ); // end go.Node Vertical
+
+    var eventNodeTemplate =
+        $(go.Node, "Auto",
+            {
+                locationObjectName: "SHAPE",
+                locationSpot: go.Spot.Center,
+                toolTip: tooltiptemplate,
+                minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                mouseEnter: mouseEnter,
+                mouseLeave: mouseLeave
+            },
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
+            new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
+            // can be resided according to the user's desires
+            { resizable: false, resizeObjectName: "SHAPE" },
+            $(go.Panel, "Spot",
+                $(go.Shape, "Rectangle",  // Outer circle
+                    {
+                        strokeWidth: 1,
+                        name: "SHAPE",
+                        desiredSize: new go.Size(EventNodeSize, EventNodeSize),
+                        portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
+                        fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
+                        name: "SHAPE",
+                        fill: ActivityNodeFill, stroke: ActivityNodeStroke,
+                        parameter1: 10
                     }),
                 $(go.Shape,
                     {
@@ -1164,7 +1183,7 @@ function init() {
     // create the nodeTemplateMap, holding special palette "mini" node templates:
     var palNodeTemplateMap = new go.Map("string", go.Node);
     palNodeTemplateMap.add("activity", activityNodeTemplateForPalette);
-    palNodeTemplateMap.add("event", eventNodeTemplate);
+    palNodeTemplateMap.add("event", eventNodeTemplateForPalette);
     palNodeTemplateMap.add("gateway", gatewayNodeTemplateForPalette);
     palNodeTemplateMap.add("annotation", annotationNodeTemplate);
     palNodeTemplateMap.add("dataobject", dataObjectNodeTemplate);
@@ -1324,19 +1343,16 @@ function init() {
             });
 
     //Object Single Mouse Click
-    window.myDiagram.addDiagramListener("ObjectSingleClicked", function (e) { 
-        if (myDeleteActive)
+    window.myDiagram.addDiagramListener("ObjectSingleClicked", function (e) {
+        if (e.Pw.Sb === "Delete") {
             return;
-
-        console.log("Tıklandı.", e);
-
+        }
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(true);
     });
 
     window.myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
-        console.log("bitti.", e);
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(false);

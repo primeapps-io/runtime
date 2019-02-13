@@ -64,7 +64,7 @@
 
 $primeapps-color: #0D6FAA;
 .wrt:before,
-.wrt:after {
+.wrt:after{
   content: ' ';
   display: table;
   margin-left: -15px;
@@ -72,6 +72,18 @@ $primeapps-color: #0D6FAA;
   float: none;
   clear: both;
 }
+.list-yanla{
+  &::after,&:before{
+    content: ' ';
+    display: table;
+    width: 100%;
+  }
+  > li{
+    float: left;
+    margin-left: 10px;
+  }
+}
+
 
 .newupload {
   .uploadlink {
@@ -933,6 +945,7 @@ button, select {
     &:hover {
       background-color: #0d6faa;
     }
+    
   }
 
   .navbar-right {
@@ -1563,7 +1576,12 @@ button, select {
       margin-bottom: 10px;
     }
   }
-
+  .avatarx{
+    width: 40px;
+    border-radius: 50px;
+    overflow: hidden;
+    display: inline-block;
+  }
   .top-header {
     display: flex;
     align-items: center;
@@ -1866,11 +1884,12 @@ button, select {
       }
 
       .app-info {
-
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        margin-top: 23px;
+        margin-top: 10px;
+        height: 50px;
+        justify-content: center;
 
         h3 {
           line-height: 20px;
@@ -1891,7 +1910,7 @@ button, select {
           padding: 3px;
           font-size: 14px;
           font-weight: 400;
-          line-height: 25px;
+          line-height: 20px;
           color: rgba(0, 0, 0, 0.5);
           white-space: nowrap;
           overflow: hidden;
@@ -3291,10 +3310,14 @@ button, select {
       }
     }
   }
+  .roundedx{
+    border-radius: 1000px;
+  }
   .imgfix {
     position: relative;
     overflow: hidden;
     display: block;
+    width: 100%;
     .imgin {
       position: absolute;
       -ms-transform: translate(-50%, -50%);
@@ -3376,7 +3399,7 @@ button, select {
       > li {
         display: inline-block;
         .rigth-oval-toolbar-item {
-          margin-left: 5px;
+          margin-left: 0px;
         }
       }
     }
