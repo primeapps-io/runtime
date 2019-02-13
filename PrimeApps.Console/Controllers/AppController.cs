@@ -13,6 +13,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Console.Services;
 using System.Collections.Generic;
+using LibGit2Sharp;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -200,7 +201,7 @@ namespace PrimeApps.Console.Controllers
 
             if (item == null)
                 return NotFound();
-            
+
             var result = await _collaboratorRepository.AppCollaboratorAdd(item);
 
             return Ok(result);

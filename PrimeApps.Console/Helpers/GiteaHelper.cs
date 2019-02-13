@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -100,10 +102,46 @@ namespace PrimeApps.Console.Helpers
 
                         var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/org/" + organization.Name + "/repos", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
+                        var resp = await response.Content.ReadAsStringAsync();
+
                         if (!response.IsSuccessStatusCode)
                         {
-                            var resp = await response.Content.ReadAsStringAsync();
                             ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + appUser.Email + ", new organization name: " + organization.Name + ", app name: " + appName);
+                        }
+                        var cloneUrl = JObject.Parse(resp)["clone_url"].ToString();
+                        var localFolder = _configuration.GetSection("AppSettings")["GiteaDirectory"] + appName;
+                        var templateUrl = _configuration.GetSection("AppSettings")["GiteaUrl"] + "/primeapps/template.git";
+
+                        //Clone auto generated repository in local folder.
+                        var co = new CloneOptions
+                        {
+                            CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = token, Password = String.Empty }
+                        };
+
+                        Repository.Clone(cloneUrl, localFolder, co);
+
+                        using (var repo = new Repository(localFolder))
+                        {
+                            repo.Network.Remotes.Add("template", templateUrl);
+                            
+                            repo.Network.Remotes.Update("template",
+                                r => r.TagFetchMode = TagFetchMode.None);
+
+                            FetchOptions options = new FetchOptions
+                            {
+                                CredentialsProvider = new CredentialsHandler(
+                                (url, usernameFromUrl, types) =>
+                                    new UsernamePasswordCredentials()
+                                    {
+                                        Username = token,
+                                        Password = ""
+                                    })
+                            };
+
+                            // Perform the actual fetch.
+                            Commands.Fetch(repo, "template", new string[0], options, null);
+
+                            
                         }
                     }
                 }
