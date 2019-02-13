@@ -14,5 +14,8 @@ angular.module('primeapps')
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'organization/delete/' + id);
                 },
+                myOrganizations: function () {
+                    return $http.get(config.apiUrl + 'user/organizations');
+                }
             };
         }]);

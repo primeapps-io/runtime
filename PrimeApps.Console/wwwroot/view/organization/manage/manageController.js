@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ManageController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'ManageService', 'ModuleService',
-        function ($rootScope, $scope, $filter, $location, helper, ManageService, ModuleService) {
+    .controller('ManageController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'ManageService', 'ModuleService', '$state',
+        function ($rootScope, $scope, $filter, $location, helper, ManageService, ModuleService, $state) {
 
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons(2);
@@ -24,12 +24,23 @@ angular.module('primeapps')
                 $scope.orgModel.id = data.id;
             });
 
+            var getMyOrganizations = function () {
+                ManageService.myOrganizations()
+                    .then(function (response) {
+                        if (response.data) {
+                            $rootScope.organizations = response.data;
+                            $state.go('studio.allApps');
+                            //$scope.menuOpen[$scope.organizations[0].id] = true;
+                        }
+                    });
+            };
+
             $scope.changeIcon = function () {
                 $scope.orgModel.icon = $scope.orgModel.icon.value;
             };
 
             $scope.deleteButtonControl = function () {
-                var currentOrg = $filter('filter')($rootScope.organizations, {id: $scope.$parent.$parent.$parent.currentOrgId}, true)[0];
+                var currentOrg = $filter('filter')($rootScope.organizations, { id: $scope.$parent.$parent.$parent.currentOrgId }, true)[0];
                 if (currentOrg.role != 'administrator' || currentOrg.default === true)
                     $scope.orgDeleteDisabled = true;
             };
@@ -63,6 +74,7 @@ angular.module('primeapps')
                             ManageService.delete(orgId)
                                 .then(function () {
                                     toastr.success("Organization is deleted successfully.", "Deleted!");
+                                    getMyOrganizations();
 
                                 });
                         }
