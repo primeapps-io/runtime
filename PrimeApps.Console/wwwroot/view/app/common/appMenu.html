@@ -7,7 +7,7 @@
             <span>Overview</span>
         </a>
     </li>
-    <li>
+    <li ng-class="subMenuOpen =='model' ? 'active sub-open':''" ng-click="openSubMenu('model')">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Model" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
