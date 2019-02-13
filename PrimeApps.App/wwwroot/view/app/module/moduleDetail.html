@@ -547,7 +547,7 @@ relatedModule['label_'
                                                     {{field.custom_label}}
                                                 </span>
                                                 <a target="_blank" href
-                                                   ng-click="documentDownload(record[field.name],field.name)"
+                                                   ng-click="documentDownload(record[field.name])"
                                                    ng-if="field.data_type ==='document'">
                                                     {{record[field.name]}}
                                                 </a>
@@ -622,7 +622,7 @@ relatedModule['label_'
                                                 </span>
                                                 <span ng-switch-when="document">
                                                     <a target="_blank" href
-                                                       ng-click="documentDownload(record[field.name],field.name)"
+                                                       ng-click="documentDownload(record[field.name])"
                                                        ng-if="field.data_type ==='document'">
                                                         {{record[field.name]}}
                                                     </a>

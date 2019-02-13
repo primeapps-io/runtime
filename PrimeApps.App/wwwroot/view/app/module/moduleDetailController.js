@@ -1708,14 +1708,8 @@ angular.module('primeapps')
             };
 
             $scope.documentDownload = function (fileName, fieldName) {
-                //TODO change blob download at refactor!
-                //var data = {};
-                //data["module"] = $scope.module.name;
-                //data["fileNameExt"] = helper.getFileExtension(fileName);
-                //data["fieldName"] = fieldName;
 
-                var downloadUrl = $scope.getmoduledownloadurl(fileName, fieldName);
-                $window.location = downloadUrl;
+                $window.location = "/storage/record_file_download?fileName=" + fileName;
 
             };
 
