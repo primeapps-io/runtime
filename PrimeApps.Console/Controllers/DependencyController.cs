@@ -1,24 +1,17 @@
-using PrimeApps.Console.Models;
 using PrimeApps.Console.Helpers;
-using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System;
-using Microsoft.AspNetCore.Http.Extensions;
-using System.Linq;
 using PrimeApps.Model.Common;
 
 namespace PrimeApps.Console.Controllers
 {
-	[Route("api/dependency")]
+    [Route("api/dependency")]
 	public class DependencyController : DraftBaseController
 	{
 		private IDependencyRepository _dependencyRepository;

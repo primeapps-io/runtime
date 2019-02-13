@@ -10,8 +10,8 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.ConsoleDB
 {
     [DbContext(typeof(ConsoleDBContext))]
-    [Migration("20190212135042_RemoveProfileOrganizationColor")]
-    partial class RemoveProfileOrganizationColor
+    [Migration("20190213055904_ProfileAndColor")]
+    partial class ProfileAndColor
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
