@@ -22,6 +22,10 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'user/change_password', angular.toJson(password));
                 },
 
+                me: function () {
+                    return $http.get(config.apiUrl + 'user/me');
+                },
+
                 changePassword: function (currentPassword, newPassword, confirmPassword) {
                     return $http.post(config.apiUrl + 'account/change_password', {
                         old_password: currentPassword,

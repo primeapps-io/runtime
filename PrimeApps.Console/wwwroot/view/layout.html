@@ -22,7 +22,7 @@
                         <i class="fas fa-question"></i>
                     </button>
                 </li>
-                <li>
+                <li ng-show="!me.picture">
                     <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh"
                             aria-hidden="true"
                             data-title="Test"
@@ -33,6 +33,22 @@
                             bs-popover aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-user"></i>
                     </button>
+                </li>
+                <li ng-show="me.picture">
+                    <a class="shadowh" style="width: 40px;border-radius: 50px;overflow: hidden;display: inline-block"
+                       aria-hidden="true"
+                       data-title="Test"
+                       data-template-url="view/common/user-dropdown.html"
+                       data-animation="am-flip-x"
+                       data-auto-close="1"
+                       data-placement="bottom-right"
+                       bs-popover aria-haspopup="true" aria-expanded="false"
+                    >
+                        <span class="imgfix imgy">
+                               <img class="imgin" ng-src="{{me.picture}}" alt="" />
+                               <img class="blank" src="images/primeapps/blank_k.png" alt="" />
+                            </span>
+                    </a>
                 </li>
             </ul>
         </div>

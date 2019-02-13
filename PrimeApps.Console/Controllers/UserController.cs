@@ -57,6 +57,7 @@ namespace PrimeApps.Console.Controllers
         {
             var user = await _platformUserRepository.GetWithSettings(AppUser.Email);
 
+
             var me = new ConsoleUser
             {
                 Id = AppUser.Id,
