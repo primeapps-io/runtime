@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields', 'icons2', 'systemReadonlyFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields, icons2, systemReadonlyFields) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields', 'icons2', 'icons', 'systemReadonlyFields',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields, icons2, icons, systemReadonlyFields) {
 
             return {
                 count: function () {
@@ -30,8 +30,11 @@ angular.module('primeapps')
                 getModuleByName: function (moduleName) {
                     return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
-                getIcons: function () {
-                    return icons2.icons;
+                getIcons: function (version) {
+                    if (version === 2)
+                        return icons2.icons;
+                    else
+                        return icons.icons
                 },
                 getSystemRequiredFields: function () {
                     return systemRequiredFields;
