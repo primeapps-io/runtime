@@ -15,18 +15,18 @@ angular.module('primeapps')
             $scope.userModel.firstName = user.first_name; //$rootScope.user.firstName;
             $scope.userModel.lastName = user.last_name;//$rootScope.user.lastName;
             $scope.userModel.email = user.email; //$rootScope.user.email;
+            $scope.userModel.picture = user.picture;
             $scope.selectedLanguage = angular.copy($scope.language);
             // $scope.selectedLocale = angular.copy($rootScope.locale);
 
             var uploader = $scope.uploader = new FileUploader({
-                    url: 'api/user/upload_profile_picture/' + $rootScope.me.id,
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json'
-                    },
-                    queueLimit: 1
-                })
-            ;
+                url: 'api/user/upload_profile_picture/' + $rootScope.me.id,
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                    'Accept': 'application/json'
+                },
+                queueLimit: 1
+            });
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -128,6 +128,9 @@ angular.module('primeapps')
                                     $scope.userModel.lastName = userModel.lastName;
                                     $scope.userModel.email = userModel.email;
                                     $scope.userModel.picture = userModel.picture;
+                                    $rootScope.me.firstName = userModel.firstName;
+                                    $rootScope.me.lastName = userModel.lastName;
+                                    $rootScope.me.picture = userModel.picture;
                                     $scope.userUpdating = false;
                                     $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
 

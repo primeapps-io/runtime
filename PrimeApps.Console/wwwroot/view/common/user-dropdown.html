@@ -2,7 +2,11 @@
     <li class="user-info">
         <div class="user-image">
             <!--<image src="" />-->
-            <i class="fas fa-user"></i>
+            <i class="fas fa-user" ng-show="!me.picture"></i>
+            <span class="imgfix imgy" ng-show="me.picture">
+                               <img class="imgin" ng-src="{{me.picture}}" alt="" />
+                               <img class="blank" src="images/primeapps/blank_k.png" alt="" />
+                            </span>
         </div>
         <div class="user-text">
             <h2>{{me.full_name}}</h2>
@@ -10,12 +14,14 @@
         </div>
     </li>
     <li class="user_divider"></li>
-    <li  ng-click="$hide()"><a ui-sref="studio.settings.profile"><i class="fas fa-user-cog"></i> <span>Account Settings</span> </a></li>
+    <li ng-click="$hide()"><a ui-sref="studio.settings.profile"><i class="fas fa-user-cog"></i> <span>Account Settings</span> </a></li>
     <li><a href=""><i class="fas fa-file-alt"></i> <span>Docs &amp; APIs</span> </a></li>
     <li class="user_divider"></li>
     <li><a href=""><i class="fas fa-info-circle"></i> Support </a></li>
     <li><a href=""><i class="fas fa-file-alt"></i> Privacy Policy </a></li>
     <li><a href=""><i class="fas fa-file-alt"></i> Legal &amp; Terms </a></li>
     <li class="user_divider"></li>
-    <li class="form-actions text-center"><button ng-click="logout()" class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button></li>
+    <li class="form-actions text-center">
+        <button ng-click="logout()" class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+    </li>
 </ul>
