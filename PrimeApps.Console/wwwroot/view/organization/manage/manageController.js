@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $location, helper, ManageService, ModuleService) {
 
             $scope.orgModel = {};
-            $scope.icons = ModuleService.getIcons();
+            $scope.icons = ModuleService.getIcons(2);
 
             $rootScope.breadcrumblist[1].link = "";
             $rootScope.breadcrumblist[1].title = 'Manage';
