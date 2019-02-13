@@ -51,7 +51,7 @@
                                            ng-trim="false"
                                            ng-blur="checkNameBlur();"
                                            ng-change="checkName(appModel.name); $parent.$parent.isAppNameChanged=true;"
-                                           ng-model="appModel.name"/>
+                                           ng-model="appModel.name" />
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"
                                            style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
@@ -79,7 +79,7 @@
                                     <label class="col-sm-12 required-field">Logo <span class="required-label">({{'Common.Required' | translate }})</label>
                                     <div class="newupload" ng-if="uploader.queue.length == 0">
                                         <label class="uploadlink">
-                                            <div ng-show="uploader.isHTML5">
+                                            <div ng-show="uploader.isHTML5" style="{{requiredColor}}">
                                                 <div nv-file-drop="" uploader="uploader">
                                                     <div nv-file-over="" uploader="uploader"
                                                          over-class="another-file-over-class" class="my-drop-zone">
@@ -97,7 +97,7 @@
                                     <div ng-show="uploader.queue.length > 0">
                                         <div class="row">
                                             <div class="col-md-6 col-lg-6">
-                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg"/>
+                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg" />
                                                 <div class="action-buttons-block">
                                                     <button type="button" class="action-buttons-delete"
                                                             ng-click="logoRemove();">

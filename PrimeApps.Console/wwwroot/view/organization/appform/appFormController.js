@@ -31,15 +31,15 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'storage/upload_logo',
-                headers: {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                    'Accept': 'application/json',
-                    'X-Organization-Id': $rootScope.currentOrgId
-                },
-                queueLimit: 1
-            })
-                ;
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId
+                    },
+                    queueLimit: 1
+                })
+            ;
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -62,6 +62,7 @@ angular.module('primeapps')
                     });
                 };
                 reader.readAsDataURL(item._file);
+                $scope.logoUpload = true;
             };
 
             uploader.filters.push({
@@ -116,21 +117,22 @@ angular.module('primeapps')
             // };
 
             $scope.openModal = function () {
+                $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/appform/newAppForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/appform/newAppForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
             };
 
             $scope.closeModal = function () {
-                $scope.appModel = {}; 
-                $scope.appFormModal.hide(); 
+                $scope.appModel = {};
+                $scope.appFormModal.hide();
                 $scope.logoRemove();
                 $scope.nameValid = null;
                 $scope.nameBlur = false;
@@ -183,6 +185,7 @@ angular.module('primeapps')
                 if (uploader.queue[0]) {
                     //uploader.queue[0].image = null;
                     uploader.queue[0].remove();
+                    $scope.logoUpload = false;
                 }
             };
 
@@ -194,8 +197,11 @@ angular.module('primeapps')
             };
 
             $scope.save = function (newAppForm) {
-                if (!newAppForm.$valid)
+                if (!newAppForm.$valid || !$scope.logoUpload) {
+                    $scope.requiredColor = 'background-color:#f8dada';
                     return false;
+                }
+
                 $scope.appSaving = true;
                 //$scope.appModel.logo = uploader;
                 $scope.appModel.template_id = 0;
@@ -232,7 +238,7 @@ angular.module('primeapps')
                                         toastr.success($filter('translate')('App successfully created.'));
                                         $scope.nameValid = null;
                                         $scope.nameBlur = false;
-                                        $state.go('studio.app.overview', {orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId});
+                                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId });
                                     });
                             }
                         };

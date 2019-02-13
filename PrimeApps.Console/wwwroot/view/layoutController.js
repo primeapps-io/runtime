@@ -73,7 +73,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 .then(function (response) {
                     AuthService.logoutComplete();
                     window.location = response.data['redirect_url'];
-                    blockUI.stop();
                 });
         };
 
