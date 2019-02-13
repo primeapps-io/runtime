@@ -93,7 +93,7 @@ namespace PrimeApps.Console.Helpers
                         var request = new JObject
                         {
                             ["name"] = appName,
-                            ["auto_init"] = true,
+                            ["auto_init"] = false,
                             ["private"] = true,
                             ["readme"] = "Default"
                         };
@@ -123,25 +123,52 @@ namespace PrimeApps.Console.Helpers
                         using (var repo = new Repository(localFolder))
                         {
                             repo.Network.Remotes.Add("template", templateUrl);
-                            
-                            repo.Network.Remotes.Update("template",
-                                r => r.TagFetchMode = TagFetchMode.None);
 
-                            FetchOptions options = new FetchOptions
+                            // Credential information to fetch
+                            PullOptions pullOptions = new PullOptions
                             {
-                                CredentialsProvider = new CredentialsHandler(
+                                FetchOptions = new FetchOptions
+                                {
+                                    CredentialsProvider = new CredentialsHandler(
                                 (url, usernameFromUrl, types) =>
                                     new UsernamePasswordCredentials()
                                     {
                                         Username = token,
-                                        Password = ""
+                                        Password = String.Empty
                                     })
+                                }
                             };
 
-                            // Perform the actual fetch.
-                            Commands.Fetch(repo, "template", new string[0], options, null);
+                            // User information to create a merge commit
+                            var signature = new Signature(
+                                new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
 
+                            // Pull
                             
+                            Remote remote = repo.Network.Remotes["origin"];
+                            var pushOption = new PushOptions
+                            {
+                                CredentialsProvider = (_url, _user, _cred) =>
+                                    new UsernamePasswordCredentials { Username = token, Password = "" }
+                            };
+                            repo.Network.Push(remote, @"refs/heads/master", pushOption);
+
+                            var branches = Repository.ListRemoteReferences(localFolder)
+                                             .Where(elem => elem.IsLocalBranch)
+                                             .Select(elem => elem.CanonicalName
+                                             .Replace("refs/heads/", ""));
+
+                            string refSpec = string.Format("refs/heads/{2}:refs/remotes/{0}/{1}", "template", "master", "master");
+
+                            // Perform the actual fetch
+                            Commands.Fetch(repo, "template", new string[] { refSpec }, new FetchOptions
+                            {
+                                CredentialsProvider = (_url, _user, _cred) =>
+                                   new UsernamePasswordCredentials { Username = token, Password = "" },
+                                TagFetchMode = TagFetchMode.None
+                            }, null);
+
+                            Commands.Pull(repo, signature, pullOptions);
                         }
                     }
                 }
