@@ -224,7 +224,7 @@ angular.module('primeapps')
             };
 
             var setMenuList = function (id) {
-               // $scope.loading = true;
+                // $scope.loading = true;
                 $scope.menuLists = [];
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
@@ -455,6 +455,7 @@ angular.module('primeapps')
                                         else {
 
                                             toastr.success($filter('translate')('Menu.UpdateSucces'));
+                                            $scope.saving = false;
                                             $scope.addNewMenuFormModal.hide();
                                             $scope.changePage(1);
                                         }
@@ -465,6 +466,7 @@ angular.module('primeapps')
                                 }
                                 else {
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
+                                    $scope.saving = false;
                                     $scope.addNewMenuFormModal.hide();
                                     $scope.changePage(1);
                                 }
@@ -489,6 +491,7 @@ angular.module('primeapps')
                             else {
 
                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
+                                $scope.saving = false;
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage(1);
                             }
@@ -500,6 +503,7 @@ angular.module('primeapps')
                     else if (menuUpdate) {
                         resultPromise.then(function onSuccess() {
                             toastr.success($filter('translate')('Menu.UpdateSucces'));
+                            $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
                             $scope.loading = false;
@@ -536,7 +540,7 @@ angular.module('primeapps')
                         });
                     });
                 }
-            }
+            };
 
             $scope.edit = function (menuNo, subMenuNo) {
 
@@ -646,7 +650,7 @@ angular.module('primeapps')
                  * If choice value True and moduleItem was select, we will clear module picklist
                  * */
                 if ($scope.menu.display && $scope.menu.moduleItem)
-                    // if (moduleDisplay && moduleItem)
+                // if (moduleDisplay && moduleItem)
                     $scope.menu.moduleItem = '';
 
                 else {
@@ -855,7 +859,7 @@ angular.module('primeapps')
                         if (value) {
                             MenusService.delete(id).then(function () {
                                 $scope.changePage(1);
-								$scope.pageTotal = $scope.pageTotal - 1;
+                                $scope.pageTotal = $scope.pageTotal - 1;
                                 toastr.success($filter('translate')('Menu.DeleteSuccess'));
                             }).catch(function () {
                                 $scope.menuList = $scope.menuListState;
@@ -871,4 +875,4 @@ angular.module('primeapps')
         }
 
     ])
-    ;
+;

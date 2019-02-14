@@ -24,6 +24,7 @@
                             class="ng-animate-disabled form-control"
                             ng-model="template.templateModule"
                             ng-required="true"
+                            ng-disabled="template.id"
                             ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in appModules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
