@@ -114,6 +114,7 @@ namespace PrimeApps.Studio.Controllers
                     OwnerId = organizationUser.Organization.OwnerId,
                     Default = organizationUser.Organization.Default,
                     Icon = organizationUser.Organization.Icon,
+                    Color = organizationUser.Organization.Color,
                     CreatedAt = organizationUser.Organization.CreatedAt,
                     CreatedById = organizationUser.Organization.CreatedById,
                     Role = organizationUser.Role
