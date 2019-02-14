@@ -166,7 +166,7 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
                                 $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentOrganization.id;
                                 $rootScope.breadcrumblist[1].title = "People";
-                                $rootScope.breadcrumblist[1].link = '#/organization/' + $rootScope.currentOrganization.id + '/collaborators';
+                                $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/collaborators';
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
 
                                 if (!$rootScope.currentOrganization) {
