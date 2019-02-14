@@ -316,7 +316,7 @@ namespace PrimeApps.App.Helpers
                 args.Text = "";
             } else if (args.DocumentFieldName.Contains("img__") && args.FieldValue != null && !string.IsNullOrWhiteSpace(args.FieldValue.ToString()))
             {
-                var url = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + instanceId + "/" + args.FieldValue;
+                var url = _configuration.GetSection("AppSettings")["StorageUrl"] + "/record-detail-" + instanceId + "/" + args.FieldValue;
                 var wc = new WebClient();
                 var bytes = wc.DownloadData(url);
                 var ms = new MemoryStream(bytes);

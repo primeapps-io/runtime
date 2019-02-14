@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App
 {
@@ -19,7 +20,7 @@ namespace PrimeApps.App
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = configuration.GetSection("AppSettings")["AuthenticationServerURL"];
-                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["RequireHttps"]);
+                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["HttpsRedirection"]);
                     options.ApiName = "api1";
                 });
 
@@ -36,12 +37,24 @@ namespace PrimeApps.App
                     options.Authority = configuration.GetSection("AppSettings")["AuthenticationServerURL"];
                     options.ClientId = configuration.GetSection("AppSettings")["ClientId"];
                     options.ClientSecret = configuration.GetSection("AppSettings")["ClientSecret"];
-                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["RequireHttps"]);
+                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["HttpsRedirection"]);
                     options.ResponseType = "code id_token";
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("api1");
                     options.Scope.Add("email");
+
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        if (context.Failure.Message.Contains("Correlation failed"))
+                            context.Response.Redirect("/");
+                        else
+                            context.Response.Redirect("/Error");
+
+                        context.HandleResponse();
+
+                        return Task.CompletedTask;
+                    };
                 });
         }
     }

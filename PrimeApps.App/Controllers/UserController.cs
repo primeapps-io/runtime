@@ -258,8 +258,8 @@ namespace PrimeApps.App.Controllers
         [Route("MyAccount"), HttpPost]
         public async Task<IActionResult> MyAccount()
         {
-            AccountInfo acc = new AccountInfo();
-            List<UserAppInfo> apps = new List<UserAppInfo>();
+            var acc = new AccountInfo();
+            var apps = new List<UserAppInfo>();
             var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
 
             if (previewMode == "app")
@@ -270,47 +270,18 @@ namespace PrimeApps.App.Controllers
             if (acc.user != null)
             {
                 var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
-                var user = await _platformUserRepository.Get(AppUser.Id);
 
                 if (tenant == null || tenant.Count <= 0)
-                {
-                    acc = null;
-                    return Ok(acc);
-                }
-
-                /*if (user.TenantsAsUser.Count > 0)
-                {
-                    foreach(var userApp in user.TenantsAsUser)
-                    {
-                        var app = new UserAppInfo();
-                        app.Email = userApp.PlatformUser.Email;
-                        app.AppId = userApp.Tenant.AppId;
-                        app.TenantId = userApp.Tenant.Id;
-                        app.UserId = userApp.UserId;
-                        app.Active = userApp.TenantId == AppUser.TenantId;
-                        apps.Add(app);
-                    }
-                }*/
+                    return Ok(null);
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
-                acc.user.picture = AzureStorage.GetProfilePictureUrl(acc.user.picture, _configuration);
-                //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
-                acc.imageUrl = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
+                acc.imageUrl = _configuration.GetSection("AppSettings")["StorageUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
                 acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
                 acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
-                //acc.user.isPaidCustomer = AppUser.IsPaidCustomer;
-                //acc.user.deactivated = AppUser.IsDeactivated;
                 acc.user.tenantId = AppUser.TenantId;
                 acc.user.appId = AppUser.AppId;
                 acc.apps = apps;
-                if (tenant[0].licenses.AnalyticsLicenseCount > 0)
-                    acc.instances[0].hasAnalytics = true;
-
-                foreach (var inst in acc.instances)
-                {
-                    inst.logoUrl = AzureStorage.GetLogoUrl(inst.logoUrl, _configuration);
-                }
 
                 if (acc.user.deactivated && previewMode != "app")
                     throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
@@ -318,8 +289,7 @@ namespace PrimeApps.App.Controllers
                 return Ok(acc);
             }
 
-            acc = null;
-            return Ok(acc); //Success service request - but no account data - disabled user(inactive)
+            return Ok(null);
         }
 
         [Route("ActiveDirectoryInfo"), HttpGet]

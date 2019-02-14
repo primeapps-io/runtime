@@ -1,328 +1,228 @@
 ﻿@using Microsoft.AspNetCore.Html
-@using PrimeApps.App.Extensions
+@using PrimeApps.Model.Common.App
 @{
-    var app = "primeapps";
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
-    }
-    var googleCode = app == "crm" ? "UA-78675728-1" : "UA-112242194-1";
-    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
-    var customDomain = false;
     var customLanguage = string.Empty;
-    //var favicon = ViewBag.AppInfo["favicon"].Value;
+    var appInfo = (ApplicationInfoViewModel)ViewBag.AppInfo;
     var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
-    var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
-    var hasAdminRight = ViewBag.HasAdminRight;
     var tenantId = ViewBag.TenantId;
     var token = ViewBag.Token;
     var appId = ViewBag.AppId;
     var encryptedUserId = ViewBag.EncryptedUserId;
     var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
-    var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var appConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var routeTemplateUrls  = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
 }
 
 <!DOCTYPE html>
 <html lang="{{language}}" ng-app="primeapps">
 <head>
-    <title>PrimeApps</title>
-    <link rel="icon" href="~/images/favicon/primeapps.ico" type="image/x-icon" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <meta name="robots" content="noindex" />
+    <title>@appInfo.Title</title>
+    <link rel="icon" href="@Url.Content(appInfo.Favicon)" type="image/x-icon"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta name="robots" content="noindex"/>
     <meta name="googlebot" content="noindex">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    @*<link rel="stylesheet" href="/styles/bundles-css/auth.css" inline />*@
-    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'/>
 
     @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["before"] != null)
     {
-        @foreach (var beforeCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["before"])
+        foreach (var beforeCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["before"])
         {
-            <link rel="stylesheet" href="@beforeCss" />
+            <link rel="stylesheet" href="@beforeCss"/>
         }
     }
 
     <environment include="Development">
-        <link rel="stylesheet" href="/styles/vendor/angular-block-ui.css" />
-        <link rel="stylesheet" href="/styles/vendor/angular-bootstrap-calendar.css" />
-        <link rel="stylesheet" href="/styles/vendor/angular-motion.css" />
-        <link rel="stylesheet" href="/styles/vendor/angular-resizable.css" />
-        <link rel="stylesheet" href="/styles/vendor/angular-ui-tree.css" />
-        <link rel="stylesheet" href="/styles/vendor/bootstrap-additions.css" />
-        <link rel="stylesheet" href="/styles/vendor/dragular.css" />
-        <link rel="stylesheet" href="/styles/vendor/flaticon.css" />
-        <link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
-        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
-        <link rel="stylesheet" href="/styles/vendor/ng-table.css" />
-        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.bootstrap.css" />
-        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.css" />
-        <link rel="stylesheet" href="/styles/vendor/ngToast.css" />
-        <link rel="stylesheet" href="/styles/vendor/select.css" />
-        <link rel="stylesheet" href="/styles/vendor/xeditable.css" />
-        <link rel="stylesheet" href="/styles/ui.css" />
-        <link rel="stylesheet" href="/styles/app.css" />
+        <link rel="stylesheet" href="/styles/vendor/angular-block-ui.css"/>
+        <link rel="stylesheet" href="/styles/vendor/angular-bootstrap-calendar.css"/>
+        <link rel="stylesheet" href="/styles/vendor/angular-motion.css"/>
+        <link rel="stylesheet" href="/styles/vendor/angular-resizable.css"/>
+        <link rel="stylesheet" href="/styles/vendor/angular-ui-tree.css"/>
+        <link rel="stylesheet" href="/styles/vendor/bootstrap-additions.css"/>
+        <link rel="stylesheet" href="/styles/vendor/dragular.css"/>
+        <link rel="stylesheet" href="/styles/vendor/flaticon.css"/>
+        <link rel="stylesheet" href="/styles/vendor/font-awesome.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ng-table.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.bootstrap.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ngToast.css"/>
+        <link rel="stylesheet" href="/styles/vendor/select.css"/>
+        <link rel="stylesheet" href="/styles/vendor/xeditable.css"/>
+        <link rel="stylesheet" href="/styles/ui.css"/>
+        <link rel="stylesheet" href="/styles/app.css"/>
+        <link rel="stylesheet" href="/styles/theme.css"/>
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" href="/styles/bundles-css/vendor.css" />
-        <link rel="stylesheet" href="/styles/bundles-css/app.css" />
+        <link rel="stylesheet" href="/bundles/vendor.css"/>
+        <link rel="stylesheet" href="/bundles/app.css"/>
     </environment>
 
     @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"] != null)
     {
-        @foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"])
+        foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"])
         {
-            <link rel="stylesheet" href="@afterCss" />
+            <link rel="stylesheet" href="@afterCss"/>
         }
     }
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
-    @RenderBody()
-    <script>
-        var globalConfigs = @globalConfigs;
-		var version = '@typeof(ControllerContext).Assembly.GetName().Version';
-		var cdnUrl = '@ViewBag.CdnUrlDynamic';
-		var isCustomDomain = '@customDomain' === 'True';
-		var customLanguage = '@customLanguage';
-		var theme = window.localStorage.getItem('theme');
-		var host = window.location.hostname;
-        var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
-	    var blobUrl = '@blobUrl';
-	    var functionUrl = '@functionUrl';
-        var tenantId = '@tenantId';
-        var token = '@token';
-        var applicationId = '@appId';
-        var encryptedUserId = '@encryptedUserId';
-        var trustedUrls = JSON.parse('@trustedUrls');
-		var getParameterByName = function (name) {
-			var url = window.location.href;
-			name = name.replace(/[\[\]]/g, '\\$&');
-			var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-			var results = regex.exec(url);
+@RenderBody()
+<script>
+    var appConfigs = @appConfigs;
+    var version = '@typeof(ControllerContext).Assembly.GetName().Version';
+    var cdnUrl = '@ViewBag.CdnUrlDynamic';
+    var customLanguage = '@customLanguage';
+    var appLogo = '@appInfo.Logo';
+    var theme = window.localStorage.getItem('theme');
+    var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
+    var blobUrl = '@blobUrl';
+    var tenantId = '@tenantId';
+    var token = '@token';
+    var applicationId = '@appId';
+    var encryptedUserId = '@encryptedUserId';
+    var trustedUrls = JSON.parse('@trustedUrls');
+    var routeTemplateUrls = JSON.parse('@routeTemplateUrls');
 
-			if (!results)
-				return null;
-
-			if (!results[2])
-				return '';
-
-			return decodeURIComponent(results[2].replace(/\+/g, ' '));
-		};
-
-		if (theme) {
-			document.body.className = theme;
-		}
-		else {
-			if (host.indexOf('localhost') < 0) {
-				if (host.indexOf('primeapps.io') > -1) {
-					document.body.className = 'primeapps';
-					window.localStorage.setItem('theme', 'primeapps');
-				} else if (host.indexOf('kobi.ofisim.com') > -1 || host.indexOf('kobi-test.ofisim.com') > -1) {
-					document.body.className = 'ofisim-kobi';
-					window.localStorage.setItem('theme', 'ofisim-kobi');
-				} else if (host.indexOf('asistan.ofisim.com') > -1 || host.indexOf('asistan-test.ofisim.com') > -1) {
-					document.body.className = 'ofisim-asistan';
-					window.localStorage.setItem('theme', 'ofisim-asistan');
-				} else if (host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1) {
-					document.body.className = 'ofisim-ik';
-					window.localStorage.setItem('theme', 'ofisim-ik');
-				} else if (host.indexOf('cagri.ofisim.com') > -1 || host.indexOf('cagri-test.ofisim.com') > -1) {
-					document.body.className = 'ofisim-cagri';
-					window.localStorage.setItem('theme', 'ofisim-cagri');
-				} else {
-					document.body.className = 'ofisim-crm';
-					window.localStorage.setItem('theme', 'ofisim-crm');
-				}
-			} else {
-				var appId = getParameterByName('app');
-
-				if (appId === '1') {
-					document.body.className = 'ofisim-crm';
-					window.localStorage.setItem('theme', 'ofisim-crm');
-				} else if (appId === '2') {
-					document.body.className = 'ofisim-kobi';
-					window.localStorage.setItem('theme', 'ofisim-kobi');
-				} else if (appId === '3') {
-					document.body.className = 'ofisim-asistan';
-					window.localStorage.setItem('theme', 'ofisim-asistan');
-				} else if (appId === '4') {
-					document.body.className = 'ofisim-ik';
-					window.localStorage.setItem('theme', 'ofisim-ik');
-				} else if (appId === '5') {
-					document.body.className = 'ofisim-cagri';
-					window.localStorage.setItem('theme', 'ofisim-cagri');
-				} else {
-					document.body.className = 'primeapps';
-					window.localStorage.setItem('theme', 'primeapps');
-				}
-			}
-		}
-
-		var loaderDiv = document.getElementById('loader');
-		loaderDiv.style.display = 'block';
-
-    </script>
-    @if (!customDomain && !HttpRequestExtensions.IsLocal(Context.Request) && hasAdminRight)
-    {
-        <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
-        <script>
-        //Google Analytics
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() { dataLayer.push(arguments); }
-
-        gtag('js', new Date());
-
-        gtag('config', '@googleCode');
-
-        //Yandex.Metrika
-        (function (d, w, c) { (w[c] = w[c] || []).push(function () { try { w.yaCounter47616517 = new Ya.Metrika({ id: 47616517, clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true, trackHash: true }); } catch (e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");
-
-        //Tawk.to
-        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-        (function() {
-            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/59888248dbb01a218b4db261/default';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-        </script>
+    if (theme) {
+        document.body.className = theme;
+    } else {
+        window.localStorage.setItem('theme', '@appInfo.Name');
     }
 
-    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"] != null)
+    var loaderDiv = document.getElementById('loader');
+    loaderDiv.style.display = 'block';
+</script>
+
+@if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"] != null)
+{
+    foreach (var beforeJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"])
     {
-        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"])
-        {
-            <script src="@afterJs"></script>
-        }
+        <script src="@beforeJs"></script>
     }
+}
 
-    <environment include="Development">
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
-        <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-        <script src="/scripts/vendor/sip.min.js"></script>
-        <script src="/scripts/vendor/xlsx.core.min.js"></script>
-        <script src="/scripts/vendor/angular.js"></script>
-        <script src="/scripts/vendor/angular-filter.js"></script>
-        <script src="/scripts/vendor/angular-ui-router.js"></script>
-        <script src="/scripts/vendor/ocLazyLoad.js"></script>
-        <script src="/scripts/vendor/angular-cookies.js"></script>
-        <script src="/scripts/vendor/angular-translate.js"></script>
-        <script src="/scripts/vendor/angular-animate.js"></script>
-        <script src="/scripts/vendor/angular-sanitize.js"></script>
-        <script src="/scripts/vendor/angular-strap.js"></script>
-        <script src="/scripts/vendor/angular-strap.tpl.js"></script>
-        <script src="/scripts/vendor/angular-ui-bootstrap-custom.js"></script>
-        <script src="/scripts/vendor/angular-ui-bootstrap-custom-tpls.js"></script>
-        <script src="/scripts/vendor/angular-xeditable.js"></script>
-        <script src="/scripts/vendor/angular-ladda.js"></script>
-        <script src="/scripts/vendor/angular-ui-utils.js"></script>
-        <script src="/scripts/vendor/angular-ui-tinymce.js"></script>
-        <script src="/scripts/vendor/mentio/mentio.js"></script>
-        <script src="/scripts/vendor/ng-table.js"></script>
-        <script src="/scripts/vendor/spin.js"></script>
-        <script src="/scripts/vendor/ladda.js"></script>
-        <script src="/scripts/vendor/moment.js"></script>
-        <script src="/scripts/vendor/es5-shim.js"></script>
-        <script src="/scripts/vendor/es5-sham.js"></script>
-        <script src="/scripts/vendor/angular-file-upload.js"></script>
-        <script src="/scripts/vendor/angular-bootstrap-show-errors.js"></script>
-        <script src="/scripts/vendor/ngToast.js"></script>
-        <script src="/scripts/vendor/angular-block-ui.js"></script>
-        <script src="/scripts/vendor/angular-touch.js"></script>
-        <script src="/scripts/vendor/ng-sortable.js"></script>
-        <script src="/scripts/vendor/file-saver.js"></script>
-        <script src="/scripts/vendor/ng-img-crop.js"></script>
-        <script src="/scripts/vendor/angular-images-resizer.js"></script>
-        <script src="/scripts/vendor/angular-ui-tree.js"></script>
-        <script src="/scripts/vendor/plupload.full.js"></script>
-        <script src="/scripts/vendor/angular-plupload.js"></script>
-        <script src="/scripts/vendor/ng-tags-input.js"></script>
-        <script src="/scripts/vendor/angular-ui-mask.js"></script>
-        <script src="/scripts/vendor/powerbi.js"></script>
-        <script src="/scripts/vendor/ace/ace.js"></script>
-        <script src="/scripts/vendor/angular-ui-ace.js"></script>
-        <script src="/scripts/vendor/ace/ext-language_tools.js"></script>
-        <script src="/scripts/vendor/angular-ui-select.js"></script>
-        <script src="/scripts/vendor/angular-resizable.js"></script>
-        <script src="/scripts/vendor/clipboard.js"></script>
-        <script src="/scripts/vendor/angular-translate-extentions.js"></script>
-        <script src="/scripts/vendor/angular-dynamic-locale.js"></script>
-        <script src="/scripts/vendor/locales/moment-locales.js"></script>
-        <script src="/scripts/vendor/angular-slider.js"></script>
-        <script src="/scripts/vendor/angular-bootstrap-calendar-tpls.js"></script>
-        <script src="/scripts/vendor/dragular.js"></script>
-        <script src="/scripts/vendor/angucomplete-alt-custom.js"></script>
-        <script src="/scripts/vendor/ngclipboard.js"></script>
-        <script src="/scripts/vendor/moment-business-days.js"></script>
-        <script src="/scripts/vendor/angular-filter.js"></script>
-        <script src="/scripts/vendor/moment-weekdaysin.js"></script>
-        <script src="/scripts/app.js"></script>
-        <script src="/scripts/interceptors.js"></script>
-        <script src="/scripts/routes.js"></script>
-        <script src="/scripts/config.js"></script>
-        <script src="/scripts/constants.js"></script>
-        <script src="/scripts/utils.js"></script>
-        <script src="/scripts/directives.js"></script>
-        <script src="/scripts/filters.js"></script>
-        <script src="/view/authService.js"></script>
-        <script src="/view/appService.js"></script>
-        <script src="/view/appController.js"></script>
-        <script src="/view/app/note/noteService.js"></script>
-        <script src="/view/app/note/noteDirective.js"></script>
-        <script src="/view/app/documents/documentService.js"></script>
-        <script src="/view/app/documents/documentDirective.js"></script>
-        <script src="/view/app/module/moduleService.js"></script>
-        <script src="/view/setup/help/helpService.js"></script>
-        <script src="/view/setup/setupController.js"></script>
-        <script src="/view/setup/payment/paymentService.js"></script>
-        <script src="/view/setup/payment/paymentDirective.js"></script>
-        <script src="/view/setup/workgroups/workgroupService.js"></script>
-        <script src="/view/setup/messaging/messagingService.js"></script>
-        <script src="/view/app/payment/paymentFormController.js"></script>
-        <script src="/view/app/phone/sipPhoneController.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
-        <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
-        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-        <script src="/scripts/vendor/sip.min.js"></script>
-        <script src="/scripts/vendor/xlsx.core.min.js"></script>
-        <script src="/scripts/bundles-js/vendor.js"></script>
-        <script src="/scripts/bundles-js/app.js"></script>
-    </environment>
+<environment include="Development">
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
+    <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/sip.min.js"></script>
+    <script src="/scripts/vendor/xlsx.core.min.js"></script>
+    <script src="/scripts/vendor/angular.js"></script>
+    <script src="/scripts/vendor/angular-filter.js"></script>
+    <script src="/scripts/vendor/angular-ui-router.js"></script>
+    <script src="/scripts/vendor/ocLazyLoad.js"></script>
+    <script src="/scripts/vendor/angular-cookies.js"></script>
+    <script src="/scripts/vendor/angular-translate.js"></script>
+    <script src="/scripts/vendor/angular-animate.js"></script>
+    <script src="/scripts/vendor/angular-sanitize.js"></script>
+    <script src="/scripts/vendor/angular-strap.js"></script>
+    <script src="/scripts/vendor/angular-strap.tpl.js"></script>
+    <script src="/scripts/vendor/angular-ui-bootstrap-custom.js"></script>
+    <script src="/scripts/vendor/angular-ui-bootstrap-custom-tpls.js"></script>
+    <script src="/scripts/vendor/angular-xeditable.js"></script>
+    <script src="/scripts/vendor/angular-ladda.js"></script>
+    <script src="/scripts/vendor/angular-ui-utils.js"></script>
+    <script src="/scripts/vendor/angular-ui-tinymce.js"></script>
+    <script src="/scripts/vendor/mentio/mentio.js"></script>
+    <script src="/scripts/vendor/ng-table.js"></script>
+    <script src="/scripts/vendor/spin.js"></script>
+    <script src="/scripts/vendor/ladda.js"></script>
+    <script src="/scripts/vendor/moment.js"></script>
+    <script src="/scripts/vendor/es5-shim.js"></script>
+    <script src="/scripts/vendor/es5-sham.js"></script>
+    <script src="/scripts/vendor/angular-file-upload.js"></script>
+    <script src="/scripts/vendor/angular-bootstrap-show-errors.js"></script>
+    <script src="/scripts/vendor/ngToast.js"></script>
+    <script src="/scripts/vendor/angular-block-ui.js"></script>
+    <script src="/scripts/vendor/angular-touch.js"></script>
+    <script src="/scripts/vendor/ng-sortable.js"></script>
+    <script src="/scripts/vendor/file-saver.js"></script>
+    <script src="/scripts/vendor/ng-img-crop.js"></script>
+    <script src="/scripts/vendor/angular-images-resizer.js"></script>
+    <script src="/scripts/vendor/angular-ui-tree.js"></script>
+    <script src="/scripts/vendor/plupload.full.js"></script>
+    <script src="/scripts/vendor/angular-plupload.js"></script>
+    <script src="/scripts/vendor/ng-tags-input.js"></script>
+    <script src="/scripts/vendor/angular-ui-mask.js"></script>
+    <script src="/scripts/vendor/powerbi.js"></script>
+    <script src="/scripts/vendor/ace/ace.js"></script>
+    <script src="/scripts/vendor/angular-ui-ace.js"></script>
+    <script src="/scripts/vendor/ace/ext-language_tools.js"></script>
+    <script src="/scripts/vendor/angular-ui-select.js"></script>
+    <script src="/scripts/vendor/angular-resizable.js"></script>
+    <script src="/scripts/vendor/clipboard.js"></script>
+    <script src="/scripts/vendor/angular-translate-extentions.js"></script>
+    <script src="/scripts/vendor/angular-dynamic-locale.js"></script>
+    <script src="/scripts/vendor/locales/moment-locales.js"></script>
+    <script src="/scripts/vendor/angular-slider.js"></script>
+    <script src="/scripts/vendor/angular-bootstrap-calendar-tpls.js"></script>
+    <script src="/scripts/vendor/dragular.js"></script>
+    <script src="/scripts/vendor/angucomplete-alt-custom.js"></script>
+    <script src="/scripts/vendor/ngclipboard.js"></script>
+    <script src="/scripts/vendor/moment-business-days.js"></script>
+    <script src="/scripts/vendor/moment-weekdaysin.js"></script>
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/interceptors.js"></script>
+    <script src="/scripts/routes.js"></script>
+    <script src="/scripts/config.js"></script>
+    <script src="/scripts/constants.js"></script>
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/directives.js"></script>
+    <script src="/scripts/filters.js"></script>
+    <script src="/view/authService.js"></script>
+    <script src="/view/appService.js"></script>
+    <script src="/view/appController.js"></script>
+    <script src="/view/app/note/noteService.js"></script>
+    <script src="/view/app/note/noteDirective.js"></script>
+    <script src="/view/app/documents/documentService.js"></script>
+    <script src="/view/app/documents/documentDirective.js"></script>
+    <script src="/view/app/module/moduleService.js"></script>
+    <script src="/view/setup/help/helpService.js"></script>
+    <script src="/view/setup/setupController.js"></script>
+    <script src="/view/setup/payment/paymentService.js"></script>
+    <script src="/view/setup/payment/paymentDirective.js"></script>
+    <script src="/view/setup/workgroups/workgroupService.js"></script>
+    <script src="/view/setup/messaging/messagingService.js"></script>
+    <script src="/view/app/payment/paymentFormController.js"></script>
+    <script src="/view/app/phone/sipPhoneController.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
+    <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/sip.min.js"></script>
+    <script src="/scripts/vendor/xlsx.core.min.js"></script>
+    <script src="/bundles/vendor.js"></script>
+    <script src="/bundles/app.js"></script>
+</environment>
 
-    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"] != null)
+@if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"] != null)
+{
+    foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"])
     {
-        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"])
-        {
-            <script src="@afterJs"></script>
-        }
+        <script src="@afterJs"></script>
     }
+}
 
-    @RenderSection("scripts", required: false)
+@RenderSection("scripts", required: false)
 </body>
 </html>

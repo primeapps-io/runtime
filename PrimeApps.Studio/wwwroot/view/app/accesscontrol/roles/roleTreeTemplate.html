@@ -1,0 +1,15 @@
+<span class="tree-node tree-node-content" data-nodrag>
+    <a href ng-click="toggle(this)" ng-if="node.nodes && node.nodes.length > 0" data-nodrag>
+        <i ng-class="{'fa fa-plus-square-o': collapsed,'fa fa-minus-square-o': !collapsed}"></i>
+    </a>
+    <a ng-click="showFormModal(node.id)" data-nodrag>{{node.title}}</a>
+    <span class="action-buttons-block">
+        <a class="action-buttons-edit" ng-click="showFormModal(node.id)" title="{{node.title}}"><i class="fas fa-pen"></i></a>
+        <!--<span ng-if="node.id != 'role_ceo'"> | </span>-->
+        <a class="action-buttons-delete" id="deleteButton{{node.id}}" href ng-click="showDeleteForm(node.id)" ng-if="node.id != 'role_ceo'" data-nodrag title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></a>
+        <a ng-click="showFormModal(node.id, true)" data-nodrag title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i></a>
+    </span>
+</span>
+<ol ng-model="node.nodes" ng-class="{hidden: collapsed}" class="fa-ul" data-nodrag>
+    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/accesscontrol/roles/roleTreeTemplate.html'" data-nodrag></li>
+</ol>

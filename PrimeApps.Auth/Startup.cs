@@ -101,6 +101,11 @@ namespace PrimeApps.Auth
 
             app.Use(async (ctx, next) =>
             {
+                if (enableHttpsRedirection)
+                    ctx.Request.Scheme = "https";
+                else
+                    ctx.Request.Scheme = "http";
+                
                 ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
                 await next();
             });

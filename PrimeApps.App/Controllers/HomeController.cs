@@ -35,7 +35,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Authorize]
-        public async Task<ActionResult> Index([FromQuery] string preview = null)
+        public async Task<ActionResult> Index([FromQuery]string preview = null)
         {
             var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
             var tenantRepository = (ITenantRepository)HttpContext.RequestServices.GetService(typeof(ITenantRepository));
@@ -47,6 +47,7 @@ namespace PrimeApps.App.Controllers
             if (preview != null)
             {
                 var previewDB = CryptoHelper.Decrypt(preview, "222EF106646458CD59995D4378B55DF2");
+
                 if (previewDB.Contains("app"))
                 {
                     var appId = int.Parse(previewDB.Split("app_id=")[1]);
@@ -90,7 +91,6 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-
                 var app = await applicationRepository.GetAppWithDomain(Request.Host.Value);
 
                 var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, app.Id);
@@ -121,9 +121,8 @@ namespace PrimeApps.App.Controllers
             var language = lang ?? "tr";
 
             var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
-            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-            ViewBag.FunctionUrl = _configuration.GetSection("AppSettings")["FunctionUrl"];
+            ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
+            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
 
             if (useCdn)
             {
@@ -142,7 +141,7 @@ namespace PrimeApps.App.Controllers
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
-            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+            componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
             var components = await componentRepository.GetByType(ComponentType.Component);
 
             var globalSettings = await componentRepository.GetGlobalSettings();
@@ -156,12 +155,11 @@ namespace PrimeApps.App.Controllers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                    userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)
                         hasAdminRight = userInfo.profile.HasAdminRights;
-
                 }
             }
 

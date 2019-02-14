@@ -1,0 +1,80 @@
+<div ng-if="!loading" class="tab-content" ng-show="$parent.showConsole" id="logger">
+    <div class="col-sm-12" style="border: none;position: fixed;bottom: 0;right: 35px;z-index: 99;width: 99.1%;padding-left: 0;padding-right: 0;background: #c8c9ca;" id="log-screen">
+        <div class="setup-liste-header row" style="margin-left: 0;margin-right: 0;">
+            <div class="col-sm-12">
+                <div class="setup-title" style="height: 30px;">
+                    <h2>Logs</h2>
+                    <div>
+                        <i class="fas fa-refresh" style="font-size: 15px;cursor: pointer;" ng-class="refreshLogs ? 'fa-spin' : ''" ng-click="getLogs()"></i>
+                        <i class="fas fa-chevron-down" style="font-size: 15px;cursor: pointer;padding-left:20px;" ng-click="$parent.showConsole = !$parent.showConsole;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="ui grid">
+                <div class="sixteen wide column content" style="padding:0px;">
+                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black;">
+                        <pre id="logArea" data-ng-bind-html="asHtml()" style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;max-height: 300px !important;min-height: 100px;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div ng-if="!loading" class="tab-content">
+    <div class="col-sm-12" style="border: none ;">
+        <div class="setup-liste-header row">
+            <div class="col-sm-12">
+                <div class="setup-title">
+                    <h2>{{function.label}} <i class="fas fa-edit" style="padding-left:10px;cursor: pointer;" data-trigger="hover" data-type="info" data-title="Edit" bs-tooltip="" data-placement="right" ng-click="edit()"></i></h2>
+                    <div>
+                        <i class="fas fa-cloud-upload-alt" data-trigger="hover" data-type="info" data-title="Deployment" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;padding-right: 20px;" ng-click="runDeployment()"></i>
+                        <i class="fas fa-bolt" data-trigger="hover" data-type="info" data-title="Trigger" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;padding-right: 20px;" ng-click="runModal()"></i>
+                        <i class="fas fa-terminal" data-trigger="hover" data-type="info" data-title="Logs" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;" ng-click="openTerminal()"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="!loading" class="tab-content" style="padding: 20px;">
+            <div class="setup-title">
+                <h2>Clone this repository</h2>
+                <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+            </div>
+            <div class="markdown" style="padding-bottom: 20px;">
+        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+            <code>
+{{giteaUrl}}/{{organization.name}}/test1.git</code>
+        </pre>
+            </div>
+            <div class="setup-title">
+                <h2>Creating a new repository on the command line</h2>
+            </div>
+            <div class="markdown" style="padding-bottom: 20px;">
+        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+            <code>
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{function.name}}.git</span>
+git push -u origin master</code>
+        </pre>
+            </div>
+            <div class="setup-title">
+                <h2>Pushing an existing repository from the command line</h2>
+            </div>
+            <div class="markdown" style="padding-bottom: 20px;">
+        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+            <code>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{function.name}}.git</span>
+git push -u origin master</code>
+        </pre>
+            </div>
+        </div>
+    </div>
+</div>
+

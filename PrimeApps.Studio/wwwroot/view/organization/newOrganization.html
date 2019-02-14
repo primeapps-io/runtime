@@ -1,0 +1,102 @@
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="organizationForm" class="form-horizontal form-custom" ng-submit="saveOrganization(organizationForm);"
+          autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">Create New Organization</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
+                        <li>
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeNewOrganizationModal()">
+                                <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="organizationSaving"
+                                    ng-disabled="!$parent.$parent.organizationShortnameValid" style="margin-left: 5px">
+                                <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-dialog">
+            <div class="modal-content padding-0">
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group"
+                                     ng-class="{'has-error': organizationForm.$submitted && organizationForm.label.$invalid}">
+                                    <label class="col-sm-6 required-field">Organization Name <span
+                                            class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           required
+                                           ng-blur="organizationShortnameBlur($parent.$parent.organization)"
+                                           maxlength="200"
+                                           focus="true"
+                                           ng-change="generateOrganizationShortName($parent.$parent.organization)"
+                                           ng-model="$parent.$parent.organization.label">
+                                </div>
+                                <div class="form-group" style="position: relative;"
+                                     ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                                    <label class="col-sm-6 required-field">Organization Identifier <span
+                                            class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-8 text-lowercase"
+                                           required
+                                           maxlength="50"
+                                           ng-trim="false"
+                                           ng-blur="organizationShortnameBlur($parent.$parent.organization)"
+                                           ng-change="checkOrganizationShortname($parent.$parent.organization); $parent.$parent.isOrganizationShortNameChanged = true;"
+                                           ng-model="$parent.$parent.organization.name">
+                                    <div ng-if="organizationShortnameChecking">
+                                        <i class="fa fa-spinner fa-spin"
+                                           style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
+                                    </div>
+                                    <div ng-if="organizationShortnameValid">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
+                                           class="fa-sidebar-icon fas fa-check"></i>
+                                    </div>
+                                    <div ng-if="organizationShortnameValid === false">
+                                        <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
+                                           class="fas fa-times"></i>
+                                    </div>
+
+                                </div>
+                                <div class="form-group" style="position: relative;"
+                                     ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                                    <label class="col-sm-6 required-field">Icon Background Color</label>
+                                    <input name="colorpicker" type="color"
+                                           class="form-control"
+                                           ng-model="$parent.$parent.organization.color">
+                                </div>
+                                <div class="form-group icon-search-list">
+                                    <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
+                                    <ui-select ng-model="$parent.$parent.organization.icon" ng-disabled="ctrl.disabled">
+                                        <ui-select-match placeholder="Please search an icon">
+                                            <div>
+                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                            </div>
+                                        </ui-select-match>
+
+                                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                            <div ng-bind-html="icon.label"></div>
+                                        </ui-select-choices>
+
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

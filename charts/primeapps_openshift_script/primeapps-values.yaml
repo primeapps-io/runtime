@@ -1,7 +1,7 @@
 # Default values for PrimeApps
 # This is a YAML-formatted file.
 # Declare name/value pairs to be passed into your templates.
-  # name: value
+# name: value
 environment: "openshift"
 app:
   serviceType: NodePort
@@ -23,58 +23,40 @@ app:
     enabled: true
     hostname: primeapps.okd.primeapps.io
     annotations:
-     kubernetes.io/ingress.class: nginx
-     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "true"
+      kubernetes.io/ingress.class: nginx
+      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
     tls: true
   probes:
     enabled: false
   secrets:
-      ConnectionStrings:
-        AuthDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=auth;command timeout=0;keepalive=30;"
-        TenantDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=dev;command timeout=0;keepalive=30;"
-        PlatformDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=platform;command timeout=0;keepalive=30;"
-        WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-        StorageConnection: "http://minio.storage.svc:9000"
-        RedisConnection: "redis-master.cache.svc:6379,password=pr!meApps!0,defaultDatabase=1"
-      AppSettings:
-        EnableJobs: "true"
-        AllowInsecureHttp: "true"
-        StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
-        StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
-        TestMode: "true"
-        BlobUrl: "http://file-dev.ofisim.com"
-        FunctionUrl: "http://localhost:7071"
-        EmailSMTPEnableSsl: "true"
-        EmailSMTPHost: "smtp.sendgrid.net"
-        EmailSMTPPort: "587"
-        EmailSMTPUser: "apikey"
-        EmailSMTPPassword: "password"
-        EmailSMTPHostTest: "smtp.mailtrap.io"
-        EmailSMTPPortTest: "465"
-        EmailSMTPUserTest: "b12c70f7f50ca9"
-        EmailSMTPPasswordTest: "2cfb87c728981a"
-        WarehouseServer: "ofisim-dwh-dev.database.windows.net"
-        WarehouseMasterUser: "ofisim"
-        WarehouseMasterPassword: "0f!s!mDev"
-        PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA=="
-        PowerbiWorkspaceCollection: "OfisimDev"
-        AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;"
-        AzureSearch.Storage: "ofisimdev"
-        AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
-        UseCdn: "false"
-        AuthenticationServerURL: "https://primeapps-auth.okd.primeapps.io"
-        ClientId: "primeapps"
-        ClientSecret: "secret"
-        RequireHttps: "true"
-        ForwardHeaders: "true"
-        HttpsRedirection: "true"
-        KubernetesClusterRootUrl: "http://kubernetes.default.svc"
-        PreviewMode: "tenant"
-      Sentry:
-        Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
-        IncludeRequestPayload: "true"
-        IncludeActivityData: "true"
+    ConnectionStrings:
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+      RedisConnection: "redis-dev.primeapps.io:6379,password=pr!m€Apps!0D€v,defaultDatabase=1"
+    AppSettings:
+      StorageUrl: "http://storage.okd.primeapps.io"
+      StorageAccessKey: "ofisim-storage"
+      StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O"
+      EnableJobs: "true"
+      FunctionUrl: "http://localhost:7071"
+      EmailSMTPEnableSsl: "true"
+      EmailSMTPHost: "smtp.mailtrap.io"
+      EmailSMTPPort: "465"
+      EmailSMTPUser: "b12c70f7f50ca9"
+      EmailSMTPPassword: "2cfb87c728981a"
+      UseCdn: "false"
+      AuthenticationServerURL: "https://auth-dev.primeapps.io"
+      ClientId: "primeapps"
+      ClientSecret: "secret"
+      ForwardHeaders: "true"
+      HttpsRedirection: "true"
+      TestMode: "true"
+      PreviewMode: "tenant"
+    Sentry:
+      Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
+      IncludeRequestPayload: "true"
+      IncludeActivityData: "true"
   resources: {}
   nodeSelector: {}
   tolerations: []
@@ -99,31 +81,27 @@ auth:
     enabled: true
     hostname: primeapps-auth.okd.primeapps.io
     annotations:
-     kubernetes.io/ingress.class: nginx
-     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "true"
+      kubernetes.io/ingress.class: nginx
+      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
     tls: true
   probes:
     enabled: false
   secrets:
-      ConnectionStrings:
-        AuthDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=auth;command timeout=0;keepalive=30;"
-        TenantDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=dev;command timeout=0;keepalive=30;"
-        PlatformDBConnection: "server=primeapps.database.svc;port=5432;username=postgres;password=aJBzfMe40N;database=platform;command timeout=0;keepalive=30;"
-        WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-        StorageConnection: "http://51.144.165.200:9000"
-      AppSettings:
-        AuthCertLocation: "/cert/primeapps_id4.pfx"
-        AuthCertExportKey: "1q2w3e4r5t"
-        PublicOrigin: "https://primeapps-auth.okd.primeapps.io"
-        ValidUrls: "localhost;primeapps.io"
-        ForwardHeaders: "true"
-        HttpsRedirection: "true"
-        AuthUrl: "https://primeapps-auth.okd.primeapps.io"
-      Sentry:
-        Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
-        IncludeRequestPayload: "true"
-        IncludeActivityData: "true"
+    ConnectionStrings:
+      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+    AppSettings:
+      Authority: "https://auth-dev.primeapps.io"
+      ForwardHeaders: "true"
+      HttpsRedirection: "true"
+      AuthCertLocation: "/cert/primeapps_id4.pfx"
+      AuthCertExportKey: "1q2w3e4r5t"
+    Sentry:
+      Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
+      IncludeRequestPayload: "true"
+      IncludeActivityData: "true"
   resources: {}
   nodeSelector: {}
   tolerations: []

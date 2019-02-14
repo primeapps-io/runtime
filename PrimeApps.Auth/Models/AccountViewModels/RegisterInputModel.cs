@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
+using PrimeApps.Model.Common.App;
 
 namespace PrimeApps.Auth.UI
 {
@@ -22,13 +19,6 @@ namespace PrimeApps.Auth.UI
 		
 		[DataMember(Name = "culture")]
 		public string Culture { get; set; }
-
-		[DataMember(Name = "tenant_id")]
-		public int TenantId { get; set; }
-		/*[DataType(DataType.Password)]
-		[Display(Name = "Confirm password")]
-		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-		public string ConfirmPassword { get; set; }*/
 
 		[DataMember(Name = "first_name")]
 		public string FirstName { get; set; }

@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Auth", "PrimeApps.Auth\PrimeApps.Auth.csproj", "{F0497B05-D72D-4E08-954C-7ACE090586F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Console", "PrimeApps.Console\PrimeApps.Console.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Studio", "PrimeApps.Studio\PrimeApps.Studio.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
 EndProject

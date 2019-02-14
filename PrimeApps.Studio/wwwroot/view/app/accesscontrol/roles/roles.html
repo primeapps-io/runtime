@@ -1,0 +1,11 @@
+<div class="setup-title">
+    <h2>{{'Setup.Nav.Tabs.Roles' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Roles.NewRole' | translate}}</button>
+</div>
+<div class="tab-content" style="padding:50px 30px;">
+    <div ui-tree id="tree-root" class="roleslist">
+        <ol ui-tree-nodes ng-model="tree" data-nodrag>
+            <li ng-repeat="node in tree" ui-tree-node ng-include="'view/app/accesscontrol/roles/roleTreeTemplate.html'" data-nodrag></li>
+        </ol>
+    </div>
+</div>

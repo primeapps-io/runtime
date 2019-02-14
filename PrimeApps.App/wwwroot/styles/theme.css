@@ -1,0 +1,379 @@
+.ofisim_crm #sidebar-wrapper {
+  background: #256aeb; }
+  .ofisim_crm #sidebar-wrapper .sidebar-nav a.active i {
+    color: #8ce097; }
+  .ofisim_crm #sidebar-wrapper .sidebar-nav a.active {
+    background: #1353ca !important; }
+  .ofisim_crm #sidebar-wrapper .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: #1353ca; }
+  .ofisim_crm #sidebar-wrapper::-webkit-scrollbar-track {
+    -webkit-box-shadow: #0f409b !important; }
+  .ofisim_crm #sidebar-wrapper::-webkit-scrollbar-thumb {
+    background: #0c3684 !important; }
+  .ofisim_crm #sidebar-wrapper::-webkit-scrollbar-thumb:window-inactive {
+    background: #0a2d6d !important; }
+.ofisim_crm .ring div {
+  border-color: #1353ca transparent; }
+.ofisim_crm .help-link:hover, .ofisim_crm .help-link:focus, .ofisim_crm .launcher-link:hover, .ofisim_crm .launcher-link:focus {
+  color: #1353ca !important; }
+.ofisim_crm .btn-auth {
+  background-color: #1353ca !important;
+  border-bottom-color: #1353ca !important; }
+.ofisim_crm .input-group-focus {
+  border-bottom-color: #1353ca; }
+  .ofisim_crm .input-group-focus .input-group-addon {
+    color: #1353ca; }
+.ofisim_crm .inner-addon i {
+  color: #1353ca; }
+.ofisim_crm .modal-header {
+  background-color: #1353ca;
+  color: white; }
+
+.green-theme .sidebar-nav a.active i {
+  color: #b8c110; }
+.green-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #b8c110; }
+.green-theme .ring div {
+  border-color: #b8c110 transparent; }
+.green-theme .help-link:hover, .green-theme .help-link:focus, .green-theme .launcher-link:hover, .green-theme .launcher-link:focus {
+  color: #b8c110 !important; }
+.green-theme .btn-auth {
+  background-color: #b8c110 !important;
+  border-bottom-color: #b8c110 !important; }
+.green-theme .input-group-focus {
+  border-bottom-color: #b8c110; }
+  .green-theme .input-group-focus .input-group-addon {
+    color: #b8c110; }
+.green-theme .inner-addon i {
+  color: #b8c110; }
+.green-theme .modal-header {
+  background-color: #b8c110;
+  color: white; }
+
+.green-dark-theme .sidebar-nav a.active i {
+  color: #61b033; }
+.green-dark-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #61b033; }
+.green-dark-theme .ring div {
+  border-color: #61b033 transparent; }
+.green-dark-theme .help-link:hover, .green-dark-theme .help-link:focus, .green-dark-theme .launcher-link:hover, .green-dark-theme .launcher-link:focus {
+  color: #61b033 !important; }
+.green-dark-theme .btn-auth {
+  background-color: #61b033 !important;
+  border-bottom-color: #61b033 !important; }
+.green-dark-theme .input-group-focus {
+  border-bottom-color: #61b033; }
+  .green-dark-theme .input-group-focus .input-group-addon {
+    color: #61b033; }
+.green-dark-theme .inner-addon i {
+  color: #61b033; }
+.green-dark-theme .modal-header {
+  background-color: #61b033;
+  color: white; }
+
+.blue-theme .sidebar-nav a.active i {
+  color: #01a0e4; }
+.blue-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #01a0e4; }
+.blue-theme .ring div {
+  border-color: #01a0e4 transparent; }
+.blue-theme .help-link:hover, .blue-theme .help-link:focus, .blue-theme .launcher-link:hover, .blue-theme .launcher-link:focus {
+  color: #01a0e4 !important; }
+.blue-theme .btn-auth {
+  background-color: #01a0e4 !important;
+  border-bottom-color: #01a0e4 !important; }
+.blue-theme .input-group-focus {
+  border-bottom-color: #01a0e4; }
+  .blue-theme .input-group-focus .input-group-addon {
+    color: #01a0e4; }
+.blue-theme .inner-addon i {
+  color: #01a0e4; }
+.blue-theme .modal-header {
+  background-color: #01a0e4;
+  color: white; }
+
+.orange-theme .sidebar-nav a.active i {
+  color: #ee6d1a; }
+.orange-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #ee6d1a; }
+.orange-theme .ring div {
+  border-color: #ee6d1a transparent; }
+.orange-theme .help-link:hover, .orange-theme .help-link:focus, .orange-theme .launcher-link:hover, .orange-theme .launcher-link:focus {
+  color: #ee6d1a !important; }
+.orange-theme .btn-auth {
+  background-color: #ee6d1a !important;
+  border-bottom-color: #ee6d1a !important; }
+.orange-theme .input-group-focus {
+  border-bottom-color: #ee6d1a; }
+  .orange-theme .input-group-focus .input-group-addon {
+    color: #ee6d1a; }
+.orange-theme .inner-addon i {
+  color: #ee6d1a; }
+.orange-theme .modal-header {
+  background-color: #ee6d1a;
+  color: white; }
+
+.pink-theme .sidebar-nav a.active i {
+  color: #e21550; }
+.pink-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #e21550; }
+.pink-theme .ring div {
+  border-color: #e21550 transparent; }
+.pink-theme .help-link:hover, .pink-theme .help-link:focus, .pink-theme .launcher-link:hover, .pink-theme .launcher-link:focus {
+  color: #e21550 !important; }
+.pink-theme .btn-auth {
+  background-color: #e21550 !important;
+  border-bottom-color: #ee6d1a !important; }
+.pink-theme .input-group-focus {
+  border-bottom-color: #e21550; }
+  .pink-theme .input-group-focus .input-group-addon {
+    color: #e21550; }
+.pink-theme .inner-addon i {
+  color: #e21550; }
+.pink-theme .modal-header {
+  background-color: #e21550;
+  color: white; }
+
+.purple-theme .sidebar-nav a.active i {
+  color: #b62f7c; }
+.purple-theme .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #b62f7c; }
+.purple-theme .ring div {
+  border-color: #b62f7c transparent; }
+.purple-theme .help-link:hover, .purple-theme .help-link:focus, .purple-theme .launcher-link:hover, .purple-theme .launcher-link:focus {
+  color: #b62f7c !important; }
+.purple-theme .btn-auth {
+  background-color: #b62f7c !important;
+  border-bottom-color: #b62f7c !important; }
+.purple-theme .input-group-focus {
+  border-bottom-color: #b62f7c; }
+  .purple-theme .input-group-focus .input-group-addon {
+    color: #b62f7c; }
+.purple-theme .inner-addon i {
+  color: #b62f7c; }
+.purple-theme .modal-header {
+  background-color: #b62f7c;
+  color: white; }
+
+.theme-1 .sidebar-nav a.active i {
+  color: #ce0404; }
+.theme-1 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #ce0404; }
+.theme-1 .ring div {
+  border-color: #ce0404 transparent; }
+.theme-1 .help-link:hover, .theme-1 .help-link:focus, .theme-1 .launcher-link:hover, .theme-1 .launcher-link:focus {
+  color: #ce0404 !important; }
+.theme-1 .btn-auth {
+  background-color: #ce0404 !important;
+  border-bottom-color: #ce0404 !important; }
+.theme-1 .input-group-focus {
+  border-bottom-color: #ce0404; }
+  .theme-1 .input-group-focus .input-group-addon {
+    color: #ce0404; }
+.theme-1 .inner-addon i {
+  color: #ce0404; }
+.theme-1 .modal-header {
+  background-color: #ce0404;
+  color: white; }
+
+.primeapps .sidebar-nav a.active i {
+  color: #635fb3; }
+.primeapps .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #635fb3; }
+.primeapps .ring div {
+  border-color: #635fb3 transparent; }
+.primeapps .help-link:hover, .primeapps .help-link:focus, .primeapps .launcher-link:hover, .primeapps .launcher-link:focus {
+  color: #635fb3 !important; }
+.primeapps .btn-auth {
+  background-color: #635fb3 !important;
+  border-bottom-color: #635fb3 !important; }
+.primeapps .input-group-focus {
+  border-bottom-color: #635fb3; }
+  .primeapps .input-group-focus .input-group-addon {
+    color: #635fb3; }
+.primeapps .inner-addon i {
+  color: #635fb3; }
+.primeapps .modal-header {
+  background-color: #635fb3;
+  color: white; }
+
+.theme-3 .sidebar-nav a.active i {
+  color: #016d45; }
+.theme-3 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #016d45; }
+.theme-3 .ring div {
+  border-color: #016d45 transparent; }
+.theme-3 .help-link:hover, .theme-3 .help-link:focus, .theme-3 .launcher-link:hover, .theme-3 .launcher-link:focus {
+  color: #016d45 !important; }
+.theme-3 .btn-auth {
+  background-color: #016d45 !important;
+  border-bottom-color: #016d45 !important; }
+.theme-3 .input-group-focus {
+  border-bottom-color: #016d45; }
+  .theme-3 .input-group-focus .input-group-addon {
+    color: #016d45; }
+.theme-3 .inner-addon i {
+  color: #016d45; }
+.theme-3 .modal-header {
+  background-color: #016d45;
+  color: white; }
+
+.theme-5 .sidebar-nav a.active i {
+  color: #F4511E; }
+.theme-5 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #F4511E; }
+.theme-5 .ring div {
+  border-color: #F4511E transparent; }
+.theme-5 .help-link:hover, .theme-5 .help-link:focus, .theme-5 .launcher-link:hover, .theme-5 .launcher-link:focus {
+  color: #F4511E !important; }
+.theme-5 .btn-auth {
+  background-color: #F4511E !important;
+  border-bottom-color: #F4511E !important; }
+.theme-5 .input-group-focus {
+  border-bottom-color: #F4511E; }
+  .theme-5 .input-group-focus .input-group-addon {
+    color: #F4511E; }
+.theme-5 .inner-addon i {
+  color: #F4511E; }
+.theme-5 .modal-header {
+  background-color: #F4511E;
+  color: white; }
+
+.theme-6 .sidebar-nav a.active i {
+  color: #607D8B; }
+.theme-6 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #607D8B; }
+.theme-6 .ring div {
+  border-color: #607D8B transparent; }
+.theme-6 .help-link:hover, .theme-6 .help-link:focus, .theme-6 .launcher-link:hover, .theme-6 .launcher-link:focus {
+  color: #607D8B !important; }
+.theme-6 .btn-auth {
+  background-color: #607D8B !important;
+  border-bottom-color: #F4511E !important; }
+.theme-6 .btn-auth {
+  background-color: #607D8B !important;
+  border-bottom-color: #607D8B !important; }
+.theme-6 .input-group-focus {
+  border-bottom-color: #607D8B; }
+  .theme-6 .input-group-focus .input-group-addon {
+    color: #607D8B; }
+.theme-6 .inner-addon i {
+  color: #607D8B; }
+.theme-6 .modal-header {
+  background-color: #607D8B;
+  color: white; }
+
+.theme-7 .sidebar-nav a.active i {
+  color: #3F5195; }
+.theme-7 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #3F5195; }
+.theme-7 .ring div {
+  border-color: #3F5195 transparent; }
+.theme-7 .help-link:hover, .theme-7 .help-link:focus, .theme-7 .launcher-link:hover, .theme-7 .launcher-link:focus {
+  color: #3F5195 !important; }
+.theme-7 .btn-auth {
+  background-color: #3F5195 !important;
+  border-bottom-color: #3F5195 !important; }
+.theme-7 .input-group-focus {
+  border-bottom-color: #3F5195; }
+  .theme-7 .input-group-focus .input-group-addon {
+    color: #3F5195; }
+.theme-7 .inner-addon i {
+  color: #3F5195; }
+.theme-7 .modal-header {
+  background-color: #3F5195;
+  color: white; }
+
+.theme-8 .sidebar-nav a.active i {
+  color: #2196F3; }
+.theme-8 .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #2196F3; }
+.theme-8 .ring div {
+  border-color: #2196F3 transparent; }
+.theme-8 .help-link:hover, .theme-8 .help-link:focus, .theme-8 .launcher-link:hover, .theme-8 .launcher-link:focus {
+  color: #2196F3 !important; }
+.theme-8 .btn-auth {
+  background-color: #2196F3 !important;
+  border-bottom-color: #2196F3 !important; }
+.theme-8 .input-group-focus {
+  border-bottom-color: #2196F3; }
+  .theme-8 .input-group-focus .input-group-addon {
+    color: #2196F3; }
+.theme-8 .modal-header {
+  background-color: #2196F3;
+  color: white; }
+
+.ofisim_ik #sidebar-wrapper {
+  background: #4b439e; }
+  .ofisim_ik #sidebar-wrapper .sidebar-nav a.active i {
+    color: #ec558a; }
+  .ofisim_ik #sidebar-wrapper .sidebar-nav a.active {
+    background-color: #3d3781 !important; }
+  .ofisim_ik #sidebar-wrapper .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: #3d3781; }
+  .ofisim_ik #sidebar-wrapper::-webkit-scrollbar-track {
+    -webkit-box-shadow: #352f6f !important; }
+  .ofisim_ik #sidebar-wrapper::-webkit-scrollbar-thumb {
+    background: #2c285d !important; }
+  .ofisim_ik #sidebar-wrapper::-webkit-scrollbar-thumb:window-inactive {
+    background: #1b1939 !important; }
+.ofisim_ik .ring div {
+  border-color: #3d3781 transparent; }
+.ofisim_ik .help-link:hover, .ofisim_ik .help-link:focus, .ofisim_ik .launcher-link:hover, .ofisim_ik .launcher-link:focus {
+  color: #3d3781 !important; }
+.ofisim_ik .btn-auth {
+  background-color: #3d3781 !important;
+  border-bottom-color: #3d3781 !important; }
+.ofisim_ik .input-group-focus {
+  border-bottom-color: #3d3781; }
+  .ofisim_ik .input-group-focus .input-group-addon {
+    color: #3d3781; }
+.ofisim_ik .inner-addon i {
+  color: #3d3781; }
+.ofisim_ik .modal-header {
+  background-color: #3d3781;
+  color: white; }
+
+.isbasi .sidebar-nav a.active i {
+  color: #ce0404; }
+.isbasi .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #ce0404; }
+.isbasi .ring div {
+  border-color: #ce0404 transparent; }
+.isbasi .help-link:hover, .isbasi .help-link:focus, .isbasi .launcher-link:hover, .isbasi .launcher-link:focus {
+  color: #ce0404 !important; }
+.isbasi .btn-auth {
+  background-color: #ce0404 !important;
+  border-bottom-color: #ce0404 !important; }
+.isbasi .input-group-focus {
+  border-bottom-color: #ce0404; }
+  .isbasi .input-group-focus .input-group-addon {
+    color: #ce0404; }
+.isbasi .inner-addon i {
+  color: #ce0404; }
+.isbasi .modal-header {
+  background-color: #ce0404;
+  color: white; }
+
+.sigortapro #sidebar-wrapper {
+  background: #1d4597; }
+.sigortapro .sidebar-nav a.active {
+  background-color: #0c317e !important; }
+.sigortapro .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+  background-color: #0c317e; }
+.sigortapro .ring div {
+  border-color: #1d4597 transparent; }
+.sigortapro .help-link:hover, .sigortapro .help-link:focus, .sigortapro .launcher-link:hover, .sigortapro .launcher-link:focus {
+  color: #1d4597 !important; }
+.sigortapro .btn-auth {
+  background-color: #1d4597 !important;
+  border-bottom-color: #1d4597 !important; }
+.sigortapro .input-group-focus {
+  border-bottom-color: #1d4597; }
+  .sigortapro .input-group-focus .input-group-addon {
+    color: #1d4597; }
+.sigortapro .inner-addon i {
+  color: #1d4597; }
+.sigortapro .modal-header {
+  background-color: #1d4597;
+  color: white; }

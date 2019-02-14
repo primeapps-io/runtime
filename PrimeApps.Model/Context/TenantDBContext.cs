@@ -189,7 +189,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<TemplateShares>()
-                .HasKey(t => new { t.UserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
+                .HasKey(t => new { t.UserId, t.TemplateId }); /*We must ensure the primary key constraint names are matching*/
 
             modelBuilder.Entity<TemplateShares>()
                 .HasOne(pt => pt.Template)
@@ -276,7 +276,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
 
             //Functions
-            modelBuilder.Entity<Function>().HasIndex(x => x.Name);
+            modelBuilder.Entity<Function>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<Function>().HasIndex(x => x.Label);
             modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
             modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
 
@@ -453,7 +454,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Setting>().HasIndex(x => x.Deleted);
 
             //Template
-            modelBuilder.Entity<Template>().HasIndex(x => new { x.Id, x.Code }).IsUnique();
+            modelBuilder.Entity<Template>().HasIndex(x => new { x.Code, x.Language }).IsUnique();
             modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<Template>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Template>().HasIndex(x => x.UpdatedAt);
@@ -509,6 +510,13 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.Deleted);
 
+            //ImportMap
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Name);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Deleted);
+
             //BpmCategory
             modelBuilder.Entity<BpmCategory>().HasIndex(x => x.Name);
             modelBuilder.Entity<BpmCategory>().HasIndex(x => x.CreatedAt);
@@ -531,13 +539,17 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.Deleted);
 
-            //ImportMap
-            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Name);
-            modelBuilder.Entity<ImportMap>().HasIndex(x => x.ModuleId);
-            modelBuilder.Entity<ImportMap>().HasIndex(x => x.CreatedAt);
-            modelBuilder.Entity<ImportMap>().HasIndex(x => x.UpdatedAt);
-            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Deleted);
+            //DeploymentFunction
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.Status);
+            modelBuilder.Entity<DeploymentFunction>().HasIndex(x => x.FunctionId);
 
+            //DeploymentComponent
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
+            modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
         }
 
         public DbSet<TenantUser> Users { get; set; }
@@ -548,7 +560,9 @@ namespace PrimeApps.Model.Context
         public DbSet<Calculation> Calculations { get; set; }
         public DbSet<Dependency> Dependencies { get; set; }
         public DbSet<Component> Components { get; set; }
+        public DbSet<DeploymentComponent> DeploymentsComponent { get; set; }
         public DbSet<Function> Functions { get; set; }
+        public DbSet<DeploymentFunction> DeploymentsFunction { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldCombination> FieldCombinations { get; set; }
         public DbSet<FieldValidation> FieldValidations { get; set; }
@@ -582,7 +596,6 @@ namespace PrimeApps.Model.Context
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<Analytic> Analytics { get; set; }
         public DbSet<Import> Imports { get; set; }
-        public DbSet<ImportMap> ImportMaps { get; set; }
         public DbSet<Dashlet> Dashlets { get; set; }
         public DbSet<Chart> Charts { get; set; }
         public DbSet<Widget> Widgets { get; set; }
@@ -607,6 +620,7 @@ namespace PrimeApps.Model.Context
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<ImportMap> ImportMaps { get; set; }
         public DbSet<BpmCategory> BpmCategories { get; set; }
         public DbSet<BpmRecordFilter> BpmRecordFilters { get; set; }
         public DbSet<BpmWorkflow> BpmWorkflows { get; set; }

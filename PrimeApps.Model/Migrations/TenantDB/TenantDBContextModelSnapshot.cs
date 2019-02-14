@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
             modelBuilder
                 .HasDefaultSchema("public")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ActionButton", b =>
@@ -56,7 +56,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnName("name")
-                        .HasMaxLength(50);
+                        .HasMaxLength(100);
 
                     b.Property<string>("Parameters")
                         .HasColumnName("parameters");
@@ -719,6 +719,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("Place")
                         .HasColumnName("place");
 
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
                     b.Property<int>("Type")
                         .HasColumnName("type");
 
@@ -1062,6 +1065,114 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("dependencies");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnName("component_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComponentId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("EndTime");
+
+                    b.HasIndex("StartTime");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("deployments_component");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentFunction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<int>("FunctionId")
+                        .HasColumnName("function_id");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("EndTime");
+
+                    b.HasIndex("FunctionId");
+
+                    b.HasIndex("StartTime");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("deployments_function");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -1188,6 +1299,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<string>("EncryptionAuthorizedUsers")
                         .HasColumnName("encryption_authorized_users");
+
+                    b.Property<string>("ExternalLink")
+                        .HasColumnName("external_link")
+                        .HasMaxLength(400);
 
                     b.Property<int>("ImageSizeDetail")
                         .HasColumnName("image_size_detail");
@@ -1478,6 +1593,73 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasKey("FieldId");
 
                     b.ToTable("field_validations");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Function", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .HasColumnName("content");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Dependencies")
+                        .HasColumnName("dependencies");
+
+                    b.Property<string>("Handler")
+                        .IsRequired()
+                        .HasColumnName("handler");
+
+                    b.Property<string>("Label")
+                        .HasColumnName("label")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("Runtime")
+                        .HasColumnName("runtime");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("Label");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("Runtime");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("functions");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Help", b =>
@@ -3492,7 +3674,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasIndex("UpdatedById");
 
-                    b.HasIndex("Id", "Code")
+                    b.HasIndex("Code", "Language")
                         .IsUnique();
 
                     b.ToTable("templates");
@@ -4659,6 +4841,40 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasForeignKey("UpdatedById");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentComponent", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Component", "Component")
+                        .WithMany("Deployments")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.DeploymentFunction", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Function", "Function")
+                        .WithMany("Deployments")
+                        .HasForeignKey("FunctionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Document", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
@@ -4750,6 +4966,18 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .WithOne("Validation")
                         .HasForeignKey("PrimeApps.Model.Entities.Tenant.FieldValidation", "FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Function", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Help", b =>
@@ -5074,7 +5302,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "ParentModule")
                         .WithMany("Relations")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);

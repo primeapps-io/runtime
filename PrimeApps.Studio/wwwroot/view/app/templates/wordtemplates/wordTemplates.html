@@ -1,0 +1,108 @@
+<div class="setup-title">
+    <h2>{{'Common.WordTemplate' | translate}}</h2>
+    <div class="pull-right" style="padding-left: 10px;">
+        <!--<ul class="list-unstyled list-inline">-->
+        <!--<li>-->
+        <button class="btn add-button" ng-click="showTemplateGuideModal()"><i class="pull-left fa fa-book"></i>{{'Setup.Templates.SelectTemplateFields' | translate}}</button>
+        <!-- </li>-->
+        <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Templates.AddNewWordTemplate' | translate}}</button>
+        <!--</li>-->
+        <!--</ul>-->
+    </div>
+</div>
+<div class="tab-content table-responsive">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Templates.Status' | translate}}</th>
+                <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table ng-show="!loading" class="table">
+        <thead>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Templates.Status' | translate}}</th>
+                <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
+                <th width="50"></th>
+            </tr>
+        </thead>
+        <tbody ng-show="!loading">
+            <tr ng-repeat="template in templates" ng-click="showFormModal(template)">
+                <td>{{template.name}}</td>
+                <td>{{template.module['label_'+language+'_plural']}}</td>
+                <td>{{template.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
+                <td><a href="{{getDownloadUrl(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
+                <td class="text-right">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(template.id);" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div>
+            Total Word Templates {{pageTotal}}
+        </div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+    </div>
+</div>

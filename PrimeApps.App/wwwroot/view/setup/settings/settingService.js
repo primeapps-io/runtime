@@ -13,7 +13,8 @@ angular.module('primeapps')
                         email: user.email,
                         password: user.password,
                         picture: user.picture,
-                        phone: user.phone
+                        phone: user.phone,
+                        profile_picture : user.picture
                     });
                 },
 

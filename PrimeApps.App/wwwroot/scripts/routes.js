@@ -6,48 +6,47 @@ angular.module('primeapps')
         function ($stateProvider, $urlRouterProvider) {
 
             /*if (window.location.hash.indexOf('#access_token') > -1) {
-                var parseQueryString = function (queryString) {
-                    var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
+             var parseQueryString = function (queryString) {
+             var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
 
-                    if (queryString === null) {
-                        return data;
-                    }
+             if (queryString === null) {
+             return data;
+             }
 
-                    pairs = queryString.split("&");
+             pairs = queryString.split("&");
 
-                    for (var i = 0; i < pairs.length; i++) {
-                        pair = pairs[i];
-                        separatorIndex = pair.indexOf("=");
+             for (var i = 0; i < pairs.length; i++) {
+             pair = pairs[i];
+             separatorIndex = pair.indexOf("=");
 
-                        if (separatorIndex === -1) {
-                            escapedKey = pair;
-                            escapedValue = null;
-                        } else {
-                            escapedKey = pair.substr(0, separatorIndex);
-                            escapedValue = pair.substr(separatorIndex + 1);
-                        }
+             if (separatorIndex === -1) {
+             escapedKey = pair;
+             escapedValue = null;
+             } else {
+             escapedKey = pair.substr(0, separatorIndex);
+             escapedValue = pair.substr(separatorIndex + 1);
+             }
 
-                        key = decodeURIComponent(escapedKey);
-                        value = decodeURIComponent(escapedValue);
+             key = decodeURIComponent(escapedKey);
+             value = decodeURIComponent(escapedValue);
 
-                        data[key] = value;
-                    }
+             data[key] = value;
+             }
 
-                    return data;
-                };
+             return data;
+             };
 
-                var queryString = parseQueryString(window.location.hash.substr(1));
-                window.localStorage['access_token'] = queryString.access_token;
-            }*/
+             var queryString = parseQueryString(window.location.hash.substr(1));
+             window.localStorage['access_token'] = queryString.access_token;
+             }*/
 
-            if (token){
+            if (token) {
                 window.localStorage['access_token'] = token;
             }
 
-            if (!window.localStorage.getItem('access_token')){
+            if (!window.localStorage.getItem('access_token')) {
                 return;
             }
-
 
             //app
             $stateProvider
@@ -119,8 +118,8 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/module/moduleListController.js',
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/email/bulkEMailController.js',
-								cdnUrl + 'view/app/sms/bulkSMSController.js',
-								cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
+                                cdnUrl + 'view/app/sms/bulkSMSController.js',
+                                cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                                 cdnUrl + 'view/app/leave/collectiveLeaveController.js',
                                 cdnUrl + 'view/app/module/exportDataController.js'
@@ -766,8 +765,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/moduleSetupController.js',
-								cdnUrl + 'view/setup/modules/moduleSetupService.js',
-								cdnUrl + 'view/setup/license/licenseService.js'
+                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
+                                cdnUrl + 'view/setup/license/licenseService.js'
                             ]);
                         }]
                     }
@@ -1059,43 +1058,43 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-				})
+                })
 
-				.state('app.setup.menu', {
-					url: '/menu',
-					views: {
-						'app': {
-							templateUrl: cdnUrl + 'view/setup/menu/menu.html',
-							controller: 'MenuController'
-						}
-					},
-					resolve: {
-						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-							return $ocLazyLoad.load([
-								cdnUrl + 'view/setup/menu/menuController.js',
-								cdnUrl + 'view/setup/menu/menuService.js'
-							]);
-						}]
-					}
-				})
+                .state('app.setup.menu', {
+                    url: '/menu',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/setup/menu/menu.html',
+                            controller: 'MenuController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/setup/menu/menuController.js',
+                                cdnUrl + 'view/setup/menu/menuService.js'
+                            ]);
+                        }]
+                    }
+                })
 
-				.state('app.setup.menu_list', {
-					url: '/menu_list',
-					views: {
-						'app': {
-							templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
-							controller: 'MenuListController'
-						}
-					},
-					resolve: {
-						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-							return $ocLazyLoad.load([
-								cdnUrl + 'view/setup/menu/menuListController.js',
-								cdnUrl + 'view/setup/menu/menuService.js'
-							]);
-						}]
-					}
-				})
+                .state('app.setup.menu_list', {
+                    url: '/menu_list',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
+                            controller: 'MenuListController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/setup/menu/menuListController.js',
+                                cdnUrl + 'view/setup/menu/menuService.js'
+                            ]);
+                        }]
+                    }
+                })
 
                 .state('app.setup.workflows', {
                     url: '/workflows',
@@ -1347,10 +1346,21 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
-                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId ) + '/' + component.name + '/';
+                    var splitUrls = componentContent.app.templateUrl.split('{appConfigs.');
+
+                    if (splitUrls.length > 1) {
+                        angular.forEach(splitUrls, function (splitUrl, key) {
+                            if (splitUrl.indexOf('}') > -1) {
+                                var configObj = splitUrl.split('}')[0];
+                                componentContent.app.templateUrl = componentContent.app.templateUrl.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+                            }
+                        });
+                    }
+
+                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
-                        files.push(componentContent.files[i].includes('http') ? componentContent.files[i] : url + componentContent.files[i]);
+                        files.push(componentContent.files[i].lastIndexOf('http', 0) === 0 ? componentContent.files[i] : url + componentContent.files[i]);
                     }
 
                     $stateProvider
@@ -1369,7 +1379,7 @@ angular.module('primeapps')
                                         }
                                         str = str.substring(0, str.length - 1);
 
-                                        var fUrl = componentContent.app.templateUrl.includes('http') ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
+                                        var fUrl = componentContent.app.templateUrl.lastIndexOf('http', 0) === 0 ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
 
                                         if (str.length > 1) {
                                             fUrl += str;

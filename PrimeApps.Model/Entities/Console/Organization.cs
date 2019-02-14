@@ -22,6 +22,9 @@ namespace PrimeApps.Model.Entities.Console
         [Column("default")]
         public bool Default { get; set; }
 
+        [Column("color")]
+        public string Color { get; set; }
+
         public virtual ConsoleUser Owner { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }

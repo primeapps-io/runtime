@@ -204,7 +204,7 @@ namespace PrimeApps.App.Storage
                 return string.Empty;
             }
 
-            var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
+            var blobUrl = configuration.GetSection("AppSettings")["StorageUrl"];
 
             return $"{blobUrl}/{profilePicture}";
         }
@@ -216,7 +216,7 @@ namespace PrimeApps.App.Storage
                 return string.Empty;
             }
 
-            var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
+            var blobUrl = configuration.GetSection("AppSettings")["StorageUrl"];
 
             return $"{blobUrl}/{logo}";
         }

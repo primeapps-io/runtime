@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IOrganizationRepository : IRepositoryBaseConsole
     {
         bool IsOrganizationAvaliable(int userId, int organizationId);
-        Task<bool> IsOrganizationNameAvailableAsync(string name);
+        Task<bool> IsOrganizationNameAvailable(string name);
         Task<Organization> Get(int userId, int organizationId);
         Task<List<OrganizationUser>> GetUsersByOrganizationId(int organizationId);
         Task<List<Organization>> GetWithUsers(int id);

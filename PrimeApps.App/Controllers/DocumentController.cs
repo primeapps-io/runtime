@@ -239,7 +239,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            String blobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -311,7 +311,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            String blobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -550,7 +550,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var document in result.Documents)
                 {
-                    document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1), Amazon.S3.Protocol.HTTP, false);
+                    document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1));
                 }
             }
 

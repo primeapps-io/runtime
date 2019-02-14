@@ -18,12 +18,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using PrimeApps.Model.Common.App;
 
 namespace PrimeApps.Auth.UI
 {
     public class AuthHelper
     {
-        public static async Task<Application> GetApplicationInfoAsync(IConfiguration configuration, HttpRequest request, string returnUrl, IApplicationRepository applicationRepository)
+        public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, string returnUrl, IApplicationRepository applicationRepository)
         {
             var language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
@@ -44,7 +45,7 @@ namespace PrimeApps.Auth.UI
 
             var theme = JObject.Parse(app.Setting.AuthTheme);
 
-            var application = new Application
+            var application = new ApplicationInfoViewModel
             {
                 Id = app.Id,
                 Name = app.Name,
@@ -58,7 +59,7 @@ namespace PrimeApps.Auth.UI
                 Favicon = theme["favicon"].ToString(),
                 CdnUrl = cdnUrlStatic,
                 Domain = app.Setting.AppDomain,
-                Settings = new Settings
+                ApplicationSetting = new ApplicationSettingViewModel
                 {
                     Culture = app.Setting.Culture,
                     Currency = app.Setting.Currency,
@@ -70,7 +71,6 @@ namespace PrimeApps.Auth.UI
                 }
             };
            
-            //ErrorHandler.LogMessage("GetApplicationInfoAsync:: ReturnUrl: " + returnUrl + " ClientId: " + clientId + " AppId: " + app.Id + " App: " + app + " Application: " + application, Sentry.Protocol.SentryLevel.Info);
             return application;
         }
 
@@ -95,9 +95,9 @@ namespace PrimeApps.Auth.UI
             return clientId;
         }
 
-        public static async Task<bool> TenantOperationWebhook(Application app, Tenant tenant, TenantUser tenantUser)
+        public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)
         {
-            if (string.IsNullOrWhiteSpace(app.Settings.TenantOperationWebhook))
+            if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
                 return true;
 
             using (var httpClient = new HttpClient())
@@ -113,7 +113,7 @@ namespace PrimeApps.Auth.UI
 
                     httpClient.DefaultRequestHeaders.Accept.Clear();
                     httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                    var response = await httpClient.PostAsync(app.Settings.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                    var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
                     if (!response.IsSuccessStatusCode)
                     {

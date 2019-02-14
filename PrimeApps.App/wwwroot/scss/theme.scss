@@ -1,6 +1,3 @@
-$ofisim-crm-color: #1353ca;
-$ofisim-crm-background: lighten($ofisim-crm-color, 10%);
-
 $green-theme-color: #b8c110;
 $green-dark-theme-color: #61b033;
 $blue-theme-color: #01a0e4;
@@ -8,965 +5,854 @@ $orange-theme-color: #ee6d1a;
 $pink-theme-color: #e21550;
 $purple-theme-color: #b62f7c;
 
-$ofisim-asistan-color: #e65946;
-$ofisim-asistan-background: lighten($ofisim-asistan-color, 4%);
-
-$ofisim-ik-color: #3d3781;
-$ofisim-ik-background: lighten($ofisim-ik-color, 8%);
-
-$ofisim-cagri-color: #517ee4;
-$ofisim-cagri-background: lighten($ofisim-cagri-color, 7%);
-
 $theme-1-color: #ce0404;
-$primeapps-color: #635fb3;
 $theme-3-color: #016d45;
-
-$ofisim-kobi-color: #49a43b;
-$ofisim-kobi-background: lighten($ofisim-kobi-color, 10%);
-
 $theme-5-color: #F4511E;
 $theme-6-color: #607D8B;
 $theme-7-color: #3F5195;
 $theme-8-color: #2196F3;
 
-.ofisim-crm {
-    #sidebar-wrapper {
-        background: $ofisim-crm-background;
-        .sidebar-nav a.active i {
-            color: #8ce097;
-        }
-        .sidebar-nav a.active {
-            background: $ofisim-crm-color !important;
-        }
+$primeapps-color: #635fb3;
+$ofisim-crm-color: #1353ca;
+$ofisim-crm-background: lighten($ofisim-crm-color, 10%);
+$ofisim-ik-color: #3d3781;
+$ofisim-ik-background: lighten($ofisim-ik-color, 8%);
+$sigortapro-1-color: #1d4597;
 
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-crm-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-crm-color, 10%) !important;
-        }
+.ofisim_crm {
+  #sidebar-wrapper {
+    background: $ofisim-crm-background;
 
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-crm-color, 15%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-crm-color, 20%) !important;
-        }
+    .sidebar-nav a.active i {
+      color: #8ce097;
     }
 
-    .ring {
-        div {
-            border-color: $ofisim-crm-color transparent;
-        }
+    .sidebar-nav a.active {
+      background: $ofisim-crm-color !important;
     }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-crm-color !important;
-        }
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+      background-color: $ofisim-crm-color;
     }
 
-    .btn-auth {
-        background-color: $ofisim-crm-color !important;
-        border-bottom-color: $ofisim-crm-color !important;
+    &::-webkit-scrollbar-track {
+      -webkit-box-shadow: darken($ofisim-crm-color, 10%) !important;
     }
 
-    .input-group-focus {
-        border-bottom-color: $ofisim-crm-color;
-
-        .input-group-addon {
-            color: $ofisim-crm-color;
-        }
+    &::-webkit-scrollbar-thumb {
+      background: darken($ofisim-crm-color, 15%) !important;
     }
 
-    .inner-addon {
-        i {
-            color: $ofisim-crm-color;
-        }
+    &::-webkit-scrollbar-thumb:window-inactive {
+      background: darken($ofisim-crm-color, 20%) !important;
     }
+  }
 
-    .modal-header {
-        background-color: $ofisim-crm-color;
-        color: white;
+  .ring {
+    div {
+      border-color: $ofisim-crm-color transparent;
     }
+  }
+
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $ofisim-crm-color !important;
+    }
+  }
+
+  .btn-auth {
+    background-color: $ofisim-crm-color !important;
+    border-bottom-color: $ofisim-crm-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $ofisim-crm-color;
+
+    .input-group-addon {
+      color: $ofisim-crm-color;
+    }
+  }
+
+  .inner-addon {
+    i {
+      color: $ofisim-crm-color;
+    }
+  }
+
+  .modal-header {
+    background-color: $ofisim-crm-color;
+    color: white;
+  }
 }
 
 .green-theme {
-    .sidebar-nav a.active i {
-        color: $green-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $green-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $green-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $green-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $green-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $green-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $green-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $green-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $green-theme-color !important;
-        border-bottom-color: $green-theme-color !important;
+  .btn-auth {
+    background-color: $green-theme-color !important;
+    border-bottom-color: $green-theme-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $green-theme-color;
+
+    .input-group-addon {
+      color: $green-theme-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $green-theme-color;
-
-        .input-group-addon {
-            color: $green-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $green-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $green-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $green-theme-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $green-theme-color;
+    color: white;
+  }
 }
 
 .green-dark-theme {
-    .sidebar-nav a.active i {
-        color: $green-dark-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $green-dark-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $green-dark-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $green-dark-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $green-dark-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $green-dark-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $green-dark-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $green-dark-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $green-dark-theme-color !important;
-        border-bottom-color: $green-dark-theme-color !important;
-    }
+  .btn-auth {
+    background-color: $green-dark-theme-color !important;
+    border-bottom-color: $green-dark-theme-color !important;
+  }
 
-    .input-group-focus {
-        border-bottom-color: $green-dark-theme-color;
+  .input-group-focus {
+    border-bottom-color: $green-dark-theme-color;
 
-        .input-group-addon {
-            color: $green-dark-theme-color;
-        }
+    .input-group-addon {
+      color: $green-dark-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $green-dark-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $green-dark-theme-color;
     }
+  }
 
-    .modal-header {
-        background-color: $green-dark-theme-color;
-        color: white;
-    }
-    }
+  .modal-header {
+    background-color: $green-dark-theme-color;
+    color: white;
+  }
+}
 
 .blue-theme {
-    .sidebar-nav a.active i {
-        color: $blue-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $blue-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $blue-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $blue-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $blue-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $blue-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $blue-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $blue-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $blue-theme-color !important;
-        border-bottom-color: $blue-theme-color !important;
+  .btn-auth {
+    background-color: $blue-theme-color !important;
+    border-bottom-color: $blue-theme-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $blue-theme-color;
+
+    .input-group-addon {
+      color: $blue-theme-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $blue-theme-color;
-
-        .input-group-addon {
-            color: $blue-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $blue-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $blue-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $blue-theme-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $blue-theme-color;
+    color: white;
+  }
 }
 
 .orange-theme {
-    .sidebar-nav a.active i {
-        color: $orange-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $orange-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $orange-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $orange-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $orange-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $orange-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $orange-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $orange-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $orange-theme-color !important;
-        border-bottom-color: $orange-theme-color !important;
+  .btn-auth {
+    background-color: $orange-theme-color !important;
+    border-bottom-color: $orange-theme-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $orange-theme-color;
+
+    .input-group-addon {
+      color: $orange-theme-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $orange-theme-color;
-
-        .input-group-addon {
-            color: $orange-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $orange-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $orange-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $orange-theme-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $orange-theme-color;
+    color: white;
+  }
 }
 
 .pink-theme {
-    .sidebar-nav a.active i {
-        color: $pink-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $pink-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $pink-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $pink-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $pink-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $pink-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $pink-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $pink-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $pink-theme-color !important;
-        border-bottom-color: $orange-theme-color !important;
+  .btn-auth {
+    background-color: $pink-theme-color !important;
+    border-bottom-color: $orange-theme-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $pink-theme-color;
+
+    .input-group-addon {
+      color: $pink-theme-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $pink-theme-color;
-
-        .input-group-addon {
-            color: $pink-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $pink-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $pink-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $pink-theme-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $pink-theme-color;
+    color: white;
+  }
 }
 
 .purple-theme {
-    .sidebar-nav a.active i {
-        color: $purple-theme-color;
-    }
+  .sidebar-nav a.active i {
+    color: $purple-theme-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $purple-theme-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $purple-theme-color;
+  }
 
-    .ring {
-        div {
-            border-color: $purple-theme-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $purple-theme-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $purple-theme-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $purple-theme-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $purple-theme-color !important;
-        border-bottom-color: $purple-theme-color !important;
+  .btn-auth {
+    background-color: $purple-theme-color !important;
+    border-bottom-color: $purple-theme-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $purple-theme-color;
+
+    .input-group-addon {
+      color: $purple-theme-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $purple-theme-color;
-
-        .input-group-addon {
-            color: $purple-theme-color;
-        }
+  .inner-addon {
+    i {
+      color: $purple-theme-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $purple-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $purple-theme-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $purple-theme-color;
+    color: white;
+  }
 }
 
 .theme-1 {
-    .sidebar-nav a.active i {
-        color: $theme-1-color;
-    }
+  .sidebar-nav a.active i {
+    color: $theme-1-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-1-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-1-color;
+  }
 
-    .ring {
-        div {
-            border-color: $theme-1-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $theme-1-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-1-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-1-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $theme-1-color !important;
-        border-bottom-color: $theme-1-color !important;
+  .btn-auth {
+    background-color: $theme-1-color !important;
+    border-bottom-color: $theme-1-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-1-color;
+
+    .input-group-addon {
+      color: $theme-1-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $theme-1-color;
-
-        .input-group-addon {
-            color: $theme-1-color;
-        }
+  .inner-addon {
+    i {
+      color: $theme-1-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $theme-1-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-1-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $theme-1-color;
+    color: white;
+  }
 }
 
 .primeapps {
-    .sidebar-nav a.active i {
-        color: $primeapps-color;
-    }
+  .sidebar-nav a.active i {
+    color: $primeapps-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $primeapps-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $primeapps-color;
+  }
 
-    .ring {
-        div {
-            border-color: $primeapps-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $primeapps-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $primeapps-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $primeapps-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $primeapps-color !important;
-        border-bottom-color: $primeapps-color !important;
+  .btn-auth {
+    background-color: $primeapps-color !important;
+    border-bottom-color: $primeapps-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $primeapps-color;
+
+    .input-group-addon {
+      color: $primeapps-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $primeapps-color;
-
-        .input-group-addon {
-            color: $primeapps-color;
-        }
+  .inner-addon {
+    i {
+      color: $primeapps-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $primeapps-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $primeapps-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $primeapps-color;
+    color: white;
+  }
 }
 
 .theme-3 {
-    .sidebar-nav a.active i {
-        color: $theme-3-color;
+  .sidebar-nav a.active i {
+    color: $theme-3-color;
+  }
+
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-3-color;
+  }
+
+  .ring {
+    div {
+      border-color: $theme-3-color transparent;
     }
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-3-color;
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-3-color !important;
     }
+  }
 
-    .ring {
-        div {
-            border-color: $theme-3-color transparent;
-        }
+  .btn-auth {
+    background-color: $theme-3-color !important;
+    border-bottom-color: $theme-3-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-3-color;
+
+    .input-group-addon {
+      color: $theme-3-color;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-3-color !important;
-        }
+  .inner-addon {
+    i {
+      color: $theme-3-color;
     }
+  }
 
-    .btn-auth {
-        background-color: $theme-3-color !important;
-        border-bottom-color: $theme-3-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-3-color;
-
-        .input-group-addon {
-            color: $theme-3-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $theme-3-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-3-color;
-        color: white;
-    }
-}
-
-.ofisim-kobi {
-    #sidebar-wrapper {
-        background: $ofisim-kobi-background;
-        .sidebar-nav a.active i {
-            color: #e4ff00;
-        }
-        .sidebar-nav a.active {
-            background: $ofisim-kobi-color !important;
-        }
-
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-kobi-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-kobi-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-kobi-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-kobi-color, 20%) !important;
-        }
-    }
-    .ring {
-        div {
-            border-color: $ofisim-kobi-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-kobi-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-kobi-color !important;
-        border-bottom-color: $ofisim-kobi-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-kobi-color;
-
-        .input-group-addon {
-            color: $ofisim-kobi-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-kobi-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-kobi-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $theme-3-color;
+    color: white;
+  }
 }
 
 .theme-5 {
-    .sidebar-nav a.active i {
-        color: $theme-5-color;
-    }
+  .sidebar-nav a.active i {
+    color: $theme-5-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-5-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-5-color;
+  }
 
-    .ring {
-        div {
-            border-color: $theme-5-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $theme-5-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-5-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-5-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $theme-5-color !important;
-        border-bottom-color: $theme-5-color !important;
+  .btn-auth {
+    background-color: $theme-5-color !important;
+    border-bottom-color: $theme-5-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-5-color;
+
+    .input-group-addon {
+      color: $theme-5-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $theme-5-color;
-
-        .input-group-addon {
-            color: $theme-5-color;
-        }
+  .inner-addon {
+    i {
+      color: $theme-5-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $theme-5-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-5-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $theme-5-color;
+    color: white;
+  }
 }
 
 .theme-6 {
-    .sidebar-nav a.active i {
-        color: $theme-6-color;
-    }
+  .sidebar-nav a.active i {
+    color: $theme-6-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-6-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-6-color;
+  }
 
-    .ring {
-        div {
-            border-color: $theme-6-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $theme-6-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-6-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-6-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $theme-6-color !important;
-        border-bottom-color: $theme-5-color !important;
-    }
-    .btn-auth {
-        background-color: $theme-6-color !important;
-        border-bottom-color: $theme-6-color !important;
-    }
+  .btn-auth {
+    background-color: $theme-6-color !important;
+    border-bottom-color: $theme-5-color !important;
+  }
 
-    .input-group-focus {
-        border-bottom-color: $theme-6-color;
+  .btn-auth {
+    background-color: $theme-6-color !important;
+    border-bottom-color: $theme-6-color !important;
+  }
 
-        .input-group-addon {
-            color: $theme-6-color;
-        }
-    }
+  .input-group-focus {
+    border-bottom-color: $theme-6-color;
 
-    .inner-addon {
-        i {
-            color: $theme-6-color;
-        }
+    .input-group-addon {
+      color: $theme-6-color;
     }
+  }
 
-    .modal-header {
-        background-color: $theme-6-color;
-        color: white;
+  .inner-addon {
+    i {
+      color: $theme-6-color;
     }
+  }
+
+  .modal-header {
+    background-color: $theme-6-color;
+    color: white;
+  }
 }
 
 .theme-7 {
-    .sidebar-nav a.active i {
-        color: $theme-7-color;
-    }
+  .sidebar-nav a.active i {
+    color: $theme-7-color;
+  }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-7-color;
-    }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-7-color;
+  }
 
-    .ring {
-        div {
-            border-color: $theme-7-color transparent;
-        }
+  .ring {
+    div {
+      border-color: $theme-7-color transparent;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-7-color !important;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-7-color !important;
     }
+  }
 
-    .btn-auth {
-        background-color: $theme-7-color !important;
-        border-bottom-color: $theme-7-color !important;
+  .btn-auth {
+    background-color: $theme-7-color !important;
+    border-bottom-color: $theme-7-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-7-color;
+
+    .input-group-addon {
+      color: $theme-7-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $theme-7-color;
-
-        .input-group-addon {
-            color: $theme-7-color;
-        }
+  .inner-addon {
+    i {
+      color: $theme-7-color;
     }
+  }
 
-    .inner-addon {
-        i {
-            color: $theme-7-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-7-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $theme-7-color;
+    color: white;
+  }
 }
 
 .theme-8 {
+  .sidebar-nav a.active i {
+    color: $theme-8-color;
+  }
+
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-8-color;
+  }
+
+  .ring {
+    div {
+      border-color: $theme-8-color transparent;
+    }
+  }
+
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-8-color !important;
+    }
+  }
+
+  .btn-auth {
+    background-color: $theme-8-color !important;
+    border-bottom-color: $theme-8-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-8-color;
+
+    .input-group-addon {
+      color: $theme-8-color;
+    }
+  }
+
+  .modal-header {
+    background-color: $theme-8-color;
+    color: white;
+  }
+}
+
+.ofisim_ik {
+  #sidebar-wrapper {
+    background: $ofisim-ik-background;
+
     .sidebar-nav a.active i {
-        color: $theme-8-color;
+      color: #ec558a;
+    }
+
+    .sidebar-nav a.active {
+      background-color: $ofisim-ik-color !important;
     }
 
     .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-8-color;
+      background-color: $ofisim-ik-color;
     }
 
-    .ring {
-        div {
-            border-color: $theme-8-color transparent;
-        }
+    &::-webkit-scrollbar-track {
+      -webkit-box-shadow: darken($ofisim-ik-color, 5%) !important;
     }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-8-color !important;
-        }
+    &::-webkit-scrollbar-thumb {
+      background: darken($ofisim-ik-color, 10%) !important;
     }
 
-    .btn-auth {
-        background-color: $theme-8-color !important;
-        border-bottom-color: $theme-8-color !important;
+    &::-webkit-scrollbar-thumb:window-inactive {
+      background: darken($ofisim-ik-color, 20%) !important;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $theme-8-color;
-
-        .input-group-addon {
-            color: $theme-8-color;
-        }
+  .ring {
+    div {
+      border-color: $ofisim-ik-color transparent;
     }
+  }
 
-    .modal-header {
-        background-color: $theme-8-color;
-        color: white;
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $ofisim-ik-color !important;
     }
+  }
+
+  .btn-auth {
+    background-color: $ofisim-ik-color !important;
+    border-bottom-color: $ofisim-ik-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $ofisim-ik-color;
+
+    .input-group-addon {
+      color: $ofisim-ik-color;
+    }
+  }
+
+  .inner-addon {
+    i {
+      color: $ofisim-ik-color;
+    }
+  }
+
+  .modal-header {
+    background-color: $ofisim-ik-color;
+    color: white;
+  }
 }
 
-.ofisim-asistan {
-    #sidebar-wrapper {
-        background: $ofisim-asistan-background;
-        .sidebar-nav a.active i {
-            color: #c7ef4e;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-asistan-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-asistan-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-asistan-color, 5%) !important;
-        }
+.isbasi {
+  .sidebar-nav a.active i {
+    color: $theme-1-color;
+  }
 
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-asistan-color, 10%) !important;
-        }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: $theme-1-color;
+  }
 
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-asistan-color, 20%) !important;
-        }
+  .ring {
+    div {
+      border-color: $theme-1-color transparent;
     }
+  }
 
-    .ring {
-        div {
-            border-color: $ofisim-asistan-color transparent;
-        }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $theme-1-color !important;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-asistan-color !important;
-        }
+  .btn-auth {
+    background-color: $theme-1-color !important;
+    border-bottom-color: $theme-1-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $theme-1-color;
+
+    .input-group-addon {
+      color: $theme-1-color;
     }
+  }
 
-    .btn-auth {
-        background-color: $ofisim-asistan-color !important;
-        border-bottom-color: $ofisim-asistan-color !important;
+  .inner-addon {
+    i {
+      color: $theme-1-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $ofisim-asistan-color;
-
-        .input-group-addon {
-            color: $ofisim-asistan-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-asistan-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-asistan-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $theme-1-color;
+    color: white;
+  }
 }
 
-.ofisim-ik {
-    #sidebar-wrapper {
-        background: $ofisim-ik-background;
-        .sidebar-nav a.active i {
-            color: #ec558a;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-ik-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-ik-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-ik-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-ik-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-ik-color, 20%) !important;
-        }
+.sigortapro {
+  #sidebar-wrapper {
+    background: $sigortapro-1-color;
+  }
+  .sidebar-nav a.active {
+    background-color: #0c317e !important;
+  }
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: #0c317e;
+  }
+  .ring {
+    div {
+      border-color: $sigortapro-1-color transparent;
     }
-
-    .ring {
-        div {
-            border-color: $ofisim-ik-color transparent;
-        }
+  }
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $sigortapro-1-color !important;
     }
+  }
 
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-ik-color !important;
-        }
+  .btn-auth {
+    background-color: $sigortapro-1-color !important;
+    border-bottom-color: $sigortapro-1-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $sigortapro-1-color;
+
+    .input-group-addon {
+      color: $sigortapro-1-color;
     }
+  }
 
-    .btn-auth {
-        background-color: $ofisim-ik-color !important;
-        border-bottom-color: $ofisim-ik-color !important;
+  .inner-addon {
+    i {
+      color: $sigortapro-1-color;
     }
+  }
 
-    .input-group-focus {
-        border-bottom-color: $ofisim-ik-color;
-
-        .input-group-addon {
-            color: $ofisim-ik-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-ik-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-ik-color;
-        color: white;
-    }
+  .modal-header {
+    background-color: $sigortapro-1-color;
+    color: white;
+  }
 }
-
-.ofisim-cagri {
-    #sidebar-wrapper {
-        background: $ofisim-cagri-background;
-        .sidebar-nav a.active i {
-            color: #f2614f;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-cagri-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-cagri-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-cagri-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-cagri-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-cagri-color, 20%) !important;
-        }
-    }
-
-    .ring {
-        div {
-            border-color: $ofisim-cagri-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-cagri-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-cagri-color !important;
-        border-bottom-color: $ofisim-cagri-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-cagri-color;
-
-        .input-group-addon {
-            color: $ofisim-cagri-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-cagri-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-cagri-color;
-        color: white;
-    }
-}
-
-    //Override for Analytics menu
-    .analytics .sidebar-nav a.focus {
-        background-color: #fff !important;
-    }
-
-    .analytics .sidebar-nav a.active {
-        background-color: #1f774d !important;
-    }
-
-    .analytics .sidebar-nav a.active i {
-        color: #fff !important;
-    }
-
-    .analytics .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: #53af84 !important;
-    }

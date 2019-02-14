@@ -127,9 +127,7 @@ namespace PrimeApps.App.Controllers
 
                     if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
-                        var clearRoot = objectType == ObjectType.PROFILEPICTURE;
-
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, clearRoot);
+                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                     }
                 }
             }
@@ -179,6 +177,57 @@ namespace PrimeApps.App.Controllers
 
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
+        }
+
+        [HttpPost("record_file_upload")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> RecordFileUpload()
+        {
+            var parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("record", AppUser.TenantId);
+
+            //if it is successfully parsed continue.
+            if (parser.Success)
+            {
+                if (parser.FileContents.Length <= 0)
+                {
+                    //check the file size if it is 0 bytes then return client with that error code.
+                    return BadRequest();
+                }
+
+                var ext = Path.GetExtension(parser.Filename);
+
+                var fileName = Path.GetFileNameWithoutExtension(parser.Filename);
+
+                var uniqueName = fileName + "_" + DateTime.UtcNow.ToFileTimeUtc() + ext;
+
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, uniqueName, stream);
+                }
+
+                var link = _storage.GetShareLink(bucketName, uniqueName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+
+                var result = new DocumentUploadResult
+                {
+                    ContentType = parser.ContentType,
+                    UniqueName = uniqueName,
+                    PublicURL = link,
+                    Chunks = 0
+                };
+
+                //return content type of the file to the client
+                return Ok(result);
+            }
+
+            //this request invalid because there is no file, return fail code to the client.
+            return NotFound();
+        }
+
+        [Route("record_file_download")]
+        public async Task<FileStreamResult> RecordFileDownload([FromQuery(Name = "fileName")] string fileName)
+        {
+            return await _storage.Download(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, fileName);
         }
 
         [HttpPost("upload_template")]
@@ -407,7 +456,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP, false);
+                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                 excelUrl = excelUrl + "--" + parser.Filename;
 
                 import.ExcelUrl = excelUrl;

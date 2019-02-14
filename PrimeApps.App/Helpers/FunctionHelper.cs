@@ -31,7 +31,7 @@ namespace PrimeApps.App.Helpers
         public FunctionHelper(IConfiguration configuration)
         {
             _configuration = configuration;
-            _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
+            _kubernetesClusterRootUrl = "http://localhost:8080"; //_configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
         public JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null)

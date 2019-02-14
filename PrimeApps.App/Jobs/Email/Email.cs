@@ -65,13 +65,6 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPassword = "EmailSMTPPassword";
                 var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
-                {
-                    smtpHost = "EmailSMTPHostTest";
-                    smtpPort = "EmailSMTPPortTest";
-                    smtpUser = "EmailSMTPUserTest";
-                    smtpPassword = "EmailSMTPPasswordTest";
-                }
                 // get configuration settings from appsetting and apply them.
                 smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {
@@ -155,13 +148,6 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPassword = "EmailSMTPPassword";
                 var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
-                {
-                    smtpHost = "EmailSMTPHostTest";
-                    smtpPort = "EmailSMTPPortTest";
-                    smtpUser = "EmailSMTPUserTest";
-                    smtpPassword = "EmailSMTPPasswordTest";
-                }
                 // get configuration settings from appsetting and apply them.
                 smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {

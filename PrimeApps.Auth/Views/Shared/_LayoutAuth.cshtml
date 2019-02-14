@@ -1,308 +1,261 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using System.Reflection;
-@using Newtonsoft.Json;
-
 @inject IViewLocalizer Localizer
 @{
-	var app = "";
-	var color = "";
-	if (Model.ApplicationInfo != null)
-	{
-		app = Model.ApplicationInfo.Name;
-		color = Model.ApplicationInfo.Theme["color"].ToString();
-	}
-	var googleCode = Model.ApplicationInfo?.Settings?.GoogleAnalytics;
-	var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
-	var customDomain = Model.ApplicationInfo?.CustomDomain;
-	var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
-	var banner = Model.ApplicationInfo?.Theme["banner"];
+    var title = Model.ApplicationInfo.Theme["title"].ToString();
+    var color = Model.ApplicationInfo.Theme["color"].ToString();
+    var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
+    var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
+    var banner = Model.ApplicationInfo?.Theme["banner"];
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
-    <environment include="Development">
-        <link rel="stylesheet" href="/styles/vendor/bootstrap.css" />
-        <link rel="stylesheet" href="/styles/vendor/flaticon.css" />
-        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
-        <link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
-    </environment>
+    <title>@ViewBag.Title</title>
+    <link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <!--<environment include="Development">-->
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.css" />
+    <link rel="stylesheet" href="/styles/vendor/flaticon.css" />
+    <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
+    <link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
+    <!--</environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="/styles/bundles-css/auth.css" />
-    </environment>
-	@*Styles.Render("~/bundles-css/auth")*@
+    </environment>-->
+
+
     <style>
-		.login-block {
-			float: left;
-			width: 100%;
-		}
-
-		.swal-text, .swal-title {
-			text-align: center;
-		}
-
-        .swal2-popup .swal2-styled.swal2-confirm {
-            background-color: @color;
+        .login-block {
+            float: left;
+            width: 100%;
         }
 
-		.error {
-			text-align: center;
-			color: red;
-			font-weight: 500;
-			font-size: 12px;
-			padding-top: 6px;
-		}
+        .swal-text, .swal-title { text-align: center; }
 
-		.fa-4x {
-			padding-bottom: 10px;
-		}
+        .swal2-popup .swal2-styled.swal2-confirm { background-color: @color; }
 
-		.fa-pulse {
-			-webkit-animation: fa-spin 1s infinite steps(8);
-			animation: fa-spin 1s infinite steps(8);
-		}
-        .swal-hide {
-            display:none;
+        .error {
+            text-align: center;
+            color: red;
+            font-weight: 500;
+            font-size: 12px;
+            padding-top: 6px;
         }
-		.login-form {
-			max-width: 400px;
-			width: 350px;
-		}
 
-		.row {
-			height: 100vh;
-		}
+        .fa-4x { padding-bottom: 10px; }
 
-		.form-group {
-			margin-bottom: 0 !important;
-		}
+        .fa-pulse {
+            -webkit-animation: fa-spin 1s infinite steps(8);
+            animation: fa-spin 1s infinite steps(8);
+        }
 
-		.free-info {
-			max-width: 400px;
-			width: 350px;
-			font-size: 12px;
-		}
+        .swal-hide { display: none; }
 
-		.free-info-header {
-			text-align: center;
-			max-width: 400px;
-			width: 350px;
-			font-size: 14px;
-			padding-bottom: 20px;
-		}
+        .login-form {
+            max-width: 400px;
+            width: 350px;
+        }
 
-		.banner-sec {
-			background: url(@banner[0]["image"].ToString()) no-repeat center center;
-			background-size: cover;
-			min-height: 500px;
-			padding: 0;
-		}
+        .row { height: 100vh; }
 
-		.container {
-			background: #fff;
-			box-shadow: 15px 20px 0px rgba(0,0,0,0.1);
-			width: 100% !important;
-			height: 100vh;
-		}
+        .form-group { margin-bottom: 0 !important; }
 
-		.carousel-inner {
-			border-radius: 0 10px 10px 0;
-			height: 100vh;
-		}
+        .free-info {
+            max-width: 400px;
+            width: 350px;
+            font-size: 12px;
+        }
 
-		.carousel-item {
-			height: 100vh;
-		}
+        .free-info-header {
+            text-align: center;
+            max-width: 400px;
+            width: 350px;
+            font-size: 14px;
+            padding-bottom: 20px;
+        }
 
-		.carousel-caption {
-			text-align: left;
-			left: 5%;
-		}
+        .banner-sec {
+            background: url(@banner[0]["image"].ToString()) no-repeat center center;
+            background-size: cover;
+            min-height: 500px;
+            padding: 0;
+        }
 
-		.login-sec {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			position: relative;
-		}
+        .container {
+            background: #fff;
+            box-shadow: 15px 20px 0px rgba(0, 0, 0, 0.1);
+            width: 100% !important;
+            height: 100vh;
+        }
 
-		.form-check {
-			margin-top: .8em;
-		}
+        .carousel-inner {
+            border-radius: 0 10px 10px 0;
+            height: 100vh;
+        }
 
-		.logo-img {
-			margin-bottom: 20px;
-			max-width: 60%;
-		}
+        .carousel-item { height: 100vh; }
 
-		.language {
-			float: left;
-			margin-bottom: 15px;
-			margin-top: 15px;
-			font-size: 13px;
-		}
+        .carousel-caption {
+            text-align: left;
+            left: 5%;
+        }
 
-		.login-sec h2 {
-			margin-bottom: 30px;
-			font-weight: 800;
-			font-size: 30px;
-		}
+        .login-sec {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
 
-		.lang-text {
-			text-transform: uppercase;
-		}
+        .form-check { margin-top: .8em; }
 
-		.login-sec h2:after {
-			content: " ";
-			width: 100px;
-			height: 5px;
-			display: block;
-			margin-top: 20px;
-			border-radius: 3px;
-			margin-left: auto;
-			margin-right: auto
-		}
+        .logo-img {
+            margin-bottom: 20px;
+            max-width: 60%;
+        }
 
-		.col-md-8 {
-			padding-left: 0px !important;
-			padding-right: 0px !important;
-		}
+        .language {
+            float: left;
+            margin-bottom: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
 
-		hr {
-			border-top: 1px solid #e6e6e6 !important;
-		}
+        .login-sec h2 {
+            margin-bottom: 30px;
+            font-weight: 800;
+            font-size: 30px;
+        }
 
-		.add-button {
-			position: relative;
-			background-color: #f4f4f4;
-			border: 1px solid #e6e6e6 !important;
-			cursor: pointer;
-		    color: black;
-		}
+        .lang-text { text-transform: uppercase; }
 
-		.add-button:before {
-			content: '';
-			position: absolute;
-			top: -1px;
-			background: url(@Url.Content(cdnUrlStatic + "/images/login/office-login-logo.png")) center center no-repeat;
-			background-size: contain;
-			width: 23px;
-			height: 100%;
-			left: 10px;
-		}
+        .login-sec h2:after {
+            content: " ";
+            width: 100px;
+            height: 5px;
+            display: block;
+            margin-top: 20px;
+            border-radius: 3px;
+            margin-left: auto;
+            margin-right: auto
+        }
 
-		.swal-button {
-			background-color: @color;
-		}
+        .col-md-8 {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
 
-		.btn-login {
-			background: @color;
-			color: #fff;
-			font-weight: 600;
-			cursor: pointer;
-		}
+        hr { border-top: 1px solid #e6e6e6 !important; }
 
-		.banner-text {
-			position: absolute;
-			bottom: 40px;
-			padding-left: 20px;
-			font-size: 30px;
-			font-weight: 700;
-			font-style: italic;
-			text-align: center;
-		}
+        .add-button {
+            position: relative;
+            background-color: #f4f4f4;
+            border: 1px solid #e6e6e6 !important;
+            cursor: pointer;
+            color: black;
+        }
 
-		.input-group {
-			border-bottom: 1px solid rgba(0,0,0,.15) !important;
-		}
+        .add-button:before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            background: url(@Url.Content(cdnUrlStatic + "/images/login/office-login-logo.png")) center center no-repeat;
+            background-size: contain;
+            width: 23px;
+            height: 100%;
+            left: 10px;
+        }
 
-		.input-group-first {
-			border-top: 1px solid rgba(0,0,0,.15) !important;
-		}
+        .swal-button { background-color: @color; }
 
-		.input-group-firstname {
-			border-right: 1px solid rgba(0,0,0,.15) !important;
-		}
+        .btn-login {
+            background: @color;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-		.input-group.input-focus {
-			border-bottom: 1px solid @color !important;
-		}
+        .banner-text {
+            position: absolute;
+            bottom: 40px;
+            padding-left: 20px;
+            font-size: 30px;
+            font-weight: 700;
+            font-style: italic;
+            text-align: center;
+        }
 
-		.input-group input {
-			border: none;
-		}
+        .input-group { border-bottom: 1px solid rgba(0, 0, 0, .15) !important; }
 
-		.input-group-addon {
-			color: @color !important;
-			background: 0 0 !important;
-			border: 0 !important;
-			font-size: 24px !important;
-		}
+        .input-group-first { border-top: 1px solid rgba(0, 0, 0, .15) !important; }
 
-		.banner-text h2 {
-			color: #fff;
-			font-weight: 600;
-		}
+        .input-group-firstname { border-right: 1px solid rgba(0, 0, 0, .15) !important; }
 
-			.banner-text h2:after {
-				content: " ";
-				width: 100px;
-				height: 5px;
-				background: #FFF;
-				display: block;
-				margin-top: 20px;
-				border-radius: 3px;
-			}
+        .input-group.input-focus { border-bottom: 1px solid @color !important; }
 
-		.banner-text p {
-			color: #fff;
-		}
+        .input-group input { border: none; }
 
-		.form-check-label {
-			margin-bottom: 15px !important;
-		}
+        .input-group-addon {
+            color: @color !important;
+            background: 0 0 !important;
+            border: 0 !important;
+            font-size: 24px !important;
+        }
 
-		@@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-			.office-button:before {
-				margin-left: 0 !important;
-			}
+        .banner-text h2 {
+            color: #fff;
+            font-weight: 600;
+        }
 
-			.logo-img {
-				max-width: 100%;
-				margin-bottom: 0 !important;
-				transform: scale(0.5, 0.5);
-			}
-		}
+        .banner-text h2:after {
+            content: " ";
+            width: 100px;
+            height: 5px;
+            background: #FFF;
+            display: block;
+            margin-top: 20px;
+            border-radius: 3px;
+        }
 
-		@@media screen and (max-width: 500px) {
-			.banner-sec {
-				display: none;
-			}
-		}
+        .banner-text p { color: #fff; }
 
-		@@media (max-height: 551px) and (max-width: 601px) {
-			.banner-sec {
-				display: none;
-			}
-		}
+        .form-check-label { margin-bottom: 15px !important; }
 
-		@@media (min-width: 620px) and (max-width: 1024px) {
-			.login-sec {
-				flex: 0 0 50% !important;
-				max-width: 50%;
-			}
+        @@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+            .office-button:before { margin-left: 0 !important; }
 
-			.banner-sec {
-				flex: 0 0 50% !important;
-				max-width: 50%;
-			}
-		}
+            .logo-img {
+                max-width: 100%;
+                margin-bottom: 0 !important;
+                transform: scale(0.5, 0.5);
+            }
+        }
+
+        @@media screen and (max-width: 500px) {
+            .banner-sec { display: none; }
+        }
+
+        @@media (max-height: 551px) and (max-width: 601px) {
+            .banner-sec { display: none; }
+        }
+
+        @@media (min-width: 620px) and (max-width: 1024px) {
+            .login-sec {
+                flex: 0 0 50% !important;
+                max-width: 50%;
+            }
+
+            .banner-sec {
+                flex: 0 0 50% !important;
+                max-width: 50%;
+            }
+        }
 
     </style>
 </head>
@@ -327,16 +280,16 @@
             </div>
         </div>
     </section>
-    <environment include="Development">
-        <script src="/scripts/vendor/jquery.js"></script>
-        <script src="/scripts/vendor/jquery-maskedinput.js"></script>
-        <script src="/scripts/vendor/sweetalert.js"></script>
-        <script src="/scripts/vendor/spin.js"></script>
-        <script src="/scripts/vendor/ladda.js"></script>
-    </environment>
+    <!--<environment include="Development">-->
+    <script src="/scripts/vendor/jquery.js"></script>
+    <script src="/scripts/vendor/jquery-maskedinput.js"></script>
+    <script src="/scripts/vendor/sweetalert.js"></script>
+    <script src="/scripts/vendor/spin.js"></script>
+    <script src="/scripts/vendor/ladda.js"></script>
+    <!--</environment>
     <environment exclude="Development">
         <script src="/scripts/bundles-js/auth.js"></script>
-    </environment>
-    @RenderSection("scripts", required: false)   
+    </environment>-->
+    @RenderSection("scripts", required: false)
 </body>
 </html>
