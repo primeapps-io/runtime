@@ -1581,6 +1581,7 @@ button, select {
     border-radius: 50px;
     overflow: hidden;
     display: inline-block;
+    background: rgba(0,0,0,0.25);
   }
   .top-header {
     display: flex;
@@ -2979,7 +2980,7 @@ button, select {
     line-height: 40px;
     border-radius: 5px;
     border: none;
-    font-size: 12px;
+    font-size: 14px;
     background: rgba(0, 0, 0, 0.05);
     .btn-default-focus {
       border: none;
@@ -2992,7 +2993,7 @@ button, select {
     }
     .form-control {
       height: 40px;
-      line-height: 30px;
+      line-height: 20px;
       border: none;
       background: transparent !important;
       &:hover {
@@ -3027,14 +3028,28 @@ button, select {
       }
     }
     .ui-select-match-text{
-      
+      padding-right: 20px;
+      line-height: 20px;
+      display: inline-block;
+      float: none !important;
+      > div {
+        height: 20px;
+      }
       span{
         font-family:"Nunito", sans-serif ;
-        font-size: 13px;
-        line-height: 30px;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: normal;
         &:before{
           display: inline-block;
           font: normal normal normal 14px/1 FontAwesome;
+        }
+        &.fas{
+          &:before{
+              display: inline-block;
+              font-family: "Font Awesome 5 Free";
+              font-weight: 900;
+          }
         }
       }
     }

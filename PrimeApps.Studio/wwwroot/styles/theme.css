@@ -1259,6 +1259,7 @@ button:focus, select:focus {
   border-radius: 50px;
   overflow: hidden;
   display: inline-block;
+  background: rgba(0, 0, 0, 0.25);
 }
 .primeapps .top-header {
   display: flex;
@@ -2355,7 +2356,7 @@ button:focus, select:focus {
   line-height: 40px;
   border-radius: 5px;
   border: none;
-  font-size: 12px;
+  font-size: 14px;
   background: rgba(0, 0, 0, 0.05);
 }
 .primeapps .ui-select-bootstrap .btn-default-focus {
@@ -2369,7 +2370,7 @@ button:focus, select:focus {
 }
 .primeapps .ui-select-bootstrap .form-control {
   height: 40px;
-  line-height: 30px;
+  line-height: 20px;
   border: none;
   background: transparent !important;
 }
@@ -2403,14 +2404,29 @@ button:focus, select:focus {
   height: 60px;
   line-height: 50px;
 }
+.primeapps .ui-select-bootstrap .ui-select-match-text {
+  padding-right: 20px;
+  line-height: 20px;
+  display: inline-block;
+  float: none !important;
+}
+.primeapps .ui-select-bootstrap .ui-select-match-text > div {
+  height: 20px;
+}
 .primeapps .ui-select-bootstrap .ui-select-match-text span {
   font-family: "Nunito", sans-serif;
-  font-size: 13px;
-  line-height: 30px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text span:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
+}
+.primeapps .ui-select-bootstrap .ui-select-match-text span.fas:before {
+  display: inline-block;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
 }
 .primeapps .menu-setup .custom-menu {
   font-size: 16px;
