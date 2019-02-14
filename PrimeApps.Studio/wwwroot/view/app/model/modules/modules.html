@@ -2,23 +2,8 @@
     <h2>Modules</h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <!--<li>-->
-            <!--<div class="form-group form-group-filtre shadowh">-->
-            <!--<select name="module" class="form-control" required>-->
-            <!--<option value="">Tip'e göre sırala</option>-->
-            <!--<option value="">test1</option>-->
-            <!--<option value="">test2</option>-->
-            <!--</select>-->
-            <!--</div>-->
-            <!--</li>-->
-            <li class="filter">
-                <button class="btn btn-gray" ui-sref="studio.app.moduledesigner"><i class="fas fa-filter"></i> Filter</button>
-                <span class="filter-badge">5</span>
-                <a href="javascript:;" class="delete" data-trigger="hover" data-type="info"
-                   data-title="Clear Filter" bs-tooltip data-placement="bottom"><i class="fas fa-trash"></i></a>
-            </li>
             <li>
-                <button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New
+                <button class="btn add-button" ui-sref="studio.app.moduleDesigner"><i class="fas fa-plus"></i> Add New
                     Modules
                 </button>
             </li>
@@ -78,7 +63,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
-                ui-sref="studio.app.moduledesigner({id:module.id})">
+                ui-sref="studio.app.moduleDesigner({id:module.id})">
                 <td class="text-center"><i
                         class="{{module.menu_icon}}"></i></td>
                 <td>
