@@ -61,8 +61,8 @@ namespace PrimeApps.Auth.UI
         private IProfileRepository _profileRepository;
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
-        private IConsoleUserRepository _consoleUserRepository;
-        private IOrganizationRepository _organizationRepository;
+        //private IConsoleUserRepository _consoleUserRepository;
+        //private IOrganizationRepository _organizationRepository;
         private IGiteaHelper _giteaHelper;
 
         public IBackgroundTaskQueue Queue { get; }
@@ -85,8 +85,8 @@ namespace PrimeApps.Auth.UI
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IRecordRepository recordRepository,
-            IConsoleUserRepository consoleUserRepository,
-            IOrganizationRepository organizationRepository,
+            //IConsoleUserRepository consoleUserRepository,
+            //IOrganizationRepository organizationRepository,
             IGiteaHelper giteaHelper,
             IConfiguration configuration)
         {
@@ -105,8 +105,8 @@ namespace PrimeApps.Auth.UI
             _userRepository = userRepository;
             _profileRepository = profileRepository;
             _roleRepository = roleRepository;
-            _consoleUserRepository = consoleUserRepository;
-            _organizationRepository = organizationRepository;
+           // _consoleUserRepository = consoleUserRepository;
+            //_organizationRepository = organizationRepository;
             _recordRepository = recordRepository;
 
             Queue = queue;
@@ -1691,7 +1691,7 @@ namespace PrimeApps.Auth.UI
                     }
                 }
 
-                if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Console)
+                /*if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Console)
                 {
                     var consoleUser = new ConsoleUser
                     {
@@ -1727,7 +1727,7 @@ namespace PrimeApps.Auth.UI
 
                         await _organizationRepository.Create(organization);
                     }
-                }
+                }*/
             }
 
             response["identity_user_id"] = identityUser.Id;
