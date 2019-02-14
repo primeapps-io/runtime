@@ -144,7 +144,7 @@ angular.module('primeapps')
                 $scope.dependencyTypes.push(dependencyTypeDisplay);
                 $scope.dependencyTypes.push(dependencyTypeValueChange);
             };
-
+            getDependencyTypes();
             var getValueChangeTypes = function () {
                 var valueChangeTypeStandard = {};
                 valueChangeTypeStandard.value = 'list_text';
@@ -336,7 +336,7 @@ angular.module('primeapps')
                     DependenciesService.createModuleDependency(relationModel, $scope.module.id)
                         .then(function () {
                             success();
-							$scope.pageTotal = $scope.pageTotal + 1;
+                            $scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function () {
                             error();
@@ -368,7 +368,7 @@ angular.module('primeapps')
                                     // var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
                                     // $scope.dependencies.splice(dependencyIndex, 1);
                                     $scope.changePage(1);
-									$scope.pageTotal = $scope.pageTotal - 1;
+                                    $scope.pageTotal = $scope.pageTotal - 1;
                                     toastr.success("Dependency is deleted successfully.", "Deleted!");
 
                                 })
@@ -404,7 +404,7 @@ angular.module('primeapps')
 
             var prepareDependency = function () {
                 getFields();
-                getDependencyTypes();
+               // getDependencyTypes();
                 getValueChangeTypes();
                 var dependency = $scope.currentDependency;
                 if (!dependency.isNew) {

@@ -81,14 +81,14 @@
                    data-placement="right"
                    href="#/apps?orgId={{organization.id}}"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="{{organization.icon}}"></i><span> {{organization.label}} </span></a>
+                        class="{{organization.icon}}" style="background-color:{{organization.color}}"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                            ng-class="currentPath.indexOf('apps?') >0 ||  currentPath.indexOf('app/') >0 ? 'active' :'' "
                            href="#/apps?orgId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="People" bs-tooltip data-placement="right"
-                           ng-class="currentPath.indexOf('org/')>0  ? 'active' :'' "
+                           ng-class="currentPath.indexOf('teams')>0 || currentPath.indexOf('collaborators')>0  ? 'active' :'' "
                            href="#/org/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"

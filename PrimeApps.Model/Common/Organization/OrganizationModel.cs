@@ -23,6 +23,9 @@ namespace PrimeApps.Model.Common.Organization
         [JsonProperty("icon"), DataMember(Name = "icon")]
         public string Icon { get; set; }
 
+        [JsonProperty("color"), DataMember(Name = "color")]
+        public string Color { get; set; }
+
         [JsonProperty("owner_id"), DataMember(Name = "owner_id")]
         public int OwnerId { get; set; }
 

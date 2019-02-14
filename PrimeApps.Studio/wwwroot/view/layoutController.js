@@ -35,7 +35,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             LayoutService.myOrganizations()
                 .then(function (response) {
                     if (response.data) {
-                        $rootScope.organizations = response.data;
+                        // $rootScope.organizations = response.data;
                         //$scope.menuOpen[$scope.organizations[0].id] = true;
                     }
                 });
@@ -163,12 +163,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
-                scope: $scope,
-                templateUrl: 'view/organization/newOrganization.html',
-                animation: 'am-fade-and-slide-right',
-                backdrop: 'static',
-                show: false
-            });
+                    scope: $scope,
+                    templateUrl: 'view/organization/newOrganization.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
             $scope.organizationFormModal.$promise.then(function () {
                 $scope.organizationFormModal.show();
 
@@ -241,6 +241,18 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             if (!$scope.organization.icon)
                 $scope.organization.icon = 'fas fa-building';
 
+            if (!$scope.organization.color) {
+                var colorPalet = [
+                    '#1157A3',
+                    '#9F5590',
+                    '#92C549',
+                    '#F1638B',
+                    '#CE0404'
+                ];
+
+                $scope.organization.color = colorPalet[Math.floor(Math.random() * colorPalet.length)];
+            }
+
             if (angular.isObject($scope.organization.icon))
                 $scope.organization.icon = $scope.organization.icon.value;
 
@@ -260,7 +272,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.apps', {orgId: response.data});
+                    $state.go('studio.apps', { orgId: response.data });
 
                 })
                 .catch(function () {

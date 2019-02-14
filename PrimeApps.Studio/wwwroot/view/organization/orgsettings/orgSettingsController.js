@@ -19,9 +19,9 @@ angular.module('primeapps')
                 var data = response.data;
                 $scope.orgModel.icon = data.icon;
                 $scope.orgModel.label = data.label;
-                $scope.orgModel.icon = data.icon;
                 $scope.orgModel.name = data.name;
                 $scope.orgModel.id = data.id;
+                $scope.orgModel.color = data.color;
             });
 
             var getMyOrganizations = function () {
@@ -56,6 +56,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
                         $rootScope.currentOrganization.icon = $scope.orgModel.icon;
+                        $rootScope.currentOrganization.color = $scope.orgModel.color;
                         toastr.success($filter('translate')('Güncelleme Başarılı'));
                         $scope.saving = false;
                     });

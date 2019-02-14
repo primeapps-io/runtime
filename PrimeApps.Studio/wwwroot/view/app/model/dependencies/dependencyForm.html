@@ -24,20 +24,21 @@
                         <div id="field-form-body" class="modal-body">
                             <div class="section" id="section1">
                                 <div class="panel">
-                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.relatedModule.$invalid}">
+                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.module.$invalid}">
                                         <label class="col-sm-12 required-field">{{('Setup.Modules.Name' | translate)}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <select name="module"
                                                 class="form-control ng-animate-disabled col-sm-12"
                                                 required
+                                                ng-disabled="!currentDependency.isNew"
                                                 ng-model="currentDependency.module"
                                                 ng-change="moduleChanged()"
                                                 ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.dependencyType.$invalid}">
+                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.dependency_Type.$invalid}">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.DependencyType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span> </label>
-                                        <select name="dependencyType"
+                                        <select name="dependency_Type"
                                                 class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.dependencyType"
@@ -54,9 +55,9 @@
                                                 ng-change="valueChangeTypeChanged()"
                                                 ng-options="o.value as o.label for o in valueChangeTypes"></select>
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parentField.$invalid}">
+                                    <div class="form-group" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.parent_Field.$invalid}">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.DependencyParentField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                        <select name="parentField"
+                                        <select name="parent_Field"
                                                 class="form-control ng-animate-disabled col-sm-12"
                                                 required
                                                 ng-model="currentDependency.parent_field"
@@ -88,11 +89,11 @@
                                             {{'Setup.Modules.AffectedAreaType' | translate }} <span class="required-label">({{'Common.Required' | translate }})</span>
                                         </label>
 
-                                        <label class="radio-inline newinput">
-                                            <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="field" name="affectedAreaType">{{'Setup.Modules.Field' | translate}}<span></span>
+                                        <label ng-class="{'radio-inline':true, 'newinput':true, 'disabled':affectedAreaType !== 'field' }">
+                                            <input type="radio" ng-model="affectedAreaType" ng-disabled="!currentDependency.isNew" ng-change="affectedAreaTypeChanged()" value="field" name="affectedAreaType">{{'Setup.Modules.Field' | translate}}<span></span>
                                         </label>
-                                        <label class="radio-inline newinput">
-                                            <input type="radio" ng-model="affectedAreaType" ng-change="affectedAreaTypeChanged()" value="section" name="affectedAreaType">{{'Setup.Modules.Section' | translate}}<span></span>
+                                        <label ng-class="{'radio-inline':true, 'newinput':true, 'disabled':affectedAreaType !== 'section'}">
+                                            <input type="radio" ng-model="affectedAreaType" ng-disabled="!currentDependency.isNew" ng-change="affectedAreaTypeChanged()" value="section" name="affectedAreaType">{{'Setup.Modules.Section' | translate}}<span></span>
                                         </label>
                                     </div>
                                     <div class="form-group"

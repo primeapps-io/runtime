@@ -1,10 +1,10 @@
 <div class="page-container">
     <div class="row">
         <div class="col-sm-3">
-            <h4 class="h4-title blue-color font-bold">Manage</h4>
+            <h4 class="h4-title blue-color font-bold">Settings</h4>
         </div>
         <div class="pull-right" style="padding-left: 10px;">
-            <button ng-disabled="orgDeleteDisabled" class="btn btn-radius btn-yellow btn-logout" ladda="savinga">
+            <button ng-disabled="orgDeleteDisabled" class="btn btn-radius btn-yellow btn-logout" ladda="saving">
                 <i class="fas fa-exchange-alt margin-right-10"></i>Transfer
             </button>
 
@@ -24,10 +24,16 @@
                     <div class="col-sm-3" style="border-right: solid 2px #dfdfdf;">
                         <div style="margin: auto;text-align: center;">
                             <div class="file-uploader" style="background: none;">
-                                <div class="organization-icon">
+                                <div class="organization-icon" style="background-color: {{orgModel.color}}">
                                     <i class="{{orgModel.icon}}"></i>
                                 </div>
                             </div>
+                        </div>
+                        <div class="form-group" style="position: relative;"
+                             ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                            <input name="colorpicker" type="color"
+                                   class="form-control"
+                                   ng-model="orgModel.color">
                         </div>
                         <div class="form-group icon-search-list">
                             <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">

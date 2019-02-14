@@ -315,6 +315,7 @@ namespace PrimeApps.Studio.Controllers
                 Name = model.Name,
                 Label = model.Label,
                 Icon = model.Icon,
+                Color = model.Color,
                 OwnerId = AppUser.Id,
                 OrganizationUsers = new List<OrganizationUser>()
             };
@@ -345,6 +346,7 @@ namespace PrimeApps.Studio.Controllers
 
             organization.Label = model.Label;
             organization.Icon = model.Icon;
+            organization.Color = model.Color;
 
             if (organization == null)
                 return NotFound(ApiResponseMessages.ORGANIZATION_NOT_FOUND);

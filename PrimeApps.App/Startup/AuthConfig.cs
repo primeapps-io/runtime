@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App
 {
@@ -42,6 +43,18 @@ namespace PrimeApps.App
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("api1");
                     options.Scope.Add("email");
+
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        if (context.Failure.Message.Contains("Correlation failed"))
+                            context.Response.Redirect("/");
+                        else
+                            context.Response.Redirect("/Error");
+
+                        context.HandleResponse();
+
+                        return Task.CompletedTask;
+                    };
                 });
         }
     }

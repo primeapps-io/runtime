@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.isTimetrackerExist = false;
             $scope.$parent.collapsed = true;
             $scope.id = $location.search().id;
-            $scope.$parent.activeMenu = 'app';
+
             $scope.$parent.activeMenuItem = 'help';
             $rootScope.breadcrumblist[2].title = 'Help';
             $scope.helpModalObj = {};

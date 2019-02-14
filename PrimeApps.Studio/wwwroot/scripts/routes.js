@@ -86,6 +86,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 .state('studio.appTemplates', {
                     url: 'appTemplates',
                     views: {
@@ -137,44 +138,7 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                })
-
-                .state('studio.dashboard', {
-                    url: 'dashboard',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/dashboard/dashboard.html',
-                            controller: 'DashboardController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
-                            return $ocLazyLoad.load([
-                                'scripts/vendor/angular-fusioncharts.js',
-                                cdnUrl + 'view/dashboard/dashboardService.js',
-                                cdnUrl + 'view/dashboard/dashboardController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.viewForm', {
-                    url: '/viewForm/:type?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/view/viewForm.html',
-                            controller: 'ViewFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/view/viewFormController.js',
-                                cdnUrl + 'view/view/viewService.js'
-                            ]);
-                        }]
-                    }
-                })
+                });
 
             //app.organization
             $stateProvider
@@ -202,7 +166,7 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
                                 $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentOrganization.id;
                                 $rootScope.breadcrumblist[1].title = "People";
-                                $rootScope.breadcrumblist[1].link = '#/organization/' + $rootScope.currentOrganization.id + '/collaborators';
+                                $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/collaborators';
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
 
                                 if (!$rootScope.currentOrganization) {
@@ -334,7 +298,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.moduledesigner', {
+                .state('studio.app.moduleDesigner', {
                     url: '/moduleDesigner?:id',
                     views: {
                         'app': {
@@ -360,7 +324,32 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.relations', {
+                .state('studio.app.pickLists', {
+                    url: '/picklists?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/picklists/picklists.html',
+                            controller: 'pickListsController'
+                        }
+                    },
+                    resolve: {
+                        relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/picklists/pickListsController.js',
+                                cdnUrl + 'view/app/model/picklists/pickListsService.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })                .state('studio.app.relations', {
                     url: '/relations?:id',
                     views: {
                         'app': {
@@ -545,7 +534,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.advancedworkflows', {
+                .state('studio.app.advancedWorkflows', {
                     url: '/advancedworkflows',
                     views: {
                         'app': {
@@ -594,13 +583,13 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflowsService.js',
                                 cdnUrl + 'scripts/vendor/bpm/icons.js',
                                 cdnUrl + 'scripts/vendor/bpm/BPMN.js',
-                                cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'                                
+                                cdnUrl + 'scripts/vendor/bpm/BPMNClasses.js'
                             ]);
                         }]
                     }
                 })
 
-                .state('studio.app.simpleworkflows', {
+                .state('studio.app.simpleWorkflows', {
                     url: '/simpleworkflows',
                     views: {
                         'app': {
@@ -834,6 +823,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.scripts', {
+                    url: '/scripts',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/customcode/scripts/scripts.html',
+                            controller: 'ScriptsController'
+                        }
+                    },
+                    resolve: {
+                        components: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/customcode/scripts/scriptsController.js',
+                                cdnUrl + 'view/app/customcode/scripts/scriptsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.functionDetail', {
                     url: '/functionDetail?:name',
                     views: {
@@ -886,7 +901,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.moduleprofilesettings', {
+                .state('studio.app.moduleProfileSettings', {
                     url: '/moduleprofilesettings/:module',
                     views: {
                         'app': {
@@ -1017,7 +1032,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.componentsdeployment', {
+                .state('studio.app.componentsDeployment', {
                     url: '/componentsDeployment',
                     views: {
                         'app': {
@@ -1043,7 +1058,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.functionsdeployment', {
+                .state('studio.app.functionsDeployment', {
                     url: '/functionsDeployment',
                     views: {
                         'app': {
@@ -1069,7 +1084,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.appdeployment', {
+                .state('studio.app.appDeployment', {
                     url: '/passwordPolicies',
                     views: {
                         'app': {
@@ -1173,7 +1188,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.passwordpolicies', {
+                .state('studio.app.passwordPolicies', {
                     url: '/passwordPolicies',
                     views: {
                         'app': {
@@ -1199,7 +1214,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.audittrail', {
+                .state('studio.app.auditTrail', {
                     url: '/auditTrail',
                     views: {
                         'app': {
@@ -1251,7 +1266,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.networkaccess', {
+                .state('studio.app.networkAccess', {
                     url: '/networkAccess',
                     views: {
                         'app': {
@@ -1329,7 +1344,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.singlesignon', {
+                .state('studio.app.singleSignOn', {
                     url: '/singleSingOn',
                     views: {
                         'app': {
@@ -1355,7 +1370,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.appdetails', {
+                .state('studio.app.appDetails', {
                     url: '/appDetails',
                     views: {
                         'app': {
@@ -1381,7 +1396,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.appcollaborators', {
+                .state('studio.app.appCollaborators', {
                     url: '/appCollaborators',
                     views: {
                         'app': {
@@ -1478,7 +1493,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.moduleactions', {
+                .state('studio.app.moduleActions', {
                     url: '/actionButtons?:id',
                     views: {
                         'app': {
@@ -1530,6 +1545,7 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
                 //settings
                 .state('studio.settings', {
                     url: 'settings',
