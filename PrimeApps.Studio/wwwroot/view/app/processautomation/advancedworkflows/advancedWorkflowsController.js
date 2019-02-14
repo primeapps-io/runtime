@@ -11,7 +11,8 @@ angular.module('primeapps')
             //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'advancedworkflows';
-            $rootScope.subtoggleClass = "";
+            $rootScope.subtoggleClass = '';
+            $rootScope.toggleClass=''
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
 
             $scope.generator = function (limit) {

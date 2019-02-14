@@ -14,6 +14,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'advancedworkflows';
             $rootScope.subtoggleClass = 'full-toggled2';
+            $rootScope.toggleClass = 'toggled';
             $scope.scheduleItems = AdvancedWorkflowsService.getScheduleItems();
             $scope.dueDateItems = AdvancedWorkflowsService.getDueDateItems();
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
@@ -1825,7 +1826,7 @@ angular.module('primeapps')
 
             var success = function () {
                 $scope.saving = false;
-                $state.go('studio.app.workflows');
+                $state.go('studio.app.advancedworkflows');
                 toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
             };
 
