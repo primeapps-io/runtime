@@ -40,6 +40,7 @@ using System.Net.Http.Headers;
 using PrimeApps.Auth.Helpers;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
+using IdentityServer.LdapExtension.UserStore;
 
 namespace PrimeApps.Auth.UI
 {
@@ -58,6 +59,7 @@ namespace PrimeApps.Auth.UI
         private ITenantRepository _tenantRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
+        private readonly ILdapUserStore _userStore;
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
         private IConsoleUserRepository _consoleUserRepository;
@@ -87,7 +89,7 @@ namespace PrimeApps.Auth.UI
             IConsoleUserRepository consoleUserRepository,
             IOrganizationRepository organizationRepository,
             IGiteaHelper giteaHelper,
-            IConfiguration configuration)
+            IConfiguration configuration, ILdapUserStore userStore)
         {
             _configuration = configuration;
             _giteaHelper = giteaHelper;
@@ -109,6 +111,7 @@ namespace PrimeApps.Auth.UI
             _recordRepository = recordRepository;
 
             Queue = queue;
+            _userStore = userStore;
 
         }
 
@@ -220,6 +223,7 @@ namespace PrimeApps.Auth.UI
                     validUrlsArr = validUrls.Split(";");
                 if (result.Succeeded)
                 {
+                    //var userrr = _userStore.ValidateCredentials(model.Username, model.Password);
                     if (vm.ApplicationInfo != null && Array.IndexOf(validUrlsArr, Request.Host.Host) == -1 && vm.ApplicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);

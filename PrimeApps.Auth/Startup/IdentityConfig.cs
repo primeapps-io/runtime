@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using IdentityServer.LdapExtension.Extensions;
+using IdentityServer.LdapExtension.UserModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
@@ -53,8 +55,9 @@ namespace PrimeApps.Auth
                     options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddProfileService<CustomProfileService>()
-                .AddSigningCredential(LoadCertificate(configuration));
+                //.AddProfileService<CustomProfileService>()
+                .AddSigningCredential(LoadCertificate(configuration))
+                .AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("MyConfigurationSection"), UserStore.InMemory);
 
             //InitializeDatabase(app);
         }
