@@ -1261,6 +1261,12 @@ button:focus, select:focus {
   display: inline-block;
   background: rgba(0, 0, 0, 0.25);
 }
+.primeapps .avatar2x {
+  width: 100px;
+  border-radius: 50px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+}
 .primeapps .top-header {
   display: flex;
   align-items: center;
@@ -1762,7 +1768,10 @@ button:focus, select:focus {
 .primeapps .file-uploader .drop-zone div span {
   color: rgba(0, 0, 0, 0.5);
 }
-.primeapps .has-error input {
+.primeapps .has-error input, .primeapps .has-error .form-control {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
+.primeapps .has-error .ui-select-bootstrap .form-control {
   background-color: rgba(206, 4, 4, 0.15) !important;
 }
 .primeapps .pagination li {
@@ -2403,6 +2412,12 @@ button:focus, select:focus {
 .primeapps .ui-select-bootstrap.bigwhiteselect .form-control {
   height: 60px;
   line-height: 50px;
+  padding: 5px 10px;
+}
+.primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-placeholder, .primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-match-text {
+  font-size: 14px;
+  line-height: 50px;
+  font-weight: normal;
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text {
   padding-right: 20px;

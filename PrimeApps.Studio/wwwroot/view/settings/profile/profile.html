@@ -11,13 +11,13 @@
                         <div ng-show="uploader.queue.length === 0 && !me.picture" class="organization-icon">
                             <i class="fas fa-user"></i>
                         </div>
-                        <div ng-show="uploader.queue.length === 0 && me.picture" style="width: 100px;border-radius: 50px;overflow: hidden">
+                        <div ng-show="uploader.queue.length === 0 && me.picture" class="avatar2x">
                             <span class="imgfix imgy">
                                <img class="imgin" ng-src="{{me.picture}}" alt="" />
                                <img class="blank" src="images/primeapps/blank_k.png" alt="" />
                             </span>
                         </div>
-                        <div ng-show="uploader.queue.length > 0" style="width: 100px;border-radius: 50px;overflow: hidden">
+                        <div ng-show="uploader.queue.length > 0" class="avatar2x">
                             <span class="imgfix imgy">
                                <img class="imgin" ng-src="{{uploader.queue[0].image}}" alt="" />
                                <img class="blank" src="images/primeapps/blank_k.png" alt="" />

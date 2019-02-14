@@ -1583,6 +1583,10 @@ button, select {
     display: inline-block;
     background: rgba(0,0,0,0.25);
   }
+  .avatar2x{
+    width: 100px;border-radius: 50px;overflow: hidden;
+    background: rgba(0,0,0,0.25);
+  }
   .top-header {
     display: flex;
     align-items: center;
@@ -2228,8 +2232,13 @@ button, select {
   }
 
   .has-error {
-    input {
+    input, .form-control {
       background-color: rgba(206, 4, 4, 0.15) !important;
+    }
+    .ui-select-bootstrap{
+      .form-control {
+        background-color: rgba(206, 4, 4, 0.15) !important;
+      }
     }
   }
 
@@ -3025,6 +3034,12 @@ button, select {
       .form-control {
         height: 60px;
         line-height: 50px;
+        padding: 5px 10px;
+      }
+      .ui-select-placeholder,.ui-select-match-text{
+        font-size: 14px;
+        line-height: 50px;
+        font-weight: normal;
       }
     }
     .ui-select-match-text{
