@@ -12,7 +12,7 @@ angular.module('primeapps')
             $scope.workflowStartModel = {};
             // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
-            $scope.$parent.activeMenuItem = 'advancedworkflows';
+            $scope.$parent.activeMenuItem = 'advancedWorkflows';
             $rootScope.subtoggleClass = 'full-toggled2';
             $rootScope.toggleClass = 'toggled';
             $scope.scheduleItems = AdvancedWorkflowsService.getScheduleItems();
@@ -63,7 +63,10 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.triggerBpm();
+            $timeout(function () {
+                $scope.triggerBpm();
+
+            }, 500);
             //BPM element menu loading end
 
             // BPM click Event and RightSide Menu Controller Start
@@ -1826,7 +1829,7 @@ angular.module('primeapps')
 
             var success = function () {
                 $scope.saving = false;
-                $state.go('studio.app.advancedworkflows');
+                $state.go('studio.app.advancedWorkflows');
                 toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
             };
 

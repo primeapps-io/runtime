@@ -478,7 +478,7 @@ function init() {
                     ),
                     $(go.Shape,
                         {
-                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20, cursor: "move"
+                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 18, cursor: "move"
 
                         },
                         new go.Binding("geometry", "icon", geoFunc)),
@@ -522,8 +522,8 @@ function init() {
 
                 $(go.Shape,
                     {
-                        margin: 5, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
-                        width: 20, height: 20
+                        margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
+                        width: 20, height: 18
                     },
                     new go.Binding("geometry", "icon", geoFunc)),
 

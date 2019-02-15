@@ -535,7 +535,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.advancedWorkflows', {
-                    url: '/advancedworkflows',
+                    url: '/advancedWorkflows',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflows.html',
@@ -543,7 +543,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        advancedworkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        advancedWorkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
