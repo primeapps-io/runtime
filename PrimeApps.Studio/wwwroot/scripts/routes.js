@@ -1467,6 +1467,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.tenants', {
+                    url: '/tenants',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/tenants/tenants.html',
+                            controller: 'TenantsController'
+                        }
+                    },
+                    resolve: {
+                        tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/tenants/tenantsController.js',
+                                cdnUrl + 'view/app/manage/tenants/tenantsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.appEmailTemplates', {
                     url: '/appEmailTemplates',
                     views: {
