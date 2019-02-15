@@ -297,7 +297,7 @@ angular.module('primeapps')
                             ModuleService.getPickItemsLists(activityModule, false)
                                 .then(function (pickList) {
                                     if (pickList)
-                                        $scope.picklistsActivity = pickList.data;
+                                        $scope.picklistsActivity = pickList;
 
                                     $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
                                     $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
@@ -545,7 +545,7 @@ angular.module('primeapps')
                     });
                 }
                 else if (filter.field.data_type === 'checkbox') {
-                    filterValue = filter.value.label[$scope.language];
+                    filterValue = filter.value.label[$rootScope.language];
                 }
                 else {
                     ModuleService.formatFieldValue(filter.field, filter.value, $scope.picklistsActivity);
@@ -705,7 +705,7 @@ angular.module('primeapps')
                     currentModule = $scope.workflowStartModel.module;
 
                 notificationObj.module = currentModule;
-                notificationObj.name = currentModule['label_' + $scope.language + '_singular'];
+                notificationObj.name = currentModule['label_' + $rootScope.language + '_singular'];
                 notificationObj.isSameModule = true;
                 notificationObj.systemName = null;
                 notificationObj.id = 1;
@@ -718,13 +718,13 @@ angular.module('primeapps')
                         var notificationObj = {};
                         if (field.lookup_type === currentModule.name) {
                             notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
+                            notificationObj.name = field['label_' + $rootScope.language] + ' ' + '(' + notificationObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
                             notificationObj.id = id;
                         } else {
                             notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
+                            notificationObj.name = field['label_' + $rootScope.language] + ' ' + '(' + notificationObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
                             notificationObj.id = id;
@@ -740,7 +740,7 @@ angular.module('primeapps')
                 var filterResult = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
 
                 if (filterResult)
-                    notificationObj.name = filterResult['label_' + $scope.language + '_singular'];
+                    notificationObj.name = filterResult['label_' + $rootScope.language + '_singular'];
 
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
@@ -762,7 +762,7 @@ angular.module('primeapps')
                     currentModule = $scope.workflowStartModel.module;
 
                 updateObj.module = currentModule;
-                updateObj.name = currentModule['label_' + $scope.language + '_singular'];
+                updateObj.name = currentModule['label_' + $rootScope.language + '_singular'];
                 updateObj.isSameModule = true;
                 updateObj.systemName = currentModule.name;
                 updateObj.id = 1;
@@ -775,13 +775,13 @@ angular.module('primeapps')
                         var updateObj = {};
                         if (field.lookup_type === currentModule.name) {
                             updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
+                            updateObj.name = field['label_' + $rootScope.language] + ' ' + '(' + updateObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
                             updateObj.id = id;
                         } else {
                             updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
+                            updateObj.name = field['label_' + $rootScope.language] + ' ' + '(' + updateObj.module['label_' + $rootScope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
                             updateObj.id = id;
@@ -1296,7 +1296,7 @@ angular.module('primeapps')
                         if (!filter.field || !filter.operator || !filter.value)
                             return;
 
-                        $scope.ruleFilterText += filter.field['label_' + $scope.language] + ' <b class="operation-highlight">' + filter.operator.label[$scope.language] + '</b> ' +
+                        $scope.ruleFilterText += filter.field['label_' + $rootScope.language] + ' <b class="operation-highlight">' + filter.operator.label[$rootScope.language] + '</b> ' +
                             getFilterValue(filter) + ' <b class="operation-highlight">' + andText + '</b><br> ';
                     });
 
@@ -1353,14 +1353,14 @@ angular.module('primeapps')
                                     $scope.updateFieldValue = $scope.workflowModel.field_update.value.id;
                                     break;
                                 case 'picklist':
-                                    $scope.updateFieldValue = $scope.workflowModel.field_update.value.label[$scope.language];
+                                    $scope.updateFieldValue = $scope.workflowModel.field_update.value.label[$rootScope.language];
                                     value = $scope.updateFieldValue;
                                     break;
                                 case 'multiselect':
                                     $scope.updateFieldValue = '';
 
                                     angular.forEach($scope.workflowModel.field_update.value, function (picklistItem) {
-                                        var label = picklistItem.label[$scope.language];
+                                        var label = picklistItem.label[$rootScope.language];
                                         $scope.updateFieldValue += label + '|';
                                         value += label + '; ';
                                     });
@@ -1387,7 +1387,7 @@ angular.module('primeapps')
                                         fieldValue = false;
 
                                     var yesNoPicklistItem = $filter('filter')($scope.picklistsModule['yes_no'], { system_code: fieldValue.toString() }, true)[0];
-                                    value = yesNoPicklistItem.label[$scope.language];
+                                    value = yesNoPicklistItem.label[$rootScope.language];
                                     $scope.updateFieldValue = fieldValue;
                                     break;
                                 default:
@@ -1395,7 +1395,7 @@ angular.module('primeapps')
                                     break;
                             }
 
-                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', { module: $scope.workflowModel.field_update.module['label_' + $scope.language + '_singular'], field: $scope.workflowModel.field_update.field['label_' + $scope.language], value: value }) + '<br>';
+                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', { module: $scope.workflowModel.field_update.module['label_' + $rootScope.language + '_singular'], field: $scope.workflowModel.field_update.field['label_' + $rootScope.language], value: value }) + '<br>';
                         } else {
                             $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummaryDynamic') + '<br>';
 
