@@ -731,6 +731,7 @@ angular.module('primeapps')
                 $scope.$broadcast('angucomplete-alt:clearInput', 'lookupDefaultValue');
 
                 var lookupModule = $filter('filter')($rootScope.appModules, {name: $scope.currentField.lookupType.value}, true)[0];
+
                 $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
             };
 

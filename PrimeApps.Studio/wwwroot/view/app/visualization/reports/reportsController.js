@@ -5,12 +5,7 @@ angular.module('primeapps')
     .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config) {
 
-            //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
-
-            //$scope.$parent.menuTopTitle = "Analytics";
-            //$scope.$parent.activeMenu = 'analytics';
             $scope.$parent.activeMenuItem = 'reports';
-
             $rootScope.breadcrumblist[2].title = 'Reports';
 
             $scope.generator = function (limit) {
@@ -135,7 +130,6 @@ angular.module('primeapps')
                         } else {
                             category.deleted = false;
                             $scope.$apply(function () {
-
                             });
 
                         }
