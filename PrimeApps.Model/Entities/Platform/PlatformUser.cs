@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("updated_at")]
         public DateTime? UpdatedAt { get; set; }
 
-        [Column("profile_picture"), Required]
+        [Column("profile_picture")]
         public string ProfilePicture { get; set; }
 
         [Column("is_integration_user")]
