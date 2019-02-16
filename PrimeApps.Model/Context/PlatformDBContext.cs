@@ -191,27 +191,12 @@ namespace PrimeApps.Model.Context
             //UserTenants
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
-
-            //Components
-            modelBuilder.Entity<Component>().HasIndex(x => x.ModuleId);
-            modelBuilder.Entity<Component>().HasIndex(x => x.Place);
-            modelBuilder.Entity<Component>().HasIndex(x => x.Status);
-            modelBuilder.Entity<Component>().HasIndex(x => x.Name);
-            modelBuilder.Entity<Component>().HasIndex(x => x.Type);
-
-            //Functions
-            modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
-            modelBuilder.Entity<Function>().HasIndex(x => x.Handler);
-            modelBuilder.Entity<Function>().HasIndex(x => x.Status);
-            modelBuilder.Entity<Function>().HasIndex(x => x.Name);
         }
 
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
         public DbSet<App> Apps { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
-        public DbSet<Function> Functions { get; set; }
-        public DbSet<Component> Components { get; set; }
         public DbSet<AppTemplate> AppTemplates { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantSetting> TenantSettings { get; set; }
