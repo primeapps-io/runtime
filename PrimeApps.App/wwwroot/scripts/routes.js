@@ -1346,20 +1346,31 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
-                    var splitUrls = componentContent.app.templateUrl.split('{appConfigs.');
+                    var replaceDynamicValues = function (str) {
+                        var splitUrls = str.split('{appConfigs.');
 
-                    if (splitUrls.length > 1) {
-                        angular.forEach(splitUrls, function (splitUrl, key) {
-                            if (splitUrl.indexOf('}') > -1) {
-                                var configObj = splitUrl.split('}')[0];
-                                componentContent.app.templateUrl = componentContent.app.templateUrl.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+                        if (splitUrls.length > 1) {
+                            for (var i in splitUrls) {
+                                if (splitUrls.hasOwnProperty(i)) {
+                                    if (!splitUrls[i])
+                                        continue;
+
+                                    var configObj = splitUrls[i].split('}')[0];
+                                    str = str.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+                                }
                             }
-                        });
-                    }
+                        }
+
+                        return str;
+                    };
+
+                    componentContent.app.templateUrl = replaceDynamicValues(componentContent.app.templateUrl);
 
                     var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
+                        componentContent.files[i] = replaceDynamicValues(componentContent.files[i]);
+
                         files.push(componentContent.files[i].lastIndexOf('http', 0) === 0 ? componentContent.files[i] : url + componentContent.files[i]);
                     }
 
