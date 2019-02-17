@@ -216,6 +216,22 @@ namespace PrimeApps.Auth.UI
 
             if (ModelState.IsValid)
             {
+                var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
+
+                if (ldapUser == null)
+                {
+                    await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+
+                    ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
+
+                    vm.Error = "WrongInfo";
+
+                    if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                        return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                    return View(vm);
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 var validationSkipDomains = _configuration.GetValue("AppSettings:ValidationSkipDomains", string.Empty);
                 Array validationSkipDomainsArr = null;
@@ -225,6 +241,7 @@ namespace PrimeApps.Auth.UI
 
                 if (result.Succeeded)
                 {
+
                     if (vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);

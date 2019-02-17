@@ -6,6 +6,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="IdentityServer.LdapExtension" Version="2.1.0" />
     <PackageReference Include="IdentityServer4" Version="2.3.2" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
@@ -18,7 +19,6 @@
     <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Users\Developer\Desktop\ldapEx\IdentityServer4.LdapExtension-master\IdentityServer.LdapExtension\IdentityServer.LdapExtension.csproj" />
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
 </Project>
