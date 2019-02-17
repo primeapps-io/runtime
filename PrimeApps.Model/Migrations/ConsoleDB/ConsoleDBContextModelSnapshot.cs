@@ -8,7 +8,7 @@ using PrimeApps.Model.Context;
 
 namespace PrimeApps.Model.Migrations.ConsoleDB
 {
-    [DbContext(typeof(ConsoleDBContext))]
+    [DbContext(typeof(StudioDBContext))]
     partial class ConsoleDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

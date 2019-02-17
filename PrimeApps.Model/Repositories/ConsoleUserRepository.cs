@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class ConsoleUserRepository : RepositoryBaseConsole, IConsoleUserRepository
     {
-        public ConsoleUserRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public ConsoleUserRepository(StudioDBContext dbContext, IConfiguration configuration)
            : base(dbContext, configuration) { }
 
         public async Task<int> Create(ConsoleUser user)

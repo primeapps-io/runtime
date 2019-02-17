@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class OrganizationUserRepository : RepositoryBaseConsole, IOrganizationUserRepository
     {
-        public OrganizationUserRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public OrganizationUserRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
         public async Task<OrganizationUser> Get(int userId, int organizationId)

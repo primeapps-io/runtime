@@ -9,27 +9,27 @@ namespace PrimeApps.Model.Repositories
 {
     public abstract class RepositoryBaseConsole : IRepositoryBaseConsole, IDisposable
     {
-        private ConsoleDBContext _dbContext;
+        private StudioDBContext _dbContext;
         private IConfiguration _configuration;
 
         public int? UserId { get; set; }
 
         public CurrentUser CurrentUser { get; set; }
 
-        public RepositoryBaseConsole(ConsoleDBContext dbContext, IConfiguration configuration)
+        public RepositoryBaseConsole(StudioDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;
         }
 
-        public ConsoleDBContext DbContext
+        public StudioDBContext DbContext
         {
             get
             {
                 var dbConnection = _dbContext.Database.GetDbConnection();
 
                 if (dbConnection.State != System.Data.ConnectionState.Open)
-                    dbConnection.ConnectionString = _configuration.GetConnectionString("ConsoleDBConnection");
+                    dbConnection.ConnectionString = _configuration.GetConnectionString("StudioDBConnection");
 
                 _dbContext.UserId = CurrentUser != null ? CurrentUser.UserId : 0;
 

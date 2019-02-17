@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class OrganizationRepository : RepositoryBaseConsole, IOrganizationRepository
     {
-        public OrganizationRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public OrganizationRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
         public bool IsOrganizationAvaliable(int userId, int organizationId)

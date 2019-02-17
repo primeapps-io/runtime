@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class CollaboratorsRepository : RepositoryBaseConsole, ICollaboratorsRepository
     {
-        public CollaboratorsRepository(ConsoleDBContext dbContext, IConfiguration configuration) 
+        public CollaboratorsRepository(StudioDBContext dbContext, IConfiguration configuration) 
             : base(dbContext, configuration) { }
 
         public async Task<List<AppCollaborator>> GetByAppId(int appId)

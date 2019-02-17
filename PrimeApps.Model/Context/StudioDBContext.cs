@@ -8,15 +8,15 @@ using PrimeApps.Model.Entities.Console;
 
 namespace PrimeApps.Model.Context
 {
-    public class ConsoleDBContext : DbContext
+    public class StudioDBContext : DbContext
     {
         public int? UserId { get; set; }
 
-        public ConsoleDBContext(DbContextOptions<ConsoleDBContext> options) : base(options) { }
+        public StudioDBContext(DbContextOptions<StudioDBContext> options) : base(options) { }
 
-        public ConsoleDBContext(IConfiguration configuration)
+        public StudioDBContext(IConfiguration configuration)
         {
-            Database.GetDbConnection().ConnectionString = configuration.GetConnectionString("ConsoleDBConnection");
+            Database.GetDbConnection().ConnectionString = configuration.GetConnectionString("StudioDBConnection");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -9,7 +9,7 @@ using PrimeApps.Model.Context;
 
 namespace PrimeApps.Model.Migrations.ConsoleDB
 {
-    [DbContext(typeof(ConsoleDBContext))]
+    [DbContext(typeof(StudioDBContext))]
     [Migration("20190129061027_Task3208")]
     partial class Task3208
     {

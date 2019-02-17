@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class TeamRepository : RepositoryBaseConsole, ITeamRepository
     {
-        public TeamRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public TeamRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
         public async Task<int> Count(int organizationId)

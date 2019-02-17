@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class AppDraftRepository : RepositoryBaseConsole, IAppDraftRepository
     {
-        public AppDraftRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public AppDraftRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration)
         {
         }
