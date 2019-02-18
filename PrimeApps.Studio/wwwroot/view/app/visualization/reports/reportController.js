@@ -554,7 +554,6 @@ angular.module('primeapps')
                 //console.log($scope.reportModel);
             };
 
-
             $scope.removeSelectAggregation = function (field) {
                 field.Aggregation = null;
                 var index = $scope.reportModel.aggregations.indexOf(field);
@@ -626,6 +625,7 @@ angular.module('primeapps')
                 });
                 return filters;
             };
+
             $scope.getFieldModel = function () {
                 var fields = [];
                 var counter = 1;
@@ -770,7 +770,8 @@ angular.module('primeapps')
                 }
 
             };
-            $scope.stepBack = function (step) {
+
+           $scope.stepBack = function (step) {
                 $scope.wizardStep = step;
             };
 
