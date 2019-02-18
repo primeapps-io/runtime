@@ -13,6 +13,9 @@ angular.module('primeapps')
                 },
                 isUniqueName: function (name) {
                     return $http.get(config.apiUrl + 'app/is_unique_name?name=' + name);
+                },
+                updateTheme: function (id, model) {
+                    return $http.put(config.apiUrl + 'app/update_theme/' + id, model);
                 }
             };
         }]);

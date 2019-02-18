@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Entities.Console;
+﻿using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0, PublishStatus status = PublishStatus.NotSet);
         Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0, PublishStatus status = PublishStatus.NotSet);
         Task<List<AppCollaborator>> GetAppCollaborators(int appId);
+        Task<int> UpdateTheme(int id, JObject model);
+
 
     }
 }

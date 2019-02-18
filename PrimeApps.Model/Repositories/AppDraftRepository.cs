@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
@@ -50,6 +52,15 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Update(AppDraft app)
         {
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateTheme(int id, JObject model)
+        {
+            var appSettings = DbContext.AppSettings.Where(x => x.AppId == id).FirstOrDefault();
+            var jsonData = JsonConvert.SerializeObject(model);
+            appSettings.AuthTheme = jsonData;
+
             return await DbContext.SaveChangesAsync();
         }
 

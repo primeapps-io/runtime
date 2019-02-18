@@ -11,6 +11,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
@@ -217,6 +218,21 @@ namespace PrimeApps.Studio.Controllers
             var appCollaborator = await _collaboratorRepository.GetById(id);
             var result = await _collaboratorRepository.Delete(appCollaborator);
 
+            return Ok(result);
+        }
+
+        [Route("update_theme/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateTheme(int id, [FromBody]JObject model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+       
+
+            var result = await _appDraftRepository.UpdateTheme(id,model);
+               
             return Ok(result);
         }
     }

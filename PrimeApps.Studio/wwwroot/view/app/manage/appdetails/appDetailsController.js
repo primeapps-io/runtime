@@ -6,6 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
 
             $scope.appModel = {};
+            $scope.authTheme = {};
             $scope.$parent.activeMenuItem = 'appDetails';
             $rootScope.breadcrumblist[2].title = 'App Details';
 
@@ -119,6 +120,27 @@ angular.module('primeapps')
                 $scope.appModel.status = 1;
                 $scope.appModel.logo = app.logo;
             });
+
+            $scope.saveAuthTheme = function () {
+                var authThemes = {};
+                var description = {};
+                description.en = $scope.authTheme.descriptionEn;
+                description.tr = $scope.authTheme.descriptionTr;
+                var banner = [
+                    { description: description, image: $scope.appModel.logo }
+                ];
+                authThemes.logo = $scope.appModel.logo;
+                authThemes.color = $scope.authTheme.color;
+                authThemes.title = $scope.authTheme.title;
+                authThemes.banner = banner;
+                authThemes.favicon = $scope.appModel.logo;
+
+                AppDetailsService.updateTheme(2, authThemes)
+                    .then(function (response) {
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.saving = false;
+                    });
+            };
 
             $scope.save = function () {
                 $scope.saving = true;
