@@ -54,10 +54,10 @@ namespace PrimeApps.Auth
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
-                .AddProfileService<CustomProfileService>()
                 .AddSigningCredential(LoadCertificate(configuration))
-                .AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("MyConfigurationSection"), UserStore.InMemory)
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("LdapConfigurationSection"), UserStore.InMemory)
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<CustomProfileService>();
 
             //InitializeDatabase(app);
         }

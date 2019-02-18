@@ -216,20 +216,25 @@ namespace PrimeApps.Auth.UI
 
             if (ModelState.IsValid)
             {
-                var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
-
-                if (ldapUser == null)
+                //ldap control
+                var useLdap = bool.Parse(_configuration.GetSection("AppSettings")["UseLdap"]);
+                if (useLdap)
                 {
-                    await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+                    var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
 
-                    ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
+                    if (ldapUser == null)
+                    {
+                        await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
 
-                    vm.Error = "WrongInfo";
+                        ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
 
-                    if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
-                        return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+                        vm.Error = "WrongInfo";
 
-                    return View(vm);
+                        if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                            return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                        return View(vm);
+                    }
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
