@@ -5,12 +5,7 @@ angular.module('primeapps')
     .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config) {
 
-            //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
-
-            //$scope.$parent.menuTopTitle = "Analytics";
-            //$scope.$parent.activeMenu = 'analytics';
             $scope.$parent.activeMenuItem = 'reports';
-
             $rootScope.breadcrumblist[2].title = 'Reports';
 
             $scope.generator = function (limit) {
@@ -65,7 +60,7 @@ angular.module('primeapps')
 
                 $scope.categoryModal = $scope.categoryModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/analytics/reports/categoryModal.html',
+                    templateUrl: 'view/app/visualization/reports/categoryModal.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
@@ -79,15 +74,15 @@ angular.module('primeapps')
             $scope.openReportDetail = function () {
                 $scope.reportModal = $scope.reportModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/analytics/reports/report.html',
+                    templateUrl: 'view/app/visualization/reports/report.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false,
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/reports/reportsService.js',
-                                cdnUrl + 'view/app/analytics/reports/reportController.js'
+                                cdnUrl + 'view/app/visualization/reports/reportsService.js',
+                                cdnUrl + 'view/app/visualization/reports/reportController.js'
                             ]);
                         }]
                     },
@@ -135,7 +130,6 @@ angular.module('primeapps')
                         } else {
                             category.deleted = false;
                             $scope.$apply(function () {
-
                             });
 
                         }

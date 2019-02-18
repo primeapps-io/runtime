@@ -38,10 +38,10 @@ function init() {
 
     // hides open HTML Element
     var openDocument = document.getElementById("openDocument");
-    openDocument.style.visibility = "hidden";
+    //openDocument.style.visibility = "hidden";
     // hides remove HTML Element
     var removeDocument = document.getElementById("removeDocument");
-    removeDocument.style.visibility = "hidden";
+    //removeDocument.style.visibility = "hidden";
 
 
     var $ = go.GraphObject.make;  // for more concise visual tree definitions
@@ -55,7 +55,7 @@ function init() {
     var ActivityNodeFill = "rgba(0, 0, 0, 0.05)";//normal tasklar
     var ActivityNodeStroke = "rgba(0, 0, 0, 0)";
     var ActivityMarkerStrokeWidth = 1.5;
-    var ActivityNodeWidth = 135;
+    var ActivityNodeWidth = 120;
     var ActivityNodeHeight = 70;
     var ActivityNodeStrokeWidth = 1;
     var ActivityNodeStrokeWidthIsCall = 4;
@@ -398,11 +398,12 @@ function init() {
         var shape = obj.findObject("SHAPE");
         icon.geometryString = "M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z";
         icon.name = "Delete"
-        icon.fill = "red";
-        icon.stroke = "red";
+        icon.fill = "rgba(0, 0, 0, 0.5)";
+        icon.stroke = "rgba(0, 0, 0, 0.5)";
         icon.strokeWidth = 1.5;
-        icon.width = 18;
-        icon.height = 18;
+        icon.width = 16;
+        icon.height = 16;
+        icon.margin = 5;
         icon.alignment = go.Spot.TopRight;
         icon.alignmentFocus = go.Spot.TopRight;
         icon.cursor = "pointer";
@@ -427,7 +428,7 @@ function init() {
 
 
     var activityNodeTemplate =
-        $(go.Node, "Spot",
+        $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE", locationSpot: go.Spot.Center,
                 resizable: true, resizeObjectName: "PANEL",
@@ -477,7 +478,7 @@ function init() {
                     ),
                     $(go.Shape,
                         {
-                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 22, height: 20, cursor: "move"
+                            margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 18, cursor: "move"
 
                         },
                         new go.Binding("geometry", "icon", geoFunc)),
@@ -500,13 +501,13 @@ function init() {
         $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE",
-                locationSpot: go.Spot.Center,
-                selectionAdorned: false,
+                //locationSpot: go.Spot.Center,
+                //selectionAdorned: false,
                 minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                //desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
                 cursor: "move"
             },
-            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            // new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             $(go.Panel, "Spot",
                 {
                     name: "PANEL",
@@ -521,8 +522,8 @@ function init() {
 
                 $(go.Shape,
                     {
-                        margin: 5, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
-                        width: 20, height: 20
+                        margin: 10, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, alignment: go.Spot.Center, alignmentFocus: go.Spot.Center,
+                        width: 20, height: 18
                     },
                     new go.Binding("geometry", "icon", geoFunc)),
 
@@ -579,23 +580,24 @@ function init() {
         $(go.Node, "Auto",
             {
                 locationObjectName: "SHAPE",
-                locationSpot: go.Spot.Center,
-                toolTip: tooltiptemplate,
+                //locationSpot: go.Spot.Center,
+                //toolTip: tooltiptemplate,
                 minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight)
+                //desiredSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                cursor: "move"
             },
-            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            //new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
             new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
             // can be resided according to the user's desires
-            { resizable: false, resizeObjectName: "SHAPE" },
+            //{ resizable: false, resizeObjectName: "SHAPE" },
             $(go.Panel, "Spot",
                 $(go.Shape, "Rectangle",  // Outer circle
                     {
                         strokeWidth: 1,
                         name: "SHAPE",
                         desiredSize: new go.Size(EventNodeSize, EventNodeSize),
-                        portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
+                        portId: "", fromLinkable: true, toLinkable: true,
                         fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
                         name: "SHAPE",
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
@@ -645,8 +647,6 @@ function init() {
                     }),
                 $(go.Shape,
                     {
-                        //TODO icon
-                        // geometryString: "M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z",
                         margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 20, height: 20, cursor: "move"
                     }, new go.Binding("geometry", "icon", geoFunc)),
             ),
@@ -1443,8 +1443,10 @@ function init() {
                 groupTemplateMap: palGroupTemplateMap,
                 layout: $(go.GridLayout,
                     {
-                        cellSize: new go.Size(1, 1),
-                        spacing: new go.Size(5, 5),
+                        wrappingColumn: 2,
+                        alignment: go.GridLayout.Position,
+                       // cellSize: go.Size.parse("220 2"),
+                        // spacing: new go.Size(5, 5),
                         comparer: keyCompare
                     })
             });
@@ -1890,25 +1892,25 @@ function saveDocumentAs() {
 
 
 // checks to see if all changes have been saved -> shows the open HTML element
-function openDocument() {
-    if (checkLocalStorage()) {
-        if (window.myDiagram.isModified) {
-            var save = confirm("Would you like to save changes to " + getCurrentFileName() + "?");
-            if (save) {
-                saveDocument();
-            }
-        }
-        openElement("openDocument", "mySavedFiles");
-    }
-    myChange();
-}
+//function openDocument() {
+//    if (checkLocalStorage()) {
+//        if (window.myDiagram.isModified) {
+//            var save = confirm("Would you like to save changes to " + getCurrentFileName() + "?");
+//            if (save) {
+//                saveDocument();
+//            }
+//        }
+//        openElement("openDocument", "mySavedFiles");
+//    }
+//    myChange();
+//}
 
 // shows the remove HTML element
-function removeDocument() {
-    if (checkLocalStorage()) {
-        openElement("removeDocument", "mySavedFiles2");
-    }
-}
+//function removeDocument() {
+//    if (checkLocalStorage()) {
+//        openElement("removeDocument", "mySavedFiles2");
+//    }
+//}
 
 // these functions are called when panel buttons are clicked
 
@@ -1988,7 +1990,7 @@ function removeFile() {
         window.localStorage.removeItem(fileName);
         // the current document remains open, even if its storage was deleted
     }
-    closeElement("removeDocument");
+    //closeElement("removeDocument");
 }
 
 function updateFileList(id) {

@@ -13,6 +13,9 @@ angular.module('primeapps')
                 },
                 getAllCategory: function () {
                     return $http.get(config.apiUrl + 'report/get_categories');
+                },
+                deleteCategory:function (id) {
+                    return $http.delete(config.apiUrl + 'report/delete_category/'+id);
                 }
 
             };

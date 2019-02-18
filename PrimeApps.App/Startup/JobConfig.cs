@@ -24,7 +24,7 @@ namespace PrimeApps.App
             app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
             JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            ConfigureRecurringJobs();
+            //ConfigureRecurringJobs();//Onpremise durumu ve bu job'larin app'e ozel olmasindan dolayi gecici olarak kapatildi. 
 
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }

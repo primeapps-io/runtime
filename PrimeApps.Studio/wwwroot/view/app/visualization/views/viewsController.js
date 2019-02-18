@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
-		function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
+    .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
 
             //$scope.$parent.menuTopTitle = "Models";
@@ -30,11 +30,11 @@ angular.module('primeapps')
                 offset: 0
             };
 
-			ViewsService.count($scope.id).then(function (response) {
+            ViewsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
 
-			ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
+            ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
                 var customViews = angular.copy(response.data);
                 for (var i = customViews.length - 1; i >= 0; i--) {
                     var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
@@ -54,7 +54,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-				ViewsService.find($scope.id, requestModel).then(function (response) {
+                ViewsService.find($scope.id, requestModel).then(function (response) {
                     var customViews = angular.copy(response.data);
                     for (var i = customViews.length - 1; i >= 0; i--) {
                         var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
@@ -84,10 +84,10 @@ angular.module('primeapps')
                     }).then(function (value) {
                         if (value) {
                             if (id) {
-								ViewsService.deleteView(id)
+                                ViewsService.deleteView(id)
                                     .then(function () {
                                         $scope.changePage(1);
-										$scope.pageTotal = $scope.pageTotal - 1;
+                                        $scope.pageTotal = $scope.pageTotal - 1;
                                         toastr.success("Filter is deleted successfully.", "Deleted!");
                                     }).catch(function () {
                                     $scope.customViews = $scope.customViewsState;
@@ -108,7 +108,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (view) {
                 if (view) {
-					ViewsService.getView(view.id).then(function (view) {
+                    ViewsService.getView(view.id).then(function (view) {
                         $scope.view = angular.copy(view);
                         $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
                         $scope.view.label = $scope.view['label_' + $scope.language];
@@ -155,6 +155,14 @@ angular.module('primeapps')
                 $scope.module = module;
                 moduleChanged($scope.module, true);
             };
+
+            $scope.$on('dragulardrop', function (e, el) {
+                if ($scope.fields.selectedFields.length < 1)
+                    $scope.background_color = "background-color: #eed3d7";
+                else
+                    $scope.background_color = "background-color: #fbfbfb";
+                //$scope.viewForm.$setValidity('field', true);
+            });
 
             var dragular = function () {
                 var containerLeft = document.querySelector('#availableFields');
@@ -212,7 +220,7 @@ angular.module('primeapps')
 
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
-					$scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
+                    $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
 
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
@@ -233,7 +241,7 @@ angular.module('primeapps')
 
                             if ($scope.view.filters && $scope.view.filters.length > 0) {
                                 $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
-								$scope.view.filterList = ViewsService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
+                                $scope.view.filterList = ViewsService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
                             }
                             dragular();
                         }).finally(function () {
@@ -415,7 +423,7 @@ angular.module('primeapps')
                 }
 
                 if (!$scope.view.id) {
-					ViewsService.create(view)
+                    ViewsService.create(view)
                         .then(function (response) {
                             //var viewState = cache.viewState;
                             var viewState;
@@ -440,7 +448,7 @@ angular.module('primeapps')
                         });
                 }
                 else {
-					ViewsService.update(view, $scope.view.id, $scope.view._rev)
+                    ViewsService.update(view, $scope.view.id, $scope.view._rev)
                         .then(function () {
                             success();
                         })
@@ -481,6 +489,7 @@ angular.module('primeapps')
 
                 if ($scope.fields && $scope.fields.selectedFields.length < 1 && wizardStep != 0) {
                     viewForm.$setValidity('field', false);
+                    $scope.background_color = "background-color: #eed3d7";
                     return false;
                 }
 

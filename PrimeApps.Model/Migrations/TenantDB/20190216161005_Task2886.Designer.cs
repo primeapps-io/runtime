@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    [Migration("20190212063715_Task2886")]
+    [Migration("20190216161005_Task2886")]
     partial class Task2886
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

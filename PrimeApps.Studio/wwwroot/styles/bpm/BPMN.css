@@ -3,13 +3,14 @@
 /* Diagram and palette area */
 
 #myDiagramDiv {
-    float: left;
-    border: solid 1px gray;
+    float: none;
+    border: none;
     border-left: none;
-    width: 80%;
+    width: 100%;
     height: 500px;
-    background-color: white;
-    margin-bottom: 20px;
+    background-color: transparent;
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 #description {
@@ -21,26 +22,33 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-}
-
-#sideBar {
-    float: left;
-    width: 18%;
-    min-height: 500px;
-    text-align: center;
-    border: 1px solid gray;
-}
+} 
 
 .myPaletteDiv {
     width: 100%;
-    min-height: 625px;
+    min-height: calc( 100vh - 200px);
+    overflow: hidden;
 }
+
+#myPaletteLevel1 canvas {
+}
+
+
 
 #accordion {
     margin: 0px;
-    width: 97%;
-    min-height: 625px;
+    width: 100%;
+    min-height: inherit;
 }
+
+    #accordion .ui-accordion-header {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #accordion .ui-accordion-header-icon {
+        display: none !important;
+    }
 
 #myOverviewDiv {
     width: 100%;
@@ -50,7 +58,8 @@
 /* top bar area */
 
 .ui-accordion .ui-accordion-content {
-    padding: 1px;
+    padding: 0px !important;
+    border: none !important;
 }
 
 .ui-menu {
@@ -62,9 +71,9 @@
     width: 100%;
 }
 
-#menuui > li {
-    float: left;
-}
+    #menuui > li {
+        float: left;
+    }
 
 /*input {*/
 /*!*text-align: center;*!*/

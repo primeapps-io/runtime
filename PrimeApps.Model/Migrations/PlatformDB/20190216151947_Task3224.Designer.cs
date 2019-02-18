@@ -10,8 +10,8 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20190212131556_ProfilePicture")]
-    partial class ProfilePicture
+    [Migration("20190216151947_Task3224")]
+    partial class Task3224
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -210,69 +210,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("app_templates");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Component", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("Content")
-                        .HasColumnName("content");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnName("module_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
-                        .HasMaxLength(15);
-
-                    b.Property<int>("Order")
-                        .HasColumnName("order");
-
-                    b.Property<int>("Place")
-                        .HasColumnName("place");
-
-                    b.Property<int>("Status")
-                        .HasColumnName("status");
-
-                    b.Property<int>("Type")
-                        .HasColumnName("type");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModuleId");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("Place");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("Type");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("components");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
                 {
                     b.Property<int>("Id")
@@ -310,73 +247,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("exchange_rates");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Function", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("Content")
-                        .HasColumnName("content");
-
-                    b.Property<int>("ContentType")
-                        .HasColumnName("content_type");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<string>("Dependencies")
-                        .HasColumnName("dependencies");
-
-                    b.Property<string>("Handler")
-                        .IsRequired()
-                        .HasColumnName("handler");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnName("label")
-                        .HasMaxLength(300);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
-                        .HasMaxLength(100);
-
-                    b.Property<int>("Runtime")
-                        .HasColumnName("runtime");
-
-                    b.Property<int>("Status")
-                        .HasColumnName("status");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("Handler");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("Runtime");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("functions");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformUser", b =>
                 {
                     b.Property<int>("Id")
@@ -402,7 +272,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("last_name");
 
                     b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasColumnName("profile_picture");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -713,30 +582,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Component", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Function", b =>
-                {
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")

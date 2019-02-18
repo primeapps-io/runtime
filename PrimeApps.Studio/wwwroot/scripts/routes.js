@@ -166,7 +166,7 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
                                 $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentOrganization.id;
                                 $rootScope.breadcrumblist[1].title = "People";
-                                $rootScope.breadcrumblist[1].link = '#/organization/' + $rootScope.currentOrganization.id + '/collaborators';
+                                $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/collaborators';
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
 
                                 if (!$rootScope.currentOrganization) {
@@ -535,7 +535,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.advancedWorkflows', {
-                    url: '/advancedworkflows',
+                    url: '/advancedWorkflows',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/processautomation/advancedworkflows/advancedWorkflows.html',
@@ -543,7 +543,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        advancedworkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        advancedWorkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
@@ -1462,6 +1462,32 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/manage/notifications/notificationsController.js',
                                 cdnUrl + 'view/app/manage/notifications/notificationsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.tenants', {
+                    url: '/tenants',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/tenants/tenants.html',
+                            controller: 'TenantsController'
+                        }
+                    },
+                    resolve: {
+                        tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/tenants/tenantsController.js',
+                                cdnUrl + 'view/app/manage/tenants/tenantsService.js'
                             ]);
                         }]
                     }

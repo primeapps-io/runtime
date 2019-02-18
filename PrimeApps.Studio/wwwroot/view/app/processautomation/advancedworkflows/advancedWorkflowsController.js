@@ -10,8 +10,9 @@ angular.module('primeapps')
             $scope.$parent.workflows = [];
             //$scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
-            $scope.$parent.activeMenuItem = 'advancedworkflows';
-            $rootScope.subtoggleClass = "";
+            $scope.$parent.activeMenuItem = 'advancedWorkflows';
+            $rootScope.subtoggleClass = '';
+            $rootScope.toggleClass=''
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
 
             $scope.generator = function (limit) {
@@ -136,5 +137,6 @@ angular.module('primeapps')
             };
 
             //Modal End
+             
         }
     ]);
