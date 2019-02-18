@@ -1086,6 +1086,9 @@ button:focus, select:focus {
   overflow-x: inherit;
   overflow-y: inherit;
 }
+.primeapps .setup-modal .modal-body .fields .container-left, .primeapps .setup-modal .modal-body .fields .container-right, .primeapps .module-modal .modal-body .fields .container-left, .primeapps .module-modal .modal-body .fields .container-right {
+  overflow-y: auto;
+}
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
   height: 100%;
