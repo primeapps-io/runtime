@@ -1362,6 +1362,11 @@ button, select {
         overflow-x: inherit;
         overflow-y: inherit;
       }
+      .fields{
+        .container-left,.container-right{
+          overflow-y: auto;
+        }
+      }
 
     }
 

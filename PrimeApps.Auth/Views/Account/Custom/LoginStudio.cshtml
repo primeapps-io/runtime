@@ -20,44 +20,52 @@
 	}
 	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
 }
-<div class="col-md-5 login-sec">
-    <img class="logo-img" src="~/images/custom/studio-logo.svg" />
-    @if (!string.IsNullOrWhiteSpace(Model.Error))
-    {
-        if (Model.Error == "WrongInfo")
-        {
-            <div class="error">@Localizer[Model.Error]</div>
-        }
-        else if (Model.Error == "notFound")
-        {
-            <div class="error">@Localizer["NotFound"]</div>
-        }
-    }
+<div class="col-lg-5 login-sec">
+    <div>
+        <div class="text-center">
+            <img class="logo-img" src="~/images/custom/studio-logo.svg"/>
+            @if (!string.IsNullOrWhiteSpace(Model.Error))
+            {
+                if (Model.Error == "WrongInfo")
+                {
+                    <div class="error">@Localizer[Model.Error]</div>
+                }
+                else if (Model.Error == "notFound")
+                {
+                    <div class="error">@Localizer["NotFound"]</div>
+                }
+            }
 
-    <div class="error-all"></div>
-    <div class="error-email"></div>
-    <div class="error-pass"></div>
+            <div class="error-all"></div>
+            <div class="error-email"></div>
+            <div class="error-pass"></div>
+            <form asp-route="Login" class="login-form" role="form" id="login-form">
+                <input type="hidden" asp-for="@Model.ReturnUrl"/>
+                <div class="form-group">
+                    <label for="Username" class="labelx"><span>@Localizer["Email"]</span>
+                        <input class="form-control" asp-for="Username" id="Email" autofocus autocomplete="off">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="Password" class="labelx"><span>@Localizer["Password"]</span>
+                        <input type="password" class="form-control" asp-for="Password" id="Password" autocomplete="off">
+                    </label>
+                </div>
 
-    <form asp-route="Login" class="login-form" role="form" id="login-form">
-        <input type="hidden" asp-for="@Model.ReturnUrl" />
-        <div class="form-group">
-            <label for="Username" class="">@Localizer["Email"]</label>
-            <input class="form-control" asp-for="Username" id="Email" autofocus autocomplete="off">
-        </div>
-        <div class="form-group">
-            <label for="Password" class="">@Localizer["Password"]</label>
-            <input type="password" class="form-control" asp-for="Password" id="Password" autocomplete="off">
-        </div>
-        <div style="text-align:right;">
-            <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="forgot-password-button">@Localizer["ForgotPassword"]</a>
-        </div>
 
-        <div class="form-check">
-            <button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
+                <div class="form-check text-center">
+                    <button type="submit" class="btn btn-login ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
     @* <a href="@Url.Action("Register", "Account", new {ReturnUrl = Model.ReturnUrl})" class="bottom-button">@Localizer["CreateAnAccount"]</a> *@
+    <div class="text-center">
+        <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="forgot-password-button">@Localizer["ForgotPassword"]</a>
+    </div>
+    
 </div>
+
 
 @section scripts {
 	<script>
