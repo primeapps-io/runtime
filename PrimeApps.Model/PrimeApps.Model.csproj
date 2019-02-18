@@ -24,4 +24,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\StudioDB" />
+  </ItemGroup>
 </Project>
