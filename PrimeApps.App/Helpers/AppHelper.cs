@@ -30,7 +30,7 @@ namespace PrimeApps.App.Helpers
                 Name = app.Name,
                 Title = theme["title"].ToString(),
                 MultiLanguage = string.IsNullOrEmpty(app.Setting.Language),
-                Logo = app.Logo,
+                Logo = theme["logo"].ToString(),
                 Theme = theme,
                 Color = theme["color"].ToString(),
                 CustomDomain = false,

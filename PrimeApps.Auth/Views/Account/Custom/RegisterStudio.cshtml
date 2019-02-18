@@ -21,56 +21,62 @@
     var officeSignIn = false;
 }
 
-<div class="col-md-5 login-sec">
-    <img class="logo-img" src="~/images/custom/studio-logo.svg" />
-
-
-    <form asp-route="Register" class="login-form" role="form" id="register-form">
-        <div class="form-group">
-            <div class="input-group">
-                <div style="width:50%;margin-right: 20px;">
-                    <label for="FirstName" class="">@Localizer["FirstName"]</label>
-                    <input class="form-control" asp-for="FirstName" id="FirstName" autofocus autocomplete="off" style="width:100%;">
-                </div>
-                <div style="width:50%;">
-                    <label for="LastName" class="">@Localizer["LastName"]</label>
-                    <input class="form-control" asp-for="LastName" id="LastName" autofocus autocomplete="off" style="width:100%;">
-                </div>
-
-            </div>
-
-        </div>
-        <div class="form-group">
-            <label for="Email" class="">@Localizer["Email"]</label>
-            <input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
-
-        </div>
-        <div class="form-group">
-            <label for="Password" class="">@Localizer["Password"]</label>
-            <input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
-        </div>
-
-        @if (!string.IsNullOrEmpty(error) && error == "UserExist")
-		{
-        <div class="error">@Localizer[error]</div>
-		}
-
-        <div class="error-all"></div>
-        <div class="error-email"></div>
-        <div class="error-pass"></div>
-        <div class="error-fullname"></div>
-        <div class="form-group">
-            <p class="free-info">
-                @Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
-            </p>
-        </div>
-        <div class="form-check">
-            <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
-
-        </div>
-    </form>
-
-    <a href="@Url.Action("Login", "Account", new { ReturnUrl = Model.ReturnUrl })" class="bottom-button">@Localizer["LoginForm"]</a>
+<div class="col-lg-5 login-sec">
+	<div>
+		<div class="text-center">
+			<img class="logo-img" src="~/images/custom/studio-logo.svg" />
+			@if (!string.IsNullOrEmpty(error) && error == "UserExist")
+			{
+				<div class="error">@Localizer[error]</div>
+			}
+		
+			<div class="error-all"></div>
+			<div class="error-email"></div>
+			<div class="error-pass"></div>
+			<div class="error-fullname"></div>
+			<form asp-route="Register" class="login-form" role="form" id="register-form">
+				<div class="form-group">
+					<div class="input-group">
+						<div style="width:50%;margin-right: 20px;">
+							<label for="FirstName" class="labelx"><span>@Localizer["FirstName"]</span>
+								<input class="form-control" asp-for="FirstName" id="FirstName" autofocus autocomplete="off" style="width:100%;">
+							</label>
+						</div>
+						<div style="width:50%;">
+							<label for="LastName" class="labelx"><span>@Localizer["LastName"]</span>
+								<input class="form-control" asp-for="LastName" id="LastName" autofocus autocomplete="off" style="width:100%;">
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="Email" class="labelx"><span>@Localizer["Email"]</span>
+						<input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
+					</label>
+				</div>
+				<div class="form-group">
+					<label for="Password" class="labelx"><span>@Localizer["Password"]</span>
+						<input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
+					</label>
+				</div>
+		
+				
+				<div class="form-group">
+					<p class="free-info">
+						@Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
+					</p>
+				</div>
+				<div class="form-check">
+					<button type="submit" class="btn btn-login ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
+		
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="text-center">
+		<a href="@Url.Action("Login", "Account", new { ReturnUrl = Model.ReturnUrl })" class="forgot-password-button">@Localizer["LoginForm"]</a>
+	</div>
+    
 </div>
 
 

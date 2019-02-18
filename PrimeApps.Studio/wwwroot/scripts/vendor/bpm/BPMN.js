@@ -395,20 +395,23 @@ function init() {
     function mouseEnter(e, obj) {
         myKey = obj.Zd.key;
         var icon = new go.Shape();
-        var shape = obj.findObject("SHAPE");
-        icon.geometryString = "M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z";
+        var shape = obj.findObject("SHAPEMAIN");
+        //Delete icon
+        icon.geometry = go.Geometry.parse("M12,24c-3.2,0-6.2-1.3-8.5-3.5C1.3,18.2,0,15.2,0,12c0-3.2,1.3-6.2,3.5-8.5 C5.8,1.3,8.8,0,12,0c3.2,0,6.2,1.3,8.5,3.5C22.7,5.8,24,8.8,24,12c0,3.2-1.3,6.2-3.5,8.5C18.2,22.7,15.2,24,12,24z M7.2,8.2 c-0.1,0-0.2,0-0.2,0.1C6.9,8.4,6.9,8.5,6.9,8.6l0.5,8.9c0,0.3,0.2,0.7,0.4,0.9c0.2,0.2,0.6,0.4,0.9,0.4h6.7c0.3,0,0.7-0.1,0.9-0.4 c0.2-0.2,0.4-0.5,0.4-0.9l0.5-8.9c0-0.1,0-0.2-0.1-0.2c-0.1-0.1-0.1-0.1-0.2-0.1L7.2,8.2z M6.7,5.6c-0.2,0-0.3,0.1-0.5,0.2 C6.1,5.9,6,6.1,6,6.3V7c0,0.1,0,0.2,0.1,0.2c0.1,0.1,0.1,0.1,0.2,0.1h11.6c0.1,0,0.2,0,0.2-0.1c0.1-0.1,0.1-0.1,0.1-0.2V6.3 c0-0.2-0.1-0.3-0.2-0.5c-0.1-0.1-0.3-0.2-0.5-0.2h-3.1l-0.2-0.5C14.2,5,14.2,4.9,14,4.8c-0.1-0.1-0.2-0.1-0.4-0.1h-3.1 c-0.1,0-0.2,0-0.4,0.1C10.1,4.9,10,5,10,5.1L9.7,5.6L6.7,5.6z", true);
+        //icon.geometry.normalize();
         icon.name = "Delete"
         icon.fill = "rgba(0, 0, 0, 0.5)";
         icon.stroke = "rgba(0, 0, 0, 0.5)";
-        icon.strokeWidth = 1.5;
-        icon.width = 16;
-        icon.height = 16;
+        icon.strokeWidth = 0;
+        icon.background = "#F2F2F2";//ActivityNodeFill;
+        icon.width = 24;
+        icon.height = 24;
         icon.margin = 5;
         icon.alignment = go.Spot.TopRight;
         icon.alignmentFocus = go.Spot.TopRight;
         icon.cursor = "pointer";
         icon.click = DeleteNode;
-        obj.add(icon);
+        shape.add(icon);
     };
 
     function mouseLeave(e, obj) {
@@ -430,7 +433,9 @@ function init() {
     var activityNodeTemplate =
         $(go.Node, "Auto",
             {
-                locationObjectName: "SHAPE", locationSpot: go.Spot.Center,
+                locationObjectName: "SHAPEMAIN",
+                name: "SHAPEMAIN",
+                locationSpot: go.Spot.Center,
                 resizable: true, resizeObjectName: "PANEL",
                 toolTip: tooltiptemplate,
                 selectionAdorned: false,  // use a Binding on the Shape.stroke to show selection
@@ -500,7 +505,7 @@ function init() {
     var activityNodeTemplateForPalette =
         $(go.Node, "Auto",
             {
-                locationObjectName: "SHAPE",
+                locationObjectName: "SHAPEMAIN",
                 //locationSpot: go.Spot.Center,
                 //selectionAdorned: false,
                 minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
@@ -620,7 +625,8 @@ function init() {
     var eventNodeTemplate =
         $(go.Node, "Auto",
             {
-                locationObjectName: "SHAPE",
+                locationObjectName: "SHAPEMAIN", 
+                name: "SHAPEMAIN",
                 locationSpot: go.Spot.Center,
                 toolTip: tooltiptemplate,
                 minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
@@ -1445,7 +1451,7 @@ function init() {
                     {
                         wrappingColumn: 2,
                         alignment: go.GridLayout.Position,
-                       // cellSize: go.Size.parse("220 2"),
+                        // cellSize: go.Size.parse("220 2"),
                         // spacing: new go.Size(5, 5),
                         comparer: keyCompare
                     })
