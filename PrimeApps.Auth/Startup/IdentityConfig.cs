@@ -36,7 +36,7 @@ namespace PrimeApps.Auth
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            services.AddIdentityServer(options =>
+            var ser = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
@@ -54,10 +54,13 @@ namespace PrimeApps.Auth
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
-                .AddSigningCredential(LoadCertificate(configuration))
-                .AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("LdapConfigurationSection"), UserStore.InMemory)
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddProfileService<CustomProfileService>();
+                .AddSigningCredential(LoadCertificate(configuration));
+
+            if (bool.Parse(configuration.GetSection("AppSettings")["UseLdap"]))
+                ser.AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("LdapConfigurationSection"), UserStore.InMemory);
+                    
+            ser.AddAspNetIdentity<ApplicationUser>();
+            ser.AddProfileService<CustomProfileService>();
 
             //InitializeDatabase(app);
         }
