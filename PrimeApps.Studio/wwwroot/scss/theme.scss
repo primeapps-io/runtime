@@ -3731,6 +3731,8 @@ button, select {
       }
       .form-control{
         height: 30px !important;
+        background: transparent;
+        padding: 10px 0px;
       }
       &:hover{
         background: rgba(0,0,0,0.05);
@@ -3809,6 +3811,15 @@ button, select {
       max-width: inherit;
     }
   }
+  .flexitemx{
+    display: flex;
+    > div{
+      > .cell-container{
+        min-height: 100%;
+      }
+    }
+    
+  }
 }
 
 .placeholder {
@@ -3824,6 +3835,7 @@ button, select {
   100% {
     background-position: 468px 0
   }
+  
 }
 
 .animated-background {

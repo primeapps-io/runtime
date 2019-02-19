@@ -3024,6 +3024,8 @@ button:focus, select:focus {
 }
 .primeapps .categorylist > li .form-control {
   height: 30px !important;
+  background: transparent;
+  padding: 10px 0px;
 }
 .primeapps .categorylist > li:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -3099,6 +3101,12 @@ button:focus, select:focus {
 }
 .primeapps .shared-users .shared-users-input {
   max-width: inherit;
+}
+.primeapps .flexitemx {
+  display: flex;
+}
+.primeapps .flexitemx > div > .cell-container {
+  min-height: 100%;
 }
 
 .placeholder {
