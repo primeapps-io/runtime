@@ -9,15 +9,15 @@
                             <button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false); "><i class="fas fa-angle-left" ></i>{{'Common.Previous' | translate}}</button>
+                            <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                         </li>
-                        <li>
-                            <button type="button" class="btn btn-radius btn-blue ng-binding" ng-show="wizardStep<3" ng-click="validate(viewForm, wizardStep, true);">
+                        <li ng-if="wizardStep<3">
+                            <button type="button" class="btn btn-radius btn-blue ng-binding"  ng-click="validate(viewForm, wizardStep, true);">
                                 {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                             </button>
                         </li>
-                        <li>
-                            <button type="submit" ladda="saving" ng-if="wizardStep>2" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        <li ng-if="wizardStep>2">
+                            <button type="submit" ladda="saving"  class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -63,8 +63,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep) ? wizardStep = 1 : false;">
-                                            {{'Common.Next' | translate}}<i class="fas fa-angle-right" ></i>
+                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true)">
+                                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -92,9 +92,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep) ? wizardStep = 2 : false;">
-                                            <i class="fas fa-angle-right"></i>{{'Common.Next' | translate}}
+                                        <button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                                        <button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep, true);">
+                                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -333,8 +333,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group text-right">
-                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="wizardStep = 1; $parent.$parent.wizardStep=1;"><i class="fas fa-angle-left" ></i>{{'Common.Previous' | translate}}</button>
-                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep) ? wizardStep = 3 : false;">
+                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true);">
                                         {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                                     </button>
                                 </div>
@@ -376,10 +376,8 @@
                                         </tags-input>
                                     </div>
                                     <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="wizardStep = 2; $parent.$parent.wizardStep=2;"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true);">
-                                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
-                                        </button>
+                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                                        <button type="submit" ladda="saving" ng-if="wizardStep>2" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                                     </div>
                                 </div>
                             </div>
