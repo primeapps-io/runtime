@@ -1388,16 +1388,28 @@ button, select {
             width: 100%;
             border: none;
             background: transparent;
+            padding: 0px;
+            &:focus{
+              outline: none;
+            }
+            &.focused{
+              -webkit-box-shadow: none;
+              -moz-box-shadow: none;
+              box-shadow: none;
+            }
 
             input {
               background: transparent;
-              height: 30px;
+              height: 20px;
+              outline: none;
+              padding: 0px;
+              margin: 0px;
             }
             .tag-item {
               margin: 0 2px 0 0;
               font-size: 12px;
               font-weight: bold;
-              line-height: 30px;
+              line-height: 15px;
             }
           }
         }
@@ -3719,6 +3731,8 @@ button, select {
       }
       .form-control{
         height: 30px !important;
+        background: transparent;
+        padding: 10px 0px;
       }
       &:hover{
         background: rgba(0,0,0,0.05);
@@ -3792,6 +3806,20 @@ button, select {
   .swal-icon--warning__body{
     height: 30px;
   }
+  .shared-users{
+    .shared-users-input{
+      max-width: inherit;
+    }
+  }
+  .flexitemx{
+    display: flex;
+    > div{
+      > .cell-container{
+        min-height: 100%;
+      }
+    }
+    
+  }
 }
 
 .placeholder {
@@ -3807,6 +3835,7 @@ button, select {
   100% {
     background-position: 468px 0
   }
+  
 }
 
 .animated-background {

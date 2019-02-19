@@ -2154,6 +2154,6 @@
     "Name": "Seçim listesi Adı",
     "SystemCode": "Sistem Kodu",
     "AddNew": "Yeni Seçim Listesi Ekle",
-    "PicklistItem": "Seçim Listesi Elemanları"
+    "PicklistItem": "{{name}} Seçim Listesi Elemanları"
   }
 }

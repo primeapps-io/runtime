@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Picklist>> GetAll();
         Task<Picklist> GetPicklistByLabelEn(string labelEn);
         Task<ICollection<Picklist>> Find(PaginationModel paginationModel);
-        //Task<ICollection<Picklist>> Find(List<int> ids);
+        Task<ICollection<Picklist>> Find(List<int> ids);
         Task<int> Count();
         Task<PicklistItem> GetItemById(int id);
         Task<PicklistItem> GetItemBySystemCode(string systemCode);
