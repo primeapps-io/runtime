@@ -139,9 +139,9 @@
                                             </label>
                                         </div>
                                         <div class="shared-users" ng-if="reportModel.sharing_type === 'custom'">
-                                            <label class="col-sm-12 control-label">{{'View.SharedUsers' | translate}}:</label>
+                                            <label class="control-label">{{'View.SharedUsers' | translate}}:</label>
                                             <tags-input name="shares"
-                                                        class="shared-users-input"
+                                                        class="shared-users-input form-control"
                                                         ng-model="reportModel.shares"
                                                         display-property="full_name"
                                                         key-property="id"
