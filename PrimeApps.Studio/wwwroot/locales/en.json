@@ -2155,6 +2155,6 @@
     "Name": "Picklist Name",
     "SystemCode": "System Code",
     "AddNew": "Add New Picklist",
-    "PicklistItem": "Picklist Items"
+    "PicklistItem": "{{name}} Picklist Items"
   }
 }

@@ -51,16 +51,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(picklistEntities);
         }
 
-        //[Route("find"), HttpPost]
-        //public async Task<IActionResult> Find([FromBody]List<int> ids)
-        //{
-        //	var picklistEntities = await _picklistRepository.Find(ids);
-        //	var picklistsViewModel = PicklistHelper.MapToViewModel(picklistEntities);
-
-        //	return Ok(picklistsViewModel);
-        //}
-
         [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]List<int> ids)
+        {
+            var picklistEntities = await _picklistRepository.Find(ids);
+            var picklistsViewModel = PicklistHelper.MapToViewModel(picklistEntities);
+
+            return Ok(picklistsViewModel);
+        }
+
+        [Route("get_page"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
             if (!ModelState.IsValid)

@@ -65,7 +65,7 @@ angular.module('primeapps')
                         }
                     });
             };
-            
+
             //Modal Start
             $scope.showFormModal = function (id) {
                 $scope.modalLoading = true;
@@ -89,7 +89,11 @@ angular.module('primeapps')
                 });
             };
 
-
+            $scope.cancel = function () {
+                $scope.picklistFormModal.hide();
+                $scope.id = null;
+                $scope.picklist = {};
+            }
 
         }
     ]);

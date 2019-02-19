@@ -34,22 +34,22 @@ namespace PrimeApps.Model.Repositories
             return await picklists;
         }
 
-        //public async Task<ICollection<Picklist>> Find(List<int> ids = null)
-        //{
-        //    var picklistsQuery = DbContext.Picklists
-        //        .Include(x => x.Items)
-        //        .Where(x => !x.Deleted);
+        public async Task<ICollection<Picklist>> Find(List<int> ids = null)
+        {
+            var picklistsQuery = DbContext.Picklists
+                .Include(x => x.Items)
+                .Where(x => !x.Deleted);
 
-        //    if (ids != null && ids.Count > 0)
-        //    {
-        //        picklistsQuery = picklistsQuery
-        //            .Where(x => ids.Contains(x.Id));
-        //    }
+            if (ids != null && ids.Count > 0)
+            {
+                picklistsQuery = picklistsQuery
+                    .Where(x => ids.Contains(x.Id));
+            }
 
-        //    var picklists = await picklistsQuery.ToListAsync();
+            var picklists = await picklistsQuery.ToListAsync();
 
-        //    return picklists;
-        //}
+            return picklists;
+        }
 
         public async Task<ICollection<Picklist>> Find(PaginationModel paginationModel)
         {
