@@ -479,7 +479,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.validate = function (viewForm, wizardStep) {
+            $scope.validate = function (viewForm, wizardStep, previous) {
 
                 viewForm.$submitted = true;
 
@@ -497,6 +497,7 @@ angular.module('primeapps')
                     return false;
                 }
 
+                $scope.wizardStep += previous ? 1 : $scope.wizardStep > 0 ? -1 : 0;
                 return true;
             };
 
