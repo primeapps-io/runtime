@@ -71,10 +71,29 @@ namespace PrimeApps.Studio.Controllers
             return Ok(picklists);
         }
 
+        [Route("get_item_page/{id:int}"), HttpPost]
+        public async Task<IActionResult> GetItemPage(int id, [FromBody] PaginationModel paginationModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemList = await _picklistRepository.GetItemPage(id, paginationModel);
+
+            return Ok(itemList);
+        }
+
         [Route("count"), HttpGet]
         public async Task<int> Count()
         {
             var count = await _picklistRepository.Count();
+
+            return count;
+        }
+
+        [Route("count_items/{id:int}"), HttpGet]
+        public async Task<int> CountItems(int id)
+        {
+            var count = await _picklistRepository.CountItems(id);
 
             return count;
         }

@@ -7,16 +7,27 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
-            $scope.wizardStep = 0;
+            $scope.loadingItem = true;
 
             $scope.requestModel = { //default page value
                 limit: "10",
                 offset: 0,
-                order_column: "name"
+                order_column: "label_en"
+            };
+            $scope.requestModelItem = { //default item page value
+                limit: "10",
+                offset: 0,
+                order_column: "label_en"
             };
 
-
             $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+
+            $scope.generatorItem = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
                     $scope.placeholderArray[i] = i;
@@ -27,16 +38,19 @@ angular.module('primeapps')
 
 
 
-            PickListsService.find($scope.requestModel).then(function (response) {
+            PickListsService.getPage($scope.requestModel).then(function (response) {
                 if (response.data) {
                     $scope.picklists = response.data;
 
                     PickListsService.count().then(function (count) {
                         $scope.pageTotal = count.data;
+                        $scope.loading = false;
+                    }).catch(function (reason) {
+                        $scope.loading = false;
                     });
-
-                    $scope.loading = false;
                 }
+            }).catch(function (reason) {
+                $scope.loadingItem = false;
             });
 
             $scope.changePage = function (page) {
@@ -44,16 +58,52 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                PickListsService.find(requestModel).then(function (response) {
+                PickListsService.getPage(requestModel).then(function (response) {
 
                     $scope.picklists = response.data;
                     $scope.loading = false;
+                }).catch(function (reason) {
+                    $scope.loading = false;
+                });
+
+            };
+
+            $scope.changePageItem = function (page) {
+                $scope.loadingItem = true;
+                if ($scope.requestModelItem.limit === null || $scope.requestModelItem.limit === 1)
+                    $scope.requestModelItem.limit = "10";
+
+                var requestModel = angular.copy($scope.requestModelItem);
+                requestModel.offset = page - 1;
+
+                PickListsService.getItemPage($scope.id, requestModel).then(function (response) {
+                    $scope.picklist = response.data;
+                    PickListsService.countItems($scope.id)
+                        .then(function (count) {
+                            if (count.data) {
+                                $scope.pageTotalItems = count.data;
+                                $scope.loadingItem = false;
+                            }
+                        }).catch(function (reason) {
+                            $scope.loadingItem = false;
+                            $scope.picklistFormModal.hide();
+                        });
+                }).catch(function (reason) {
+                    $scope.loadingItem = false;
+                    $scope.picklistFormModal.hide();
                 });
 
             };
 
             $scope.changeOffset = function (value) {
                 $scope.changePage(value);
+            };
+
+            $scope.changeOffsetItem = function (value) {
+                if ($scope.id && $scope.picklist)
+                    $scope.changePageItem(value);
+                else
+                    return;
             };
 
             $scope.selectPicklist = function (id) {
@@ -63,15 +113,22 @@ angular.module('primeapps')
                             $scope.picklist = response.data;
                             $scope.modalLoading = false;
                         }
+                    }).catch(function (reason) {
+                        $scope.modalLoading = false;
+                        $scope.picklistFormModal.hide();
                     });
             };
 
             //Modal Start
-            $scope.showFormModal = function (id) {
+            $scope.showFormModal = function (picklist) {
                 $scope.modalLoading = true;
-                if (id) {
-                    $scope.id = id;
-                    $scope.selectPicklist(id);
+                $scope.generatorItem(5);
+
+                if (picklist) {
+                    $scope.picklist = picklist;
+                    $scope.id = picklist.id;
+                    // $scope.selectPicklist(picklist.id);
+                    $scope.changeOffsetItem(1);
                 }
                 else
                     $scope.modalLoading = false;

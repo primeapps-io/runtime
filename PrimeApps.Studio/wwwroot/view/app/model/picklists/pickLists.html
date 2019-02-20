@@ -35,14 +35,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="picklist in picklists" ng-click="showFormModal(picklist.id)">
+            <tr ng-repeat="picklist in picklists" ng-click="$event.stopPropagation(); showFormModal(picklist);">
                 <td>{{picklist['label_' + language]}}</td>
                 <td style="text-transform: capitalize;">{{picklist.system_type}}</td>
                 <td class="text-right">
                     <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
                     <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(view.id);" type="button" class="action-buttons-delete">
+                        <button ng-click="$event.stopPropagation(); delete(picklist.id);" type="button" class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -77,7 +77,7 @@
         </div>
         <div>
             <span class="pagination-span">Items per page  </span>
-            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset(1)">
                 <option ng-selected="true" value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
