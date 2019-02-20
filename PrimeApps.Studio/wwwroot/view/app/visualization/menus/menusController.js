@@ -245,6 +245,7 @@ angular.module('primeapps')
 
                         $scope.firstProfileId = $scope.menu.profile.id;
 
+                        $scope.loadingModal = true;
                         //We use firstprofileId because maybe user was changed
                         MenusService.getMenuItem($scope.menu.profile_id).then(function onSuccess(response) {
                             $scope.menuLists = [];
@@ -284,7 +285,7 @@ angular.module('primeapps')
                             $scope.counter = $scope.menuLists.length + 1;
 
                         }).finally(function () {
-                            $scope.loading = false;
+                            $scope.loadingModal = false;
                         });
                     });
                 }
