@@ -5,11 +5,8 @@ angular.module('primeapps')
     .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
         function ($rootScope, $scope, $filter, $state, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
 
-            //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'menus';
-            $scope.wizardStep = 0;
-
 
             $rootScope.breadcrumblist[2].title = 'Menu';
 
@@ -194,6 +191,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (id, _clone) {
                 $scope.id = id;
+                $scope.wizardStep = 0;
                 $scope.menuLists = [];
                 $scope.menu = {};
                 $scope.counter = 1;
