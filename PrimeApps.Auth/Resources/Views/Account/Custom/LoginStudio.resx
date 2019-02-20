@@ -124,7 +124,7 @@
     <value>English</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Forgot Password</value>
+    <value>Forgotten Password?</value>
   </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Login</value>

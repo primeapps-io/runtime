@@ -60,7 +60,7 @@ angular.module('primeapps')
 
                 $scope.categoryModal = $scope.categoryModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/analytics/reports/categoryModal.html',
+                    templateUrl: 'view/app/visualization/reports/categoryModal.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
@@ -74,15 +74,15 @@ angular.module('primeapps')
             $scope.openReportDetail = function () {
                 $scope.reportModal = $scope.reportModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/analytics/reports/report.html',
+                    templateUrl: 'view/app/visualization/reports/report.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false,
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/reports/reportsService.js',
-                                cdnUrl + 'view/app/analytics/reports/reportController.js'
+                                cdnUrl + 'view/app/visualization/reports/reportsService.js',
+                                cdnUrl + 'view/app/visualization/reports/reportController.js'
                             ]);
                         }]
                     },

@@ -1086,6 +1086,9 @@ button:focus, select:focus {
   overflow-x: inherit;
   overflow-y: inherit;
 }
+.primeapps .setup-modal .modal-body .fields .container-left, .primeapps .setup-modal .modal-body .fields .container-right, .primeapps .module-modal .modal-body .fields .container-left, .primeapps .module-modal .modal-body .fields .container-right {
+  overflow-y: auto;
+}
 .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
   border: none;
   height: 100%;
@@ -1104,16 +1107,28 @@ button:focus, select:focus {
   width: 100%;
   border: none;
   background: transparent;
+  padding: 0px;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags:focus, .primeapps .module-modal .modal-content tags-input .host .tags:focus {
+  outline: none;
+}
+.primeapps .setup-modal .modal-content tags-input .host .tags.focused, .primeapps .module-modal .modal-content tags-input .host .tags.focused {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 .primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
   background: transparent;
-  height: 30px;
+  height: 20px;
+  outline: none;
+  padding: 0px;
+  margin: 0px;
 }
 .primeapps .setup-modal .modal-content tags-input .host .tags .tag-item, .primeapps .module-modal .modal-content tags-input .host .tags .tag-item {
   margin: 0 2px 0 0;
   font-size: 12px;
   font-weight: bold;
-  line-height: 30px;
+  line-height: 15px;
 }
 .primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
   max-width: 100% !important;
@@ -3009,6 +3024,8 @@ button:focus, select:focus {
 }
 .primeapps .categorylist > li .form-control {
   height: 30px !important;
+  background: transparent;
+  padding: 10px 0px;
 }
 .primeapps .categorylist > li:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -3081,6 +3098,15 @@ button:focus, select:focus {
 }
 .primeapps .swal-icon--warning__body {
   height: 30px;
+}
+.primeapps .shared-users .shared-users-input {
+  max-width: inherit;
+}
+.primeapps .flexitemx {
+  display: flex;
+}
+.primeapps .flexitemx > div > .cell-container {
+  min-height: 100%;
 }
 
 .placeholder {

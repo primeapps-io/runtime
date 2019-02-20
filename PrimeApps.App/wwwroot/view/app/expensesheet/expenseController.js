@@ -386,13 +386,13 @@ angular.module('primeapps')
                 $scope.currentLookupField = { lookup_type: module };
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/module/moduleFormModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/module/moduleFormModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -408,33 +408,33 @@ angular.module('primeapps')
                 $scope.formType = 'modal';
                 $scope.item = item;
                 $scope.editformModal = $scope.editformModal || $modal({
-                    scope: $scope,
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'views/app/module/moduleFormController.js',
-                                cdnUrl + 'views/app/module/moduleFormModalController.js',
-                                cdnUrl + 'views/app/product/quoteProductsController.js',
-                                cdnUrl + 'views/app/product/quoteProductsService.js',
-                                cdnUrl + 'views/app/product/orderProductsController.js',
-                                cdnUrl + 'views/app/product/orderProductsService.js',
-                                cdnUrl + 'views/app/product/purchaseProductsController.js',
-                                cdnUrl + 'views/app/product/purchaseProductsService.js',
-                                cdnUrl + 'views/app/actionbutton/actionButtonFrameController.js',
-                                cdnUrl + 'views/app/product/salesInvoiceProductsController.js',
-                                cdnUrl + 'views/app/product/salesInvoiceProductsService.js',
-                                cdnUrl + 'views/app/product/purchaseInvoiceProductsController.js',
-                                cdnUrl + 'views/app/product/purchaseInvoiceProductsService.js'
-                            ]);
-                        }]
-                    },
-                    templateUrl: 'views/app/module/moduleForm.html',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'editModal',
-                    container: 'body',
-                    controller: 'ModuleFormController'
-                });
+                        scope: $scope,
+                        resolve: {
+                            plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                                return $ocLazyLoad.load([
+                                    cdnUrl + 'views/app/module/moduleFormController.js',
+                                    cdnUrl + 'views/app/module/moduleFormModalController.js',
+                                    cdnUrl + 'views/app/product/quoteProductsController.js',
+                                    cdnUrl + 'views/app/product/quoteProductsService.js',
+                                    cdnUrl + 'views/app/product/orderProductsController.js',
+                                    cdnUrl + 'views/app/product/orderProductsService.js',
+                                    cdnUrl + 'views/app/product/purchaseProductsController.js',
+                                    cdnUrl + 'views/app/product/purchaseProductsService.js',
+                                    cdnUrl + 'views/app/actionbutton/actionButtonFrameController.js',
+                                    cdnUrl + 'views/app/product/salesInvoiceProductsController.js',
+                                    cdnUrl + 'views/app/product/salesInvoiceProductsService.js',
+                                    cdnUrl + 'views/app/product/purchaseInvoiceProductsController.js',
+                                    cdnUrl + 'views/app/product/purchaseInvoiceProductsService.js'
+                                ]);
+                            }]
+                        },
+                        templateUrl: 'views/app/module/moduleForm.html',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'editModal',
+                        container: 'body',
+                        controller: 'ModuleFormController'
+                    });
 
                 $scope.editformModal.$promise.then($scope.editformModal.show);
             };
@@ -448,13 +448,13 @@ angular.module('primeapps')
 
             $scope.expenseSettingsModal = function () {
                 $scope.settingsFormModal = $scope.settingsFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/expensesheet/expenseSettingsModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/expensesheet/expenseSettingsModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.settingsFormModal.$promise.then($scope.settingsFormModal.show);
             };
@@ -521,8 +521,8 @@ angular.module('primeapps')
                             if ($scope.currentExpense.process_status === 1)
                                 $scope.ExpenseItemFreeze = false;
                         }).catch(function onError() {
-                            $scope.manuelApproveRequest = false;
-                        });
+                        $scope.manuelApproveRequest = false;
+                    });
                 } else {
                     ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
                     $scope.manuelApproveRequest = false;
@@ -544,8 +544,8 @@ angular.module('primeapps')
                             $scope.currentExpense.process_status = 2;
                             $scope.waitingForApproval = true;
                         }).catch(function onError() {
-                            $scope.approving = false;
-                        });
+                        $scope.approving = false;
+                    });
                 }
             };
 
@@ -562,8 +562,8 @@ angular.module('primeapps')
                             $scope.currentExpense.process_status = 3;
                             $scope.rejectModal.hide();
                         }).catch(function onError() {
-                            $scope.rejecting = false;
-                        });
+                        $scope.rejecting = false;
+                    });
                 }
             };
 
@@ -582,8 +582,8 @@ angular.module('primeapps')
                             if ($scope.currentExpense.process_status === 1)
                                 $scope.ExpenseItemFreeze = false;
                         }).catch(function onError() {
-                            $scope.reapproving = false;
-                        });
+                        $scope.reapproving = false;
+                    });
                 } else {
                     ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
                     $scope.reapproving = false;
@@ -595,13 +595,13 @@ angular.module('primeapps')
             $scope.openRejectApprovalModal = function () {
                 if ($scope.runProcess) {
                     $scope.rejectModal = $scope.rejectModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'views/app/module/rejectProcessModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal'
-                    });
+                            scope: $scope,
+                            templateUrl: 'views/app/module/rejectProcessModal.html',
+                            animation: '',
+                            backdrop: 'static',
+                            show: false,
+                            tag: 'createModal'
+                        });
 
                     $scope.rejectModal.$promise.then($scope.rejectModal.show);
                 }

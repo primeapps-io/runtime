@@ -2149,5 +2149,11 @@
     "DefaultValueFalse": "Hayır",
     "MenuElementType": "Menü Öğe Tipi",
     "Modules": "Modüller"
+  },
+  "Picklist": {
+    "Name": "Seçim listesi Adı",
+    "SystemCode": "Sistem Kodu",
+    "AddNew": "Yeni Seçim Listesi Ekle",
+    "PicklistItem": "{{name}} Seçim Listesi Elemanları"
   }
 }

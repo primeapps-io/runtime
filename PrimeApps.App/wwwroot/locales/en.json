@@ -1268,7 +1268,8 @@
 			"ContentFormat": "Content Format",
 			"Cancel": "Cancel",
 			"ConnectionLogout": "Connection Logout",
-			"Save": "Save"
+			"Save": "Save",
+			"OutlookPlugin": "Outlook Plugin"
 		},
 		"HelpGuide": {
 			"Module": "Module",

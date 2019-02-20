@@ -73,7 +73,7 @@ angular.module('primeapps')
                 ProcessesService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     var data = fillModule(response.data);
 
-                    $scope.rules = data;
+                    $scope.processes = data;
                     $scope.loading = false;
                 });
 

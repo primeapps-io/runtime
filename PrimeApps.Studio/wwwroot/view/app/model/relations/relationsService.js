@@ -738,8 +738,8 @@ angular.module('primeapps')
                     ModuleService.getModuleFields(module.related_module.name).then(function (res) {
                         module.related_module.fields = res.data;
                         var moduleFields = angular.copy(module.related_module.fields);
-                        var relationField = $filter('filter')(moduleFields, { name: module.relation_field, deleted: false }, true)[0];
-                        module.relationField = relationField;
+                        //var relationField = $filter('filter')(moduleFields, { name: module.relation_field, deleted: false }, true)[0];
+                       // module.relationField = relationField;
 
                         moduleFields = $filter('filter')(moduleFields, {
                             display_list: true,
