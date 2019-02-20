@@ -20,101 +20,43 @@
         </div>
     </div>
     <div class="modal-dialog scroll-style-4">
-        <!-- <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
+        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div> 
+        <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && (picklistForm.picklistLabel.$invalid || picklistForm.$error.unique)}">
+            <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistName' | translate}}: </label>
+            <input type="text"
+                   name="picklistLabel"
+                   class="form-control ng-animate-disabled col-sm-8"
+                   required
+                   maxlength="50"
+                   focus="true"
+                   ng-change="picklistForm.$setValidity('unique', true)"
+                   ng-model="picklist.label_en">
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
+            <div class="col-sm-12">
+                <div id="rightTopBar" class="scrollBar"></div>
+                <div id="picklistOptionContainer" class="picklist-options">
+                    <ul id="picklistContainer" class="list-unstyled">
+                        <li ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
 
-        <div class="tab-content table-responsive">
-            <table class="table" ng-show="loadingItem">
-                <thead>
-                    <tr>
-                        <th>{{'Picklist.Name' | translate}}</th>
-                        <th>{{'Picklist.SystemCode' | translate}}</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <tr ng-repeat="item in placeholderArray">
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <table ng-show="!loadingItem" class="table">
-                <thead>
-                    <tr>
-                        <th>{{'Picklist.Name' | translate}}</th>
-                        <th>{{'Picklist.SystemCode' | translate}}</th>
-                        <th>Value</th>
-                        <th>Value 1</th>
-                        <th>Value 2</th>
-                        <th>Order</th>
-                        <th>{{'Common.Active' | translate}}</th>
-                        <th width="50"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="item in picklist.items">
-                        <td>{{item['label_' + language]}}</td>
-                        <td>{{item.value}}</td>
-                        <td>{{item.value2}}</td>
-                        <td>{{item.value3}}</td>
-                        <td>{{item.order}}</td>
-                        <td>{{ !item.inactive}}</td>
-                        <td class="text-right">
-                            <div class="action-buttons-block">
-                                <button ng-click="$event.stopPropagation(); deleteItem(item.id);" type="button" class="action-buttons-delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="table-pagination">
-                <div>
-                    <nav aria-label="Page navigation">
-                        <div paging
-                             text-first="&laquo;"
-                             ul-class="pagination"
-                             active-class="active"
-                             page="requestModelItem.offset"
-                             page-size="requestModelItem.limit"
-                             total="pageTotalItems"
-                             scroll-top="true"
-                             hide-if-empty="true"
-                             show-prev-next="true"
-                             show-first-last="true"
-                             text-next-class="fas fa-chevron-right"
-                             text-prev-class="fas fa-chevron-left"
-                             text-first-class="fas fa-step-backward"
-                             text-last-class="fas fa-step-forward"
-                             paging-action="changePageItem(page)">
-                        </div>
-                    </nav>
+                            <span class="option-dragging">{{picklistItem.label_en}}</span>
+                            <span class="action-buttons" ng-if="!picklistItem.id">
+                                <i class="action-icon fa fa-trash-o" ng-click="deleteOption(picklistItem)" title="{{'Common.Delete' | translate}}"></i>
+                            </span>
+                            <span class="action-buttons" ng-if="picklistItem.id" ng-show="!picklistItem.inactive">
+                                <i class="action-icon fa fa-ban" ng-click="picklistItem.inactive = true" title="{{'Common.Deactivate' | translate}}"></i>
+                            </span>
+                            <span class="action-buttons" ng-if="picklistItem.id" ng-show="picklistItem.inactive">
+                                <i class="action-icon fa fa-undo" ng-click="picklistItem.inactive = false" title="{{'Common.Activate' | translate}}"></i>
+                            </span>
+                            <span class="option-drag pull-right option-handle"><i class="fa fa-arrows option-handle"></i></span>
+                        </li>
+                    </ul>
+                    <button type="button" class="btn btn-xs btn-w-sm btn-custom" style="margin-left: 5px" ng-click="newOption(picklistForm); fieldForm.$setValidity('picklist', true);"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewOption' | translate}}</button>
                 </div>
-                <div>
-                    Total Picklist Items {{$parent.pageTotalItems}}
-                </div>
-                <div>
-                    <span class="pagination-span">Items per page  </span>
-                    <select ng-model="requestModelItem.limit" class="items-per-page-select" ng-change="changeOffsetItem(1)">
-                        <option ng-selected="true" value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="150">150</option>
-                        <option value="200">200</option>
-                    </select>
-                </div>
+                <div id="rightBottomBar" class="scrollBar"></div>
             </div>
         </div>
-
     </div>
 </div>

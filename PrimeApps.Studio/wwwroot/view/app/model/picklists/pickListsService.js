@@ -19,7 +19,7 @@ angular.module('primeapps')
                 },
                 getItemPage: function (id, model) {
                     return $http.post(config.apiUrl + 'picklist/get_item_page/' + id, model);
-                },
+                }, 
                 count: function () {
                     return $http.get(config.apiUrl + 'picklist/count');
                 },
