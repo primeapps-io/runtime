@@ -293,11 +293,12 @@ angular.module('primeapps')
                 }
             }
 
-            $scope.validate = function (menuForm) {
+            $scope.validate = function (menuForm, next) {
                 menuForm.$submitted = true;
-                if (menuForm.$valid)
+                if (menuForm.$valid) {
+                    $scope.wizardStep += next ? 1 : -1;
                     return true;
-
+                }
                 return false;
             };
 
@@ -540,6 +541,8 @@ angular.module('primeapps')
                         });
                     });
                 }
+
+                $scope.wizardStep = 0;
             };
 
             $scope.edit = function (menuNo, subMenuNo) {
