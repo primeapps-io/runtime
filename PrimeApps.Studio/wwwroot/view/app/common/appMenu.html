@@ -187,8 +187,8 @@
 
         </ul>
     </li>
-    <li ng-class="subMenuOpen =='authorization' ? 'active sub-open':''" ng-click="openSubMenu('authorization'); $event.stopPropagation();">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/profiles" data-trigger="hover" data-type="info"
+    <li ng-class="subMenuOpen =='accessControl' ? 'active sub-open':''" ng-click="openSubMenu('accessControl'); $event.stopPropagation();">
+        <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Access Control" bs-tooltip data-placement="right">
             <i class="fas fa-lock"></i>
             <span>Access Control</span>
@@ -211,13 +211,12 @@
         </ul>
     </li>
     <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='help' ? 'active' :''">
-        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
+        <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Help &amp; Guides" bs-tooltip data-placement="right">
             <i class="fas fa-book"></i>
             <span>Help &amp; Guides</span>
         </a>
     </li>
-
     <li ng-class="subMenuOpen =='deployments' ? 'active sub-open':''" ng-click="openSubMenu('deployments');$event.stopPropagation();"
         ng-class="activeMenuItem ==='deployments' ?  'active' :''">
         <a href="javascript:;" data-trigger="hover" data-type="info"

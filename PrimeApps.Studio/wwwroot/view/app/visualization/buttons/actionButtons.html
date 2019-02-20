@@ -12,9 +12,6 @@
 </div>
 
 <div class="tab-content table-responsive">
-    <div class="empty-message" ng-if="actionButtons.length < 1 && !loading ">
-        {{'Setup.Modules.NoActionButton' | translate}}
-    </div>
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -50,7 +47,7 @@
             </tr>
         </tbody>
     </table>
-    <table class="table" ng-show="!loading && actionButtons.length > 0">
+    <table class="table" ng-show="!loading">
         <thead>
             <tr>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
