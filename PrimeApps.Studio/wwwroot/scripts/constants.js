@@ -405,18 +405,39 @@ angular.module('primeapps')
             name: 'tag',
             label: {
                 en: 'Tag',
-                tr: 'Tag'
+                tr: 'Etiket'
             },
             operators: [
-                'contains',
-                'not_contain',
-                'is',
-                'is_not',
+                'equals',
+                'not_equal',
+                'greater',
+                'greater_equal',
+                'less',
+                'less_equal',
                 'empty',
                 'not_empty'
             ],
             order: 20
-        }
+        },
+        combination: {
+            name: 'combination',
+            label: {
+                en: 'Combination',
+                tr: 'Birleşim Alanı'
+            },
+            operators: [
+                'equals',
+                'not_equal',
+                'greater',
+                'greater_equal',
+                'less',
+                'less_equal',
+                'empty',
+                'not_empty'
+            ],
+            order: 21
+        },
+
         // json: {
         //     name: 'json',
         //     label: {

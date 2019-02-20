@@ -224,6 +224,12 @@ angular.module('primeapps')
                                     field: that.newField(dataType)
                                 });
                                 break;
+                            case 'tag':
+                                fields.push({
+                                    icon: "k-i-textbox-hidden",
+                                    field: that.newField(dataType)
+                                });
+                                break;
 
                         }
 
@@ -1985,25 +1991,7 @@ angular.module('primeapps')
                 },
 
                 getActionButtons: function (moduleId) {
-                    //var deferred = $q.defer();
-                    //var cacheKey = 'action_button_' + moduleId;
-                    // var cache = $cache.get(cacheKey);
-
-                    // if (cache) {
-                    //     deferred.resolve(cache);
-                    //     return deferred.promise;
-                    // }
-
                     return $http.get(config.apiUrl + 'action_button/get/' + moduleId);
-                    // .then(function (actionButtons) {
-                    //     // $cache.put(cacheKey, actionButtons.data);
-                    //     deferred.resolve(actionButtons.data);
-                    // })
-                    // .catch(function (reason) {
-                    //     deferred.reject(reason.data);
-                    // });
-
-                    // return deferred.promise;
                 },
 
                 createActionButton: function (actionButton) {
