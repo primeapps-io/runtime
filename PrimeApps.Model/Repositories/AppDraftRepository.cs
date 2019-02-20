@@ -55,11 +55,32 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> UpdateTheme(int id, JObject model)
+        public async Task<AppDraftSetting> GetAuthTheme(int id)
+        {
+            return await DbContext.AppSettings
+                .Where(x => x.AppId == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> UpdateAuthTheme(int id, JObject model)
         {
             var appSettings = DbContext.AppSettings.Where(x => x.AppId == id).FirstOrDefault();
             var jsonData = JsonConvert.SerializeObject(model);
             appSettings.AuthTheme = jsonData;
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<AppDraftSetting> GetAppTheme(int id)
+        {
+            return await DbContext.AppSettings
+                .Where(x => x.AppId == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> UpdateAppTheme(int id, JObject model)
+        {
+            var appSettings = DbContext.AppSettings.Where(x => x.AppId == id).FirstOrDefault();
+            var jsonData = JsonConvert.SerializeObject(model);
+            appSettings.AppTheme = jsonData;
 
             return await DbContext.SaveChangesAsync();
         }

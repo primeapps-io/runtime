@@ -221,19 +221,70 @@ namespace PrimeApps.Studio.Controllers
             return Ok(result);
         }
 
-        [Route("update_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateTheme(int id, [FromBody]JObject model)
+        [Route("update_auth_theme/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
-       
 
-            var result = await _appDraftRepository.UpdateTheme(id,model);
-               
+
+            var result = await _appDraftRepository.UpdateAuthTheme(id, model);
+
             return Ok(result);
+        }
+
+        [Route("get_auth_theme/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAuthTheme(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var app = await _appDraftRepository.GetAuthTheme(id);
+
+            if (app != null)
+                return Ok(app.AuthTheme);
+            else
+                return Ok(app);
+
+        }
+
+        [Route("update_app_theme/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody]JObject model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+
+            var result = await _appDraftRepository.UpdateAppTheme(id, model);
+
+            return Ok(result);
+        }
+
+        [Route("get_app_theme/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAppTheme(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var app = await _appDraftRepository.GetAppTheme(id);
+
+            if (app != null)
+                return Ok(app.AppTheme);
+            else
+                return Ok(app);
+
         }
     }
 }

@@ -8,7 +8,15 @@
                         <li>
                             <button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
-                        <li>
+                        <li ng-if="wizardStep>0">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                        </li>
+                        <li ng-if="wizardStep<3">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, true);">
+                                {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
+                            </button>
+                        </li>
+                        <li ng-if="wizardStep>2">
                             <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
@@ -23,10 +31,10 @@
                         <div class="megalist">
                             <div class="modal-menu">
                                 <ul class="list-unstyled">
-                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(viewForm) ? wizardStep = 0 : false">{{'View.ViewInformation' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(viewForm) ? wizardStep = 1 : false">{{'View.ChooseFields' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==2}" ng-click="validate(viewForm) ? wizardStep = 2 : false">{{'View.Filter' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==3}" ng-click="validate(viewForm) ? wizardStep = 3 : false">{{'View.ShareInformation' | translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(viewForm, true) ? wizardStep = 0 : false">{{'View.ViewInformation' | translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(viewForm, true) ? wizardStep = 1 : false">{{'View.ChooseFields' | translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==2}" ng-click="validate(viewForm, true) ? wizardStep = 2 : false">{{'View.Filter' | translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==3}" ng-click="validate(viewForm, true) ? wizardStep = 3 : false">{{'View.ShareInformation' | translate}}</a></li>
                                 </ul>
                             </div>
                             <div class="section" id="section1" ng-show="wizardStep == 0">
@@ -50,15 +58,15 @@
                                     <div class="form-group" ng-show="viewForm.$submitted && (viewForm.label.$error.required || viewForm.module.$error.required )">
                                         <div class="callout callout-danger">
                                             <p ng-if="viewForm.label.$error.required && viewForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                            <p ng-if="viewForm.label.$error.required && !viewForm.module.$error.required">Label gerekli alan</p>
-                                            <p ng-if="viewForm.module.$error.required && !viewForm.label.$error.required">ModuleGerekli alan</p>
+                                            <p ng-if="viewForm.label.$error.required && !viewForm.module.$error.required">Label is required</p>
+                                            <p ng-if="viewForm.module.$error.required && !viewForm.label.$error.required">Module is required</p>
                                         </div>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep) ? wizardStep = 1 : false;">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true)">-->
+                                    <!--{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>-->
+                                    <!--</button>-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                             <div class="section" id="section2" ng-show="wizardStep == 1">
@@ -80,15 +88,15 @@
                                             <i class="fas fa-exchange-alt"></i>
                                         </div>
                                         <div id="selectedFields" style="{{background_color}}" class="container-right scroll-style-4">
-                                            <div ng-repeat="field in fields.selectedFields" class="dragable">{{field.label + ' ' + field.labelExt}} <i class="fa fa-arrows"></i></div>
+                                            <div ng-repeat="field in fields.selectedFields" class="dragable">{{field.label + ' ' + field.labelExt}} <i class="fas fa-arrows"></i></div>
                                         </div>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep) ? wizardStep = 2 : false;">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue" ng-click="validate(viewForm, wizardStep, true);">-->
+                                    <!--{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>-->
+                                    <!--</button>-->
+                                    <!--</div>-->
                                 </div>
                                 <div class="form-group" ng-show="viewForm.$submitted && viewForm.$invalid && fields.selectedFields.length === 0">
                                     <div class="col-sm-offset-2 col-sm-8">
@@ -110,9 +118,9 @@
                                                 <th>{{'View.Value' | translate}}</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <div ng-show="$parent.$parent.loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                            <tr ng-show="!$parent.$parent.loading" ng-repeat="filter in view.filterList">
+                                        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                        <tbody ng-if="!modalLoading">
+                                            <tr ng-repeat="filter in view.filterList">
                                                 <td>
                                                     <span class="filter-no">{{filter.no}}.</span>
                                                 </td>
@@ -324,12 +332,12 @@
                                         <span class="filter-logic-example" ng-bind-html="'View.FilterLogicExample' | translate"></span>
                                     </div>
                                 </div>
-                                <div class="form-group text-right">
-                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="wizardStep = 1; $parent.$parent.wizardStep=1;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                                    <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep) ? wizardStep = 3 : false;">
-                                        <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
-                                    </button>
-                                </div>
+                                <!--<div class="form-group text-right">-->
+                                <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>-->
+                                <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true);">-->
+                                <!--{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>-->
+                                <!--</button>-->
+                                <!--</div>-->
                             </div>
                             <div class="section" id="section4" ng-show="wizardStep == 3">
                                 <h4>{{'View.ShareInformation' | translate}}</h4>
@@ -367,9 +375,10 @@
 
                                         </tags-input>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="wizardStep = 2; $parent.$parent.wizardStep=2;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>-->
+                                    <!--<button type="submit" ladda="saving" ng-if="wizardStep>2" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                         </div>
