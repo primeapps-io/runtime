@@ -331,7 +331,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser, Request.Cookies["gitea_token"]));
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, Request.Cookies["gitea_token"]));
 
             return Ok(organization.Id);
         }

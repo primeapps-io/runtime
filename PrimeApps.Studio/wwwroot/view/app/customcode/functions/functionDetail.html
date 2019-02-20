@@ -30,7 +30,13 @@
         <div class="setup-liste-header row">
             <div class="col-sm-12">
                 <div class="setup-title">
-                    <h2>{{function.label}} <i class="fas fa-edit" style="padding-left:10px;cursor: pointer;" data-trigger="hover" data-type="info" data-title="Edit" bs-tooltip="" data-placement="right" ng-click="edit()"></i></h2>
+                    <h2>
+                        {{function.label}} 
+                        <span style="color: black;font-size: 13px;font-style: italic;font-weight: 600;">
+                            ( {{giteaUrl}}/{{organization.name}}/{{app.name}}/src/branch/master/functions/{{name}}.{{getFileType()}} )
+                        </span>
+                        <i class="fas fa-edit" style="padding-left:10px;cursor: pointer;" data-trigger="hover" data-type="info" data-title="Edit" bs-tooltip="" data-placement="right" ng-click="edit()"></i>
+                    </h2>
                     <div>
                         <i class="fas fa-cloud-upload-alt" data-trigger="hover" data-type="info" data-title="Deployment" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;padding-right: 20px;" ng-click="runDeployment()"></i>
                         <i class="fas fa-bolt" data-trigger="hover" data-type="info" data-title="Trigger" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;padding-right: 20px;" ng-click="runModal()"></i>
@@ -48,7 +54,7 @@
             <div class="markdown" style="padding-bottom: 20px;">
         <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
             <code>
-{{giteaUrl}}/{{organization.name}}/test1.git</code>
+{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</code>
         </pre>
             </div>
             <div class="setup-title">
@@ -60,7 +66,7 @@
 git init
 git add README.md
 git commit -m "first commit"
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{function.name}}.git</span>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
         </pre>
             </div>
@@ -70,7 +76,7 @@ git push -u origin master</code>
             <div class="markdown" style="padding-bottom: 20px;">
         <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
             <code>
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{function.name}}.git</span>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
         </pre>
             </div>

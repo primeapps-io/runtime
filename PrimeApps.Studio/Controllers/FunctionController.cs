@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using LibGit2Sharp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -26,13 +27,27 @@ namespace PrimeApps.Studio.Controllers
         private IFunctionHelper _functionHelper;
         private IConfiguration _configuration;
         private IFunctionRepository _functionRepository;
+        private IGiteaHelper _giteaHelper;
+        private IAppDraftRepository _appDraftRepository;
+        private IOrganizationRepository _organizationRepository;
+        private IDeploymentFunctionRepository _deploymentFunctionRepository;
         private string _kubernetesClusterRootUrl;
 
-        public FunctionController(IFunctionHelper functionHelper, IConfiguration configuration, IFunctionRepository functionRepository)
+        public FunctionController(IConfiguration configuration,
+            IFunctionHelper functionHelper,
+            IFunctionRepository functionRepository,
+            IGiteaHelper giteaHelper,
+            IAppDraftRepository appDraftRepository,
+            IOrganizationRepository organizationRepository,
+            IDeploymentFunctionRepository deploymentFunctionRepository)
         {
             _functionHelper = functionHelper;
             _configuration = configuration;
             _functionRepository = functionRepository;
+            _giteaHelper = giteaHelper;
+            _appDraftRepository = appDraftRepository;
+            _organizationRepository = organizationRepository;
+            _deploymentFunctionRepository = deploymentFunctionRepository;
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
@@ -40,6 +55,7 @@ namespace PrimeApps.Studio.Controllers
         {
             SetContext(context);
             SetCurrentUser(_functionRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_deploymentFunctionRepository, PreviewMode, AppId, TenantId);
             base.OnActionExecuting(context);
         }
 
@@ -147,6 +163,59 @@ namespace PrimeApps.Studio.Controllers
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
             }
+
+            var giteaEnable = _configuration.GetSection("AppSettings")["EnableGiteaIntegration"];
+
+            if (!string.IsNullOrEmpty(giteaEnable) && bool.Parse(giteaEnable))
+            {
+                var app = await _appDraftRepository.Get((int)AppId);
+                var repository = await _giteaHelper.GetRepositoryInfo(Request.Cookies["gitea_token"], AppUser.Email, app.Name);
+
+                if (repository != null)
+                {
+                    var localPath = _configuration.GetSection("AppSettings")["GiteaDirectory"] + repository["name"].ToString();
+                    _giteaHelper.CloneRepository(Request.Cookies["gitea_token"], repository["clone_url"].ToString(), localPath);
+
+                    var fileName = string.Format("functions/{0}.{1}", function.Name, "cs");
+
+                    if (!System.IO.File.Exists(fileName))
+                    {
+                        using (var repo = new Repository(localPath))
+                        {
+                            string sample = string.Format(@"using System;" +
+                                "using Kubeless.Functions;" + Environment.NewLine +
+                                "using Newtonsoft.Json.Linq;" + Environment.NewLine +
+                                "public class {0}{{" + Environment.NewLine +
+                                "\tpublic object {0}(Event k8Event, Context k8Context)" + Environment.NewLine +
+                                "\t{{" + Environment.NewLine +
+                                "\t\tvar obj = new JObject();" + Environment.NewLine +
+                                "\t\tobj[\"data\"] = k8Event.Data.ToString();" + Environment.NewLine +
+                                "\t\treturn obj;" + Environment.NewLine +
+                                "\t}}" + Environment.NewLine +
+                                "}}", function.Handler);
+                            using (FileStream fs = System.IO.File.Create(localPath + "/" + fileName))
+                            {
+                                Byte[] info = new UTF8Encoding(true).GetBytes(sample);
+                                // Add some information to the file.
+                                fs.Write(info, 0, info.Length);
+                            }
+                            //System.IO.File.WriteAllText(localPath, sample);
+                            Commands.Stage(repo, "*");
+
+                            var signature = new Signature(
+                                    new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                            // Commit to the repository
+                            Commit commit = repo.Commit("Created function " + function.Name, signature, signature);
+                            _giteaHelper.Push(repo, Request.Cookies["gitea_token"]);
+
+                            repo.Dispose();
+                            _giteaHelper.DeleteDirectory(localPath);
+                        }
+                    }
+                }
+            }
+
 
             return Ok(functionObj.Id);
         }
@@ -308,5 +377,33 @@ namespace PrimeApps.Studio.Controllers
             return Ok(result);
         }
 
+        [Route("deploy/{name}"), HttpGet]
+        public async Task<IActionResult> Deploy(string name)
+        {
+            var function = await _functionRepository.Get(name);
+
+            if (function == null)
+                return NotFound("Function is not found.");
+
+            var functionObj = await _functionHelper.Get(name);
+
+            if (functionObj.IsNullOrEmpty())
+                return NotFound();
+
+            var deployment = new DeploymentFunction
+            {
+                FunctionId = function.Id,
+                Status = DeploymentStatus.Running,
+                Version = "12",
+                StartTime = DateTime.Now
+            };
+
+            var result = await _deploymentFunctionRepository.Create(deployment);
+
+            if (result < 1)
+                return BadRequest("Unhandled Exception");
+
+            return Ok();
+        }
     }
 }

@@ -100,6 +100,10 @@ angular.module('primeapps')
                     if (rejection.status === 400 || rejection.status === 409) {
                         return $q.reject(rejection);
                     }
+                    
+                    if(rejection.status === 503 && rejection.config.url.contains('functions/run')){
+                        return $q.reject(rejection);
+                    }
 
                     toastr.error($filter('translate')('Common.Error'));
 
