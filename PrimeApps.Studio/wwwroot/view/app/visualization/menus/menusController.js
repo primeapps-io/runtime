@@ -50,7 +50,6 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
                 MenusService.find(requestModel).then(function (response) {
-                    $scope.loading = true;
                     var menuList = response.data;
                     ProfilesService.getAllBasic().then(function (response) {
                         $scope.newProfiles = response.data;
@@ -222,7 +221,7 @@ angular.module('primeapps')
             };
 
             var setMenuList = function (id) {
-                // $scope.loading = true;
+
                 $scope.menuLists = [];
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
@@ -378,7 +377,7 @@ angular.module('primeapps')
 
                 $scope.saving = true;
                 var resultPromise;
-                $scope.loading = true;
+
                 //If update
                 if (menu.id && !$scope.clone) {
 
@@ -448,7 +447,6 @@ angular.module('primeapps')
                                                 $scope.addNewMenuFormModal.hide();
                                                 $scope.changePage(1);
                                             }).finally(function () {
-                                                $scope.loading = false;
                                                 $scope.saving = false;
                                             });
                                         else {
@@ -459,7 +457,6 @@ angular.module('primeapps')
                                             $scope.changePage(1);
                                         }
                                     }).finally(function () {
-                                        $scope.loading = false;
                                         $scope.saving = false;
                                     });
                                 }
@@ -484,7 +481,6 @@ angular.module('primeapps')
                                     $scope.addNewMenuFormModal.hide();
                                     $scope.changePage(1);
                                 }).finally(function () {
-                                    $scope.loading = false;
                                     $scope.saving = false;
                                 });
                             else {
@@ -495,7 +491,7 @@ angular.module('primeapps')
                                 $scope.changePage(1);
                             }
                         }).finally(function () {
-                            $scope.loading = false;
+
                             $scope.saving = false;
                         });
                     }
@@ -505,13 +501,11 @@ angular.module('primeapps')
                             $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
-                            $scope.loading = false;
                         });
                     }
                     else {
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
-                        $scope.loading = false;
                         $scope.saving = false;
                     }
                 }
@@ -529,18 +523,14 @@ angular.module('primeapps')
                         MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
 
                             toastr.success($filter('translate')('Menu.MenuSaving'));
-                            $scope.loading = true;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
                             $scope.pageTotal += 1;
                         }).finally(function () {
-                            $scope.loading = false;
                             $scope.saving = false;
                         });
                     });
                 }
-
-                $scope.wizardStep = 0;
             };
 
             $scope.edit = function (menuNo, subMenuNo) {
