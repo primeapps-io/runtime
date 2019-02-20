@@ -45,6 +45,9 @@ angular.module('primeapps')
                 },
                 isFunctionNameUnique: function (name) {
                     return $http.get(config.apiUrl + 'functions/is_unique_name?name=' + name);
+                },
+                deploy: function (name) {
+                    return $http.get(config.apiUrl + 'functions/deploy/' + name);
                 }
             };
         }]);

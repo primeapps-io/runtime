@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using PrimeApps.App.Helpers;
+using PrimeApps.Model.Constants;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
@@ -46,7 +47,7 @@ namespace PrimeApps.App.Controllers
 
             if (preview != null)
             {
-                var previewDB = CryptoHelper.Decrypt(preview, "222EF106646458CD59995D4378B55DF2");
+                var previewDB = CryptoHelper.Decrypt(preview);
 
                 if (previewDB.Contains("app"))
                 {

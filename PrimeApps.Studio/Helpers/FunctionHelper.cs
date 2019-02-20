@@ -15,6 +15,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IFunctionHelper
     {
+        string GetTypeWithRuntime(FunctionRuntime runtime);
         JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null);
         Task<JObject> Get(string functionName);
         Task<string> GetFunctionUrl(string functionName);
@@ -199,6 +200,33 @@ namespace PrimeApps.Studio.Helpers
             }
 
             return logs;
+        }
+
+        public string GetTypeWithRuntime(FunctionRuntime runtime)
+        {
+            switch (runtime)
+            {
+                case FunctionRuntime.Dotnetcore20:
+                    return "cs";
+                case FunctionRuntime.Go110:
+                    return "go";
+                case FunctionRuntime.Java18:
+                    return "java";
+                case FunctionRuntime.Nodejs8:
+                case FunctionRuntime.Nodejs6:
+                    return "js";
+
+                case FunctionRuntime.Php72:
+                    return "php";
+                case FunctionRuntime.Ruby24:
+                    return "rb";
+                case FunctionRuntime.Python27:
+                case FunctionRuntime.Python34:
+                case FunctionRuntime.Python36:
+                    return "py";
+                default:
+                    return "txt";
+            }
         }
     }
 }

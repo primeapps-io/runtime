@@ -14,9 +14,8 @@ namespace PrimeApps.Studio.Controllers
     public class HomeController : Controller
     {
         private IConfiguration _configuration;
-        private IServiceScopeFactory _serviceScopeFactory;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -40,9 +39,8 @@ namespace PrimeApps.Studio.Controllers
             var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
             if (bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
             {
-                var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
-
-                Request.Cookies.Append(new System.Collections.Generic.KeyValuePair<string, string>("gitea_token", giteaToken));
+                var giteaToken = Request.Cookies["gitea_token"];
+                //var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
                 Response.Cookies.Append("gitea_token", giteaToken);
             }
 

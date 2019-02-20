@@ -14,11 +14,12 @@ namespace PrimeApps.Auth.Helpers
 {
     public interface IGiteaHelper
     {
-        Task CreateUser(string email, string password, string fullName);
+        Task<string> GetToken(string email, string password);
     }
 
     public class GiteaHelper : IGiteaHelper
     {
+
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
         private IConfiguration _configuration;
@@ -32,58 +33,38 @@ namespace PrimeApps.Auth.Helpers
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public async Task CreateUser(string email, string password, string fullName)
+        public async Task<string> GetToken(string email, string password)
         {
-            if (!bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
-                return;
+            var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
-            using (var httpClient = new HttpClient())
+            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                var request = new JObject
+                try
                 {
-                    ["email"] = email,
-                    ["password"] = password,
-                    ["full_name"] = fullName,
-                    ["username"] = GetUserName(email)
-                };
+                    using (var httpClient = new HttpClient())
+                    {
+                        var request = new JObject
+                        {
+                            ["name"] = "primeapps"
+                        };
 
-                SetHeaders(httpClient, _configuration.GetSection("AppSettings")["GiteaEmail"], _configuration.GetSection("AppSettings")["GiteaPassword"]);
+                        SetHeaders(httpClient, email, password);
+                        var userName = GetUserName(email);
 
-                var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/admin/users", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var resp = await response.Content.ReadAsStringAsync();
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + email + ", password: " + password);
+                        var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                        var resp = await response.Content.ReadAsStringAsync();
+                        var giteaResponse = JObject.Parse(resp);
+                        return giteaResponse["sha1"].ToString();
+                    }
                 }
-
-                await CreateAccessToken(email, password);
-            }
-        }
-
-        public async Task CreateAccessToken(string email, string password)
-        {
-            if (!bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
-                return;
-
-            var username = GetUserName(email);
-            using (var httpClient = new HttpClient())
-            {
-                var request = new JObject
+                catch (Exception ex)
                 {
-                    ["name"] = "primeapps"
-                };
-
-                SetHeaders(httpClient, email, password);
-
-                var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/users/" + username + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var resp = await response.Content.ReadAsStringAsync();
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + email + ", password: " + password);
+                    ErrorHandler.LogError(ex, "GiteaHelper Get Gitea Token. User:" + email);
+                    return null;
                 }
             }
+            else
+                return null;
         }
 
         private void SetHeaders(HttpClient client, string email, string password)

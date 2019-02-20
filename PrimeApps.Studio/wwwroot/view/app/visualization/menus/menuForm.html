@@ -138,7 +138,7 @@
                                         <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
                                     </div>
 
-                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-if="loadingModal" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                     <div ng-show="menuLists.length >0" class="menu-setup" style="margin-top:50px; ">
                                         <ul ng-model="menuLists" class="custom-menu list-unstyled">
                                             <li ng-repeat="menuList in $parent.menuLists">
