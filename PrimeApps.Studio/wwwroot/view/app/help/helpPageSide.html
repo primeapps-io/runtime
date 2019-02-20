@@ -54,7 +54,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': helpName.$submitted && helpName.tinymceModel.$invalid}">
-                                    <div class="row" ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
+                                    <div ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
                                         <textarea name="tinymceModel"  ui-tinymce="tinymceOptions" ng-required="true" ng-model="helpModalObj.tinymceModel"></textarea>
                                         <div class="hidden" plupload="imgUpload">
                                             <input id="uploadImage" type="file" add-file="add-file" />

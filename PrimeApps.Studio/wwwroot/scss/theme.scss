@@ -3728,6 +3728,8 @@ button, select {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-weight: bold;
+        color: rgba(0,0,0,0.75);
       }
       .form-control{
         height: 30px !important;

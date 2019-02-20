@@ -3021,6 +3021,8 @@ button:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.75);
 }
 .primeapps .categorylist > li .form-control {
   height: 30px !important;
