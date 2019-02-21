@@ -24,5 +24,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(Picklist picklist);
         Task<int> DeleteSoft(Picklist picklist);
         Task<int> DeleteHard(Picklist picklist);
+        Task<int> ItemDeleteSoft(PicklistItem picklistItem);
     }
 }

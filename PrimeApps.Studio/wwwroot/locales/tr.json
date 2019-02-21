@@ -2156,6 +2156,16 @@
     "Name": "Seçim listesi Adı",
     "SystemCode": "Sistem Kodu",
     "AddNew": "Yeni Seçim Listesi Ekle",
-    "PicklistItem": "{{name}} Seçim Listesi Elemanları"
+    "PicklistItem": "{{name}} Seçim Listesi Elemanları",
+    "DeleteSuccess": "Seçim Listesi başarıyla silinmiştir.",
+    "DeleteItemSuccess": "Seçim Listesi elemanı başarıyla silinmiştir.",
+    "Items": {
+      "Name": "Adı",
+      "SystemCode": "Sistem Kodu",
+      "Value": "Değer",
+      "Value2": "Değer-2",
+      "Value3": "Değer-3",
+      "Order": "Sıra"
+    }
   }
 }

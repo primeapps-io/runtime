@@ -19,7 +19,7 @@ angular.module('primeapps')
                 },
                 getItemPage: function (id, model) {
                     return $http.post(config.apiUrl + 'picklist/get_item_page/' + id, model);
-                }, 
+                },
                 count: function () {
                     return $http.get(config.apiUrl + 'picklist/count');
                 },
@@ -34,6 +34,9 @@ angular.module('primeapps')
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'picklist/delete/' + id);
+                },
+                deleteItem: function (itemId) {
+                    return $http.delete(config.apiUrl + 'picklist/deleteItem/' + itemId);
                 }
             };
         }]);

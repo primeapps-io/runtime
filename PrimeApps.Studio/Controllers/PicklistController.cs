@@ -145,5 +145,18 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok();
         }
+
+        [Route("deleteItem/{id:int}"), HttpDelete]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var picklistEntity = await _picklistRepository.GetItemById(id);
+
+            if (picklistEntity == null)
+                return NotFound();
+
+            await _picklistRepository.ItemDeleteSoft(picklistEntity);
+
+            return Ok();
+        }
     }
 }

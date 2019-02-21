@@ -194,6 +194,13 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
+        public async Task<int> ItemDeleteSoft(PicklistItem picklistItem)
+        {
+            picklistItem.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
+
         public async Task<int> DeleteHard(Picklist picklist)
         {
             DbContext.Picklists.Remove(picklist);

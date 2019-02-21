@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .controller('pickListsController', ['$rootScope', '$scope', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout','$interval',
+    .controller('pickListsController', ['$rootScope', '$scope', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval',
         function ($rootScope, $scope, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
@@ -129,10 +129,31 @@ angular.module('primeapps')
             }
 
             $scope.delete = function (id) {
-                if (id);
+                if (id) {
+                    PickListsService.delete(id)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.DeleteSuccess'));
+                                $scope.changePage(1);
+                            }
+                        }).catch(function (reason) {
+                            $scope.loading = false;
+                        });
+                }
             }
 
-
+            $scope.deleteItem = function (id) {
+                if ($scope.picklist && id) { 
+                    PickListsService.deleteItem(id)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+                            }
+                        }).catch(function (reason) {
+                            $scope.loading = false;
+                        });
+                }
+            }
              
             $scope.bindPicklistDragDrop = function () {
                 $timeout(function () {
