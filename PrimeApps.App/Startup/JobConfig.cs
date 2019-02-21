@@ -9,34 +9,41 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App
 {
-    public partial class Startup
-    {
-        private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
+	public partial class Startup
+	{
+		private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
 
-        public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
-        {
-            var enableJobs = bool.Parse(configuration.GetSection("AppSettings")["EnableJobs"]);
+		public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
+		{
+			var enableJobs_ = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
+			if (!string.IsNullOrEmpty(enableJobs_))
+			{
+				var enableJobs = bool.Parse(enableJobs_);
+				if (enableJobs)
+					return;
+			}
+			else
+				return;
+			app.UseHangfireServer(new BackgroundJobServerOptions
+			{
+				Queues = new[] { QueueName, "default" }
+			});
+			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
+			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            if (!enableJobs)
-                return;
+			//ConfigureRecurringJobs();//Onpremise durumu ve bu job'larin app'e ozel olmasindan dolayi gecici olarak kapatildi. 
 
-            app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { QueueName, "default" } });
-            app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
-            JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+		}
 
-            //ConfigureRecurringJobs();//Onpremise durumu ve bu job'larin app'e ozel olmasindan dolayi gecici olarak kapatildi. 
-
-            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
-        }
-
-        public static void ConfigureRecurringJobs()
-        {
-            RecurringJob.AddOrUpdate<Jobs.ExchangeRate>("daily-exchange-rate", exchange => exchange.DailyRates(), Cron.Daily(13, 00), TimeZoneInfo.Utc, QueueName);
-            RecurringJob.AddOrUpdate<Jobs.TrialNotification>("trial-expire-notification", expire => expire.TrialExpire(), "0 * * * *", TimeZoneInfo.Utc, QueueName);
-            RecurringJob.AddOrUpdate<Jobs.AccountDeactivate>("deactivate-account", deactivate => deactivate.Deactivate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-            RecurringJob.AddOrUpdate<Jobs.UpdateLeave>("update-leave", update => update.Update(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-            RecurringJob.AddOrUpdate<Jobs.EmployeeCalculation>("employee-calculation", employee => employee.Calculate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-            RecurringJob.AddOrUpdate<Jobs.AccountCleanup>("cleanup-account", cleanup => cleanup.Run(), Cron.Daily(03, 00), TimeZoneInfo.Utc, QueueName);
-        }
-    }
+		public static void ConfigureRecurringJobs()
+		{
+			RecurringJob.AddOrUpdate<Jobs.ExchangeRate>("daily-exchange-rate", exchange => exchange.DailyRates(), Cron.Daily(13, 00), TimeZoneInfo.Utc, QueueName);
+			RecurringJob.AddOrUpdate<Jobs.TrialNotification>("trial-expire-notification", expire => expire.TrialExpire(), "0 * * * *", TimeZoneInfo.Utc, QueueName);
+			RecurringJob.AddOrUpdate<Jobs.AccountDeactivate>("deactivate-account", deactivate => deactivate.Deactivate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+			RecurringJob.AddOrUpdate<Jobs.UpdateLeave>("update-leave", update => update.Update(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+			RecurringJob.AddOrUpdate<Jobs.EmployeeCalculation>("employee-calculation", employee => employee.Calculate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+			RecurringJob.AddOrUpdate<Jobs.AccountCleanup>("cleanup-account", cleanup => cleanup.Run(), Cron.Daily(03, 00), TimeZoneInfo.Utc, QueueName);
+		}
+	}
 }

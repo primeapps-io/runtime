@@ -12,59 +12,59 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.App.Helpers
 {
-    public interface IRoleHelper
-    {
-        Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser);
-    }
+	public interface IRoleHelper
+	{
+		Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser);
+	}
 
-    public class RoleHelper : IRoleHelper
-    {
+	public class RoleHelper : IRoleHelper
+	{
 
-        private IServiceScopeFactory _serviceScopeFactory;
-        private IHttpContextAccessor _context;
-        private IConfiguration _configuration;
+		private IServiceScopeFactory _serviceScopeFactory;
+		private IHttpContextAccessor _context;
+		private IConfiguration _configuration;
 
-        public RoleHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
-        {
-            _context = context;
-            _configuration = configuration;
-            _serviceScopeFactory = serviceScopeFactory;
-        }
+		public RoleHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+		{
+			_context = context;
+			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
+		}
 
-        public async Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser)
-        {
-            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+		public async Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser)
+		{
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var databaseContext = _scope.ServiceProvider.GetService<TenantDBContext>();
+				warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+				using (var userRespository = new UserRepository(databaseContext, _configuration))
+				using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
+				{
+					if (!string.IsNullOrEmpty(previewMode))
+					{
+						userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+					}
+					var users = await userRespository.GetAllAsync();
 
-            using (var _scope = _serviceScopeFactory.CreateScope())
-            {
-                var databaseContext = _scope.ServiceProvider.GetService<TenantDBContext>();
-                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
-                using (var userRespository = new UserRepository(databaseContext, _configuration))
-                using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
-                {
-                    userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+					foreach (var user in users)
+					{
+						if (user.RoleId.HasValue)
+						{
+							await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+						}
 
-                    var users = await userRespository.GetAllAsync();
+						warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                    foreach (var user in users)
-                    {
-                        if (user.RoleId.HasValue)
-                        {
-                            await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
-                        }
+						await roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
 
-                        warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+						//TODO CACHE
+						//await Cache.Workgroup.UpdateRoles(appUser.InstanceId);
+					}
 
-                        await roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
-
-                        //TODO CACHE
-                        //await Cache.Workgroup.UpdateRoles(appUser.InstanceId);
-                    }
-
-
-                    return true;
-                }
-            }
-        }
-    }
+					return true;
+				}
+			}
+		}
+	}
 }

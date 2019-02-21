@@ -12,107 +12,117 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 namespace PrimeApps.Auth
 {
-    public partial class Startup
-    {
-        public IConfiguration Configuration { get; }
+	public partial class Startup
+	{
+		public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            //Register DI
-            DIRegister(services, Configuration);
+		public void ConfigureServices(IServiceCollection services)
+		{
+			//Register DI
+			DIRegister(services, Configuration);
 
-            //Configure Identity
-            IdentityConfiguration(services, Configuration);
+			//Configure Identity
+			IdentityConfiguration(services, Configuration);
 
-            //Configure Authentication
-            AuthConfiguration(services, Configuration);
+			//Configure Authentication
+			AuthConfiguration(services, Configuration);
 
-            services.AddMvc()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization()
-                .AddJsonOptions(opt =>
-                {
-                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
-                    {
-                        NamingStrategy = new SnakeCaseNamingStrategy(),
-                    };
-                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+			services.AddMvc()
+				.AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+				.AddDataAnnotationsLocalization()
+				.AddJsonOptions(opt =>
+				{
+					opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+					opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
+					{
+						NamingStrategy = new SnakeCaseNamingStrategy(),
+					};
+					opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+				})
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
-        }
+			services.AddLocalization(options => options.ResourcesPath = "Resources");
+		}
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            //InitializeDatabase(app);
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		{
+			//InitializeDatabase(app);
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseDatabaseErrorPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Home/Error");
+			}
 
-            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+			var enableHeaderForwarding = new bool();
+			if (!string.IsNullOrEmpty(forwardHeaders))
+			{
+				enableHeaderForwarding = bool.Parse(forwardHeaders);
+			}
 
-            if (enableHeaderForwarding)
-            {
-                var fordwardedHeaderOptions = new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                };
+			var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+			var enableHttpsRedirection = new bool();
+			if (!string.IsNullOrEmpty(httpsRedirection))
+			{
+				enableHttpsRedirection = bool.Parse(httpsRedirection);
+			}
 
-                fordwardedHeaderOptions.KnownNetworks.Clear();
-                fordwardedHeaderOptions.KnownProxies.Clear();
+			if (enableHeaderForwarding)
+			{
+				var fordwardedHeaderOptions = new ForwardedHeadersOptions
+				{
+					ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+				};
 
-                app.UseForwardedHeaders(fordwardedHeaderOptions);
-            }
+				fordwardedHeaderOptions.KnownNetworks.Clear();
+				fordwardedHeaderOptions.KnownProxies.Clear();
 
-            if (enableHttpsRedirection)
-            {
-                app.UseHsts().UseHttpsRedirection();
-            }
+				app.UseForwardedHeaders(fordwardedHeaderOptions);
+			}
 
-            var supportedCultures = new[]
-            {
-                new CultureInfo("tr"),
-                new CultureInfo("tr-TR"),
-                new CultureInfo("en"),
-                new CultureInfo("en-US")
-            };
+			if (enableHttpsRedirection)
+			{
+				app.UseHsts().UseHttpsRedirection();
+			}
+			var supportedCultures = new[]
+			{
+				new CultureInfo("tr"),
+				new CultureInfo("tr-TR"),
+				new CultureInfo("en"),
+				new CultureInfo("en-US")
+			};
 
-            app.UseRequestLocalization(new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("en"),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            });
+			app.UseRequestLocalization(new RequestLocalizationOptions
+			{
+				DefaultRequestCulture = new RequestCulture("en"),
+				SupportedCultures = supportedCultures,
+				SupportedUICultures = supportedCultures
+			});
 
-            app.Use(async (ctx, next) =>
-            {
-                if (enableHttpsRedirection)
-                    ctx.Request.Scheme = "https";
-                else
-                    ctx.Request.Scheme = "http";
-                
-                ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
-                await next();
-            });
+			app.Use(async (ctx, next) =>
+			{
+				if (enableHttpsRedirection)
+					ctx.Request.Scheme = "https";
+				else
+					ctx.Request.Scheme = "http";
 
-            app.UseStaticFiles();
-            app.UseIdentityServer();
-            app.UseMvcWithDefaultRoute();
-        }
-    }
+				ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
+				await next();
+			});
+
+			app.UseStaticFiles();
+			app.UseIdentityServer();
+			app.UseMvcWithDefaultRoute();
+		}
+	}
 }

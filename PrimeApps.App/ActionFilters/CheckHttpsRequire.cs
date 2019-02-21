@@ -18,8 +18,12 @@ namespace PrimeApps.App.ActionFilters
             }
 
             var configuration = (IConfiguration)filterContext.HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            var allowInsecureHttp = !bool.Parse(configuration.GetSection("AppSettings")["HttpsRedirection"]);
-
+			var httpsRedirection = configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+			var allowInsecureHttp = new bool();
+			if (!string.IsNullOrEmpty(httpsRedirection))
+			{
+				 allowInsecureHttp = !bool.Parse(httpsRedirection);
+			}
             if (!filterContext.HttpContext.Request.IsHttps && !allowInsecureHttp)
             {
                 base.HandleNonHttpsRequest(filterContext);
