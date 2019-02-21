@@ -29,6 +29,7 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>{{'Picklist.Items.Name' | translate}}</th>
                                 <th>{{'Picklist.Items.SystemCode' | translate}}</th>
                                 <th>{{'Picklist.Items.Value' | translate}}</th>
@@ -39,14 +40,15 @@
                             </tr>
                         </thead>
                         <tbody id="picklistContainer" class="picklist-options">
-                            <tr class="option-dragging" ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
-                                <td class="option-dragging option-handle">{{picklistItem['label_'+language]}}</td> 
-                                <td class="option-dragging option-handle">{{picklistItem.system_code ? picklistItem.system_code:'-'}}</td>
-                                <td class="option-dragging option-handle">{{picklistItem.value ? picklistItem.value:'-'}}</td>
-                                <td class="option-dragging option-handle">{{picklistItem.value2 ? picklistItem.value2:'-'}}</td>
-                                <td class="option-dragging option-handle">{{picklistItem.value3 ? picklistItem.value3:'-'}}</td>
-                                <td class="option-dragging option-handle">{{picklistItem.order}}</td>
-                                <td class="option-drag option-handle">
+                            <tr  ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
+                                <td class="option-dragging option-handle"><i class="fa fa-arrows option-dragging option-handle"></i> </td>
+                                <td class="option-dragging">{{picklistItem['label_'+language]}}</td>
+                                <td class="option-dragging">{{picklistItem.system_code ? picklistItem.system_code:'-'}}</td>
+                                <td class="option-dragging">{{picklistItem.value ? picklistItem.value:'-'}}</td>
+                                <td class="option-dragging">{{picklistItem.value2 ? picklistItem.value2:'-'}}</td>
+                                <td class="option-dragging">{{picklistItem.value3 ? picklistItem.value3:'-'}}</td>
+                                <td class="option-dragging">{{picklistItem.order}}</td>
+                                <td class="option-dragging">
                                     <button ng-if="picklistItem.id" ng-click="deleteOption(picklistItem)" class="edit-btn" title="{{'Common.Edit' | translate}}"><i class="fas fa-pen"></i></button>
                                     <button ng-if="picklistItem.id" ladda="" ng-click="deleteOption(picklistItem)" class="delete-btn" title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></button>
                                     <button ng-if="picklistItem.id" ng-show="!picklistItem.inactive" ng-click="picklistItem.inactive = true" class="delete-btn" title="{{'Common.Deactivate' | translate}}"><i class="fas fa-ban"></i></button>

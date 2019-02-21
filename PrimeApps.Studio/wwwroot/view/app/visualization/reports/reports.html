@@ -17,17 +17,16 @@
 </div>
 
 <div class="tab-content table-responsive">
-
     <table class="table" ng-show="loading">
         <thead>
             <tr>
                 <th>{{'Setup.Report.ReportName' | translate}}</th>
                 <th>{{'Setup.Report.ReportCategory' | translate}}</th>
                 <th>{{'Setup.Report.ReportType' | translate}}</th>
+                <th width="50"></th>
             </tr>
         </thead>
         <tbody>
-            <tr>
             <tr ng-repeat="item in placeholderArray">
 
                 <td>
@@ -42,14 +41,13 @@
             </tr>
         </tbody>
     </table>
-
-
     <table class="table" ng-show="!loading">
         <thead>
             <tr>
                 <th>{{'Setup.Report.ReportName' | translate}}</th>
                 <th>{{'Setup.Report.ReportCategory' | translate}}</th>
                 <th>{{'Setup.Report.ReportType' | translate}}</th>
+                <th width="50"></th>
             </tr>
         </thead>
         <tbody>
