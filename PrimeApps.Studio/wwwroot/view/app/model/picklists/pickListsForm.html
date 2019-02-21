@@ -20,7 +20,7 @@
         </div>
     </div>
     <div class="modal-dialog scroll-style-4">
-        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div> 
+        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && (picklistForm.picklistLabel.$invalid || picklistForm.$error.unique)}">
             <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistName' | translate}}: </label>
             <input type="text"
@@ -30,7 +30,7 @@
                    maxlength="50"
                    focus="true"
                    ng-change="picklistForm.$setValidity('unique', true)"
-                   ng-model="picklist.label_en">
+                   ng-model="picklist['label_'+language]">
         </div>
         <div class="form-group">
             <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
@@ -40,9 +40,17 @@
                     <ul id="picklistContainer" class="list-unstyled">
                         <li ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
 
-                            <span class="option-dragging">{{picklistItem.label_en}}</span>
-                            <span class="action-buttons" ng-if="!picklistItem.id">
-                                <i class="action-icon fa fa-trash-o" ng-click="deleteOption(picklistItem)" title="{{'Common.Delete' | translate}}"></i>
+                            <span class="option-dragging">{{picklistItem['label_'+language]}}</span>
+                            <span class="option-dragging">{{picklistItem.system_code ? picklistItem.system_code:'-'}}</span>
+                            <span class="option-dragging">{{picklistItem.value ? picklistItem.value:'-'}}</span>
+                            <span class="option-dragging">{{picklistItem.value2 ? picklistItem.value2:'-'}}</span>
+                            <span class="option-dragging">{{picklistItem.value3 ? picklistItem.value3:'-'}}</span>
+                            <span class="option-dragging">{{picklistItem.order}}</span>
+                            <span class="action-buttons" ng-if="picklistItem.id">
+                                <i class="action-icon fa fa-pencil" ng-click="deleteOption(picklistItem)" title="{{'Common.Edit' | translate}}"></i>
+                            </span>
+                            <span class="action-buttons" ng-if="picklistItem.id">
+                                <i class="action-icon fa fa-trash" ng-click="deleteOption(picklistItem)" title="{{'Common.Delete' | translate}}"></i>
                             </span>
                             <span class="action-buttons" ng-if="picklistItem.id" ng-show="!picklistItem.inactive">
                                 <i class="action-icon fa fa-ban" ng-click="picklistItem.inactive = true" title="{{'Common.Deactivate' | translate}}"></i>
