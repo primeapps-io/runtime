@@ -56,8 +56,9 @@ namespace PrimeApps.Auth
                 })
                 .AddSigningCredential(LoadCertificate(configuration));
 
-            if (bool.Parse(configuration.GetSection("AppSettings")["UseLdap"]))
-                ser.AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("LdapConfigurationSection"), UserStore.InMemory);
+            var useLdap = configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
+            if(useLdap != null)
+                ser.AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("Ldap"), UserStore.InMemory);
                     
             ser.AddAspNetIdentity<ApplicationUser>();
             ser.AddProfileService<CustomProfileService>();

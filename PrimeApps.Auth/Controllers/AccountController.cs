@@ -215,8 +215,8 @@ namespace PrimeApps.Auth.UI
             if (ModelState.IsValid)
             {
                 //ldap control
-                var useLdap = bool.Parse(_configuration.GetSection("AppSettings")["UseLdap"]);
-                if (useLdap)
+                var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
+                if (useLdap != null)
                 {
                     var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
                     var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
