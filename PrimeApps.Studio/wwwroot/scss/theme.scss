@@ -1031,7 +1031,29 @@ button, select {
     background: #FFF;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   }
-  .table-responsive{
+
+  .function {
+    .tab-content {
+      box-shadow: none;
+    }
+    .nav-tabs {
+      li {
+        a {
+          font-weight: 700;
+          color: #0d6faa;
+        }
+      }
+      li.active {
+        a {
+          background-color: #f7f7f7;
+          border: 1px solid #f7f7f7;
+        }
+      }
+
+    }
+  }
+
+  .table-responsive {
     border-color: transparent !important;
   }
   .table {

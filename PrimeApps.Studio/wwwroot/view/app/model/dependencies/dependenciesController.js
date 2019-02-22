@@ -33,6 +33,7 @@ angular.module('primeapps')
             DependenciesService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
+            
             DependenciesService.find($scope.id, $scope.requestModel).then(function (response) {
                 var dependencies = response.data;
                 //  $scope.dependencies = DependenciesService.processDependencies(dependencies);

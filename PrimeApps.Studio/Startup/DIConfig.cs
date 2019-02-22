@@ -68,6 +68,7 @@ namespace PrimeApps.Studio
             services.AddScoped<IActivityHelper, ActivityHelper>();
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
+            services.AddScoped<IDeploymentHelper, DeploymentHelper>();
 
             services.AddScoped<ActionButtonHelper, ActionButtonHelper>();
             services.AddScoped<Email, Email>();

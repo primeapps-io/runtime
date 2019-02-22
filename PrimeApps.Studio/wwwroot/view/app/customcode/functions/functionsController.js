@@ -78,7 +78,7 @@ angular.module('primeapps')
                 FunctionsService.count()
                     .then(function (response) {
                         $scope.pageTotal = response.data;
-
+                        
                         if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
                             $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
@@ -144,7 +144,7 @@ angular.module('primeapps')
                     })
             };
 
-            $scope.delete = function (name) {
+            $scope.delete = function (name, e) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -154,11 +154,13 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(e.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             if (name) {
                                 FunctionsService.delete(name)
                                     .then(function (response) {
-                                        toastr.success("Function is deleted successfully.", "Deleted!");
                                         $scope.reload();
+                                        toastr.success("Function is deleted successfully.", "Deleted!");
                                     });
                             }
                         }

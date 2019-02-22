@@ -7,20 +7,29 @@ using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
     [Route("api/deployment_function")]
     public class DeploymentFunctionController : DraftBaseController
     {
+        private IBackgroundTaskQueue Queue;
         private IConfiguration _configuration;
         private IDeploymentFunctionRepository _deploymentFunctionRepository;
+        private IDeploymentHelper _deploymentHelper;
 
-        public DeploymentFunctionController(IConfiguration configuration, IDeploymentFunctionRepository deploymentFunctionRepository)
+        public DeploymentFunctionController(IBackgroundTaskQueue queue,
+            IConfiguration configuration,
+            IDeploymentFunctionRepository deploymentFunctionRepository,
+            IDeploymentHelper deploymentHelper)
         {
+            Queue = queue;
             _configuration = configuration;
             _deploymentFunctionRepository = deploymentFunctionRepository;
+            _deploymentHelper = deploymentHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -30,18 +39,18 @@ namespace PrimeApps.Studio.Controllers
             base.OnActionExecuting(context);
         }
 
-        [Route("count"), HttpGet]
-        public async Task<IActionResult> Count()
+        [Route("count/{functionId}"), HttpGet]
+        public async Task<IActionResult> Count(int functionId)
         {
-            var count = await _deploymentFunctionRepository.Count();
+            var count = await _deploymentFunctionRepository.Count(functionId);
 
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find/{functionId}"), HttpPost]
+        public async Task<IActionResult> Find(int functionId, [FromBody]PaginationModel paginationModel)
         {
-            var deployments = await _deploymentFunctionRepository.Find(paginationModel); ;
+            var deployments = await _deploymentFunctionRepository.Find(functionId, paginationModel); ;
 
             return Ok(deployments);
         }
@@ -56,16 +65,19 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(deployment);
         }
-        
+
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]DeploymentFunctionBindingModel deployment)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
+
             var deploymentObj = new DeploymentFunction()
             {
-                Version = "1",
+                BuildNumber = currentBuildNumber,
+                Version = currentBuildNumber.ToString(),
                 StartTime = DateTime.Now,
                 Status = DeploymentStatus.Running
             };
@@ -73,7 +85,8 @@ namespace PrimeApps.Studio.Controllers
             var createResult = await _deploymentFunctionRepository.Create(deploymentObj);
 
             if (createResult < 0)
-                return BadRequest("An error occurred while creating an function");
+                return BadRequest("An error occurred while creating an build.");
+
 
             return Ok(deploymentObj);
         }
@@ -98,7 +111,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (result < 0)
                 return BadRequest("An error occurred while update function deployment.");
-  
+
             return Ok(result);
         }
 

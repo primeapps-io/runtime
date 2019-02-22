@@ -8,12 +8,8 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -23,7 +19,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IDeploymentHelper
     {
-
+        Task StartFunctionDeployment(Model.Entities.Tenant.Function function, JObject functionObj, string name, int userId, int organizationId, int appId, int deploymentId);
     }
 
     public class DeploymentHelper : IDeploymentHelper
@@ -52,7 +48,7 @@ namespace PrimeApps.Studio.Helpers
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
-        public async void StartFunctionDeployment(Function function, JObject functionObj, string name, int userId, int organizationId, int appId)
+        public async Task StartFunctionDeployment(Model.Entities.Tenant.Function function, JObject functionObj, string name, int userId, int organizationId, int appId, int deploymentId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -63,7 +59,7 @@ namespace PrimeApps.Studio.Helpers
                 using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                 using (var _deploymentFunctionRepository = new DeploymentFunctionRepository(tenantDBContext, _configuration))
                 {
-                    _organizationRepository.CurrentUser = _appDraftRepository.CurrentUser = _currentUser;
+                    _organizationRepository.CurrentUser = _appDraftRepository.CurrentUser = _deploymentFunctionRepository.CurrentUser = _currentUser;
 
                     var organization = await _organizationRepository.Get(userId, organizationId);
                     var app = await _appDraftRepository.Get((int)appId);
@@ -73,9 +69,14 @@ namespace PrimeApps.Studio.Helpers
                     var functionModel = new FunctionBindingModel
                     {
                         Name = name,
-                        Function = code
+                        Function = code,
+                        Handler = function.Handler,
+                        Runtime = function.Runtime,
+                        Dependencies = function.Dependencies,
+                        ContentType = function.ContentType
                     };
 
+                    
                     var functionRequest = _functionHelper.CreateFunctionRequest(functionModel, functionObj);
                     JObject result;
 
@@ -90,11 +91,16 @@ namespace PrimeApps.Studio.Helpers
 
                         result = JObject.Parse(content);
 
+                        var deployment = await _deploymentFunctionRepository.Get(deploymentId);
+
                         if (!response.IsSuccessStatusCode)
-                        {
+                            deployment.Status = DeploymentStatus.Failed;
+                        else
+                            deployment.Status = DeploymentStatus.Succeed;
 
-                        }
+                        deployment.EndTime = DateTime.Now;
 
+                        await _deploymentFunctionRepository.Update(deployment);
                     }
                 }
             }

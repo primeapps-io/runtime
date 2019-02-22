@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('FunctionDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage', '$sce', '$window',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage, $sce, $window) {
+    .controller('FunctionDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage', '$sce', '$window', 'FunctionsDeploymentService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage, $sce, $window, FunctionsDeploymentService) {
 
             $scope.name = $state.params.name;
             $scope.orgId = $state.params.orgId;
@@ -13,7 +13,76 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'functions';
 
             $scope.app = $rootScope.currentApp;
+            $scope.tabManage = {
+                activeTab: "overview"
+            };
 
+            $scope.deployments = [];
+            $scope.loading = true;
+
+            $scope.generator = function (limit) {
+                $scope.placeholderArray = [];
+                for (var i = 0; i < limit; i++) {
+                    $scope.placeholderArray[i] = i;
+                }
+            };
+
+            $scope.generator(10);
+
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
+            };
+
+            $scope.reload = function () {
+                FunctionsDeploymentService.count($scope.function.id)
+                    .then(function (response) {
+                        $scope.pageTotal = response.data;
+
+                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
+                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
+                        }
+
+                        FunctionsDeploymentService.find($scope.function.id, $scope.requestModel)
+                            .then(function (response) {
+                                $scope.deployments = response.data;
+                                $scope.loading = false;
+                            });
+                    });
+            };
+
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+                FunctionsDeploymentService.find(requestModel)
+                    .then(function (response) {
+                        $scope.deployments = response.data;
+                        $scope.loading = false;
+                    });
+
+            };
+
+            $scope.getTime = function (time) {
+                return moment(time).format("DD-MM-YYYY HH:ss");
+            };
+
+            $scope.getIcon = function (status) {
+                switch (status) {
+                    case 'running':
+                        return $sce.trustAsHtml('<i style="color:#0d6faa;" class="fas fa-clock"></i>');
+                    case 'failed':
+                        return $sce.trustAsHtml('<i style="color:rgba(218,10,0,1);" class="fas fa-times"></i>');
+                    case 'succeed':
+                        return $sce.trustAsHtml('<i style="color:rgba(16,124,16,1);" class="fas fa-check"></i>');
+                }
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+            
             $scope.runtimes = [
                 {id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", type: "cs", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}"},
                 {id: 2, name: "python (2.7)", value: "python2.7", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
@@ -68,6 +137,7 @@ angular.module('primeapps')
                     }
                     $scope.functionCopy = angular.copy(response.data);
                     $scope.function = response.data;
+                    $scope.reload();
                     $scope.loading = false;
                 });
 

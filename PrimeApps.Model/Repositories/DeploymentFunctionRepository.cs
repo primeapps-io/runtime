@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -15,10 +16,11 @@ namespace PrimeApps.Model.Repositories
     {
         public DeploymentFunctionRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task<int> Count()
+        public async Task<int> Count(int functionId)
         {
             return await DbContext.DeploymentsFunction
-               .Where(x => !x.Deleted).CountAsync();
+               .Where(x => !x.Deleted & x.FunctionId == functionId)
+               .CountAsync();
         }
 
         public async Task<DeploymentFunction> Get(int id)
@@ -28,11 +30,19 @@ namespace PrimeApps.Model.Repositories
                .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<DeploymentFunction>> Find(PaginationModel paginationModel)
+        public async Task<int> CurrentBuildNumber()
+        {
+            return await DbContext.DeploymentsFunction
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.BuildNumber)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<DeploymentFunction>> Find(int functionId, PaginationModel paginationModel)
         {
             var deployments = await DbContext.DeploymentsFunction
                 .Include(x => x.Function)
-                .Where(x => !x.Deleted)
+                .Where(x => !x.Deleted & x.FunctionId == functionId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit)
                 .ToListAsync();
