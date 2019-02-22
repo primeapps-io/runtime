@@ -8,6 +8,8 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
             $scope.loadingItem = true;
+            $scope.addItem = false;
+            $scope.editItem = false;
             $scope.pageOfItem;
 
             $scope.requestModel = { //default page value
@@ -133,7 +135,20 @@ angular.module('primeapps')
                 $scope.picklistFormModal.hide();
                 $scope.id = null;
                 $scope.picklist = {};
-            }
+            };
+
+            $scope.addMode = function (state) {
+                $scope.addItem = state;
+            };
+
+            $scope.save = function () {
+                $scope.saving = true;
+
+                if (!$scope.picklistModel) {
+                    $scope.saving = false;
+                    return false;
+                }
+            };
 
             $scope.delete = function (id) {
                 if (id) {
@@ -147,7 +162,44 @@ angular.module('primeapps')
                             $scope.loading = false;
                         });
                 }
-            }
+            };
+
+            $scope.saveItem = function () {
+                $scope.savingItem = true;
+
+                if (!itemModel && !$scope.id) {
+                    $scope.savingItem = false;
+                    return false;
+                }
+
+                PickListsService.createItem($scope.id, itemModel)
+                then(function (response) {
+                    if (response.data)
+                        toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
+
+                    $scope.savingItem = false;
+                }).catch(function (reason) {
+                    $scope.savingItem = false;
+                });
+            };
+
+            $scope.updateItem = function (item) {
+                $scope.savingItem = true;
+                if (!item) {
+                    $scope.savingItem = false;
+                    toastr.warning($filter('translate')('Common.Error'));
+                    return false;
+                }
+
+                PickListsService.updateItem(item)
+                    .then(function (response) {
+                        if (response.data)
+                            toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
+                        $scope.savingItem = false;
+                    }).catch(function (reason) {
+                        $scope.savingItem = false;
+                    });
+            };
 
             $scope.deleteItem = function (id) {
                 if ($scope.picklist && id) {
@@ -160,8 +212,20 @@ angular.module('primeapps')
                             $scope.loading = false;
                         });
                 }
-            }
+            };
 
+            $scope.systemCodeGenerate = function () {
+                if (!$scope.picklistItem['label_' + $scope.language])
+                    $scope.itemModel.system_code = '';
+                else {
+                    var tempCode = $scope.itemModel['label_' + $scope.language].trim();
+                    $scope.itemModel.system_code = tempCode.replace(/ /g, '_');
+                }
+
+            };
+
+
+            //For Drag & Drop
             $scope.bindPicklistDragDrop = function () {
                 $timeout(function () {
                     if ($scope.drakePicklist) {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -116,6 +117,32 @@ namespace PrimeApps.Studio.Controllers
             //return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 
+        [Route("add_item/{id:int}")]
+        public async Task<IActionResult> AddItem(int id, [FromBody] PicklistItemViewModel picklistItemModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var picklistItem = new PicklistItem
+            {
+                PicklistId = id,
+                LabelEn = picklistItemModel.LabelEn,
+                LabelTr = picklistItemModel.LabelTr,
+                Value = picklistItemModel.Value,
+                Value2 = picklistItemModel.Value2,
+                Value3 = picklistItemModel.Value3,
+                Order = picklistItemModel.Order,
+                Inactive = false
+            };
+
+            var result = await _picklistRepository.AddItem(picklistItem);
+
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            return Ok(result);
+        }
+
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]PicklistBindingModel picklist)
         {
@@ -131,6 +158,23 @@ namespace PrimeApps.Studio.Controllers
             await _picklistRepository.Update(picklistEntity);
 
             return Ok(picklistEntity);
+        }
+
+        [Route("update_item/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateItem(int id, [FromBody]PicklistItemBindingModel item)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemEntity = await _picklistRepository.GetItemById(id);
+
+            if (itemEntity == null)
+                return NotFound();
+
+            PicklistHelper.UpdateItemEntity(item, itemEntity);
+            await _picklistRepository.Update(itemEntity);
+
+            return Ok(itemEntity);
         }
 
         [Route("delete/{id:int}"), HttpDelete]

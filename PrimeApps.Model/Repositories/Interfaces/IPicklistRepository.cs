@@ -21,7 +21,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<PicklistItem>> FindItems(List<int> ids);
         Task<PicklistItem> FindItemByLabel(int picklistId, string label, string language);
         Task<int> Create(Picklist picklist);
+        Task<int> AddItem(PicklistItem item);
         Task<int> Update(Picklist picklist);
+        Task<int> Update(PicklistItem item);
         Task<int> DeleteSoft(Picklist picklist);
         Task<int> DeleteHard(Picklist picklist);
         Task<int> ItemDeleteSoft(PicklistItem picklistItem);

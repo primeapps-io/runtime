@@ -2158,6 +2158,7 @@
     "SystemCode": "Sistem Kodu",
     "AddNew": "Yeni Seçim Listesi Ekle",
     "PicklistItem": "{{name}} Seçim Listesi Elemanları",
+    "SaveItemSuccess": "Seçim Listesi elemanı başarıyla kaydedildi.",
     "DeleteSuccess": "Seçim Listesi başarıyla silinmiştir.",
     "DeleteItemSuccess": "Seçim Listesi elemanı başarıyla silinmiştir.",
     "Items": {

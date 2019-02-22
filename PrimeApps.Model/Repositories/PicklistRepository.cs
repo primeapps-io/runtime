@@ -182,7 +182,21 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
+
+        public async Task<int> AddItem(PicklistItem item)
+        {
+            DbContext.PicklistItems.Add(item);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+
         public async Task<int> Update(Picklist picklist)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> Update(PicklistItem item)
         {
             return await DbContext.SaveChangesAsync();
         }
