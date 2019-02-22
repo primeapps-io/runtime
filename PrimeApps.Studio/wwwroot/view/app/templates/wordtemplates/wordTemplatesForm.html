@@ -9,7 +9,7 @@
                             <button type="button" ng-disabled="saving" ng-click="addNewWordTemplateFormModal.hide(); template.content = currentContent;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                            <button type="submit" ladda="saving" ng-disabled="saving || fileUpload.queue.length<1" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
+                    <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateFile' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                     <div>
                         <div class="newupload" ng-if="fileUpload.queue.length == 0 && !template.content">
                             <label class="uploadlink">
