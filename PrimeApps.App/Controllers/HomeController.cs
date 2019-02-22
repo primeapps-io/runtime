@@ -121,19 +121,14 @@ namespace PrimeApps.App.Controllers
 			var lang = Request.Cookies["_lang"];
 			var language = lang ?? "tr";
 
-			var useCdn_ = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
-			var useCdn = new bool();
-			if (!string.IsNullOrEmpty(useCdn_))
-			{
-				useCdn = bool.Parse(useCdn_);
-			}
+			var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);			
 			ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
 			var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 			if (!string.IsNullOrEmpty(storageUrl))
 			{
 				ViewBag.BlobUrl = storageUrl;
 			}
-			if (useCdn)
+			if (!string.IsNullOrEmpty(useCdn) && bool.Parse(useCdn))
 			{
 				var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
 				var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;

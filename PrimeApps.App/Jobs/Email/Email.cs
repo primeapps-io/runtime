@@ -64,11 +64,6 @@ namespace PrimeApps.App.Jobs.Email
 				var smtpUser = "EmailSMTPUser";
 				var smtpPassword = "EmailSMTPPassword";
 				var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
-				var enableSsl = new bool();
-				if (!string.IsNullOrEmpty(emailSMTPEnableSsl))
-				{
-					enableSsl = bool.Parse(emailSMTPEnableSsl);
-				}
 				var smtpHost_ = _configuration.GetValue("AppSettings:" + smtpHost + '"', string.Empty);
 				var smtpPort_ = _configuration.GetValue("AppSettings:" + smtpPort + '"', string.Empty);
 				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_))
@@ -76,7 +71,7 @@ namespace PrimeApps.App.Jobs.Email
 					var smtpUser_ = _configuration.GetValue("AppSettings:" + smtpUser + '"', string.Empty);
 					var smtpPassword_ = _configuration.GetValue("AppSettings:" + smtpPassword + '"', string.Empty);
 
-					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_))
+					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_) && !string.IsNullOrEmpty(emailSMTPEnableSsl))
 					{
 						smtpClient = new SmtpClient(smtpHost_, int.Parse(smtpPort_))
 						{
@@ -85,7 +80,7 @@ namespace PrimeApps.App.Jobs.Email
 							Credentials = new NetworkCredential(smtpUser_, smtpPassword_),
 							DeliveryFormat = SmtpDeliveryFormat.International,
 							DeliveryMethod = SmtpDeliveryMethod.Network,
-							EnableSsl = enableSsl
+							EnableSsl = bool.Parse(emailSMTPEnableSsl)
 						};
 					}
 				}
@@ -162,12 +157,6 @@ namespace PrimeApps.App.Jobs.Email
 				var smtpUser = "EmailSMTPUser";
 				var smtpPassword = "EmailSMTPPassword";
 				var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
-				var enableSsl = new bool();
-				if (!string.IsNullOrEmpty(emailSMTPEnableSsl))
-				{
-					enableSsl = bool.Parse(emailSMTPEnableSsl);
-				}
-
 				var smtpHost_ = _configuration.GetValue("AppSettings:" + smtpHost + '"', string.Empty);
 				var smtpPort_ = _configuration.GetValue("AppSettings:" + smtpPort + '"', string.Empty);
 				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_))
@@ -175,7 +164,7 @@ namespace PrimeApps.App.Jobs.Email
 					var smtpUser_ = _configuration.GetValue("AppSettings:" + smtpUser + '"', string.Empty);
 					var smtpPassword_ = _configuration.GetValue("AppSettings:" + smtpPassword + '"', string.Empty);
 
-					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_))
+					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_) && !string.IsNullOrEmpty(emailSMTPEnableSsl))
 					{
 
 						// get configuration settings from appsetting and apply them.
@@ -186,7 +175,7 @@ namespace PrimeApps.App.Jobs.Email
 							Credentials = new NetworkCredential(smtpUser_, smtpPassword_),
 							DeliveryFormat = SmtpDeliveryFormat.International,
 							DeliveryMethod = SmtpDeliveryMethod.Network,
-							EnableSsl = enableSsl
+							EnableSsl = bool.Parse(emailSMTPEnableSsl)
 						};
 					}
 				}

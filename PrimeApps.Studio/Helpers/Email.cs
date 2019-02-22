@@ -33,17 +33,11 @@ namespace PrimeApps.Studio.Helpers
 				var smtpPort = "EmailSMTPPort";
 				var smtpUser = "EmailSMTPUser";
 				var smtpPassword = "EmailSMTPPassword";
-				var emailSmtpEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
-				var enableSsl = new bool();
-				if (!string.IsNullOrEmpty(emailSmtpEnableSsl))
-				{
-					enableSsl = bool.Parse(emailSmtpEnableSsl);
-				}
-
+				var emailSmtpEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);		
 				var smtpHost_ = _configuration.GetValue("AppSettings:" + smtpHost + '"', string.Empty);
 				var smtpPort_ = _configuration.GetValue("AppSettings:" + smtpPort + '"', string.Empty);
 				// get configuration settings from appsetting and apply them.
-				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_))
+				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_) && !string.IsNullOrEmpty(emailSmtpEnableSsl))
 				{
 					var smtpUser_ = _configuration.GetValue("AppSettings:" + smtpUser + '"', string.Empty);
 					var smtpPassword_ = _configuration.GetValue("AppSettings:" + smtpPassword + '"', string.Empty);
@@ -57,7 +51,7 @@ namespace PrimeApps.Studio.Helpers
 							Credentials = new NetworkCredential(smtpUser_, smtpPassword_),
 							DeliveryFormat = SmtpDeliveryFormat.International,
 							DeliveryMethod = SmtpDeliveryMethod.Network,
-							EnableSsl = enableSsl
+							EnableSsl = bool.Parse(emailSmtpEnableSsl)
 						};
 
 						// transmit it.

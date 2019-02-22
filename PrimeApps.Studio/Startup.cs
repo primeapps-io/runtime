@@ -116,19 +116,8 @@ namespace PrimeApps.Studio
 				app.UseDeveloperExceptionPage();
 				app.UseDatabaseErrorPage();
 			}
-			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
-			var enableHeaderForwarding = new bool();
-			if (!string.IsNullOrEmpty(forwardHeaders))
-			{
-				enableHeaderForwarding = bool.Parse(forwardHeaders);
-			}
-			var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
-			var enableHttpsRedirection = new bool();
-			if (!string.IsNullOrEmpty(httpsRedirection))
-			{
-				enableHttpsRedirection = bool.Parse(httpsRedirection);
-			}
-			if (enableHeaderForwarding)
+			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);						
+			if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
 			{
 				var fordwardedHeaderOptions = new ForwardedHeadersOptions
 				{
@@ -141,7 +130,8 @@ namespace PrimeApps.Studio
 				app.UseForwardedHeaders(fordwardedHeaderOptions);
 			}
 
-			if (enableHttpsRedirection)
+			var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+			if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
 			{
 				app.UseHsts().UseHttpsRedirection();
 			}
