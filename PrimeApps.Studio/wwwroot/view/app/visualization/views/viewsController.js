@@ -5,9 +5,6 @@ angular.module('primeapps')
     .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
-
-            //$scope.$parent.menuTopTitle = "Models";
-            //$scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'views';
 
             $rootScope.breadcrumblist[2].title = 'Views';
@@ -138,12 +135,7 @@ angular.module('primeapps')
                     templateUrl: 'view/app/visualization/views/viewsForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
-                    show: false,
-                    controller: function ($scope) {
-                        $scope.$on('dragulardrop', function (e, el) {
-                            $scope.viewForm.$setValidity('field', true);
-                        });
-                    }
+                    show: false
                 });
 
                 $scope.addNewFiltersModal.$promise.then(function () {
@@ -165,12 +157,20 @@ angular.module('primeapps')
             });
 
             var dragular = function () {
+
+                if ($scope.availableFields_ && $scope.selectedFields_) {
+                    $scope.availableFields_.destroy();
+                    $scope.selectedFields_.destroy();
+                    $scope.availableFields_ = null;
+                    $scope.selectedFields_ = null;
+                }
+
                 var containerLeft = document.querySelector('#availableFields');
                 var containerRight = document.querySelector('#selectedFields');
 
-                dragularService.cleanEnviroment();
+                //dragularService.cleanEnviroment();
 
-                dragularService([containerLeft], {
+                $scope.availableFields_ = dragularService([containerLeft], {
                     scope: $scope,
                     containersModel: [$scope.fields.availableFields],
                     classes: {
@@ -183,7 +183,7 @@ angular.module('primeapps')
                     }
                 });
 
-                dragularService([containerRight], {
+                $scope.selectedFields_ = dragularService([containerRight], {
                     scope: $scope,
                     classes: {
                         mirror: 'gu-mirror-view',
@@ -497,7 +497,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                $scope.wizardStep += next ? $scope.wizardStep >= 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : 0;
+                $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
 
