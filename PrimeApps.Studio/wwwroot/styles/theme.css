@@ -895,6 +895,17 @@ button:focus, select:focus {
   background: rgba(0, 0, 0, 0.15);
   color: rgba(0, 0, 0, 0.75);
 }
+.primeapps .tab-content2 {
+  box-shadow: 0px 0px 5px 0 rgba(0, 0, 0, 0.05);
+  margin-left: 2px;
+}
+.primeapps .tab-content2 .table tbody tr td {
+  padding: 5px !important;
+  line-height: 30px;
+}
+.primeapps .tab-content2 .table thead:first-child > tr:first-child > th {
+  padding: 5px !important;
+}
 .primeapps .table-pagination {
   height: 60px;
   padding: 0px 20px;
@@ -1212,6 +1223,10 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal.modal-900, .primeapps .module-modal.modal-900 {
   width: 900px !important;
+  max-width: calc(100% - 20px) !important;
+}
+.primeapps .setup-modal.modal-1100, .primeapps .module-modal.modal-1100 {
+  width: 1100px !important;
   max-width: calc(100% - 20px) !important;
 }
 .primeapps .user-dropdown {
@@ -3032,11 +3047,11 @@ button:focus, select:focus {
 .primeapps .categorylist > li:hover {
   background: rgba(0, 0, 0, 0.05);
 }
-.primeapps .categorylist .new-actions {
+.primeapps .new-actions {
   display: inline-block;
   padding-left: 10px;
 }
-.primeapps .categorylist .new-actions button, .primeapps .categorylist .new-actions a {
+.primeapps .new-actions button, .primeapps .new-actions a {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
@@ -3052,23 +3067,67 @@ button:focus, select:focus {
   border-radius: 50%;
   display: inline-block;
 }
-.primeapps .categorylist .new-actions button.delete-btn, .primeapps .categorylist .new-actions a.delete-btn {
+.primeapps .new-actions button.delete-btn, .primeapps .new-actions a.delete-btn {
   background: #E78D8F;
   color: #FFF;
 }
-.primeapps .categorylist .new-actions button.delete-btn:hover, .primeapps .categorylist .new-actions a.delete-btn:hover {
+.primeapps .new-actions button.delete-btn:hover, .primeapps .new-actions a.delete-btn:hover {
   background: #ce0404;
   color: #FFF;
 }
-.primeapps .categorylist .new-actions button.edit-btn, .primeapps .categorylist .new-actions a.edit-btn {
+.primeapps .new-actions button.edit-btn, .primeapps .new-actions a.edit-btn {
   background: rgba(0, 0, 0, 0.25);
 }
-.primeapps .categorylist .new-actions button.edit-btn:hover, .primeapps .categorylist .new-actions a.edit-btn:hover {
+.primeapps .new-actions button.edit-btn:hover, .primeapps .new-actions a.edit-btn:hover {
   background: rgba(0, 0, 0, 0.5);
 }
-.primeapps .categorylist .new-actions button:hover, .primeapps .categorylist .new-actions a:hover {
+.primeapps .new-actions button:hover, .primeapps .new-actions a:hover {
   background: #0d6faa;
   color: #FFF;
+}
+.primeapps .picklistx {
+  flex-grow: 1;
+}
+.primeapps .picklistx > span {
+  display: inline-block;
+}
+.primeapps .picklistx > span:nth-child(1) {
+  width: 20px;
+  text-align: center;
+}
+.primeapps .picklistx > span:nth-child(2) {
+  width: calc(20% - 10px);
+}
+.primeapps .picklistx > span:nth-child(3) {
+  width: calc(20% - 10px);
+}
+.primeapps .picklistx > span:nth-child(4) {
+  width: calc(20% - 10px);
+}
+.primeapps .picklistx > span:nth-child(5) {
+  width: calc(20% - 10px);
+}
+.primeapps .picklistx > span:nth-child(6) {
+  width: calc(20% - 10px);
+}
+.primeapps .picklist-options .form-control {
+  height: 30px;
+  line-height: 30px;
+}
+.primeapps .pickitemcopy {
+  display: table;
+  padding: 10px 0px;
+}
+.primeapps .pickitemcopy td {
+  display: none;
+}
+.primeapps .pickitemcopy td:nth-child(1) {
+  display: inline-block;
+  width: 40px;
+}
+.primeapps .pickitemcopy td:nth-child(2) {
+  display: inline-block;
+  width: calc(100% - 40px);
 }
 .primeapps .action-button2-plus, .primeapps .action-button2-delete {
   width: 26px;

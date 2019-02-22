@@ -1,4 +1,4 @@
-<div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-1100" tabindex="-1" role="dialog">
     <div class="modal-header">
         <div class="flex-between">
             <h4 class="modal-title">{{'Picklist.PicklistItem' | translate:{name:picklist['label_'+language]} }} </h4>
@@ -22,46 +22,89 @@
     <div class="modal-dialog scroll-style-4">
         <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div class="form-group">
-            <label class="col-sm-4 required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
-            <div class="col-sm-12">
-                <div id="rightTopBar" class="scrollBar"></div>
-                <div id="picklistOptionContainer">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>{{'Picklist.Items.Name' | translate}}</th>
-                                <th>{{'Picklist.Items.SystemCode' | translate}}</th>
-                                <th>{{'Picklist.Items.Value' | translate}}</th>
-                                <th>{{'Picklist.Items.Value2' | translate}}</th>
-                                <th>{{'Picklist.Items.Value3' | translate}}</th>
-                                <th>{{'Picklist.Items.Order' | translate}}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="picklistContainer" class="picklist-options">
-                            <tr  ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
-                                <td class="option-dragging option-handle"><i class="fa fa-arrows option-dragging option-handle"></i> </td>
-                                <td class="option-dragging">{{picklistItem['label_'+language]}}</td>
-                                <td class="option-dragging">{{picklistItem.system_code ? picklistItem.system_code:'-'}}</td>
-                                <td class="option-dragging">{{picklistItem.value ? picklistItem.value:'-'}}</td>
-                                <td class="option-dragging">{{picklistItem.value2 ? picklistItem.value2:'-'}}</td>
-                                <td class="option-dragging">{{picklistItem.value3 ? picklistItem.value3:'-'}}</td>
-                                <td class="option-dragging">{{picklistItem.order}}</td>
-                                <td class="option-dragging">
+            <label class="required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
+            <div id="rightTopBar" class="scrollBar"></div>
+            <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th width="40"></th>
+                            <th>{{'Picklist.Items.Name' | translate}}</th>
+                            <th>{{'Picklist.Items.SystemCode' | translate}}</th>
+                            <th>{{'Picklist.Items.Value' | translate}}</th>
+                            <th>{{'Picklist.Items.Value2' | translate}}</th>
+                            <th>{{'Picklist.Items.Value3' | translate}}</th>
+                            <th width="120"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="picklistContainer" class="picklist-options">
+                        <tr  ng-repeat="picklistItem in picklist.items track by picklistItem.order" ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
+                            <td class="option-dragging option-handle text-center">
+                                <i class="fa fa-arrows option-dragging option-handle"></i>
+                            </td>
+                            <td>
+                                {{picklistItem['label_'+language]}}
+                            </td>
+                            <td>
+                                {{picklistItem.system_code ? picklistItem.system_code:'-'}}
+                            </td>
+                            <td>
+                                {{picklistItem.value ? picklistItem.value:'-'}}
+                            </td>
+                            <td>
+                                {{picklistItem.value2 ? picklistItem.value2:'-'}}
+                            </td>
+                            <td>
+                                {{picklistItem.value3 ? picklistItem.value3:'-'}}
+                            </td>
+                            <td class="text-center">
+                                <div class="new-actions">
                                     <button ng-if="picklistItem.id" ng-click="deleteOption(picklistItem)" class="edit-btn" title="{{'Common.Edit' | translate}}"><i class="fas fa-pen"></i></button>
+                                    <button ng-if="picklistItem.id" ng-show="!picklistItem.inactive" ng-click="picklistItem.inactive = true" title="{{'Common.Deactivate' | translate}}"><i class="fas fa-eye"></i></button>
+                                    <button ng-if="picklistItem.id" ng-show="picklistItem.inactive" ng-click="picklistItem.inactive = false" title="{{'Common.Activate' | translate}}"><i class="fas fa-eye-slash"></i></button>
                                     <button ng-if="picklistItem.id" ladda="" ng-click="deleteOption(picklistItem)" class="delete-btn" title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></button>
-                                    <button ng-if="picklistItem.id" ng-show="!picklistItem.inactive" ng-click="picklistItem.inactive = true" class="delete-btn" title="{{'Common.Deactivate' | translate}}"><i class="fas fa-ban"></i></button>
-                                    <button ng-if="picklistItem.id" ng-show="picklistItem.inactive" ng-click="picklistItem.inactive = false" class="delete-btn" title="{{'Common.Activate' | translate}}"><i class="fas fa-undo"></i></button>
                                     
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" class="btn btn-xs btn-w-sm btn-custom" style="margin-left: 5px" ng-click="newOption(picklistForm); fieldForm.$setValidity('picklist', true);"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewOption' | translate}}</button>
-                </div>
-                <div id="rightBottomBar" class="scrollBar"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">
+                                
+                            </td>
+                            <td >
+                                <input name="xx" class="form-control" placeholder="xx"/>
+                            </td>
+                            <td>
+                                <div class="form-group bottom0">
+                                    <select class="form-control">
+                                        <option value="volvo">Volvo</option>
+                                        <option value="saab">Saab</option>
+                                        <option value="mercedes">Mercedes</option>
+                                        <option value="audi">Audi</option>
+                                    </select>
+                                </div>
+                                
+                            </td>
+                            <td>
+                                <input name="xx" class="form-control" placeholder="xx"/>
+                            </td>
+                            <td>
+                                <input name="xx" class="form-control" placeholder="xx"/>
+                            </td>
+                            <td>
+                                <input name="xx" class="form-control" placeholder="xx"/>
+                            </td>
+                            <td class="text-center">
+                                <div class="new-actions">
+                                    <button title="{{'Common.Edit' | translate}}"><i class="fas fa-check"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-xs btn-w-sm btn-custom" style="margin-left: 5px" ng-click="newOption(picklistForm); fieldForm.$setValidity('picklist', true);"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewOption' | translate}}</button>
             </div>
+            <div id="rightBottomBar" class="scrollBar"></div>
         </div>
     </div>
 </div>
