@@ -82,7 +82,7 @@
                    data-placement="right"
                    href="/#/apps?orgId={{organization.id}}"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="{{organization.icon}}" style="background-color:{{organization.color}}"></i><span> {{organization.label}} </span></a>
+                        class="{{organization.icon || 'fas fa-building'}}" style="background-color:{{organization.color || '#9F5590'}}"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                            ng-class="currentPath.indexOf('apps?') >0 ||  currentPath.indexOf('app/') >0 ? 'active' :'' "

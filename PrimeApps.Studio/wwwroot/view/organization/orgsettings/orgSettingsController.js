@@ -17,11 +17,11 @@ angular.module('primeapps')
 
             OrgSettingsService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
                 var data = response.data;
-                $scope.orgModel.icon = data.icon;
+                $scope.orgModel.icon = data.icon || 'fas fa-building';
                 $scope.orgModel.label = data.label;
                 $scope.orgModel.name = data.name;
                 $scope.orgModel.id = data.id;
-                $scope.orgModel.color = data.color;
+                $scope.orgModel.color = data.color || '#9F5590';
             });
 
             var getMyOrganizations = function () {

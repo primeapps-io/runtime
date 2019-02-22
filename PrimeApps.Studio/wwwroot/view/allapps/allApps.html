@@ -1,11 +1,11 @@
 <div class="page-container">
-    <div class="row">
+    <div class="row" ng-hide="!appsFilter && apps.length < 1">
         <div class="col-sm-10">
             <div class="search-input shadowh">
                 <div class="search-input-icon">
                     <i class="fas fa-search"></i>
                 </div>
-                <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" class="form-control form-control-lg form-control-borderless app-search-input" type="search" placeholder="Search">
+                <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" ng-model-options='{ debounce: 500 }' class="form-control form-control-lg form-control-borderless app-search-input" type="search" placeholder="Search">
             </div>
         </div>
         <div class="col-sm-2">
@@ -20,7 +20,7 @@
             </div>
         </div>
     </div>
-    <div class="row" style="margin-top: 50px" >
+    <div class="row" style="margin-top: 50px" ng-hide="!appsFilter && apps.length < 1">
         <div>
             <div class="col-sm-12">
                 <h4 class="h4-title blue-color font-bold">All Apps</h4>
@@ -50,7 +50,7 @@
                           data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
                           class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                     </div>
-                    <img class="applogo" ng-src="{{app.logo}}" alt="" />
+                    <img class="applogo" ng-src="{{app.logo}}" alt=""/>
                 </div>
                 <div class="app-info">
                     <div>
