@@ -122,7 +122,7 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task CreateUser(string email, string password, string firstName, string lastName, string orgName)
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 			if (!string.IsNullOrEmpty(enableGiteaIntegration))
 			{
 				if (!bool.Parse(enableGiteaIntegration))
@@ -165,7 +165,7 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task CreateOrganization(string uniqueName, string fullName, string email, string token, string type = "token")
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 			if (!string.IsNullOrEmpty(enableGiteaIntegration))
 			{
 				if (!bool.Parse(enableGiteaIntegration))
@@ -202,7 +202,7 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task CreateRepository(int organizationId, string appName, UserItem appUser, string token)
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 			if (!string.IsNullOrEmpty(enableGiteaIntegration))
 			{
 				if (!bool.Parse(enableGiteaIntegration))
@@ -302,7 +302,7 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task CreateAccessToken(string email, string password)
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 			if (!string.IsNullOrEmpty(enableGiteaIntegration))
 			{
 				if (!bool.Parse(enableGiteaIntegration))
@@ -338,7 +338,7 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task<string> GetSHAToken(string email, string password)
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 			if (!string.IsNullOrEmpty(enableGiteaIntegration))
 			{
 				if (!bool.Parse(enableGiteaIntegration))

@@ -171,7 +171,7 @@ namespace PrimeApps.Studio.Controllers
 					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
 			}
 
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
 			if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
 			{
