@@ -111,7 +111,7 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a ng-click="$event.stopPropagation(); delete(module);">
+                                <a ng-click="$event.stopPropagation(); delete(module,$event)">
                                     {{'Common.Remove' | translate}}
                                 </a>
                             </li>
@@ -158,7 +158,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"
