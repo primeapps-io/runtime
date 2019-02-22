@@ -27,21 +27,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
+
             ModuleService.count().then(function (response) {
                 $scope.pageTotal = response.data;
                 $rootScope.appModules.length = response.data;
-                console.log($rootScope)
+                $scope.changePage(1);
+
             });
 
-            ModuleService.find($scope.requestModel).then(function (response) {
-                $scope.modules = response.data;
-                $scope.loading = false;
-            });
 
-            $scope.changePage = function (page) {
+            $scope.changePage = function (page, deleted) {
                 $scope.loading = true;
+
+                if (page > Math.ceil($scope.pageTotal / $scope.requestModel.limit)) {
+                    --page;
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
                 ModuleService.find(requestModel).then(function (response) {
                     $scope.modules = response.data;
                     $scope.loading = false;
@@ -50,27 +56,10 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage, true)
             };
 
-
-            // $scope.showDeleteForm = function (moduleId) {
-            //     $scope.selectedModuleId = moduleId;
-            //
-            //     $scope.deleteModal = $scope.deleteModal || $modal({
-            //         scope: $scope,
-            //         template: 'view/app/model/modules/deleteForm.html',
-            //         animation: 'am-fade-and-slide-right',
-            //         backdrop: 'static',
-            //         show: false
-            //     });
-            //
-            //     $scope.deleteModal.$promise.then(function () {
-            //         $scope.deleteModal.show();
-            //     });
-            // };
-
-            $scope.delete = function (module) {
+            $scope.delete = function (module, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -80,19 +69,23 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            $scope.loading = true;
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             ModuleService.delete(module.id)
                                 .then(function () {
+
                                     $scope.pageTotal--;
                                     $rootScope.appModules.length = $scope.pageTotal;
-                                    $scope.changeOffset();
-                                    $scope.loading = false;
+                                    angular.element(elem.closest('tr')).remove();
+                                    $scope.changePage($scope.activePage, true);
                                     toastr.success("Module is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
 
                                 });
+
                         }
                     });
             };

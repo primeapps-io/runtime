@@ -294,7 +294,7 @@ angular.module('primeapps')
             $scope.validate = function (menuForm, next) {
                 menuForm.$submitted = true;
                 if (menuForm.$valid) {
-                    $scope.wizardStep += next ? 1 : -1;
+                    $scope.wizardStep += next ? 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                     return true;
                 }
                 return false;

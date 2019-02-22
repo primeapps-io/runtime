@@ -18,12 +18,15 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
 	[Route("api/functions")]
 	public class FunctionController : DraftBaseController
 	{
+        private IBackgroundTaskQueue Queue;
+        private IDeploymentHelper _deploymentHelper;
 		private IFunctionHelper _functionHelper;
 		private IConfiguration _configuration;
 		private IFunctionRepository _functionRepository;
@@ -33,7 +36,9 @@ namespace PrimeApps.Studio.Controllers
 		private IDeploymentFunctionRepository _deploymentFunctionRepository;
 		private string _kubernetesClusterRootUrl;
 
-		public FunctionController(IConfiguration configuration,
+        public FunctionController(IBackgroundTaskQueue queue,
+            IConfiguration configuration,
+            IDeploymentHelper deploymentHelper,
 			IFunctionHelper functionHelper,
 			IFunctionRepository functionRepository,
 			IGiteaHelper giteaHelper,
@@ -41,6 +46,8 @@ namespace PrimeApps.Studio.Controllers
 			IOrganizationRepository organizationRepository,
 			IDeploymentFunctionRepository deploymentFunctionRepository)
 		{
+            Queue = queue;
+            _deploymentHelper = deploymentHelper;
 			_functionHelper = functionHelper;
 			_configuration = configuration;
 			_functionRepository = functionRepository;
@@ -164,7 +171,7 @@ namespace PrimeApps.Studio.Controllers
 					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
 			}
 
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
 			if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
 			{
@@ -186,17 +193,7 @@ namespace PrimeApps.Studio.Controllers
 						{
 							using (var repo = new Repository(localPath))
 							{
-								string sample = string.Format(@"using System;" +
-									"using Kubeless.Functions;" + Environment.NewLine +
-									"using Newtonsoft.Json.Linq;" + Environment.NewLine +
-									"public class {0}{{" + Environment.NewLine +
-									"\tpublic object {0}(Event k8Event, Context k8Context)" + Environment.NewLine +
-									"\t{{" + Environment.NewLine +
-									"\t\tvar obj = new JObject();" + Environment.NewLine +
-									"\t\tobj[\"data\"] = k8Event.Data.ToString();" + Environment.NewLine +
-									"\t\treturn obj;" + Environment.NewLine +
-									"\t}}" + Environment.NewLine +
-									"}}", function.Handler);
+                            var sample = _functionHelper.GetSampleFunction(function.Runtime, function.Handler);
 								using (FileStream fs = System.IO.File.Create(localPath + "/" + fileName))
 								{
 									Byte[] info = new UTF8Encoding(true).GetBytes(sample);
@@ -394,18 +391,23 @@ namespace PrimeApps.Studio.Controllers
 			if (functionObj.IsNullOrEmpty())
 				return NotFound();
 
+            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
+
 			var deployment = new DeploymentFunction
 			{
 				FunctionId = function.Id,
 				Status = DeploymentStatus.Running,
-				Version = "12",
+                Version = currentBuildNumber.ToString(),
+                BuildNumber = currentBuildNumber,
 				StartTime = DateTime.Now
 			};
 
 			var result = await _deploymentFunctionRepository.Create(deployment);
 
 			if (result < 1)
-				return BadRequest("Unhandled Exception");
+                return BadRequest("An error occurred while creating an deployment.");
+
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartFunctionDeployment(function, functionObj, name, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
 
 			return Ok();
 		}

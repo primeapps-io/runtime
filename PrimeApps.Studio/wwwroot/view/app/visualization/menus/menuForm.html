@@ -29,8 +29,8 @@
                         <div class="megalist">
                             <div class="modal-menu">
                                 <ul class="list-unstyled">
-                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
                                 </ul>
                             </div>
                             <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->

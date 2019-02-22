@@ -1926,6 +1926,7 @@ angular.module('primeapps')
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
+                               if (lookupModule) 
                                 that.getModuleFields(lookupModule.name).then(function (response) {
                                     lookupModule.fields = response.data;
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];

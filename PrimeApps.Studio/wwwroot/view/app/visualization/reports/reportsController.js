@@ -31,14 +31,35 @@ angular.module('primeapps')
             });
 
 
-            ReportsService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
+            // ReportsService.count().then(function (response) {
+            //     $scope.pageTotal = response.data;
+            // });
+            //
+            // ReportsService.find($scope.requestModel).then(function (response) {
+            //     $scope.reports = response.data;
+            //     $scope.loading = false;
+            // });
 
-            ReportsService.find($scope.requestModel).then(function (response) {
-                $scope.reports = response.data;
-                $scope.loading = false;
-            });
+            $scope.reload = function () {
+                ReportsService.count()
+                    .then(function (response) {
+                        $scope.pageTotal = response.data;
+
+                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
+                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
+                        }
+
+                        ReportsService.find($scope.requestModel)
+                            .then(function (response) {
+                                $scope.reports = response.data;
+                                $scope.loading = false;
+                            });
+
+                    });
+            };
+
+            $scope.reload();
+
 
             $scope.changePage = function (page) {
                 $scope.loading = true;

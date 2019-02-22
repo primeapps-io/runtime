@@ -37,12 +37,14 @@ namespace PrimeApps.Studio.Controllers
 			var handler = new JwtSecurityTokenHandler();
 			var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
 			var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
-			if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:EnableGiteaIntegration", string.Empty)))
+			
+			if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
 			{
 				var giteaToken = Request.Cookies["gitea_token"];
 				//var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
-				Response.Cookies.Append("gitea_token", giteaToken);
-			}
+                if (giteaToken != null)
+                    Response.Cookies.Append("gitea_token", giteaToken);
+            }
 
 			var useCdn_ = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
 			if (!string.IsNullOrEmpty(useCdn_))
