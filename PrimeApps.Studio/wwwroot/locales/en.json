@@ -2155,7 +2155,8 @@
     "Modules": "Modules"
   },
   "Picklist": {
-    "Name": "Picklist Name",
+    "Name": "Picklist Name", 
+    "SystemType": "System Type",
     "SystemCode": "System Code",
     "AddNew": "Add New Picklist",
     "PicklistItem": "{{name}} Picklist Items",

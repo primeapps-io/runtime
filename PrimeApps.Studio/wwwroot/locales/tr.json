@@ -2154,6 +2154,7 @@
   },
   "Picklist": {
     "Name": "Seçim listesi Adı",
+    "SystemType": "Sistem Tipi",
     "SystemCode": "Sistem Kodu",
     "AddNew": "Yeni Seçim Listesi Ekle",
     "PicklistItem": "{{name}} Seçim Listesi Elemanları",

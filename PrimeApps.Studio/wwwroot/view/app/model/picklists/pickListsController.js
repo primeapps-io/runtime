@@ -16,6 +16,11 @@ angular.module('primeapps')
                 order_column: "label_en"
             };
 
+            $scope.systemTypes = [
+                { name: "System", order: 3 },
+                { name: "Custom", order: 2 },
+                { name: "Component", order: 1 }];
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -106,9 +111,11 @@ angular.module('primeapps')
                     $scope.id = picklist.id;
                     $scope.selectPicklist(picklist.id);
                 }
-                else
+                else {
+                    $scope.picklist = {};
+                    $scope.id = null;
                     $scope.modalLoading = false;
-
+                }
                 $scope.picklistFormModal = $scope.picklistForm || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/picklists/picklistsForm.html',
@@ -143,7 +150,7 @@ angular.module('primeapps')
             }
 
             $scope.deleteItem = function (id) {
-                if ($scope.picklist && id) { 
+                if ($scope.picklist && id) {
                     PickListsService.deleteItem(id)
                         .then(function (response) {
                             if (response.data) {
@@ -154,7 +161,7 @@ angular.module('primeapps')
                         });
                 }
             }
-             
+
             $scope.bindPicklistDragDrop = function () {
                 $timeout(function () {
                     if ($scope.drakePicklist) {
