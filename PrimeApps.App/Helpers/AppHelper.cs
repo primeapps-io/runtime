@@ -11,9 +11,9 @@ namespace PrimeApps.App.Helpers
         public static ApplicationInfoViewModel GetApplicationInfo(IConfiguration configuration, HttpRequest request, string language, Model.Entities.Platform.App app)
         {
             var cdnUrlStatic = "";
-            var cdnUrl = configuration.GetSection("webOptimizer")["cdnUrl"];
+            var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
 
-            if (!string.IsNullOrEmpty(cdnUrl))
+			if (!string.IsNullOrEmpty(cdnUrl))
             {
                 var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;

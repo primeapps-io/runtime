@@ -748,7 +748,7 @@ namespace PrimeApps.Auth.UI
                     var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
                     var cdnUrlStatic = "";
-                    var cdnUrl = _configuration.GetSection("webOptimizer")["cdnUrl"];
+                    var cdnUrl = _configuration.GetValue("webOptimizer:cdnUrl",string.Empty);
 
                     if (!string.IsNullOrEmpty(cdnUrl))
                     {

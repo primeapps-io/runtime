@@ -179,7 +179,7 @@ angular.module('primeapps')
                         scope: $scope,
                         containersModel: [$scope.picklist.items],
                         classes: {
-                            mirror: 'gu-mirror-option',
+                            mirror: 'gu-mirror-option pickitemcopy',
                             transit: 'gu-transit-option'
                         },
                         lockY: true,
