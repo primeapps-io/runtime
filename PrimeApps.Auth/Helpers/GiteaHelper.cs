@@ -35,7 +35,7 @@ namespace PrimeApps.Auth.Helpers
 
 		public async Task<string> GetToken(string email, string password)
 		{
-			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
 			if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
 			{
