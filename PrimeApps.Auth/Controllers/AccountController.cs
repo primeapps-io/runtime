@@ -1676,7 +1676,6 @@ namespace PrimeApps.Auth.UI
 
                     using (var httpClient = new HttpClient())
                     {
-                        httpClient.BaseAddress = new Uri(url);
                         httpClient.DefaultRequestHeaders.Accept.Clear();
                         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         var userCreatedResponse = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
