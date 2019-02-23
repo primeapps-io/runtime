@@ -49,54 +49,45 @@ namespace PrimeApps.Studio.Controllers
             var previewUrl = _configuration.GetValue("AppSettings:PreviewUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(previewUrl))
-            {
                 ViewBag.PreviewUrl = previewUrl;
-            }
 
             var blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(blobUrl))
-            {
                 ViewBag.BlobUrl = blobUrl;
-            }
 
             var functionUrl = _configuration.GetValue("AppSettings:FunctionUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(functionUrl))
-            {
                 ViewBag.FunctionUrl = functionUrl;
-            }
 
             var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(giteaUrl))
-            {
                 ViewBag.GiteaUrl = giteaUrl;
-            }
 
             var useCdnSetting = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
+            var useCdn = false;
 
             if (!string.IsNullOrEmpty(useCdnSetting))
+                useCdn = bool.Parse(useCdnSetting);
+
+            if (useCdn)
             {
-                var useCdn = bool.Parse(useCdnSetting);
+                var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
+                var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+                var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
 
-                if (useCdn)
+                if (!string.IsNullOrEmpty(cdnUrl))
                 {
-                    var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
-                    var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                    var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
-
-                    if (!string.IsNullOrEmpty(cdnUrl))
-                    {
-                        ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
-                        ViewBag.CdnUrlStatic = cdnUrl + "/" + versionStatic + "/";
-                    }
+                    ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
+                    ViewBag.CdnUrlStatic = cdnUrl + "/" + versionStatic + "/";
                 }
-                else
-                {
-                    ViewBag.CdnUrlDynamic = "";
-                    ViewBag.CdnUrlStatic = "";
-                }
+            }
+            else
+            {
+                ViewBag.CdnUrlDynamic = "";
+                ViewBag.CdnUrlStatic = "";
             }
         }
     }
