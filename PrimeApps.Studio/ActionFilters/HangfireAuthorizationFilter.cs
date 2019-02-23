@@ -1,4 +1,6 @@
-﻿using Hangfire.Dashboard;
+﻿using System.Security.Claims;//Don't delete this. It's used in release mode
+using System.Threading;//Don't delete this. It's used in release mode
+using Hangfire.Dashboard;
 
 namespace PrimeApps.Studio.ActionFilters
 {
