@@ -57,7 +57,7 @@ namespace PrimeApps.Auth
 
             //InitializeDatabase(app);
         }
-        
+
         private static X509Certificate2 LoadCertificate()
         {
             var assembly = typeof(Startup).GetTypeInfo().Assembly;
@@ -67,14 +67,14 @@ namespace PrimeApps.Auth
             using (var certificateStream = certificateFileInfo.CreateReadStream())
             {
                 byte[] certificatePayload;
-                
+
                 using (var memoryStream = new MemoryStream())
                 {
                     certificateStream.CopyTo(memoryStream);
                     certificatePayload = memoryStream.ToArray();
                 }
 
-                return new X509Certificate2(certificatePayload, "1q2w3e4r5t");
+                return new X509Certificate2(certificatePayload, "1q2w3e4r5t", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
             }
         }
 
