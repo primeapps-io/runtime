@@ -6,14 +6,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width"/>
     <title>PrimeApps Identity</title>
-    <link rel="icon" href="~/images/favicon/primeapps.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />
+    <link rel="icon" href="~/images/favicon.ico" type="image/x-icon"/>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="/styles/vendor/bootstrap.css"/>
+        <link rel="stylesheet" href="/styles/vendor/flaticon.css"/>
+        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css"/>
+        <link rel="stylesheet" href="/styles/vendor/font-awesome.css"/>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="/styles/bundles-css/auth.css"/>
+    </environment>
 </head>
 <style>
     body {
-        background-image: url(/images/authentication_home.jpg);
+        background-image: url(/images/background.jpg);
         background-size: cover;
         background-repeat: no-repeat;
     }
@@ -34,58 +43,69 @@
     }
 
     #fof h1 {
-        font-family: Montserrat,sans-serif,Arial;
+        font-family: Montserrat, sans-serif, Arial;
         font-weight: 700;
         font-size: 55px;
         color: white;
         line-height: 1em;
         letter-spacing: 7px;
     }
+
     #fof h2 {
-        font-family: Montserrat,sans-serif,Arial;
+        font-family: Montserrat, sans-serif, Arial;
         font-weight: 700;
         font-size: 45px;
         color: white;
         line-height: 0.8em;
         letter-spacing: 7px;
     }
+
     #fof h3 {
-        font-family: Montserrat,sans-serif,Arial;
+        font-family: Montserrat, sans-serif, Arial;
         font-weight: 700;
         color: white;
         line-height: 1em;
         letter-spacing: 3px;
     }
 
-        #fof p {
-            font-family: Montserrat,sans-serif,Arial;
-            font-weight: 700;
-            color: white;
-            line-height: 1em;
-        }
-
-    #fof p:first-child {
-        margin-top: 0;
+    #fof p {
+        font-family: Montserrat, sans-serif, Arial;
+        font-weight: 700;
+        color: white;
+        line-height: 1em;
     }
+
+    #fof p:first-child { margin-top: 0; }
 </style>
 <body>
-    <div class="wrapper row2">
-        <div id="container" class="clear">
+<div class="wrapper row2">
+    <div id="container" class="clear">
 
-            <div id="fof" class="clear">
-                <h1>PrimeApps</h1>
-                <h2>Identity Server</h2>
-                @if (!string.IsNullOrEmpty(ViewBag.UserName))
-                {
-                    <h3>Logged in User</h3>
-                    <p style="text-transform: uppercase;">@ViewBag.UserName</p>
-                    <p>@ViewBag.Email</p>
-                }
-                @RenderBody()
-            </div>
+        <div id="fof" class="clear">
+            <h1>PrimeApps</h1>
+            <h2>Identity Server</h2>
+            @if (!string.IsNullOrEmpty(ViewBag.UserName))
+            {
+                <h3>Logged in User</h3>
+                <p style="text-transform: uppercase;">@ViewBag.UserName</p>
+                <p>@ViewBag.Email</p>
+            }
+            @RenderBody()
         </div>
     </div>
-    <script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
-    @RenderSection("scripts", required: false)
+</div>
+
+<environment include="Development">
+    <script src="/scripts/vendor/jquery.js"></script>
+    <script src="/scripts/vendor/jquery-maskedinput.js"></script>
+    <script src="/scripts/vendor/sweetalert.js"></script>
+    <script src="/scripts/vendor/spin.js"></script>
+    <script src="/scripts/vendor/ladda.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="/scripts/bundles-js/auth.js"></script>
+</environment>
+
+@RenderSection("scripts", required: false)
 </body>
 </html>
