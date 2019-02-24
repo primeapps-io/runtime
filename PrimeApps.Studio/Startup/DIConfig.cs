@@ -48,7 +48,7 @@ namespace PrimeApps.Studio
                     }
                 }
             }
-            services.AddScoped<Warehouse, Warehouse>();
+
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
@@ -69,8 +69,9 @@ namespace PrimeApps.Studio
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
             services.AddScoped<IDeploymentHelper, DeploymentHelper>();
-            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();
-            services.AddScoped<Email, Email>();
+            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();//What the fuck!
+            services.AddScoped<Email, Email>();//What the fuck!
+            services.AddScoped<Warehouse, Warehouse>();//What the fuck!
         }
     }
 }

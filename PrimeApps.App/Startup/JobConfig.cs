@@ -9,41 +9,44 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App
 {
-	public partial class Startup
-	{
-		private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
+    public partial class Startup
+    {
+        private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
 
-		public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
-		{
-			var enableJobs_ = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
-			if (!string.IsNullOrEmpty(enableJobs_))
-			{
-				var enableJobs = bool.Parse(enableJobs_);
-				if (enableJobs)
-					return;
-			}
-			else
-				return;
-			app.UseHangfireServer(new BackgroundJobServerOptions
-			{
-				Queues = new[] { QueueName, "default" }
-			});
-			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
-			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+        public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
+        {
+            var enableJobsSetting = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
 
-			//ConfigureRecurringJobs();//Onpremise durumu ve bu job'larin app'e ozel olmasindan dolayi gecici olarak kapatildi. 
+            if (!string.IsNullOrEmpty(enableJobsSetting))
+            {
+                var enableJobs = bool.Parse(enableJobsSetting);
+                if (enableJobs)
+                    return;
+            }
+            else
+                return;
 
-			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
-		}
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Queues = new[] { QueueName, "default" }
+            });
 
-		public static void ConfigureRecurringJobs()
-		{
-			RecurringJob.AddOrUpdate<Jobs.ExchangeRate>("daily-exchange-rate", exchange => exchange.DailyRates(), Cron.Daily(13, 00), TimeZoneInfo.Utc, QueueName);
-			RecurringJob.AddOrUpdate<Jobs.TrialNotification>("trial-expire-notification", expire => expire.TrialExpire(), "0 * * * *", TimeZoneInfo.Utc, QueueName);
-			RecurringJob.AddOrUpdate<Jobs.AccountDeactivate>("deactivate-account", deactivate => deactivate.Deactivate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-			RecurringJob.AddOrUpdate<Jobs.UpdateLeave>("update-leave", update => update.Update(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-			RecurringJob.AddOrUpdate<Jobs.EmployeeCalculation>("employee-calculation", employee => employee.Calculate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
-			RecurringJob.AddOrUpdate<Jobs.AccountCleanup>("cleanup-account", cleanup => cleanup.Run(), Cron.Daily(03, 00), TimeZoneInfo.Utc, QueueName);
-		}
-	}
+            app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
+            JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
+            //ConfigureRecurringJobs();//Onpremise durumu ve bu job'larin app'e ozel olmasindan dolayi gecici olarak kapatildi. 
+
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+        }
+
+        public static void ConfigureRecurringJobs()
+        {
+            RecurringJob.AddOrUpdate<Jobs.ExchangeRate>("daily-exchange-rate", exchange => exchange.DailyRates(), Cron.Daily(13, 00), TimeZoneInfo.Utc, QueueName);
+            RecurringJob.AddOrUpdate<Jobs.TrialNotification>("trial-expire-notification", expire => expire.TrialExpire(), "0 * * * *", TimeZoneInfo.Utc, QueueName);
+            RecurringJob.AddOrUpdate<Jobs.AccountDeactivate>("deactivate-account", deactivate => deactivate.Deactivate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+            RecurringJob.AddOrUpdate<Jobs.UpdateLeave>("update-leave", update => update.Update(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+            RecurringJob.AddOrUpdate<Jobs.EmployeeCalculation>("employee-calculation", employee => employee.Calculate(), Cron.Daily(04, 00), TimeZoneInfo.Utc, QueueName);
+            RecurringJob.AddOrUpdate<Jobs.AccountCleanup>("cleanup-account", cleanup => cleanup.Run(), Cron.Daily(03, 00), TimeZoneInfo.Utc, QueueName);
+        }
+    }
 }

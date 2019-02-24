@@ -36,7 +36,7 @@ namespace PrimeApps.Studio
 			//Configure Authentication
 			AuthConfiguration(services, Configuration);
 
-			var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
+			var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("StudioDBConnection"));
 			GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
 			services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
