@@ -224,6 +224,12 @@ angular.module('primeapps')
                                     field: that.newField(dataType)
                                 });
                                 break;
+                            case 'tag':
+                                fields.push({
+                                    icon: "k-i-textbox-hidden",
+                                    field: that.newField(dataType)
+                                });
+                                break;
 
                         }
 
@@ -1920,6 +1926,7 @@ angular.module('primeapps')
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
+                               if (lookupModule) 
                                 that.getModuleFields(lookupModule.name).then(function (response) {
                                     lookupModule.fields = response.data;
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
@@ -1985,25 +1992,7 @@ angular.module('primeapps')
                 },
 
                 getActionButtons: function (moduleId) {
-                    //var deferred = $q.defer();
-                    //var cacheKey = 'action_button_' + moduleId;
-                    // var cache = $cache.get(cacheKey);
-
-                    // if (cache) {
-                    //     deferred.resolve(cache);
-                    //     return deferred.promise;
-                    // }
-
                     return $http.get(config.apiUrl + 'action_button/get/' + moduleId);
-                    // .then(function (actionButtons) {
-                    //     // $cache.put(cacheKey, actionButtons.data);
-                    //     deferred.resolve(actionButtons.data);
-                    // })
-                    // .catch(function (reason) {
-                    //     deferred.reject(reason.data);
-                    // });
-
-                    // return deferred.promise;
                 },
 
                 createActionButton: function (actionButton) {

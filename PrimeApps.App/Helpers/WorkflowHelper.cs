@@ -853,9 +853,12 @@ namespace PrimeApps.App.Helpers
                                     appDomain = "cagri";
                                     break;
                             }
-
-                            var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
-
+							var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
+							var subdomain = "";
+							if (!string.IsNullOrEmpty(testMode))
+							{
+								subdomain = testMode == "true" ? "test" : appDomain;
+							}
                             domain = string.Format(domain, subdomain);
 
                             //domain = "http://localhost:5554/";

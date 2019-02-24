@@ -5,9 +5,6 @@ angular.module('primeapps')
     .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
-
-            //$scope.$parent.menuTopTitle = "Models";
-            //$scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'views';
 
             $rootScope.breadcrumblist[2].title = 'Views';
@@ -138,12 +135,7 @@ angular.module('primeapps')
                     templateUrl: 'view/app/visualization/views/viewsForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
-                    show: false,
-                    controller: function ($scope) {
-                        $scope.$on('dragulardrop', function (e, el) {
-                            $scope.viewForm.$setValidity('field', true);
-                        });
-                    }
+                    show: false
                 });
 
                 $scope.addNewFiltersModal.$promise.then(function () {
@@ -165,12 +157,20 @@ angular.module('primeapps')
             });
 
             var dragular = function () {
+
+                if ($scope.availableFields_ && $scope.selectedFields_) {
+                    $scope.availableFields_.destroy();
+                    $scope.selectedFields_.destroy();
+                    $scope.availableFields_ = null;
+                    $scope.selectedFields_ = null;
+                }
+
                 var containerLeft = document.querySelector('#availableFields');
                 var containerRight = document.querySelector('#selectedFields');
 
-                dragularService.cleanEnviroment();
+                //dragularService.cleanEnviroment();
 
-                dragularService([containerLeft], {
+                $scope.availableFields_ = dragularService([containerLeft], {
                     scope: $scope,
                     containersModel: [$scope.fields.availableFields],
                     classes: {
@@ -183,7 +183,7 @@ angular.module('primeapps')
                     }
                 });
 
-                dragularService([containerRight], {
+                $scope.selectedFields_ = dragularService([containerRight], {
                     scope: $scope,
                     classes: {
                         mirror: 'gu-mirror-view',
@@ -221,10 +221,9 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-
+                    $scope.modalLoading = true;
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
-                            $scope.loading = true;
                             $scope.modulePicklists = picklists;
                             $scope.view.filterList = [];
 
@@ -245,7 +244,7 @@ angular.module('primeapps')
                             }
                             dragular();
                         }).finally(function () {
-                        $scope.loading = false;
+                        $scope.modalLoading = false;
                     });
                 });
             };
@@ -311,7 +310,7 @@ angular.module('primeapps')
 
             $scope.save = function (viewForm) {
 
-                if (!viewForm.$valid || !$scope.validate(viewForm))
+                if (!viewForm.$valid || !$scope.validate(viewForm, true))
                     return;
 
                 $scope.saving = true;
@@ -464,6 +463,7 @@ angular.module('primeapps')
                     //swal("Good job!", "You clicked the button!", "success");
                     toastr.success("Filter is saved successfully.");
                     //$state.go('studio.app.filters');
+                    $scope.wizardStep = 0;
                     $scope.addNewFiltersModal.hide();
                     $scope.changePage(1);
                 }
@@ -479,7 +479,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.validate = function (viewForm, wizardStep, previous) {
+            $scope.validate = function (viewForm, next) {
 
                 viewForm.$submitted = true;
 
@@ -487,7 +487,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.fields && $scope.fields.selectedFields.length < 1 && wizardStep != 0) {
+                if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep != 0) {
                     viewForm.$setValidity('field', false);
                     $scope.background_color = "background-color: #eed3d7";
                     return false;
@@ -497,7 +497,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                $scope.wizardStep += previous ? 1 : $scope.wizardStep > 0 ? -1 : 0;
+                $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
 

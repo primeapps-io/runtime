@@ -49,7 +49,7 @@ angular.module('primeapps')
             ActionButtonsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
                 var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = requestModel.offset;
+                requestModel.offset = requestModel.offset-1;
                 ActionButtonsService.find($scope.id, requestModel)
                     .then(function (actionButtons) {
                         $scope.actionButtons = actionButtons.data;

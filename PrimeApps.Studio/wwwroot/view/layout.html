@@ -4,7 +4,8 @@
             <ul class="breadcrumb ">
                 <li ng-repeat="breadcrumb in breadcrumblist" ng-if="breadcrumb.title">
                     <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
-                    <a href="{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a>
+                    <a href="/{{breadcrumb.link}}" ng-if="breadcrumb.link">{{breadcrumb.title}}</a>
+
                 </li>
             </ul>
             <ul class="list-unstyled list-yanla">
@@ -73,23 +74,23 @@
 
             <li class="sidebar-li " ng-class="currentPath == '/all-apps'  ? 'open' :''">
                 <a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"
-                   href="#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>
+                   href="/#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
                 <a data-trigger="hover" data-type="info" data-title="{{organization.label}}" bs-tooltip
                    data-placement="right"
-                   href="#/apps?orgId={{organization.id}}"
+                   href="/#/apps?orgId={{organization.id}}"
                    ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="{{organization.icon}}" style="background-color:{{organization.color}}"></i><span> {{organization.label}} </span></a>
+                        class="{{organization.icon || 'fas fa-building'}}" style="background-color:{{organization.color || '#9F5590'}}"></i><span> {{organization.label}} </span></a>
                 <ul>
                     <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                            ng-class="currentPath.indexOf('apps?') >0 ||  currentPath.indexOf('app/') >0 ? 'active' :'' "
-                           href="#/apps?orgId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
+                           href="/#/apps?orgId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="People" bs-tooltip data-placement="right"
                            ng-class="currentPath.indexOf('teams')>0 || currentPath.indexOf('collaborators')>0  ? 'active' :'' "
-                           href="#/org/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
+                           href="/#/org/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
                     <li><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"
                            ng-class="currentPath.indexOf('orgsettings')>0  ? 'active' :'' "

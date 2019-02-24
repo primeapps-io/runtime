@@ -2,13 +2,19 @@
     <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4>
+                <h4 class="modal-title">{{'Setup.Modules.TitleMenu' | translate}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
                             <button type="button" ng-disabled="saving" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
-                        <li>
+                        <li ng-if="wizardStep > 0">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue" ng-click="validate(menuForm, false)"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                        </li>
+                        <li ng-if="wizardStep < 1">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm, true)">{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i></button>
+                        </li>
+                        <li ng-if="wizardStep === 1">
                             <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
@@ -23,8 +29,8 @@
                         <div class="megalist">
                             <div class="modal-menu">
                                 <ul class="list-unstyled">
-                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
                                 </ul>
                             </div>
                             <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
@@ -59,11 +65,11 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm) ? wizardStep = 1 : false;">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm) ? wizardStep = 1 : false;">-->
+                                    <!--<i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}-->
+                                    <!--</button>-->
+                                    <!--</div>-->
 
                                     <div class="form-group" ng-show="menuForm.$submitted && (menuForm.profile_name.$error.required || menuForm.name_menu.$error.required)">
                                         <div class="callout callout-danger">
@@ -131,8 +137,8 @@
                                     <div class="form-group">
                                         <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
                                     </div>
-                                    <legend />
-                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+
+                                    <div ng-if="loadingModal" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                     <div ng-show="menuLists.length >0" class="menu-setup" style="margin-top:50px; ">
                                         <ul ng-model="menuLists" class="custom-menu list-unstyled">
                                             <li ng-repeat="menuList in $parent.menuLists">
@@ -229,7 +235,7 @@
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
                                                             <span ng-show="!menu.isEdit && !menu.name" class="action-buttons-block">
-                                                                <a  class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                <a class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
                                                                     <i class="fas fa-trash"></i>
                                                                 </a>
                                                             </span>
@@ -239,9 +245,9 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                         </div>

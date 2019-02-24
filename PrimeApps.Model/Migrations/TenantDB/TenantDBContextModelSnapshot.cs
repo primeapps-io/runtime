@@ -1071,6 +1071,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("BuildNumber")
+                        .HasColumnName("build_number");
+
                     b.Property<int>("ComponentId")
                         .HasColumnName("component_id");
 
@@ -1085,6 +1088,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnName("end_time");
+
+                    b.Property<int>("Revision")
+                        .HasColumnName("revision");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");
@@ -1125,6 +1131,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("BuildNumber")
+                        .HasColumnName("build_number");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
 
@@ -1139,6 +1148,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<int>("FunctionId")
                         .HasColumnName("function_id");
+
+                    b.Property<int>("Revision")
+                        .HasColumnName("revision");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");

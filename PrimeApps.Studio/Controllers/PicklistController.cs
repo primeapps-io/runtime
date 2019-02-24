@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -71,10 +72,29 @@ namespace PrimeApps.Studio.Controllers
             return Ok(picklists);
         }
 
+        [Route("get_item_page/{id:int}"), HttpPost]
+        public async Task<IActionResult> GetItemPage(int id, [FromBody] PaginationModel paginationModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemList = await _picklistRepository.GetItemPage(id, paginationModel);
+
+            return Ok(itemList);
+        }
+
         [Route("count"), HttpGet]
         public async Task<int> Count()
         {
             var count = await _picklistRepository.Count();
+
+            return count;
+        }
+
+        [Route("count_items/{id:int}"), HttpGet]
+        public async Task<int> CountItems(int id)
+        {
+            var count = await _picklistRepository.CountItems(id);
 
             return count;
         }
@@ -97,6 +117,32 @@ namespace PrimeApps.Studio.Controllers
             //return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 
+        [Route("add_item/{id:int}")]
+        public async Task<IActionResult> AddItem(int id, [FromBody] PicklistItemViewModel picklistItemModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var picklistItem = new PicklistItem
+            {
+                PicklistId = id,
+                LabelEn = picklistItemModel.LabelEn,
+                LabelTr = picklistItemModel.LabelTr,
+                Value = picklistItemModel.Value,
+                Value2 = picklistItemModel.Value2,
+                Value3 = picklistItemModel.Value3,
+                Order = picklistItemModel.Order,
+                Inactive = false
+            };
+
+            var result = await _picklistRepository.AddItem(picklistItem);
+
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            return Ok(result);
+        }
+
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]PicklistBindingModel picklist)
         {
@@ -114,6 +160,23 @@ namespace PrimeApps.Studio.Controllers
             return Ok(picklistEntity);
         }
 
+        [Route("update_item/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateItem(int id, [FromBody]PicklistItemBindingModel item)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemEntity = await _picklistRepository.GetItemById(id);
+
+            if (itemEntity == null)
+                return NotFound();
+
+            PicklistHelper.UpdateItemEntity(item, itemEntity);
+            await _picklistRepository.Update(itemEntity);
+
+            return Ok(itemEntity);
+        }
+
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -123,6 +186,19 @@ namespace PrimeApps.Studio.Controllers
                 return NotFound();
 
             await _picklistRepository.DeleteSoft(picklistEntity);
+
+            return Ok();
+        }
+
+        [Route("deleteItem/{id:int}"), HttpDelete]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var picklistEntity = await _picklistRepository.GetItemById(id);
+
+            if (picklistEntity == null)
+                return NotFound();
+
+            await _picklistRepository.ItemDeleteSoft(picklistEntity);
 
             return Ok();
         }

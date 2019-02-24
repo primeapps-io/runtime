@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Organization;
-using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
@@ -27,14 +26,16 @@ namespace PrimeApps.Studio.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private ITeamRepository _teamRepository;
+        private IConsoleUserRepository _consoleUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IConsoleUserRepository consoleUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _teamRepository = teamRepository;
+            _consoleUserRepository = consoleUserRepository;
             _configuration = configuration;
             _storage = storage;
         }
@@ -46,6 +47,7 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_consoleUserRepository);
             SetCurrentUser(_teamRepository);
 
         }
@@ -56,7 +58,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _platformUserRepository.GetWithSettings(AppUser.Email);
 
 
-            var me = new ConsoleUser
+            var me = new Model.Common.User.ConsoleUser
             {
                 Id = AppUser.Id,
                 Email = user.Email,

@@ -42,8 +42,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		/// <returns></returns>
 		public override async Task<bool> Process(MessageDTO emailQueueItem, UserItem appUser)
 		{
-            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
-            string[] ids;
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			string[] ids;
 			bool isAllSelected = false;
 			string emailTemplate = "",
 				query = "",
@@ -73,15 +73,18 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				{
 					var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 					var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+					var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                    databaseContext.TenantId = emailQueueItem.TenantId;
+					databaseContext.TenantId = emailQueueItem.TenantId;
 
 					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
-						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+						if (!string.IsNullOrEmpty(previewMode))
+						{
+							notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+						}
 						/// get details of the email queue item.
 						///
 						var notificationId = Convert.ToInt32(emailQueueItem.Id);
@@ -230,8 +233,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		{
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
-            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
-            IList<Message> messages = new List<Message>();
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			IList<Message> messages = new List<Message>();
 			IList<string> messageFields = new List<string>();
 			JArray messageStatusList = new JArray();
 			int successful = 0,
@@ -319,8 +322,10 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
-							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
-
+							if (!string.IsNullOrEmpty(previewMode))
+							{
+								moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
+							}
 							foreach (string recordId in ids)
 							{
 								var status = MessageStatusEnum.Successful;

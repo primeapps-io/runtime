@@ -1,23 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
-    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
-    <DockerTargetOS>Linux</DockerTargetOS>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="IdentityServer4" Version="2.3.2" />
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
-    <PackageReference Include="Sentry" Version="1.1.0" />
-    <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+        <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+        <DockerTargetOS>Linux</DockerTargetOS>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="IdentityServer4" Version="2.3.2" />
+        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+        <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
+        <PackageReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.2" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" PrivateAssets="All" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
+        <PackageReference Include="Sentry" Version="1.1.0" />
+        <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="primeapps_id4.pfx" />
+    </ItemGroup>
 </Project>

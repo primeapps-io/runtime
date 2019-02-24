@@ -5,11 +5,8 @@ angular.module('primeapps')
     .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
         function ($rootScope, $scope, $filter, $state, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
 
-            //$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'menus';
-            $scope.wizardStep = 0;
-
 
             $rootScope.breadcrumblist[2].title = 'Menu';
 
@@ -53,7 +50,6 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
                 MenusService.find(requestModel).then(function (response) {
-                    $scope.loading = true;
                     var menuList = response.data;
                     ProfilesService.getAllBasic().then(function (response) {
                         $scope.newProfiles = response.data;
@@ -194,6 +190,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (id, _clone) {
                 $scope.id = id;
+                $scope.wizardStep = 0;
                 $scope.menuLists = [];
                 $scope.menu = {};
                 $scope.counter = 1;
@@ -224,7 +221,7 @@ angular.module('primeapps')
             };
 
             var setMenuList = function (id) {
-                // $scope.loading = true;
+
                 $scope.menuLists = [];
                 $scope.updateArray = [];
                 $scope.deleteArray = [];
@@ -248,6 +245,7 @@ angular.module('primeapps')
 
                         $scope.firstProfileId = $scope.menu.profile.id;
 
+                        $scope.loadingModal = true;
                         //We use firstprofileId because maybe user was changed
                         MenusService.getMenuItem($scope.menu.profile_id).then(function onSuccess(response) {
                             $scope.menuLists = [];
@@ -287,17 +285,18 @@ angular.module('primeapps')
                             $scope.counter = $scope.menuLists.length + 1;
 
                         }).finally(function () {
-                            $scope.loading = false;
+                            $scope.loadingModal = false;
                         });
                     });
                 }
             }
 
-            $scope.validate = function (menuForm) {
+            $scope.validate = function (menuForm, next) {
                 menuForm.$submitted = true;
-                if (menuForm.$valid)
+                if (menuForm.$valid) {
+                    $scope.wizardStep += next ? 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                     return true;
-
+                }
                 return false;
             };
 
@@ -379,7 +378,7 @@ angular.module('primeapps')
 
                 $scope.saving = true;
                 var resultPromise;
-                $scope.loading = true;
+
                 //If update
                 if (menu.id && !$scope.clone) {
 
@@ -449,7 +448,6 @@ angular.module('primeapps')
                                                 $scope.addNewMenuFormModal.hide();
                                                 $scope.changePage(1);
                                             }).finally(function () {
-                                                $scope.loading = false;
                                                 $scope.saving = false;
                                             });
                                         else {
@@ -460,7 +458,6 @@ angular.module('primeapps')
                                             $scope.changePage(1);
                                         }
                                     }).finally(function () {
-                                        $scope.loading = false;
                                         $scope.saving = false;
                                     });
                                 }
@@ -485,7 +482,6 @@ angular.module('primeapps')
                                     $scope.addNewMenuFormModal.hide();
                                     $scope.changePage(1);
                                 }).finally(function () {
-                                    $scope.loading = false;
                                     $scope.saving = false;
                                 });
                             else {
@@ -496,7 +492,7 @@ angular.module('primeapps')
                                 $scope.changePage(1);
                             }
                         }).finally(function () {
-                            $scope.loading = false;
+
                             $scope.saving = false;
                         });
                     }
@@ -506,13 +502,11 @@ angular.module('primeapps')
                             $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
-                            $scope.loading = false;
                         });
                     }
                     else {
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
-                        $scope.loading = false;
                         $scope.saving = false;
                     }
                 }
@@ -530,12 +524,10 @@ angular.module('primeapps')
                         MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
 
                             toastr.success($filter('translate')('Menu.MenuSaving'));
-                            $scope.loading = true;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage(1);
                             $scope.pageTotal += 1;
                         }).finally(function () {
-                            $scope.loading = false;
                             $scope.saving = false;
                         });
                     });

@@ -14,9 +14,8 @@ namespace PrimeApps.Studio.Controllers
     public class HomeController : Controller
     {
         private IConfiguration _configuration;
-        private IServiceScopeFactory _serviceScopeFactory;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -38,25 +37,52 @@ namespace PrimeApps.Studio.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
             var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
-            if (bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
-            {
-                var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
 
-                Request.Cookies.Append(new System.Collections.Generic.KeyValuePair<string, string>("gitea_token", giteaToken));
-                Response.Cookies.Append("gitea_token", giteaToken);
+            if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
+            {
+                var giteaToken = Request.Cookies["gitea_token"];
+                //var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
+                if (giteaToken != null)
+                    Response.Cookies.Append("gitea_token", giteaToken);
             }
 
-            var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
-            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-            ViewBag.FunctionUrl = _configuration.GetSection("AppSettings")["FunctionUrl"];
-            ViewBag.GiteaUrl = _configuration.GetSection("AppSettings")["GiteaUrl"];
+            var previewUrl = _configuration.GetValue("AppSettings:PreviewUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(previewUrl))
+                ViewBag.PreviewUrl = previewUrl;
+
+            var blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(blobUrl))
+                ViewBag.BlobUrl = blobUrl;
+
+            var functionUrl = _configuration.GetValue("AppSettings:FunctionUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(functionUrl))
+                ViewBag.FunctionUrl = functionUrl;
+
+            var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(giteaUrl))
+                ViewBag.GiteaUrl = giteaUrl;
+
+            var useCdnSetting = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
+            var useCdn = false;
+
+            if (!string.IsNullOrEmpty(useCdnSetting))
+                useCdn = bool.Parse(useCdnSetting);
 
             if (useCdn)
             {
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                ViewBag.CdnUrlDynamic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionDynamic + "/";
-                ViewBag.CdnUrlStatic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic + "/";
+                var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
+
+                if (!string.IsNullOrEmpty(cdnUrl))
+                {
+                    ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
+                    ViewBag.CdnUrlStatic = cdnUrl + "/" + versionStatic + "/";
+                }
             }
             else
             {

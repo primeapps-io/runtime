@@ -238,8 +238,8 @@ namespace PrimeApps.App.Controllers
                 await _storage.Upload(publicPath, publicFileName, outputStream);
 
                 outputStream.Position = 0;
-                var blobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
-                var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
+                var blobUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+				var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
 
                 return Ok(result);
             }

@@ -171,14 +171,25 @@ angular.module('primeapps')
 
                 $scope.currentRelation.relationField = null;
                 var relatedModuleName = $scope.currentRelation.related_module.name;
+
                 ModuleService.getModuleFields(relatedModuleName).then(function (response) {
+
                     $scope.currentRelation.related_module.fields = response.data;
+
                     if ($scope.currentRelation.related_module)
                         $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.related_module.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
 
+                    if ($scope.currentRelation.related_module && ($scope.currentRelation.related_module.name === 'activities' || $scope.currentRelation.related_module.name === 'mails') && ($scope.module.name != 'activities' || $scope.module.name != 'mails') && $scope.currentRelation.relation_type === 'one_to_many')
+                        $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, { name: 'related_to' }, true)[0];
+
                     $scope.currentRelation.display_fields = null;
                     RelationsService.getFields($scope.currentRelation, $rootScope.appModules).then(function (fields) {
+
                         $scope.fields = fields;
+
+                        if ($scope.currentRelation.relationField) {
+                            $scope.bindDragDrop();
+                        }
 
                         if ($scope.currentRelation.relation_type === 'many_to_many')
                             $scope.bindDragDrop();

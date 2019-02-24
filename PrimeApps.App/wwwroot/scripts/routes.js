@@ -1343,6 +1343,9 @@ angular.module('primeapps')
                 var _components = angular.fromJson(components);
 
                 angular.forEach(_components, function (component) {
+                    if(!component.content)
+                        return;
+                    
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 

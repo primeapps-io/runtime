@@ -27,6 +27,7 @@
     "Filter": "Filter",
     "Sort": "Sort",
     "Everyone": "Everyone",
+    "Status": "State",
     "Active": "Active",
     "Passive": "Passive",
     "Find": "Find",
@@ -984,7 +985,8 @@
       "TitleActionButtons": "Action Buttons",
       "NewModule": "New Module",
       "TitleDependency": "Field Dependencies",
-      "TitleFilters": "Filters",
+      "TitleFilters": "Views",
+      "TitleMenu": "Menus",
       "NewRelation": "New Relation",
       "NewActionButton": "New Action Button",
       "NewProfileSetting": "New Profile Setting",
@@ -1737,6 +1739,7 @@
     }
   },
   "Import": {
+    "TitleMenus": null,
     "Title": "Import Data",
     "Description": "To start the import procedure, please select optionally an encoding and a delimiter value before selecting the file to import.",
     "ErrorMessage": "Error Message",
@@ -2153,8 +2156,21 @@
   },
   "Picklist": {
     "Name": "Picklist Name",
+    "SystemType": "System Type",
     "SystemCode": "System Code",
     "AddNew": "Add New Picklist",
-    "PicklistItem": "{{name}} Picklist Items"
+    "PicklistItem": "{{name}} Picklist Items",
+    "SaveItemSuccess": "Picklist item is saved successfully.",
+    "DeleteSuccess": "Picklist is deleted successfully",
+    "DeleteItemSuccess": "Picklist item is deleted successfully.",
+    "Items": {
+      "Name": "Name",
+      "SystemCode": "System Code",
+      "Value": "Value",
+      "Value2": "Value-2",
+      "Value3": "Value-3",
+      "Order": "Order"
+    }
+
   }
 }

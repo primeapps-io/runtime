@@ -25,6 +25,7 @@ namespace PrimeApps.Studio.Controllers
             var appInfo = await _applicationRepository.Get(Request.Host.Value);
 
             Response.Cookies.Delete("tenant_id");
+            Response.Cookies.Delete("gitea_token");
             await HttpContext.SignOutAsync();
 
             return StatusCode(200, new {redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain});

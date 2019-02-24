@@ -29,7 +29,7 @@ namespace PrimeApps.Studio.Controllers
             if (AppId == null)
                 return BadRequest("AppId can not be null");
 
-            var token = CryptoHelper.Encrypt("app_id=" + AppId, "222EF106646458CD59995D4378B55DF2");
+            var token = CryptoHelper.Encrypt("app_id=" + AppId);
 
             return Ok(token);
         }

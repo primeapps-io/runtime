@@ -111,6 +111,17 @@ namespace PrimeApps.Studio.Helpers
             return picklistViewModel;
         }
 
+        public static void UpdateItemEntity(PicklistItemBindingModel picklistItemModel, PicklistItem picklistItem)
+        {
+            picklistItem.LabelEn = picklistItemModel.LabelEn;
+            picklistItem.LabelTr = picklistItemModel.LabelTr;
+            picklistItem.Value = picklistItemModel.Value;
+            picklistItem.Value2 = picklistItemModel.Value2;
+            picklistItem.Value3 = picklistItemModel.Value3;
+            picklistItem.Order = picklistItemModel.Order;
+            picklistItem.Inactive = picklistItemModel.Inactive;
+        }
+
         public static List<PicklistViewModel> MapToViewModel(ICollection<Picklist> picklists)
         {
             return picklists.Select(MapToViewModel).ToList();

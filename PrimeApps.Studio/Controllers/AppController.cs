@@ -164,7 +164,6 @@ namespace PrimeApps.Studio.Controllers
                     status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
-
             var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
 
             return Ok(organizations);

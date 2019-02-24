@@ -65,7 +65,6 @@
                                         </select>
                                     </div>
 
-
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'lookup' && !currentField.systemReadonly"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
@@ -81,6 +80,7 @@
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
+
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.picklistType.$invalid}"
@@ -97,25 +97,7 @@
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'">
-                                        <div class="col-sm-offset-4">
-                                            <button type="button"
-                                                    class="col-sm-offset-4 btn btn-xs btn-w-lg btn-custom new-picklist"
-                                                    ng-click="newPicklist()" ng-show="currentField.isNew"><i
-                                                    class="fa fa-plus pull-left"></i> {{'Setup.Modules.PicklistNew' |
-                                                translate}}
-                                            </button>
-                                            <button type="button"
-                                                    class="col-sm-offset-4 btn btn-xs btn-w-lg btn-custom edit-picklist"
-                                                    ng-class="{'edit-picklist-extra': currentField.isNew}"
-                                                    ng-click="editPicklist()"
-                                                    ng-show="currentField.picklist_id && currentField.picklist_id != 1 && currentField.picklist_id != 2">
-                                                <i class="fa fa-edit pull-left"></i> {{'Setup.Modules.PicklistEdit' |
-                                                translate}}
-                                            </button>
-                                        </div>
-                                    </div>
+
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField1.$invalid}">
                                         <label class="col-sm-4 required-field"> {{'Setup.Modules.CombinationField1' |

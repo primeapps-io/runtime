@@ -1,5 +1,6 @@
 ﻿@{
     var token = ViewBag.Token;
+    var previewUrl = ViewBag.PreviewUrl;
     var giteaUrl = ViewBag.GiteaUrl;
 }
 
@@ -59,6 +60,7 @@
         var functionUrl = '';
         var tenantId = '0';
         var components = '';
+        var previewUrl = '@previewUrl';
         var giteaUrl = '@giteaUrl';
 
         document.body.className = 'primeapps';

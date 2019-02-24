@@ -74,9 +74,51 @@ namespace PrimeApps.Model.Repositories
             return await picklist.ToListAsync();
         }
 
+        public async Task<Picklist> GetItemPage(int id, PaginationModel paginationModel)
+        {
+            var picklist = await DbContext.Picklists.Where(x => !x.Deleted && x.Id == id)
+                .Include(x => x.Items).FirstOrDefaultAsync();
+
+            picklist.Items = picklist.Items.Where(x => !x.Deleted)
+                .OrderByDescending(q => q.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            //var picklist = await DbContext.Picklists.Where(x => !x.Deleted && x.Id == id).FirstAsync();
+
+            //var items = await DbContext.PicklistItems.Where(x => !x.Deleted && x.PicklistId == id)
+            //    .OrderByDescending(q => q.Id)
+            //    .Skip(paginationModel.Offset * paginationModel.Limit)
+            //    .Take(paginationModel.Limit).ToListAsync();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(PicklistItem).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    picklist.Items = picklist.Items.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    picklist.Items = picklist.Items.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+            }
+
+            //picklist.Items = items;
+
+            return picklist;
+        }
+
         public async Task<int> Count()
         {
-            var count = await DbContext.PicklistItems.Where(x => !x.Deleted).CountAsync();
+            var count = await DbContext.Picklists.Where(x => !x.Deleted).CountAsync();
+
+            return count;
+        }
+        public async Task<int> CountItems(int id)
+        {
+            var count = await DbContext.PicklistItems.CountAsync(x => !x.Deleted && x.PicklistId == id);
 
             return count;
         }
@@ -140,7 +182,21 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
+
+        public async Task<int> AddItem(PicklistItem item)
+        {
+            DbContext.PicklistItems.Add(item);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+
         public async Task<int> Update(Picklist picklist)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> Update(PicklistItem item)
         {
             return await DbContext.SaveChangesAsync();
         }
@@ -148,6 +204,13 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> DeleteSoft(Picklist picklist)
         {
             picklist.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> ItemDeleteSoft(PicklistItem picklistItem)
+        {
+            picklistItem.Deleted = true;
 
             return await DbContext.SaveChangesAsync();
         }

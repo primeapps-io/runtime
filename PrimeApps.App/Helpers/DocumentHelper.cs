@@ -133,7 +133,12 @@ namespace PrimeApps.App.Helpers
 		public async Task<string> Save(DocumentUploadResult result, string containerName)
 		{
 			var blob = await AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks, _configuration);
-			var fileUrl = $"{_configuration.GetSection("AppSettings")["StorageUrl"]}{blob.Uri.AbsolutePath}";
+			var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+			var fileUrl = "";
+			if (!string.IsNullOrEmpty(storageUrl))
+			{
+				fileUrl = $"{storageUrl}{blob.Uri.AbsolutePath}";
+			}
 
 			return fileUrl;
 		}

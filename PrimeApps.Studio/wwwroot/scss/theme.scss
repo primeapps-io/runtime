@@ -1031,7 +1031,29 @@ button, select {
     background: #FFF;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   }
-  .table-responsive{
+
+  .function {
+    .tab-content {
+      box-shadow: none;
+    }
+    .nav-tabs {
+      li {
+        a {
+          font-weight: 700;
+          color: #0d6faa;
+        }
+      }
+      li.active {
+        a {
+          background-color: #f7f7f7;
+          border: 1px solid #f7f7f7;
+        }
+      }
+
+    }
+  }
+
+  .table-responsive {
     border-color: transparent !important;
   }
   .table {
@@ -1109,9 +1131,28 @@ button, select {
         }
       }
     }
-
   }
-
+  .tab-content2{
+    box-shadow: 0px 0px 5px 0 rgba(0, 0, 0, 0.05);
+    margin-left: 2px;
+    .table{
+      tbody {
+        tr {
+          td {
+            padding: 5px !important;
+            line-height: 30px;
+          }
+        }
+      }
+      thead:first-child {
+        > tr:first-child {
+          > th {
+            padding: 5px !important;
+          }
+        }
+      }
+    }
+  }
   .table-pagination {
     height: 60px;
     padding: 0px 20px;
@@ -1523,6 +1564,10 @@ button, select {
 
     &.modal-900 {
       width: 900px !important;
+      max-width: calc(100% - 20px) !important;
+    }
+    &.modal-1100 {
+      width: 1100px !important;
       max-width: calc(100% - 20px) !important;
     }
   }
@@ -3728,6 +3773,8 @@ button, select {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-weight: bold;
+        color: rgba(0,0,0,0.75);
       }
       .form-control{
         height: 30px !important;
@@ -3738,45 +3785,75 @@ button, select {
         background: rgba(0,0,0,0.05);
       }
     }
-    .new-actions{
-      display: inline-block;
-      padding-left: 10px;
-      button,a {
-        @include hoverEffect;
-        background: rgba(13, 111, 170, 0.5);
-        color: rgba(255, 255, 255, 1);
-        width: 25px;
-        height: 25px;
-        line-height: 25px;
-        font-size: 10px;
-        text-align: center;
-        border: none;
-        border-radius: 50%;
-        display:inline-block;
-        
-        &.delete-btn {
-          background: #E78D8F;
-          color: #FFF;
-          &:hover {
-            background: rgba(206, 4, 4, 1);
-            color: #FFF;
-          }
-        }
-        &.edit-btn {
-          background: rgba(0,0,0,0.25);
-          &:hover {
-            background: rgba(0,0,0,0.5);
-          }
-        }
-        
+  }
+  .new-actions{
+    display: inline-block;
+    padding-left: 10px;
+    button,a {
+      @include hoverEffect;
+      background: rgba(13, 111, 170, 0.5);
+      color: rgba(255, 255, 255, 1);
+      width: 25px;
+      height: 25px;
+      line-height: 25px;
+      font-size: 10px;
+      text-align: center;
+      border: none;
+      border-radius: 50%;
+      display:inline-block;
+
+      &.delete-btn {
+        background: #E78D8F;
+        color: #FFF;
         &:hover {
-          background: rgba(13, 111, 170, 1);
+          background: rgba(206, 4, 4, 1);
           color: #FFF;
         }
       }
+      &.edit-btn {
+        background: rgba(0,0,0,0.25);
+        &:hover {
+          background: rgba(0,0,0,0.5);
+        }
+      }
+
+      &:hover {
+        background: rgba(13, 111, 170, 1);
+        color: #FFF;
+      }
     }
-    
   }
+  .picklistx{
+    flex-grow: 1;
+    > span{
+      display: inline-block;
+      &:nth-child(1){
+        width: 20px;
+        text-align: center;
+      }
+      &:nth-child(2){ width: calc(20% - 10px);}
+      &:nth-child(3){ width: calc(20% - 10px);}
+      &:nth-child(4){ width: calc(20% - 10px);}
+      &:nth-child(5){ width: calc(20% - 10px);}
+      &:nth-child(6){ width: calc(20% - 10px);} 
+    }
+  }
+  .picklist-options{
+    .form-control{
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+  .pickitemcopy{
+    display: table;
+    padding: 10px 0px;
+    td{
+      display: none;
+      &:nth-child(1){ display: inline-block; width: 40px;}
+      &:nth-child(2){ display: inline-block; width: calc(100% - 40px);}
+    }
+  }
+  
   .action-button2-plus,.action-button2-delete{
     width: 26px;
     height: 26px;
