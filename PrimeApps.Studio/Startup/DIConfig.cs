@@ -19,7 +19,7 @@ namespace PrimeApps.Studio
             services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-            services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBContext")));
+            services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
             services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
