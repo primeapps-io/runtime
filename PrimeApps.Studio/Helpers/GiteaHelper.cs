@@ -212,7 +212,7 @@ namespace PrimeApps.Studio.Helpers
 				return;
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
-				var databaseContext = _scope.ServiceProvider.GetRequiredService<ConsoleDBContext>();
+				var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 				using (var _organizationRepository = new OrganizationRepository(databaseContext, _configuration))
 				{
 					var organization = await _organizationRepository.Get(appUser.Id, organizationId);

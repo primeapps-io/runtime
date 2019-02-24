@@ -52,7 +52,7 @@ namespace PrimeApps.Studio.Helpers
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<ConsoleDBContext>();
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var tenantDBContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
                 using (var _organizationRepository = new OrganizationRepository(databaseContext, _configuration))
