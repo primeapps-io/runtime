@@ -4,9 +4,9 @@
             <div class="sidemenu setup-title">
                 <h2>People</h2>
                 <button class="btn btn-radius btn-gray backclose" ng-click="toggledSubMenu()" data-trigger="hover" data-type="info"
-                        data-title="Close" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-left"></i></button>
+                        data-title="Collapse" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-left"></i></button>
                 <button class="btn btn-radius btn-gray backopen" ng-click="toggledSubMenu()" data-trigger="hover" data-type="info"
-                        data-title="Open" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-right"></i></button>
+                        data-title="Expand" bs-tooltip data-placement="right"><i class="fas fa-long-arrow-alt-right"></i></button>
             </div>
             <ng-include ng-class="activeMenu==='organization' ?  'am-fade-and-slide-right':''" ng-if="activeMenu==='organization'" src="'view/organization/common/organizationMenu.html'"></ng-include>
             <ng-include ng-class="activeMenu==='teams' ?  'am-fade-and-slide-right':''" ng-if="activeMenu==='teams'" src="'view/organization/common/teamsMenu.html'"></ng-include>

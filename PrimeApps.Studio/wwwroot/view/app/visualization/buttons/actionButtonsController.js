@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
-        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService', '$timeout',
+        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService, $timeout) {
 
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
@@ -49,7 +49,7 @@ angular.module('primeapps')
             ActionButtonsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
                 var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = requestModel.offset-1;
+                requestModel.offset = requestModel.offset - 1;
                 ActionButtonsService.find($scope.id, requestModel)
                     .then(function (actionButtons) {
                         $scope.actionButtons = actionButtons.data;
@@ -82,7 +82,6 @@ angular.module('primeapps')
                     $scope.currentActionButton = actionButton;
                     $scope.currentActionButton.module = actionButton.parent_module;
                     $scope.moduleChanged();
-                    webhookParameters();
                 }
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
@@ -147,32 +146,32 @@ angular.module('primeapps')
                     $scope.hookParameters = [];
 
                     var hookParameterArray = actionButton.parameters.split(',');
+                    $timeout(function () {
+                        angular.forEach(hookParameterArray, function (data) {
+                            var parameter = data.split("|", 3);
 
-                    angular.forEach(hookParameterArray, function (data) {
-                        var parameter = data.split("|", 3);
+                            var editParameter = {};
+                            editParameter.parameterName = parameter[0];
+                            editParameter.selectedModules = angular.copy($scope.updatableModules);
+                            var selectedModule;
 
-                        var editParameter = {};
-                        editParameter.parameterName = parameter[0];
-                        editParameter.selectedModules = angular.copy($scope.updatableModules);
-                        var selectedModule;
+                            if ($scope.module.name === parameter[1]) {
+                                selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
+                            }
+                            else {
+                                var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
+                                selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
+                            }
 
-                        if ($scope.module.name === parameter[1]) {
-                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
-                        }
-                        else {
-                            var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
-                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
-                        }
+                            if (!selectedModule)
+                                return;
 
+                            editParameter.selectedModule = selectedModule;
+                            editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
 
-                        if (!selectedModule)
-                            return;
-
-                        editParameter.selectedModule = selectedModule;
-                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
-
-                        $scope.hookParameters.push(editParameter);
-                    })
+                            $scope.hookParameters.push(editParameter);
+                        });
+                    }, 1000);
                 }
 
                 $scope.formModal = $scope.formModal || $modal({
@@ -198,7 +197,7 @@ angular.module('primeapps')
                 if (actionButton.isNew)
                     delete actionButton.isNew;
 
-               // $scope.id = $scope.module.id;
+                // $scope.id = $scope.module.id;
 
                 actionButton.module_id = $scope.module.id;
                 actionButton.template = 'template';
