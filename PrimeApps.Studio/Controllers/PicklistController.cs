@@ -126,7 +126,7 @@ namespace PrimeApps.Studio.Controllers
             var picklistItem = new PicklistItem
             {
                 PicklistId = id,
-                LabelEn = picklistItemModel.LabelEn,
+                LabelEn = picklistItemModel.LabelTr,
                 LabelTr = picklistItemModel.LabelTr,
                 Value = picklistItemModel.Value,
                 Value2 = picklistItemModel.Value2,

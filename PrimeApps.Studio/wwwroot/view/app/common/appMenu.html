@@ -56,7 +56,7 @@
         <ul ng-click="$event.stopPropagation();">
             <li ng-class="activeMenuItem ==='simpleworkflows' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/simpleworkflows" data-trigger="hover" data-type="info"
-                   data-title="Business Rules" bs-tooltip data-placement="right">
+                   data-title="Simple Workflows" bs-tooltip data-placement="right">
                     <i class="fas fa-forward "></i>
                     <span>Simple Workflows</span>
                 </a>
@@ -110,7 +110,7 @@
             </li>
             <li ng-class="activeMenuItem ==='buttons' ?'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/actionButtons?id={{module.id}}" data-trigger="hover" data-type="info"
-                   data-title="Buttons" bs-tooltip data-placement="right">
+                   data-title="Action Buttons" bs-tooltip data-placement="right">
                     <i class="fas fa-caret-square-right"></i>
                     <span>Action Buttons</span>
                 </a>
@@ -207,9 +207,9 @@
     </li>
     <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='help' ? 'active' :''">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
-           data-title="Help &amp; Guides" bs-tooltip data-placement="right">
+           data-title="User Guides" bs-tooltip data-placement="right">
             <i class="fas fa-book"></i>
-            <span>Help &amp; Guides</span>
+            <span>User Guides</span>
         </a>
     </li>
 

@@ -26,18 +26,17 @@
         <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div ng-if="!picklist.id" class="form-group">
             <form name="picklistForm" class="form-horizontal form-custom" ng-submit="">
-                <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelTr.$invalid}">
-                    <label class="col-sm-12 required-field">* {{'Picklist.Name' | translate}} (Tr):</label>
-                    <input name="labelTr" class="form-control" maxlength="50" required ng-model="picklistModel.label_tr" />
-                </div>
+                <!--<div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelTr.$invalid}">-->
+                    <!--<label class="col-sm-12 required-field">{{'Picklist.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>-->
+                    <!--<input name="labelTr" class="form-control" maxlength="50" required ng-model="picklistModel.label_tr" />-->
+                <!--</div>-->
                 <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelEn.$invalid}">
-                    <label class="col-sm-12 required-field">* {{'Picklist.Name' | translate}} (En):</label>
+                    <label class="col-sm-12 required-field">{{'Picklist.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <input name="labelEn" class="form-control" maxlength="50" required ng-model="picklistModel.label_en" />
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': picklistForm.$submitted && picklistForm.systemType.$invalid}">
-                    <label class="col-sm-12 required-field">
-                        * {{'Picklist.SystemType' | translate}}:
+                    <label class="col-sm-12 required-field">{{'Picklist.SystemType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                     </label>
                     <select class="form-control ng-animate-disabled col-sm-12"
                             name="systemType"
@@ -50,7 +49,7 @@
             </form>
         </div>
         <div ng-if="picklist.id" class="form-group">
-            <label class="required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
+            <label class="required-field">{{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
             <div id="rightTopBar" class="scrollBar"></div>
             <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
                 <table class="table table-striped">

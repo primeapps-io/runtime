@@ -2153,7 +2153,7 @@
     "Modules": "Modüller"
   },
   "Picklist": {
-    "Name": "Seçim listesi Adı",
+    "Name": "Seçim Listesi Adı",
     "SystemType": "Sistem Tipi",
     "SystemCode": "Sistem Kodu",
     "AddNew": "Yeni Seçim Listesi Ekle",
@@ -2164,7 +2164,7 @@
     "Items": {
       "Name": "Adı",
       "SystemCode": "Sistem Kodu",
-      "Value": "Değer",
+      "Value": "Değer-1",
       "Value2": "Değer-2",
       "Value3": "Değer-3",
       "Order": "Sıra"

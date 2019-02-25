@@ -125,7 +125,7 @@
                                     <div ng-show="!menu.display" class="form-group icon-search-list">
                                         <label class="control-label">{{'Common.Icon' | translate}}:</label>
                                         <ui-select ng-model="menu.menu_icon">
-                                            <ui-select-match placeholder="Please search an icon">
+                                            <ui-select-match placeholder="Select an icon">
                                                 <div ng-bind-html="$select.selected.label || $select.selected"></div>
                                             </ui-select-match>
                                             <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
@@ -157,7 +157,7 @@
                                                         <!--bs-select><span class="caret"></span>-->
                                                         <!--</button>-->
                                                           <ui-select ng-model="menuList.icon">
-                                                            <ui-select-match placeholder="Please search an icon">
+                                                            <ui-select-match placeholder="Select an icon">
                                                                 <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
                                                             <div>
                                                                 <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
@@ -202,7 +202,7 @@
                                                                 <!--bs-select><span class="caret"></span>-->
                                                                 <!--</button>-->
                                                                   <ui-select ng-model="menu.icon">
-                                                                    <ui-select-match placeholder="Please search an icon">
+                                                                    <ui-select-match placeholder="Select an icon">
                                                                         <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
                                                                     <div>
                                                                         <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>

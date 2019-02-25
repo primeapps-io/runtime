@@ -38,13 +38,12 @@
                     <label class="control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                     <div ng-init="template.active = true">
                         <label class="radio-inline newinput">
-                            <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateActive' | translate}}<span></span>
-                        </label>
-
-                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
                             {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
+                        </label>
+                        <label class="radio-inline newinput">
+                            <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
+                            {{'Setup.Templates.TemplateActive' | translate}}<span></span>
                         </label>
                     </div>
                 </div>

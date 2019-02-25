@@ -32,7 +32,7 @@
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.name.$invalid}">
-                                    <label class="col-sm-4 required-field">* Name: </label>
+                                    <label class="col-sm-4 required-field">Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-6"
@@ -45,7 +45,7 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.type.$invalid}">
-                                    <label class="col-sm-4 required-field">* Type: </label>
+                                    <label class="col-sm-4 required-field">Type <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select
                                             name="type"
                                             class="form-control ng-animate-disabled col-sm-8"
@@ -59,7 +59,7 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.module_id.$invalid}">
-                                    <label class="col-sm-4 required-field">* Module: </label>
+                                    <label class="col-sm-4 required-field">Module <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select
                                             name="module_id"
                                             class="form-control ng-animate-disabled col-sm-8"
@@ -73,7 +73,7 @@
                                 <div class="form-group"
                                      ng-if="component.type === 1"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.place.$invalid}">
-                                    <label class="col-sm-4 required-field">* Place: </label>
+                                    <label class="col-sm-4 required-field">Place <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select
                                             name="place"
                                             class="form-control ng-animate-disabled col-sm-8"
@@ -87,7 +87,7 @@
                                 <div class="form-group"
                                      ng-if="component.type === 1"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.order.$invalid}">
-                                    <label class="col-sm-4 required-field">* Order: </label>
+                                    <label class="col-sm-4 required-field">Order <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="number"
                                            name="order"
                                            class="form-control ng-animate-disabled col-sm-8"
