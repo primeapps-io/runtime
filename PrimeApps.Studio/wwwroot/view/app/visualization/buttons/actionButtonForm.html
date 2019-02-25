@@ -73,18 +73,12 @@
                 <div ng-if="currentActionButton.type == 2" class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.method_type.$invalid}">
                     <label class="col-sm-12 required-field">{{'Setup.Workflow.WebHookMethod' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                    <div class="col-sm-12">
-                        <label class="radio-inline">
-                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
-                                   value="post" required>
-                            POST
-                        </label>
-                        <label class="radio-inline">
-                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
-                                   value="get" required>
-                            GET
-                        </label>
-                    </div>
+                    <label class="radio-inline newinput">
+                        <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="post" required>POST<span></span>
+                    </label>
+                    <label class="radio-inline newinput">
+                        <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="get" required>GET<span></span>
+                    </label>
                 </div>
                 <div class="form-group" ng-if="currentActionButton.type == 2">
                     <div class="row form-inline" style="margin-bottom: 10px;">
