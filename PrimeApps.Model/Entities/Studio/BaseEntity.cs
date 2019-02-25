@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     public class BaseEntity
     {
@@ -24,8 +24,8 @@ namespace PrimeApps.Model.Entities.Console
         [Column("deleted")]
         public bool Deleted { get; set; }
 
-        public virtual ConsoleUser CreatedBy { get; set; }
+        public virtual StudioUser CreatedBy { get; set; }
 
-        public virtual ConsoleUser UpdatedBy { get; set; }
+        public virtual StudioUser UpdatedBy { get; set; }
     }
 }

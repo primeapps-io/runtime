@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Team;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Constants;

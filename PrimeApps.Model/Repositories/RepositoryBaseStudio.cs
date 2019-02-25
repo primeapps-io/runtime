@@ -7,7 +7,7 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
-    public abstract class RepositoryBaseConsole : IRepositoryBaseConsole, IDisposable
+    public abstract class RepositoryBaseStudio : IRepositoryBaseStudio, IDisposable
     {
         private StudioDBContext _dbContext;
         private IConfiguration _configuration;
@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories
 
         public CurrentUser CurrentUser { get; set; }
 
-        public RepositoryBaseConsole(StudioDBContext dbContext, IConfiguration configuration)
+        public RepositoryBaseStudio(StudioDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;

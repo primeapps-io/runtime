@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using PrimeApps.Model.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("apps")]
     public class AppDraft : BaseEntity

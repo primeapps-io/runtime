@@ -7,7 +7,7 @@ using PrimeApps.Model.Common.Role;
 
 namespace PrimeApps.Model.Common.User
 {
-    public class ConsoleUser
+    public class StudioUser
     {
         /// <summary>
         /// User ID

@@ -9,6 +9,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
+using PrimeApps.Studio.Storage;
 
 namespace PrimeApps.Studio
 {
@@ -72,6 +73,7 @@ namespace PrimeApps.Studio
             services.AddScoped<ActionButtonHelper, ActionButtonHelper>();//What the fuck!
             services.AddScoped<Email, Email>();//What the fuck!
             services.AddScoped<Warehouse, Warehouse>();//What the fuck!
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
         }
     }
 }

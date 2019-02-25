@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -10,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class OrganizationUserRepository : RepositoryBaseConsole, IOrganizationUserRepository
+    public class OrganizationUserRepository : RepositoryBaseStudio, IOrganizationUserRepository
     {
         public OrganizationUserRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.OrganizationUsers
                 .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
-                .Include(x => x.ConsoleUser)
+                .Include(x => x.StudioUser)
                 .ToListAsync();
         }
 

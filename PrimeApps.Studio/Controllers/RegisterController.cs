@@ -11,8 +11,8 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Constants;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -20,6 +20,7 @@ using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
 using PrimeApps.Studio.Storage;
+using StudioUser = PrimeApps.Model.Entities.Studio.StudioUser;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -28,7 +29,7 @@ namespace PrimeApps.Studio.Controllers
     {
         private IConfiguration _configuration;
         private IOrganizationRepository _organizationRepository;
-        private IConsoleUserRepository _consoleUserRepository;
+        private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
         private IGiteaHelper _giteaHelper;
 
@@ -36,13 +37,13 @@ namespace PrimeApps.Studio.Controllers
 
         public RegisterController(IConfiguration configuration,
             IOrganizationRepository organizationRepository,
-            IConsoleUserRepository consoleUserRepository,
+            IStudioUserRepository studioUserRepository,
             IUnifiedStorage storage,
             IGiteaHelper giteaHelper,
             IBackgroundTaskQueue queue)
         {
             _organizationRepository = organizationRepository;
-            _consoleUserRepository = consoleUserRepository;
+            _studioUserRepository = studioUserRepository;
             _configuration = configuration;
             _storage = storage;
             _giteaHelper = giteaHelper;
@@ -62,13 +63,13 @@ namespace PrimeApps.Studio.Controllers
             if (!validId)
                 return BadRequest("Id is not valid");
 
-            var consoleUser = new Model.Entities.Console.ConsoleUser
+            var studioUser = new StudioUser
             {
                 Id = id,
                 UserOrganizations = new List<OrganizationUser>()
             };
 
-            var result = await _consoleUserRepository.Create(consoleUser);
+            var result = await _studioUserRepository.Create(studioUser);
             Organization organization = null;
 
             if (result >= 1)
@@ -81,17 +82,17 @@ namespace PrimeApps.Studio.Controllers
                 {
                     Name = orgName,
                     Label = user.FirstName + " " + user.LastName,
-                    OwnerId = consoleUser.Id,
-                    CreatedById = consoleUser.Id,
+                    OwnerId = studioUser.Id,
+                    CreatedById = studioUser.Id,
                     Default = true,
                     OrganizationUsers = new List<OrganizationUser>()
                 };
 
                 organization.OrganizationUsers.Add(new OrganizationUser
                 {
-                    UserId = consoleUser.Id,
+                    UserId = studioUser.Id,
                     Role = OrganizationRole.Administrator,
-                    CreatedById = consoleUser.Id,
+                    CreatedById = studioUser.Id,
                     CreatedAt = DateTime.Now
                 });
 

@@ -26,16 +26,16 @@ namespace PrimeApps.Studio.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private ITeamRepository _teamRepository;
-        private IConsoleUserRepository _consoleUserRepository;
+        private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IConsoleUserRepository consoleUserRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository studioUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _teamRepository = teamRepository;
-            _consoleUserRepository = consoleUserRepository;
+            _studioUserRepository = studioUserRepository;
             _configuration = configuration;
             _storage = storage;
         }
@@ -47,7 +47,7 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
-            SetCurrentUser(_consoleUserRepository);
+            SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_teamRepository);
 
         }
@@ -58,7 +58,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _platformUserRepository.GetWithSettings(AppUser.Email);
 
 
-            var me = new Model.Common.User.ConsoleUser
+            var me = new Model.Common.User.StudioUser
             {
                 Id = AppUser.Id,
                 Email = user.Email,

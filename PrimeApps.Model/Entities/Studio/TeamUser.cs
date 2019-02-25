@@ -1,8 +1,6 @@
-﻿using PrimeApps.Model.Entities;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("team_users")]
     public class TeamUser
@@ -13,7 +11,7 @@ namespace PrimeApps.Model.Entities.Console
         [Column("team_id")]
         public int TeamId { get; set; }
 
-        public virtual ConsoleUser ConsoleUser { get; set; }
+        public virtual StudioUser StudioUser { get; set; }
 
         public virtual Team Team { get; set; }
         

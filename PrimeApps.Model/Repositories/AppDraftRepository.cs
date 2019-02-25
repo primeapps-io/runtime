@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -11,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class AppDraftRepository : RepositoryBaseConsole, IAppDraftRepository
+    public class AppDraftRepository : RepositoryBaseStudio, IAppDraftRepository
     {
         public AppDraftRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration)

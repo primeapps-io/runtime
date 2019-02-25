@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Services;
+using PrimeApps.App.Storage;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using System;
@@ -80,6 +81,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
 
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();
             services.AddTransient<DataDeleteStep>();

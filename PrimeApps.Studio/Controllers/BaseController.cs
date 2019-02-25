@@ -33,7 +33,7 @@ namespace PrimeApps.Studio.Controllers
             }
         }
 
-        public void SetCurrentUser(IRepositoryBaseConsole repository)
+        public void SetCurrentUser(IRepositoryBaseStudio repository)
         {
             if (AppUser != null)
             {

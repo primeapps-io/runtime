@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("organizations")]
     public class Organization : BaseEntity
@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Entities.Console
         [Column("color")]
         public string Color { get; set; }
 
-        public virtual ConsoleUser Owner { get; set; }
+        public virtual StudioUser Owner { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }
 

@@ -1,12 +1,12 @@
-﻿using PrimeApps.Model.Entities.Console;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IOrganizationRepository : IRepositoryBaseConsole
+    public interface IOrganizationRepository : IRepositoryBaseStudio
     {
         bool IsOrganizationAvaliable(int userId, int organizationId);
         Task<bool> IsOrganizationNameAvailable(string name);

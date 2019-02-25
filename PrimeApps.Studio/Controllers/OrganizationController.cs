@@ -18,7 +18,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.Team;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -39,7 +39,7 @@ namespace PrimeApps.Studio.Controllers
 		private IPlatformUserRepository _platformUserRepository;
 		private IPlatformRepository _platformRepository;
 		private IServiceScopeFactory _serviceScopeFactory;
-		private IConsoleUserRepository _consoleUserRepository;
+		private IStudioUserRepository _studioUserRepository;
 		private IApplicationRepository _applicationRepository;
 		private ITeamRepository _teamRepository;
 		private IGiteaHelper _giteaHelper;
@@ -55,7 +55,7 @@ namespace PrimeApps.Studio.Controllers
 			ITeamRepository teamRepository,
 			IApplicationRepository applicationRepository,
 			IPlatformRepository platformRepository,
-			IConsoleUserRepository consoleUserRepository,
+			IStudioUserRepository studioUserRepository,
 			IServiceScopeFactory serviceScopeFactory,
 			IPermissionHelper permissionHelper,
 			IOrganizationHelper organizationHelper,
@@ -67,7 +67,7 @@ namespace PrimeApps.Studio.Controllers
 			_platformUserRepository = platformUserRepository;
 			_organizationUserRepository = organizationUserRepository;
 			_serviceScopeFactory = serviceScopeFactory;
-			_consoleUserRepository = consoleUserRepository;
+			_studioUserRepository = studioUserRepository;
 			_applicationRepository = applicationRepository;
 			_platformRepository = platformRepository;
 			_teamRepository = teamRepository;
@@ -86,7 +86,7 @@ namespace PrimeApps.Studio.Controllers
 			SetCurrentUser(_appDraftRepository);
 			SetCurrentUser(_platformUserRepository);
 			SetCurrentUser(_organizationUserRepository);
-			SetCurrentUser(_consoleUserRepository);
+			SetCurrentUser(_studioUserRepository);
 			SetCurrentUser(_platformRepository);
 			SetCurrentUser(_teamRepository);
 
@@ -451,13 +451,13 @@ namespace PrimeApps.Studio.Controllers
 					}
 						var platformUser = await _platformUserRepository.Get(model.Email);
 
-						var consoleUser = new ConsoleUser
+						var studioUser = new StudioUser
 						{
 							Id = platformUser.Id,
 							UserOrganizations = new List<OrganizationUser>()
 						};
 
-						consoleUser.UserOrganizations.Add(new OrganizationUser
+						studioUser.UserOrganizations.Add(new OrganizationUser
 						{
 							UserId = platformUser.Id,
 							Role = model.Role,
@@ -466,7 +466,7 @@ namespace PrimeApps.Studio.Controllers
 							CreatedAt = DateTime.Now
 						});
 
-						result = await _consoleUserRepository.Create(consoleUser);
+						result = await _studioUserRepository.Create(studioUser);
 					}
 				}
 

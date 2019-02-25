@@ -3,7 +3,7 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IRepositoryBaseConsole
+    public interface IRepositoryBaseStudio
     {
         CurrentUser CurrentUser { get; set; }
         StudioDBContext DbContext { get; }

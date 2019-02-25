@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("teams")]
     public class Team : BaseEntity

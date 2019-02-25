@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("app_collaborators")]
     public class AppCollaborator : BaseEntity
@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Console
         [Column("app_id"), ForeignKey("AppDraft")]
         public int AppId { get; set; }
 
-        [Column("user_id"), ForeignKey("ConsoleUser")]
+        [Column("user_id"), ForeignKey("StudioUser")]
         public int? UserId { get; set; }
 
         [Column("team_id"), ForeignKey("Team")]
@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Entities.Console
 
         public virtual AppDraft AppDraft { get; set; }
 
-        public virtual ConsoleUser ConsoleUser { get; set; }
+        public virtual StudioUser StudioUser { get; set; }
 
         public virtual Team Team { get; set; }
     }

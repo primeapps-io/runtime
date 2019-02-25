@@ -38,7 +38,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Net.Http.Headers;
 using PrimeApps.Auth.Helpers;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common.App;
 
@@ -1458,7 +1457,7 @@ namespace PrimeApps.Auth.UI
 
                 identityUser = await _userManager.FindByEmailAsync(model.Email);
             }
-            else if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Console)
+            else if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Studio)
             {
                 response["Error"] = "UserExist";
                 return response;
@@ -1660,7 +1659,7 @@ namespace PrimeApps.Auth.UI
                 }
 
                 var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-                if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Console && !string.IsNullOrEmpty(studioUrl))
+                if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
                     var url = studioUrl + "/api/register/create";

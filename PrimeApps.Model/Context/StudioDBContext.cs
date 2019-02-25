@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Context
 {
@@ -85,7 +85,7 @@ namespace PrimeApps.Model.Context
                .HasKey(t => new { t.UserId, t.TeamId });
 
             modelBuilder.Entity<TeamUser>()
-                .HasOne(pt => pt.ConsoleUser)
+                .HasOne(pt => pt.StudioUser)
                 .WithMany(p => p.UserTeams)
                 .HasForeignKey(pt => pt.UserId);
 
@@ -98,7 +98,7 @@ namespace PrimeApps.Model.Context
                .HasKey(t => new { t.UserId, t.OrganizationId });
 
             modelBuilder.Entity<OrganizationUser>()
-                .HasOne(pt => pt.ConsoleUser)
+                .HasOne(pt => pt.StudioUser)
                 .WithMany(p => p.UserOrganizations)
                 .HasForeignKey(pt => pt.UserId);
 
@@ -156,7 +156,7 @@ namespace PrimeApps.Model.Context
             
 
         }
-        public DbSet<ConsoleUser> Users { get; set; }
+        public DbSet<StudioUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
         public DbSet<Deployment> Deployments { get; set; }

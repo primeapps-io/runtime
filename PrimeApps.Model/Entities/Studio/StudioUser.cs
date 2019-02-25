@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("users")]
-    public class ConsoleUser
+    public class StudioUser
     {
         [Column("id"), Key, Required, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }

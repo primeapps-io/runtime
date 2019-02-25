@@ -1,11 +1,9 @@
-﻿using PrimeApps.Model.Enums;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Console
+namespace PrimeApps.Model.Entities.Studio
 {
     [Table("deployments")]
     public class Deployment : BaseEntity

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.App;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
