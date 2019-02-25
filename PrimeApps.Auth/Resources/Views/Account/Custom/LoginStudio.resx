@@ -124,7 +124,7 @@
     <value>English</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Forgotten Password?</value>
+    <value>Forgot Password?</value>
   </data>
   <data name="LoginButton" xml:space="preserve">
     <value>Login</value>
@@ -193,6 +193,6 @@
     <value>There was a problem creating the user.</value>
   </data>
   <data name="CreateAnAccount" xml:space="preserve">
-    <value>Have not account yet ? Sign up</value>
+    <value>Don’t have an account? Sign-up</value>
   </data>
 </root>

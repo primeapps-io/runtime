@@ -476,7 +476,7 @@
 						</div>
 						<div class="form-group"
 							 ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' &&  currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'">
-							<label class="col-sm-4">{{'Setup.Modules.InlineEdit' | translate}}: </label>
+							<label class="col-sm-4">{{'Setup.Modules.InlineEdit' | translate}}</label>
 							<input type="checkbox" ng-model="currentField.inline_edit" ng-disabled="!currentField.editable">
 						</div>
 						<!--<div class="form-group"-->
@@ -485,7 +485,7 @@
 						<!--<input type="checkbox" name="editable" ng-model="currentField.editable" ng-change="currentField.inline_edit = currentField.editable;changeEditable()">-->
 						<!--</div>-->
 						<div class="form-group">
-							<label class="col-sm-4" ng-if="currentField.dataType.name == 'text_single'">{{'Setup.Modules.ShowLabel' | translate}}: </label>
+							<label class="col-sm-4" ng-if="currentField.dataType.name == 'text_single'">{{'Setup.Modules.ShowLabel' | translate}}</label>
 							<input type="checkbox" name="show_label" ng-disabled="currentField.default_value" ng-if="currentField.dataType.name == 'text_single'" ng-change="changeShowLabel()" ng-model="currentField.show_label">
 						</div>
 
@@ -503,7 +503,7 @@
 
 						<div class="form-group"
 							 ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-							<label class="col-sm-4">Şifreli Alan:</label>
+							<label class="col-sm-4">Şifreli Alan</label>
 							<input type="checkbox" ng-model="currentField.encrypted" ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
 						</div>
 						<div class="form-group" ng-show="currentField.encrypted">
