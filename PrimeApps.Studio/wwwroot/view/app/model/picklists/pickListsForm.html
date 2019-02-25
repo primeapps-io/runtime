@@ -14,7 +14,7 @@
                         <button type="button" ng-if="picklist.id" ng-click="addMode(true);" class="btn add-button btn-radius btn-blue">
                             <i class="fas fa-plus"></i>{{'Common.Add' | translate}}
                         </button>
-                        <button type="button" ng-if="!picklist.id" class="btn add-button btn-radius btn-blue" ladda="saving">
+                        <button type="button" ng-if="!picklist.id" ng-click="save();" class="btn add-button btn-radius btn-blue" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
                     </li>
@@ -26,23 +26,22 @@
         <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
         <div ng-if="!picklist.id" class="form-group">
             <form name="picklistForm" class="form-horizontal form-custom" ng-submit="">
-                <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelTr.$invalid}">
-                    <label class="col-sm-12 required-field">* {{'Picklist.Name' | translate}} (Tr):</label>
-                    <input name="labelTr" class="form-control" maxlength="50" required ng-model="picklistModel.label_tr" />
-                </div>
+                <!--<div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelTr.$invalid}">-->
+                    <!--<label class="col-sm-12 required-field">{{'Picklist.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>-->
+                    <!--<input name="labelTr" class="form-control" maxlength="50" required ng-model="picklistModel.label_tr" />-->
+                <!--</div>-->
                 <div class="form-group" ng-class="{'has-error': picklistForm.$submitted && picklistForm.labelEn.$invalid}">
-                    <label class="col-sm-12 required-field">* {{'Picklist.Name' | translate}} (En):</label>
+                    <label class="col-sm-12 required-field">{{'Picklist.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <input name="labelEn" class="form-control" maxlength="50" required ng-model="picklistModel.label_en" />
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': picklistForm.$submitted && picklistForm.systemType.$invalid}">
-                    <label class="col-sm-12 required-field">
-                        * {{'Picklist.SystemType' | translate}}:
+                    <label class="col-sm-12 required-field">{{'Picklist.SystemType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                     </label>
                     <select class="form-control ng-animate-disabled col-sm-12"
                             name="systemType"
                             required
-                            ng-model="picklistModule.system_type"
+                            ng-model="picklistModel.system_type"
                             ng-options="o as o.name for o in systemTypes | orderBy:'order' track by o.name">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
@@ -50,7 +49,7 @@
             </form>
         </div>
         <div ng-if="picklist.id" class="form-group">
-            <label class="required-field">* {{'Setup.Modules.PicklistOptions' | translate}}:</label>
+            <label class="required-field">{{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
             <div id="rightTopBar" class="scrollBar"></div>
             <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
                 <table class="table table-striped">
@@ -131,12 +130,12 @@
                             <td class="text-center">
                                 <div class="new-actions" ng-show="!picklistItem.edit">
                                     <button ng-show="picklistItem.id" ng-click="picklistItem.edit=true" class="edit-btn" title="{{'Common.Edit' | translate}}"><i class="fas fa-pen"></i></button>
-                                    <button ng-show="picklistItem.id" ladda="savingItem" ng-click="updateItem(picklistItem)" title="{{picklistItem.inactive ? 'Common.Activate':'Common.Deactivate' | translate}}"><i ng-class="picklistItem.inactive ? 'fas fa-eye-slash':'fas fa-eye'"></i></button>
+                                    <button ng-show="picklistItem.id" ladda="savingItem" ng-click="picklistItem.inactive=!picklistItem.inactive; updateItem(picklistItem)" title="{{picklistItem.inactive ? 'Common.Activate':'Common.Deactivate' | translate}}"><i ng-class="picklistItem.inactive ? 'fas fa-eye-slash':'fas fa-eye'"></i></button>
                                     <button ng-show="picklistItem.id" ladda="savingItem" ng-click="deleteItem(picklistItem)" class="delete-btn" title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></button>
                                 </div>
                                 <div class="new-actions" ng-show="picklistItem.edit">
                                     <button title="{{'Common.Save' | translate}}" ladda="savingItem" ng-click="saveItem(picklistItem)"><i class="fas fa-check"></i></button>
-                                    <button class="delete-btn" ng-click="picklistItem.edit=false" title="{{'Common.Cancel' | translate}}"><i class="fas fa-trash"></i></button>
+                                    <button class="delete-btn" ng-click="picklistItem.edit=false" title="{{'Common.Cancel' | translate}}"><i class="fas fa-times"></i></button>
                                 </div>
                             </td>
                         </tr>

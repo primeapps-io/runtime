@@ -27,6 +27,7 @@
                                         <select name="module"
                                                 class="form-control ng-animate-disabled col-sm-12"
                                                 required
+                                                ng-disabled="!currentRelation.isNew"
                                                 ng-model="currentRelation.module"
                                                 ng-change="moduleChanged()"
                                                 ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">

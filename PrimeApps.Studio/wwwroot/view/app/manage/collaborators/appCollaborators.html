@@ -28,7 +28,7 @@
             </tbody>
         </table>
     </div>
-    <div class="table-responsive" ng-show="!loadingMembers">
+    <div class="table-responsive" style="margin-bottom:65px" ng-show="!loadingMembers">
         <div ng-show="appCollaborators.length < 1" style="padding:10px"><p>No member available.</p></div>
         <table class="table table-hover" ng-show="appCollaborators.length > 0">
             <thead>
@@ -43,7 +43,14 @@
                     <td>
                         {{appCol.name}}
                     </td>
-                    <td></td>
+                    <td>
+                        <select name="profile"
+                                class="form-control ng-animate-disabled"
+                                ng-model="appCol.profile"
+                                ng-change="changeRole(appCol)"
+                                ng-options="o.value as o.name for o in colProfiles">
+                        </select>
+                    </td>
                     <td class="text-right">
                         <div class="action-buttons-block">
                             <button ng-click="$event.stopPropagation(); delete(appCol.id)" type="button" class="action-buttons-delete">

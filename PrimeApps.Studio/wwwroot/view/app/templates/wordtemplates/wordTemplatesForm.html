@@ -9,7 +9,7 @@
                             <button type="button" ng-disabled="saving" ng-click="addNewWordTemplateFormModal.hide(); template.content = currentContent;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="submit" ladda="saving" ng-disabled="saving || fileUpload.queue.length<1" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                            <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -41,7 +41,6 @@
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
                             {{'Setup.Templates.TemplateActive' | translate}}<span></span>
                         </label>
-
                         <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
                             {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
@@ -54,7 +53,7 @@
                     <div>
                         <div class="newupload" ng-if="fileUpload.queue.length == 0 && !template.content">
                             <label class="uploadlink">
-                                <div ng-show="fileUpload.isHTML5">
+                                <div ng-show="fileUpload.isHTML5" style="{{requiredColor}}">
                                     <div nv-file-drop="" uploader="fileUpload">
                                         <div nv-file-over="" uploader="fileUpload"
                                              over-class="another-file-over-class" class="my-drop-zone">

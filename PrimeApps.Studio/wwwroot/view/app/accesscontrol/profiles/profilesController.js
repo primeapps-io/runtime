@@ -20,22 +20,23 @@ angular.module('primeapps')
                     "value": "Dashboard",
                     "valueLower": "dashboard",
                     "name": $filter('translate')('Layout.Menu.Dashboard')
-                },
-                {
-                    "value": "Newsfeed",
-                    "valueLower": "newsfeed",
-                    "name": $filter('translate')('Layout.Menu.Newsfeed')
-                },
-                {
-                    "value": "Tasks",
-                    "valueLower": "tasks",
-                    "name": $filter('translate')('Layout.Menu.Tasks')
-                },
-                {
-                    "value": "Calendar",
-                    "valueLower": "calendar",
-                    "name": $filter('translate')('Layout.Menu.Calendar')
                 }
+                //,
+                // {
+                //     "value": "Newsfeed",
+                //     "valueLower": "newsfeed",
+                //     "name": $filter('translate')('Layout.Menu.Newsfeed')
+                // },
+                // {
+                //     "value": "Tasks",
+                //     "valueLower": "tasks",
+                //     "name": $filter('translate')('Layout.Menu.Tasks')
+                // },
+                // {
+                //     "value": "Calendar",
+                //     "valueLower": "calendar",
+                //     "name": $filter('translate')('Layout.Menu.Calendar')
+                // }
             ];
 
             if ($scope.moduleRehber) {
@@ -298,12 +299,12 @@ angular.module('primeapps')
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });

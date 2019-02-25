@@ -205,6 +205,23 @@ namespace PrimeApps.Studio.Controllers
             return Ok(result);
         }
 
+        [Route("app_collaborator_update/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAppCollaborator(int id, [FromBody]AppCollaborator item)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var appCollaborator = await _collaboratorRepository.GetById(id);
+            appCollaborator.Profile = item.Profile;
+
+            var result = await _collaboratorRepository.Update(appCollaborator);
+
+            return Ok(result);
+        }
+
         [Route("app_collaborator_delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> AppCollaboratorDelete(int id)
         {

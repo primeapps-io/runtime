@@ -66,6 +66,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (template) {
+                $scope.requiredColor = "";
                 if (template) {
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrlExcel();
@@ -223,8 +224,10 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid)
+                if (!uploadForm.$valid || !$scope.logoUpload) {
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
+                }
 
                 $scope.saving = true;
                 var header = {

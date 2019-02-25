@@ -33,7 +33,7 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
-                                    <label class="col-sm-4 required-field">*Name: </label>
+                                    <label class="col-sm-4 required-field">Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                    <label class="col-sm-4 required-field">*Surname: </label>
+                                    <label class="col-sm-4 required-field">Surname <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="surname"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.email.$invalid}">
-                                    <label class="col-sm-4 required-field">*Email: </label>
+                                    <label class="col-sm-4 required-field">Email <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="email"
                                            name="email"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.role.$invalid}">
-                                    <label class="col-sm-4 required-field">*Role: </label>
+                                    <label class="col-sm-4 required-field">Role <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select required ng-model="collaboratorModel.role" name="role" class="form-control  ng-animate-disabled col-sm-8" ng-options="role.name for role in roles">
                                         <option value="">Please select a role --></option>
                                     </select>

@@ -36,7 +36,7 @@
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': addNewTeamForm.$submitted && addNewTeamForm.name.$invalid}">
-                                    <label class="col-sm-4 required-field">* Team Name: </label>
+                                    <label class="col-sm-4 required-field">Team Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-6"

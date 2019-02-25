@@ -35,7 +35,7 @@ angular.module('primeapps')
                 update: function (model) {
                     return $http.put(config.apiUrl + 'picklist/update/' + id, model);
                 },
-                updateItem: function (model) {
+                updateItem: function (id, model) {
                     return $http.put(config.apiUrl + 'picklist/update_item/' + id, model);
                 },
                 delete: function (id) {

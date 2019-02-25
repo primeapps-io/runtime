@@ -29,19 +29,25 @@
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <li><a class="active" href="#properties">Properties </a></li>
-                                <li><a href="#validation">Validation </a></li>
-                                <li><a href="#permissions">Permissions </a></li>
+                                <li ng-click="fieldActiveSection = 'properties'">
+                                    <a ng-class="fieldActiveSection ==='properties' ? 'active':''" href="javascript:void(0);">Properties </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'validation'">
+                                    <a ng-class="fieldActiveSection ==='validation' ? 'active':''" href="javascript:void(0);">Validation </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'permissions'">
+                                    <a ng-class="fieldActiveSection ==='permissions' ? 'active':''" href="javascript:void(0)">Permissions </a>
+                                </li>
                             </ul>
                         </div>
                         <div>
-                            <div class="section" id="properties">
+                            <div class="section" id="properties" ng-show="fieldActiveSection ==='properties'">
                                 <h4>Properties</h4>
                                 <div class="panel">
                                     <div class="form-group"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.label.$invalid}">
                                         <label class="col-sm-4 required-field"> {{'Setup.Modules.FieldName' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <input type="text"
                                                name="label"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -53,7 +59,7 @@
                                     <div class="form-group"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.dataType.$invalid}">
                                         <label class="col-sm-4 required-field">{{'Setup.Modules.FieldType' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <select name="dataType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -69,7 +75,7 @@
                                          ng-if="currentField.dataType.name === 'lookup' && !currentField.systemReadonly"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
                                         <label class="col-sm-4 required-field"> {{'Setup.Modules.LookupType' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <select name="lookupType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -86,7 +92,7 @@
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.picklistType.$invalid}"
                                          ng-show="!currentField.systemReadonly">
                                         <label class="col-sm-4 required-field"> {{'Setup.Modules.PicklistType' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <select name="picklistType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -101,7 +107,7 @@
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField1.$invalid}">
                                         <label class="col-sm-4 required-field"> {{'Setup.Modules.CombinationField1' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <select name="combinationField1"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -113,7 +119,7 @@
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField2.$invalid}">
                                         <label class="col-sm-4 required-field">{{'Setup.Modules.CombinationField2' |
-                                            translate}} <span class="required-label">(required)</span> : </label>
+                                            translate}} <span class="required-label">(required)</span></label>
                                         <select name="combinationField2"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -128,7 +134,7 @@
                                          ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.userLookup.$invalid}">
                                         <label class="control-label col-sm-12">{{'Setup.Modules.DefaultValue' |
-                                            translate}}:</label>
+                                            translate}}</label>
 
                                         <div class="col-sm-12" style="padding: 0;">
                                             <input type="text"
@@ -322,7 +328,7 @@
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'lookup'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
-                                        <label class="col-sm-4">{{'Setup.Modules.SearchType' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.SearchType' | translate}}</label>
                                         <select name="lookup_search_type"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-model="currentField.lookup_search_type"
@@ -330,7 +336,7 @@
                                     </div>
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'text_multi'">
-                                        <label class="col-sm-4">{{'Setup.Modules.MultilineType' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.MultilineType' | translate}}</label>
                                         <select name="multilineType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-model="currentField.multiline_type"
@@ -350,7 +356,7 @@
                                     </div>
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.DecimalPlaces' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.DecimalPlaces' | translate}}</label>
                                         <input type="text"
                                                name="decimalPlaces"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -360,7 +366,7 @@
                                     </div>
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.RoundingType' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.RoundingType' | translate}}</label>
                                         <select name="rounding"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-model="currentField.rounding"
@@ -369,7 +375,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.CurrencySymbol' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.CurrencySymbol' | translate}}</label>
                                         <input type="text"
                                                name="currencySymbol"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -378,7 +384,7 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'number_auto'">
                                         <label class="col-sm-4">{{'Setup.Modules.AutoNumberPrefix' |
-                                            translate}}: </label>
+                                            translate}}</label>
                                         <input type="text"
                                                name="autoNumberPrefix"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -387,7 +393,7 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'number_auto'">
                                         <label class="col-sm-4">{{'Setup.Modules.AutoNumberSuffix' |
-                                            translate}}: </label>
+                                            translate}}</label>
                                         <input type="text"
                                                name="autoNumberSuffix"
                                                class="form-control ng-animate-disabled col-sm-8"
@@ -410,7 +416,7 @@
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'text_single'"
                                          ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.Mask' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.Mask' | translate}}</label>
                                         <input type="text"
                                                name="mask"
                                                maxlength="100"
@@ -422,11 +428,11 @@
                                         <label class="col-sm-4"><label
                                                 ng-if="!currentField.show_label && !currentField.editable"
                                                 style="color:#b30000">{{'Setup.Modules.Placeholder' |
-                                            translate}} <span class="required-label">(required)</span> :</label>
+                                            translate}} <span class="required-label">(required)</span></label>
 
                                             <label
                                                     ng-show="currentField.show_label || currentField.editable">{{'Setup.Modules.Placeholder'
-                                                | translate}}:</label>
+                                                | translate}}</label>
                                         </label>
                                         <textarea class="form-control ng-animate-disabled"
                                                   ng-model="currentField.placeholder"
@@ -438,7 +444,7 @@
                                     <div class="form-group"
                                          ng-show="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect' ||  currentField.dataType.name === 'tag' ">
                                         <label class="col-sm-4">{{'Setup.Modules.PicklistSortOrder' |
-                                            translate}}: </label>
+                                            translate}}</label>
                                         <select name="picklistSortOrder"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-model="currentField.picklist_sortorder"
@@ -448,7 +454,7 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'date_time'">
                                         <label class="col-sm-4">{{'Setup.Modules.CalendarDateType' |
-                                            translate}}: </label>
+                                            translate}}</label>
                                         <select name="calendarDateType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-change="calendarDateTypeChanged()"
@@ -459,7 +465,7 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'">
                                         <label class="col-sm-4">{{'Setup.Modules.CombinationCharacter' |
-                                            translate}}: </label>
+                                            translate}}</label>
                                         <input type="text"
                                                name="placeholder"
                                                maxlength="50"
@@ -471,7 +477,7 @@
                                         <!--</label>-->
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}</label>
                                         <div class="col-sm-8" style="padding-left: 0;">
                                             <label class="checkbox-inline newinput"
                                                    ng-class="currentField.validation.required || currentField.systemRequired ? 'disabled':''">
@@ -498,7 +504,7 @@
                                          ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' &&  currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'">
                                         <label class="radio-inline newinput"
                                                ng-class="!currentField.editable ? 'disabled':''">
-                                            {{'Setup.Modules.InlineEdit' | translate}}:
+                                            {{'Setup.Modules.InlineEdit' | translate}}
                                             <input type="checkbox" ng-model="currentField.inline_edit"
                                                    ng-disabled="!currentField.editable">
                                             <span></span>
@@ -509,7 +515,7 @@
                                         <label class="col-sm-4 radio-inline newinput"
                                                ng-if="currentField.dataType.name == 'text_single'"
                                                ng-class="currentField.default_value ? 'disabled':''">{{'Setup.Modules.ShowLabel'
-                                            | translate}}:
+                                            | translate}}
                                             <input type="checkbox" name="show_label"
                                                    ng-disabled="currentField.default_value"
                                                    ng-if="currentField.dataType.name == 'text_single'"
@@ -595,7 +601,7 @@
                                     </div>
                                     <div class="form-group"
                                          ng-show="currentField.dataType.name == 'picklist' ||  currentField.dataType.name == 'text_single' || currentField.dataType.name == 'multi_line'">
-                                        <label class="col-sm-4">{{'Setup.Modules.AddresType' | translate}}: </label>
+                                        <label class="col-sm-4">{{'Setup.Modules.AddresType' | translate}}</label>
                                         <select name="uniqueCombination"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 ng-model="currentField.address_type"
@@ -665,7 +671,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="validation">
+                            <div class="section" id="validation" ng-show="fieldActiveSection ==='validation'">
                                 <h4>Validation</h4>
                                 <div class="panel">
                                     <div ng-if="showPermissionWarning" class="callout callout-warning">
@@ -750,7 +756,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="permissions">
+                            <div class="section" id="permissions" ng-show="fieldActiveSection ==='permissions'">
                                 <h4> Permissions</h4>
                                 <div class="panel table-responsive">
                                     <table class="table">

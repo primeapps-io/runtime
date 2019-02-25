@@ -35,6 +35,11 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
+        public async Task<int> Update(AppCollaborator appCollaborator)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
+
         public async Task<AppCollaborator> GetById(int id)
         {
             return await DbContext.AppCollaborators.Where(x => x.Id == id && !x.Deleted)

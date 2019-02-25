@@ -338,7 +338,10 @@ $primeapps-color: #0D6FAA;
   &:hover {
     input[type="radio"] {
       ~ span {
-        background-color: #ccc;
+        background-color: rgba(13,111,170,0.5);
+        &:after {
+          display: block;
+        }
       }
       &:checked {
         ~ span {
@@ -348,7 +351,10 @@ $primeapps-color: #0D6FAA;
     }
     input[type="checkbox"] {
       ~ span {
-        background-color: #ccc;
+        background-color: rgba(13,111,170,0.5);
+        &:after {
+          display: block;
+        }
       }
       &:checked {
         ~ span {
