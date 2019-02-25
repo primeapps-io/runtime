@@ -9,7 +9,7 @@
                             <button type="button" ng-disabled="saving" ng-click="addNewWordTemplateFormModal.hide(); template.content = currentContent;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="submit" ladda="saving" ng-disabled="saving || fileUpload.queue.length<1" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                            <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -38,12 +38,12 @@
                     <label class="control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                     <div ng-init="template.active = true">
                         <label class="radio-inline newinput">
-                            <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
-                            {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
-                        </label>
-                        <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
                             {{'Setup.Templates.TemplateActive' | translate}}<span></span>
+                        </label>
+                        <label class="radio-inline newinput">
+                            <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
+                            {{'Setup.Templates.TemplateDeactive' | translate}}<span></span>
                         </label>
                     </div>
                 </div>
