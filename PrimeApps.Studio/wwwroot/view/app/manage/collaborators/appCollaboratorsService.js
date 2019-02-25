@@ -17,6 +17,9 @@ angular.module('primeapps')
                 addAppCollaborator: function (item) {
                     return $http.post(config.apiUrl + 'app/app_collaborator_add', item);
                 },
+                updateAppCollaborator: function (id, item) {
+                    return $http.put(config.apiUrl + 'app/app_collaborator_update/' + id, item);
+                },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'app/app_collaborator_delete/' + id);
                 },
