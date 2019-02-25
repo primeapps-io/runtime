@@ -35,7 +35,6 @@ angular.module('primeapps')
                 $scope.changePage(1);
             });
 
-
             $scope.changePage = function (page) {
                 $scope.loading = true;
                 var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
