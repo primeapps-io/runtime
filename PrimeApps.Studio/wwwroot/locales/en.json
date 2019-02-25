@@ -2160,6 +2160,7 @@
     "SystemCode": "System Code",
     "AddNew": "Add New Picklist",
     "PicklistItem": "{{name}} Picklist Items",
+    "SaveSuccess": "Picklist is saved successfully.",
     "SaveItemSuccess": "Picklist item is saved successfully.",
     "DeleteSuccess": "Picklist is deleted successfully",
     "DeleteItemSuccess": "Picklist item is deleted successfully.",

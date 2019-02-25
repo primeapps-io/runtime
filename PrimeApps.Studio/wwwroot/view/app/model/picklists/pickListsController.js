@@ -148,6 +148,16 @@ angular.module('primeapps')
                     $scope.saving = false;
                     return false;
                 }
+
+                PickListsService.create($scope.picklistModel)
+                    .then(function (response) {
+                        if (response.data)
+                            toastr.success($filter('translate')('Picklist.SaveSuccess'));
+
+                        $scope.saving = false;
+                    }).catch(function (reason) {
+                        $scope.saving = false;
+                    });
             };
 
             $scope.delete = function (id) {
@@ -185,13 +195,13 @@ angular.module('primeapps')
 
             $scope.updateItem = function (item) {
                 $scope.savingItem = true;
-                if (!item) {
+                if (!item || !$scope.id) {
                     $scope.savingItem = false;
                     toastr.warning($filter('translate')('Common.Error'));
                     return false;
                 }
 
-                PickListsService.updateItem(item)
+                PickListsService.updateItem($scope.id, item)
                     .then(function (response) {
                         if (response.data)
                             toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
@@ -202,14 +212,16 @@ angular.module('primeapps')
             };
 
             $scope.deleteItem = function (id) {
+                $scope.savingItem = true;
                 if ($scope.picklist && id) {
                     PickListsService.deleteItem(id)
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+                                $scope.savingItem = false;
                             }
                         }).catch(function (reason) {
-                            $scope.loading = false;
+                            $scope.savingItem = false;
                         });
                 }
             };
