@@ -66,6 +66,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (template) {
+                $scope.requiredColor = "";
                 if (template) {
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrlExcel();
@@ -223,8 +224,10 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid)
+                if (!uploadForm.$valid || !$scope.logoUpload) {
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
+                }
 
                 $scope.saving = true;
                 var header = {
@@ -299,12 +302,13 @@ angular.module('primeapps')
                 $scope.addNewWordTemplateFormModal.hide();
             };
 
-            $scope.getDownloadUrlExcel = function (template) {
-                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            $scope.getDownloadUrlExcel = function (module) {
+                module = module.name;
+                $window.open("/attach/export_excel?module=" + module + '&locale=en', "_blank");
             };
 
             $scope.getDownloadUrl = function (template) {
-                return '/attach/export_excel?fileId=' + template.id + "&tempType=excel" + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId; //template.template_type
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
             };
 
             $scope.delete = function (id) {

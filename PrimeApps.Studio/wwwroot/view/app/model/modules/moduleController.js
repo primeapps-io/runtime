@@ -33,15 +33,17 @@ angular.module('primeapps')
                 $scope.pageTotal = response.data;
                 $rootScope.appModules.length = response.data;
                 $scope.changePage(1);
-
             });
 
-
-            $scope.changePage = function (page, deleted) {
+            $scope.changePage = function (page) {
                 $scope.loading = true;
+                var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
-                if (page > Math.ceil($scope.pageTotal / $scope.requestModel.limit)) {
-                    --page;
+                if (page > difference) {
+                    if (Math.abs(page - difference) < 1)
+                        --page;
+                    else
+                        page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
                 }
 
                 $scope.activePage = page;
@@ -69,7 +71,6 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-
                             var elem = angular.element(event.srcElement);
                             angular.element(elem.closest('tr')).addClass('animated-background');
                             ModuleService.delete(module.id)

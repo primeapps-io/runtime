@@ -14,5 +14,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> AppCollaboratorAdd(AppCollaborator appCollaborator);
         Task<int> Delete(AppCollaborator appCollaborator);
         Task<AppCollaborator> GetById(int id);
+        Task<int> Update(AppCollaborator appCollaborator);
     }
 }

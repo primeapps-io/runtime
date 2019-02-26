@@ -16,6 +16,12 @@ angular.module('primeapps')
 
             };
             $scope.generator(10);
+            $scope.colProfiles = [
+                {name:'Manager', value:'manager'},
+                { name: 'Developer', value: 'developer' },
+                { name: 'Viewer', value: 'viewer' },
+                { name: 'Tenant Admin', value: 'tenant_admin' }
+            ]
 
             $scope.getTeamsAndCollaborators = function () {
                 $scope.collaboratorsAndTeamsArr = [];
@@ -120,7 +126,7 @@ angular.module('primeapps')
                 $scope.loadingMembers = true;
                 var appCollaboratorObj = {};
                 appCollaboratorObj.app_id = $scope.$parent.appId;
-                appCollaboratorObj.profile_id = 1;
+                appCollaboratorObj.profile = 'viewer';
 
                 if (item.type == 'user') {
                     appCollaboratorObj.user_id = item.id;
@@ -146,6 +152,18 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                     });
 
+            }
+
+            $scope.changeRole = function (appCol) {
+                console.log(appCol)
+                AppCollaboratorsService.updateAppCollaborator(appCol.id, appCol)
+                    .then(function (response) {
+                        console.log(response)
+                        toastr.success('Role is updated successfully');
+                    })
+                    .catch(function (error) {
+                        toastr.error($filter('translate')('Common.Error'));
+                    });
             }
 
             $scope.delete = function (id) {

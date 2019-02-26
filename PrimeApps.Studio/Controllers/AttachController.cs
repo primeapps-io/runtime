@@ -1032,7 +1032,7 @@ namespace PrimeApps.Studio.Controllers
 		//    }
 		//}
 
-		[HttpPost("export_excel")]
+		[Route("export_excel")]
 		public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
 		{
 			if (string.IsNullOrWhiteSpace(module))

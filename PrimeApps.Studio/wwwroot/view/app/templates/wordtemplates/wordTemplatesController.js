@@ -67,6 +67,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (template) {
+                $scope.requiredColor = "";
                 if (template) {
                     // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
@@ -200,18 +201,20 @@ angular.module('primeapps')
             $scope.remove = function () {
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
-                    $scope.templateFileCleared=true;
+                    $scope.templateFileCleared = true;
                 }
                 else {
                     $scope.template.content = undefined;
-                    $scope.templateFileCleared=true;
+                    $scope.templateFileCleared = true;
                 }
             };
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid)
+                if (!uploadForm.$valid || !$scope.logoUpload) {
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
+                }
 
                 $scope.saving = true;
                 var header = {

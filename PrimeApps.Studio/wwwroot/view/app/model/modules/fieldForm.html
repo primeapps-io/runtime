@@ -29,13 +29,19 @@
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <li><a class="active" href="#properties">Properties </a></li>
-                                <li><a href="#validation">Validation </a></li>
-                                <li><a href="#permissions">Permissions </a></li>
+                                <li ng-click="fieldActiveSection = 'properties'">
+                                    <a ng-class="fieldActiveSection ==='properties' ? 'active':''" href="javascript:void(0);">Properties </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'validation'">
+                                    <a ng-class="fieldActiveSection ==='validation' ? 'active':''" href="javascript:void(0);">Validation </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'permissions'">
+                                    <a ng-class="fieldActiveSection ==='permissions' ? 'active':''" href="javascript:void(0)">Permissions </a>
+                                </li>
                             </ul>
                         </div>
                         <div>
-                            <div class="section" id="properties">
+                            <div class="section" id="properties" ng-show="fieldActiveSection ==='properties'">
                                 <h4>Properties</h4>
                                 <div class="panel">
                                     <div class="form-group"
@@ -665,7 +671,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="validation">
+                            <div class="section" id="validation" ng-show="fieldActiveSection ==='validation'">
                                 <h4>Validation</h4>
                                 <div class="panel">
                                     <div ng-if="showPermissionWarning" class="callout callout-warning">
@@ -750,7 +756,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="permissions">
+                            <div class="section" id="permissions" ng-show="fieldActiveSection ==='permissions'">
                                 <h4> Permissions</h4>
                                 <div class="panel table-responsive">
                                     <table class="table">
