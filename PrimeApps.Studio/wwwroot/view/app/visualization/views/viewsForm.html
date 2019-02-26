@@ -8,15 +8,15 @@
                         <li>
                             <button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0; wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
-                        <li ng-if="wizardStep>0">
+                        <li ng-if="wizardStep > 0">
                             <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                         </li>
-                        <li ng-if="wizardStep<3">
+                        <li ng-if=" wizardStep > 0 && wizardStep < 3">
                             <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, true);">
                                 {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                             </button>
                         </li>
-                        <li ng-if="wizardStep>2">
+                        <li ng-if="wizardStep > 2 || wizardStep === 0">
                             <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>

@@ -231,11 +231,12 @@ angular.module('primeapps')
             $scope.imgUpload = {
                 settings: {
                     multi_selection: false,
-                    url: config.apiUrl + 'Document/upload_attachment',
+                    url: 'storage/upload_attachment',
                     headers: {
-                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
                         'Accept': 'application/json',
-                        'X-Tenant-Id': $cookies.get('tenant_id')
+                        'X-Organization-Id': $rootScope.currentOrgId,
+                        'X-App-Id': $scope.appId
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -271,7 +272,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback(resp, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
