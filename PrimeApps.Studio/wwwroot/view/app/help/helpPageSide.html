@@ -39,7 +39,7 @@
                                             name="module"
                                             ng-change="relationTypeShow();"
                                             ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                        <option value="">NotSet</option>
+                                        <option value="">Not Set</option>
                                     </select>
                                 </div>
                                 <div class="form-group" ng-show="helpModalObj.relationType">
