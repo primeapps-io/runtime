@@ -10,6 +10,7 @@ angular.module('primeapps')
             $scope.loadingItem = true;
             $scope.addItem = false;
             $scope.editItem = false;
+            $scope.orderChanged = false;
             $scope.pageOfItem;
             $scope.itemModel = {};
             $scope.lastPageValue = 0;
@@ -98,6 +99,7 @@ angular.module('primeapps')
             };
 
             $scope.selectPicklist = function (id) {
+                $scope.modalLoading = true;
                 PickListsService.get(id)
                     .then(function (response) {
                         if (response.data) {
@@ -149,10 +151,13 @@ angular.module('primeapps')
             //Modal Cancel Function
             $scope.cancel = function () {
                 $scope.picklistFormModal.hide();
+                $scope.orderChanged = false;
 
                 $timeout(function () {
                     $scope.picklist = {};
                     $scope.picklistModel = {};
+                    $scope.itemModel = {};
+
                     $scope.id = null;
                 }, 300);
             };
@@ -283,12 +288,42 @@ angular.module('primeapps')
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
                                 item.deletingItem = false;
+                                $scope.selectPicklist($scope.picklist.id);
                             }
                         }).catch(function (reason) {
                             item.deletingItem = false;
                         });
                 }
             };
+
+            //Save Order Button Action Function when changed of item order state
+            $scope.orderSave = function () {
+                $scope.saving = true;
+
+                if (!$scope.picklist && !$scope.picklist.items) {
+                    $scope.saving = true;
+                    return;
+                }
+
+                for (var i = 0; i < $scope.picklist.items.length; i++) {
+                    $scope.picklist.items[i].order = i + 1;
+                }
+
+                PickListsService.update($scope.picklist)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success($filter('translate')('Picklist.SaveOrderSuccess'));
+                            $scope.saving = false;
+                            $scope.orderChanged = false;
+                            $scope.selectPicklist($scope.picklist.id);
+                        }
+
+                    }).catch(function (reason) {
+                        $scope.saving = false;
+                        $scope.orderChanged = false;
+                    });
+            };
+
 
             //Picklist item system code auto generator
             $scope.systemCodeGenerate = function () {
@@ -323,16 +358,13 @@ angular.module('primeapps')
                             mirror: 'gu-mirror-option pickitemcopy',
                             transit: 'gu-transit-option'
                         },
-                        lockY: true,
+                        lockY: true, 
                         moves: function (el, container, handle) {
+                            $scope.orderChanged = true;
                             return handle.classList.contains('option-handle');
                         }
-                    });
 
-                    //angular.element(picklistContainer).on('dragulardrop', function () {
-                    //    var picklistSortOrder = $filter('filter')($scope.sortOrderTypes, { value: 'order' }, true)[0];
-                    //    $scope.currentField.picklist_sortorder = picklistSortOrder;
-                    //});
+                    });
 
                     registerEvents(rightTopBar, picklistOptionContainer, -5);
                     registerEvents(rightBottomBar, picklistOptionContainer, 5);
