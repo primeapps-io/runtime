@@ -44,7 +44,7 @@ angular.module('primeapps')
 
                     var organization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrganization.id }, true)[0];
 
-                    AppCollaboratorsService.getTeamsByOrganizationId($scope.$parent.orgId)
+                    AppCollaboratorsService.getTeamsByOrganizationId($rootScope.currentOrgId)
                         .then(function (response) {
                             if (response.data.length > 0) {
 

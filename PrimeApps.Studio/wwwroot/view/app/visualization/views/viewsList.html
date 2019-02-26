@@ -42,7 +42,7 @@
                     <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
                     <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); deleteView(view.id);" type="button" class="action-buttons-delete">
+                        <button ng-click="$event.stopPropagation(); deleteView(view.id, $event);" type="button" class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

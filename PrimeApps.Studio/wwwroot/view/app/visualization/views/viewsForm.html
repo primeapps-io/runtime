@@ -32,12 +32,13 @@
                             <div class="modal-menu">
                                 <ul class="list-unstyled">
                                     <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(viewForm) ? $parent.$parent.wizardStep = 0 : false">{{'View.ViewInformation' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(viewForm) ? $parent.$parent.wizardStep = 1 : false">{{'View.ChooseFields' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==2}" ng-click="validate(viewForm) ? $parent.$parent.wizardStep = 2 : false">{{'View.Filter' | translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==3}" ng-click="validate(viewForm) ? $parent.$parent.wizardStep = 3 : false">{{'View.ShareInformation' | translate}}</a></li>
+                                    <li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==1}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 1 : false : return;">{{'View.ChooseFields' | translate}}</a></li>
+                                    <li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==2}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 2 : false : return;">{{'View.Filter' | translate}}</a></li>
+                                    <li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==3}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 3 : false : return;">{{'View.ShareInformation' | translate}}</a></li>
                                 </ul>
                             </div>
-                            <div class="section" id="section1" ng-show="wizardStep == 0">
+                            <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="section" id="section1" ng-show="wizardStep == 0 && !loadingModal">
                                 <h4>{{'View.ViewInformation' | translate}}</h4>
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': viewForm.$submitted && viewForm.module.$invalid}">
@@ -49,11 +50,12 @@
                                                 ng-change="selectedModuleChanged(module)"
                                                 ng-disabled="view.edit===true"
                                                 ng-options="o as o['label_' + language + '_plural'] for o in modules | orderNotZero | orderBy:'order' track by o.name">
+                                            <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
                                     <div class="form-group" ng-class="{'has-error': viewForm.$submitted && viewForm.label.$invalid}">
                                         <label for="label" class="control-label col-sm-12">{{'View.ViewName' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                        <input type="text" id="label" name="label" class="form-control" required ng-model="view.label" />
+                                        <input type="text" id="label" name="label" class="form-control" required ng-model="view.label"/>
                                     </div>
                                     <div class="form-group" ng-show="viewForm.$submitted && (viewForm.label.$error.required || viewForm.module.$error.required )">
                                         <div class="callout callout-danger">
@@ -111,92 +113,109 @@
                                 <div class="panel table-responsive">
                                     <table class="filter-table">
                                         <thead>
-                                            <tr>
-                                                <th style="padding-left: 5px;">{{'View.No' | translate}}</th>
-                                                <th>{{'View.Field' | translate}}</th>
-                                                <th>{{'View.Operator' | translate}}</th>
-                                                <th>{{'View.Value' | translate}}</th>
-                                            </tr>
+                                        <tr>
+                                            <th style="padding-left: 5px;">{{'View.No' | translate}}</th>
+                                            <th>{{'View.Field' | translate}}</th>
+                                            <th>{{'View.Operator' | translate}}</th>
+                                            <th>{{'View.Value' | translate}}</th>
+                                        </tr>
                                         </thead>
-                                        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                        <tbody ng-if="!modalLoading">
-                                            <tr ng-repeat="filter in view.filterList">
-                                                <td>
-                                                    <span class="filter-no">{{filter.no}}.</span>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group bottom0">
-                                                        <select id="field"
-                                                                name="field"
-                                                                class="form-control ng-animate-disabled"
-                                                                ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
-                                                                ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
-                                                                ng-model="filter.field">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group bottom0">
-                                                        <select id="operator"
-                                                                name="operator"
-                                                                class="form-control ng-animate-disabled"
-                                                                ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
-                                                                ng-change="operatorChanged(filter.field, $index)"
-                                                                ng-model="filter.operator"
-                                                                ng-if="!filter.field.lookupModulePrimaryField">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-                                                        <select
-                                                                class="form-control ng-animate-disabled"
-                                                                ng-options="o as o.label[language] for o in filter.field.lookupModulePrimaryField.operators | orderBy:'order' track by o.order"
-                                                                ng-change="operatorChanged(filter.field, $index)"
-                                                                ng-model="filter.operator"
-                                                                ng-if="filter.field.lookupModulePrimaryField">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group bottom0">
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="100"
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined) : (filter.field.lookupModulePrimaryField.data_type === 'text_single' || filter.field.lookupModulePrimaryField.data_type === 'text_multi' || filter.field.lookupModulePrimaryField.data_type === 'email' || filter.field.lookupModulePrimaryField.data_type === undefined)" />
+                                        <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                        <tbody ng-if="!loadingModal">
+                                        <tr ng-repeat="filter in view.filterList">
+                                            <td>
+                                                <span class="filter-no">{{filter.no}}.</span>
+                                            </td>
+                                            <td>
+                                                <div class="form-group bottom0">
+                                                    <select id="field"
+                                                            name="field"
+                                                            class="form-control ng-animate-disabled"
+                                                            ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
+                                                            ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
+                                                            ng-model="filter.field">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group bottom0">
+                                                    <select id="operator"
+                                                            name="operator"
+                                                            class="form-control ng-animate-disabled"
+                                                            ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
+                                                            ng-change="operatorChanged(filter.field, $index)"
+                                                            ng-model="filter.operator"
+                                                            ng-if="!filter.field.lookupModulePrimaryField">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                    <select
+                                                            class="form-control ng-animate-disabled"
+                                                            ng-options="o as o.label[language] for o in filter.field.lookupModulePrimaryField.operators | orderBy:'order' track by o.order"
+                                                            ng-change="operatorChanged(filter.field, $index)"
+                                                            ng-model="filter.operator"
+                                                            ng-if="filter.field.lookupModulePrimaryField">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group bottom0">
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="100"
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined) : (filter.field.lookupModulePrimaryField.data_type === 'text_single' || filter.field.lookupModulePrimaryField.data_type === 'text_multi' || filter.field.lookupModulePrimaryField.data_type === 'email' || filter.field.lookupModulePrimaryField.data_type === undefined)"/>
 
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="50"
-                                                               numeric
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'number' || filter.field.data_type === 'number_auto') : (filter.field.lookupModulePrimaryField.data_type === 'number' || filter.field.lookupModulePrimaryField.data_type === 'number_auto')" />
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="50"
+                                                           numeric
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'number' || filter.field.data_type === 'number_auto') : (filter.field.lookupModulePrimaryField.data_type === 'number' || filter.field.lookupModulePrimaryField.data_type === 'number_auto')"/>
 
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="19"
-                                                               places="filter.field.decimal_places || 2"
-                                                               number-decimal
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'number_decimal' : filter.field.lookupModulePrimaryField.data_type === 'number_decimal'" />
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="19"
+                                                           places="filter.field.decimal_places || 2"
+                                                           number-decimal
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'number_decimal' : filter.field.lookupModulePrimaryField.data_type === 'number_decimal'"/>
 
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="50"
-                                                               places="filter.field.decimal_places || 2"
-                                                               currency-symbol="filter.field.currency_symbol"
-                                                               number-currency
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'currency' : filter.field.lookupModulePrimaryField.data_type === 'currency'" />
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="50"
+                                                           places="filter.field.decimal_places || 2"
+                                                           currency-symbol="filter.field.currency_symbol"
+                                                           number-currency
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'currency' : filter.field.lookupModulePrimaryField.data_type === 'currency'"/>
 
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           data-autoclose="1"
+                                                           data-date-type="iso"
+                                                           data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                           data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                           data-icon-left="fa fa-chevron-left"
+                                                           data-icon-right="fa fa-chevron-right"
+                                                           data-placement="bottom-right"
+                                                           bs-datepicker
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date' : filter.field.lookupModulePrimaryField.data_type === 'date'">
+
+                                                    <div class="clearfix datetime-pick" ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date_time' : filter.field.lookupModulePrimaryField.data_type === 'date_time'">
                                                         <input type="text"
-                                                               class="form-control ng-animate-disabled"
+                                                               class="form-control ng-animate-disabled date-pick"
                                                                ng-model="filter.value"
+                                                               ng-change="dateTimeChanged(filter.field)"
                                                                ng-disabled="filter.disabled"
+                                                               placeholder="{{'Common.Date' | translate}}"
                                                                data-autoclose="1"
                                                                data-date-type="iso"
                                                                data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
@@ -204,44 +223,11 @@
                                                                data-icon-left="fa fa-chevron-left"
                                                                data-icon-right="fa fa-chevron-right"
                                                                data-placement="bottom-right"
-                                                               bs-datepicker
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date' : filter.field.lookupModulePrimaryField.data_type === 'date'">
-
-                                                        <div class="clearfix datetime-pick" ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date_time' : filter.field.lookupModulePrimaryField.data_type === 'date_time'">
-                                                            <input type="text"
-                                                                   class="form-control ng-animate-disabled date-pick"
-                                                                   ng-model="filter.value"
-                                                                   ng-change="dateTimeChanged(filter.field)"
-                                                                   ng-disabled="filter.disabled"
-                                                                   placeholder="{{'Common.Date' | translate}}"
-                                                                   data-autoclose="1"
-                                                                   data-date-type="iso"
-                                                                   data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
-                                                                   data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
-                                                                   data-icon-left="fa fa-chevron-left"
-                                                                   data-icon-right="fa fa-chevron-right"
-                                                                   data-placement="bottom-right"
-                                                                   bs-datepicker>
-                                                            <input type="text"
-                                                                   class="form-control ng-animate-disabled time-pick"
-                                                                   ng-model="filter.value"
-                                                                   ng-disabled="!filter.value"
-                                                                   placeholder="{{'Common.Time' | translate}}"
-                                                                   data-autoclose="1"
-                                                                   data-time-type="iso"
-                                                                   data-icon-up="fa fa-chevron-up"
-                                                                   data-icon-down="fa fa-chevron-down"
-                                                                   data-length="1"
-                                                                   data-minute-step="10"
-                                                                   data-arrow-behavior="picker"
-                                                                   data-placement="bottom-right"
-                                                                   bs-timepicker>
-                                                        </div>
-
+                                                               bs-datepicker>
                                                         <input type="text"
-                                                               class="form-control ng-animate-disabled"
+                                                               class="form-control ng-animate-disabled time-pick"
                                                                ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
+                                                               ng-disabled="!filter.value"
                                                                placeholder="{{'Common.Time' | translate}}"
                                                                data-autoclose="1"
                                                                data-time-type="iso"
@@ -251,84 +237,100 @@
                                                                data-minute-step="10"
                                                                data-arrow-behavior="picker"
                                                                data-placement="bottom-right"
-                                                               bs-timepicker
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'time' : filter.field.lookupModulePrimaryField.data_type === 'time'">
-
-                                                        <select class="form-control ng-animate-disabled"
-                                                                ng-model="filter.value"
-                                                                ng-disabled="filter.disabled"
-                                                                ng-options="o as o.label[language] for o in modulePicklists[!filter.field.lookupModulePrimaryField ? filter.field.picklist_id : filter.field.lookupModulePrimaryField.picklist_id] track by o.id"
-                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'picklist' : filter.field.lookupModulePrimaryField.data_type === 'picklist'">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
-
-
-                                                        <tags-input class="ng-animate-disabled"
-                                                                    ng-model="filter.value"
-                                                                    display-property="labelStr"
-                                                                    key-property="id"
-                                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                                    replace-spaces-with-dashes="false"
-                                                                    add-from-autocomplete-only="true"
-                                                                    ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'multiselect' : filter.field.lookupModulePrimaryField.data_type === 'multiselect'">
-                                                            <auto-complete source="multiselect($query, filter.field)"
-                                                                           min-length="0"
-                                                                           load-on-focus="true"
-                                                                           load-on-empty="true"
-                                                                           max-results-to-show="9999"></auto-complete>
-                                                        </tags-input>
-
-                                                        <tags-input class="ng-animate-disabled"
-                                                                    ng-model="filter.value"
-                                                                    display-property="full_name"
-                                                                    key-property="id"
-                                                                    max-tags="1"
-                                                                    placeholder="{{'Common.Search' | translate}}"
-                                                                    replace-spaces-with-dashes="false"
-                                                                    add-from-autocomplete-only="true"
-                                                                    ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.field.lookupModulePrimaryField.lookup_type === 'users')">
-                                                            <auto-complete source="lookupUser($query, 'logged_in_user')"
-                                                                           min-length="0"
-                                                                           load-on-focus="true"
-                                                                           load-on-empty="true"
-                                                                           max-results-to-show="9999"></auto-complete>
-                                                        </tags-input>
-
-                                                        <input-stars
-                                                                ng-if="filter.field.data_type === 'rating'"
-                                                                max="{{filter.field.validation.min_length}}"
-                                                                allow-half
-                                                                icon-base="fa fa-fw"
-                                                                icon-empty="fa-star-o"
-                                                                icon-half="fa-star-half-o"
-                                                                icon-full="fa-star"
-                                                                icon-hover-full="fa-star"
-                                                                ng-model="filter.value"></input-stars>
-
-                                                        <input type="text"
-                                                               class="form-control ng-animate-disabled"
-                                                               ng-model="filter.value"
-                                                               ng-disabled="filter.disabled"
-                                                               maxlength="100"
-                                                               ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.lookupModulePrimaryField.field.lookup_type != 'users')" />
-
-                                                        <select
-                                                                class="form-control ng-animate-disabled"
-                                                                ng-model="filter.value"
-                                                                ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
-                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'checkbox' : filter.field.lookupModulePrimaryField.data_type === 'checkbox'">
-                                                            <option value="">{{'Common.Select' | translate}}</option>
-                                                        </select>
+                                                               bs-timepicker>
                                                     </div>
-                                                </td>
-                                            </tr>
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           placeholder="{{'Common.Time' | translate}}"
+                                                           data-autoclose="1"
+                                                           data-time-type="iso"
+                                                           data-icon-up="fa fa-chevron-up"
+                                                           data-icon-down="fa fa-chevron-down"
+                                                           data-length="1"
+                                                           data-minute-step="10"
+                                                           data-arrow-behavior="picker"
+                                                           data-placement="bottom-right"
+                                                           bs-timepicker
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'time' : filter.field.lookupModulePrimaryField.data_type === 'time'">
+
+                                                    <select class="form-control ng-animate-disabled"
+                                                            ng-model="filter.value"
+                                                            ng-disabled="filter.disabled"
+                                                            ng-options="o as o.label[language] for o in modulePicklists[!filter.field.lookupModulePrimaryField ? filter.field.picklist_id : filter.field.lookupModulePrimaryField.picklist_id] track by o.id"
+                                                            ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'picklist' : filter.field.lookupModulePrimaryField.data_type === 'picklist'">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+
+
+                                                    <tags-input class="ng-animate-disabled"
+                                                                ng-model="filter.value"
+                                                                display-property="labelStr"
+                                                                key-property="id"
+                                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                replace-spaces-with-dashes="false"
+                                                                add-from-autocomplete-only="true"
+                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'multiselect' : filter.field.lookupModulePrimaryField.data_type === 'multiselect'">
+                                                        <auto-complete source="multiselect($query, filter.field)"
+                                                                       min-length="0"
+                                                                       load-on-focus="true"
+                                                                       load-on-empty="true"
+                                                                       max-results-to-show="9999"></auto-complete>
+                                                    </tags-input>
+
+                                                    <tags-input class="ng-animate-disabled"
+                                                                ng-model="filter.value"
+                                                                display-property="full_name"
+                                                                key-property="id"
+                                                                max-tags="1"
+                                                                placeholder="{{'Common.Search' | translate}}"
+                                                                replace-spaces-with-dashes="false"
+                                                                add-from-autocomplete-only="true"
+                                                                ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.field.lookupModulePrimaryField.lookup_type === 'users')">
+                                                        <auto-complete source="lookupUser($query, 'logged_in_user')"
+                                                                       min-length="0"
+                                                                       load-on-focus="true"
+                                                                       load-on-empty="true"
+                                                                       max-results-to-show="9999"></auto-complete>
+                                                    </tags-input>
+
+                                                    <input-stars
+                                                            ng-if="filter.field.data_type === 'rating'"
+                                                            max="{{filter.field.validation.min_length}}"
+                                                            allow-half
+                                                            icon-base="fa fa-fw"
+                                                            icon-empty="fa-star-o"
+                                                            icon-half="fa-star-half-o"
+                                                            icon-full="fa-star"
+                                                            icon-hover-full="fa-star"
+                                                            ng-model="filter.value"></input-stars>
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="100"
+                                                           ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.lookupModulePrimaryField.field.lookup_type != 'users')"/>
+
+                                                    <select
+                                                            class="form-control ng-animate-disabled"
+                                                            ng-model="filter.value"
+                                                            ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
+                                                            ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'checkbox' : filter.field.lookupModulePrimaryField.data_type === 'checkbox'">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="form-group filter-logic" ng-class="{'has-error': viewForm.$submitted && viewForm.filterLogic.$invalid}">
                                     <label for="filterLogic" class="control-label col-sm-12">{{'View.FilterLogic' | translate}}:</label>
                                     <div class="col-sm-12">
-                                        <input type="text" id="filterLogic" name="filterLogic" class="form-control" maxlength="40" ng-change="viewForm.filterLogic.$setValidity('filterLogic', true)" ng-model="view.filter_logic" />
+                                        <input type="text" id="filterLogic" name="filterLogic" class="form-control" maxlength="40" ng-change="viewForm.filterLogic.$setValidity('filterLogic', true)" ng-model="view.filter_logic"/>
                                         <span class="filter-logic-example" ng-bind-html="'View.FilterLogicExample' | translate"></span>
                                     </div>
                                 </div>
@@ -346,11 +348,11 @@
                                         <label class="newinput">
                                             <input type="radio" ng-model="view.sharing_type" value="me">
                                             {{'View.ShareMe' | translate}}<span></span>
-                                        </label><br />
+                                        </label><br/>
                                         <label class="newinput"> <!--ng-if="user.profile.HasAdminRights">-->
                                             <input type="radio" ng-model="view.sharing_type" value="everybody">
                                             {{'View.ShareEveryone' | translate}}<span></span>
-                                        </label><br />
+                                        </label><br/>
                                         <!--</label><br ng-if="user.profile.HasAdminRights" />-->
                                         <label class="newinput">
                                             <input type="radio" ng-model="view.sharing_type" value="custom">

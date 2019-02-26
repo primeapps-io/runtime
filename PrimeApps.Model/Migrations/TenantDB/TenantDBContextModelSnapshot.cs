@@ -2941,10 +2941,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<int>("RelationType")
                         .HasColumnName("relation_type");
-                    
+
                     b.Property<string>("ManyToManyTableName")
-                        .HasColumnName("many_to_many_table_name")
-                        .HasMaxLength(500);
+                        .HasColumnName("many_to_many_table_name");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");

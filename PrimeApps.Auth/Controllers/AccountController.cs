@@ -1503,12 +1503,12 @@ namespace PrimeApps.Auth.UI
                         platformUser.Setting.Culture = culture;
                         platformUser.Setting.Language = culture.Substring(0, 2);
                         //tenant.Setting.TimeZone =
-                        platformUser.Setting.Currency = culture;
+                        platformUser.Setting.Currency = culture.Substring(0, 2);
                     }
                     else
                     {
                         platformUser.Setting.Culture = applicationInfo.ApplicationSetting.Culture;
-                        platformUser.Setting.Currency = applicationInfo.ApplicationSetting.Currency;
+                        platformUser.Setting.Currency = applicationInfo.Language;
                         platformUser.Setting.Language = applicationInfo.Language;
                         platformUser.Setting.TimeZone = applicationInfo.ApplicationSetting.TimeZone;
                     }

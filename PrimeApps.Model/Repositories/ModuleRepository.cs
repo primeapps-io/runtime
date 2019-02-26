@@ -37,8 +37,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<Module>> Find(PaginationModel paginationModel)
         {
             var modules = DbContext.Modules
-                 .Where(x => !x.Deleted && x.Order != 0)
-                 .OrderByDescending(x => x.Id)
+                .Where(x => !x.Deleted && x.Order != 0)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 
@@ -175,6 +175,12 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Create(Module module)
         {
+            if (module.Order == 0)
+            {
+                var order = DbContext.Modules.Count();
+                module.Order = (short)order;
+            }
+
             DbContext.Modules.Add(module);
 
             return await DbContext.SaveChangesAsync();
