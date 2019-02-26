@@ -16,6 +16,7 @@ using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
+using PrimeApps.App.Logging;
 
 namespace PrimeApps.App
 {
@@ -158,8 +159,9 @@ namespace PrimeApps.App
 
 			JobConfiguration(app, Configuration);
 			BpmConfiguration(app, Configuration);
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
-			app.UseMvc(routes =>
+            app.UseMvc(routes =>
 			{
 				routes.MapRoute(
 					name: "default",
