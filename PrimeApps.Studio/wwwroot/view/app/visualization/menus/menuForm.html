@@ -11,10 +11,10 @@
                         <li ng-if="wizardStep > 0">
                             <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue" ng-click="validate(menuForm, false)"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                         </li>
-                        <li ng-if="wizardStep < 1">
-                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm, true)">{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i></button>
-                        </li>
-                        <li ng-if="wizardStep === 1">
+                        <!--<li ng-if="wizardStep < 1">-->
+                            <!--<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm, true)">{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i></button>-->
+                        <!--</li>-->
+                        <li>
                             <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
