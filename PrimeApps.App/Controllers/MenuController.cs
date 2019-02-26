@@ -59,10 +59,10 @@ namespace PrimeApps.App.Controllers
 
 			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
-			}
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+			tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
+
 			var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
 			var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
 			//TODO Removed

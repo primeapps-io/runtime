@@ -14,36 +14,35 @@ namespace PrimeApps.App.Helpers
 		public static CurrentUser GetCurrentUser(IHttpContextAccessor context, IConfiguration configuration)
 		{
 			var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			var tenantId = 0;
 			var appId = 0;
 
-			if (!string.IsNullOrEmpty(previewMode))
+			if (previewMode == "tenant")
 			{
-				if (previewMode == "tenant")
-				{
-					if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-						return null;
+				if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+					return null;
 
-					if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-						return null;
+				if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
+					return null;
 
-					if (tenantId < 1)
-						return null;
+				if (tenantId < 1)
+					return null;
 
-					if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-						return null;
-				}
-				else
-				{
-					if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
-						return null;
+				if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
+					return null;
+			}
+			else
+			{
+				if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
+					return null;
 
-					if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) || !int.TryParse(appIdValues[0], out appId))
-						return null;
+				if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) || !int.TryParse(appIdValues[0], out appId))
+					return null;
 
-					if (appId < 1)
-						return null;
-				}
+				if (appId < 1)
+					return null;
 			}
 			//var cacheRepository = (ICacheRepository)context.HttpContext.RequestServices.GetService(typeof(ICacheRepository));
 

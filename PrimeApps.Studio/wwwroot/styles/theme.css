@@ -1028,7 +1028,7 @@ button:focus, select:focus {
   padding: 0px;
   border: none;
   border-radius: 0px;
-  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 .primeapps .modal .megalist .section:last-child {
   border: none;
@@ -1428,6 +1428,12 @@ button:focus, select:focus {
   margin-bottom: 20px !important;
 }
 .primeapps .form-group.has-error select {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
+.primeapps .form-group.has-error .newinput {
+  color: red !important;
+}
+.primeapps .form-group.has-error .newinput span {
   background-color: rgba(206, 4, 4, 0.15) !important;
 }
 .primeapps .form-group.bottom0 {
@@ -3185,6 +3191,9 @@ button:focus, select:focus {
 }
 .primeapps .flexitemx > div > .cell-container {
   min-height: 100%;
+}
+.primeapps .instructions-list {
+  list-style: decimal;
 }
 
 .placeholder {
