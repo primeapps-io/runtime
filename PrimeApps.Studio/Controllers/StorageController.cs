@@ -160,10 +160,10 @@ namespace PrimeApps.Studio.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
                 //return content type.
-                return Ok(logo);
+                return Ok(url);
             }
 
             //this request invalid because there is no file, return fail code to the client.
