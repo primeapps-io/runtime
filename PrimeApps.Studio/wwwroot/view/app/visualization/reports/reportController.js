@@ -561,19 +561,31 @@ angular.module('primeapps')
             };
 
             $scope.validate = function (tab) {
-
                 $scope.reportForm.$submitted = true;
-                if (tab == 'info')
+                if (tab === 'info') {
+                    $scope.wizardStep = 0;
                     return true;
+                }
 
-                if (tab == 'filter' || tab == 'area') {
+                if (tab === 'summary') {
+                    $scope.wizardStep = 3;
+                }
+
+                if (tab === 'filter' || tab === 'area') {
                     if ($scope.reportForm.report_type.$valid && $scope.reportForm.module_id.$valid && $scope.reportForm.category_id.$valid && $scope.reportForm.name.$valid) {
+                        $scope.wizardStep = 1;
+
+                        if (tab === 'area')
+                            $scope.wizardStep = 2;
+
                         return true;
                     }
                     else {
                         return false;
                     }
-                    if (tab == 'area') {
+
+                    if (tab === 'area') {
+                        $scope.wizardStep = 2;
                         return true
                     }
                 }
@@ -781,7 +793,7 @@ angular.module('primeapps')
                 $scope.reportForm.$submitted = true;
                 if ($scope.reportForm.$valid) {
                     $scope.wizardStep = 3;
-                    // $scope.setValideStep3();
+
                 }
 
             };

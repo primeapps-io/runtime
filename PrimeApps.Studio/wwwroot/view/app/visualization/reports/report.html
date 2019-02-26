@@ -9,14 +9,23 @@
                             <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                         </button>
                     </li>
-                    <li>
 
-                        <button ng-if="wizardStep !=3" type="button" class="btn btn-radius btn-blue "
+                    <li ng-show="wizardStep !=3 && wizardStep !=3 && wizardStep !=0">
+                        <button type="button"
+                                class="btn btn-radius btn-blue "
                                 ng-click="validate(viewForm, true);">
+                            <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
+                        </button>
+                    </li>
+
+                    <li ng-show="wizardStep !=3">
+                        <button type="button" class="btn btn-radius btn-blue "
+                                ng-click="wizardStep  ==0 ? validate('filter') : (wizardStep ===1 ?   validate('area') : validate('summary'))">
                             {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                         </button>
-
-                        <button ng-if="wizardStep ===3" type="submit" ng-click="save();"
+                    </li>
+                    <li ng-show="wizardStep ===3">
+                        <button type="submit" ng-click="save();"
                                 class="btn add-button btn-radius btn-blue">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
@@ -39,7 +48,7 @@
                             <li><a ng-class="{'active':wizardStep==2}"
                                    ng-click="validate('area') ? wizardStep = 2 : false">{{'Report.AreaSelection' |
                                 translate }}</a></li>
-                            <li ><a ng-class="{'active':wizardStep==3}"
+                            <li><a ng-class="{'active':wizardStep==3}"
                                    ng-click="validate('summary') ? wizardStep = 3 : false">{{'Report.ReportSummary' |
                                 translate}}</a></li>
                         </ul>
