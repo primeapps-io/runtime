@@ -1430,6 +1430,12 @@ button:focus, select:focus {
 .primeapps .form-group.has-error select {
   background-color: rgba(206, 4, 4, 0.15) !important;
 }
+.primeapps .form-group.has-error .newinput {
+  color: red !important;
+}
+.primeapps .form-group.has-error .newinput span {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
 .primeapps .form-group.bottom0 {
   margin-bottom: 0px !important;
 }
@@ -3185,6 +3191,9 @@ button:focus, select:focus {
 }
 .primeapps .flexitemx > div > .cell-container {
   min-height: 100%;
+}
+.primeapps .instructions-list {
+  list-style: decimal;
 }
 
 .placeholder {
