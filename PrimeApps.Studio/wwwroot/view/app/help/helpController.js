@@ -231,7 +231,7 @@ angular.module('primeapps')
             $scope.imgUpload = {
                 settings: {
                     multi_selection: false,
-                    url: 'storage/upload_whole',
+                    url: 'storage/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
                         'Accept': 'application/json',

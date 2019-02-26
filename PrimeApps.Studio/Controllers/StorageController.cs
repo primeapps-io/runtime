@@ -134,7 +134,7 @@ namespace PrimeApps.Studio.Controllers
         //    return Json(response);
         //}
 
-        [HttpPost("upload_whole")]
+        [HttpPost("upload_attachment")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadWhole()
         {
