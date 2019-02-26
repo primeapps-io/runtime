@@ -42,7 +42,7 @@ angular.module('primeapps')
                     return $http.delete(config.apiUrl + 'picklist/delete/' + id);
                 },
                 deleteItem: function (itemId) {
-                    return $http.delete(config.apiUrl + 'picklist/deleteItem/' + itemId);
+                    return $http.delete(config.apiUrl + 'picklist/delete_item/' + itemId);
                 }
             };
         }]);

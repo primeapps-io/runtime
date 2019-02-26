@@ -18,6 +18,9 @@
                         <button type="button" ng-if="!picklist.id" ng-click="save($parent.picklistForm);" class="btn add-button btn-radius btn-blue" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
+                        <button type="button" ng-if="orderChanged" ng-click="orderSave();" class="btn add-button btn-radius btn-blue" ladda="saving">
+                            <i class="fas fa-save"></i>{{'Picklist.SaveSortOrder' | translate}}
+                        </button> 
                     </li>
                 </ul>
             </div>
