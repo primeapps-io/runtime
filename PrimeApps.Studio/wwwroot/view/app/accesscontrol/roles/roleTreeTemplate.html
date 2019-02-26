@@ -6,7 +6,7 @@
     <span class="action-buttons-block">
         <a class="action-buttons-edit" ng-click="showFormModal(node.id)" title="{{node.title}}"><i class="fas fa-pen"></i></a>
         <!--<span ng-if="node.id != 'role_ceo'"> | </span>-->
-        <a class="action-buttons-delete" id="deleteButton{{node.id}}" href ng-click="showDeleteForm(node.id)" ng-if="node.id != 'role_ceo'" data-nodrag title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></a>
+        <a class="action-buttons-delete" id="deleteButton{{node.id}}" href ng-click="showDeleteForm(node.id)" ng-if="!node.master" data-nodrag title="{{'Common.Delete' | translate}}"><i class="fas fa-trash"></i></a>
         <a ng-click="showFormModal(node.id, true)" data-nodrag title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i></a>
     </span>
 </span>
