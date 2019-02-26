@@ -43,6 +43,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		public override async Task<bool> Process(MessageDTO emailQueueItem, UserItem appUser)
 		{
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			string[] ids;
 			bool isAllSelected = false;
 			string emailTemplate = "",
@@ -81,10 +83,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-						}
+
+						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
 						/// get details of the email queue item.
 						///
 						var notificationId = Convert.ToInt32(emailQueueItem.Id);
@@ -234,6 +235,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			IList<Message> messages = new List<Message>();
 			IList<string> messageFields = new List<string>();
 			JArray messageStatusList = new JArray();
@@ -322,10 +325,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
-							if (!string.IsNullOrEmpty(previewMode))
-							{
-								moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
-							}
+
+							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
+
 							foreach (string recordId in ids)
 							{
 								var status = MessageStatusEnum.Successful;
