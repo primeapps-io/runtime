@@ -2158,7 +2158,7 @@
     "Name": "Name",
     "SystemType": "System Type",
     "SystemCode": "System Code",
-    "AddNew": "Add New Picklist",
+    "AddNew": "New Picklist",
     "PicklistItem": "{{name}} Picklist Items",
     "SaveSuccess": "Picklist is saved successfully.",
     "SaveItemSuccess": "Picklist item is saved successfully.",

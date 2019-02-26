@@ -12,7 +12,7 @@ namespace PrimeApps.Studio.Helpers
         {
             var picklist = new Picklist
             {
-                SystemType = SystemType.Custom,
+                SystemType = SystemType.System, //Default and static for Studio
                 LabelEn = picklistModel.LabelEn,
                 LabelTr = picklistModel.LabelEn,
                 Items = new List<PicklistItem>()
@@ -120,6 +120,7 @@ namespace PrimeApps.Studio.Helpers
             picklistItem.Value3 = picklistItemModel.Value3;
             picklistItem.Order = picklistItemModel.Order;
             picklistItem.Inactive = picklistItemModel.Inactive;
+            picklistItem.SystemCode = picklistItemModel.SystemCode;
         }
 
         public static List<PicklistViewModel> MapToViewModel(ICollection<Picklist> picklists)
