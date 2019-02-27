@@ -101,7 +101,7 @@
                 </a>
             </li>
 
-            <li  ng-class="activeMenuItem ==='menus' ?'active' :''">
+            <li ng-class="activeMenuItem ==='menus' ?'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
                    data-title="Menus" bs-tooltip data-placement="right">
                     <i class="fas fa-stream"></i>
@@ -155,24 +155,21 @@
             <span>Custom Code</span>
         </a>
         <ul ng-click="$event.stopPropagation();">
-            <li
-                ng-class="activeMenuItem ==='scripts' ? 'active' :''">
+            <li ng-class="activeMenuItem ==='scripts' ? 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/scripts" data-trigger="hover" data-type="info"
                    data-title="Scripts" bs-tooltip data-placement="right">
                     <i class="fab fa-js-square"></i>
                     <span>Scripts</span>
                 </a>
             </li>
-            <li
-                ng-class="activeMenuItem ==='components' ? 'active' :''">
+            <li ng-class="activeMenuItem ==='components' ? 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
                    data-title="Components" bs-tooltip data-placement="right">
                     <i class="fas fa-shapes"></i>
                     <span>Components</span>
                 </a>
             </li>
-            <li
-                ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
+            <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
                    data-title="Functions" bs-tooltip data-placement="right">
                     <i class="fas fa-file-code"></i>
@@ -214,42 +211,42 @@
     </li>
 
     <!--<li ng-class="subMenuOpen =='deployments' ? 'active sub-open':''" ng-click="openSubMenu('deployments');$event.stopPropagation();"-->
-        <!--ng-class="activeMenuItem ==='deployments' ?  'active' :''">-->
-        <!--<a href="javascript:;" data-trigger="hover" data-type="info"-->
-           <!--data-title="Deployments" bs-tooltip data-placement="right">-->
-            <!--<i class="fas fa-upload"></i>-->
-            <!--<span>Deployments</span>-->
-        <!--</a>-->
-        <!--<ul ng-click="$event.stopPropagation();">-->
-            <!--<li ng-class="activeMenuItem ==='appDeployment' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDeployment" data-trigger="hover" data-type="info"-->
-                   <!--data-title="App" bs-tooltip data-placement="right">-->
-                    <!--<i class="fas fa-layer-group"></i>-->
-                    <!--<span>App</span>-->
-                <!--</a>-->
-            <!--</li>-->
-            <!--<li ng-class="activeMenuItem ==='scriptsDeployment' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/scriptsDeployment" data-trigger="hover" data-type="info"-->
-                   <!--data-title="Scripts" bs-tooltip data-placement="right">-->
-                    <!--<i class="fab fa-js-square"></i>-->
-                    <!--<span>Scripts</span>-->
-                <!--</a>-->
-            <!--</li>-->
-            <!--<li ng-class="activeMenuItem ==='componentsDeployment' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/componentsDeployment" data-trigger="hover" data-type="info"-->
-                   <!--data-title="Components" bs-tooltip data-placement="right">-->
-                    <!--<i class="fas fa-shapes"></i>-->
-                    <!--<span>Components</span>-->
-                <!--</a>-->
-            <!--</li>-->
-            <!--<li ng-class="activeMenuItem ==='functionsDeployment' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/functionsDeployment" data-trigger="hover" data-type="info"-->
-                   <!--data-title="Functions" bs-tooltip data-placement="right">-->
-                    <!--<i class="fas fa-file-code"></i>-->
-                    <!--<span>Functions</span>-->
-                <!--</a>-->
-            <!--</li>-->
-        <!--</ul>-->
+    <!--ng-class="activeMenuItem ==='deployments' ?  'active' :''">-->
+    <!--<a href="javascript:;" data-trigger="hover" data-type="info"-->
+    <!--data-title="Deployments" bs-tooltip data-placement="right">-->
+    <!--<i class="fas fa-upload"></i>-->
+    <!--<span>Deployments</span>-->
+    <!--</a>-->
+    <!--<ul ng-click="$event.stopPropagation();">-->
+    <!--<li ng-class="activeMenuItem ==='appDeployment' ? 'active' :''">-->
+    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDeployment" data-trigger="hover" data-type="info"-->
+    <!--data-title="App" bs-tooltip data-placement="right">-->
+    <!--<i class="fas fa-layer-group"></i>-->
+    <!--<span>App</span>-->
+    <!--</a>-->
+    <!--</li>-->
+    <!--<li ng-class="activeMenuItem ==='scriptsDeployment' ? 'active' :''">-->
+    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/scriptsDeployment" data-trigger="hover" data-type="info"-->
+    <!--data-title="Scripts" bs-tooltip data-placement="right">-->
+    <!--<i class="fab fa-js-square"></i>-->
+    <!--<span>Scripts</span>-->
+    <!--</a>-->
+    <!--</li>-->
+    <!--<li ng-class="activeMenuItem ==='componentsDeployment' ? 'active' :''">-->
+    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/componentsDeployment" data-trigger="hover" data-type="info"-->
+    <!--data-title="Components" bs-tooltip data-placement="right">-->
+    <!--<i class="fas fa-shapes"></i>-->
+    <!--<span>Components</span>-->
+    <!--</a>-->
+    <!--</li>-->
+    <!--<li ng-class="activeMenuItem ==='functionsDeployment' ? 'active' :''">-->
+    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/functionsDeployment" data-trigger="hover" data-type="info"-->
+    <!--data-title="Functions" bs-tooltip data-placement="right">-->
+    <!--<i class="fas fa-file-code"></i>-->
+    <!--<span>Functions</span>-->
+    <!--</a>-->
+    <!--</li>-->
+    <!--</ul>-->
     <!--</li>-->
     <!---->
     <li ng-class="subMenuOpen =='manage' ? 'active sub-open':''" ng-click="openSubMenu('manage');$event.stopPropagation();">
@@ -278,6 +275,13 @@
                    data-title="Tenants" bs-tooltip data-placement="right">
                     <i class="fas fa-th-list"></i>
                     <span>Tenants</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='users' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/users" data-trigger="hover" data-type="info"
+                   data-title="Users" bs-tooltip data-placement="right">
+                    <i class="fas fa-th-list"></i>
+                    <span>Users</span>
                 </a>
             </li>
             <li ng-class="activeMenuItem ==='notifications' ? 'active' :''">
@@ -327,34 +331,54 @@
 </ul>
 
 <ul class="setup-nav" ng-show="appLoading">
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
-    <li><a>
-        <div class="animated-background"></div>
-    </a></li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
+    <li>
+        <a>
+            <div class="animated-background"></div>
+        </a>
+    </li>
 </ul>

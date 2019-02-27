@@ -1494,6 +1494,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.users', {
+                    url: '/users',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/users/users.html',
+                            controller: 'UsersController'
+                        }
+                    },
+                    resolve: {
+                        tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/users/usersController.js',
+                                cdnUrl + 'view/app/manage/users/usersService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.appEmailTemplates', {
                     url: '/appEmailTemplates',
                     views: {
