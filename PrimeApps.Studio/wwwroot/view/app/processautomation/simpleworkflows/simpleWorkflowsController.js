@@ -681,119 +681,7 @@ angular.module('primeapps')
 
                 return false;
             };
-
-            $scope.getUpdatableModules = function () {
-                $scope.updatableModules = [];
-                $scope.updatableModules.push($scope.workflowModel.module);
-
-                angular.forEach($scope.workflowModel.module.fields, function (field) {
-                    if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                        var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                        $scope.updatableModules.push(module);
-                    }
-                });
-
-                $scope.fieldUpdateModules = angular.copy($scope.updatableModules);
-                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]);
-            };
-
-            //upodatable modules for send_notification
-            $scope.getSendNotificationUpdatableModules = function (module) {
-                var updatableModulesForNotification = [];
-                var notificationObj = {};
-
-                var currentModule;
-                if (module)
-                    currentModule = module;
-                else
-                    currentModule = $scope.workflowModel.module;
-
-                notificationObj.module = currentModule;
-                notificationObj.name = currentModule['label_' + $scope.language + '_singular'];
-                notificationObj.isSameModule = true;
-                notificationObj.systemName = null;
-                notificationObj.id = 1;
-                updatableModulesForNotification.push(notificationObj);
-
-                var id = 2;
-                angular.forEach(currentModule.fields, function (field) {
-
-                    if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
-                        var notificationObj = {};
-                        if (field.lookup_type === currentModule.name) {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
-                            notificationObj.isSameModule = false;
-                            notificationObj.systemName = field.name;
-                            notificationObj.id = id;
-                        } else {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
-                            notificationObj.isSameModule = false;
-                            notificationObj.systemName = field.name;
-                            notificationObj.id = id;
-                        }
-                        updatableModulesForNotification.push(notificationObj);
-                        id++;
-                    }
-                });
-
-                var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
-
-                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-                notificationObj.name = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]['label_' + $scope.language + '_singular'];
-                notificationObj.isSameModule = false;
-                notificationObj.systemName = null;
-                notificationObj.id = id;
-                fieldUpdateModulesForNotification.unshift(notificationObj);
-
-                $scope.fieldUpdateModulesForNotification = fieldUpdateModulesForNotification;
-            };
-
-            //upodatable modules for send_notification
-            $scope.getDynamicFieldUpdateModules = function (module) {
-                var dynamicfieldUpdateModules = [];
-                var updateObj = {};
-
-                var currentModule;
-                if (module)
-                    currentModule = module;
-                else
-                    currentModule = $scope.workflowModel.module;
-
-                updateObj.module = currentModule;
-                updateObj.name = currentModule['label_' + $scope.language + '_singular'];
-                updateObj.isSameModule = true;
-                updateObj.systemName = currentModule.name;
-                updateObj.id = 1;
-                dynamicfieldUpdateModules.push(updateObj);
-
-                var id = 2;
-                angular.forEach(currentModule.fields, function (field) {
-
-                    if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
-                        var updateObj = {};
-                        if (field.lookup_type === currentModule.name) {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
-                            updateObj.isSameModule = false;
-                            updateObj.systemName = field.name;
-                            updateObj.id = id;
-                        } else {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
-                            updateObj.isSameModule = false;
-                            updateObj.systemName = field.name;
-                            updateObj.id = id;
-                        }
-                        dynamicfieldUpdateModules.push(updateObj);
-                        id++;
-                    }
-                });
-
-                $scope.dynamicfieldUpdateModules = angular.copy(dynamicfieldUpdateModules);
-            };
-
+            
             $scope.generateHookModules = function () {
                 if ($scope.id && $scope.workflowModel.webHook && $scope.workflowModel.webHook.parameters) {
                     $scope.hookParameters = [];
@@ -936,20 +824,7 @@ angular.module('primeapps')
                 $scope.workflowModel.changed_field_checkbox = false;
                 $scope.workflowModel.changed_field = null;
             };
-
-            $scope.changeFieldCheckboxChanged = function (status) {
-                if (!status) {
-                    $scope.workflowModel.changed_field = null;
-                }
-            };
-
-            $scope.frequencyChanged = function (frequency) {
-                if ($scope.id) {
-                    if (frequency === 'continuous')
-                        $scope.workflowModel.delete_logs = false;
-                }
-            };
-
+              
             $scope.updatableField = function (field) {
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;
@@ -1664,6 +1539,7 @@ angular.module('primeapps')
                 notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
                 var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
 
+                //TODO add fake User Module
                 if (resultModule)
                     notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
 
