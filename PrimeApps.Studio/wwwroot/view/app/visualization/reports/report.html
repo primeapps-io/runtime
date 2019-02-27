@@ -134,7 +134,7 @@
 
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-12 control-label">Paylaşım Bilgisi:</label>
+                                        <label class="col-sm-12 control-label">{{'View.ShareInformation' | translate}}:</label>
                                         <div class="sharing">
                                             <label class="radio-inline newinput">
                                                 <input type="radio" ng-model="reportModel.sharing_type" value="me">
@@ -241,7 +241,7 @@
                                                         <option value="">{{'Common.Select' | translate}}</option>
                                                     </select>
                                                 </td>
-                                                <td class="form-group">
+                                                <td class="form-group flexy bottom0">
                                                     <input type="text"
                                                            class="form-control ng-animate-disabled"
                                                            ng-model="filter.value"
@@ -452,7 +452,7 @@
                                                 <span class="title-right">{{'View.SelectedFields' | translate}}</span>
                                             </div>
                                             <div class="fields clearfix">
-                                                <div id="availableFields" class="container-left">
+                                                <div id="availableFields" class="container-left scroll-style-4">
                                                     <div ng-repeat="field in fields.availableFields"
                                                          ng-class="{'dragable':!field.seperator, 'seperator':field.seperator, 'seperator-main':field.name === 'seperator-main'}">
                                                         {{field.label}} <i class="fa fa-arrows"
@@ -462,7 +462,7 @@
                                                 <div class="container-middle">
                                                     <i class="fa fa-exchange"></i>
                                                 </div>
-                                                <div id="selectedFields" class="container-right">
+                                                <div id="selectedFields" class="container-right scroll-style-4">
                                                     <div ng-repeat="field in fields.selectedFields"
                                                          class="dragable">{{field.label + ' ' +
                                                         field.labelExt}} <i
