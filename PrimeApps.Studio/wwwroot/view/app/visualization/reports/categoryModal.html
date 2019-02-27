@@ -37,8 +37,8 @@
                 </li>
                 <li ng-repeat="category in reportCategory">
                     <div ng-if="category.edit !=true">
-                        <span class="option-drag pull-right optison-handle"><i class="fa fa-arrows option-handle"></i></span>
-                        <span class="option-draging option-handle">{{ category.name }}</span>
+                        
+                        <span> <span class="option-drag optison-handle"><i class="fa fa-arrows option-handle"></i></span> {{ category.name }}</span>
                         <span class="new-actions">
                             <button ng-click="category.edit = true" class="edit-btn" title="Edit"><i
                                     class="fas fa-pen"></i></button>
