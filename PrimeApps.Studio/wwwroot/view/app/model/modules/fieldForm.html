@@ -545,16 +545,16 @@
                                         </label>
 
                                     </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-                                        <label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">
-                                            Şifreli Alan
-                                            <input type="checkbox" ng-model="currentField.encrypted"
-                                                   ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
-                                            <span></span>
-                                        </label>
+                                    <!--<div class="form-group"-->
+                                         <!--ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">-->
+                                        <!--<label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">-->
+                                            <!--Şifreli Alan-->
+                                            <!--<input type="checkbox" ng-model="currentField.encrypted"-->
+                                                   <!--ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">-->
+                                            <!--<span></span>-->
+                                        <!--</label>-->
 
-                                    </div>
+                                    <!--</div>-->
                                     <div class="form-group" ng-show="currentField.encrypted">
                                         <label class="col-sm-4">Şifre Sahipleri</label>
                                         <div class="col-sm-8">
