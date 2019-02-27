@@ -13,7 +13,7 @@
                     <li ng-show="wizardStep !=3 && wizardStep !=3 && wizardStep !=0">
                         <button type="button"
                                 class="btn btn-radius btn-blue "
-                                ng-click="validate(viewForm, true);">
+                                ng-click="wizardStep  ==1 ? validate('info') : validate('filter')">
                             <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
                         </button>
                     </li>
@@ -436,19 +436,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="wizard-buttons text-right">
-                                        <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' |
-                                            translate}}</a>
-                                        <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="wizardStep = 0">
-                                            {{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left"
-                                                                                 style="margin-top: 3px;"></i></button>
-                                        <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="step2()">
-                                            {{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right"
-                                                                             style="margin-top: 3px;"></i>
-                                        </button>
-                                    </div>
+
                                 </div>
                             </div>
 
@@ -491,11 +479,9 @@
                                     <h4>{{'Report.GroupArea' | translate}}</h4>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.group_field.$invalid}">
-                                        <label>
-                                            <span class="required-field">*</span>{{
-                                            'Report.GroupArea'
-                                            | translate
-                                            }}:
+                                        <label class="control-label">
+                                            {{ 'Report.GroupArea'| translate }}
+                                            <span class="required-label">(required)</span>:
                                         </label>
                                         <select class="form-control"
                                                 name="group_field"
@@ -639,11 +625,12 @@
                                 </div>
 
                                 <div class="panel" ng-if="reportModel.report_type=='summary'">
-                                    <h4>{{'Report.Chart.Name' | translate}}</h4>
+                                    <h4>Chart</h4>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.chartTypes.$invalid}">
-                                        <label for="chartTypes">
-                                            {{'Report.Chart.Type' | translate}} :
+                                        <label class="control-label" for="chartTypes">
+                                            {{'Report.Chart.Type' | translate}}
+                                            <span class="required-label">(required)</span>:
                                         </label>
                                         <select class="form-control" id="chartTypes"
                                                 ng-model="reportModel.chart.type"
@@ -657,11 +644,9 @@
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.xaxis_name.$invalid}">
-                                        <label for="xaxis_name">
-                                            {{
-                                            'Report.Chart.XaxisName' |
-                                            translate
-                                            }}:
+                                        <label class="control-label" for="xaxis_name">
+                                            {{ 'Report.Chart.XaxisName' | translate }}
+                                            <span class="required-label">(required)</span>:
                                         </label>
                                         <input class="form-control"
                                                id="xaxis_name"
@@ -671,11 +656,9 @@
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                        <label for="yaxis_name">
-                                            {{
-                                            'Report.Chart.YaxisName' |
-                                            translate
-                                            }}:
+                                        <label class="control-label" for="yaxis_name">
+                                            {{ 'Report.Chart.YaxisName' | translate}}
+                                            <span class="required-label">(required)</span>:
                                         </label>
                                         <input class="form-control"
                                                id="yaxis_name"
@@ -690,10 +673,8 @@
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
                                         <label>
-                                            {{
-                                            'Report.Widget.Icon' |
-                                            translate
-                                            }}:
+                                            {{ 'Report.Widget.Icon' | translate }}
+                                            <span class="required-label">(required)</span>:
                                         </label>
 
                                         <button type="button" data-container="form"
@@ -709,11 +690,10 @@
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
                                         <label>
-                                            {{
-                                            'Report.Widget.Color' |
-                                            translate
-                                            }}:
+                                            {{ 'Report.Widget.Color' | translate }}
+                                            <span class="required-label">(required)</span>:
                                         </label>
+
                                         <input name="colorpicker" type="color"
                                                class="form-control"
                                                required

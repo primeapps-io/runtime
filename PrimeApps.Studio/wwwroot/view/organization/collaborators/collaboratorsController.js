@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, CollaboratorsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
             $scope.collaboratorArray = [];
 
-           // $scope.$parent.menuTopTitle = "Organization";
+            // $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
             $scope.updatingRole = false;
@@ -111,12 +111,12 @@ angular.module('primeapps')
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
