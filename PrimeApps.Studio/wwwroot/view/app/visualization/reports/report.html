@@ -1,4 +1,4 @@
-<div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
+<div class="modal setup-modal modal-1100" tabindex="-1" role="dialog">
     <div class="modal-header">
         <div class="flex-between">
             <h4 class="modal-title">New Report</h4>
@@ -9,8 +9,24 @@
                             <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                         </button>
                     </li>
-                    <li>
-                        <button type="submit" ng-click="save();" class="btn add-button btn-radius btn-blue">
+
+                    <li ng-show="wizardStep !=3 && wizardStep !=3 && wizardStep !=0">
+                        <button type="button"
+                                class="btn btn-radius btn-blue "
+                                ng-click="wizardStep  ==1 ? validate('info') : validate('filter')">
+                            <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
+                        </button>
+                    </li>
+
+                    <li ng-show="wizardStep !=3">
+                        <button type="button" class="btn btn-radius btn-blue "
+                                ng-click="wizardStep  ==0 ? validate('filter') : (wizardStep ===1 ?   validate('area') : validate('summary'))">
+                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
+                        </button>
+                    </li>
+                    <li ng-show="wizardStep ===3">
+                        <button type="submit" ng-click="save();"
+                                class="btn add-button btn-radius btn-blue">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
                     </li>
@@ -25,16 +41,15 @@
                     <div class="modal-menu">
                         <ul class="list-unstyled">
                             <li><a ng-class="{'active':wizardStep==0}"
-                                   ng-click="validate() ? wizardStep = 0 : false">{{'Report.ReportName' |
-                                translate}}</a></li>
+                                   ng-click="validate('info') ? wizardStep = 0 : false"> Report Info </a></li>
                             <li><a ng-class="{'active':wizardStep==1}"
-                                   ng-click="validate() ? wizardStep = 1 : false">{{'Report.FilterOptions' |
+                                   ng-click="validate('filter') ? wizardStep = 1 : false">{{'Report.FilterOptions' |
                                 translate}}</a></li>
                             <li><a ng-class="{'active':wizardStep==2}"
-                                   ng-click="validate() ? wizardStep = 2 : false">{{'Report.AreaSelection' |
+                                   ng-click="validate('area') ? wizardStep = 2 : false">{{'Report.AreaSelection' |
                                 translate }}</a></li>
                             <li><a ng-class="{'active':wizardStep==3}"
-                                   ng-click="validate() ? wizardStep = 2 : false">{{'Report.ReportSummary' |
+                                   ng-click="validate('summary') ? wizardStep = 3 : false">{{'Report.ReportSummary' |
                                 translate}}</a></li>
                         </ul>
                     </div>
@@ -42,7 +57,7 @@
                         <form name="reportForm" class="form-horizontal form-custom" ng-submit="save()"
                               autocomplete="off" novalidate>
 
-                            <div class="section" id="section1" ng-show="wizardStep == 0">
+                            <div class="section" id="section1" ng-show="wizardStep === 0">
                                 <div class="panel">
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.name.$invalid}">
@@ -132,30 +147,30 @@
                                                 {{'View.ShareEveryone' | translate}}
                                                 <span></span>
                                             </label>
-                                            <label class="radio-inline newinput">
-                                                <input type="radio" ng-model="reportModel.sharing_type" value="custom">
-                                                {{'View.ShareCustom' | translate}}
-                                                <span></span>
-                                            </label>
+                                            <!--<label class="radio-inline newinput">-->
+                                            <!--<input type="radio" ng-model="reportModel.sharing_type" value="custom">-->
+                                            <!--{{'View.ShareCustom' | translate}}-->
+                                            <!--<span></span>-->
+                                            <!--</label>-->
                                         </div>
-                                        <div class="shared-users" ng-if="reportModel.sharing_type === 'custom'">
-                                            <label class="control-label">{{'View.SharedUsers' | translate}}:</label>
-                                            <tags-input name="shares"
-                                                        class="shared-users-input form-control"
-                                                        ng-model="reportModel.shares"
-                                                        display-property="full_name"
-                                                        key-property="id"
-                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        add-from-autocomplete-only="true">
-                                                <auto-complete source="lookupUser($query)"
-                                                               min-length="0"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
+                                        <!--<div class="shared-users" ng-if="reportModel.sharing_type === 'custom'">-->
+                                        <!--<label class="control-label">{{'View.SharedUsers' | translate}}:</label>-->
+                                        <!--<tags-input name="shares"-->
+                                        <!--class="shared-users-input form-control"-->
+                                        <!--ng-model="reportModel.shares"-->
+                                        <!--display-property="full_name"-->
+                                        <!--key-property="id"-->
+                                        <!--placeholder="{{'Common.MultiselectPlaceholder' | translate}}"-->
+                                        <!--replace-spaces-with-dashes="false"-->
+                                        <!--add-from-autocomplete-only="true">-->
+                                        <!--<auto-complete source="lookupUser($query)"-->
+                                        <!--min-length="0"-->
+                                        <!--load-on-focus="true"-->
+                                        <!--load-on-empty="true"-->
+                                        <!--max-results-to-show="9999"></auto-complete>-->
 
-                                            </tags-input>
-                                        </div>
+                                        <!--</tags-input>-->
+                                        <!--</div>-->
                                     </div>
                                     <div class="form-group"
                                          ng-show="reportForm.$submitted && (reportForm.reportName.$error.required || reportForm.module.$error.required || reportForm.$error.reportType)">
@@ -172,9 +187,9 @@
                                         </div>
                                     </div>
                                 </div>
-                           </div>
+                            </div>
 
-                            <div class="section" id="section2" ng-show="wizardStep == 1">
+                            <div class="section" id="section2" ng-show="wizardStep === 1">
                                 <h4>Filter Criteria</h4>
                                 <div class="panel">
 
@@ -421,22 +436,12 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="wizard-buttons text-right">
-                                        <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                                        <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">
-                                            {{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left"
-                                                                                 style="margin-top: 3px;"></i></button>
-                                        <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="step2()">
-                                            {{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right"
-                                                                             style="margin-top: 3px;"></i>
-                                        </button>
-                                    </div>
+
                                 </div>
                             </div>
 
-                            <div class="section" id="section3" ng-show="wizardStep == 2">
-                                <div class="panel"  ng-init="setFields()" ng-if="reportModel.report_type=='tabular'">
+                            <div class="section" id="section3" ng-show="wizardStep === 2">
+                                <div class="panel" ng-init="setFields()" ng-if="reportModel.report_type=='tabular'">
 
                                     <div class="row">
                                         <div class="col-sm-12">
@@ -470,304 +475,263 @@
 
                                 </div>
 
-                                <div class="subpanel-body  custom-body group-area"
-                                     ng-if="reportModel.report_type=='summary'"
-                                     style="padding: 0;">
-                                    <div class="sub-tab-body">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="subpanel">
-                                                    <h5 class="subpanel-heading">{{'Report.GroupArea' | translate}}</h5>
-                                                    <div class="subpanel-body">
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.group_field.$invalid}">
-                                                                    <label>
-                                                                        <span class="required-field">*</span>{{
-                                                                        'Report.GroupArea'
-                                                                        | translate
-                                                                        }}:
-                                                                    </label>
-                                                                    <select class="form-control"
-                                                                            name="group_field"
-                                                                            ng-model="reportModel.group_field"
-                                                                            ng-change="changeGroupField()"
-                                                                            required
-                                                                            ng-options="o.name as o.label for o in fields.availableFields">
-                                                                        <option value="">
-                                                                            {{'Common.Select' | translate}}
-                                                                        </option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label for="sel2">
-                                                                        {{
-                                                                        'Report.OrderArea' |
-                                                                        translate
-                                                                        }}:
-                                                                    </label>
-                                                                    <select class="form-control"
-                                                                            ng-model="reportModel.sort_field" id="sel2"
-                                                                            ng-options="o.name as o.label for o in fields.availableFields">
-                                                                        <option value="">
-                                                                            {{'Common.Select' | translate}}
-                                                                        </option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                            </div>
-                                        </div>
+                                <div class="panel" ng-if="reportModel.report_type=='summary'">
+                                    <h4>{{'Report.GroupArea' | translate}}</h4>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.group_field.$invalid}">
+                                        <label class="control-label">
+                                            {{ 'Report.GroupArea'| translate }}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
+                                        <select class="form-control"
+                                                name="group_field"
+                                                ng-model="reportModel.group_field"
+                                                ng-change="changeGroupField()"
+                                                required
+                                                ng-options="o.name as o.label for o in fields.availableFields">
+                                            <option value="">
+                                                {{'Common.Select' | translate}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sel2">
+                                            {{
+                                            'Report.OrderArea' |
+                                            translate
+                                            }}:
+                                        </label>
+                                        <select class="form-control"
+                                                ng-model="reportModel.sort_field" id="sel2"
+                                                ng-options="o.name as o.label for o in fields.availableFields">
+                                            <option value="">
+                                                {{'Common.Select' | translate}}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="subpanel-body custom-body" style="padding: 0;">
-                                    <div class="sub-tab-body">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="subpanel">
-                                                    <h5 class="subpanel-heading">
-                                                        {{
-                                                        'Report.CalculationFields' |
-                                                        translate
-                                                        }}
-                                                    </h5>
-                                                    <div class="subpanel-body">
-                                                        <div class="row row-custom">
-                                                            <div class="col-sm-12 table-responsive">
-                                                                <label style="margin-bottom: 15px;" ng-show="">
-                                                                    Not :Eğer
-                                                                    herhangi bir seçim
-                                                                    alanı seçilmes kayıt saysını
-                                                                    hesaplama alana olarak setlenir
-                                                                </label>
-                                                                <br>
 
-                                                                <table class="table calculation-area-table">
-                                                                    <thead>
-                                                                    <tr>
-                                                                        <th style="text-align: center;"></th>
-                                                                        <th style="text-align: center;">
-                                                                            {{'Report.sum' | translate}}
-                                                                        </th>
-                                                                        <th style="text-align: center;">
-                                                                            {{'Report.avg' | translate}}
-                                                                        </th>
-                                                                        <th style="text-align: center;">
-                                                                            {{ 'Report.min' | translate }}
-                                                                        </th>
-                                                                        <th style="text-align: center;">
-                                                                            {{'Report.max' | translate }}
-                                                                        </th>
-                                                                        <th style="text-align: center;">
+                                <div class="panel table-responsive">
+                                    <h4> {{ 'Report.CalculationFields' | translate}} </h4>
 
-                                                                        </th>
-                                                                    </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    <tr ng-repeat="field in numberField">
-                                                                        <td class="text-center"> {{field.label}}</td>
-                                                                        <td class="text-center">
-                                                                            <input type="radio"
-                                                                                   ng-model="field.Aggregation"
-                                                                                   ng-click="aggregationChange({field:field.name,aggregation_type:'sum'},field)"
-                                                                                   value="sum-{{field.name}}"
-                                                                                   name="{{ reportModel.report_type === 'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
-                                                                                   style="">
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <input type="radio"
-                                                                                   ng-model="field.Aggregation"
-                                                                                   value="avg-{{field.name}}"
-                                                                                   ng-click="aggregationChange({field:field.name,aggregation_type:'avg'},field)"
-                                                                                   name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
-                                                                                   style="">
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <input type="radio"
-                                                                                   ng-model="field.Aggregation"
-                                                                                   value="min-{{field.name}}"
-                                                                                   ng-click="aggregationChange({field:field.name,aggregation_type:'min'},field)"
-                                                                                   name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
-                                                                                   style="">
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <input type="radio"
-                                                                                   ng-model="field.Aggregation"
-                                                                                   value="max-{{field.name}}"
-                                                                                   ng-click="aggregationChange({field:field.name,aggregation_type:'max'},field)"
-                                                                                   name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
-                                                                                   style="">
-                                                                        </td>
-                                                                        <td class="text-center"
-                                                                            ng-click="removeSelectAggregation(field)">
-                                                                            <input type="button" class="btn btn-custom"
-                                                                                   ng-click="removeSelectAggregation(field)"
-                                                                                   value="{{'Report.RemoveSelection' | translate }}"/>
-                                                                        </td>
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th class="text-center">
+                                                {{'Report.sum' | translate}}
+                                            </th>
+                                            <th class="text-center">
+                                                {{'Report.avg' | translate}}
+                                            </th>
+                                            <th class="text-center">
+                                                {{ 'Report.min' | translate }}
+                                            </th>
+                                            <th class="text-center">
+                                                {{'Report.max' | translate }}
+                                            </th>
+                                            <th class="text-center"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="field in numberField">
+                                            <td> {{field.label}}</td>
+                                            <td class="text-center">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="field.Aggregation"
+                                                           ng-click="aggregationChange({field:field.name,aggregation_type:'sum'},field)"
+                                                           value="sum-{{field.name}}"
+                                                           name="{{ reportModel.report_type === 'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                    >
+                                                    <span></span>
+                                                </label>
 
-                                                                    </tr>
-                                                                    <tr ng-if="reportModel.report_type !=  'tabular'">
-                                                                        <td class="text-center">
-                                                                            {{'Report.count' | translate}}
-                                                                        </td>
-                                                                        <td colspan="5" class="text-center">
-                                                                            <input type="radio"
-                                                                                   ng-model="countField.Aggregation"
-                                                                                   ng-click="aggregationChange({field:'created_by',aggregation_type:'count'})"
-                                                                                   value="count-created_by"
-                                                                                   name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : 'created_at' }}"
-                                                                                   style="">
-                                                                        </td>
-                                                                    </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="field.Aggregation"
+                                                           value="avg-{{field.name}}"
+                                                           ng-click="aggregationChange({field:field.name,aggregation_type:'avg'},field)"
+                                                           name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                           style="">
+                                                    <span></span>
+                                                </label>
+                                            </td>
+                                            <td class="text-center">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="field.Aggregation"
+                                                           value="min-{{field.name}}"
+                                                           ng-click="aggregationChange({field:field.name,aggregation_type:'min'},field)"
+                                                           name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                    >
+                                                    <span></span>
+                                                </label>
+                                            </td>
+                                            <td class="text-center">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="field.Aggregation"
+                                                           value="max-{{field.name}}"
+                                                           ng-click="aggregationChange({field:field.name,aggregation_type:'max'},field)"
+                                                           name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                           style="">
+                                                    <span></span>
+                                                </label>
+                                            </td>
+                                            <td class="text-center"
+                                                ng-click="removeSelectAggregation(field)">
+                                                <input type="button" class="btn add-button btn-radius"
+                                                       ng-click="removeSelectAggregation(field)"
+                                                       value="Clean"/>
+                                            </td>
 
-                                            </div>
-                                        </div>
+                                        </tr>
+                                        <tr ng-if="reportModel.report_type !=  'tabular'">
+                                            <td>
+                                                {{'Report.count' | translate}}
+                                            </td>
+                                            <td colspan="5" class="text-center">
+                                                <label class="radio-inline newinput">
+                                                    <input type="radio"
+                                                           ng-model="countField.Aggregation"
+                                                           ng-click="aggregationChange({field:'created_by',aggregation_type:'count'})"
+                                                           value="count-created_by"
+                                                           name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : 'created_at' }}"
+                                                           style="">
+                                                    <span></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
 
-                                    </div>
-                                </div>
-                                <div class="subpanel-body  custom-body group-area"
-                                     ng-if="reportModel.report_type=='summary'"
-                                     style="padding: 0;">
-                                    <div class="sub-tab-body">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="subpanel">
-                                                    <h5 class="subpanel-heading">{{'Report.Chart.Name' |
-                                                        translate}}</h5>
-                                                    <div class="subpanel-body">
-                                                        <div class="row">
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.chartTypes.$invalid}">
-                                                                    <label for="chartTypes">
-                                                                        {{'Report.Chart.Type' | translate}} :
-                                                                    </label>
-                                                                    <select class="form-control" id="chartTypes"
-                                                                            ng-model="reportModel.chart.type"
-                                                                            name="chartTypes"
-                                                                            required
-                                                                            ng-options="o.name as o.label for o in chartTypes">
-                                                                        <option value="">
-                                                                            {{'Common.Select' | translate}}
-                                                                        </option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.xaxis_name.$invalid}">
-                                                                    <label for="xaxis_name">
-                                                                        {{
-                                                                        'Report.Chart.XaxisName' |
-                                                                        translate
-                                                                        }}:
-                                                                    </label>
-                                                                    <input class="form-control"
-                                                                           id="xaxis_name"
-                                                                           required
-                                                                           ng-model="reportModel.chart.xaxis_name"
-                                                                           name="xaxis_name"/>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                                                    <label for="yaxis_name">
-                                                                        {{
-                                                                        'Report.Chart.YaxisName' |
-                                                                        translate
-                                                                        }}:
-                                                                    </label>
-                                                                    <input class="form-control"
-                                                                           id="yaxis_name"
-                                                                           required
-                                                                           ng-model="reportModel.chart.yaxis_name"
-                                                                           name="yaxis_name"/>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                    <!--<div class="row">-->
+                                    <!--<div class="col-sm-12 ">-->
+                                    <!--<label style="margin-bottom: 15px;" ng-show="">-->
+                                    <!--Not :Eğer-->
+                                    <!--herhangi bir seçim-->
+                                    <!--alanı seçilmes kayıt saysını-->
+                                    <!--hesaplama alana olarak setlenir-->
+                                    <!--</label>-->
+                                    <!--<br>-->
 
 
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <!--</div>-->
+                                    <!--</div>-->
 
                                 </div>
 
-                                <div class="subpanel-body  custom-body group-area"
-                                     ng-if="reportModel.report_type=='single'"
-                                     style="padding: 0;">
-                                    <div class="sub-tab-body">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="subpanel">
-                                                    <h5 class="subpanel-heading">{{'Report.Widget.Name' |
-                                                        translate}}</h5>
-                                                    <div class="subpanel-body">
-                                                        <div class="row">
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                                                    <label>
-                                                                        {{
-                                                                        'Report.Widget.Icon' |
-                                                                        translate
-                                                                        }}:
-                                                                    </label>
+                                <div class="panel" ng-if="reportModel.report_type=='summary'">
+                                    <h4>Chart</h4>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.chartTypes.$invalid}">
+                                        <label class="control-label" for="chartTypes">
+                                            {{'Report.Chart.Type' | translate}}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
+                                        <select class="form-control" id="chartTypes"
+                                                ng-model="reportModel.chart.type"
+                                                name="chartTypes"
+                                                required
+                                                ng-options="o.name as o.label for o in chartTypes">
+                                            <option value="">
+                                                {{'Common.Select' | translate}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.xaxis_name.$invalid}">
+                                        <label class="control-label" for="xaxis_name">
+                                            {{ 'Report.Chart.XaxisName' | translate }}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
+                                        <input class="form-control"
+                                               id="xaxis_name"
+                                               required
+                                               ng-model="reportModel.chart.xaxis_name"
+                                               name="xaxis_name"/>
+                                    </div>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
+                                        <label class="control-label" for="yaxis_name">
+                                            {{ 'Report.Chart.YaxisName' | translate}}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
+                                        <input class="form-control"
+                                               id="yaxis_name"
+                                               required
+                                               ng-model="reportModel.chart.yaxis_name"
+                                               name="yaxis_name"/>
+                                    </div>
+                                </div>
 
-                                                                    <button type="button" data-container="form"
-                                                                            class="form-control btn btn-default"
-                                                                            data-placeholder="{{'Common.Icon' | translate}}-"
-                                                                            ng-model="reportModel.widget.icon"
-                                                                            data-html="1" data-toggle="true"
-                                                                            bs-options="icon.value as icon.label for icon in icons"
-                                                                            bs-select>
-                                                                        <span class="caret"></span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group"
-                                                                     ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
-                                                                    <label>
-                                                                        {{
-                                                                        'Report.Widget.Color' |
-                                                                        translate
-                                                                        }}:
-                                                                    </label>
-                                                                    <input name="colorpicker" type="color"
-                                                                           class="form-control"
-                                                                           required
-                                                                           ng-model="reportModel.widget.color">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                <div class="panel" ng-if="reportModel.report_type=='single'">
+                                    <h4>{{'Report.Widget.Name' | translate}}</h4>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
+                                        <label>
+                                            {{ 'Report.Widget.Icon' | translate }}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
 
+                                        <button type="button" data-container="form"
+                                                class="form-control btn btn-default"
+                                                data-placeholder="{{'Common.Icon' | translate}}-"
+                                                ng-model="reportModel.widget.icon"
+                                                data-html="1" data-toggle="true"
+                                                bs-options="icon.value as icon.label for icon in icons"
+                                                bs-select>
+                                            <span class="caret"></span>
+                                        </button>
+                                    </div>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
+                                        <label>
+                                            {{ 'Report.Widget.Color' | translate }}
+                                            <span class="required-label">(required)</span>:
+                                        </label>
 
-                                            </div>
+                                        <input name="colorpicker" type="color"
+                                               class="form-control"
+                                               required
+                                               ng-model="reportModel.widget.color">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section" id="section4" ng-show="wizardStep === 3">
+                                <div class="panel">
+                                    <h4>Summary</h4>
+                                    <div class="row ">
+                                        <label class="col-sm-3 control-label">
+                                            {{'Report.ReportName' | translate}}:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <span> {{ reportModel.name }} </span>
+                                        </div>
+                                    </div>
+                                    <div class="row ">
+                                        <label class="col-sm-3 control-label">
+                                            {{'Report.Module' | translate}}:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <span> {{ module['label_'+language+'_plural'] }} </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row ">
+                                        <label class="col-sm-3 control-label">
+                                            {{'Report.ReportType' | translate}}:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <span> {{ reportModel.report_type  === 'summary' ? ('Report.SummaryReport' | translate) :  reportModel.report_type  === 'single' ? ('Report.Single' | translate) :('Report.ListviewReport' | translate) }} </span>
                                         </div>
                                     </div>
 
                                 </div>
-
                             </div>
                         </form>
                     </div>

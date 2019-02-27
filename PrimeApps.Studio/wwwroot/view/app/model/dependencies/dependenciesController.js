@@ -33,7 +33,7 @@ angular.module('primeapps')
             DependenciesService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
             });
-            
+
             DependenciesService.find($scope.id, $scope.requestModel).then(function (response) {
                 var dependencies = response.data;
                 //  $scope.dependencies = DependenciesService.processDependencies(dependencies);
@@ -88,6 +88,9 @@ angular.module('primeapps')
 
                 angular.forEach($scope.module.fields, function (field) {
 
+                    if (isSystemField(field))
+                        return;
+
                     var existDisplayDependency = $filter('filter')($scope.dependencies, {
                         childField: { name: field.name },
                         dependencyType: 'display'
@@ -130,6 +133,12 @@ angular.module('primeapps')
                         $scope.picklistFields.push(field);
                 });
 
+                function isSystemField(field) {
+                    if (systemRequiredFields.all.indexOf(field.name) > -1 || (systemRequiredFields[$scope.module.name] && systemRequiredFields[$scope.module.name].indexOf(field.name) > -1))
+                        return true;
+
+                    return false;
+                }
             };
 
             var getDependencyTypes = function () {
@@ -195,7 +204,6 @@ angular.module('primeapps')
                         case 'value':
                             if ($scope.currentDependency.type === 'list_value')
                                 return $scope.picklistFields;
-
                             else
                                 return $scope.parentValueFields;
                     }
@@ -212,6 +220,7 @@ angular.module('primeapps')
                                 if (field.name === $scope.currentDependency.parent_field || field.deleted)
                                     field.hidden = true;
                             });
+
                             return $scope.childDisplayFields;
 
                         case 'value':
@@ -405,7 +414,7 @@ angular.module('primeapps')
 
             var prepareDependency = function () {
                 getFields();
-               // getDependencyTypes();
+                // getDependencyTypes();
                 getValueChangeTypes();
                 var dependency = $scope.currentDependency;
                 if (!dependency.isNew) {

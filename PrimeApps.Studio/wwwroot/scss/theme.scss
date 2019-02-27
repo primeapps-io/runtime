@@ -1790,6 +1790,11 @@ button, select {
       select {
         background-color: rgba(206, 4, 4, 0.15) !important;
       }
+      .newinput{
+        span{
+          background-color: rgba(206, 4, 4, 0.15) !important;
+        }
+      }
     }
     &.bottom0 {
       margin-bottom: 0px !important;

@@ -96,14 +96,14 @@ namespace PrimeApps.App.Controllers
 
 			var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
 			var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			//if (tenantUser == null)
 			//{
 			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
-			}
+
+			tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
+
 			var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
 			//cacheHelper.Set(cacheKeyTenantUser, tenantUser);

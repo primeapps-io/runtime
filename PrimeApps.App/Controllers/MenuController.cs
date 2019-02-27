@@ -59,10 +59,10 @@ namespace PrimeApps.App.Controllers
 
 			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
-			}
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+			tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
+
 			var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
 			var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
 			//TODO Removed
@@ -152,14 +152,14 @@ namespace PrimeApps.App.Controllers
 						break;
 					case "timesheet":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasTimesheetPermission = UserHelper.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, currentProfile);//29 is timesheet module id
+						var hasTimesheetPermission = UserHelper.CheckPermission(PermissionEnum.Read, 29, EntityType.Module, currentProfile);//29 is timesheet module id
 
 						if (hasTimesheetPermission)
 							return true;
 						break;
 					case "timetrackers":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasTimetrackersPermission = UserHelper.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, currentProfile);//35 is timetrackers module id
+						var hasTimetrackersPermission = UserHelper.CheckPermission(PermissionEnum.Read, 35, EntityType.Module, currentProfile);//35 is timetrackers module id
 
 						if (hasTimetrackersPermission)
 							return true;
@@ -170,7 +170,7 @@ namespace PrimeApps.App.Controllers
 							return true;
 						break;
 					case "expense":
-						var hasExpensePermission = UserHelper.CheckPermission(PermissionEnum.Write, 20, EntityType.Module, currentProfile); //20 is masraflar module id
+						var hasExpensePermission = UserHelper.CheckPermission(PermissionEnum.Read, 20, EntityType.Module, currentProfile); //20 is masraflar module id
 						if (hasExpensePermission)
 							return true;
 						break;

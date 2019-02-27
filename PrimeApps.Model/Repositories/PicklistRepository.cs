@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Items)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
-            picklist.Items = picklist.Items.OrderBy(x => x.Order).ToList();
+            picklist.Items = picklist.Items.Where(q => !q.Deleted).OrderBy(x => x.Order).ToList();
 
             return picklist;
         }

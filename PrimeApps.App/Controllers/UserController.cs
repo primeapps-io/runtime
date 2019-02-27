@@ -261,13 +261,13 @@ namespace PrimeApps.App.Controllers
 			var acc = new AccountInfo();
 			var apps = new List<UserAppInfo>();
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				if (previewMode == "app")
-					acc.user = await _userRepository.GetUserInfoAsync(1, false);
-				else
-					acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
-			}
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+			if (previewMode == "app")
+				acc.user = await _userRepository.GetUserInfoAsync(1, false);
+			else
+				acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+
 			if (acc.user != null)
 			{
 				var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
@@ -288,11 +288,9 @@ namespace PrimeApps.App.Controllers
 				acc.user.appId = AppUser.AppId;
 				acc.apps = apps;
 
-				if (!string.IsNullOrEmpty(previewMode))
-				{
-					if (acc.user.deactivated && previewMode != "app")
-						throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
-				}
+				if (acc.user.deactivated && previewMode != "app")
+					throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
+
 				return Ok(acc);
 			}
 

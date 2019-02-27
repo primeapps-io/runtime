@@ -304,7 +304,7 @@ angular.module('primeapps')
 
             $scope.getDownloadUrlExcel = function (module) {
                 module = module.name;
-                $window.open("/attach/export_excel?module=" + module + '&locale=en', "_blank");
+                $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
             };
 
             $scope.getDownloadUrl = function (template) {

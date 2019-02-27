@@ -35,6 +35,7 @@ namespace PrimeApps.App.Bpm.Steps
 		public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
 		{
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			if (context == null)
 				throw new NullReferenceException();
@@ -45,10 +46,8 @@ namespace PrimeApps.App.Bpm.Steps
 			var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
 			var _currentUser = new CurrentUser { };
 
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				_currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-			}
+			_currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
 			var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
 
 			if (newRequest.IsNullOrEmpty())

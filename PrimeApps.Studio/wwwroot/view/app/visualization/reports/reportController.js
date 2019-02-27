@@ -6,8 +6,8 @@ angular.module('primeapps')
         function ($rootScope, $scope, $location, $filter, $timeout, $state, helper, ModuleService, dragularService, ReportsService, operators) {
 
             $scope.reportModel = {};
-            $scope.reportModel.category_id = parseInt($location.search().categoryId);
-            $scope.ReportId = parseInt($location.search().Id);
+            //$scope.reportModel.category_id = parseInt($location.search().categoryId);
+            //$scope.ReportId = parseInt($location.search().Id);
             $scope.isEdit = $scope.ReportId > 0;
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
@@ -560,12 +560,35 @@ angular.module('primeapps')
                 $scope.reportModel.aggregations.splice(index, 1);
             };
 
-            $scope.validate = function (tabClick) {
+            $scope.validate = function (tab) {
                 $scope.reportForm.$submitted = true;
-
-
-                if ($scope.reportForm.$valid)
+                if (tab === 'info') {
+                    $scope.wizardStep = 0;
                     return true;
+                }
+
+
+                if (tab === 'filter' || tab === 'area' || tab === 'summary') {
+                    if ((tab === 'area' || tab === 'filter') && $scope.reportForm.report_type.$valid && $scope.reportForm.module_id.$valid && $scope.reportForm.category_id.$valid && $scope.reportForm.name.$valid) {
+
+                        if (tab === 'filter')
+                            $scope.wizardStep = 1;
+
+                        if (tab === 'area') {
+                            $scope.wizardStep = 2;
+                            $scope.reportForm.$submitted = false;
+                            return true
+                        }
+
+                        return true;
+                    }
+
+                    if (tab === 'summary' && $scope.reportForm.$valid) {
+                        $scope.wizardStep = 3;
+                        return true;
+                    }
+
+                }
 
                 return false;
             };
@@ -766,12 +789,12 @@ angular.module('primeapps')
                 $scope.reportForm.$submitted = true;
                 if ($scope.reportForm.$valid) {
                     $scope.wizardStep = 3;
-                    // $scope.setValideStep3();
+
                 }
 
             };
 
-           $scope.stepBack = function (step) {
+            $scope.stepBack = function (step) {
                 $scope.wizardStep = step;
             };
 
