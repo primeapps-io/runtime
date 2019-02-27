@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config) {
+    .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config', '$interval',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config, $interval) {
 
             $scope.$parent.activeMenuItem = 'reports';
             $rootScope.breadcrumblist[2].title = 'Reports';
@@ -78,14 +78,14 @@ angular.module('primeapps')
 
 
             $scope.openCategoryModal = function () {
-
+                $scope.bindPicklistDragDrop();
                 $scope.categoryModal = $scope.categoryModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/visualization/reports/categoryModal.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/visualization/reports/categoryModal.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.categoryModal.$promise.then(function () {
                     $scope.categoryModal.show();
@@ -94,22 +94,22 @@ angular.module('primeapps')
 
             $scope.openReportDetail = function () {
                 $scope.reportModal = $scope.reportModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/visualization/reports/report.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false,
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/visualization/reports/reportsService.js',
-                                cdnUrl + 'view/app/visualization/reports/reportController.js'
-                            ]);
-                        }]
-                    },
-                    controller: 'ReportController'
+                        scope: $scope,
+                        templateUrl: 'view/app/visualization/reports/report.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false,
+                        resolve: {
+                            plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                                return $ocLazyLoad.load([
+                                    cdnUrl + 'view/app/visualization/reports/reportsService.js',
+                                    cdnUrl + 'view/app/visualization/reports/reportController.js'
+                                ]);
+                            }]
+                        },
+                        controller: 'ReportController'
 
-                });
+                    });
 
                 $scope.reportModal.$promise.then(function () {
                     $scope.reportModal.show();
@@ -158,7 +158,57 @@ angular.module('primeapps')
 
                     });
 
-            }
+            };
 
+            // Drag & Drop For Items list
+            $scope.bindPicklistDragDrop = function () {
+                $timeout(function () {
+                    if ($scope.drakePicklist) {
+                        $scope.drakePicklist.destroy();
+                        $scope.drakePicklist = null;
+                    }
+
+                    var picklistContainer = document.querySelector('#picklistContainer');
+                    var picklistOptionContainer = document.querySelector('#picklistOptionContainer');
+                    var rightTopBar = document.getElementById('rightTopBar');
+                    var rightBottomBar = document.getElementById('rightBottomBar');
+                    var timer;
+
+                    $scope.drakePicklist = dragularService([picklistContainer], {
+                        scope: $scope,
+                        containersModel: [$scope.reportCategory],
+                        classes: {
+                            mirror: 'gu-mirror-option pickitemcopy',
+                            transit: 'gu-transit-option'
+                        },
+                        lockY: true,
+                        moves: function (el, container, handle) {
+                            return handle.classList.contains('option-handle');
+                        }
+
+                    });
+
+                    registerEvents(rightTopBar, picklistOptionContainer, -5);
+                    registerEvents(rightBottomBar, picklistOptionContainer, 5);
+
+                    function registerEvents(bar, container, inc, speed) {
+                        if (!speed) {
+                            speed = 10;
+                        }
+
+                        angular.element(bar).on('dragularenter', function () {
+                            container.scrollTop += inc;
+
+                            timer = $interval(function moveScroll() {
+                                container.scrollTop += inc;
+                            }, speed);
+                        });
+
+                        angular.element(bar).on('dragularleave dragularrelease', function () {
+                            $interval.cancel(timer);
+                        });
+                    }
+                }, 100);
+            };
         }
     ]);
