@@ -32,6 +32,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<AppDraft> Get(string name)
         {
             return await DbContext.Apps
+                .Include(x => x.Setting)
                 .Where(x => x.Name == name && !x.Deleted)
                 .FirstOrDefaultAsync();
         }
@@ -40,7 +41,8 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Apps
                 .Where(x => x.Id == id && !x.Deleted)
-                .Include(x => x.Organization)
+                //.Include(x => x.Organization)
+                .Include(x => x.Setting)
                 .FirstOrDefaultAsync();
         }
 

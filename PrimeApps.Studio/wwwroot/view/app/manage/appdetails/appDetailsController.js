@@ -107,8 +107,8 @@ angular.module('primeapps')
                 $scope.authTheme.banner = authTheme.banner[0].image;
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
-                $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
-                $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
+                $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
+                $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
                 $scope.authTheme.favicon = authTheme.favicon;
                 $scope.authTheme.logo = authTheme.logo;
             });

@@ -55,6 +55,16 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.preview = function () {
+            if (!$rootScope.currentApp.settings || ($rootScope.currentApp.settings && !$rootScope.currentApp.settings.master_user)) {
+                $state.go('studio.app.appDetails', {
+                    orgId: $rootScope.currentOrgId,
+                    appId: $rootScope.currentAppId
+                });
+
+                toastr.warning('Master user can not be empty for preview application.');
+                return;
+            }
+
             $rootScope.previewActivating = true;
             LayoutService.getPreviewToken()
                 .then(function (response) {
@@ -163,12 +173,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/newOrganization.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                scope: $scope,
+                templateUrl: 'view/organization/newOrganization.html',
+                animation: 'am-fade-and-slide-right',
+                backdrop: 'static',
+                show: false
+            });
             $scope.organizationFormModal.$promise.then(function () {
                 $scope.organizationFormModal.show();
 
@@ -272,7 +282,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
 
-                    $state.go('studio.apps', { orgId: response.data });
+                    $state.go('studio.apps', {orgId: response.data});
 
                 })
                 .catch(function () {
@@ -299,7 +309,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             if (!newOrganizationForm.$valid)
                 return false;
         };
-
 
     }
 

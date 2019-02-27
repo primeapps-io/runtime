@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce','icons',
-        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce,icons) {
+    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'icons',
+        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons) {
             return {
                 getAll: function () {
                     var promises = [];
@@ -272,28 +272,29 @@ angular.module('primeapps')
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
                     promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
 
-                    return $q.all(promises).then(function (response) {
-                        $rootScope.appModules = response[0].data;
-                        $rootScope.appProfiles = response[1].data;
-                        var result = response[2];
-                        $rootScope.currentApp = result.data;
-                        $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
+                    return $q.all(promises)
+                        .then(function (response) {
+                            $rootScope.appModules = response[0].data;
+                            $rootScope.appProfiles = response[1].data;
+                            var result = response[2];
+                            $rootScope.currentApp = result.data;
+                            $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 
-                        if (!angular.isArray($rootScope.breadcrumblist))
-                            $rootScope.breadcrumblist = [{}, {}, {}];
+                            if (!angular.isArray($rootScope.breadcrumblist))
+                                $rootScope.breadcrumblist = [{}, {}, {}];
 
-                        $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
-                        $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentApp.organization_id;
+                            $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
+                            $rootScope.breadcrumblist[0].link = '#/apps?orgId=' + $rootScope.currentApp.organization_id;
 
-                        $rootScope.breadcrumblist[1] = {
-                            title: result.data.label,
-                            link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
-                        };
+                            $rootScope.breadcrumblist[1] = {
+                                title: result.data.label,
+                                link: '#/org/' + $rootScope.currentApp.organization_id + '/app/' + $rootScope.currentApp.id + '/overview'
+                            };
 
-                        $rootScope.menuTopTitle = $rootScope.currentApp.label;
-                        deferred.resolve(true);
-                        return deferred.promise;
-                    });
+                            $rootScope.menuTopTitle = $rootScope.currentApp.label;
+                            deferred.resolve(true);
+                            return deferred.promise;
+                        });
 
                     return deferred.promise;
                 }
