@@ -116,12 +116,14 @@ namespace PrimeApps.App.Controllers
 		private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
 		{
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
 			var lang = Request.Cookies["_lang"];
 			var language = lang ?? "tr";
 
-			var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);			
+			var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
 			ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
 			var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 			if (!string.IsNullOrEmpty(storageUrl))
@@ -136,7 +138,7 @@ namespace PrimeApps.App.Controllers
 				if (!string.IsNullOrEmpty(cdnUrl))
 				{
 					ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
-					ViewBag.CdnUrlStatic  = cdnUrl + "/" + versionStatic + "/";
+					ViewBag.CdnUrlStatic = cdnUrl + "/" + versionStatic + "/";
 				}
 			}
 			else
@@ -149,10 +151,9 @@ namespace PrimeApps.App.Controllers
 			var hasAdminRight = false;
 
 			var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
-			if (!string.IsNullOrEmpty(previewMode))
-			{
-				componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
-			}
+
+			componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+
 			var components = await componentRepository.GetByType(ComponentType.Component);
 
 			var globalSettings = await componentRepository.GetGlobalSettings();
@@ -166,10 +167,9 @@ namespace PrimeApps.App.Controllers
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var userRepository = new UserRepository(databaseContext, _configuration))
 				{
-					if (!string.IsNullOrEmpty(previewMode))
-					{
-						userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
-					}
+
+					userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+
 					var userInfo = await userRepository.GetUserInfoAsync(userId);
 
 					if (userInfo != null)

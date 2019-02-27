@@ -13,6 +13,11 @@
     margin-top: 0px;
 }
 
+#myDiagramDiv canvas {
+    outline: none !important;
+}
+
+
 #description {
     float: left;
     margin-left: 4px;

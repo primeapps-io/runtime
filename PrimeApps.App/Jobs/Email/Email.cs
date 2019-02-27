@@ -243,6 +243,8 @@ namespace PrimeApps.App.Jobs.Email
 			var matches = pattern.Matches(content);
 
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 
 			Tenant subscriber = null;
 			using (var scope = _serviceScopeFactory.CreateScope())
@@ -279,10 +281,9 @@ namespace PrimeApps.App.Jobs.Email
 				using (var picklistRepository = new PicklistRepository(tenantDatabaseContext, _configuration))
 				using (var recordRepository = new RecordRepository(tenantDatabaseContext, _configuration))
 				{
-					if (!string.IsNullOrEmpty(previewMode))
-					{
-						moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-					}
+
+					moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
 					var module = await moduleRepository.GetById(moduleId);
 					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
 					var record = recordRepository.GetById(module, recordId, false, lookupModules, true);

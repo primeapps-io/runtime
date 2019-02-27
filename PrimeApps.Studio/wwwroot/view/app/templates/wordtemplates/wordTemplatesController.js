@@ -260,7 +260,7 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-
+                $scope.tempalteFieldName = "/" + $filter('translate')('Setup.Templates.TemplateFieldName');
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',

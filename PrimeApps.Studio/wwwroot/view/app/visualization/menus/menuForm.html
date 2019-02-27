@@ -11,11 +11,11 @@
                         <li ng-if="wizardStep > 0">
                             <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue" ng-click="validate(menuForm, false)"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                         </li>
-                        <li ng-if="wizardStep < 1">
+                        <li ng-if="!id && wizardStep < 1">
                             <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm, true)">{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i></button>
                         </li>
-                        <li ng-if="wizardStep === 1">
-                            <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        <li ng-if="id || wizardStep === 1">
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -39,18 +39,18 @@
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
                                         <label class="control-label">{{'Menu.MenuName'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                        <input name="name_menu" class="form-control" maxlength="50" required ng-model="menu.name"/>
+                                        <input name="name_menu" class="form-control" maxlength="50" required ng-model="menu.name" />
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}:</label>
+                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}</label>
                                         <textarea rows="2" name="menu_description" class="form-control" maxlength="200" auto-grow ng-model="menu.description"></textarea>
                                     </div>
 
                                     <div class=" form-group">
 
                                         <label class="control-label newinput">
-                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected"/><span></span>
+                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default" ng-model="$parent.menu.default" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
                                         </label>
                                     </div>
 
@@ -89,7 +89,7 @@
                                 <div class="panel">
                                     <div class="form-group">
                                         <div>
-                                            <label class="control-label">{{'Menu.MenuElementType'|translate}}:</label>
+                                            <label class="control-label">{{'Menu.MenuElementType'|translate}}</label>
                                         </div>
                                         <label class="radio-inline newinput">
                                             <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}<span></span>
@@ -100,7 +100,7 @@
                                     </div>
 
                                     <div ng-show="menu.display" class="form-group">
-                                        <label class="control-label">{{'Menu.Modules'|translate}}:</label>
+                                        <label class="control-label">{{'Menu.Modules'|translate}}</label>
                                         <select
                                                 class="form-control ng-animate-disabled"
                                                 name="module_name"
@@ -111,8 +111,8 @@
                                     </div>
 
                                     <div ng-show="!menu.display" class="form-group">
-                                        <label class="control-label">{{'Menu.CategoryName' | translate}}:</label>
-                                        <input name="name" class="form-control " maxlength="50" ng-model="menu.menuItem"/>
+                                        <label class="control-label">{{'Menu.CategoryName' | translate}}</label>
+                                        <input name="name" class="form-control " maxlength="50" ng-model="menu.menuItem" />
                                     </div>
 
                                     <!--<div ng-show="!menu.display" class="form-group">-->
@@ -123,7 +123,7 @@
                                     <!--bs-select><span class="caret"></span></button>-->
                                     <!--</div>-->
                                     <div ng-show="!menu.display" class="form-group icon-search-list">
-                                        <label class="control-label">{{'Common.Icon' | translate}}:</label>
+                                        <label class="control-label">{{'Common.Icon' | translate}}</label>
                                         <ui-select ng-model="menu.menu_icon">
                                             <ui-select-match placeholder="Select an icon">
                                                 <div ng-bind-html="$select.selected.label || $select.selected"></div>
@@ -150,7 +150,7 @@
 
                                                     <span class="menu-label">{{menuList.no+'. '+(!menuList.isEdit ? (menuList.name ) : "")}}</span>
                                                     <span ng-show="menuList.isEdit">
-                                                        <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name"/>
+                                                        <input class="form-control ng-animate-disabled" maxlength="50" ng-model="menuList.name" />
                                                         <!--<button style="width:120px;" type="button" data-container="form" class="form-control btn btn-default ng-animate-disabled" name="icon"-->
                                                         <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menuList.icon"-->
                                                         <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->
@@ -195,7 +195,7 @@
                                                             </span>
                                                             <span class="menu-label" ng-show="!menu.isEdit && menu.name">{{ menu.menuId + '.' + menu.no+'. '+ menu.name}}</span>
                                                             <span ng-show="menu.isEdit">
-                                                                <input class="form-control" maxlength="50" ng-model="menu.name"/>
+                                                                <input class="form-control" maxlength="50" ng-model="menu.name" />
                                                                 <!--<button style="width: 120px;" type="button" data-container="form" class="form-control btn btn-default" name="icon"-->
                                                                 <!--data-placeholder="{{'Common.Icon' | translate}}-" ng-model="menu.icon"-->
                                                                 <!--data-html="1" data-toggle="true" bs-options="icon.value as icon.label for icon in icons"-->

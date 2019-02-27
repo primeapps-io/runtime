@@ -53,7 +53,7 @@
                             <li>
                                 <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' | translate}} </a>
                             </li>
-                            <li>
+                            <li ng-show="!profile.has_admin_rights">
                                 <a ng-click="$event.stopPropagation();delete(profile)">{{'Common.Delete' | translate}} </a>
                             </li>
                         </ul>
