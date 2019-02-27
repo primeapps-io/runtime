@@ -76,12 +76,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/exceltemplates/excelTemplatesForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewExcelTemplateFormModal.$promise.then(function () {
                     $scope.addNewExcelTemplateFormModal.show();
@@ -91,12 +91,12 @@ angular.module('primeapps')
             $scope.showTemplateGuideModal = function () {
                 // $scope.getDownloadUrl();
                 $scope.excelTemplateGuideModal = $scope.excelTemplateGuideModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/exceltemplates/excelTemplateGuide.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.excelTemplateGuideModal.$promise.then(function () {
                     $scope.excelTemplateGuideModal.show();
@@ -304,7 +304,7 @@ angular.module('primeapps')
 
             $scope.getDownloadUrlExcel = function (module) {
                 module = module.name;
-                $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=en', "_blank");
+                $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
             };
 
             $scope.getDownloadUrl = function (template) {

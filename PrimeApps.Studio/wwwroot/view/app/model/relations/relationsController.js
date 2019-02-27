@@ -81,10 +81,12 @@ angular.module('primeapps')
                 $scope.currentRelation.module = angular.copy(relation.parent_module);
                 $scope.currentRelationState = angular.copy($scope.currentRelation);
 
-                if ($scope.currentRelation.related_module)
-                    RelationsService.getFields($scope.currentRelation, $rootScope.appModules).then(function (fields) {
-                        $scope.fields = fields;
-                    });
+                if ($scope.currentRelation.related_module) {
+
+                    $scope.fields = {}
+                    $scope.module = $scope.currentRelation.module;
+                    $scope.relatedModuleChanged();
+                }
 
                 else
                     $scope.fields = RelationsService.getFields($scope.currentRelation, $rootScope.appModules);
@@ -106,9 +108,6 @@ angular.module('primeapps')
                 });
 
                 $scope.addNewRelationsFormModal.$promise.then(function () {
-                    if (!relation.isNew)
-                        $scope.bindDragDrop();
-
                     $scope.addNewRelationsFormModal.show();
                 });
             };
@@ -181,6 +180,8 @@ angular.module('primeapps')
 
                     if ($scope.currentRelation.related_module && ($scope.currentRelation.related_module.name === 'activities' || $scope.currentRelation.related_module.name === 'mails') && ($scope.module.name != 'activities' || $scope.module.name != 'mails') && $scope.currentRelation.relation_type === 'one_to_many')
                         $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, { name: 'related_to' }, true)[0];
+                    else
+                        $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, { name: $scope.currentRelation.relation_field }, true)[0];
 
                     $scope.currentRelation.display_fields = null;
                     RelationsService.getFields($scope.currentRelation, $rootScope.appModules).then(function (fields) {
@@ -198,17 +199,17 @@ angular.module('primeapps')
             };
 
             $scope.save = function (relationForm) {
-                if (!relationForm.$valid || $scope.fields.selectedFields.length <= 0) {
+                if (!relationForm.$valid) {
                     $scope.background;
                     return;
                 }
-
 
                 $scope.saving = true;
                 if (relationForm.two_way)
                     var relation = relationForm;
                 else
                     relation = angular.copy($scope.currentRelation);
+
                 relation.display_fields = [];
 
                 if ($scope.fields.selectedFields && $scope.fields.selectedFields.length > 0) {
@@ -279,7 +280,6 @@ angular.module('primeapps')
                     else {
                         $scope.loading = true;
                         toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
-                        $scope.saving = false;
                         $scope.addNewRelationsFormModal.hide();
                         $scope.changePage(1);
                     }
@@ -290,7 +290,6 @@ angular.module('primeapps')
 
                     if ($scope.addNewRelationsFormModal) {
                         $scope.addNewRelationsFormModal.hide();
-                        $scope.saving = false;
                     }
                 };
 
@@ -304,7 +303,9 @@ angular.module('primeapps')
                         })
                         .catch(function () {
                             error();
-                        });
+                        }).finally(function () {
+                        $scope.saving = false;
+                    });
                 }
                 else {
                     RelationsService.updateModuleRelation(relation, $scope.currentRelation.module.id)
@@ -313,7 +314,9 @@ angular.module('primeapps')
                         })
                         .catch(function () {
                             error();
-                        });
+                        }).finally(function () {
+                        $scope.saving = false;
+                    });
                 }
             };
 

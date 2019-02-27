@@ -44,7 +44,7 @@
                 <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(rule.id);" type="button" class="action-buttons-delete">
+                        <button ng-click="$event.stopPropagation(); delete(rule);" ladda="rule.deleting" type="button" class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

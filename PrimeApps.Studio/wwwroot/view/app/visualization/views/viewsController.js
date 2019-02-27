@@ -105,6 +105,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (view) {
                 if (view) {
+                    $scope.isNew = false;
                     ViewsService.getView(view.id).then(function (view) {
                         $scope.view = angular.copy(view);
                         $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
@@ -126,6 +127,7 @@ angular.module('primeapps')
                     });
                 }
                 else {
+                    $scope.isNew = true;
                     $scope.view = {};
                     $scope.module = undefined;
                     //moduleChanged($scope.module, true);
