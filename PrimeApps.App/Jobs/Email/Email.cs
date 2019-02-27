@@ -1,32 +1,32 @@
-﻿using PrimeApps.App.Helpers;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
+using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Helpers;
+using PrimeApps.App.Jobs.Messaging;
+using PrimeApps.Model.Common.Cache;
+using PrimeApps.Model.Common.Record;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using PrimeApps.App.ActionFilters;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
-using PrimeApps.App.Jobs.Messaging;
-using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Enums;
-using System;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Jobs.Email
 {
-	/// <summary>
-	/// Schedules and send email messages application wide.
-	/// </summary>
-	public class Email
+    /// <summary>
+    /// Schedules and send email messages application wide.
+    /// </summary>
+    public class Email
 	{
 		private static IConfiguration _configuration;
 		private static IServiceScopeFactory _serviceScopeFactory;
@@ -59,31 +59,25 @@ namespace PrimeApps.App.Jobs.Email
 				// create smtp client and mail message objects
 				SmtpClient smtpClient = null;
 				MailMessage myMessage;
-				var smtpHost = "EmailSMTPHost";
-				var smtpPort = "EmailSMTPPort";
-				var smtpUser = "EmailSMTPUser";
-				var smtpPassword = "EmailSMTPPassword";
-				var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
-				var smtpHost_ = _configuration.GetValue("AppSettings:" + smtpHost + '"', string.Empty);
-				var smtpPort_ = _configuration.GetValue("AppSettings:" + smtpPort + '"', string.Empty);
-				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_))
-				{
-					var smtpUser_ = _configuration.GetValue("AppSettings:" + smtpUser + '"', string.Empty);
-					var smtpPassword_ = _configuration.GetValue("AppSettings:" + smtpPassword + '"', string.Empty);
+				var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
 
-					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_) && !string.IsNullOrEmpty(emailSMTPEnableSsl))
-					{
-						smtpClient = new SmtpClient(smtpHost_, int.Parse(smtpPort_))
-						{
-							UseDefaultCredentials = false,
-							// set credentials
-							Credentials = new NetworkCredential(smtpUser_, smtpPassword_),
-							DeliveryFormat = SmtpDeliveryFormat.International,
-							DeliveryMethod = SmtpDeliveryMethod.Network,
-							EnableSsl = bool.Parse(emailSMTPEnableSsl)
-						};
-					}
-				}
+				if (!string.IsNullOrEmpty(smtpHostSetting))
+				{
+					var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
+					var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
+                    var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);		
+                    var smtpPortSetting = _configuration.GetValue("AppSettings:EmailSMTPPort", string.Empty);
+
+                    smtpClient = new SmtpClient(smtpHostSetting, int.Parse(smtpPortSetting))
+                    {
+                        UseDefaultCredentials = false,
+                        // set credentials
+                        Credentials = new NetworkCredential(smtpUserSetting, smtpPasswordSetting),
+                        DeliveryFormat = SmtpDeliveryFormat.International,
+                        DeliveryMethod = SmtpDeliveryMethod.Network,
+                        EnableSsl = bool.Parse(emailSMTPEnableSsl)
+                    };
+                }
 				// get configuration settings from appsetting and apply them.
 
 				var emailAddress = new EmailAddressAttribute();
@@ -152,33 +146,26 @@ namespace PrimeApps.App.Jobs.Email
 				// create smtp client and mail message objects
 				SmtpClient smtpClient = null;
 				MailMessage myMessage;
-				var smtpHost = "EmailSMTPHost";
-				var smtpPort = "EmailSMTPPort";
-				var smtpUser = "EmailSMTPUser";
-				var smtpPassword = "EmailSMTPPassword";
-				var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
-				var smtpHost_ = _configuration.GetValue("AppSettings:" + smtpHost + '"', string.Empty);
-				var smtpPort_ = _configuration.GetValue("AppSettings:" + smtpPort + '"', string.Empty);
-				if (!string.IsNullOrEmpty(smtpHost_) && !string.IsNullOrEmpty(smtpPort_))
+				var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
+
+				if (!string.IsNullOrEmpty(smtpHostSetting))
 				{
-					var smtpUser_ = _configuration.GetValue("AppSettings:" + smtpUser + '"', string.Empty);
-					var smtpPassword_ = _configuration.GetValue("AppSettings:" + smtpPassword + '"', string.Empty);
+					var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
+					var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
+                    var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
+                    var smtpPortSetting = _configuration.GetValue("AppSettings:EmailSMTPPort", string.Empty);
 
-					if (!string.IsNullOrEmpty(smtpUser_) && !string.IsNullOrEmpty(smtpPassword_) && !string.IsNullOrEmpty(emailSMTPEnableSsl))
-					{
-
-						// get configuration settings from appsetting and apply them.
-						smtpClient = new SmtpClient(smtpHost_, int.Parse(smtpPort_))
-						{
-							UseDefaultCredentials = false,
-							// set credentials
-							Credentials = new NetworkCredential(smtpUser_, smtpPassword_),
-							DeliveryFormat = SmtpDeliveryFormat.International,
-							DeliveryMethod = SmtpDeliveryMethod.Network,
-							EnableSsl = bool.Parse(emailSMTPEnableSsl)
-						};
-					}
-				}
+                    // get configuration settings from appsetting and apply them.
+                    smtpClient = new SmtpClient(smtpHostSetting, int.Parse(smtpPortSetting))
+                    {
+                        UseDefaultCredentials = false,
+                        // set credentials
+                        Credentials = new NetworkCredential(smtpUserSetting, smtpPasswordSetting),
+                        DeliveryFormat = SmtpDeliveryFormat.International,
+                        DeliveryMethod = SmtpDeliveryMethod.Network,
+                        EnableSsl = bool.Parse(emailSMTPEnableSsl)
+                    };
+                }
 				// parse subject and body
 				var subject = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Subject, tenantId, moduleId, recordId, appUser, false));
 				var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, appUser, addRecordSummary));

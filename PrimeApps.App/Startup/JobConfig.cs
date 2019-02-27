@@ -15,19 +15,23 @@ namespace PrimeApps.App
 
 		public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
 		{
-			var enableJobs_ = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
-			if (!string.IsNullOrEmpty(enableJobs_))
+			var enableJobsSetting = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
+
+			if (!string.IsNullOrEmpty(enableJobsSetting))
 			{
-				var enableJobs = bool.Parse(enableJobs_);
-				if (enableJobs)
+				var enableJobs = bool.Parse(enableJobsSetting);
+
+				if (!enableJobs)
 					return;
 			}
 			else
 				return;
+
 			app.UseHangfireServer(new BackgroundJobServerOptions
 			{
 				Queues = new[] { QueueName, "default" }
 			});
+
 			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
 			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
