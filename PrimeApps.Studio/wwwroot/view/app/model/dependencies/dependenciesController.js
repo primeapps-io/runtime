@@ -91,14 +91,8 @@ angular.module('primeapps')
                     if (isSystemField(field))
                         return;
 
-                    var existDisplayDependency = $filter('filter')($scope.dependencies, {
-                        childField: { name: field.name },
-                        dependencyType: 'display'
-                    }, true)[0];
-                    var existValueDependency = $filter('filter')($scope.dependencies, {
-                        childField: { name: field.name },
-                        dependencyType: 'value'
-                    }, true)[0];
+                    var existDisplayDependency = $filter('filter')($scope.dependencies, { child_field: { name: field.name }, dependency_type: 'display' }, true)[0];
+                    var existValueDependency = $filter('filter')($scope.dependencies, { child_field: { name: field.name }, dependency_type: 'value' }, true)[0];
 
                     if (!existDisplayDependency)
                         $scope.childDisplayFields.push(field);
@@ -155,6 +149,7 @@ angular.module('primeapps')
                 $scope.dependencyTypes.push(dependencyTypeValueChange);
             };
             getDependencyTypes();
+
             var getValueChangeTypes = function () {
                 var valueChangeTypeStandard = {};
                 valueChangeTypeStandard.value = 'list_text';
@@ -172,7 +167,6 @@ angular.module('primeapps')
                 $scope.valueChangeTypes.push(valueChangeTypeStandard);
                 $scope.valueChangeTypes.push(valueChangeTypeValueMapping);
                 $scope.valueChangeTypes.push(valueChangeTypeFieldMapping);
-
             };
 
             $scope.dependencyTypeChanged = function () {
