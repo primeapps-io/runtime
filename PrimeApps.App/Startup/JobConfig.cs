@@ -15,10 +15,10 @@ namespace PrimeApps.App
 
 		public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
 		{
-			var enableJobs_ = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
-			if (!string.IsNullOrEmpty(enableJobs_))
+			var enableJobsSetting = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
+			if (!string.IsNullOrEmpty(enableJobsSetting))
 			{
-				var enableJobs = bool.Parse(enableJobs_);
+				var enableJobs = bool.Parse(enableJobsSetting);
 				if (enableJobs)
 					return;
 			}
