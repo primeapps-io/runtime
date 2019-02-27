@@ -567,32 +567,28 @@ angular.module('primeapps')
                     return true;
                 }
 
-                if (tab === 'summary') {
-                    $scope.wizardStep = 3;
-                }
 
-                if (tab === 'filter' || tab === 'area') {
-                    if ($scope.reportForm.report_type.$valid && $scope.reportForm.module_id.$valid && $scope.reportForm.category_id.$valid && $scope.reportForm.name.$valid) {
-                        $scope.wizardStep = 1;
+                if (tab === 'filter' || tab === 'area' || tab === 'summary') {
+                    if ((tab === 'area' || tab === 'filter') && $scope.reportForm.report_type.$valid && $scope.reportForm.module_id.$valid && $scope.reportForm.category_id.$valid && $scope.reportForm.name.$valid) {
 
-                        if (tab === 'area')
+                        if (tab === 'filter')
+                            $scope.wizardStep = 1;
+
+                        if (tab === 'area') {
                             $scope.wizardStep = 2;
+                            $scope.reportForm.$submitted = false;
+                            return true
+                        }
 
                         return true;
                     }
-                    else {
-                        return false;
+
+                    if (tab === 'summary' && $scope.reportForm.$valid) {
+                        $scope.wizardStep = 3;
+                        return true;
                     }
 
-                    if (tab === 'area') {
-                        $scope.wizardStep = 2;
-                        return true
-                    }
                 }
-
-
-                if ($scope.reportForm.$valid)
-                    return true;
 
                 return false;
             };
