@@ -111,7 +111,7 @@ angular.module('primeapps')
                     return dueDateItems;
                 },
 
-                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, dynamicprocessModules) {
+                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity,  picklistUpdateModule, dynamicprocessModules) {
 
                     var workflowModel = {};
                     workflowModel.id = workflow.id;
