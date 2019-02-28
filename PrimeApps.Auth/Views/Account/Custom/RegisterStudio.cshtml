@@ -33,15 +33,6 @@
                 <path class="st5" d="M85.33,27.725,77.523,52.753l-5.157-1.61,7.807-25.028c.566-1.814,2.179-2.925,3.6-2.48S85.9,25.911,85.33,27.725Zm.417-14.456a2.986,2.986,0,1,0,2.985,2.986A2.986,2.986,0,0,0,85.747,13.269Z" fill="#0d6faa"/>
             </svg>
         </a>
-		@if (!string.IsNullOrEmpty(error) && error == "UserExist")
-		{
-			<div class="error">@Localizer[error]</div>
-		}
-	
-		<div class="error-all"></div>
-		<div class="error-email"></div>
-		<div class="error-pass"></div>
-		<div class="error-fullname"></div>
 		
 		<form asp-route="Register" class="login-form" role="form" id="register-form">
 			<div class="form-group">
@@ -57,28 +48,32 @@
 						</label>
 					</div>
 				</div>
+				<div class="error-fullname d-none"></div>
 			</div>
 			<div class="form-group">
 				<label for="Email" class="labelx"><span>@Localizer["Email"]</span>
 					<input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
 				</label>
+				<div class="error-email d-none"></div>
 			</div>
 			<div class="form-group">
 				<label for="Password" class="labelx"><span>@Localizer["Password"]</span>
 					<input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
 				</label>
+				<div class="error-pass d-none"></div>
 			</div>
-	
 			
-			<div class="form-group">
-				<p class="free-info">
-					@Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
-				</p>
+			<div class="free-info">
+				@Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
 			</div>
-			<div class="text-center">
+			<div class="text-center paddingb20">
 				<button type="submit" class="btn btn-login ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
-	
 			</div>
+			<div class="error-all d-none"></div>
+			@if (!string.IsNullOrEmpty(error) && error == "UserExist")
+			{
+				<div class="error2 error">@Localizer[error]</div>
+			}
 		</form>
 	</div>
 </div>

@@ -70,11 +70,35 @@
 .login-page .infotext {
   padding: 0px 0px 20px 0px;
 }
+.login-page .login-form {
+  position: relative;
+}
+.login-page .error {
+  position: absolute;
+  left: 0px;
+  bottom: 10px;
+  width: 100%;
+  text-align: right;
+  display: block !important;
+  color: red;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 15px;
+}
+.login-page .error.error-all, .login-page .error.error2 {
+  text-align: center;
+  bottom: 0px;
+}
 .login-page .studio-banner {
   object-fit: contain;
   position: absolute;
   top: 0;
   right: 0;
+}
+.login-page .form-group {
+  position: relative;
+  margin-bottom: 0px;
+  padding-bottom: 30px;
 }
 .login-page .form-group .form-control {
   border-radius: 0.35em !important;
@@ -89,6 +113,7 @@
   position: relative;
   ont-size: 14px;
   text-align: left;
+  margin-bottom: 0px;
 }
 .login-page .form-group label.labelx span {
   color: rgba(255, 255, 255, 0.5);
@@ -130,12 +155,8 @@
   padding-left: 0;
   padding-right: 0;
 }
-.login-page .error {
-  text-align: center;
-  color: red;
-  font-weight: 400;
-  padding: 5px 0px;
-  font-size: 12px;
+.login-page .form-group.error {
+  margin-bottom: 0px;
 }
 .login-page .login-sec form {
   padding: 20px 0px;
@@ -181,6 +202,12 @@
 }
 .login-page .banner-sec {
   padding: 0px;
+}
+.login-page .paddingb20 {
+  padding-bottom: 20px;
+}
+.login-page .free-info {
+  padding-bottom: 10px;
 }
 .login-page .free-info a {
   color: rgba(255, 255, 255, 0.5);
