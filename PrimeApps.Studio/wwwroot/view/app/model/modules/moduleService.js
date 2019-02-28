@@ -999,8 +999,8 @@ angular.module('primeapps')
 
                     if ($rootScope.appModules.length < 1)
                         module.order = 1;
-
-                    module.order = Math.max.apply(null, sortOrders) + 1;
+                    else
+                        module.order = Math.max.apply(null, sortOrders) + 1;                      
                     module.name = 'custom_module_' + 9999;
                     module.sections = [];
                     module.fields = [];
