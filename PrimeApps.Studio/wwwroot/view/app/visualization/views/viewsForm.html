@@ -325,12 +325,10 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="form-group filter-logic" ng-class="{'has-error': viewForm.$submitted && viewForm.filterLogic.$invalid}">
+                                <div class="form-group " ng-class="{'has-error': viewForm.$submitted && viewForm.filterLogic.$invalid}">
                                     <label for="filterLogic" class="control-label col-sm-12">{{'View.FilterLogic' | translate}}</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" id="filterLogic" name="filterLogic" class="form-control" maxlength="40" ng-change="viewForm.filterLogic.$setValidity('filterLogic', true)" ng-model="view.filter_logic" />
-                                        <span class="filter-logic-example" ng-bind-html="'View.FilterLogicExample' | translate"></span>
-                                    </div>
+                                    <input type="text" id="filterLogic" name="filterLogic" class="form-control col-sm-12" maxlength="40" ng-change="viewForm.filterLogic.$setValidity('filterLogic', true)" ng-model="view.filter_logic" />
+                                    <span class="filter-logic-example" ng-bind-html="'View.FilterLogicExample' | translate"></span>
                                 </div>
                                 <!--<div class="form-group text-right">-->
                                 <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, false);"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>-->
