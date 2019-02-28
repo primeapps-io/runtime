@@ -11,5 +11,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Create(StudioUser user);
         Task<int> Update(StudioUser user);
         Task<int> Delete(StudioUser user);
+        Task<StudioUser> Get(int id);
     }
 }

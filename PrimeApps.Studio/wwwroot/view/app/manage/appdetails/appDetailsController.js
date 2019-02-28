@@ -107,8 +107,8 @@ angular.module('primeapps')
                 $scope.authTheme.banner = authTheme.banner[0].image;
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
-                $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
-                $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
+                $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
+                $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
                 $scope.authTheme.favicon = authTheme.favicon;
                 $scope.authTheme.logo = authTheme.logo;
             });
@@ -166,6 +166,29 @@ angular.module('primeapps')
                             $scope.saving = false;
                         });
                 }
+            };
+            
+            $scope.addMasterUser = function () {
+                var newCol = {};
+                newCol.role_id = 1;
+                newCol.profile_id = 1;
+                newCol.first_name = "master";
+                newCol.last_name = "test";
+                newCol.email = "master.test@usertest3.com";
+                newCol.password = "1234567";
+                newCol.created_at = new Date();
+
+                AppDetailsService.addAppUser(newCol)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success('Collaborator is saved successfully');
+
+                        }
+                    })
+                    .catch(function () {
+                        toastr.error($filter('translate')('Common.Error'));
+
+                    });
             };
         }
     ]);

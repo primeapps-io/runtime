@@ -33,7 +33,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'picklist/add_item/' + id, model);
                 },
                 update: function (model) {
-                    return $http.put(config.apiUrl + 'picklist/update/' + id, model);
+                    return $http.put(config.apiUrl + 'picklist/update/' + model.id, model);
                 },
                 updateItem: function (id, model) {
                     return $http.put(config.apiUrl + 'picklist/update_item/' + id, model);
@@ -42,7 +42,7 @@ angular.module('primeapps')
                     return $http.delete(config.apiUrl + 'picklist/delete/' + id);
                 },
                 deleteItem: function (itemId) {
-                    return $http.delete(config.apiUrl + 'picklist/deleteItem/' + itemId);
+                    return $http.delete(config.apiUrl + 'picklist/delete_item/' + itemId);
                 }
             };
         }]);

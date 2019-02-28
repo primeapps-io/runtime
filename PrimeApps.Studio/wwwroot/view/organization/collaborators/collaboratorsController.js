@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, CollaboratorsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
             $scope.collaboratorArray = [];
 
-           // $scope.$parent.menuTopTitle = "Organization";
+            // $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
             $scope.updatingRole = false;
@@ -85,9 +85,9 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
                 $scope.selectedCollaborator = angular.copy(result);
-                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.selectedCollaborator.role}, true)[0];
                 $scope.$parent.activeMenu = "collaborator";
                 $scope.$parent.activeMenuItem = 'collaborator';
             }
@@ -96,17 +96,17 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
                 $scope.collaboratorId = id;
                 $scope.$parent.collaboratorId = id;
                 $scope.selectedCollaborator = angular.copy(result);
                 $scope.$parent.selectedCollaborator = angular.copy(result);
-                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.$parent.selectedCollaborator.role }, true)[0];
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.$parent.selectedCollaborator.role}, true)[0];
             }
 
             $scope.roles = [
-                { 'name': 'Admin', 'value': 'administrator' },
-                { 'name': 'Collaborator', 'value': 'collaborator' }
+                {'name': 'Admin', 'value': 'administrator'},
+                {'name': 'Collaborator', 'value': 'collaborator'}
             ];
 
             $scope.addNewCollaborator = function () {
@@ -128,7 +128,7 @@ angular.module('primeapps')
                 if (!newCollaboratorForm.$valid)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { email: $scope.collaboratorModel.email }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, {email: $scope.collaboratorModel.email}, true)[0];
 
                 if (result)
                     return false;
@@ -169,7 +169,6 @@ angular.module('primeapps')
                 $scope.showNewCollaboratorInfo = false;
             }
 
-
             $scope.update = function (collaboratorModel) {
                 if (!$scope.selectedCollaborator)
                     return false;
@@ -190,7 +189,7 @@ angular.module('primeapps')
                     .catch(function (error) {
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.updatingRole = false;
-                        $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
+                        $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.selectedCollaborator.role}, true)[0];
                     });
             }
 
@@ -198,7 +197,7 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
 
                 if (!result)
                     return false;

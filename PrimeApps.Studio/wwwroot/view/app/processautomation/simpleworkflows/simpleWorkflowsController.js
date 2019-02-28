@@ -3,7 +3,7 @@
 angular.module('primeapps')
 
     .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config',
-		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config) {
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
@@ -18,35 +18,35 @@ angular.module('primeapps')
             $rootScope.approvalProcesses = [];
             $rootScope.breadcrumblist[2].title = 'Simple Worflows';
             // $scope.id = $location.search().id;
-			$scope.scheduleItems = SimpleWorkflowsService.getScheduleItems();
-			$scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
+            $scope.scheduleItems = SimpleWorkflowsService.getScheduleItems();
+            $scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
             $scope.showProcessFilter = false;
 
-            var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
+            ////var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
-            ModuleService.getModuleFields(activityModule.name)
-                .then(function (response) {
-                    if (response) {
-                        activityModule.fields = response.data;
-                        $scope.taskFields = {};
+            ////ModuleService.getModuleFields(activityModule.name)
+            ////    .then(function (response) {
+            ////        if (response) {
+            ////            activityModule.fields = response.data;
+            $scope.taskFields = {};
 
-                        if (!activityModule.fields)
-                            return;
+            ////            if (!activityModule.fields)
+            ////                return;
 
-                        $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                        $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                        $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                        $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                        $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                        $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                        $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+            ////            $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+            ////            $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+            ////            $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+            ////            $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+            ////            $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+            ////            $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+            ////            $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
 
-                        ModuleService.getPickItemsLists(activityModule, false)
-                            .then(function (picklistsActivity) {
-                                $scope.picklistsActivity = picklistsActivity;
-                            });
-                    }
-                });
+            ////            ModuleService.getPickItemsLists(activityModule, false)
+            ////                .then(function (picklistsActivity) {
+            $scope.picklistsActivity = {};////picklistsActivity;
+            ////                });
+            ////        }
+            ////    });
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -74,13 +74,13 @@ angular.module('primeapps')
 
 
             var count = function () {
-				SimpleWorkflowsService.count().then(function (response) {
+                SimpleWorkflowsService.count().then(function (response) {
                     $scope.pageTotal = response.data;
                 });
             };
             count();
 
-			SimpleWorkflowsService.find($scope.requestModel, $rootScope.currentOrgId)
+            SimpleWorkflowsService.find($scope.requestModel, $rootScope.currentOrgId)
                 .then(function (response) {
                     if (response.data) {
                         var data = fillModule(response.data);
@@ -95,7 +95,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
                 count();
 
-				SimpleWorkflowsService.find(requestModel)
+                SimpleWorkflowsService.find(requestModel)
                     .then(function (response) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
@@ -129,99 +129,99 @@ angular.module('primeapps')
 
             var selectRule = function () {
                 $scope.modalLoading = true;
-                ModuleService.getPickItemsLists(activityModule, false)
-                    .then(function (picklistsActivity) {
-                        $scope.picklistsActivity = picklistsActivity;
+                ////ModuleService.getPickItemsLists(activityModule, false)
+                ////    .then(function (picklistsActivity) {
+                ////        $scope.picklistsActivity = picklistsActivity;
 
-                        if (!$scope.id) {
-                            $scope.workflowModel = {};
-                            $scope.workflowModel.active = true;
-                            $scope.workflowModel.processFilter = 'none';
-                            $scope.workflowModel.frequency = 'continuous';
-                            $scope.loading = false;
-                            $scope.modalLoading = false;
-                        }
-                        else {
-							SimpleWorkflowsService.get($scope.id)
-                                .then(function (workflow) {
-                                    $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0);
+                if (!$scope.id) {
+                    $scope.workflowModel = {};
+                    $scope.workflowModel.active = true;
+                    $scope.workflowModel.processFilter = 'none';
+                    $scope.workflowModel.frequency = 'continuous';
+                    $scope.loading = false;
+                    $scope.modalLoading = false;
+                }
+                else {
+                    SimpleWorkflowsService.get($scope.id)
+                        .then(function (workflow) {
+                            $scope.workflowModel = workflow = workflow.data;
+                            $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0);
 
-                                    $scope.workflowModel.operation = {};
+                            $scope.workflowModel.operation = {};
 
-                                    angular.forEach($scope.workflowModel.operations_array, function (value) {
-                                        if (value)
-                                            $scope.workflowModel.operation[value.toString()] = true;
-                                    });
+                            angular.forEach($scope.workflowModel.operations_array, function (value) {
+                                if (value)
+                                    $scope.workflowModel.operation[value.toString()] = true;
+                            });
 
-                                    if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
-                                        $scope.showProcessFilter = true;
+                            if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
+                                $scope.showProcessFilter = true;
 
-                                    ModuleService.getPickItemsLists($scope.module)
-                                        .then(function (picklists) {
-                                            $scope.modulePicklists = picklists;
-                                            $scope.filters = [];
+                            ModuleService.getPickItemsLists($scope.module)
+                                .then(function (picklists) {
+                                    $scope.modulePicklists = picklists;
+                                    $scope.filters = [];
 
-                                            for (var i = 0; i < 5; i++) {
-                                                var filter = {};
-                                                filter.id = i;
-                                                filter.field = null;
-                                                filter.operator = null;
-                                                filter.value = null;
-                                                filter.no = i + 1;
+                                    for (var i = 0; i < 5; i++) {
+                                        var filter = {};
+                                        filter.id = i;
+                                        filter.field = null;
+                                        filter.operator = null;
+                                        filter.value = null;
+                                        filter.no = i + 1;
 
-                                                $scope.filters.push(filter);
-                                            }
+                                        $scope.filters.push(filter);
+                                    }
 
-                                            if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
-                                                $scope.picklistsModule = picklists;
-                                                $scope.getSendNotificationUpdatableModules($scope.module);
-                                                $scope.getDynamicFieldUpdateModules($scope.module);
+                                    if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
+                                        $scope.picklistsModule = picklists;
+                                        $scope.getSendNotificationUpdatableModules($scope.module);
+                                        $scope.getDynamicFieldUpdateModules($scope.module);
 
-												$scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                                $scope.getUpdatableModules();
-                                                $scope.generateHookModules();
-                                            }
+                                        $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                        $scope.getUpdatableModules();
+                                        $scope.generateHookModules();
+                                    }
+                                    else {
+                                        var fieldUpdateModule;
+                                        if (workflow.field_update.module.split(',').length > 1) {
+                                            var updModule = workflow.field_update.module.split(',')[0];
+                                            if (updModule === $scope.module.name)
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
                                             else {
-                                                var fieldUpdateModule;
-                                                if (workflow.field_update.module.split(',').length > 1) {
-                                                    var updModule = workflow.field_update.module.split(',')[0];
-                                                    if (updModule === $scope.module.name)
-                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
-                                                    else {
-                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
-                                                    }
-                                                }
-                                                else
-                                                    fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
-                                                ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
-                                                    if (response) {
-                                                        fieldUpdateModule.fields = response.data;
-                                                    }
-                                                    ModuleService.getPickItemsLists(fieldUpdateModule)
-                                                        .then(function (picklistUpdateModule) {
-                                                            $scope.picklistsModule = picklistUpdateModule;
-                                                            $scope.getSendNotificationUpdatableModules($scope.module);
-                                                            $scope.getDynamicFieldUpdateModules($scope.module);
-															$scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                                            $scope.getUpdatableModules();
-                                                            $scope.generateHookModules();
-                                                        });
-                                                });
-
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
                                             }
-
-                                            $scope.prepareFilters();
-
-                                            $scope.lastStepClicked = true;
-                                            $scope.loading = false;
-                                            $scope.modalLoading = false;
-
+                                        }
+                                        else
+                                            fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
+                                        ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
+                                            if (response) {
+                                                fieldUpdateModule.fields = response.data;
+                                            }
+                                            ModuleService.getPickItemsLists(fieldUpdateModule)
+                                                .then(function (picklistUpdateModule) {
+                                                    $scope.picklistsModule = picklistUpdateModule;
+                                                    $scope.getSendNotificationUpdatableModules($scope.module);
+                                                    $scope.getDynamicFieldUpdateModules($scope.module);
+                                                    $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                    $scope.getUpdatableModules();
+                                                    $scope.generateHookModules();
+                                                });
                                         });
-                                    // $scope.modalLoading = false;
+
+                                    }
+
+                                    $scope.prepareFilters();
+
+                                    $scope.lastStepClicked = true;
+                                    $scope.loading = false;
+                                    $scope.modalLoading = false;
+
                                 });
-                        }
-                    });
+                            // $scope.modalLoading = false;
+                        });
+                }
+                ////});
             };
 
             $scope.selectModule = function (module) {
@@ -312,7 +312,7 @@ angular.module('primeapps')
 
             $scope.searchTags = function (term) {
                 if (!$scope.moduleFields)
-					$scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
+                    $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
 
                 var tagsList = [];
                 angular.forEach($scope.moduleFields, function (item) {
@@ -1136,7 +1136,7 @@ angular.module('primeapps')
                 }
 
                 if (tabClick.subjectNotification.$pristine && tabClick.message.$pristine &&
-                    tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
+                    ////tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
                     (tabClick.updateField && tabClick.updateField.$pristine) && (tabClick.updateValue && tabClick.updateValue.$pristine) &&
                     tabClick.callbackUrl.$pristine) {
                     tabClick.$submitted = false;
@@ -1152,14 +1152,14 @@ angular.module('primeapps')
                 if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.message)
                     tabClick.message.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
-                    tabClick.owner.$setValidity('minTags', false);
+                ////if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
+                ////    tabClick.owner.$setValidity('minTags', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
-                    tabClick.subjectTask.$setValidity('required', false);
+                ////if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
+                ////    tabClick.subjectTask.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
-                    tabClick.dueDate.$setValidity('required', false);
+                ////if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
+                ////    tabClick.dueDate.$setValidity('required', false);
 
                 if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field)
                     tabClick.updateField.$setValidity('required', false);
@@ -1175,7 +1175,7 @@ angular.module('primeapps')
                 }
 
                 var isSendNotificationValid = $scope.validateSendNotification();
-                var isCreateTaskValid = $scope.validateCreateTask();
+                var isCreateTaskValid = false;////$scope.validateCreateTask();
                 var isUpdateFieldValid = $scope.validateUpdateField();
                 var isWebhookValid = $scope.validateWebHook();
 
@@ -1205,9 +1205,9 @@ angular.module('primeapps')
 
                 $scope.workflowForm.subjectNotification.$setValidity('required', true);
                 $scope.workflowForm.message.$setValidity('required', true);
-                $scope.workflowForm.owner.$setValidity('minTags', true);
-                $scope.workflowForm.subjectTask.$setValidity('required', true);
-                $scope.workflowForm.dueDate.$setValidity('required', true);
+                ////$scope.workflowForm.owner.$setValidity('minTags', true);
+                ////$scope.workflowForm.subjectTask.$setValidity('required', true);
+                ////$scope.workflowForm.dueDate.$setValidity('required', true);
                 $scope.workflowForm.actions.$setValidity('actionRequired', true);
                 $scope.workflowForm.updateOption.$setValidity('required', true);
                 $scope.workflowForm.callbackUrl.$setValidity('required', true);
@@ -1406,7 +1406,7 @@ angular.module('primeapps')
                 if ($scope.webHookIsNullOrEmpty())
                     delete $scope.workflowModel.webHook;
 
-				var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
+                var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
 
                 var success = function () {
                     $scope.saving = false;
@@ -1418,7 +1418,7 @@ angular.module('primeapps')
                 };
 
                 if (!$scope.id) {
-					SimpleWorkflowsService.create(workflow)
+                    SimpleWorkflowsService.create(workflow)
                         .then(function () {
                             success();
                         })
@@ -1436,7 +1436,7 @@ angular.module('primeapps')
                     workflow.updated_at = $scope.workflowModel.updated_at;
                     workflow.deleted = $scope.workflowModel.deleted;
 
-					SimpleWorkflowsService.update($scope.id, workflow)
+                    SimpleWorkflowsService.update($scope.id, workflow)
                         .then(function () {
                             success();
                         })
@@ -1446,7 +1446,8 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (rule) {
+                rule.deleting = true;
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -1455,16 +1456,18 @@ angular.module('primeapps')
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
-                        if (!id)
-                            return false;
-
-						SimpleWorkflowsService.delete(id)
-                            .then(function () {
+                        if (!rule) {
+                            rule.deleting = false;
+                            return;
+                        }
+                        SimpleWorkflowsService.delete(rule.id)
+                            .then(function (response) {
                                 //$scope.cancel();
                                 $scope.workflowModel = {};
                                 $scope.id = null;
                                 $scope.changePage(1);
                                 //$state.reload();
+                                rule.deleting = false;
                                 toastr.success("Rule is deleted successfully.", "Deleted!");
                             });
                     }
@@ -1764,8 +1767,8 @@ angular.module('primeapps')
                 $scope.modalLoading = true;
 
                 if (id) {
-                    $scope.id = id; 
-                    selectRule(); 
+                    $scope.id = id;
+                    selectRule();
                 }
                 else
                     $scope.modalLoading = false;
@@ -1780,7 +1783,7 @@ angular.module('primeapps')
 
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
-                }); 
+                });
             };
 
             $scope.cancel = function () {

@@ -7,7 +7,6 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
-            $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
             //$scope.$parent.menuTopTitle = "Automation";
@@ -311,7 +310,7 @@ angular.module('primeapps')
                 return filterValue;
             };
 
-            $scope.validate = function (tabClick) {
+            $scope.validate = function (tabClick, next) {
                 if (!$scope.workflowForm)
                     $scope.workflowForm = tabClick;
 
@@ -321,7 +320,10 @@ angular.module('primeapps')
                 if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.user.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
-                return $scope.validateActions(tabClick);
+                if ($scope.wizardStep === 2 && !$scope.workflowForm.approverType.$valid)
+                    return false;
+
+                return $scope.validateActions(tabClick, next);
             };
 
             $scope.validateOperations = function (tabClick) {
@@ -439,9 +441,13 @@ angular.module('primeapps')
                 $scope.currentLookupField = field;
             };
 
-            $scope.validateActions = function (tabClick) {
+            $scope.validateActions = function (tabClick, next) {
                 if (!$scope.lastStepClicked) {
                     $scope.workflowForm.$submitted = false;
+                    $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                    if ($scope.wizardStep === 2) {
+                        $scope.getSummary();
+                    }
                     return true;
                 }
 
@@ -854,13 +860,17 @@ angular.module('primeapps')
 
             //Modal Start
             $scope.showFormModal = function (id) {
+                $scope.wizardStep = 0;
                 $scope.modalLoading = true;
                 if (id) {
+                    $scope.isNew = false;
                     $scope.id = id;
                     $scope.selectProcess(id);
                 }
-                else
+                else {
+                    $scope.isNew = true;
                     $scope.modalLoading = false;
+                }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({
                     scope: $scope,
