@@ -1404,8 +1404,9 @@ angular.module('primeapps')
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
-                    ModuleService.moduleCreate(moduleModel).then(function () {
-                        $scope.saving = false;
+                    ModuleService.moduleCreate(moduleModel).then(function (result) {
+                        $scope.saving = false;                        
+                        $rootScope.appModules.push(result.data);                        
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId
