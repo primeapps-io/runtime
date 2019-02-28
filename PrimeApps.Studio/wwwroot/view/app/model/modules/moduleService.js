@@ -997,7 +997,7 @@ angular.module('primeapps')
                         sortOrders.push(moduleItem.order);
                     });
 
-                    if ($rootScope.appModules.length < 0)
+                    if ($rootScope.appModules.length < 1)
                         module.order = 1;
 
                     module.order = Math.max.apply(null, sortOrders) + 1;
