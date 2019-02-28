@@ -205,6 +205,35 @@ namespace PrimeApps.Auth.UI
 
             if (ModelState.IsValid)
             {
+                var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+
+                if(!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
+                {
+                    
+                    var platformUser = await _platformUserRepository.Get(model.Username);
+                    
+                    if (platformUser != null)
+                    {
+                        var url = studioUrl + "/api/account/user_available/" + platformUser.Id;
+                        using (var httpClient = new HttpClient())
+                        {
+                            httpClient.DefaultRequestHeaders.Accept.Clear();
+                            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            var isStudioUser = await httpClient.GetAsync(url);
+
+                            if (!isStudioUser.IsSuccessStatusCode)
+                            {
+                                vm.Error = "WrongInfo";
+
+                                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                                return View(vm);
+                            }
+                        }
+                    }
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 var validationSkipDomains = _configuration.GetValue("AppSettings:ValidationSkipDomains", string.Empty);
                 Array validationSkipDomainsArr = null;
@@ -1662,7 +1691,7 @@ namespace PrimeApps.Auth.UI
                 if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
-                    var url = studioUrl + "/api/register/create";
+                    var url = studioUrl + "/api/account/create";
 
                     var requestModel = new JObject
                     {

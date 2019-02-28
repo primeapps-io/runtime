@@ -1,11 +1,20 @@
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Common.App;
 using PrimeApps.Model.Common.Profile;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -13,52 +22,163 @@ using PrimeApps.Studio.Helpers;
 
 namespace PrimeApps.Studio.Controllers
 {
-	[Route("api/profile")]
-	public class ProfileController : DraftBaseController
-	{
-		private IRelationRepository _relationRepository;
+    [Route("api/app_draft_user")]
+    public class AppDraftUserController : DraftBaseController
+    {
+        private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository;
-		private IModuleRepository _moduleRepository;
-		private IConfiguration _configuration;
-		private Warehouse _warehouse;
-		private IModuleHelper _moduleHelper;
+        private ISettingRepository _settingRepository;
+        private IModuleRepository _moduleRepository;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
+        private IModuleHelper _moduleHelper;
+        private IApplicationRepository _applicationRepository;
 
-		public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository)
-		{
-			_relationRepository = relationRepository;
-			_profileRepository = profileRepository;
-			_settingRepository = settingRepository;			
-			_warehouse = warehouse;
-			_configuration = configuration;
-			_moduleHelper = moduleHelper;
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository)
+        {
+            _relationRepository = relationRepository;
+            _profileRepository = profileRepository;
+            _settingRepository = settingRepository;
+            _warehouse = warehouse;
+            _configuration = configuration;
+            _moduleHelper = moduleHelper;
             _userRepository = userRepository;
+            _applicationRepository = applicationRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         /// <summary>
-        /// Creates a new profile.
+        /// Creates a new user.
         /// </summary>
-        /// <param name="NewProfile"></param>
+        /// <param name="Create"></param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
+        public async Task<IActionResult> Create([FromBody]AppDraftUserModel user)
         {
-            //Set Warehouse
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
+            /*var organization = await _appDraftUserRepository.Get(AppUser.Id, model.OrganizationId);
 
-            return Ok();
+            if (organization == null)
+                return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
+                */
+
+            var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
+            var result = 0;
+            string password = "";
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                var appInfo = await _applicationRepository.GetByNameAsync(clientId);
+
+                using (var httpClient = new HttpClient())
+                {
+                    var token = await HttpContext.GetTokenAsync("access_token");
+                    var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_app_draft_user";
+                    httpClient.BaseAddress = new Uri(url);
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
+
+                    var json = JsonConvert.SerializeObject(user);
+                    var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(response);
+
+                    using (var content = response.Content)
+                    {
+                        var stringResult = content.ReadAsStringAsync().Result;
+
+                        var jsonResult = JObject.Parse(stringResult);
+                        password = jsonResult["password"].ToString();
+                        var platformUserId = int.Parse(jsonResult["id"].ToString());
+                        var tenantUser = new TenantUser
+                        {
+                            Id = platformUserId,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Email = user.Email,
+                            FullName = user.FirstName + " " + user.LastName,
+                            ProfileId = user.ProfileId,
+                            RoleId = user.RoleId,
+                            Culture = AppUser.Culture,
+                            Currency = AppUser.Currency
+
+                        };
+
+                        await _userRepository.CreateAsync(tenantUser);
+                    }
+                    /*using (var content = response.Content)
+                    {
+                        var stringResult = content.ReadAsStringAsync().Result;
+
+                        var jsonResult = JObject.Parse(stringResult);
+                        password = jsonResult["password"].ToString();
+                        var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
+
+                        foreach (var template in templates)
+                        {
+                            template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
+                            template.Content = template.Content.Replace("{:LastName}", model.LastName);
+                            template.Content = template.Content.Replace("{:Organization}", organization.Label);
+                            template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
+                            template.Content = template.Content.Replace("{:Email}", model.Email);
+                            template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
+
+                            if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
+                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "initial");
+                            else
+                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
+
+                            var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+
+                            var myMessage = new MailMessage()
+                            {
+                                From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
+                                Subject = template.Subject,
+                                Body = template.Content,
+                                IsBodyHtml = true
+                            };
+
+                            myMessage.To.Add(model.Email);
+
+                            var email = new Email(_configuration, _serviceScopeFactory);
+                            email.TransmitMail(myMessage);
+                        }
+                    }
+                    var platformUser = await _platformUserRepository.Get(model.Email);
+
+                    var studioUser = new StudioUser
+                    {
+                        Id = platformUser.Id,
+                        UserOrganizations = new List<OrganizationUser>()
+                    };
+
+                    studioUser.UserOrganizations.Add(new OrganizationUser
+                    {
+                        UserId = platformUser.Id,
+                        Role = model.Role,
+                        OrganizationId = model.OrganizationId,
+                        CreatedById = AppUser.Id,
+                        CreatedAt = DateTime.Now
+                    });
+
+                    result = await _studioUserRepository.Create(studioUser);*/
+                }
+            }
+
+            return StatusCode(201, new { password = password });
         }
 
         /// <summary>

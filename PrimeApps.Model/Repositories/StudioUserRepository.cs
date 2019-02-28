@@ -32,5 +32,12 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.SaveChangesAsync();
         }
+
+        public async Task<StudioUser> Get(int id)
+        {
+            return await DbContext.Users
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
     }
 }

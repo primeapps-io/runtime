@@ -227,32 +227,5 @@ angular.module('primeapps')
                         $scope.removing = false;
                     });
             };
-
-            $scope.addMasterUser = function () {
-                var newCol = {};
-                newCol.organization_id = $rootScope.currentOrgId;
-                newCol.role = $scope.collaboratorModel.role.value;
-                newCol.email = $scope.collaboratorModel.email;
-                newCol.first_name = $scope.collaboratorModel.first_name;
-                newCol.last_name = $scope.collaboratorModel.last_name;
-                newCol.created_at = new Date();
-
-                CollaboratorsService.save(newCol)
-                    .then(function (response) {
-                        if (response.data) {
-                            toastr.success('Collaborator is saved successfully');
-                            $scope.collaboratorModel.email = "";
-
-                            $scope.submitting = false;
-                            $scope.userPassword = response.data.password;
-                            $scope.showNewCollaboratorInfo = true;
-                            $scope.changePage(1);
-                        }
-                    })
-                    .catch(function () {
-                        toastr.error($filter('translate')('Common.Error'));
-                        $scope.submitting = false;
-                    });
-            };
         }
     ]);

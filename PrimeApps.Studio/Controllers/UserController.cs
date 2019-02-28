@@ -29,13 +29,13 @@ namespace PrimeApps.Studio.Controllers
         private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository studioUserRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _teamRepository = teamRepository;
-            _studioUserRepository = studioUserRepository;
+            _studioUserRepository = consoleUserRepository;
             _configuration = configuration;
             _storage = storage;
         }
