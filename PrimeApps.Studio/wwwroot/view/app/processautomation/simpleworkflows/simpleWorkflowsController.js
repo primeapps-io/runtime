@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
@@ -7,6 +7,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
+            $scope.lastStepClicked = false;
             $scope.$parent.wizardStep = 0;
             $scope.$parent.tab = 0;
             $scope.rules = [];
@@ -157,6 +158,10 @@ angular.module('primeapps')
                             if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
                                 $scope.showProcessFilter = true;
 
+                            var newModules = angular.copy($rootScope.appModules);
+                            var userModule = getFakeUserModule();
+                            newModules.push(userModule.module);
+
                             ModuleService.getPickItemsLists($scope.module)
                                 .then(function (picklists) {
                                     $scope.modulePicklists = picklists;
@@ -177,8 +182,7 @@ angular.module('primeapps')
                                         $scope.picklistsModule = picklists;
                                         $scope.getSendNotificationUpdatableModules($scope.module);
                                         $scope.getDynamicFieldUpdateModules($scope.module);
-
-                                        $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                        $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, newModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                         $scope.getUpdatableModules();
                                         $scope.generateHookModules();
                                     }
@@ -203,7 +207,7 @@ angular.module('primeapps')
                                                     $scope.picklistsModule = picklistUpdateModule;
                                                     $scope.getSendNotificationUpdatableModules($scope.module);
                                                     $scope.getDynamicFieldUpdateModules($scope.module);
-                                                    $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                    $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, newModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                     $scope.getUpdatableModules();
                                                     $scope.generateHookModules();
                                                 });
@@ -681,7 +685,7 @@ angular.module('primeapps')
 
                 return false;
             };
-            
+
             $scope.generateHookModules = function () {
                 if ($scope.id && $scope.workflowModel.webHook && $scope.workflowModel.webHook.parameters) {
                     $scope.hookParameters = [];
@@ -813,18 +817,8 @@ angular.module('primeapps')
                         $scope.workflowModel.send_notification.customBcc = null;
                 }
             };
-            $scope.operationUpdateChanged = function (status) {
-                if (!status) {
-                    $scope.workflowModel.frequency = 'continuous';
 
-                    if ($scope.id)
-                        $scope.workflowModel.delete_logs = false;
-                }
 
-                $scope.workflowModel.changed_field_checkbox = false;
-                $scope.workflowModel.changed_field = null;
-            };
-              
             $scope.updatableField = function (field) {
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;
@@ -1536,16 +1530,19 @@ angular.module('primeapps')
 
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
-                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-                var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                //notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                //var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
 
-                //TODO add fake User Module
-                if (resultModule)
-                    notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
+                ////TODO add fake User Module
+                //if (resultModule)
+                //    notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
 
+                notificationObj = getFakeUserModule();
+                notificationObj.name = "User";
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
                 notificationObj.id = id;
+
                 fieldUpdateModulesForNotification.unshift(notificationObj);
 
                 $scope.fieldUpdateModulesForNotification = fieldUpdateModulesForNotification;
@@ -1666,11 +1663,189 @@ angular.module('primeapps')
                 angular.forEach($scope.currentRelation, function (value, key) {
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
-
+                $scope.lastStepClicked = false;
                 $scope.workflowModel = {};
                 $scope.id = null;
                 $scope.ruleFormModal.hide();
             };
             //Modal End
+
+            $scope.nextStep = function (form, stepId) {
+                var result = $scope.validate(form);
+                if (result)
+                    if (stepId < 3) {
+                        $scope.$parent.wizardStep = stepId + 1;
+                        if (stepId + 1 == 3) {
+                            $scope.lastStepClicked = true;
+                            $scope.getSummary();
+                        }
+                    }
+
+            };
+
+            $scope.previous = function (form, stepId) {
+                var result = $scope.validate(form);
+                if (result)
+                    if (stepId > 0) {
+                        $scope.$parent.wizardStep = stepId - 1;
+
+                        if (stepId < 3)
+                            $scope.lastStepClicked = false;
+                    }
+            };
+
+            getFakeUserModule: function () {
+                var userModule = {};
+                userModule.id = 999;
+                userModule.name = 'users';
+                userModule.system_type = 'system';
+                userModule.order = 999;
+                userModule.display = false;
+                userModule.label_en_singular = 'User';
+                userModule.label_en_plural = 'Users';
+                userModule.label_tr_singular = 'Kullanıcı';
+                userModule.label_tr_plural = 'Kullanıcılar';
+                userModule.menu_icon = 'fa fa-users';
+                userModule.sections = [];
+                userModule.fields = [];
+
+                var section = {};
+                section.name = 'user_information';
+                section.system_type = 'system';
+                section.order = 1;
+                section.column_count = 1;
+                section.label_en = 'User Information';
+                section.label_tr = 'Kullanıcı Bilgisi';
+                section.display_form = true;
+                section.display_detail = true;
+
+                var fieldEmail = {};
+                fieldEmail.name = 'email';
+                fieldEmail.system_type = 'system';
+                fieldEmail.data_type = 'email';
+                fieldEmail.order = 2;
+                fieldEmail.section = 1;
+                fieldEmail.section_column = 1;
+                fieldEmail.primary = false;
+                fieldEmail.inline_edit = true;
+                fieldEmail.label_en = 'Email';
+                fieldEmail.label_tr = 'Eposta';
+                fieldEmail.display_list = true;
+                fieldEmail.display_form = true;
+                fieldEmail.display_detail = true;
+                userModule.fields.push(fieldEmail);
+
+                var fieldFirstName = {};
+                fieldFirstName.name = 'first_name';
+                fieldFirstName.system_type = 'system';
+                fieldFirstName.data_type = 'text_single';
+                fieldFirstName.order = 3;
+                fieldFirstName.section = 1;
+                fieldFirstName.section_column = 1;
+                fieldFirstName.primary = false;
+                fieldFirstName.inline_edit = true;
+                fieldFirstName.editable = true;
+                fieldFirstName.show_label = true;
+                fieldFirstName.label_en = 'First Name';
+                fieldFirstName.label_tr = 'Adı';
+                fieldFirstName.display_list = true;
+                fieldFirstName.display_form = true;
+                fieldFirstName.display_detail = true;
+                userModule.fields.push(fieldFirstName);
+
+                var fieldLastName = {};
+                fieldLastName.name = 'last_name';
+                fieldLastName.system_type = 'system';
+                fieldLastName.data_type = 'text_single';
+                fieldLastName.order = 4;
+                fieldLastName.section = 1;
+                fieldLastName.section_column = 1;
+                fieldLastName.primary = false;
+                fieldLastName.inline_edit = true;
+                fieldLastName.editable = true;
+                fieldLastName.show_label = true;
+                fieldLastName.label_en = 'Last Name';
+                fieldLastName.label_tr = 'Soyadı';
+                fieldLastName.display_list = true;
+                fieldLastName.display_form = true;
+                fieldLastName.display_detail = true;
+                userModule.fields.push(fieldLastName);
+
+                var fieldFullName = {};
+                fieldFullName.name = 'full_name';
+                fieldFullName.system_type = 'system';
+                fieldFullName.data_type = 'text_single';
+                fieldFullName.order = 5;
+                fieldFullName.section = 1;
+                fieldFullName.section_column = 1;
+                fieldFullName.primary = true;
+                fieldFullName.inline_edit = true;
+                fieldFullName.editable = true;
+                fieldFullName.show_label = true;
+                fieldFullName.label_en = 'Name';
+                fieldFullName.label_tr = 'Adı Soyadı';
+                fieldFullName.display_list = true;
+                fieldFullName.display_form = true;
+                fieldFullName.display_detail = true;
+                fieldFullName.combination = {};
+                fieldFullName.combination.field_1 = 'first_name';
+                fieldFullName.combination.field_2 = 'last_name';
+                userModule.fields.push(fieldFullName);
+
+                var fieldPhone = {};
+                fieldPhone.name = 'phone';
+                fieldPhone.system_type = 'system';
+                fieldPhone.data_type = 'text_single';
+                fieldPhone.order = 6;
+                fieldPhone.section = 1;
+                fieldPhone.section_column = 1;
+                fieldPhone.primary = false;
+                fieldPhone.inline_edit = true;
+                fieldPhone.label_en = 'Phone';
+                fieldPhone.label_tr = 'Telefon';
+                fieldPhone.display_list = true;
+                fieldPhone.display_form = true;
+                fieldPhone.display_detail = true;
+                userModule.fields.push(fieldPhone);
+
+                var fieldProfileId = {};
+                fieldProfileId.name = 'profile_id';
+                fieldProfileId.system_type = 'system';
+                fieldProfileId.data_type = 'number';
+                fieldProfileId.order = 6;
+                fieldProfileId.section = 1;
+                fieldProfileId.section_column = 1;
+                fieldProfileId.primary = false;
+                fieldProfileId.inline_edit = true;
+                fieldProfileId.editable = true;
+                fieldProfileId.show_label = true;
+                fieldProfileId.label_en = 'Profile Id';
+                fieldProfileId.label_tr = 'Profile Id';
+                fieldProfileId.display_list = true;
+                fieldProfileId.display_form = true;
+                fieldProfileId.display_detail = true;
+                userModule.fields.push(fieldProfileId);
+
+                var fieldRoleId = {};
+                fieldRoleId.name = 'role_id';
+                fieldRoleId.system_type = 'system';
+                fieldRoleId.data_type = 'number';
+                fieldRoleId.order = 7;
+                fieldRoleId.section = 1;
+                fieldRoleId.section_column = 1;
+                fieldRoleId.primary = false;
+                fieldRoleId.inline_edit = true;
+                fieldRoleId.editable = true;
+                fieldRoleId.show_label = true;
+                fieldRoleId.label_en = 'Role Id';
+                fieldRoleId.label_tr = 'Role Id';
+                fieldRoleId.display_list = true;
+                fieldRoleId.display_form = true;
+                fieldRoleId.display_detail = true;
+                userModule.fields.push(fieldRoleId);
+
+                return userModule;
+            },
+
         }
     ]);
