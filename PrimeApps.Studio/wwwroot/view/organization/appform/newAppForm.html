@@ -50,13 +50,13 @@
                                            maxlength="50"
                                            ng-trim="false"
                                            ng-blur="checkNameBlur();"
-                                           ng-change="checkName(appModel.name); $parent.$parent.isAppNameChanged=true;"
+                                           ng-change="checkNameUnique(appModel.name)"
                                            ng-model="appModel.name" />
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"
                                            style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
                                     </div>
-                                    <div ng-if="nameValid">
+                                    <div ng-if="nameValid && appModel.name">
                                         <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
                                            class="fa-sidebar-icon fas fa-check"></i>
                                     </div>

@@ -1694,7 +1694,7 @@ angular.module('primeapps')
                     }
             };
 
-            getFakeUserModule: function () {
+            var getFakeUserModule = function () {
                 var userModule = {};
                 userModule.id = 999;
                 userModule.name = 'users';
@@ -1845,7 +1845,7 @@ angular.module('primeapps')
                 userModule.fields.push(fieldRoleId);
 
                 return userModule;
-            },
+            }
 
         }
     ]);

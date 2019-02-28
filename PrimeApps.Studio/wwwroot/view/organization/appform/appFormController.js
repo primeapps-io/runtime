@@ -31,15 +31,15 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                    url: 'storage/upload_logo',
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId
-                    },
-                    queueLimit: 1
-                })
-            ;
+                url: 'storage/upload_logo',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId
+                },
+                queueLimit: 1
+            })
+                ;
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -119,12 +119,12 @@ angular.module('primeapps')
             $scope.openModal = function () {
                 $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/appform/newAppForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/appform/newAppForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -140,10 +140,10 @@ angular.module('primeapps')
 
             $scope.checkNameBlur = function () {
                 $scope.nameBlur = true;
-                $scope.checkName($scope.appModel.name);
+                $scope.checkNameUnique($scope.appModel.name);
             };
 
-            $scope.checkName = function (name) {
+            $scope.checkNameValid = function (name) {
                 if (!name)
                     return;
 
@@ -164,6 +164,13 @@ angular.module('primeapps')
                     $scope.nameValid = false;
                     return;
                 }
+            };
+
+            $scope.checkNameUnique = function (name) {
+                if (!name)
+                    return;
+
+                $scope.checkNameValid(name);
 
                 AppFormService.isUniqueName(name)
                     .then(function (response) {
@@ -190,8 +197,10 @@ angular.module('primeapps')
             };
 
             $scope.generateAppName = function () {
-                if (!$scope.appModel || !$scope.appModel.label || $scope.isAppNameChanged)
+                if (!$scope.appModel || !$scope.appModel.label) {
+                    $scope.appModel.name = null;
                     return;
+                }
 
                 $scope.appModel.name = helper.getSlug($scope.appModel.label, '-');
             };
@@ -203,49 +212,65 @@ angular.module('primeapps')
                 }
 
                 $scope.appSaving = true;
-                //$scope.appModel.logo = uploader;
-                $scope.appModel.template_id = 0;
-                $scope.appModel.status = 1;
 
-                AppFormService.create($scope.appModel)
+                $scope.checkNameValid($scope.appModel.name);
+
+                AppFormService.isUniqueName($scope.appModel.name)
                     .then(function (response) {
-                        $rootScope.currentAppId = response.data.id;
-                        var header = {
-                            'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
-                            'Accept': 'application/json',
-                            'X-Organization-Id': $rootScope.currentOrgId,
-                            'X-App-Id': response.data.id
-                        };
-                        uploader.queue[0].uploader.headers = header;
-                        uploader.queue[0].headers = header;
-                        uploader.queue[0].upload();
+                        $scope.nameChecking = false;
+                        if (response.data) {
+                            //$scope.appModel.logo = uploader;
+                            $scope.appModel.template_id = 0;
+                            $scope.appModel.status = 1;
 
-                        uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                            if (status === 200) {
-                                $scope.updateApp = {};
-                                $scope.updateApp.description = response.data.description;
-                                $scope.updateApp.label = response.data.label;
-                                $scope.updateApp.name = response.data.name;
-                                $scope.updateApp.status = response.data.status;
-                                $scope.updateApp.template_id = response.data.templet_id;
-                                $scope.updateApp.logo = logoUrl;
-                                AppFormService.update($rootScope.currentAppId, $scope.updateApp)
-                                    .then(function (response) {
-                                        $scope.appSaving = false;
-                                        $scope.appFormModal.hide();
-                                        $scope.appModel = {};
-                                        $scope.logoRemove();
-                                        toastr.success($filter('translate')('App successfully created.'));
-                                        $scope.nameValid = null;
-                                        $scope.nameBlur = false;
-                                        $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId });
-                                    });
-                            }
-                        };
+                            AppFormService.create($scope.appModel)
+                                .then(function (response) {
+                                    $rootScope.currentAppId = response.data.id;
+                                    var header = {
+                                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                                        'Accept': 'application/json',
+                                        'X-Organization-Id': $rootScope.currentOrgId,
+                                        'X-App-Id': response.data.id
+                                    };
+                                    uploader.queue[0].uploader.headers = header;
+                                    uploader.queue[0].headers = header;
+                                    uploader.queue[0].upload();
+
+                                    uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.updateApp = {};
+                                            $scope.updateApp.description = response.data.description;
+                                            $scope.updateApp.label = response.data.label;
+                                            $scope.updateApp.name = response.data.name;
+                                            $scope.updateApp.status = response.data.status;
+                                            $scope.updateApp.template_id = response.data.templet_id;
+                                            $scope.updateApp.logo = logoUrl;
+                                            AppFormService.update($rootScope.currentAppId, $scope.updateApp)
+                                                .then(function (response) {
+                                                    $scope.appSaving = false;
+                                                    $scope.appFormModal.hide();
+                                                    $scope.appModel = {};
+                                                    $scope.logoRemove();
+                                                    toastr.success($filter('translate')('App successfully created.'));
+                                                    $scope.nameValid = null;
+                                                    $scope.nameBlur = false;
+                                                    $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId });
+                                                });
+                                        }
+                                    };
+                                })
+                                .catch(function () {
+                                    toastr.error('App ' + $scope.appModel.label + ' not created.');
+                                    $scope.appSaving = false;
+                                });
+                        }
+                        else {
+                            $scope.nameValid = false;
+                        }
                     })
                     .catch(function () {
-                        toastr.error('App ' + $scope.appModel.label + ' not created.');
-                        $scope.appSaving = false;
+                        $scope.nameValid = false;
+                        $scope.nameChecking = false;
                     });
             };
         }
