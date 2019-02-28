@@ -133,8 +133,8 @@ namespace PrimeApps.Model.Repositories
             var appCollabrator = await DbContext.AppCollaborators
                 .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.ToLower().Contains(search.ToLower())) && (status == PublishStatus.NotSet || x.AppDraft.Status == status))
                 .Select(x => x.AppDraft)
-                .Skip(50 * page)
-                .Take(50)
+                .Skip(500 * page)
+                .Take(500)
                 .Distinct()
                 .ToListAsync();
 

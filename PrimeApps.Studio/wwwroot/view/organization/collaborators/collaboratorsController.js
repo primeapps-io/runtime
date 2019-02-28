@@ -111,12 +111,12 @@ angular.module('primeapps')
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
