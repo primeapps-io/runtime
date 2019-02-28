@@ -4,9 +4,7 @@ angular.module('primeapps')
 
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
-
-            $rootScope.subtoggleClass = 'full-toggled2';
-            $rootScope.toggleClass = 'toggled full-toggled';
+ 
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
@@ -1398,7 +1396,6 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                //moduleModel.order = 6;//TODO: add an order backend
 
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;

@@ -16,6 +16,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 });
             }
         });
+        
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
