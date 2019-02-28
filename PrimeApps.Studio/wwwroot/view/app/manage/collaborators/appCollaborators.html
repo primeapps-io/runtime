@@ -39,15 +39,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="appCol in appCollaborators">
-                    <td>
-                        {{appCol.name}}
-                    </td>
-                    <td>
-                        <select name="profile"
-                                class="form-control ng-animate-disabled"
-                                ng-model="appCol.profile"
-                                ng-change="changeRole(appCol)"
+            <tr ng-repeat="appCol in appCollaborators">
+                <td>
+                    {{appCol.name}}
+                </td>
+                <td class="form-group">
+                    <select name="profile"
+                            class="form-control ng-animate-disabled"
+                            ng-model="appCol.profile"
+                            ng-change="changeRole(appCol)"
                                 ng-options="o.value as o.name for o in colProfiles">
                         </select>
                     </td>

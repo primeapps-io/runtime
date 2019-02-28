@@ -1395,6 +1395,10 @@ button, select {
           .datetime-pick{
             float: inherit;
             display:flex;
+            .time-pick{
+              min-width: 70px !important;
+              width: auto !important;
+            }
           }
         }
       }
@@ -3129,6 +3133,7 @@ button, select {
       float: none !important;
       > div {
         height: 20px;
+        overflow: hidden;
       }
       span {
         font-family: "Nunito", sans-serif;

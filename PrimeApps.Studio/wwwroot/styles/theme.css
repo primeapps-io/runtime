@@ -1106,6 +1106,10 @@ button:focus, select:focus {
   float: inherit;
   display: flex;
 }
+.primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick {
+  min-width: 70px !important;
+  width: auto !important;
+}
 .primeapps .setup-modal .modal-body, .primeapps .module-modal .modal-body {
   max-height: 100% !important;
   margin: 0 auto !important;
@@ -2488,6 +2492,7 @@ button:focus, select:focus {
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text > div {
   height: 20px;
+  overflow: hidden;
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text span {
   font-family: "Nunito", sans-serif;
