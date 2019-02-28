@@ -320,7 +320,7 @@ angular.module('primeapps')
                 if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.user.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
-                if ($scope.wizardStep === 2 && !$scope.workflowForm.approverType.$valid)
+                if ($scope.wizardStep === 2 && !$scope.workflowForm.approverType.$valid && next)
                     return false;
 
                 return $scope.validateActions(tabClick, next);
