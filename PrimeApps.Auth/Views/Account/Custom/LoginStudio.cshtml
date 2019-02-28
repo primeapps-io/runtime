@@ -33,37 +33,39 @@
                 <path class="st5" d="M85.33,27.725,77.523,52.753l-5.157-1.61,7.807-25.028c.566-1.814,2.179-2.925,3.6-2.48S85.9,25.911,85.33,27.725Zm.417-14.456a2.986,2.986,0,1,0,2.985,2.986A2.986,2.986,0,0,0,85.747,13.269Z" fill="#0d6faa"/>
             </svg>
         </a>
-        @if (!string.IsNullOrWhiteSpace(Model.Error))
-            {
-                if (Model.Error == "WrongInfo")
-                {
-                    <div class="error">@Localizer[Model.Error]</div>
-                }
-                else if (Model.Error == "notFound")
-                {
-                    <div class="error">@Localizer["NotFound"]</div>
-                }
-            }
-        
-        <div class="error-all"></div>
-        <div class="error-email"></div>
-        <div class="error-pass"></div>
-        <form asp-route="Login" class="login-form" role="form" id="login-form">
+        <form asp-route="Login" class="login-form " role="form" id="login-form">
             <input type="hidden" asp-for="@Model.ReturnUrl"/>
             <div class="form-group">
                 <label for="Username" class="labelx"><span>@Localizer["Email"]</span>
                     <input class="form-control" asp-for="Username" id="Email" autofocus autocomplete="off">
                 </label>
+                <div class="error-email d-none"></div>
             </div>
             <div class="form-group">
                 <label for="Password" class="labelx"><span>@Localizer["Password"]</span>
                     <input type="password" class="form-control" asp-for="Password" id="Password" autocomplete="off">
                 </label>
+                <div class="error-pass d-none"></div>
             </div>
+
             <div class="text-center">
                 <button type="submit" class="btn btn-login ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
                 <div class="helpbutton"><a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="buttonx">@Localizer["ForgotPassword"]</a></div>
             </div>
+            <div class="error-all d-none"></div>
+            @if (!string.IsNullOrWhiteSpace(Model.Error))
+            {
+                if (Model.Error == "WrongInfo")
+                {
+                    <div class="error2 error">@Localizer[Model.Error]</div>
+                }
+                else if (Model.Error == "notFound")
+                {
+                    <div class="error2 error">@Localizer["NotFound"]</div>
+                }
+            }
+            
+            
         </form>
     </div>
 </div>
