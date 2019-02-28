@@ -981,9 +981,9 @@ angular.module('primeapps')
                     // field.validation.readonly = false;
                     //
                     // $scope.module.fields.push(field);
-                    // $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
-                    // $scope.fieldModal.hide();
-                    // $scope.moduleChange = new Date();
+                    $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
+                    $scope.fieldModal.hide();
+                    $scope.moduleChange = new Date();
                 }
 
 
