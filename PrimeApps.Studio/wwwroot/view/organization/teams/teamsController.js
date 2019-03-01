@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $stateParams) {
+    .controller('TeamsController', ['$rootScope', '$scope', '$filter', 'TeamsService', '$state', '$modal', 'ModuleService',
+        function ($rootScope, $scope, $filter, TeamsService, $state, $modal, ModuleService) {
 
             $scope.loading = true;
 
@@ -11,6 +11,7 @@ angular.module('primeapps')
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
             $scope.teamId;
+            $scope.icons = ModuleService.getIcons(2);
 
             //$scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
@@ -195,7 +196,11 @@ angular.module('primeapps')
                         if (response.data) {
                             $scope.nameValid = true;
                             if (!$scope.teamId) {
-                                TeamsService.create($scope.teamModel)
+                                var request = {
+                                    name: $scope.teamModel.name,
+                                    icon: $scope.teamModel.icon.value
+                                };
+                                TeamsService.create(request)
                                     .then(function (response) {
                                         if (response.data) {
                                             $scope.submitting = false;
@@ -206,6 +211,7 @@ angular.module('primeapps')
                                     })
                                     .catch(function (error) {
                                         toastr.error($filter('translate')('Common.Error'));
+                                        $scope.submitting = false;
                                         return false;
                                     });
                             }
@@ -216,9 +222,11 @@ angular.module('primeapps')
                                             toastr.success($filter('translate')('Common.Success'));
                                             $scope.clearModels();
                                             $scope.changePage(1);
+                                            $scope.submitting = false;
                                         }
                                     })
                                     .catch(function (error) {
+                                        $scope.submitting = false;
                                         toastr.error($filter('translate')('Common.Error'));
                                     });
                             }
@@ -334,5 +342,13 @@ angular.module('primeapps')
                 $scope.addNewTeamFormModal.hide();
                 $scope.teamModel = {};
             };
+
+            $scope.cancel = function () {
+                if ($scope.addNewTeamFormModal) {
+                    $scope.addNewTeamFormModal.hide();
+                    $scope.teamModel = {};
+                }
+            };
+
         }
     ]);

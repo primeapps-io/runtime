@@ -91,10 +91,10 @@
             </nav>
         </div>
         <div>
-            Total Collaborators {{pageTotal}}
+            {{'Common.PageTotal' | translate:{name:'Collaborators'} }} {{pageTotal}}
         </div>
         <div>
-            <span class="pagination-span">Items per page  </span>
+            <span class="pagination-span">{{'Common.ItemPerPage' | translate}} </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                 <option ng-selected="true" value="10">10</option>
                 <option value="25">25</option>

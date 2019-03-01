@@ -4,6 +4,9 @@
     "ImportExcel": "Import from Excel",
     "Download": "Download",
     "TotalRecord": "Total",
+    "PageTotal": "Total {{name}}",
+    "NoMember": "No member available",
+    "ItemPerPage": "Items per page",
     "Edit": "Edit",
     "Delete": "Delete",
     "Remove": "Remove",
@@ -2175,5 +2178,11 @@
       "Order": "Order"
     }
 
+  },
+  "Team": {
+    "Name": "Name",
+    "TeamMember": "Team Member",
+    "Organization": "Organization",
+    "AddNew": "Add New Team"
   }
 }

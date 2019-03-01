@@ -198,7 +198,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/teams/teamsService.js',
-                                cdnUrl + 'view/organization/teams/teamsController.js'
+                                cdnUrl + 'view/organization/teams/teamsController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
                     }
@@ -349,7 +350,7 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                })                .state('studio.app.relations', {
+                }).state('studio.app.relations', {
                     url: '/relations?:id',
                     views: {
                         'app': {
@@ -1656,4 +1657,4 @@ angular.module('primeapps')
 
             $urlRouterProvider.otherwise('/all-apps');
         }])
-;
+    ;

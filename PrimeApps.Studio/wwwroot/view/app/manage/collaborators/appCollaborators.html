@@ -8,7 +8,7 @@
         {{$select.selected.full_name}}
     </ui-select-match>
     <ui-select-choices repeat="item in collaboratorsAndTeamsArr | filter:{full_name: $select.search} | orderBy:'full_name'">
-        <i class="fa fa-user" ng-if="item.type == 'user'"></i><i class="fas fa-users" ng-if="item.type == 'team'"></i><span style="margin-left:15px" ng-bind-html="item.full_name | highlight: $select.search"></span>
+        <i class="fa fa-user" ng-if="item.type == 'user'"></i><i class="fas {{item.icon}}" ng-if="item.type == 'team'"></i><span style="margin-left:15px" ng-bind-html="item.full_name | highlight: $select.search"></span>
     </ui-select-choices>
 </ui-select>
 <div class="tab-content" style="margin-top: 30px;">
@@ -39,21 +39,24 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="appCol in appCollaborators">
-                <td>
-                    {{appCol.name}}
-                </td>
-                <td class="form-group">
-                    <select name="profile"
-                            class="form-control ng-animate-disabled"
-                            ng-model="appCol.profile"
-                            ng-change="changeRole(appCol)"
-                                ng-options="o.value as o.name for o in colProfiles">
-                        </select>
+                <tr ng-repeat="appCol in appCollaborators">
+                    <td>
+                        {{appCol.name}}
+                    </td>
+                    <td class="form-group">
+                        <div style="position:relative;">
+                            <select name="profile" ng-disabled="appCol.updating"
+                                    class="form-control ng-animate-disabled"
+                                    ng-model="appCol.profile"
+                                    ng-change="changeRole(appCol)"
+                                    ng-options="o.value as o.name for o in colProfiles"></select>
+
+                            <span style="position:absolute;z-index:1;left:50%;top:50%;margin-left:-12px;margin-top:-12px;"><img src="../../../../images/loading.gif" ng-show="appCol.updating" /></span>
+                        </div>
                     </td>
                     <td class="text-right">
                         <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation(); delete(appCol.id)" type="button" class="action-buttons-delete">
+                            <button ng-click="$event.stopPropagation(); delete(appCol)" ladda="appCol.deleting" type="button" class="action-buttons-delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

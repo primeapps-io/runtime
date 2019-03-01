@@ -4,7 +4,7 @@
 
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">New Collaborator</h4>
+                <h4 class="modal-title">Add New Collaborator</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -33,7 +33,7 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
-                                    <label class="col-sm-4 required-field">Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label class="col-sm-4 required-field">Firstname <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
-                                    <label class="col-sm-4 required-field">Surname <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label class="col-sm-4 required-field">Lastname <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="surname"
                                            class="form-control ng-animate-disabled col-sm-8"
