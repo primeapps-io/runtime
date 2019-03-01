@@ -668,24 +668,31 @@
                                     </div>
                                 </div>
 
-                                <div class="panel" ng-if="reportModel.report_type=='single'">
+                                <div class="panel" style="min-height: 400px;" ng-if="reportModel.report_type=='single'">
                                     <h4>{{'Report.Widget.Name' | translate}}</h4>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                        <label>
-                                            {{ 'Report.Widget.Icon' | translate }}
-                                            <span class="required-label">(required)</span>:
-                                        </label>
+                                     
 
-                                        <button type="button" data-container="form"
-                                                class="form-control btn btn-default"
-                                                data-placeholder="{{'Common.Icon' | translate}}-"
-                                                ng-model="reportModel.widget.icon"
-                                                data-html="1" data-toggle="true"
-                                                bs-options="icon.value as icon.label for icon in icons"
-                                                bs-select>
-                                            <span class="caret"></span>
-                                        </button>
+                                        <div class="form-group icon-search-list">
+                                            <label class="col-sm-4"> {{ 'Report.Widget.Icon' | translate }}</label>
+
+                                            <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
+                                                <ui-select-match placeholder="Select an icon">
+                                                    <div>
+                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                    </div>
+                                                </ui-select-match>
+
+                                                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                    <div ng-bind-html="icon.label"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
+
+
+                                        </div>
+
+                                         
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">

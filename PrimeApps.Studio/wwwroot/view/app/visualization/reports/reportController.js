@@ -4,7 +4,7 @@ angular.module('primeapps')
 
     .controller('ReportController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'helper', 'ModuleService', 'dragularService', 'ReportsService', 'operators',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, helper, ModuleService, dragularService, ReportsService, operators) {
-
+            $scope.icons = ModuleService.getIcons();
             $scope.reportModel = {};
             //$scope.reportModel.category_id = parseInt($location.search().categoryId);
             //$scope.ReportId = parseInt($location.search().Id);
@@ -495,9 +495,7 @@ angular.module('primeapps')
                 };
 
 
-            };
-
-       
+            }; 
             
             $scope.setFields = function () {
                 var containerLeft = document.querySelector('#availableFields');
