@@ -80,7 +80,7 @@
                                                 ng-model="reportModel.module_id"
                                                 ng-change="selectModule()"
                                                 ng-disabled="id"
-                                                ng-options="o.id as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                ng-options="o.id as o['label_' + language + '_singular'] for o in appModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>

@@ -146,32 +146,31 @@ angular.module('primeapps',
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 console.log(toState.url);
                 var currentUrl = toState.url;
-               // $rootScope.allMenuPanelOpen =true;
-                if(currentUrl.indexOf("moduleDesigner") >0 || currentUrl.indexOf("workflowEditor")>0  ){
-                    if(!$rootScope.subtoggleClass || $rootScope.subtoggleClass ==null)
-                     $rootScope.subtoggleClass = 'full-toggled2';
-                    if(!$rootScope.toggleClass || $rootScope.toggleClass ==null)
+                // $rootScope.allMenuPanelOpen =true;
+                if (currentUrl.indexOf("moduleDesigner") > 0 || currentUrl.indexOf("workflowEditor") > 0) {
+                    if (!$rootScope.subtoggleClass || $rootScope.subtoggleClass == null)
+                        $rootScope.subtoggleClass = 'full-toggled2';
+                    if (!$rootScope.toggleClass || $rootScope.toggleClass == null)
                         $rootScope.toggleClass = 'toggled full-toggled';
-                    
-                 $rootScope.allMenuPanelOpen =  false;
-                }else{
-                    if(!$rootScope.allMenuPanelOpen){
-                        if($rootScope.subtoggleClass ==null)
+
+                    $rootScope.allMenuPanelClose = true;
+                } else {
+                    if ($rootScope.allMenuPanelClose) {
+                        if ($rootScope.subtoggleClass == null)
                             $rootScope.subtoggleClass = 'full-toggled2';
-                        if(!$rootScope.toggleClass || $rootScope.toggleClass ==null)
+                        if (!$rootScope.toggleClass || $rootScope.toggleClass == null)
                             $rootScope.toggleClass = 'toggled full-toggled';
-                        $rootScope.allMenuPanelOpen =true;
+                        $rootScope.allMenuPanelOpen = true;
                     }
-                    
-               
+
+
                 }
-                
+
                 try {
                     $rootScope.currentPath = $location.$$url;
                     $window.scrollTo(0, 0);
 
-                }
-                catch (error) {
+                } catch (error) {
                     return;
                 }
             });

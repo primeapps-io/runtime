@@ -11,9 +11,9 @@ angular.module('primeapps')
 
             $scope.loading = true;
 
-            $scope.moduleLead = $filter('filter')($scope.$parent.modules, { name: 'leads' }, true)[0];
-            $scope.moduleIzinler = $filter('filter')($scope.$parent.modules, { name: 'izinler' }, true)[0];
-            $scope.moduleRehber = $filter('filter')($scope.$parent.modules, { name: 'rehber' }, true)[0];
+            $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
+            $scope.moduleIzinler = $filter('filter')($rootScope.appModules, { name: 'izinler' }, true)[0];
+            $scope.moduleRehber = $filter('filter')($rootScope.appModules, { name: 'rehber' }, true)[0];
 
             $scope.startPageList = [
                 {
@@ -69,7 +69,7 @@ angular.module('primeapps')
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
                 ProfilesService.find($scope.requestModel, 2).then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     $scope.profilesCopy = $scope.profiles;
                     $scope.profile = {};
 
@@ -114,7 +114,7 @@ angular.module('primeapps')
                 });
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     $scope.profile = {};
 
                     $scope.profile.has_admin_rights = false;

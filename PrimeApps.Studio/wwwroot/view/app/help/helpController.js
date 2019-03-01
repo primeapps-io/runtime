@@ -4,7 +4,7 @@ angular.module('primeapps')
 
     .controller('HelpController', ['$rootScope', '$scope', 'HelpService', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state', '$cookies', 'helper',
         function ($rootScope, $scope, HelpService, $filter, $window, $modal, config, $localStorage, $location, $cache, $state, $cookies, helper) {
-            $scope.moduleFilter = $filter('filter')($scope.$parent.modules, { deleted: false });
+            $scope.moduleFilter = $filter('filter')($rootScope.appModules, { deleted: false });
             $scope.selectHelpRelation = 'any';
             $scope.isTimetrackerExist = false;
             $scope.$parent.collapsed = true;
