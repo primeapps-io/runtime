@@ -44,8 +44,8 @@ namespace PrimeApps.Studio.Controllers
 			return await _roleRepository.GetByIdAsync(id);
 		}
 
-		[Route("find_all"), HttpPost]
-		public async Task<IEnumerable<RoleDTO>> FindAll()
+		[Route("get_all"), HttpPost]
+		public async Task<IEnumerable<RoleDTO>> GetAll()
 		{
 			IEnumerable<RoleDTO> roles = await _roleRepository.GetAllAsync();
 

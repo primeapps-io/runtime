@@ -63,16 +63,16 @@ namespace PrimeApps.Studio.Controllers
         /// </summary>
         /// <param name="Create"></param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]AppDraftUserModel user)
+        public async Task<IActionResult> Create([FromBody]AppDraftUserModel userModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            /*var organization = await _appDraftUserRepository.Get(AppUser.Id, model.OrganizationId);
+            var user = await _userRepository.GetByEmail(userModel.Email);
 
-            if (organization == null)
-                return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
-                */
+            if (user != null)
+                return BadRequest(new { message = "User already exist" });
+
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             var result = 0;
@@ -90,7 +90,7 @@ namespace PrimeApps.Studio.Controllers
                     httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
 
-                    var json = JsonConvert.SerializeObject(user);
+                    var json = JsonConvert.SerializeObject(userModel);
                     var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
                     if (!response.IsSuccessStatusCode)
@@ -106,12 +106,13 @@ namespace PrimeApps.Studio.Controllers
                         var tenantUser = new TenantUser
                         {
                             Id = platformUserId,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            Email = user.Email,
-                            FullName = user.FirstName + " " + user.LastName,
-                            ProfileId = user.ProfileId,
-                            RoleId = user.RoleId,
+                            FirstName = userModel.FirstName,
+                            IsActive = userModel.IsActive,
+                            LastName = userModel.LastName,
+                            Email = userModel.Email,
+                            FullName = userModel.FirstName + " " + userModel.LastName,
+                            ProfileId = userModel.ProfileId,
+                            RoleId = userModel.RoleId,
                             Culture = AppUser.Culture,
                             Currency = AppUser.Currency
 
@@ -119,62 +120,6 @@ namespace PrimeApps.Studio.Controllers
 
                         await _userRepository.CreateAsync(tenantUser);
                     }
-                    /*using (var content = response.Content)
-                    {
-                        var stringResult = content.ReadAsStringAsync().Result;
-
-                        var jsonResult = JObject.Parse(stringResult);
-                        password = jsonResult["password"].ToString();
-                        var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
-
-                        foreach (var template in templates)
-                        {
-                            template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
-                            template.Content = template.Content.Replace("{:LastName}", model.LastName);
-                            template.Content = template.Content.Replace("{:Organization}", organization.Label);
-                            template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
-                            template.Content = template.Content.Replace("{:Email}", model.Email);
-                            template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
-
-                            if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
-                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "initial");
-                            else
-                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
-
-                            var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-
-                            var myMessage = new MailMessage()
-                            {
-                                From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
-                                Subject = template.Subject,
-                                Body = template.Content,
-                                IsBodyHtml = true
-                            };
-
-                            myMessage.To.Add(model.Email);
-
-                            var email = new Email(_configuration, _serviceScopeFactory);
-                            email.TransmitMail(myMessage);
-                        }
-                    }
-                    var platformUser = await _platformUserRepository.Get(model.Email);
-
-                    var studioUser = new StudioUser
-                    {
-                        Id = platformUser.Id,
-                        UserOrganizations = new List<OrganizationUser>()
-                    };
-
-                    studioUser.UserOrganizations.Add(new OrganizationUser
-                    {
-                        UserId = platformUser.Id,
-                        Role = model.Role,
-                        OrganizationId = model.OrganizationId,
-                        CreatedById = AppUser.Id,
-                        CreatedAt = DateTime.Now
-                    });
-
-                    result = await _studioUserRepository.Create(studioUser);*/
                 }
             }
 
@@ -182,16 +127,24 @@ namespace PrimeApps.Studio.Controllers
         }
 
         /// <summary>
-        /// Updates an existing profile.
+        /// Updates an existing user.
         /// </summary>
-        /// <param name="UpdatedProfile"></param>
-        [Route("update"), HttpPost]
-        public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
+        /// <param name="UpdatedUser"></param>
+        [Route("update/{id:int}"), HttpPut]
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftUserModel userModel)
         {
-            //Set Warehouse
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            var user = await _userRepository.GetById(id);
+            if (user == null)
+                return BadRequest();
 
-            await _profileRepository.UpdateAsync(UpdatedProfile, AppUser.TenantLanguage);
+            user.FirstName = userModel.FirstName;
+            user.LastName = userModel.LastName;
+            user.IsActive = userModel.IsActive;
+            user.FullName = userModel.FirstName + " " + userModel.LastName;
+            user.ProfileId = userModel.ProfileId;
+            user.RoleId = userModel.RoleId;
+            await _userRepository.UpdateAsync(user);
+
             return Ok();
         }
 
@@ -199,68 +152,24 @@ namespace PrimeApps.Studio.Controllers
         /// Removes a profile and replaces its relations with another profile.
         /// </summary>
         /// <param name="RemovalRequest"></param>
-        [Route("remove"), HttpPost]
-        public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
-        {
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
-
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Gets all profiles and permissions belong to users workgroups with a lightweight user id list.
-        /// </summary>
-        /// <returns></returns>
-        [Route("get_all"), HttpPost]
-        public async Task<IActionResult> GetAll()
-        {
-            IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
-
-            return Ok(profileList);
-        }
-
-        /// <summary>
-        /// Changes users profile with another one.
-        /// </summary>
-        /// <param name="transfer"></param>
-        [Route("change_user_profile"), HttpPost]
-        public async Task<IActionResult> ChangeUserProfile([FromBody]ProfileTransferDTO transfer)
-        {
-            await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
-            /// update session cache
-
-            return Ok();
-        }
-
-        [Route("get_all_basic"), HttpGet]
-        public async Task<IActionResult> GetAllBasic()
-        {
-            var profiles = await _profileRepository.GetAll();
-
-            return Ok(profiles);
-        }
-
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var profileEntity = await _profileRepository.GetByIdBasic(id);
+            var user = await _userRepository.GetById(id);
 
-            if (profileEntity == null)
-                return NotFound();
+            if (user == null)
+                return BadRequest();
 
-            await _profileRepository.DeleteSoft(profileEntity);
+            user.Deleted = true;
+            await _userRepository.UpdateAsync(user);
 
             return Ok();
         }
 
         [Route("count"), HttpGet]
-        public async Task<IActionResult> Count([FromUri]TemplateType templateType)
+        public async Task<IActionResult> Count()
         {
-            var count = await _profileRepository.Count();
-
-            //if (count < 1)
-            //	return NotFound(count);
+            var count = await _userRepository.Count();
 
             return Ok(count);
         }
@@ -268,12 +177,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
-            var templates = await _profileRepository.Find(paginationModel);
+            var users = await _userRepository.Find(paginationModel);
 
-            //if (templates == null)
-            //	return NotFound();
-
-            return Ok(templates);
+            return Ok(users);
         }
 
     }

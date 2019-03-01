@@ -56,25 +56,33 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.preview = function () {
-            if (!$rootScope.currentApp.settings || ($rootScope.currentApp.settings && !$rootScope.currentApp.settings.master_user)) {
-                $state.go('studio.app.appDetails', {
-                    orgId: $rootScope.currentOrgId,
-                    appId: $rootScope.currentAppId
-                });
-
-                toastr.warning('Master user can not be empty for preview application.');
-                return;
-            }
-
             $rootScope.previewActivating = true;
-            LayoutService.getPreviewToken()
+
+            LayoutService.appDraftUserCount()
                 .then(function (response) {
-                    $scope.previewActivating = false;
-                    $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
-                })
-                .catch(function (response) {
-                    $scope.previewActivating = false;
+                    if (response.data <= 0) {
+                        $rootScope.subMenuOpen = 'manage';
+                        $state.go('studio.app.users', {
+                            orgId: $rootScope.currentOrgId,
+                            appId: $rootScope.currentAppId
+                        });
+
+                        toastr.warning('You need to add user for preview application.');
+                        $rootScope.previewActivating = false;
+                        return;
+                    }
+                    else {
+                        LayoutService.getPreviewToken()
+                            .then(function (response) {
+                                $scope.previewActivating = false;
+                                $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
+                            })
+                            .catch(function (response) {
+                                $scope.previewActivating = false;
+                            });
+                    }
                 });
+
         };
 
         $scope.logout = function () {

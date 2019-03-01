@@ -8,7 +8,7 @@ using System.Text;
 namespace PrimeApps.Model.Common.App
 {
     public class AppDraftUserModel
-    {        
+    {
         [JsonProperty("email"), DataMember(Name = "email"), Required]
         public string Email { get; set; }
 
@@ -29,6 +29,9 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("role_id"), DataMember(Name = "role_id")]
         public int RoleId { get; set; }
+
+        [JsonProperty("is_active"), DataMember(Name = "is_active")]
+        public bool IsActive { get; set; }
 
         [JsonProperty("created_at"), DataMember(Name = "created_at")]
         public DateTime CreatedAt { get; set; }

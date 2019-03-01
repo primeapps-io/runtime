@@ -178,7 +178,7 @@ namespace PrimeApps.Model.Repositories
             if (module.Order == 0)
             {
                 var order = DbContext.Modules.Count();
-                module.Order = (short)order++;
+                module.Order =(short)(order + 1);
             }
 
             DbContext.Modules.Add(module);

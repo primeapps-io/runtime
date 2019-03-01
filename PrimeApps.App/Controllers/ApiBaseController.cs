@@ -69,7 +69,7 @@ namespace PrimeApps.App.Controllers
 
 			if (appId > 0)
 			{
-				platformUser = platformUserRepository.GetByEmailAndTenantId("app@primeapps.io", 1);
+				platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
 				platformUser.TenantsAsUser.Single().Tenant.AppId = appId;
 			}
 			else

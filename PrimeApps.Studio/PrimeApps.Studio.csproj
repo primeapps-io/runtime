@@ -34,6 +34,5 @@
     <Folder Include="wwwroot\view\app\customcode\scripts\" />
     <Folder Include="wwwroot\view\app\deployments\app\" />
     <Folder Include="wwwroot\view\app\deployments\scripts\" />
-    <Folder Include="wwwroot\view\app\model\picklist\" />
   </ItemGroup>
 </Project>

@@ -264,7 +264,6 @@ angular.module('primeapps')
 
                     return module;
                 },
-
                 getAppData: function () {
                     var promises = [];
                     var deferred = $q.defer();
@@ -297,6 +296,9 @@ angular.module('primeapps')
                         });
 
                     return deferred.promise;
+                },
+                appDraftUserCount: function () {
+                    return $http.get(config.apiUrl + 'app_draft_user/count');
                 }
             };
         }]);
