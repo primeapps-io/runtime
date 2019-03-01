@@ -131,7 +131,7 @@
 
                                     <!--Default value options-->
                                     <div class="form-group"
-                                         ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
+                                         ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'lookup' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.userLookup.$invalid}">
                                         <label class="control-label col-sm-12">{{'Setup.Modules.DefaultValue' |
                                             translate}}</label>
