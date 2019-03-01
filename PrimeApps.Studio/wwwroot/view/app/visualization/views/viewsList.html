@@ -1,53 +1,60 @@
 <div class="setup-title">
     <h2>Views</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewFilter' | translate}}</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
+                {{'Setup.Modules.NewFilter' | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'View.ViewName' | translate}}</th>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>{{'View.ViewName' | translate}}</th>
+            <th>{{'Setup.Modules.Name' | translate}}</th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-            <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+        <tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <table ng-show="!loading" class="table">
         <thead>
-            <tr>
-                <th>{{'View.ViewName' | translate}}</th>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th width="50"></th>
-            </tr>
+        <tr>
+            <th>{{'View.ViewName' | translate}}</th>
+            <th>{{'Setup.Modules.Name' | translate}}</th>
+            <th width="50"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(view)">
-                <td>{{view['label_' + language]}}</td>
-                <td>{{view.parent_module['label_'+language+'_plural']}}</td>
-                <td class="text-right">
-                    <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
-                    <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); deleteView(view.id, $event);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(view)">
+            <td>{{view['label_' + language]}}</td>
+            <td>{{view.parent_module['label_'+language+'_plural']}}</td>
+            <td class="text-right">
+                <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>-->
+                <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); deleteView(view.id, $event);" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -73,7 +80,7 @@
             </nav>
         </div>
         <div>
-            Total Filters {{pageTotal}}
+            Total Views {{pageTotal}}
         </div>
         <div>
             <span class="pagination-span">Items per page  </span>

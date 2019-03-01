@@ -1,73 +1,79 @@
 <div class="setup-title">
     <h2>Picklists</h2>
-    <button class="btn add-button" ng-click="showFormModal(null, false)"><i class="fas fa-plus"></i>{{'Picklist.AddNew' | translate}}</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal(null, false)"><i class="fas fa-plus"></i>{{'Picklist.AddNew'
+                | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Picklist.Name' | translate}}</th>
-                <th>{{'Picklist.SystemCode' | translate}}</th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>{{'Picklist.Name' | translate}}</th>
+            <th>{{'Picklist.SystemCode' | translate}}</th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-            <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+        <tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <table ng-show="!loading" class="table">
         <thead>
-            <tr>
-                <th>{{'Picklist.Name' | translate}}</th>
-                <th>{{'Picklist.SystemCode' | translate}}</th>
-                <th width="50"></th>
-            </tr>
+        <tr>
+            <th>{{'Picklist.Name' | translate}}</th>
+            <th>{{'Picklist.SystemCode' | translate}}</th>
+            <th width="50"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="picklist in picklists" ng-click="$event.stopPropagation(); showFormModal(picklist, false);">
-                <td>{{picklist['label_' + language]}}</td>
-                <td style="text-transform: capitalize;">{{picklist.system_type}}</td>
-                <td class="text-right">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
-                                class="btn btn-xs btn-default list-action-button"
-                                placement="bottom-right"
-                                data-animation="am-flip-x"
-                                bs-dropdown
-                                aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="$event.stopPropagation();showFormModal(picklist, true)">
-                                    {{'Common.Edit' | translate}}
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="$event.stopPropagation(); delete(picklist.id)">
-                                    {{'Common.Remove' | translate}}
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--<div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(picklist.id);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>-->
-                </td>
-            </tr>
+        <tr ng-repeat="picklist in picklists" ng-click="$event.stopPropagation(); showFormModal(picklist, false);">
+            <td>{{picklist['label_' + language]}}</td>
+            <td style="text-transform: capitalize;">{{picklist.system_type}}</td>
+            <td class="text-right">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"
+                            class="btn btn-xs btn-default list-action-button"
+                            placement="bottom-right"
+                            data-animation="am-flip-x"
+                            bs-dropdown
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a ng-click="$event.stopPropagation();showFormModal(picklist, true)">
+                                {{'Common.Edit' | translate}}
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="$event.stopPropagation(); delete(picklist.id)">
+                                {{'Common.Remove' | translate}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!--<div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); delete(picklist.id);" type="button" class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>-->
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">

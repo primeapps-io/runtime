@@ -145,20 +145,25 @@ angular.module('primeapps',
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 console.log(toState.url);
-                var currentUrl = toState.url; 
+                var currentUrl = toState.url;
+               // $rootScope.allMenuPanelOpen =true;
                 if(currentUrl.indexOf("moduleDesigner") >0 || currentUrl.indexOf("workflowEditor")>0  ){
                     if(!$rootScope.subtoggleClass || $rootScope.subtoggleClass ==null)
                      $rootScope.subtoggleClass = 'full-toggled2';
                     if(!$rootScope.toggleClass || $rootScope.toggleClass ==null)
-                        $rootScope.toggleClass = 'full-toggled';
+                        $rootScope.toggleClass = 'toggled full-toggled';
                     
-                    $rootScope.allMenuPanelOpen =  false;
+                 $rootScope.allMenuPanelOpen =  false;
                 }else{
-                    $rootScope.allMenuPanelOpen =true;
-                    if($rootScope.allMenuPanelOpen){
-                        $rootScope.subtoggleClass = '';
-                        $rootScope.toggleClass = '';
-                    } 
+                    if(!$rootScope.allMenuPanelOpen){
+                        if($rootScope.subtoggleClass ==null)
+                            $rootScope.subtoggleClass = 'full-toggled2';
+                        if(!$rootScope.toggleClass || $rootScope.toggleClass ==null)
+                            $rootScope.toggleClass = 'toggled full-toggled';
+                        $rootScope.allMenuPanelOpen =true;
+                    }
+                    
+               
                 }
                 
                 try {

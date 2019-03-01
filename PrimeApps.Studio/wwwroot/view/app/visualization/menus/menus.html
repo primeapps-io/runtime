@@ -1,6 +1,12 @@
 <div class="setup-title">
     <h2>{{'Menu.MenuSettings'|translate}}</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Menu.NewMenu'|translate}}</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
+                {{'Menu.NewMenu'|translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 
 <div class="tab-content table-responsive">
@@ -63,7 +69,8 @@
                         <!--<a ng-click="$event.stopPropagation();showFormModal(item.id)">{{'Common.Edit' | translate}} </a>-->
                         <!--</li>-->
                         <li>
-                            <a ng-click="$event.stopPropagation();showFormModal(item.id, true)">{{'Common.Copy' | translate}}</a>
+                            <a ng-click="$event.stopPropagation();showFormModal(item.id, true)">{{'Common.Copy' |
+                                translate}}</a>
                         </li>
                         <li>
                             <a ng-click="$event.stopPropagation();delete(item.id, $event);">

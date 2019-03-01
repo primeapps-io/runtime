@@ -33,7 +33,7 @@ angular.module('primeapps')
             ExcelTemplatesService.find($scope.requestModel, "excel").then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
                 });
                 $scope.templates = templates;
                 $scope.templatesState = templates;
@@ -51,7 +51,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;
@@ -67,12 +67,13 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
+                $scope.template = [];
+
                 if (template) {
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrlExcel();
-                }
-                else {
-                    $scope.template = [];
+                } else {// if template, isNew we set the first value active
+                    $scope.template.active = true;
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
@@ -215,8 +216,7 @@ angular.module('primeapps')
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
                     $scope.templateFileCleared = true;
-                }
-                else {
+                } else {
                     $scope.template.content = undefined;
                     $scope.templateFileCleared = true;
                 }
@@ -224,7 +224,7 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid || !$scope.logoUpload) {
+                if (!uploadForm.$valid) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
@@ -246,8 +246,7 @@ angular.module('primeapps')
                         uploadThenComplete(fileItem, tempInfo, status);
                     };
                     $scope.pageTotal = $scope.pageTotal + 1;
-                }
-                else {
+                } else {
                     if ($scope.templateFileCleared) {
                         //$scope.fileUpload.uploader.start();
                         fileUpload.queue[0].uploader.headers = header;
@@ -256,8 +255,7 @@ angular.module('primeapps')
                         fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
                             uploadThenComplete(fileItem, tempInfo, status);
                         };
-                    }
-                    else {
+                    } else {
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
@@ -288,8 +286,9 @@ angular.module('primeapps')
                 /**template.name
                  * wordTemplates.html'deki değişken adıyla aynı olduğu için modal açıldığında wordTemplatesForm.html'de ki alan değişikliğinde wordTemplates.html'deki alan etkileniyor*/
                 $scope.templateFileCleared = false;
-                $scope.template = template;
+                $scope.template = angular.copy(template);
                 $scope.template.templateName = template.name;
+                $scope.template.active = template.active;
                 $scope.template.templateModule = template.module;
                 $scope.currentContent = angular.copy(template.content);
             };
@@ -360,8 +359,7 @@ angular.module('primeapps')
                             .catch(function () {
                                 $scope.saving = false;
                             });
-                    }
-                    else {
+                    } else {
                         template.id = $scope.template.id;
 
                         ExcelTemplatesService.update(template)

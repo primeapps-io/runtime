@@ -20,22 +20,23 @@
 
         <div class="tab-content" style="padding: 50px;margin-top: 50px">
             <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
-                <div class="row" style="display: flex;align-items: center;">
-                    <div class="col-sm-3" style="border-right: solid 2px #dfdfdf;">
-                        <div style="margin: auto;text-align: center;">
+                <div class="row">
+                    <div class="col-md-offset-3 col-md-6 col-lg-offset-4 col-lg-4">
+                        <div class="text-center">
                             <div class="file-uploader" style="background: none;">
                                 <div class="organization-icon" style="background-color: {{orgModel.color}}">
                                     <i class="{{orgModel.icon}}"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group" style="position: relative;"
-                             ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                            <input name="colorpicker" type="color"
-                                   class="form-control"
-                                   ng-model="orgModel.color">
+                        <div class="form-group">
+                            <div ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                                <label class="required-field">Organization Color</label>
+                                <input name="colorpicker" type="color" class="form-control" ng-model="orgModel.color">
+                            </div>
                         </div>
-                        <div class="form-group icon-search-list">
+                        <div class="form-group form-group icon-search-list">
+                            <label class="required-field">Organization Icon</label>
                             <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">
                                 <ui-select-match placeholder="Select an icon">
                                     <div>
@@ -49,18 +50,10 @@
 
                             </ui-select>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                        <div class="form-group bottom0">
-                            <div class="col-sm-4 col-md-4 col-lg-4"><label class="required-field"
-                                                                           style="line-height: 40px">Organization
-                                Name</label></div>
-                            <div class="col-sm-6 col-md-6 col-lg-6"><input type="text"
-                                                                           name="description"
-                                                                           class="form-control ng-animate-disabled col-sm-8"
-                                                                           required
-                                                                           maxlength="50"
-                                                                           ng-model="orgModel.label">
+                        <div class="form-group">
+                            <label class="required-field">Organization Name</label>
+                            <div>
+                                <input type="text" name="description" class="form-control ng-animate-disabled" required maxlength="50" ng-model="orgModel.label">
                             </div>
                         </div>
                     </div>

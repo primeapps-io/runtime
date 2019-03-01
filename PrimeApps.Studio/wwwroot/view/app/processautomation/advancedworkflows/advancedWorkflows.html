@@ -1,53 +1,70 @@
 <div class="setup-title">
     <h2>Advanced Workflows</h2>
-    <button class="btn add-button" ui-sref="studio.app.workflowEditor"><i class="fas fa-plus"></i> {{'Setup.BpmWorkflow.NewRule' | translate}}</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ui-sref="studio.app.workflowEditor"><i class="fas fa-plus"></i>
+                {{'Setup.BpmWorkflow.NewRule' | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
-                <th width="70"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
+            <th width="70"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in placeholderArray">
-                <td><div class="animated-background"></div></td>
-                <td><div class="animated-background"></div></td>
-                <td><div class="animated-background"></div></td>
-                <td><div class="animated-background"></div></td>
-                <td><div class="animated-background"></div></td>
-            </tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
 
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-            <tr>
-                <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
-                <th width="70"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
+            <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
+            <th width="70"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">
-                <td>{{workflow.name}}</td>
-                <td>{{workflow.module['label_'+language+'_plural']}}</td>
-                <td>{{workflow.record_operations}}</td>
-                <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        <tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">
+            <td>{{workflow.name}}</td>
+            <td>{{workflow.module['label_'+language+'_plural']}}</td>
+            <td>{{workflow.record_operations}}</td>
+            <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">

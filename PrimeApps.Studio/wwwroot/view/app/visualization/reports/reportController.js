@@ -162,6 +162,7 @@ angular.module('primeapps')
                     nextprevdatetype: "Y"
                 }
             ];
+            
             $scope.setEdit = function (reportId) {
                 ReportsService.getReport(reportId).then(function (result) {
                     $scope.currentReport = result.data;
@@ -186,9 +187,11 @@ angular.module('primeapps')
             $scope.nextPrevDateChange = function (filter) {
                 $scope.setCostumDate(filter);
             };
+            
             $scope.nextPrevDateTypeChange = function (filter) {
                 $scope.setCostumDate(filter);
             };
+            
             $scope.setCostumDate = function (filter) {
                 if (filter.valueX === null || filter.valueX === "" || filter.valueX === undefined) {
                     filter.value = "";

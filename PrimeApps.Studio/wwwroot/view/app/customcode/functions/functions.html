@@ -2,9 +2,9 @@
     <h2>Functions</h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <li></li>
             <li>
-                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Function</button>
+                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Function
+                </button>
             </li>
         </ul>
     </div>
@@ -91,7 +91,8 @@
             <td>{{getTime(function.created_at)}}</td>
             <td class="text-right">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)" type="button" class="action-buttons-delete">
+                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"
+                            type="button" class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
                     <div class="spinner-border spinner-border-sm" role="status">
@@ -108,7 +109,7 @@
         </tr>
         </tbody>
     </table>
-    <div class="table-pagination" >
+    <div class="table-pagination">
         <div>
             <nav aria-label="Page navigation">
                 <div paging

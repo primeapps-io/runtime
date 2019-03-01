@@ -4,7 +4,6 @@
             <h2>{{module['label_' + language + '_plural']}}</h2>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li></li>
                     <li>
                         <a href="/#/org/{{ orgId}}/app/{{ appId}}/modules" class="btn  btn-radius btn-gray"><i
                                 class="fas fa-angle-left"></i>
@@ -124,12 +123,14 @@
                                    bs-tooltip></i>
                             </span>
                                     </h5>
-                                    <div class="subpanel-body clearfix" ng-class="{'flexitemx':row.section.column_count === 2}">
+                                    <div class="subpanel-body clearfix"
+                                         ng-class="{'flexitemx':row.section.column_count === 2}">
                                         <div ng-class="{'col-sm-6': row.section.column_count === 2, 'col-sm-12': row.section.column_count === 1}"
                                              ng-repeat="column in row.columns">
                                             <div class="cell-container"
-                                                  style="{{row.columns[0].cells.length < 1  ?  'min-height:40px' :''}}">
-                                                <div class="form-group" ng-repeat="cell in column.cells | filter:{deleted:'!true'}"
+                                                 style="{{row.columns[0].cells.length < 1  ?  'min-height:40px' :''}}">
+                                                <div class="form-group"
+                                                     ng-repeat="cell in column.cells | filter:{deleted:'!true'}"
                                                 >
                                                     <label class="control-label cell-handle"
                                                            ng-class="{'col-sm-5':row.section.column_count === 2, 'col-sm-4':row.section.column_count === 1, 'required-field':cell.field.validation.required,'pull-right':cell.field.position==='right'}">
