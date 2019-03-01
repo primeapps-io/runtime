@@ -672,6 +672,11 @@ button:focus, select:focus {
 .primeapps .input-group-focus .input-group-addon {
   color: #0D6FAA;
 }
+.primeapps .input-group .input-group-addon {
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
 .primeapps .inner-addon i {
   color: #0D6FAA;
 }
