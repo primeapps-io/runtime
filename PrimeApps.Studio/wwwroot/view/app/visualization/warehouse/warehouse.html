@@ -1,34 +1,39 @@
 <div class="setup-title">
     <h2>Warehouse</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Warehouse</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Warehouse
+            </button>
+        </li>
+    </ul>
 </div>
 <div class="tab-content table-responsive">
     <table class="table">
         <thead>
-            <tr>
-                <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                <th>{{'Setup.Modules.RelationType' | translate}}</th>
-                <th style="min-width: 110px;"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Modules.RelationName' | translate}}</th>
+            <th>{{'Setup.Modules.Name' | translate}}</th>
+            <th>{{'Setup.Modules.RelationName' | translate}}</th>
+            <th>{{'Setup.Modules.RelationType' | translate}}</th>
+            <th style="min-width: 110px;"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="workflow in workflows">
-                <td>{{workflow.name}}</td>
-                <td>{{workflow.moduleStr}}</td>
-                <td>{{workflow.operationsStr}}</td>
-                <td>{{workflow.statusStr}}</td>
-                <td class="text-right">
-                    <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
-                        translate}}</a>
-                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                            action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                            confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                        {{'Common.Remove' | translate}}
-                    </button>
-                </td>
-            </tr>
+        <tr ng-repeat="workflow in workflows">
+            <td>{{workflow.name}}</td>
+            <td>{{workflow.moduleStr}}</td>
+            <td>{{workflow.operationsStr}}</td>
+            <td>{{workflow.statusStr}}</td>
+            <td class="text-right">
+                <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
+                    translate}}</a>
+                <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                        action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                        confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                    {{'Common.Remove' | translate}}
+                </button>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="row table-pagination">
