@@ -209,7 +209,7 @@ angular.module('primeapps')
                 });
 
                 function accepts(el, target, source) {
-                    if (source != target) {
+                    if (source !== target) {
                         return true;
                     }
                 }
@@ -259,7 +259,7 @@ angular.module('primeapps')
 
                             if ($scope.view.filters && $scope.view.filters.length > 0) {
                                 $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
-                                $scope.view.filterList = ViewsService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
+                                $scope.view.filterList = setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
                             }
                             dragular();
                         })
@@ -357,7 +357,7 @@ angular.module('primeapps')
 
                     view.fields.push(field);
 
-                    if (selectedField.lookup_type && selectedField.lookup_type != 'relation') {
+                    if (selectedField.lookup_type && selectedField.lookup_type !== 'relation') {
                         var lookupModule = $filter('filter')($rootScope.appModules, {name: selectedField.lookup_type}, true)[0];
                         //TODO dont forget
                         if (lookupModule) {
@@ -377,13 +377,13 @@ angular.module('primeapps')
                     if (!filterItem.field || !filterItem.operator)
                         return;
 
-                    if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value == null || filterItem.value == undefined))
+                    if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value === null || filterItem.value === undefined))
                         return;
 
                     var field = filterItem.field;
                     var fieldName = field.name;
 
-                    if (field.data_type === 'lookup' && field.lookup_type != 'users') {
+                    if (field.data_type === 'lookup' && field.lookup_type !== 'users') {
                         var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                         var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
@@ -507,7 +507,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep != 0) {
+                if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep !== 0) {
                     viewForm.$setValidity('field', false);
                     $scope.background_color = "background-color: #eed3d7";
                     return false;
@@ -520,6 +520,328 @@ angular.module('primeapps')
                 $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
+
+            $scope.costumeDate = "this_day()";
+            $scope.dateFormat = [
+                {
+                    label: $filter('translate')('View.Second'),
+                    value: "s"
+                },
+                {
+                    label: $filter('translate')('View.Minute'),
+                    value: "m"
+                },
+                {
+                    label: $filter('translate')('View.Hour'),
+                    value: "h"
+                },
+                {
+                    label: $filter('translate')('View.Day'),
+                    value: "D"
+                },
+                {
+                    label: $filter('translate')('View.Week'),
+                    value: "W"
+                },
+                {
+                    label: $filter('translate')('View.Month'),
+                    value: "M"
+                },
+                {
+                    label: $filter('translate')('View.Year'),
+                    value: "Y"
+                }
+            ];
+
+            $scope.costumeDateFilter = [
+                {
+                    name: "thisNow",
+                    label: $filter('translate')('View.Now'),
+                    value: "now()"
+                },
+                {
+                    name: "thisToday",
+                    label: $filter('translate')('View.StartOfTheDay'),
+                    value: "today()"
+                },
+                {
+                    name: "thisWeek",
+                    label: $filter('translate')('View.StartOfThisWeek'),
+                    value: "this_week()"
+                },
+                {
+                    name: "thisMonth",
+                    label: $filter('translate')('View.StartOfThisMonth'),
+                    value: "this_month()"
+                },
+                {
+                    name: "thisYear",
+                    label: $filter('translate')('View.StartOfThisYear'),
+                    value: "this_year()"
+                },
+                {
+                    name: "year",
+                    label: $filter('translate')('View.NowYear'),
+                    value: "year()"
+                },
+                {
+                    name: "month",
+                    label: $filter('translate')('View.NowMonth'),
+                    value: "month()"
+                },
+                {
+                    name: "day",
+                    label: $filter('translate')('View.NowDay'),
+                    value: "day()"
+                },
+                {
+                    name: "costume",
+                    label: $filter('translate')('View.CustomDate'),
+                    value: "costume"
+                },
+                {
+                    name: "todayNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheDay'),
+                    value: "costumeN",
+                    nextprevdatetype: "D"
+                },
+                {
+                    name: "weekNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheWeek'),
+                    value: "costumeW",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "monthNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheMonth'),
+                    value: "costumeM",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "yearNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheYear'),
+                    value: "costumeY",
+                    nextprevdatetype: "Y"
+                }
+            ];
+
+            $scope.dateChange = function (filter) {
+                if (filter.costumeDate !== 'costume' && filter.costumeDate !== 'costumeN' && filter.costumeDate !== 'costumeW' && filter.costumeDate !== 'costumeM' && filter.costumeDate !== 'costumeY') {
+                    filter.value = filter.costumeDate;
+                }
+                if (filter.costumeDate === 'costumeN' || filter.costumeDate === 'costumeW' || filter.costumeDate === 'costumeM' || filter.costumeDate === 'costumeY') {
+                    filter.value = "";
+                    filter.valueX = "";
+                    filter.nextprevdatetype = "";
+
+                }
+
+            };
+
+            $scope.nextPrevDateChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
+            $scope.nextPrevDateTypeChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
+            $scope.setCostumDate = function (filter) {
+                if (filter.valueX === null || filter.valueX === "" || filter.valueX === undefined) {
+                    filter.value = "";
+                    return false;
+                }
+                if (filter.nextprevdatetype === undefined) {
+                    filter.nextprevdatetype = $scope.dateFormat[0].value;
+                }
+                switch (filter.costumeDate) {
+                    case "costumeN":
+                        filter.value = "today(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeM":
+                        filter.value = "this_month(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeW":
+                        filter.value = "this_week(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeY":
+                        filter.value = "this_year(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                }
+
+			};
+
+			var setFilter =function (viewFilters, moduleFields, modulePicklists, filterList) {
+
+				for (var j = 0; j < viewFilters.length; j++) {
+					var name = viewFilters[j].field;
+					var value = viewFilters[j].value;
+
+					if (name.indexOf('.') > -1) {
+						name = name.split('.')[0];
+						viewFilters[j].field = name;
+					}
+
+					var field = $filter('filter')(moduleFields, { name: name }, true)[0];
+					var fieldValue = null;
+
+					if (!field)
+						return filterList;
+
+					switch (field.data_type) {
+						case 'picklist':
+							fieldValue = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
+							break;
+						case 'multiselect':
+							fieldValue = [];
+							var multiselectValue = value.split('|');
+
+							angular.forEach(multiselectValue, function (picklistLabel) {
+								var picklist = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
+
+								if (picklist)
+									fieldValue.push(picklist);
+							});
+							break;
+						case 'tag':
+							fieldValue = [];
+							var tagValue = value.split('|');
+
+							angular.forEach(tagValue, function (label) {
+								fieldValue.push(label);
+							});
+							break;
+						case 'lookup':
+							if (field.lookup_type === 'users') {
+								var user = {};
+
+								if (value === '0' || value === '[me]') {
+									user.id = 0;
+									user.email = '[me]';
+									user.full_name = $filter('translate')('Common.LoggedInUser');
+								}
+								else {
+									if (value !== '-') {
+										var userItem =
+											$filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
+											];
+										user.id = userItem.Id;
+										user.email = userItem.Email;
+										user.full_name = userItem.FullName;
+									}
+
+									//TODO: $rootScope.users kaldirilinca duzeltilecek
+									// ModuleService.getRecord('users', value)
+									//     .then(function (lookupRecord) {
+									//         fieldValue = [lookupRecord.data];
+									//     });
+								}
+
+								fieldValue = [user];
+							}
+							else {
+								fieldValue = value;
+							}
+							break;
+						case 'date':
+						case 'date_time':
+						case 'time':
+							if (!$scope.isCostumeDate($scope.view.filters[j])) {
+								fieldValue = new Date(value);
+								$scope.view.filterList[j].costumeDate = "costume";
+								$scope.view.filters[j].costumeDate = "costume";
+							} else {
+								fieldValue = $scope.view.filters[j].value;
+								$scope.view.filterList[j].costumeDate = $scope.view.filters[j].costumeDate;
+								$scope.view.filterList[j].valueX = $scope.view.filters[j].valueX;
+								$scope.view.filterList[j].nextprevdatetype = $scope.view.filters[j].nextprevdatetype;
+							}
+							break;
+						case 'checkbox':
+							fieldValue = $filter('filter')(modulePicklists.yes_no, { system_code: value }, true)[0];
+							break;
+						default:
+							fieldValue = value;
+							break;
+					}
+
+					filterList[j].field = field;
+					filterList[j].operator = operators[viewFilters[j].operator];
+					filterList[j].value = fieldValue;
+
+					if (viewFilters[j].operator === 'empty' || viewFilters[j].operator === 'not_empty') {
+						filterList[j].value = null;
+						filterList[j].disabled = true;
+					}
+				}
+				return filterList;
+			};
+
+		$scope.isCostumeDate =  function (filter) {
+			var getNumberRegex = /[^\d.-]/g;
+			if (filter.value.indexOf('now(') > -1) {
+				filter.costumeDate = "now()";
+				return true;
+			}
+			if (filter.value.indexOf('today(') > -1) {
+				if (/\d+/.test(filter.value)) {
+					filter.costumeDate = "costumeN";
+					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+					return true;
+				} else {
+					filter.costumeDate = "today()";
+					return true;
+				}
+			}
+			if (filter.value === 'year()') {
+				filter.costumeDate = "year()";
+				return true;
+			}
+			if (filter.value === 'month()') {
+				filter.costumeDate = "month()";
+				return true;
+			}
+			if (filter.value === 'day()') {
+				filter.costumeDate = "day()";
+				return true;
+			}
+
+			if (filter.value.indexOf('this_week(') > -1) {
+				if (/\d+/.test(filter.value)) {
+					filter.costumeDate = "costumeW";
+					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+					return true;
+				} else {
+					filter.costumeDate = "this_week()";
+					return true;
+				}
+			}
+
+			if (filter.value.indexOf('this_month(') > -1) {
+				if (/\d+/.test(filter.value)) {
+					filter.costumeDate = "costumeM";
+					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+					return true;
+				} else {
+					filter.costumeDate = "this_month()";
+					return true;
+				}
+			}
+
+			if (filter.value.indexOf('this_year(') > -1) {
+				if (/\d+/.test(filter.value)) {
+					filter.costumeDate = "costumeY";
+					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+					return true;
+				} else {
+					filter.costumeDate = "this_year()";
+					return true;
+				}
+			}
+			return false;
+		}
 
         }
     ]);

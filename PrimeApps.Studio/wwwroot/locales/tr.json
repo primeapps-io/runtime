@@ -4,6 +4,9 @@
     "ImportExcel": "Excel'den Aktar",
     "Download": "İndir",
     "TotalRecord": "Kayıt Sayısı",
+    "PageTotal": "Toplam {{name}}",
+    "NoMember": "Kayıt Bulunamadı.",
+    "ItemPerPage": "Sayfa başına öğe", 
     "Edit": "Düzenle",
     "Delete": "Sil",
     "Remove": "Sil",
@@ -2172,5 +2175,11 @@
       "Value3": "Değer-3",
       "Order": "Sıra"
     }
+  },
+  "Team": {
+    "Name": "Adı",
+    "TeamMember": "Takım Üyesi",
+    "Organization": "Organizasyon",
+    "AddNew": "Yeni Takım Ekle" 
   }
 }

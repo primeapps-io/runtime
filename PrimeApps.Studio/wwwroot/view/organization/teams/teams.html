@@ -4,45 +4,31 @@
         <ul class="list-unstyled list-inline">
             <li ng-show="!selectedTeam">
                 <button class="btn add-button" ng-click="addNewTeam()">
-                    <i class="fas fa-plus"></i> Add New Team
+                    <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
                 </button>
             </li>
-            <li ng-show="selectedTeam">
-                <button class="btn btn-red" ng-click="delete(teamId)">
-                    <i class="fas fa-trash"></i> Delete
+            <li ng-if="selectedTeam">
+                <button class="btn delete-btn btn-red" ng-click="delete(teamId)">
+                    <i class="fas fa-trash"></i>{{'Common.Delete' | translate}}
                 </button>
-            </li>
-            <li ng-show="selectedTeam">
+
                 <button class="btn btn-blue" ng-click="addNewTeam(teamId)">
-                    <i class="fas fa-pen"></i> Edit
+                    <i class="fas fa-pen"></i> {{'Common.Edit' | translate}}
                 </button>
             </li>
         </ul>
 
     </div>
 </div>
-<!--<div class="setup-title">
-    <ul class="list-unstyled list-inline">
-        <li>
-            <button class="btn add-button">
-                <i class="fas fa-users"></i> Members (8)
-            </button>
-        </li>
-        <li>
-            <button class="btn add-button btn-gray">
-                <i class="fas fa-users"></i> Apps (8)
-            </button>
-        </li>
-    </ul>
-</div>-->
+
 <div class="tab-content" ng-show="!selectedTeam">
     <div class="table-responsive" ng-show="loading">
-        <table class="table" >
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Team member</th>
-                    <th>Organization</th>
+                    <th>{{'Team.Name' | translate}}</th>
+                    <th>{{'Team.TeamMember' | translate}}</th>
+                    <th>{{'Team.Organization' | translate}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,12 +50,12 @@
     <div class="table-responsive" ng-show="!loading">
         <table class="table table-hover">
             <thead>
-            <tr>
-                <th>Name</th>
-                <th>Team member</th>
-                <th>Organization</th>
-                <th style="width: 50px;"></th>
-            </tr>
+                <tr>
+                    <th>{{'Team.Name' | translate}}</th>
+                    <th>{{'Team.TeamMember' | translate}}</th>
+                    <th>{{'Team.Organization' | translate}}</th>
+                    <th style="width: 50px;"></th>
+                </tr>
             </thead>
             <tbody>
                 <tr ng-click="selectTeam(team.id)" ng-repeat="team in teamArray">
@@ -105,17 +91,6 @@
                             </ul>
                         </div>
                     </td>
-                    <!--<td class="text-right">
-                        <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">
-                            {{ 'Common.Edit' | translate }}
-                        </a>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>-->
                 </tr>
             </tbody>
         </table>
@@ -142,10 +117,10 @@
                 </nav>
             </div>
             <div>
-                Total Teams {{pageTotal}}
+                {{'Common.PageTotal' | translate:{name:"Teams"} }} {{pageTotal}}
             </div>
             <div>
-                <span class="pagination-span">Items per page  </span>
+                <span class="pagination-span">{{'Common.ItemPerPage' | translate}}  </span>
                 <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                     <option ng-selected="true" value="10">10</option>
                     <option value="25">25</option>
@@ -173,7 +148,7 @@
             <table class="table" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>{{'Team.Name' | translate}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -186,11 +161,11 @@
             </table>
         </div>
         <div class="table-responsive" ng-show="!loadingMembers">
-            <div ng-show="selectedTeam.team_users.length < 1" style="padding:30px"><p>No member available.</p></div>
+            <div ng-show="selectedTeam.team_users.length < 1" style="padding:30px"><p>{{'Common.NoMember' | translate}}</p></div>
             <table class="table table-hover" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>{{'Team.Name' | translate}}</th>
                         <th style="width: 50px;"></th>
                     </tr>
                 </thead>
@@ -206,12 +181,6 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                            <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                    action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                    confirm-yes="{{'Common.Yes' | translate}}"
-                                    confirm-no="{{'Common.No' | translate}}">
-                                {{'Common.Remove' | translate}}
-                            </button>-->
                         </td>
                     </tr>
                 </tbody>

@@ -1,5 +1,5 @@
 ﻿<div class="setup-title">
-    <h2>App Details</h2>
+    <h2>App Settings</h2>
     <ul class="list-unstyled list-inline">
         <li>
             <button type="submit" ng-click="save();" class="btn btn-radius btn-blue" style="" ladda="saving">
@@ -44,11 +44,11 @@
         <div class="row">
             <div class="col-sm-4">
                 <div class="form-group bottom0">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Name:</label>
+                    <label class="required-field" style="padding-bottom: 10px;">Name:</label>
                     <input type="text"
                            name="label"
                            style="margin-bottom: 20px;"
-                           class="form-control ng-animate-disabled col-sm-8"
+                           class="form-control ng-animate-disabled"
                            required
                            maxlength="50"
                            ng-model="appModel.label">
@@ -56,11 +56,11 @@
             </div>
             <div class="col-sm-4">
                 <div class="form-group bottom0">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Identifier:</label>
+                    <label class="required-field" style="padding-bottom: 10px;">Identifier:</label>
                     <input type="text"
                            name="name"
                            style="margin-bottom: 20px;"
-                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                           class="form-control ng-animate-disabled text-lowercase"
                            required
                            disabled="true"
                            maxlength="50"
@@ -73,11 +73,11 @@
             </div>
             <div class="col-sm-4">
                 <div class="form-group bottom0">
-                    <label class="col-sm-4 required-field" style="padding-bottom: 10px;">Description:</label>
+                    <label class="required-field" style="padding-bottom: 10px;">Description:</label>
                     <input type="text"
                            name="description"
                            style="margin-bottom: 20px;"
-                           class="form-control ng-animate-disabled col-sm-8"
+                           class="form-control ng-animate-disabled"
                            required
                            maxlength="50"
                            ng-model="appModel.description">
@@ -87,7 +87,7 @@
     </form>
 </div>
 <div class="setup-title">
-    <h2></h2>
+    <h2>Auth Settings</h2>
     <ul class="list-unstyled list-inline">
         <li>
             <button type="submit" ng-click="saveAuthTheme();" class="btn btn-radius btn-blue" style="" ladda="savingAuth">
@@ -167,7 +167,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Color:</label>
                     <input name="colorpicker" type="color"
@@ -175,7 +175,7 @@
                            ng-model="authTheme.color">
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Title:</label>
                     <input type="text"
@@ -189,7 +189,7 @@
                            ng-model="authTheme.title" />
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Description Tr:</label>
                     <input type="text"
@@ -201,7 +201,7 @@
                            ng-model="authTheme.descriptionTr">
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Description En:</label>
                     <input type="text"
@@ -214,11 +214,12 @@
                 </div>
             </div>
         </div>
+        
     </form>
 </div>
 
 <div class="setup-title">
-    <h2></h2>
+    <h2>Theme Settings</h2>
     <ul class="list-unstyled list-inline">
         <li>
             <button type="submit" ng-click="saveAppTheme();" class="btn btn-radius btn-blue" style="" ladda="savingApp">
@@ -230,7 +231,8 @@
 <div class="tab-content" style="padding: 30px;margin-bottom: 30px;">
     <form name="appThemeForm" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
                 <div style="margin: auto;text-align: center;">
                     <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
                         <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
@@ -252,7 +254,7 @@
                     </label>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div style="margin: auto;text-align: center;">
                     <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding: 0px;">
                         <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
@@ -276,7 +278,8 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Color:</label>
                     <input name="colorpicker" type="color"
@@ -284,7 +287,7 @@
                            ng-model="appTheme.color">
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <label class="required-field" style="padding-bottom: 10px;">Title:</label>
                     <input type="text"
@@ -294,7 +297,6 @@
                            required
                            maxlength="50"
                            ng-trim="false"
-                           focus="true"
                            ng-model="appTheme.title" />
                 </div>
             </div>
