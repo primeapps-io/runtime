@@ -23,7 +23,7 @@
                             class="form-control ng-animate-disabled col-sm-8"
                             required
                             ng-model="currentActionButton.module"
-                            ng-change="moduleChanged()"
+                            ng-change="moduleChanged(true)"
                             ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
@@ -71,7 +71,7 @@
                            ng-model="currentActionButton.url">
                 </div>
                 <div ng-if="currentActionButton.type == 2" class="form-group"
-                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.method_type.$invalid}">
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.methodType.$invalid}">
                     <label class="col-sm-12 required-field">{{'Setup.Workflow.WebHookMethod' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <label class="radio-inline newinput">
                         <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="post" required>POST<span></span>
@@ -96,7 +96,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="parameter in hookParameters">
+                                    <tr ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.hookModule.$invalid && !parameter.parameterName && !parameter.selectedField}" ng-repeat="parameter in hookParameters">
                                         <td style="padding: 1px">
                                             <input type="text" required ng-model="parameter.parameterName" tabindex="2"
                                                    class="form-control" maxlength="500" />

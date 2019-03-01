@@ -94,7 +94,7 @@ angular.module('primeapps')
 					name: 'expense',
 					route: "expense",
 					custom: true,
-					menu_icon: 'fa-credit-card',
+					menu_icon: 'fa fa-credit-card',
 					display: true
 				},
 				{

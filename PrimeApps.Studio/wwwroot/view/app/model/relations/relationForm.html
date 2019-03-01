@@ -29,7 +29,7 @@
                                                 required
                                                 ng-disabled="!currentRelation.isNew"
                                                 ng-model="currentRelation.module"
-                                                ng-change="moduleChanged()"
+                                                ng-change="moduleChanged(true)"
                                                 ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
@@ -64,13 +64,13 @@
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
-                                    <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.labelSingular.$invalid}">
+                                    <div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.relationType.$invalid}">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.RelationType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                        <label ng-class="{'disabled':currentRelation.relation_type ==='one_to_many' ?false:true,'radio-inline':true, 'newinput':true}">
-                                            <input type="radio" ng-model="currentRelation.relation_type" value="one_to_many" ng-disabled="!currentRelation.isNew"> {{'Setup.Modules.OneToMany' | translate}}<span></span>
+                                        <label ng-class="{'disabled':currentRelation.isNew ? false : currentRelation.relation_type ==='one_to_many' ? false : true,'radio-inline':true, 'newinput':true}">
+                                            <input name="relationType" type="radio" ng-model="currentRelation.relation_type" value="one_to_many" ng-disabled="!currentRelation.isNew"> {{'Setup.Modules.OneToMany' | translate}}<span></span>
                                         </label>
-                                        <label ng-class="{'disabled':currentRelation.relation_type ==='one_to_many' ?true:false,'radio-inline':true, 'newinput':true}">
-                                            <input type="radio" ng-model="currentRelation.relation_type" value="many_to_many"
+                                        <label ng-class="{'disabled':currentRelation.isNew ? false : currentRelation.relation_type ==='one_to_many' ? true : false,'radio-inline':true, 'newinput':true}">
+                                            <input name="relationType" type="radio" ng-model="currentRelation.relation_type" value="many_to_many"
                                                    ng-disabled="!currentRelation.isNew" ng-change="relationTypeChanged()">
                                             {{'Setup.Modules.ManyToMany' | translate}}<span></span>
                                         </label>
