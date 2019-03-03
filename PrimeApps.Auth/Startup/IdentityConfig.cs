@@ -55,6 +55,12 @@ namespace PrimeApps.Auth
                 .AddProfileService<CustomProfileService>()
                 .AddSigningCredential(LoadCertificate());
 
+            //Fix for localhost identity cookie conflict
+            var authority = configuration.GetValue("AppSettings:Authority", string.Empty);
+
+            if (authority.Contains("localhost"))
+                services.ConfigureApplicationCookie(options => { options.Cookie.Name = ".AspNetCore.Identity.Application." + authority.Substring(authority.Length - 4); });
+
             //InitializeDatabase(app);
         }
 
