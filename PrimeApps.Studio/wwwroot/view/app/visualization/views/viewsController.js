@@ -517,7 +517,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                $scope.wizardStep += $scope.view.id ? $scope.wizardStep : next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
 
