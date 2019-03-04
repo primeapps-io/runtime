@@ -9,7 +9,7 @@ angular.module('primeapps')
 
             $scope.$parent.menuTopTitle = $scope.currentApp.label
             $scope.$parent.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'customCode';
+            $scope.$parent.activeMenuItem = 'components';
 
             $scope.currentApp = $localStorage.get("current_app");
 

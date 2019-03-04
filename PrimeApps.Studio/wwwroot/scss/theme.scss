@@ -2789,6 +2789,14 @@ button, select {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        ul{
+          li{
+            &.list-inline{
+              float:left;
+            }
+            
+          }
+        }
 
         h2 {
           font-size: 16px;

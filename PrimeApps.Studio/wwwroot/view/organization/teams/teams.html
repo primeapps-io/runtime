@@ -1,24 +1,24 @@
 <div class="setup-title">
     <h2>{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
-    <div>
-        <ul class="list-unstyled list-inline">
-            <li ng-show="!selectedTeam">
-                <button class="btn add-button" ng-click="addNewTeam()">
-                    <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
-                </button>
-            </li>
-            <li ng-if="selectedTeam">
-                <button class="btn delete-btn btn-red" ng-click="delete(teamId)">
-                    <i class="fas fa-trash"></i>{{'Common.Delete' | translate}}
-                </button>
-
-                <button class="btn btn-blue" ng-click="addNewTeam(teamId)">
-                    <i class="fas fa-pen"></i> {{'Common.Edit' | translate}}
-                </button>
-            </li>
-        </ul>
-
-    </div>
+    <ul class="list-unstyled list-inline"  ng-show="!selectedTeam">
+        <li>
+            <button class="btn add-button" ng-click="addNewTeam()">
+                <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
+            </button>
+        </li>
+    </ul>
+    <ul class="list-unstyled list-inline"  ng-if="selectedTeam">
+        <li>
+            <button class="btn delete-btn btn-red" ng-click="delete(teamId)">
+                <i class="fas fa-trash"></i>{{'Common.Delete' | translate}}
+            </button>
+        </li>
+        <li>
+            <button class="btn btn-blue" ng-click="addNewTeam(teamId)">
+                <i class="fas fa-pen"></i> {{'Common.Edit' | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 
 <div class="tab-content" ng-show="!selectedTeam">
