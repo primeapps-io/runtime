@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
             $scope.loading = true;
-            var module = $filter('filter')($scope.$parent.modules, { name: $stateParams.module }, true)[0];
+            var module = $filter('filter')($rootScope.appModules, { name: $stateParams.module }, true)[0];
 
             if (!module) {
                 toastr.warning($filter('translate')('Common.NotFound'));
@@ -34,7 +34,7 @@ angular.module('primeapps')
             ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($scope.$parent.modules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 });
                 $scope.templates = templates;
 

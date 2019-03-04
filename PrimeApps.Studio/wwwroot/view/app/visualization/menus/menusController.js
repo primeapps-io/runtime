@@ -35,7 +35,7 @@ angular.module('primeapps')
                 var menuList = response.data;
                 ProfilesService.getAllBasic().then(function (response) {
                     //$scope.newProfiles = response.data;
-                    $scope.newProfiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.newProfiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     angular.forEach(menuList, function (menu) {
                         menu.profile_name = $filter('filter')($scope.newProfiles, {id: menu.profile_id}, true)[0].name;
                     });
@@ -54,7 +54,7 @@ angular.module('primeapps')
                     var menuList = response.data;
                     ProfilesService.getAllBasic().then(function (response) {
                         //$scope.newProfiles = response.data;
-                        $scope.newProfiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                        $scope.newProfiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                         angular.forEach(menuList, function (menu) {
                             menu.profile_name = $filter('filter')($scope.newProfiles, {id: menu.profile_id}, true)[0].name;
                         });
