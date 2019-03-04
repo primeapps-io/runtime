@@ -140,7 +140,7 @@ namespace PrimeApps.Studio.Controllers
 				Label = function.Label,
 				Dependencies = function.Dependencies,
 				Content = function.ContentType == FunctionContentType.Text ? function.Function : "",
-				ContentType = function.ContentType,
+				ContentType = function.ContentType != FunctionContentType.NotSet ? function.ContentType : FunctionContentType.Text,
 				Runtime = function.Runtime,
 				Handler = function.Handler,
 				Status = PublishStatus.Draft
