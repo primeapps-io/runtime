@@ -117,7 +117,7 @@
             </div>
             <div>
                 <div class="form-group">
-                    <select ng-disabled="removing" required ng-model="collaboratorModel.role" name="role" class="form-control ng-animate-disabled" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
+                    <select ng-disabled="removing || (selectedCollaborator.role === 'administrator' && selectedCollaborator.id == me.id)" required ng-model="collaboratorModel.role" name="role" class="form-control ng-animate-disabled" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
                 </div>
             </div>
 
