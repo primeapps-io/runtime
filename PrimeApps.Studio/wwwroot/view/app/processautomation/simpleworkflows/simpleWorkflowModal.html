@@ -7,7 +7,7 @@
                     <li><button type="button" ng-click="cancel();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
                     <li><button type="button" ng-click="previousStep(workflowForm, wizardStep)" ng-if="wizardStep>0 && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-left pull-left" style="margin-top: unset;"></i>{{'Common.Previous' | translate}}</button></li>
                     <li><button type="button" ng-click="nextStep(workflowForm, wizardStep)" ng-if="!lastStepClicked && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-right pull-right"></i>{{'Common.Next' | translate}}</button></li>
-                    <li><button type="button" ng-if="lastStepClicked && wizardStep=>3" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button" ng-if="lastStepClicked && wizardStep>=2" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
