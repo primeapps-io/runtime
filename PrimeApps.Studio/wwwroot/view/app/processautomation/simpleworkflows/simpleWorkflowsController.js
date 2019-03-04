@@ -22,6 +22,7 @@ angular.module('primeapps')
             $scope.scheduleItems = SimpleWorkflowsService.getScheduleItems();
             $scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
             $scope.showProcessFilter = false;
+            $scope.modules = {};
 
             ////var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
@@ -1638,6 +1639,7 @@ angular.module('primeapps')
             //Modal Start
             $scope.showFormModal = function (id) {
                 $scope.modalLoading = true;
+                $scope.modules = $rootScope.appModules;
 
                 if (id) {
                     $scope.id = id;
@@ -1683,13 +1685,13 @@ angular.module('primeapps')
 
             };
 
-            $scope.previous = function (form, stepId) {
+            $scope.previousStep = function (form, stepId) {
                 var result = $scope.validate(form);
                 if (result)
                     if (stepId > 0) {
                         $scope.$parent.wizardStep = stepId - 1;
 
-                        if (stepId < 3)
+                        if (stepId - 1 < 3)
                             $scope.lastStepClicked = false;
                     }
             };
