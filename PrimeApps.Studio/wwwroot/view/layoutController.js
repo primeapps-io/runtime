@@ -16,7 +16,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 });
             }
         });
-        
+
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
@@ -73,7 +73,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
                 })
                 .catch(function (response) {
-                    $scope.previewActivating = false;
+                    $scope.previewActivatingf = false;
                 });
         };
 
@@ -174,12 +174,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
-                scope: $scope,
-                templateUrl: 'view/organization/newOrganization.html',
-                animation: 'am-fade-and-slide-right',
-                backdrop: 'static',
-                show: false
-            });
+                    scope: $scope,
+                    templateUrl: 'view/organization/newOrganization.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
             $scope.organizationFormModal.$promise.then(function () {
                 $scope.organizationFormModal.show();
 
@@ -267,6 +267,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             if (angular.isObject($scope.organization.icon))
                 $scope.organization.icon = $scope.organization.icon.value;
 
+            $scope.organizationFormModal.hide();
             LayoutService.createOrganization($scope.organization)
                 .then(function (response) {
                     var copyOrganization = angular.copy($scope.organization);
@@ -277,13 +278,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.menuOpen[response.data] = true;
                     toastr.success('Organization ' + $scope.organization.label + ' successfully created.');
                     $scope.organizationSaving = false;
-                    $scope.organizationFormModal.hide();
                     $scope.organizations.push(copyOrganization);
                     $scope.organization = {};
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
-
-                    $state.go('studio.apps', {orgId: response.data});
+                    $state.go('studio.apps', { orgId: response.data });
 
                 })
                 .catch(function () {
