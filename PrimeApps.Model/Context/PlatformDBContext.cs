@@ -148,7 +148,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.Phone);
 
             //App
-            modelBuilder.Entity<App>().HasIndex(x => x.Name);
+            modelBuilder.Entity<App>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<App>().HasIndex(x => x.AppDraftId);
             modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);

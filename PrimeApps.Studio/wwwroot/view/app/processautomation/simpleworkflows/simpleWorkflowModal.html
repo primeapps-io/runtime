@@ -5,9 +5,9 @@
             <div>
                 <ul class="list-unstyled list-inline">
                     <li><button type="button" ng-click="cancel();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="button" ng-click="previous(workflowForm, wizardStep)" ng-if="wizardStep>0 && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-left pull-left" style="margin-top: unset;"></i>{{'Common.Previous' | translate}}</button></li>
+                    <li><button type="button" ng-click="previousStep(workflowForm, wizardStep)" ng-if="wizardStep>0 && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-left pull-left" style="margin-top: unset;"></i>{{'Common.Previous' | translate}}</button></li>
                     <li><button type="button" ng-click="nextStep(workflowForm, wizardStep)" ng-if="!lastStepClicked && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-right pull-right"></i>{{'Common.Next' | translate}}</button></li>
-                    <li><button type="button" ng-if="lastStepClicked" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button" ng-if="lastStepClicked && wizardStep>=2" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
@@ -539,10 +539,26 @@
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
                                             <label class="col-sm-12 ">{{'Setup.Workflow.Message' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
 
-                                            <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
+                                            <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                                       mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
                                                       ng-required="true" ng-model="workflowModel.send_notification.message" name="message"
                                                       mentio-iframe-element="iframeElement"></textarea>
+
+                                            <script type="text/ng-template" id="tag-mentions.tpl">
+                                                <ul class="ment-tags">
+                                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                        class="list-group-item clearfix"
+                                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                        {{tag.name}}
+                                                    </li>
+                                                </ul>
+                                            </script>
+                                            <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                                         mentio-trigger-char="'#'" mentio-items="tags"
+                                                         mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
+
+
 
                                             <!--  <script type="text/ng-template" id="tag-mentions.tpl">
                                                 <ul class="ment-tags">

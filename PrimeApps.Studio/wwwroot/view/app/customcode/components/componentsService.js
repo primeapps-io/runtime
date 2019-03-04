@@ -8,17 +8,17 @@ angular.module('primeapps')
                 get: function (id) {
                     return $http.get(config.apiUrl + 'component/get/' + id);
                 },
-                create: function (data) {
-                    return $http.post(config.apiUrl + 'component/create', data);
-                },
-                update: function (data) {
-                    return $http.put(config.apiUrl + 'component/update', data);
-                },
                 count: function () {
                     return $http.get(config.apiUrl + 'component/count');
                 },
-                find: function (data) {
-                    return $http.post(config.apiUrl + 'component/find', data);
+                find: function (model) {
+                    return $http.post(config.apiUrl + 'component/find', model);
+                },
+                create: function (model) {
+                    return $http.post(config.apiUrl + 'component/create', model);
+                },
+                update: function (model) {
+                    return $http.put(config.apiUrl + 'component/update', model);
                 },
                 getAllModulesBasic: function () {
                     return $http.get(config.apiUrl + 'module/get_all_basic');

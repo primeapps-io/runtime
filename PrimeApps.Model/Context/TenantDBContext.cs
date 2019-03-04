@@ -365,6 +365,7 @@ namespace PrimeApps.Model.Context
             //Picklist
             modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelEn).IsUnique();
             modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelTr).IsUnique();
+            modelBuilder.Entity<Picklist>().HasIndex(x => x.SystemCode).IsUnique();
             modelBuilder.Entity<Picklist>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Picklist>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Picklist>().HasIndex(x => x.Deleted);

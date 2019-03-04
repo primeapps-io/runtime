@@ -26,7 +26,10 @@ namespace PrimeApps.Studio.Controllers
 
         private IPermissionHelper _permissionHelper;
 
-        public TeamController(IConfiguration configuration, IOrganizationRepository organizationRepository, IOrganizationUserRepository organizationUserRepository, IPlatformUserRepository platformUserRepository, IAppDraftRepository applicationDraftRepository, ITeamRepository teamRepository, IPermissionHelper permissionHelper)
+        public TeamController(IConfiguration configuration, IOrganizationRepository organizationRepository,
+            IOrganizationUserRepository organizationUserRepository, IPlatformUserRepository platformUserRepository,
+            IAppDraftRepository applicationDraftRepository, ITeamRepository teamRepository,
+            IPermissionHelper permissionHelper)
         {
             _organizationRepository = organizationRepository;
             _appDraftRepository = applicationDraftRepository;
@@ -60,7 +63,8 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = OrganizationId, Icon = model.Icon });
+            var result = await _teamRepository.Create(new Team
+                {Name = model.Name, OrganizationId = OrganizationId, Icon = model.Icon});
 
             return Ok(result);
         }
@@ -101,6 +105,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -110,7 +117,7 @@ namespace PrimeApps.Studio.Controllers
             foreach (var user in team.TeamUsers)
                 ids.Add(user.UserId);
 
-            var JTeam = new JArray();//JObject.FromObject(team);
+            var JTeam = new JArray(); //JObject.FromObject(team);
 
 
             var platformUsers = await _platformUserRepository.GetByIds(ids);
@@ -145,6 +152,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
             var teams = await _teamRepository.GetAll();
 
             return Ok(teams);
@@ -159,7 +169,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find/{organizationId:int}"), HttpPost]
-        public async Task<IActionResult> Find(int organizationId, [FromBody]PaginationModel paginationModel)
+        public async Task<IActionResult> Find(int organizationId, [FromBody] PaginationModel paginationModel)
         {
             var teams = await _teamRepository.Find(paginationModel, organizationId);
 
@@ -191,6 +201,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("team_user_add/{id:int}"), HttpPost]
         public async Task<IActionResult> TeamUserAdd(int id, [FromBody] TeamModel teamModel)
         {
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -213,6 +226,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("team_user_delete/{id:int}"), HttpPost]
         public async Task<IActionResult> TeamUserDelete(int id, [FromBody] TeamModel teamModel)
         {
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

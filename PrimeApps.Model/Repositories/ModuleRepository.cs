@@ -20,9 +20,13 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public ModuleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ModuleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext,
+            configuration)
+        {
+        }
 
-        public ModuleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
+        public ModuleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(
+            dbContext, configuration)
         {
             _warehouse = warehouse;
         }
@@ -30,7 +34,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Count()
         {
             var count = await DbContext.Modules
-               .Where(x => !x.Deleted && x.Order != 0).CountAsync();
+                .Where(x => !x.Deleted && x.Order != 0).CountAsync();
             return count;
         }
 
@@ -54,11 +58,9 @@ namespace PrimeApps.Model.Repositories
                 {
                     modules = modules.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await modules.ToListAsync();
-
         }
 
         public async Task<ICollection<Module>> GetAllBasic()
@@ -75,11 +77,11 @@ namespace PrimeApps.Model.Repositories
                     Order = x.Order,
                     Display = x.Display
                 })
-             .ToListAsync();
+                .ToListAsync();
 
             return modules;
-
         }
+
         public async Task<Module> GetById(int id)
         {
             var module = await GetModuleQuery()
@@ -130,7 +132,7 @@ namespace PrimeApps.Model.Repositories
         {
             var module = await DbContext.Modules
                 .Include(x => x.Fields)
-                    .ThenInclude(field => field.Permissions)
+                .ThenInclude(field => field.Permissions)
                 .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
 
             return module;
@@ -154,6 +156,7 @@ namespace PrimeApps.Model.Repositories
 
             return modules;
         }
+
         public async Task<ICollection<Component>> GetComponents()
         {
             var components = await DbContext.Modules
@@ -231,30 +234,6 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(tableAlterSql);
 
-            //if (result == -1)
-            //{
-            //    // Alter warehouse table
-            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-            //        throw new Exception("Warehouse cannot be null during create/update module.");
-
-            //    if (_warehouse.DatabaseName == "0")
-            //        return result;
-
-            //    if (moduleChanges.FieldsAdded != null && moduleChanges.FieldsAdded.Count > 0)
-            //    {
-            //        var fieldIds = moduleChanges.FieldsAdded.Select(x => x.Id).ToList();
-            //        BackgroundJob.Enqueue(() => _warehouse.CreateColumns(_warehouse.DatabaseName, module.Name, fieldIds, CurrentUser, language));
-            //    }
-
-            //    // Create warehouse junction tables
-            //    if (moduleChanges.RelationsAdded != null && moduleChanges.RelationsAdded.Count > 0)
-            //    {
-            //        foreach (var relation in moduleChanges.RelationsAdded)
-            //        {
-            //            BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
-            //        }
-            //    }
-            //}
 
             return result;
         }
@@ -295,21 +274,13 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> CreateJunctionTable(Module module, Relation relation, ICollection<Relation> currentRelations)
+        public async Task<int> CreateJunctionTable(Module module, Relation relation,
+            ICollection<Relation> currentRelations)
         {
-            var tableJunctionCreateSql = ModuleHelper.GenerateJunctionTableCreateSql(module.Name, relation.RelatedModule, currentRelations);
+            var tableJunctionCreateSql =
+                ModuleHelper.GenerateJunctionTableCreateSql(module.Name, relation.RelatedModule, currentRelations);
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(tableJunctionCreateSql);
-
-            //if (result == -1)
-            //{
-            //    // Create warehouse junction table
-            //    if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-            //        throw new Exception("Warehouse cannot be null during create/update module.");
-
-            //    if (_warehouse.DatabaseName != "0")
-            //        BackgroundJob.Enqueue(() => _warehouse.CreateJunctionTable(_warehouse.DatabaseName, module.Name, relation.Id, CurrentUser));
-            //}
 
             return result;
         }
@@ -340,6 +311,7 @@ namespace PrimeApps.Model.Repositories
 
             return dependency;
         }
+
         public async Task<Field> GetField(int id)
         {
             var field = await DbContext.Fields
@@ -347,6 +319,7 @@ namespace PrimeApps.Model.Repositories
 
             return field;
         }
+
         public async Task<int> CreateDependency(Dependency dependency)
         {
             DbContext.Dependencies.Add(dependency);
@@ -387,9 +360,9 @@ namespace PrimeApps.Model.Repositories
             return module;
         }
 
-        private IQueryable<Module> GetModuleQuery()
+        private IQueryable<Module> GetModuleQuery(bool extraInclude = false)
         {
-            return DbContext.Modules
+            var modulex = DbContext.Modules
                 .Include(module => module.Sections)
                 .ThenInclude(section => section.Permissions)
                 .Include(module => module.Fields)
@@ -399,11 +372,17 @@ namespace PrimeApps.Model.Repositories
                 .Include(module => module.Fields)
                 .ThenInclude(field => field.Filters)
                 .Include(module => module.Fields)
-                .ThenInclude(field => field.Permissions)
-                .Include(module => module.Relations)
-                .Include(module => module.Dependencies)
-                .Include(module => module.Calculations)
-                .Include(module => module.Components);
+                .ThenInclude(field => field.Permissions);
+
+            if (extraInclude)
+            {
+                modulex.Include(module => module.Relations)
+                    .Include(module => module.Dependencies)
+                    .Include(module => module.Calculations)
+                    .Include(module => module.Components);
+            }
+
+            return modulex;
         }
 
         public async Task<Field> GetFieldByName(string fieldName)
@@ -422,5 +401,4 @@ namespace PrimeApps.Model.Repositories
             return module.Fields;
         }
     }
-
 }

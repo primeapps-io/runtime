@@ -135,7 +135,7 @@
                             <li>
                                 <a ng-click="$event.stopPropagation();"
                                    href="/#/org/{{orgId}}/app/{{appId}}/actionButtons?id={{module.id}}">
-                                    {{'Setup.Modules.ActionButtons' | translate}}
+                                    {{'Setup.Modules.TitleActionButtons' | translate}}
                                 </a>
                             </li>
                             <li>
@@ -172,9 +172,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Modules {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
