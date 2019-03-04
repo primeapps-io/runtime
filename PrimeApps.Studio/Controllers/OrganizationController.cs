@@ -452,7 +452,7 @@ namespace PrimeApps.Studio.Controllers
                     }
                     var platformUser = await _platformUserRepository.Get(model.Email);
 
-						var studioUser = new StudioUser
+                    var studioUser = new StudioUser
                     {
                         Id = platformUser.Id,
                         UserOrganizations = new List<OrganizationUser>()
