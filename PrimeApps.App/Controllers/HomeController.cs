@@ -58,7 +58,7 @@ namespace PrimeApps.App.Controllers
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                    _userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty) };
+                    _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
 
                     var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
 
@@ -66,7 +66,7 @@ namespace PrimeApps.App.Controllers
                     {
                         Response.Cookies.Delete("app_id");
                         await HttpContext.SignOutAsync();
-                        return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
+                        return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview);
                     }
 
                     /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Controllers
 
                 Response.Cookies.Append("tenant_id", tenant.Id.ToString());
             }
- 
+
             return View();
         }
 
@@ -144,6 +144,7 @@ namespace PrimeApps.App.Controllers
             {
                 ViewBag.BlobUrl = storageUrl;
             }
+
             if (!string.IsNullOrEmpty(useCdn) && bool.Parse(useCdn))
             {
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
@@ -166,7 +167,7 @@ namespace PrimeApps.App.Controllers
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
 
-            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+            componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
 
             var components = await componentRepository.GetByType(ComponentType.Component);
 
@@ -181,8 +182,7 @@ namespace PrimeApps.App.Controllers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-
-                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                    userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
 
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
