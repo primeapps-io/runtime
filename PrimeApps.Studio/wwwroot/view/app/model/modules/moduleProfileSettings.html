@@ -78,9 +78,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Module Profile Settings {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
