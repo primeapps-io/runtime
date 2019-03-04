@@ -173,6 +173,19 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
+            $scope.organization = {};
+            var colorPalet = [
+                '#1157A3',
+                '#9F5590',
+                '#92C549',
+                '#F1638B',
+                '#CE0404'
+            ];
+
+            var orgColor = colorPalet[Math.floor(Math.random() * colorPalet.length)];
+            $scope.organization.color = orgColor;
+            $scope.organization.icon = 'fas fa-building';
+
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/organization/newOrganization.html',
@@ -248,21 +261,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             if (!organizationForm.$valid)
                 return;
             $scope.organizationSaving = true;
-
-            if (!$scope.organization.icon)
-                $scope.organization.icon = 'fas fa-building';
-
-            if (!$scope.organization.color) {
-                var colorPalet = [
-                    '#1157A3',
-                    '#9F5590',
-                    '#92C549',
-                    '#F1638B',
-                    '#CE0404'
-                ];
-
-                $scope.organization.color = colorPalet[Math.floor(Math.random() * colorPalet.length)];
-            }
 
             if (angular.isObject($scope.organization.icon))
                 $scope.organization.icon = $scope.organization.icon.value;
