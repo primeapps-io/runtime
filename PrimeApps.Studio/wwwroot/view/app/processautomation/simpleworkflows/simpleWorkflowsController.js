@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config) {
+    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config', '$localStorage', '$cookies',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config, $localStorage, $cookies) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
@@ -61,7 +61,6 @@ angular.module('primeapps')
             $scope.generator(10);
 
 
-
             var uploadSuccessCallback,
                 uploadFailedCallback;
             $scope.$parent.collapsed = true;
@@ -72,7 +71,6 @@ angular.module('primeapps')
                 offset: 0,
                 order_column: "name"
             };
-
 
 
             var count = function () {
@@ -103,8 +101,8 @@ angular.module('primeapps')
                         $scope.rules = data;
                         $scope.loading = false;
                     }).catch(function (err) {
-                        $scope.loading = false;
-                    });
+                    $scope.loading = false;
+                });
 
             };
 
@@ -117,16 +115,12 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
+                    var module = $filter('filter')($rootScope.appModules, {id: moduleId}, true)[0];
                     data[i].module = angular.copy(module);
                 }
 
                 return data;
             };
-
-
-
-
 
 
             var selectRule = function () {
@@ -142,8 +136,7 @@ angular.module('primeapps')
                     $scope.workflowModel.frequency = 'continuous';
                     $scope.loading = false;
                     $scope.modalLoading = false;
-                }
-                else {
+                } else {
                     SimpleWorkflowsService.get($scope.id)
                         .then(function (workflow) {
                             $scope.workflowModel = workflow = workflow.data;
@@ -156,7 +149,7 @@ angular.module('primeapps')
                                     $scope.workflowModel.operation[value.toString()] = true;
                             });
 
-                            if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
+                            if ($filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true)[0])
                                 $scope.showProcessFilter = true;
 
                             var newModules = angular.copy($rootScope.appModules);
@@ -186,19 +179,17 @@ angular.module('primeapps')
                                         $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, newModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                         $scope.getUpdatableModules();
                                         $scope.generateHookModules();
-                                    }
-                                    else {
+                                    } else {
                                         var fieldUpdateModule;
                                         if (workflow.field_update.module.split(',').length > 1) {
                                             var updModule = workflow.field_update.module.split(',')[0];
                                             if (updModule === $scope.module.name)
-                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, {name: updModule}, true)[0];
                                             else {
-                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, {name: $scope.module.name}, true)[0];
                                             }
-                                        }
-                                        else
-                                            fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
+                                        } else
+                                            fieldUpdateModule = $filter('filter')($rootScope.appModules, {name: workflow.field_update.module}, true)[0];
                                         ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
                                             if (response) {
                                                 fieldUpdateModule.fields = response.data;
@@ -244,11 +235,10 @@ angular.module('primeapps')
 
                         $scope.module = ModuleService.getFieldsOperator($scope.workflowModel.module, $rootScope.appModules, 0)
 
-                        if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
+                        if ($filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true)[0]) {
                             $scope.showProcessFilter = true;
                             $scope.workflowModel.processFilter = 'all';
-                        }
-                        else {
+                        } else {
                             $scope.workflowModel.processFilter = 'none';
                             $scope.showProcessFilter = false;
                         }
@@ -309,18 +299,17 @@ angular.module('primeapps')
                 if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
                     filterListItem.value = null;
                     filterListItem.disabled = true;
-                }
-                else {
+                } else {
                     filterListItem.disabled = false;
                 }
             };
 
-            $scope.searchTags = function (term) {
-                if (!$scope.moduleFields)
-                    $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
+           /* $scope.searchTags = function (term) {
+                  if (!$scope.moduleFields)
+                      $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
 
                 var tagsList = [];
-                angular.forEach($scope.moduleFields, function (item) {
+                angular.forEach($scope.module.fields, function (item) {
                     if (item.name === "seperator")
                         return;
                     if (item.label.indexOf(term) >= 0) {
@@ -332,220 +321,239 @@ angular.module('primeapps')
                 $scope.tags = tagsList;
                 return tagsList;
             };
+*/
+            $scope.searchTags = function (term) {
+                
+                if (!$scope.moduleFields)
+                    $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
+                
+                var tagsList = [];
+                angular.forEach($scope.moduleFields, function (item) {
+                    if (item.name === "seperator")
+                        return;
+
+                    if (item.name.match('seperator'))
+                        item.name = item.label;
+
+                    if (item.name && item.name.indexOf(term) >= 0) {
+                        tagsList.push(item);
+                    }
+                });
+
+                $scope.tags = tagsList;
+                return tagsList;
+            };
 
             var dialog_uid = plupload.guid();
 
-            ///// uploader configuration for image files.
-            //$scope.imgUpload = {
-            //    settings: {
-            //        multi_selection: false,
-            //        url: config.apiUrl + 'Document/upload_attachment',
-            //        headers: {
-            //            'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-            //            'Accept': 'application/json',
-            //            'X-Tenant-Id': $cookies.get('tenant_id')
-            //        },
-            //        multipart_params: {
-            //            container: dialog_uid
-            //        },
-            //        filters: {
-            //            mime_types: [
-            //                { title: "Image files", extensions: "jpg,gif,png" },
-            //            ],
-            //            max_file_size: "2mb"
-            //        },
-            //        resize: { quality: 90 }
-            //    },
-            //    events: {
-            //        filesAdded: function (uploader, files) {
-            //            uploader.start();
-            //            tinymce.activeEditor.windowManager.open({
-            //                title: $filter('translate')('Common.PleaseWait'),
-            //                width: 50,
-            //                height: 50,
-            //                body: [
-            //                    {
-            //                        type: 'container',
-            //                        name: 'container',
-            //                        label: '',
-            //                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-            //                    },
-            //                ],
-            //                buttons: []
-            //            });
-            //        },
-            //        uploadProgress: function (uploader, file) {
-            //        },
-            //        fileUploaded: function (uploader, file, response) {
-            //            tinymce.activeEditor.windowManager.close();
-            //            var resp = JSON.parse(response.response);
-            //            uploadSuccessCallback(resp.public_url, { alt: file.name });
-            //            uploadSuccessCallback = null;
-            //        },
-            //        error: function (file, error) {
-            //            switch (error.code) {
-            //                case -600:
-            //                    tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
-            //                    break;
-            //                default:
-            //                    break;
-            //            }
-            //            if (uploadFailedCallback) {
-            //                uploadFailedCallback();
-            //                uploadFailedCallback = null;
-            //            }
-            //        }
-            //    }
-            //};
+            // uploader configuration for image files.
+            $scope.imgUpload = {
+                settings: {
+                    multi_selection: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            {title: "Image files", extensions: "jpg,gif,png"},
+                        ],
+                        max_file_size: "2mb"
+                    },
+                    resize: {quality: 90}
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        tinymce.activeEditor.windowManager.close();
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, {alt: file.name});
+                        uploadSuccessCallback = null;
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
 
-            //$scope.fileUpload = {
-            //    settings: {
-            //        multi_selection: false,
-            //        unique_names: false,
-            //        url: config.apiUrl + 'Document/upload_attachment',
-            //        headers: {
-            //            'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-            //            'Accept': 'application/json',
-            //            'X-Tenant-Id': $cookies.get('tenant_id')
-            //        },
-            //        multipart_params: {
-            //            container: dialog_uid
-            //        },
-            //        filters: {
-            //            mime_types: [
-            //                { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
-            //            ],
-            //            max_file_size: "50mb"
-            //        }
-            //    },
-            //    events: {
-            //        filesAdded: function (uploader, files) {
-            //            uploader.start();
-            //            tinymce.activeEditor.windowManager.open({
-            //                title: $filter('translate')('Common.PleaseWait'),
-            //                width: 50,
-            //                height: 50,
-            //                body: [
-            //                    {
-            //                        type: 'container',
-            //                        name: 'container',
-            //                        label: '',
-            //                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-            //                    },
-            //                ],
-            //                buttons: []
-            //            });
-            //        },
-            //        uploadProgress: function (uploader, file) {
-            //        },
-            //        fileUploaded: function (uploader, file, response) {
-            //            var resp = JSON.parse(response.response);
-            //            uploadSuccessCallback(resp.public_url, { alt: file.name });
-            //            uploadSuccessCallback = null;
-            //            tinymce.activeEditor.windowManager.close();
-            //        },
-            //        error: function (file, error) {
-            //            switch (error.code) {
-            //                case -600:
-            //                    tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
-            //                    break;
-            //                default:
-            //                    break;
-            //            }
-            //            if (uploadFailedCallback) {
-            //                uploadFailedCallback();
-            //                uploadFailedCallback = null;
-            //            }
-            //        }
-            //    }
-            //};
+            $scope.fileUpload = {
+                settings: {
+                    multi_selection: false,
+                    unique_names: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            {title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv"},
+                        ],
+                        max_file_size: "50mb"
+                    }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, {alt: file.name});
+                        uploadSuccessCallback = null;
+                        tinymce.activeEditor.windowManager.close();
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
 
-            //$scope.tinymceOptions = {
-            //    setup: function (editor) {
-            //        editor.addButton('addParameter', {
-            //            type: 'button',
-            //            text: $filter('translate')('EMail.AddParameter'),
-            //            onclick: function () {
-            //                tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
-            //            }
-            //        });
-            //        editor.on("init", function () {
-            //            $scope.loadingModal = false;
-            //        });
-            //    },
-            //    onChange: function (e) {
-            //        debugger;
-            //        // put logic here for keypress and cut/paste changes
-            //    },
-            //    inline: false,
-            //    height: 300,
-            //    language: $scope.language,
-            //    plugins: [
-            //        "advlist autolink lists link image charmap print preview anchor",
-            //        "searchreplace visualblocks code fullscreen",
-            //        "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
-            //    ],
-            //    imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
-            //    toolbar: "addParameter | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image imagetools | undo redo | code preview fullscreen",
-            //    menubar: 'false',
-            //    templates: [
-            //        { title: 'Test template 1', content: 'Test 1' },
-            //        { title: 'Test template 2', content: 'Test 2' }
-            //    ],
-            //    skin: 'lightgray',
-            //    theme: 'modern',
+            $scope.tinymceOptions = {
+                setup: function (editor) {
+                    editor.addButton('addParameter', {
+                        type: 'button',
+                        text: $filter('translate')('EMail.AddParameter'),
+                        onclick: function () {
+                            tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
+                        }
+                    });
+                    editor.on("init", function () {
+                        $scope.loadingModal = false;
+                    });
+                },
+                onChange: function (e) {
+                    debugger;
+                    // put logic here for keypress and cut/paste changes
+                },
+                inline: false,
+                height: 300,
+                language: $scope.language,
+                plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                ],
+                imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
+                toolbar: "addParameter | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image imagetools | undo redo | code preview fullscreen",
+                menubar: 'false',
+                templates: [
+                    {title: 'Test template 1', content: 'Test 1'},
+                    {title: 'Test template 2', content: 'Test 2'}
+                ],
+                skin: 'lightgray',
+                theme: 'modern',
 
-            //    file_picker_callback: function (callback, value, meta) {
-            //        // Provide file and text for the link dialog
-            //        uploadSuccessCallback = callback;
+                file_picker_callback: function (callback, value, meta) {
+                    // Provide file and text for the link dialog
+                    uploadSuccessCallback = callback;
 
-            //        if (meta.filetype == 'file') {
-            //            var uploadButton = document.getElementById('uploadFile');
-            //            uploadButton.click();
-            //        }
+                    if (meta.filetype == 'file') {
+                        var uploadButton = document.getElementById('uploadFile');
+                        uploadButton.click();
+                    }
 
-            //        // Provide image and alt text for the image dialog
-            //        if (meta.filetype == 'image') {
-            //            var uploadButton = document.getElementById('uploadImage');
-            //            uploadButton.click();
-            //        }
-            //    },
-            //    image_advtab: true,
-            //    file_browser_callback_types: 'image file',
-            //    paste_data_images: true,
-            //    paste_as_text: true,
-            //    spellchecker_language: $scope.language,
-            //    images_upload_handler: function (blobInfo, success, failure) {
-            //        var blob = blobInfo.blob();
-            //        uploadSuccessCallback = success;
-            //        uploadFailedCallback = failure;
-            //        $scope.imgUpload.uploader.addFile(blob);
-            //        ///TODO: in future will be implemented to upload pasted data images into server.
-            //    },
-            //    init_instance_callback: function (editor) {
-            //        $scope.iframeElement = editor.iframeElement;
-            //    },
-            //    resize: false,
-            //    width: '99,9%',
-            //    toolbar_items_size: 'small',
-            //    statusbar: false,
-            //    convert_urls: false,
-            //    remove_script_host: false
-            //};
+                    // Provide image and alt text for the image dialog
+                    if (meta.filetype == 'image') {
+                        var uploadButton = document.getElementById('uploadImage');
+                        uploadButton.click();
+                    }
+                },
+                image_advtab: true,
+                file_browser_callback_types: 'image file',
+                paste_data_images: true,
+                paste_as_text: true,
+                spellchecker_language: $scope.language,
+                images_upload_handler: function (blobInfo, success, failure) {
+                    var blob = blobInfo.blob();
+                    uploadSuccessCallback = success;
+                    uploadFailedCallback = failure;
+                    $scope.imgUpload.uploader.addFile(blob);
+                    ///TODO: in future will be implemented to upload pasted data images into server.
+                },
+                init_instance_callback: function (editor) {
+                    $scope.iframeElement = editor.iframeElement;
+                },
+                resize: false,
+                width: '99,9%',
+                toolbar_items_size: 'small',
+                statusbar: false,
+                convert_urls: false,
+                remove_script_host: false
+            };
 
             var getFilterValue = function (filter) {
                 var filterValue = '';
 
                 if (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') {
                     filterValue = filter.value[0].full_name;
-                }
-                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
+                } else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
                     filterValue = filter.value.primary_value;
-                }
-                else if (filter.field.data_type === 'picklist') {
+                } else if (filter.field.data_type === 'picklist') {
                     filterValue = filter.value.labelStr;
-                }
-                else if (filter.field.data_type === 'multiselect') {
+                } else if (filter.field.data_type === 'multiselect') {
                     filterValue = '';
 
                     angular.forEach(filter.value, function (picklistItem) {
@@ -553,18 +561,15 @@ angular.module('primeapps')
                     });
 
                     filterValue = filterValue.slice(0, -2);
-                }
-                else if (filter.field.data_type === 'tag') {
+                } else if (filter.field.data_type === 'tag') {
                     filterValue = '';
 
                     angular.forEach(filter.value, function (item) {
                         filterValue += item.text + '; ';
                     });
-                }
-                else if (filter.field.data_type === 'checkbox') {
+                } else if (filter.field.data_type === 'checkbox') {
                     filterValue = filter.value.label[$scope.language];
-                }
-                else {
+                } else {
                     ModuleService.formatFieldValue(filter.field, filter.value, $scope.picklistsActivity);
                     filterValue = angular.copy(filter.field.valueFormatted);
                 }
@@ -702,23 +707,21 @@ angular.module('primeapps')
                         var selectedModule;
 
                         if ($scope.module.name === parameter[1]) {
-                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
-                        }
-                        else {
-                            var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
-                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
+                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: parameter[1]}, true)[0];
+                        } else {
+                            var lookupModuleName = $filter('filter')($scope.module.fields, {name: parameter[1]}, true)[0].lookup_type;
+                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: lookupModuleName}, true)[0];
                         }
 
                         if (!selectedModule)
                             return;
 
                         editParameter.selectedModule = selectedModule;
-                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
+                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, {name: parameter[2]}, true)[0];
 
                         $scope.hookParameters.push(editParameter);
                     })
-                }
-                else {
+                } else {
                     setWebHookModules();
                 }
             };
@@ -842,10 +845,9 @@ angular.module('primeapps')
                         lookupRecord = lookupRecord.data;
                         if ($scope.workflowModel.field_update.field.lookup_type === 'users') {
                             lookupRecord.primary_value = lookupRecord['full_name'];
-                        }
-                        else {
-                            var lookupModule = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.field_update.field.lookup_type }, true)[0];
-                            var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                        } else {
+                            var lookupModule = $filter('filter')($rootScope.appModules, {name: $scope.workflowModel.field_update.field.lookup_type}, true)[0];
+                            var lookupPrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                             lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
                         }
 
@@ -901,10 +903,9 @@ angular.module('primeapps')
                                 if (filter.field.lookup_type === 'users') {
                                     lookupRecord.primary_value = lookupRecord['full_name'];
                                     filter.value = [lookupRecord];
-                                }
-                                else {
-                                    var lookupModule = $filter('filter')($rootScope.appModules, { name: filter.field.lookup_type }, true)[0];
-                                    var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                } else {
+                                    var lookupModule = $filter('filter')($rootScope.appModules, {name: filter.field.lookup_type}, true)[0];
+                                    var lookupPrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                     lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
                                     filter.value = lookupRecord;
                                     $scope.$broadcast('angucomplete-alt:changeInput', 'filterLookup' + filter.no, lookupRecord);
@@ -1131,7 +1132,7 @@ angular.module('primeapps')
 
                     if (isSendNotificationValid) {
                         $scope.ruleActionsText += '<b class="operation-highlight">' + $filter('translate')('Setup.Workflow.SendNotification') + '</b><br>';
-                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.SendNotificationSummary', { subject: $scope.workflowModel.send_notification.subject }) + '<br>';
+                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.SendNotificationSummary', {subject: $scope.workflowModel.send_notification.subject}) + '<br>';
 
                         angular.forEach($scope.workflowModel.send_notification.recipients, function (recipient) {
                             $scope.ruleActionsText += recipient.full_name + ', ';
@@ -1148,7 +1149,7 @@ angular.module('primeapps')
                             $scope.ruleActionsText += '<br><br>';
 
                         $scope.ruleActionsText += '<b class="operation-highlight">' + $filter('translate')('Setup.Workflow.AssignTask') + '</b><br>';
-                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.AssignTaskSummary', { subject: $scope.workflowModel.create_task.subject }) + '<br>';
+                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.AssignTaskSummary', {subject: $scope.workflowModel.create_task.subject}) + '<br>';
                         $scope.ruleActionsText += $scope.workflowModel.create_task.owner[0].full_name + '<br>';
 
                         if ($scope.workflowModel.create_task.task_due_date)
@@ -1209,7 +1210,7 @@ angular.module('primeapps')
                                     if (fieldValue === undefined)
                                         fieldValue = false;
 
-                                    var yesNoPicklistItem = $filter('filter')($scope.picklistsModule['yes_no'], { system_code: fieldValue.toString() }, true)[0];
+                                    var yesNoPicklistItem = $filter('filter')($scope.picklistsModule['yes_no'], {system_code: fieldValue.toString()}, true)[0];
                                     value = yesNoPicklistItem.label[$scope.language];
                                     $scope.updateFieldValue = fieldValue;
                                     break;
@@ -1218,7 +1219,11 @@ angular.module('primeapps')
                                     break;
                             }
 
-                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', { module: $scope.workflowModel.field_update.module['label_' + $scope.language + '_singular'], field: $scope.workflowModel.field_update.field['label_' + $scope.language], value: value }) + '<br>';
+                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', {
+                                module: $scope.workflowModel.field_update.module['label_' + $scope.language + '_singular'],
+                                field: $scope.workflowModel.field_update.field['label_' + $scope.language],
+                                value: value
+                            }) + '<br>';
                         } else {
                             $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummaryDynamic') + '<br>';
 
@@ -1233,7 +1238,10 @@ angular.module('primeapps')
 
 
                         $scope.ruleActionsText += '<b class="operation-highlight">' + $filter('translate')('Setup.Workflow.WebHook') + '</b><br>';
-                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.WebhookSummary', { callbackUrl: $scope.workflowModel.webHook.callbackUrl, methodType: $scope.workflowModel.webHook.methodType }) + '<br>';
+                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.WebhookSummary', {
+                            callbackUrl: $scope.workflowModel.webHook.callbackUrl,
+                            methodType: $scope.workflowModel.webHook.methodType
+                        }) + '<br>';
 
                         if ($scope.hookParameters.length > 0) {
                             $scope.ruleActionsText += '<br><b>' + $filter('translate')('Setup.Workflow.WebHookParameters') + ':</b><br>';
@@ -1242,8 +1250,7 @@ angular.module('primeapps')
                                 $scope.showWebhookSummaryTable = true;
                                 //if any valid parameter for object
                                 $scope.workflowModel.webHook.hookParameters = $scope.hookParameters;
-                            }
-                            else {
+                            } else {
                                 $scope.showWebhookSummaryTable = false;
                             }
                         }
@@ -1255,8 +1262,7 @@ angular.module('primeapps')
                         .then(function () {
                             getSummary();
                         });
-                }
-                else {
+                } else {
                     getSummary();
                 }
             };
@@ -1295,8 +1301,7 @@ angular.module('primeapps')
                         .catch(function () {
                             $scope.saving = false;
                         });
-                }
-                else {
+                } else {
                     workflow.id = $scope.workflowModel.id;
                     workflow._rev = $scope.workflowModel._rev;
                     workflow.type = $scope.workflowModel.type;
@@ -1372,8 +1377,7 @@ angular.module('primeapps')
                 if (parameter.parameterName && parameter.selectedModules && parameter.selectedField) {
                     if ($scope.hookParameters.length <= 10) {
                         $scope.hookParameters.push(parameter);
-                    }
-                    else {
+                    } else {
                         toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
@@ -1479,13 +1483,13 @@ angular.module('primeapps')
 
                 angular.forEach($scope.workflowModel.module.fields, function (field) {
                     if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                        var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                        var module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                         $scope.updatableModules.push(module);
                     }
                 });
 
                 $scope.fieldUpdateModules = angular.copy($scope.updatableModules);
-                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]);
+                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, {name: 'users'}, true)[0]);
             };
             //upodatable modules for send_notification
 
@@ -1512,13 +1516,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var notificationObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
                             notificationObj.id = id;
                         } else {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                            notificationObj.module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                             notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
                             notificationObj.isSameModule = false;
                             notificationObj.systemName = field.name;
@@ -1573,13 +1577,13 @@ angular.module('primeapps')
                     if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
                         var updateObj = {};
                         if (field.lookup_type === currentModule.name) {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
                             updateObj.id = id;
                         } else {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                            updateObj.module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                             updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
                             updateObj.isSameModule = false;
                             updateObj.systemName = field.name;
@@ -1644,8 +1648,7 @@ angular.module('primeapps')
                 if (id) {
                     $scope.id = id;
                     selectRule();
-                }
-                else
+                } else
                     $scope.modalLoading = false;
 
                 $scope.ruleFormModal = $scope.ruleFormModal || $modal({

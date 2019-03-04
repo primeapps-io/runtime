@@ -1429,11 +1429,11 @@ button:focus, select:focus {
   background-color: #0d6faa;
 }
 .primeapps .btn-yellow {
-  background-color: rgba(255, 157, 0, 0.75);
+  background-color: rgba(224, 131, 64, 0.75);
   color: #fff;
 }
 .primeapps .btn-yellow:hover {
-  background-color: #0d6faa;
+  background-color: #e08340;
 }
 .primeapps .btn-gray {
   background-color: rgba(0, 0, 0, 0.25);
@@ -1852,6 +1852,8 @@ button:focus, select:focus {
   border-radius: 50%;
   border: none;
   background: transparent;
+  font-size: 12px;
+  line-height: 20px;
 }
 .primeapps .pagination li a:hover {
   color: #000;
@@ -3240,6 +3242,11 @@ button:focus, select:focus {
     background-position: 468px 0;
   }
 }
+.total {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .animated-background {
   animation-duration: 0.7s;
   animation-fill-mode: forwards;

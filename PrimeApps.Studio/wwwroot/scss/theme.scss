@@ -1785,11 +1785,11 @@ button, select {
   }
 
   .btn-yellow {
-    background-color: rgba(255, 157, 0, 0.75);
+    background-color: rgba(224, 131, 64, 0.75);
     color: #fff;
 
     &:hover {
-      background-color: rgba(13, 111, 170, 1);
+      background-color: rgba(224, 131, 64, 1);
     }
   }
 
@@ -2344,7 +2344,8 @@ button, select {
         border-radius: 50%;
         border: none;
         background: transparent;
-
+        font-size: 12px;
+        line-height: 20px;
         &:hover {
           color: #000;
         }
@@ -3971,7 +3972,10 @@ button, select {
   100% {
     background-position: 468px 0
   }
-
+}
+.total{
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
 }
 
 .animated-background {
