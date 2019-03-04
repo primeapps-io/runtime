@@ -15,13 +15,19 @@ angular.module('primeapps')
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+
+            if ($rootScope.currentOrganization.role != 'administrator') {
+                toastr.warning($filter('translate')('Common.Forbidden'));
+                $state.go('studio.allApps');
+                return;
+            }
 
             $rootScope.breadcrumblist[0] = {
                 title: $rootScope.currentOrganization.label,
                 link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = { title: "Create App" };
+            $rootScope.breadcrumblist[1] = {title: "Create App"};
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
@@ -31,15 +37,15 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                url: 'storage/upload_logo',
-                headers: {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                    'Accept': 'application/json',
-                    'X-Organization-Id': $rootScope.currentOrgId
-                },
-                queueLimit: 1
-            })
-                ;
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId
+                    },
+                    queueLimit: 1
+                })
+            ;
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -177,8 +183,7 @@ angular.module('primeapps')
                         $scope.nameChecking = false;
                         if (response.data) {
                             $scope.nameValid = true;
-                        }
-                        else {
+                        } else {
                             $scope.nameValid = false;
                         }
                     })
@@ -254,7 +259,10 @@ angular.module('primeapps')
                                                     toastr.success($filter('translate')('App successfully created.'));
                                                     $scope.nameValid = null;
                                                     $scope.nameBlur = false;
-                                                    $state.go('studio.app.overview', { orgId: $rootScope.currentOrgId, appId: $rootScope.currentAppId });
+                                                    $state.go('studio.app.overview', {
+                                                        orgId: $rootScope.currentOrgId,
+                                                        appId: $rootScope.currentAppId
+                                                    });
                                                 });
                                         }
                                     };
@@ -263,8 +271,7 @@ angular.module('primeapps')
                                     toastr.error('App ' + $scope.appModel.label + ' not created.');
                                     $scope.appSaving = false;
                                 });
-                        }
-                        else {
+                        } else {
                             $scope.nameValid = false;
                         }
                     })

@@ -5,6 +5,12 @@ angular.module('primeapps')
     .controller('TeamsController', ['$rootScope', '$scope', '$filter', 'TeamsService', '$state', '$modal', 'ModuleService',
         function ($rootScope, $scope, $filter, TeamsService, $state, $modal, ModuleService) {
 
+            if ($rootScope.currentOrganization.role != 'administrator') {
+                toastr.warning($filter('translate')('Common.Forbidden'));
+                $state.go('studio.allApps');
+                return;
+            }
+        
             $scope.loading = true;
 
             $scope.teamArray = [];
