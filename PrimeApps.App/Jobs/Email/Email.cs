@@ -269,7 +269,7 @@ namespace PrimeApps.App.Jobs.Email
 				using (var recordRepository = new RecordRepository(tenantDatabaseContext, _configuration))
 				{
 
-					moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+					moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : tenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
 					var module = await moduleRepository.GetById(moduleId);
 					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
