@@ -278,7 +278,7 @@ angular.module('primeapps')
                 FunctionsService.deploy($scope.function.name)
                     .then(function (response) {
                         //setAceOption($scope.record.runtime);
-
+                        $scope.reload();
                     })
                     .catch(function (response) {
                     });

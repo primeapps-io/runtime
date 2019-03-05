@@ -2212,6 +2212,9 @@ button:focus, select:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.primeapps #wrapper .setup-layout .setup-title ul li.list-inline {
+  float: left;
+}
 .primeapps #wrapper .setup-layout .setup-title h2 {
   font-size: 16px;
   margin: 0px;

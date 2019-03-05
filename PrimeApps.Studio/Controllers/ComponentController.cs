@@ -14,13 +14,14 @@ namespace PrimeApps.Studio.Controllers
     [Route("api/component")]
     public class ComponentController : DraftBaseController
     {
+        private IModuleRepository _moduleRepository;
         private IComponentRepository _componentRepository;
         private IConfiguration _configuration;
-        private Warehouse _warehouse;
 
-        public ComponentController(IComponentRepository componentRepository, IConfiguration configuration)
+        public ComponentController(IComponentRepository componentRepository, IModuleRepository moduleRepository, IConfiguration configuration)
         {
             _componentRepository = componentRepository;
+            _moduleRepository = moduleRepository;
             _configuration = configuration;
         }
 
@@ -43,7 +44,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
-            var components = await _componentRepository.Find(paginationModel); ;
+            var components = await _componentRepository.Find(paginationModel);
 
             return Ok(components);
         }
@@ -55,20 +56,26 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] ComponentModel model)
+        public async Task<IActionResult> Create([FromBody]ComponentModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var module = await _moduleRepository.GetById(model.ModuleId);
+
+            if (module == null)
+                return BadRequest("Module id is not valid.");
+
             var component = new Component
             {
-                Name = model.Name,
+                Name = module.Name,
                 Content = model.Content,
                 ModuleId = model.ModuleId,
-                Type = model.Type,
+                Type = ComponentType.Component,
                 Place = model.Place,
                 Order = model.Order,
-                Status = PublishStatus.Draft
+                Status = PublishStatus.Draft,
+                Label = model.Label
             };
 
             var result = await _componentRepository.Create(component);
@@ -93,10 +100,11 @@ namespace PrimeApps.Studio.Controllers
             component.Name = model.Name ?? component.Name;
             component.Content = model.Content ?? component.Content;
             component.ModuleId = model.ModuleId != 0 ? model.ModuleId : component.ModuleId;
-            component.Type = model.Type != ComponentType.NotSet ? model.Type : component.Type;
+            component.Type = ComponentType.Component;
             component.Place = model.Place != ComponentPlace.NotSet ? model.Place : component.Place;
             component.Order = model.Order != 0 ? model.Order : component.Order;
             component.Status = model.Status;
+            component.Label = model.Label;
 
             await _componentRepository.Update(component);
 

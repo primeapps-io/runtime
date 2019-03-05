@@ -13,7 +13,7 @@ angular.module('primeapps')
 
             $scope.apps = [];
             $scope.appsFilter = null;
-
+            $rootScope.defaultorganization = $filter('filter')($rootScope.organizations, {default: true}, true)[0];
             AllAppsService.myApps($scope.appsFilter)
                 .then(function (response) {
                     if (response.data) {
@@ -36,7 +36,7 @@ angular.module('primeapps')
             };
 
             $scope.gotoAppForm = function () {
-                $state.go('studio.appsForm', { orgId:  $filter('filter')($rootScope.organizations, {default: true}, true)[0].id });
+                $state.go('studio.appsForm', {orgId: $filter('filter')($rootScope.organizations, {default: true}, true)[0].id});
             }
         }
     ]);

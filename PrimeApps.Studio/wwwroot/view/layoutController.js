@@ -16,7 +16,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 });
             }
         });
-        
+
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
@@ -67,7 +67,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                             appId: $rootScope.currentAppId
                         });
 
-                        toastr.warning('You need to add user for preview application.');
+                        toastr.warning('You need to add a user to preview the application.', null, {timeOut: 5000, extendedTimeOut: 5000});
                         $rootScope.previewActivating = false;
                         return;
                     }
@@ -181,6 +181,19 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
+            $scope.organization = {};
+            var colorPalet = [
+                '#1157A3',
+                '#9F5590',
+                '#92C549',
+                '#F1638B',
+                '#CE0404'
+            ];
+
+            var orgColor = colorPalet[Math.floor(Math.random() * colorPalet.length)];
+            $scope.organization.color = orgColor;
+            $scope.organization.icon = 'fas fa-building';
+
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
                 scope: $scope,
                 templateUrl: 'view/organization/newOrganization.html',
@@ -257,24 +270,10 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 return;
             $scope.organizationSaving = true;
 
-            if (!$scope.organization.icon)
-                $scope.organization.icon = 'fas fa-building';
-
-            if (!$scope.organization.color) {
-                var colorPalet = [
-                    '#1157A3',
-                    '#9F5590',
-                    '#92C549',
-                    '#F1638B',
-                    '#CE0404'
-                ];
-
-                $scope.organization.color = colorPalet[Math.floor(Math.random() * colorPalet.length)];
-            }
-
             if (angular.isObject($scope.organization.icon))
                 $scope.organization.icon = $scope.organization.icon.value;
 
+            $scope.organizationFormModal.hide();
             LayoutService.createOrganization($scope.organization)
                 .then(function (response) {
                     var copyOrganization = angular.copy($scope.organization);
@@ -285,12 +284,10 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.menuOpen[response.data] = true;
                     toastr.success('Organization ' + $scope.organization.label + ' successfully created.');
                     $scope.organizationSaving = false;
-                    $scope.organizationFormModal.hide();
                     $scope.organizations.push(copyOrganization);
                     $scope.organization = {};
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
-
                     $state.go('studio.apps', {orgId: response.data});
 
                 })

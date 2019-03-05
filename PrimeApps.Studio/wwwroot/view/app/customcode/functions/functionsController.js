@@ -78,7 +78,7 @@ angular.module('primeapps')
                 FunctionsService.count()
                     .then(function (response) {
                         $scope.pageTotal = response.data;
-                        
+
                         if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
                             $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
@@ -130,7 +130,7 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
-
+                $scope.function.content_type = 'text';
                 FunctionsService.create($scope.function)
                     .then(function (response) {
                         $scope.saving = false;

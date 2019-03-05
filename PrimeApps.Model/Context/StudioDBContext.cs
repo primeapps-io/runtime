@@ -113,7 +113,7 @@ namespace PrimeApps.Model.Context
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
             //AppDraft
-            modelBuilder.Entity<AppDraft>().HasIndex(x => x.Name);
+            modelBuilder.Entity<AppDraft>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.Deleted);
@@ -129,7 +129,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TempletCategory>().HasIndex(x => x.Deleted);
 
             //Organization
-            modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
+            modelBuilder.Entity<Organization>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<Organization>().HasIndex(x => x.Label);
             modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);

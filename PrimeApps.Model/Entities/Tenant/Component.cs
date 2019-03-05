@@ -30,6 +30,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [JsonProperty("status"), Column("status")]
         public PublishStatus Status { get; set; }
 
+        [JsonProperty("label"), Column("label"), Required, MaxLength(300)]
+        public string Label { get; set; }
+
         [JsonIgnore]
         public virtual Module Module { get; set; }
 

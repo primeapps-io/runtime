@@ -75,7 +75,6 @@ namespace PrimeApps.Studio.Helpers
                         Dependencies = function.Dependencies,
                         ContentType = function.ContentType
                     };
-
                     
                     var functionRequest = _functionHelper.CreateFunctionRequest(functionModel, functionObj);
                     JObject result;
