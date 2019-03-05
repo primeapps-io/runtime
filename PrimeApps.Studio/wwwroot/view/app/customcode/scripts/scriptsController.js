@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptsController', ['$rootScope', '$scope', '$state', '$stateParams', 'ScriptsService', '$modal',
-        function ($rootScope, $scope, $state, $stateParams, $location, ScriptsService, $modal) {
+    .controller('ScriptsController', ['$rootScope', '$scope', '$state', 'ScriptsService', '$modal',
+        function ($rootScope, $scope, $state, ScriptsService, $modal) {
             $scope.$parent.activeMenuItem = 'scripts';
             $rootScope.breadcrumblist[2].title = 'Scripts';
             $scope.scripts = [];

@@ -6,7 +6,15 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, UsersService) {
 
             $scope.$parent.activeMenuItem = 'users';
-            
+            $rootScope.breadcrumblist[2].title = 'Users';
+            $scope.roles = [];
+            $scope.profiles = [];
+            $scope.users = [];
+            $scope.userModel = {};
+            $scope.resultModel = {};
+            $scope.loading = true;
+            $scope.userModel.auto_pass = "true";
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -15,11 +23,7 @@ angular.module('primeapps')
             };
 
             $scope.generator(10);
-            $rootScope.breadcrumblist[2].title = 'Users';
-            $scope.roles = [];
-            $scope.profiles = [];
-            $scope.users = [];
-            $scope.loading = true;
+
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
@@ -110,30 +114,33 @@ angular.module('primeapps')
                     return;
                 }
                 $scope.saving = true;
+                $scope.resultModel = {};
 
                 if (!$scope.editing) {
-                    if ($scope.user.auto_pass) {
-                        delete $scope.user.password;
+                    if ($scope.userModel.auto_pass == 'true') {
+                        delete $scope.userModel.password;
                     }
 
-                    //delete $scope.user.auto_pass;
-                    $scope.user.created_at = new Date();
-                    $scope.user.is_active = true;
-                    
-                    UsersService.create($scope.user)
+                    $scope.userModel.created_at = new Date();
+                    $scope.userModel.is_active = true;
+
+                    UsersService.create($scope.userModel)
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success('User is saved successfully');
-                                if ($scope.user.auto_pass) {
+                                if ($scope.userModel.auto_pass) {
                                     $scope.showPassword = true;
-                                    $scope.autoPassword = response.data.password;
+                                    $scope.resultModel = {};
+                                    $scope.resultModel.autoPassword = response.data.password;
+                                    $scope.resultModel.displayName = $scope.userModel.first_name + ' ' + $scope.userModel.last_name;
+                                    $scope.resultModel.email = $scope.userModel.email;
                                 }
                                 else {
                                     $scope.userFormModal.hide();
                                 }
                                 $scope.changePage(1);
                                 $scope.saving = false;
-                                $scope.user = null;
+                                $scope.userModel = null;
                             }
                         })
                         .catch(function (response) {
@@ -144,16 +151,17 @@ angular.module('primeapps')
                                 toastr.error($filter('translate')('Common.Error'));
                             }
                             $scope.saving = false;
+                            $scope.closeModal();
                         });
                 }
                 else {
-                    UsersService.update($scope.user.id, $scope.user)
+                    UsersService.update($scope.userModel.id, $scope.userModel)
                         .then(function (response) {
                             toastr.success('User is saved successfully');
                             $scope.userFormModal.hide();
                             $scope.changePage($scope.activePage);
                             $scope.saving = false;
-                            $scope.user = null;
+                            $scope.userModel = null;
                         })
                         .catch(function () {
                             toastr.error($filter('translate')('Common.Error'));
@@ -163,13 +171,28 @@ angular.module('primeapps')
 
             };
 
+            $scope.sendEmail = function (resultForm) {
+                if (!userForm.$valid) {
+                    return;
+                }
+
+                //TODO mail sending
+                toastr.success("Mail sending successfull");
+                $scope.closeModal();
+                $scope.changePage(1);
+                $scope.saving = false;
+
+            };
+
             $scope.showFormModal = function (id) {
                 if (id) {
-                    $scope.user = $filter('filter')($scope.users, {id: id}, true)[0];
+                    $scope.userModel = $filter('filter')($scope.users, { id: id }, true)[0];
                     $scope.editing = true;
                 }
                 else {
-                    $scope.user = null;
+                    $scope.userModel = {};
+                    $scope.resultModel = {};
+                    $scope.userModel.auto_pass = "true";
                     $scope.editing = false;
                 }
 
@@ -188,9 +211,10 @@ angular.module('primeapps')
 
             $scope.closeModal = function () {
                 $scope.userFormModal.hide();
-                $scope.user = null;
+                $scope.userModel = null;
                 $scope.showPassword = false;
                 $scope.autoPassword = null;
+                $scope.resultModel = {};
             };
         }
     ]);

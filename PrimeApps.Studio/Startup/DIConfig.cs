@@ -74,6 +74,7 @@ namespace PrimeApps.Studio
             services.AddScoped<Email, Email>();//What the fuck!
             services.AddScoped<Warehouse, Warehouse>();//What the fuck!
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            services.AddScoped<IReportHelper, ReportHelper>();
         }
     }
 }
