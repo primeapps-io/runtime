@@ -124,7 +124,7 @@ namespace PrimeApps.Model.Repositories
                 .Take(paginationModel.Limit);
 
             if (id > 0)
-                actionButtons = actionButtons.Where(x => x.Id == id);
+                actionButtons = actionButtons.Where(x => x.ModuleId == id);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {

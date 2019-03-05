@@ -5,8 +5,8 @@ angular.module('primeapps')
     .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
+            $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
             $scope.$parent.activeMenuItem = 'views';
-
             $rootScope.breadcrumblist[2].title = 'Views';
 
             $scope.generator = function (limit) {

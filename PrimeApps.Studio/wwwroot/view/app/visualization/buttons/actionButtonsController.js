@@ -5,6 +5,7 @@ angular.module('primeapps')
     .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService', '$timeout',
         function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService, $timeout) {
 
+            $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
 
