@@ -19,6 +19,9 @@ angular.module('primeapps')
                 getAll: function () {
                     return $http.get(config.apiUrl + 'app_draft_user/get_all');
                 },
+                send: function (model) {
+                    return $http.post(config.apiUrl + 'app_draf_user/send_email', model);
+                },
                 create: function (model) {
                     return $http.post(config.apiUrl + 'app_draft_user/create', model);
                 },

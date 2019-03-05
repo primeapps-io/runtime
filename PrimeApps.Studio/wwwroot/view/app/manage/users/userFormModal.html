@@ -1,12 +1,11 @@
-﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog" >
-    <form name="userForm" class="form-horizontal form-custom" ng-submit="" autocomplete="off" novalidate ng-if="showPassword">
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="resultForm" class="form-horizontal form-custom" ng-submit="sendMail(resultForm)" autocomplete="off" novalidate ng-if="showPassword">
 
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Password</h4>
+                <h4 class="modal-title">User Info</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
-                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                         <li>
                             <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
@@ -22,18 +21,57 @@
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
-                                <div class="form-group"
-                                     style="position: relative;">
-                                    <label class="col-sm-4 required-field">Password </label>
+                                <div class="form-group" style="position: relative;">
+                                    <label class="col-sm-12 required-field">Display Name </label>
                                     <input type="text"
-                                           name="first_name"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           style="opacity:unset;"
+                                           name="displayName"
+                                           class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-disabled="true"
-                                           maxlength="100"
-                                           focus="true"
-                                           ng-model="$parent.$parent.$parent.autoPassword"/>
+                                           ng-model="resultModel.displayName" />
                                 </div>
+                                <div class="form-group" style="position: relative;">
+                                    <label class="col-sm-12 required-field">Email </label>
+                                    <input type="text"
+                                           style="opacity:unset;"
+                                           name="email"
+                                           class="form-control ng-animate-disabled col-sm-12"
+                                           required
+                                           ng-disabled="true"
+                                           ng-model="resultModel.email" />
+                                </div>
+                                <div class="form-group"
+                                     style="position: relative;">
+                                    <label class="col-sm-12 required-field">Password </label>
+                                    <input type="text"
+                                           style="opacity:unset;"
+                                           name="autoPassword"
+                                           class="form-control ng-animate-disabled col-sm-12"
+                                           required
+                                           ng-disabled="true"
+                                           focus="true"
+                                           ng-model="resultModel.autoPassword" />
+                                </div>
+                                <div class="form-group"
+                                     style="position: relative;">
+                                    <label class="checkbox-inline newinput">
+                                        <input type="checkbox" ng-model="result.sendPassword" ng-checked="true" />
+                                        <small style="font-size:100%;">Send password in email</small>
+                                        <span></span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="position: relative;">
+                                    <label class="col-sm-12 required-field">Email the new password to the following recipient </label>
+                                    <input type="text"
+                                           name="recipient"
+                                           class="form-control ng-animate-disabled col-sm-12"
+                                           required
+                                           ng-model="resultModel.recipient" />
+                                </div>
+                                <button type="submit" class="btn add-button btn-radius btn-blue" ladda="saving">
+                                    <i class="fas fa-envelope margin-right-10"></i>Send Email
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -47,7 +85,6 @@
                 <h4 class="modal-title">User</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
-                        <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                         <li>
                             <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()" ng-disabled="saving">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
@@ -71,69 +108,73 @@
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.first_name.$invalid}">
-                                    <label class="col-sm-4 required-field">First Name <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">First Name <span class="required-label">(required)</span> </label>
                                     <input type="text"
                                            name="first_name"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            maxlength="100"
                                            focus="true"
-                                           ng-model="$parent.$parent.$parent.user.first_name"/>
+                                           ng-model="userModel.first_name" />
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.last_name.$invalid}">
-                                    <label class="col-sm-4 required-field">Last Name <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">Last Name <span class="required-label">(required)</span> </label>
                                     <input type="text"
                                            name="last_name"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            maxlength="100"
-                                           ng-model="$parent.$parent.$parent.user.last_name"/>
+                                           ng-model="userModel.last_name" />
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.email.$invalid}">
-                                    <label class="col-sm-4 required-field">Email <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">Email <span class="required-label">(required)</span> </label>
                                     <input type="text"
                                            name="email"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-disabled="editing"
                                            maxlength="100"
-                                           ng-model="$parent.$parent.$parent.user.email"/>
+                                           ng-model="userModel.email" />
                                 </div>
 
                                 <div class="form-group"
                                      style="position: relative;" ng-if="!editing">
-                                    <label class="ui-checkbox newinput">
-                                        <input type="checkbox" ng-model="$parent.$parent.$parent.$parent.user.auto_pass"/>
-                                        <small style="font-size:100%;">Automatic Password Creation</small>
+                                    <label class="radio-inline newinput">
+                                        <input type="radio" ng-model="userModel.auto_pass" name="passwordType" value="true" ng-checked="true" />
+                                        <small style="font-size:100%;">Automatic password creation</small>
+                                        <span></span>
+                                    </label>
+                                    <label class="radio-inline newinput">
+                                        <input type="radio" ng-model="userModel.auto_pass" name="passwordType" value="false" />
+                                        <small style="font-size:100%;">Let me create the password</small>
                                         <span></span>
                                     </label>
                                 </div>
 
                                 <div class="form-group"
                                      style="position: relative;"
-                                     ng-if="!user.auto_pass && !editing"
+                                     ng-if="userModel.auto_pass =='false' && !editing"
                                      ng-class="{'has-error': userForm.$submitted && userForm.password.$invalid}">
-                                    <label class="col-sm-4 required-field">Password <span class="required-label"></span> </label>
+                                    <label class="col-sm-12 required-field">Password <span class="required-label"></span> </label>
                                     <input type="password"
                                            name="password"
-                                           class="form-control ng-animate-disabled col-sm-6"
+                                           class="form-control ng-animate-disabled col-sm-12"
                                            maxlength="100"
                                            minlength="6"
-                                           ng-model="$parent.$parent.$parent.user.password"/>
+                                           ng-model="userModel.password" />
                                 </div>
 
                                 <div class="form-group"
                                      ng-class="{'has-error': userForm.$submitted && userForm.profile.$invalid}">
-                                    <label class="col-sm-4 required-field">Profile <span class="required-label">(required)</span></label>
-                                    <select
-                                            name="profile"
-                                            class="form-control ng-animate-disabled col-sm-8"
+                                    <label class="col-sm-12 required-field">Profile <span class="required-label">(required)</span></label>
+                                    <select name="profile"
+                                            class="form-control ng-animate-disabled col-sm-12"
                                             required
-                                            ng-model="$parent.$parent.$parent.user.profile_id"
+                                            ng-model="userModel.profile_id"
                                             ng-options="o.id as o.name for o in profiles | filter:{deleted: false}">
                                         <option value="">Select Profile</option>
                                     </select>
@@ -141,13 +182,12 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': userForm.$submitted && userForm.role.$invalid}">
-                                    <label class="col-sm-4 required-field">Role <span class="required-label">(required)</span></label>
-                                    <select
-                                            name="role"
-                                            class="form-control ng-animate-disabled col-sm-8"
+                                    <label class="col-sm-12 required-field">Role <span class="required-label">(required)</span></label>
+                                    <select name="role"
+                                            class="form-control ng-animate-disabled col-sm-12"
                                             required
-                                            ng-model="$parent.$parent.$parent.user.role_id"
-                                            ng-options="o.id as o.label_en for o in $parent.$parent.$parent.roles">
+                                            ng-model="userModel.role_id"
+                                            ng-options="o.id as o.label_en for o in roles">
                                         <option value="">Select Role</option>
                                     </select>
                                 </div>
