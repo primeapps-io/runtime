@@ -5,7 +5,10 @@ angular.module('primeapps')
     .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService', '$timeout',
         function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService, $timeout) {
 
-            $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
+            $scope.id = $location.search().id ? $location.search().id : 0;
+            if ($scope.id > 0)
+                $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
+            
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
 
@@ -19,7 +22,6 @@ angular.module('primeapps')
             $scope.generator(10);
 
             $scope.loading = true;
-            $scope.id = $location.search().id ? $location.search().id : 0;
 
             $scope.requestModel = {
                 limit: "10",
