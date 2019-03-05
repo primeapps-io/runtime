@@ -62,7 +62,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage, true)
+                $scope.changePage($scope.activePage)
             };
 
             $scope.delete = function (module, event) {
@@ -84,7 +84,7 @@ angular.module('primeapps')
                                     $rootScope.appModules.splice(index, 1);
 
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage, true);
+                                    $scope.changePage($scope.activePage);
                                     toastr.success("Module is deleted successfully.", "Deleted!");
 
                                 })

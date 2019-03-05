@@ -52,7 +52,7 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                RelationsService.find(requestModel)
+                RelationsService.find($scope.id, requestModel)
                     .then(function (response) {
                         $scope.relations = response.data;
                         angular.forEach($scope.relations, function (relation) {
@@ -67,7 +67,7 @@ angular.module('primeapps')
 
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
 
             $scope.showFormModal = function (relation) {
@@ -223,6 +223,7 @@ angular.module('primeapps')
                 }
 
                 $scope.saving = true;
+
                 if (relationForm.two_way)
                     var relation = relationForm;
                 else
@@ -266,7 +267,7 @@ angular.module('primeapps')
 
                 //Create dynamic relation for related module in manytomany relation.
                 var createRelationManyToManyModule = function () {
-                    var relatedModul = {
+                    var relatedModule = {
                         display_fields: null,
                         hasRelationField: false,
                         isNew: true,
@@ -280,14 +281,14 @@ angular.module('primeapps')
                     };
 
                     if ($scope.currentRelation.hasOwnProperty("label_en_singular")) {
-                        relatedModul["label_en_singular"] = $scope.module.label_en_singular;
-                        relatedModul["label_en_plural"] = $scope.module.label_en_plural;
+                        relatedModule["label_en_singular"] = $scope.module.label_en_singular;
+                        relatedModule["label_en_plural"] = $scope.module.label_en_plural;
                     } else {
-                        relatedModul["label_tr_singular"] = $scope.module.label_tr_singular;
-                        relatedModul["label_tr_plural"] = $scope.module.label_tr_plural;
+                        relatedModule["label_tr_singular"] = $scope.module.label_tr_singular;
+                        relatedModule["label_tr_plural"] = $scope.module.label_tr_plural;
                     }
                     $scope.fields.selectedFields = [];
-                    $scope.save(relatedModul);
+                       $scope.save(relatedModule);
                 };
 
                 var success = function () {
@@ -297,7 +298,7 @@ angular.module('primeapps')
                         $scope.loading = true;
                         toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
                         $scope.addNewRelationsFormModal.hide();
-                        $scope.changePage(1);
+                        $scope.changePage($scope.activePage);
                     }
                 };
 
@@ -312,10 +313,10 @@ angular.module('primeapps')
                 if (!relation.id) {
                     if (relation.mainModule)
                         var mainModuleId = ($filter('filter')($rootScope.appModules, {name: relation.mainModule}, true)[0]).id;
-                    RelationsService.createModuleRelation(relation, (relation.two_way) ? mainModuleId : $scope.module.id)
+                    RelationsService.createModuleRelation(relation, relation.two_way ? mainModuleId : $scope.module.id)
                         .then(function () {
                             success();
-                            $scope.pageTotal = $scope.pageTotal + 1;
+                            $scope.pageTotal++;
                         })
                         .catch(function () {
                             error();
@@ -345,24 +346,24 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
+                           // var elem = angular.element(event.srcElement);
+                           // angular.element(elem.closest('tr')).addClass('animated-background');
 
                             RelationsService.deleteModuleRelation(relation.id)
                                 .then(function () {
 
                                     $scope.pageTotal--;
-                                    var index = $rootScope.appModules.indexOf(module);
-                                    $rootScope.appModules.splice(index, 1);
+                                    // var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
 
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage, true);
+                                    //  angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.changePage($scope.activePage);
 
                                     toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
 
                                 })
                                 .catch(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                   // angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     //$scope.relations = $scope.relationsState;
 
                                     if ($scope.addNewRelationsFormModal) {
