@@ -27,24 +27,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             WordTemplatesService.count("module").then(function (response) {
                 $scope.pageTotal = response.data;
-            });
-
-            WordTemplatesService.find($scope.requestModel, "module").then(function (response) {
-                var templates = response.data;
-                angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
-                });
-                $scope.templates = templates;
-                $scope.templatesState = templates;
-
-            }).finally(function () {
-                $scope.loading = false;
+                $scope.changePage(1);
             });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -63,7 +66,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
 
             $scope.showFormModal = function (template) {
@@ -303,8 +306,8 @@ angular.module('primeapps')
                 $scope.saving = false;
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
-                $scope.changePage(1);
-                $scope.pageTotal = create ? $scope.pageTotal + 1 : $scope.pageTotal;
+                $scope.changePage($scope.activePage);
+                $scope.pageTotal = create ? $scope.pageTotal++ : $scope.pageTotal;
             };
 
             //for GuideTemplate
@@ -467,8 +470,8 @@ angular.module('primeapps')
                     }).then(function (value) {
                         if (value) {
                             WordTemplatesService.delete(id).then(function () {
-                                $scope.changePage(1);
-                                $scope.pageTotal = $scope.pageTotal - 1;
+                                $scope.changePage($scope.activePage);
+                                $scope.pageTotal--;
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
                                 $scope.templates = $scope.templatesState;

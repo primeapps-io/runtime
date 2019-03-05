@@ -25,10 +25,29 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
+            ActionButtonsService.count($scope.id).then(function (response) {
+                $scope.pageTotal = response.data;
+                $scope.changePage(1);
+            });
+
             $scope.changePage = function (page) {
                 $scope.loading = true;
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
                 ActionButtonsService.find($scope.id, requestModel).then(function (response) {
                     $scope.actionButtons = response.data;
                     for (var i = 0; i < response.data.length; i++) {
@@ -41,24 +60,8 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
-
-            ActionButtonsService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = requestModel.offset - 1;
-                ActionButtonsService.find($scope.id, requestModel)
-                    .then(function (actionButtons) {
-                        $scope.actionButtons = actionButtons.data;
-                        for (var i = 0; i < actionButtons.data.length; i++) {
-                            $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, {id: actionButtons.data[i].module_id}, true)[0];
-                            $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
-                        }
-                        $scope.actionbuttonState = angular.copy($scope.actionButtons);
-                        $scope.loading = false;
-                    });
-            });
 
             $scope.moduleChanged = function (isNew, actionButton) {
                 if ($scope.currentActionButton.module) {
@@ -181,7 +184,8 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.changePage(1);
+                            $scope.pageTotal++;
+                            $scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
 
@@ -198,7 +202,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.changePage(1);
+                            $scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
@@ -230,7 +234,8 @@ angular.module('primeapps')
                                 .then(function () {
                                     // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
                                     // $scope.actionButtons.splice(actionButtonIndex, 1);
-                                    $scope.changePage(1);
+                                    $scope.pageTotal--;
+                                    $scope.changePage($scope.activePage);
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                 })
                                 .catch(function () {
@@ -276,7 +281,7 @@ angular.module('primeapps')
                     angular.forEach($scope.updatableModules, function (module) {
                         $scope.hookModules.push(module);
                     });
-                    
+
                     if (isNew) {
                         var parameter = {};
                         parameter.parameterName = null;

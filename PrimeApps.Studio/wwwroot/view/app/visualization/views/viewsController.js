@@ -27,28 +27,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             ViewsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
+                $scope.changePage(1);
             });
-
-            ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
-                var customViews = angular.copy(response.data);
-                for (var i = customViews.length - 1; i >= 0; i--) {
-                    var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                    if (parentModule) {
-                        customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                    }
-                    else {
-                        customViews.splice(i, 1);
-                    }
-                }
-                $scope.customViews = customViews;
-                $scope.customViewsState = customViews;
-                $scope.loading = false;
-            });
-
+            
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -69,7 +68,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
             $scope.deleteView = function (id, event) {
@@ -91,7 +90,7 @@ angular.module('primeapps')
                                         .then(function () {
                                             angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                             $scope.pageTotal--;
-                                            $scope.changePage(1);
+                                            $scope.changePage($scope.activePage);
                                             toastr.success("View is deleted successfully.", "Deleted!");
                                         })
                                         .catch(function () {
@@ -485,7 +484,7 @@ angular.module('primeapps')
                     //$state.go('studio.app.filters');
                     $scope.wizardStep = 0;
                     $scope.addNewFiltersModal.hide();
-                    $scope.changePage(1);
+                    $scope.changePage($scope.activePage);
                 }
 
                 function error(data, status) {
