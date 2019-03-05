@@ -10,9 +10,6 @@
                         ng-if="clone && !revise"> ({{'Module.Copy' | translate}})</span><span ng-if="revise"> ({{'Common.Revise' | translate}})</span>
                 </h4>
                 <div class="pull-right">
-                    <a href="#/app/setup/module?id={{module.name}}&redirect" class="btn btn-sm btn-custom"
-                       ng-if="hasAdminRights() && !id && !isAvailableForSmallDevice() && !preview">{{'Module.EditForm' |
-                        translate}}</a>
                     <a href="{{!back ? (!parentId ? (!id ? '#/app/modules/' + type : '#/app/module/' + type + '?id=' + id) : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/modules/' + back : '#/app/calendar')}}"
                        class="btn btn-sm btn-custom" ng-disabled="submitting || loading">{{'Common.Cancel' |
                         translate}}</a>
