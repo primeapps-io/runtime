@@ -31,16 +31,16 @@
                             <div class="panel">
                                 <div class="form-group"
                                      style="position: relative;"
-                                     ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.name.$invalid}">
-                                    <label class="col-sm-4 required-field">Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                     ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.label.$invalid}">
+                                    <label class="col-sm-4 required-field">Label <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
-                                           name="name"
+                                           name="label"
                                            class="form-control ng-animate-disabled col-sm-6"
                                            required
                                            maxlength="15"
                                            ng-disabled="editing"
                                            focus="true"
-                                           ng-model="component.name" />
+                                           ng-model="component.label" />
                                 </div>
 
                                 <!--<div class="form-group"

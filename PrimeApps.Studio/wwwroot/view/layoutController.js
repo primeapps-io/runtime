@@ -67,7 +67,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                             appId: $rootScope.currentAppId
                         });
 
-                        toastr.warning('You need to add user for preview application.');
+                        toastr.warning('You need to add a user to preview the application.', null, {timeOut: 5000, extendedTimeOut: 5000});
                         $rootScope.previewActivating = false;
                         return;
                     }
@@ -78,7 +78,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
                             })
                             .catch(function (response) {
-                    $scope.previewActivating = false;
+                                $scope.previewActivating = false;
                             });
                     }
                 });
@@ -195,12 +195,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.organization.icon = 'fas fa-building';
 
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/newOrganization.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                scope: $scope,
+                templateUrl: 'view/organization/newOrganization.html',
+                animation: 'am-fade-and-slide-right',
+                backdrop: 'static',
+                show: false
+            });
             $scope.organizationFormModal.$promise.then(function () {
                 $scope.organizationFormModal.show();
 
@@ -288,7 +288,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organization = {};
                     $scope.organizationShortnameValid = null;
                     $scope.isOrganizationShortnameBlur = false;
-                    $state.go('studio.apps', { orgId: response.data });
+                    $state.go('studio.apps', {orgId: response.data});
 
                 })
                 .catch(function () {

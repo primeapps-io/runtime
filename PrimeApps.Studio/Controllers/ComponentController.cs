@@ -14,12 +14,14 @@ namespace PrimeApps.Studio.Controllers
     [Route("api/component")]
     public class ComponentController : DraftBaseController
     {
+        private IModuleRepository _moduleRepository;
         private IComponentRepository _componentRepository;
         private IConfiguration _configuration;
 
-        public ComponentController(IComponentRepository componentRepository, IConfiguration configuration)
+        public ComponentController(IComponentRepository componentRepository, IModuleRepository moduleRepository, IConfiguration configuration)
         {
             _componentRepository = componentRepository;
+            _moduleRepository = moduleRepository;
             _configuration = configuration;
         }
 
@@ -42,7 +44,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
-            var components = await _componentRepository.Find(paginationModel); ;
+            var components = await _componentRepository.Find(paginationModel);
 
             return Ok(components);
         }
@@ -54,14 +56,19 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] ComponentModel model)
+        public async Task<IActionResult> Create([FromBody]ComponentModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var module = await _moduleRepository.GetById(model.ModuleId);
+
+            if (module == null)
+                return BadRequest("Module id is not valid.");
+
             var component = new Component
             {
-                Name = model.Name,
+                Name = module.Name,
                 Content = model.Content,
                 ModuleId = model.ModuleId,
                 Type = ComponentType.Component,
