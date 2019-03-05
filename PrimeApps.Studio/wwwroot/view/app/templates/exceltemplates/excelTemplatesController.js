@@ -72,7 +72,8 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
-
+                if ($scope.fileUpload)
+                    $scope.fileUpload.queue = [];
                 if (template) {
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrlExcel();
@@ -205,7 +206,7 @@ angular.module('primeapps')
                 name: 'excelFilter',
                 fn: function (item, options) {
                     var extension = helper.getFileExtension(item.name);
-                    return true ? (extension == 'xls' || extension == 'xlsx') : false;
+                    return true ? (extension === 'xls' || extension === 'xlsx') : false;
                 }
             });
 
@@ -298,11 +299,13 @@ angular.module('primeapps')
             };
 
             var success = function () {
+
                 $scope.saving = false;
                 $scope.addNewExcelTemplateFormModal.hide();
                 $scope.changePage($scope.activePage);
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
+
             };
 
             $scope.getDownloadUrlExcel = function (module) {

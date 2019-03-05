@@ -95,7 +95,6 @@
                                                 required
                                                 ng-model="currentRelation.relationField"
                                                 ng-disabled="true"
-                                                ng-init="bindDragDrop()"
                                                 ng-options="o as o['label_' + language] for o in currentRelation.related_module.fields track by o.name">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
@@ -113,8 +112,9 @@
                                                    class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1561"> {{'Common.FlatView' | translate}}<span></span>
                                         </label>
                                     </div>
-                                    <div class="form-group" ng-if="currentRelation.relationField || (currentRelation.related_module && currentRelation.relation_type === 'many_to_many')">
+                                    <div class="form-group" style="position: relative;" ng-if="currentRelation.relationField || (currentRelation.related_module && currentRelation.relation_type === 'many_to_many')">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.ViewFields' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                         <div class="col-sm-12">
                                             <div class="fields-header">
                                                 <span class="title-left">{{'Setup.Modules.AvailableFields' | translate}}</span>

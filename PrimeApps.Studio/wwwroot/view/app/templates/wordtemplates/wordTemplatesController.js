@@ -72,7 +72,10 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
-
+                
+                if ($scope.fileUpload)
+                    $scope.fileUpload.queue = [];
+                
                 if (template) {
                     // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
