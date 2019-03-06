@@ -2,7 +2,7 @@
     <h2>Scripts</h2>
     <ul class="list-unstyled list-inline">
         <li>
-            <button class="btn add-button" ng-click="showFormModal()">
+            <button type="button" class="btn add-button" ng-click="showFormModal()">
                 <i class="fas fa-plus"></i>Add New Scripts
             </button>
         </li>
@@ -12,7 +12,7 @@
     <table class="table" ng-show="loading">
         <thead>
             <tr>
-                <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Common.Name' | translate}}</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th></th>
             </tr>
@@ -35,13 +35,13 @@
     <table ng-show="!loading" class="table">
         <thead>
             <tr>
-                <th>{{'View.ViewName' | translate}}</th>
+                <th>{{'Common.Name' | translate}}</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th width="50"></th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(script)">
+            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(script);">
                 <td>{{script.name}}</td>
                 <td>{{script.module_id}}</td>
                 <td class="text-right">
