@@ -368,7 +368,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (dependency) {
+            $scope.delete = function (dependency, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -378,16 +378,24 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+
+
                             DependenciesService.deleteModuleDependency(dependency.id)
                                 .then(function () {
                                     // var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
                                     // $scope.dependencies.splice(dependencyIndex, 1);
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     $scope.changePage($scope.activePage);
                                     $scope.pageTotal--;
                                     toastr.success("Dependency is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.dependencies = $scope.dependenciesState;
 
                                     if ($scope.addNewDependencyModal) {

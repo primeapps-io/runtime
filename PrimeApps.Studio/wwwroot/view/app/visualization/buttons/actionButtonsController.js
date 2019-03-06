@@ -219,7 +219,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (actionButton) {
+            $scope.delete = function (actionButton), event {
                 // delete actionButton.$$hashKey;
                 // var deleteModel = angular.copy($scope.actionButtons);
                 // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
@@ -233,15 +233,23 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            
                             ModuleService.deleteActionButton(actionButton.id)
                                 .then(function () {
                                     // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
                                     // $scope.actionButtons.splice(actionButtonIndex, 1);
+                                    
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     $scope.pageTotal--;
                                     $scope.changePage($scope.activePage);
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                 })
                                 .catch(function () {
+                                    
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.actionButtons = $scope.actionButtonState;
 
                                     if ($scope.formModal) {

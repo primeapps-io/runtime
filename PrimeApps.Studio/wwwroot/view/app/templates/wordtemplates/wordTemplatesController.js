@@ -72,10 +72,10 @@ angular.module('primeapps')
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
-                
+
                 if ($scope.fileUpload)
                     $scope.fileUpload.queue = [];
-                
+
                 if (template) {
                     // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
@@ -462,7 +462,7 @@ angular.module('primeapps')
                 return module.parent_field.name + '.' + (field.multiline_type_use_html ? 'html__' : '') + field.name;
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -472,11 +472,17 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+
                             WordTemplatesService.delete(id).then(function () {
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                 $scope.changePage($scope.activePage);
                                 $scope.pageTotal--;
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                 $scope.templates = $scope.templatesState;
                                 if ($scope.addNewWordTemplateFormModal) {
                                     $scope.addNewWordTemplateFormModal.hide();
