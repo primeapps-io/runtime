@@ -26,7 +26,7 @@
                     </li>
                     <li ng-show="wizardStep ===3">
                         <button type="submit" ng-click="save();"
-                                class="btn add-button btn-radius btn-blue">
+                                class="btn add-button btn-radius btn-blue" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
                     </li>
@@ -134,7 +134,8 @@
 
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-12 control-label">{{'View.ShareInformation' | translate}}:</label>
+                                        <label class="col-sm-12 control-label">{{'View.ShareInformation' |
+                                            translate}}:</label>
                                         <div class="sharing">
                                             <label class="radio-inline newinput">
                                                 <input type="radio" ng-model="reportModel.sharing_type" value="me">
@@ -672,27 +673,30 @@
                                     <h4>{{'Report.Widget.Name' | translate}}</h4>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                     
+
 
                                         <div class="form-group icon-search-list">
                                             <label class="col-sm-4"> {{ 'Report.Widget.Icon' | translate }}</label>
-
-                                            <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
+                                            
+                                            <ui-select ng-model="reportModel.widget.icon" ng-disabled="ctrl.disabled">
                                                 <ui-select-match placeholder="Select an icon">
                                                     <div>
-                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                        <span ng-if="$select.selected.value"
+                                                              class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                        <span ng-if="!$select.selected.value"
+                                                              class="{{$select.selected}}"> {{ $select.selected }}</span>
                                                     </div>
                                                 </ui-select-match>
-
-                                                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                <ui-select-choices
+                                                        repeat="icon in icons | filter:{ label:$select.search }">
                                                     <div ng-bind-html="icon.label"></div>
                                                 </ui-select-choices>
-                                            </ui-select>
 
+                                            </ui-select>
 
                                         </div>
 
-                                         
+
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">

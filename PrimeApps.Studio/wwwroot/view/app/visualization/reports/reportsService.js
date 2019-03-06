@@ -33,7 +33,7 @@ angular.module('primeapps')
                     return $http.put(config.apiUrl + 'report/update/' + data.id, data);
                 },
                 deleteReport: function (id) {
-                    return $http.delete(config.apiUrl + '/report/delete/' + id);
+                    return $http.delete(config.apiUrl + 'report/delete/' + id);
                 },
                 getChart: function (reportId) {
                     return $http.get(config.apiUrl + 'report/get_chart/' + reportId);

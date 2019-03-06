@@ -24,7 +24,7 @@
         <div id="rightTopBar" class="scrollBar"></div>
         <div id="picklistOptionContainer" class="picklist-options">
             <ul id="picklistContainer" class="list-unstyled categorylist">
-                <li ng-repeat="category in reportCategory">
+                <li ng-repeat="category in reportCategory | orderBy:'-order'">
                     <div ng-if="category.edit !=true">
 
                         <span> <span class="option-drag optison-handle"><i
@@ -45,8 +45,8 @@
                                     title="Apply"><i
                                     class="fas fa-check"></i></button>
                         </span>
-                        <span class="new-actions">
-                            <button class="delete-btn" ng-click="cancelCategory(category,$index)"
+                        <span class="new-actions" ng-if="!category.id">
+                            <button class="delete-btn" ng-click="cancelCategory($index)"
                                     title="Apply"><i
                                     class="fas fa-times"></i></button>
                         </span>

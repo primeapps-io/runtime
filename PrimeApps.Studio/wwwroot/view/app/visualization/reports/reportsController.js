@@ -7,7 +7,7 @@ angular.module('primeapps')
 
             $scope.$parent.activeMenuItem = 'reports';
             $rootScope.breadcrumblist[2].title = 'Reports';
-
+            $scope.activePage = 1;
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -30,41 +30,40 @@ angular.module('primeapps')
                 $rootScope.reportCategory = result.data;
             });
 
-
-            $scope.reload = function () {
-                ReportsService.count()
-                    .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        ReportsService.find($scope.requestModel)
-                            .then(function (response) {
-                                $scope.reports = response.data;
-                                $scope.loading = false;
-                            });
-
-                    });
-            };
-
-            $scope.reload();
-
+            ReportsService.count()
+                .then(function (response) {
+                    $scope.pageTotal = response.data;
+                    $scope.changePage(1);
+                });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                ReportsService.find(requestModel).then(function (response) {
-                    $scope.reports = response.data;
-                    $scope.loading = false;
-                });
+
+                ReportsService.find(requestModel)
+                    .then(function (response) {
+                        $scope.reports = response.data;
+                        $scope.loading = false;
+                    });
 
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
 
@@ -130,12 +129,12 @@ angular.module('primeapps')
                             ReportsService.deleteReport(report.id)
                                 .then(function () {
                                     $scope.pageTotal--;
-                                    var index = $rootScope.appModules.indexOf(module);
-                                    $rootScope.appModules.splice(index, 1);
+                                    //var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
 
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage, true);
-                                    toastr.success("Module is deleted successfully.", "Deleted!");
+                                    $scope.changePage($scope.activePage);
+                                    toastr.success("Report is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
@@ -155,8 +154,8 @@ angular.module('primeapps')
                 $rootScope.reportCategory.push(category);
             };
 
-            $scope.cancelCategory = function (category, $index) {
-
+            $scope.cancelCategory = function (index) {
+                $rootScope.reportCategory.splice(index, 1);
             };
 
             $scope.saveCategory = function (category) {
@@ -165,6 +164,7 @@ angular.module('primeapps')
                     ReportsService.createCategory(category).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
+                        toastr.success("Report category  is saved successfully.");
                         category.saving = false;
                         category.edit = false;
                     });
@@ -172,6 +172,7 @@ angular.module('primeapps')
                     ReportsService.updateCategory(category).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
+                        toastr.success("Report category  is saved successfully.");
                         category.saving = false;
                         category.edit = false;
                     });
@@ -193,6 +194,7 @@ angular.module('primeapps')
                             ReportsService.deleteCategory(category.id).then(function () {
                                 category.deleted = false;
                                 $rootScope.reportCategory.splice(index, 1);
+                                toastr.success("Report category  is deleted successfully.", "Deleted!");
 
                             });
                         } else {

@@ -230,27 +230,46 @@ angular.module('primeapps')
                 ModuleService.getModuleFields($scope.module.name).then(function (response) {
                     var fields = response.data;
                     $scope.module.fields = ModuleService.processFields(fields);
+                    if (!$scope.ReportId) {
 
-                    angular.forEach(fields, function (item) {
-                        if (item.deleted && item.multiline_type != 'large')
-                            return;
+                        angular.forEach(fields, function (item) {
+                            if (item.deleted && item.multiline_type != 'large')
+                                return;
 
-                        if (item.data_type === 'lookup' && item.lookup_type != 'users') {
-                            if (item.lookupModulePrimaryField) {
-                                item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                            if (item.data_type === 'lookup' && item.lookup_type != 'users') {
+                                if (item.lookupModulePrimaryField) {
+                                    item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                                }
                             }
+
+                            $scope.fields.availableFields.push(item);
+
+                        });
+                        $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
+                        angular.forEach(fields, function (field) {
+                            if (field.data_type === 'numeric' || field.data_type === 'number' || field.data_type === 'number_auto' || field.data_type === 'currency' || field.data_type === 'number_decimal') {
+                                $scope.numberField.push(angular.copy(field));
+                            }
+                        });
+                    } else {
+                        if ($scope.currentReport.fields) {
+                            $scope.fields.availableFields = [];
+                            $scope.fields.selectedFields = [];
+                            angular.forEach($scope.module.fields, function (item) {
+                                if (item.deleted && item.multiline_type != 'large')
+                                    return;
+                                var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
+                                if (field) {
+                                    $scope.fields.selectedFields.push(item);
+                                } else {
+                                    $scope.fields.availableFields.push(item);
+                                }
+                            });
+
+                            $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
+
                         }
-
-                        $scope.fields.availableFields.push(item);
-
-                    });
-                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
-                    angular.forEach(fields, function (field) {
-                        if (field.data_type === 'numeric' || field.data_type === 'number' || field.data_type === 'number_auto' || field.data_type === 'currency' || field.data_type === 'number_decimal') {
-                            $scope.numberField.push(angular.copy(field));
-                        }
-                    });
-
+                    }
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
@@ -740,8 +759,14 @@ angular.module('primeapps')
                     report.widget = {
                         name: report.name,
                         color: $scope.reportModel.widget ? $scope.reportModel.widget.color : null,
-                        icon: $scope.reportModel.widget ? $scope.reportModel.widget.icon : null
+
                     }
+                    if (angular.isObject($scope.reportModel.widget.icon)) {
+                        report.widget.icon = $scope.reportModel.widget.icon.value;
+                    } else {
+                        report.widget.icon = $scope.reportModel.widget.icon;
+                    }
+
                 }
                 if (report.report_type === 'tabular') {
                     report.fields = $scope.getFieldModel();
@@ -761,12 +786,17 @@ angular.module('primeapps')
                     report.id = $scope.ReportId;
                     ReportsService.updateReport(report).then(function (result) {
                         $scope.saving = false;
+                        toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
+                        $scope.changePage();
                     });
                 } else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
+                        toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
+                        $scope.$parent.$parent.pageTotal++;
+                        $scope.changePage();
 
 
                     });
@@ -844,23 +874,7 @@ angular.module('primeapps')
                 $scope.reportModel.name = $scope.currentReport.name;
                 $scope.reportModel.filters = $scope.currentReport.filters;
                 $scope.selectModule();
-                if ($scope.currentReport.fields) {
-                    $scope.fields.availableFields = [];
-                    $scope.fields.selectedFields = [];
-                    angular.forEach($scope.module.fields, function (item) {
-                        if (item.deleted || item.multiline_type != 'large')
-                            return;
-                        var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
-                        if (field) {
-                            $scope.fields.selectedFields.push(item);
-                        } else {
-                            $scope.fields.availableFields.push(item);
-                        }
-                    });
 
-                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
-
-                }
                 if ($scope.currentReport.group_field) {
                     $scope.reportModel.group_field = $scope.currentReport.group_field;
                     $scope.reportModel.sort_field = $scope.currentReport.sort_field;
@@ -876,7 +890,7 @@ angular.module('primeapps')
                 }
                 if ($scope.currentReport.report_type === "single") {
                     ReportsService.getWidget($scope.currentReport.id).then(function (result) {
-                        var widget = result.data[0];
+                        var widget = result.data;
                         $scope.reportModel.widget = {
                             color: widget.color,
                             icon: widget.icon
