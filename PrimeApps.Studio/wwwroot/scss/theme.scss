@@ -2790,9 +2790,19 @@ button, select {
         overflow: hidden;
         text-overflow: ellipsis;
         ul{
-          li{
-            &.list-inline{
+          &:before,&:after{
+            content: ' ';
+            display: table;
+          }
+          &:after{
+            clear: both;
+          }
+          &.list-inline{
+            li{
               float:left;
+              &:last-child{
+                padding-right: 0px;
+              }
             }
             
           }

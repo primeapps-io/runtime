@@ -2212,8 +2212,18 @@ button:focus, select:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.primeapps #wrapper .setup-layout .setup-title ul li.list-inline {
+.primeapps #wrapper .setup-layout .setup-title ul:before, .primeapps #wrapper .setup-layout .setup-title ul:after {
+  content: " ";
+  display: table;
+}
+.primeapps #wrapper .setup-layout .setup-title ul:after {
+  clear: both;
+}
+.primeapps #wrapper .setup-layout .setup-title ul.list-inline li {
   float: left;
+}
+.primeapps #wrapper .setup-layout .setup-title ul.list-inline li:last-child {
+  padding-right: 0px;
 }
 .primeapps #wrapper .setup-layout .setup-title h2 {
   font-size: 16px;

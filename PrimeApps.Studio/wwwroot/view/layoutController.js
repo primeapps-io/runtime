@@ -8,8 +8,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.toggleClass = 'full-toggled toggled';
                     $rootScope.subtoggleClass = 'full-toggled2';
                 });
-            }
-            else {
+            } else {
                 $scope.$apply(function () {
                     $scope.toggleClass = '';
                     $rootScope.subtoggleClass = '';
@@ -67,11 +66,13 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                             appId: $rootScope.currentAppId
                         });
 
-                        toastr.warning('You need to add a user to preview the application.', null, {timeOut: 5000, extendedTimeOut: 5000});
+                        toastr.warning('You need to add a user to preview the application.', null, {
+                            timeOut: 5000,
+                            extendedTimeOut: 5000
+                        });
                         $rootScope.previewActivating = false;
                         return;
-                    }
-                    else {
+                    } else {
                         LayoutService.getPreviewToken()
                             .then(function (response) {
                                 $scope.previewActivating = false;
@@ -126,11 +127,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 if (currentUrl.charAt(index - 1) === ':') {
                     currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
-                }
-                else if (currentUrl.charAt(index - 1) === '?') {
+                } else if (currentUrl.charAt(index - 1) === '?') {
                     currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
-                }
-                else if (currentUrl.charAt(index - 1) === '&') {
+                } else if (currentUrl.charAt(index - 1) === '&') {
                     currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
                 }
             });
@@ -247,8 +246,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.organizationShortnameChecking = false;
                     if (response.data) {
                         $scope.organizationShortnameValid = true;
-                    }
-                    else {
+                    } else {
                         $scope.organizationShortnameValid = false;
                     }
                 })
@@ -276,6 +274,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.organizationFormModal.hide();
             LayoutService.createOrganization($scope.organization)
                 .then(function (response) {
+                    $scope.organization.role = 'administrator';
                     var copyOrganization = angular.copy($scope.organization);
                     copyOrganization.id = response.data;
 

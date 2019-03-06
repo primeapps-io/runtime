@@ -1535,10 +1535,13 @@ angular.module('primeapps')
                     var components = $filter('orderBy')($filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
                     }, true), 'order');
-                    for (var i = 0; i < components.length; i++) {
-                        var component = components[i];
-                        eval(component.content);
+                    if(components){
+                        for (var i = 0; i < components.length; i++) {
+                            var component = components[i];
+                            eval(component.content);
+                        }
                     }
+                   
                 }
             }
         }]);

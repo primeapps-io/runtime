@@ -5,9 +5,9 @@ angular.module('primeapps')
     .controller('ReportController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'helper', 'ModuleService', 'dragularService', 'ReportsService', 'operators',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, helper, ModuleService, dragularService, ReportsService, operators) {
             $scope.icons = ModuleService.getIcons();
-            $scope.reportModel = {};
             //$scope.reportModel.category_id = parseInt($location.search().categoryId);
             //$scope.ReportId = parseInt($location.search().Id);
+
             $scope.isEdit = $scope.ReportId > 0;
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
@@ -226,10 +226,11 @@ angular.module('primeapps')
                     "availableFields": [],
                     "selectedFields": []
                 };
-                if (!$scope.ReportId) {
-                    ModuleService.getModuleFields($scope.module.name).then(function (response) {
-                        var fields = response.data;
-                        $scope.module.fields = ModuleService.processFields(fields);
+
+                ModuleService.getModuleFields($scope.module.name).then(function (response) {
+                    var fields = response.data;
+                    $scope.module.fields = ModuleService.processFields(fields);
+                    if (!$scope.ReportId) {
 
                         angular.forEach(fields, function (item) {
                             if (item.deleted && item.multiline_type != 'large')
@@ -250,132 +251,147 @@ angular.module('primeapps')
                                 $scope.numberField.push(angular.copy(field));
                             }
                         });
-
-                        ModuleService.getPickItemsLists($scope.module)
-                            .then(function (picklists) {
-                                $scope.modulePicklists = picklists;
-                                $scope.reportModel.filterList = [];
-
-                                for (var i = 0; i < 10; i++) {
-                                    var filter = {};
-                                    filter.field = null;
-                                    filter.operator = null;
-                                    filter.value = null;
-                                    filter.no = i + 1;
-
-                                    $scope.reportModel.filterList.push(filter);
+                    } else {
+                        if ($scope.currentReport.fields) {
+                            $scope.fields.availableFields = [];
+                            $scope.fields.selectedFields = [];
+                            angular.forEach($scope.module.fields, function (item) {
+                                if (item.deleted && item.multiline_type != 'large')
+                                    return;
+                                var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
+                                if (field) {
+                                    $scope.fields.selectedFields.push(item);
+                                } else {
+                                    $scope.fields.availableFields.push(item);
                                 }
+                            });
 
-                                if ($scope.reportModel.filters) {
-                                    $scope.reportModel.filters = $filter('orderBy')($scope.reportModel.filters, 'no');
+                            $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
 
-                                    for (var j = 0; j < $scope.reportModel.filters.length; j++) {
-                                        var name = $scope.reportModel.filters[j].field;
-                                        var value = $scope.reportModel.filters[j].value;
+                        }
+                    }
+                    ModuleService.getPickItemsLists($scope.module)
+                        .then(function (picklists) {
+                            $scope.modulePicklists = picklists;
+                            $scope.reportModel.filterList = [];
 
-                                        if (name.indexOf('.') > -1) {
-                                            name = name.split('.')[0];
-                                            $scope.reportModel.filters[j].field = name;
-                                        }
+                            for (var i = 0; i < 10; i++) {
+                                var filter = {};
+                                filter.field = null;
+                                filter.operator = null;
+                                filter.value = null;
+                                filter.no = i + 1;
 
-                                        var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
-                                        var fieldValue = null;
+                                $scope.reportModel.filterList.push(filter);
+                            }
 
-                                        if (!field)
-                                            return;
+                            if ($scope.reportModel.filters) {
+                                $scope.reportModel.filters = $filter('orderBy')($scope.reportModel.filters, 'no');
 
-                                        switch (field.data_type) {
-                                            case 'picklist':
-                                                fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
-                                                break;
-                                            case 'multiselect':
-                                                fieldValue = [];
-                                                var multiselectValue = value.split('|');
+                                for (var j = 0; j < $scope.reportModel.filters.length; j++) {
+                                    var name = $scope.reportModel.filters[j].field;
+                                    var value = $scope.reportModel.filters[j].value;
 
-                                                angular.forEach(multiselectValue, function (picklistLabel) {
-                                                    var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+                                    if (name.indexOf('.') > -1) {
+                                        name = name.split('.')[0];
+                                        $scope.reportModel.filters[j].field = name;
+                                    }
 
-                                                    if (picklist)
-                                                        fieldValue.push(picklist);
-                                                });
-                                                break;
-                                            case 'lookup':
-                                                if (field.lookup_type === 'users') {
-                                                    var user = {};
+                                    var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
+                                    var fieldValue = null;
 
-                                                    if (value === '0' || value === '[me]') {
-                                                        user.id = 0;
-                                                        user.email = '[me]';
-                                                        user.full_name = $filter('translate')('Common.LoggedInUser');
-                                                    } else {
-                                                        if (value != '-') {
-                                                            var userItem =
-                                                                $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0
-                                                                    ];
-                                                            user.id = userItem.id;
-                                                            user.email = userItem.email;
-                                                            user.full_name = userItem.full_name;
-                                                        }
+                                    if (!field)
+                                        return;
 
-                                                        //TODO: $rootScope.users kaldirilinca duzeltilecek
-                                                        // ModuleService.getRecord('users', value)
-                                                        //     .then(function (lookupRecord) {
-                                                        //         fieldValue = [lookupRecord.data];
-                                                        //     });
+                                    switch (field.data_type) {
+                                        case 'picklist':
+                                            fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                                            break;
+                                        case 'multiselect':
+                                            fieldValue = [];
+                                            var multiselectValue = value.split('|');
+
+                                            angular.forEach(multiselectValue, function (picklistLabel) {
+                                                var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+
+                                                if (picklist)
+                                                    fieldValue.push(picklist);
+                                            });
+                                            break;
+                                        case 'lookup':
+                                            if (field.lookup_type === 'users') {
+                                                var user = {};
+
+                                                if (value === '0' || value === '[me]') {
+                                                    user.id = 0;
+                                                    user.email = '[me]';
+                                                    user.full_name = $filter('translate')('Common.LoggedInUser');
+                                                } else {
+                                                    if (value != '-') {
+                                                        var userItem =
+                                                            $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0
+                                                                ];
+                                                        user.id = userItem.id;
+                                                        user.email = userItem.email;
+                                                        user.full_name = userItem.full_name;
                                                     }
 
-                                                    fieldValue = [user];
-                                                } else {
-                                                    fieldValue = value;
-                                                }
-                                                break;
-                                            case 'date':
-                                            case 'date_time':
-                                            case 'time':
-                                                if (!$scope.isCostumeDate($scope.reportModel.filters[j])) {
-                                                    fieldValue = new Date(value);
-                                                    $scope.reportModel.filterList[j].costumeDate = "costume";
-                                                    $scope.reportModel.filters[j].costumeDate = "costume";
-                                                } else {
-                                                    fieldValue = $scope.reportModel.filters[j].value;
-                                                    $scope.reportModel.filterList[j].costumeDate = $scope.reportModel.filters[j].costumeDate;
-                                                    $scope.reportModel.filterList[j].valueX = $scope.reportModel.filters[j].valueX;
-                                                    $scope.reportModel.filterList[j].nextprevdatetype = $scope.reportModel.filters[j].nextprevdatetype;
+                                                    //TODO: $rootScope.users kaldirilinca duzeltilecek
+                                                    // ModuleService.getRecord('users', value)
+                                                    //     .then(function (lookupRecord) {
+                                                    //         fieldValue = [lookupRecord.data];
+                                                    //     });
                                                 }
 
-                                                break;
-                                            case 'checkbox':
-                                                fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
-                                                break;
-                                            default :
+                                                fieldValue = [user];
+                                            } else {
                                                 fieldValue = value;
-                                                break;
-                                        }
+                                            }
+                                            break;
+                                        case 'date':
+                                        case 'date_time':
+                                        case 'time':
+                                            if (!$scope.isCostumeDate($scope.reportModel.filters[j])) {
+                                                fieldValue = new Date(value);
+                                                $scope.reportModel.filterList[j].costumeDate = "costume";
+                                                $scope.reportModel.filters[j].costumeDate = "costume";
+                                            } else {
+                                                fieldValue = $scope.reportModel.filters[j].value;
+                                                $scope.reportModel.filterList[j].costumeDate = $scope.reportModel.filters[j].costumeDate;
+                                                $scope.reportModel.filterList[j].valueX = $scope.reportModel.filters[j].valueX;
+                                                $scope.reportModel.filterList[j].nextprevdatetype = $scope.reportModel.filters[j].nextprevdatetype;
+                                            }
 
-                                        $scope.reportModel.filterList[j].field = field;
-                                        $scope.reportModel.filterList[j].operator = operators[$scope.reportModel.filters[j].operator];
-                                        $scope.reportModel.filterList[j].value = fieldValue;
+                                            break;
+                                        case 'checkbox':
+                                            fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
+                                            break;
+                                        default :
+                                            fieldValue = value;
+                                            break;
+                                    }
 
-                                        if ($scope.reportModel.filters[j].operator === 'empty' || $scope.reportModel.filters[j].operator === 'not_empty') {
-                                            $scope.reportModel.filterList[j].value = null;
-                                            $scope.reportModel.filterList[j].disabled = true;
-                                        }
+                                    $scope.reportModel.filterList[j].field = field;
+                                    $scope.reportModel.filterList[j].operator = operators[$scope.reportModel.filters[j].operator];
+                                    $scope.reportModel.filterList[j].value = fieldValue;
+
+                                    if ($scope.reportModel.filters[j].operator === 'empty' || $scope.reportModel.filters[j].operator === 'not_empty') {
+                                        $scope.reportModel.filterList[j].value = null;
+                                        $scope.reportModel.filterList[j].disabled = true;
                                     }
                                 }
-                                $scope.loadingFilter = false;
-                            })
-                            .finally(function () {
-                                $scope.loadingModal = false;
-                            });
-                        
-                        if($scope.reportModel.report_type ==='tabular'){
-                            $scope.setFields();
-                        }
+                            }
+                            $scope.loadingFilter = false;
+                        })
+                        .finally(function () {
+                            $scope.loadingModal = false;
+                        });
 
-                    });
+                    if ($scope.reportModel.report_type === 'tabular') {
+                        $scope.setFields();
+                    }
 
-
-                }
+                });
 
 
                 $scope.multiselect = function (searchTerm, field) {
@@ -495,8 +511,8 @@ angular.module('primeapps')
                 };
 
 
-            }; 
-            
+            };
+
             $scope.setFields = function () {
                 var containerLeft = document.querySelector('#availableFields');
                 var containerRight = document.querySelector('#selectedFields');
@@ -529,7 +545,7 @@ angular.module('primeapps')
                     },
                     containersModel: [$scope.fields.selectedFields]
                 });
-                
+
                 function accepts(el, target, source) {
                     if (source != target) {
                         return true;
@@ -743,8 +759,14 @@ angular.module('primeapps')
                     report.widget = {
                         name: report.name,
                         color: $scope.reportModel.widget ? $scope.reportModel.widget.color : null,
-                        icon: $scope.reportModel.widget ? $scope.reportModel.widget.icon : null
+
                     }
+                    if (angular.isObject($scope.reportModel.widget.icon)) {
+                        report.widget.icon = $scope.reportModel.widget.icon.value;
+                    } else {
+                        report.widget.icon = $scope.reportModel.widget.icon;
+                    }
+
                 }
                 if (report.report_type === 'tabular') {
                     report.fields = $scope.getFieldModel();
@@ -764,12 +786,18 @@ angular.module('primeapps')
                     report.id = $scope.ReportId;
                     ReportsService.updateReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/reports?id=" + result.data.id;
+                        toastr.success("Report is saved successfully.");
+                        $scope.reportModal.hide();
+                        $scope.changePage();
                     });
                 } else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/reports?id=" + result.data.id;
+                        toastr.success("Report is saved successfully.");
+                        $scope.reportModal.hide();
+                        $scope.$parent.$parent.pageTotal++;
+                        $scope.changePage();
+
 
                     });
                 }
@@ -846,23 +874,7 @@ angular.module('primeapps')
                 $scope.reportModel.name = $scope.currentReport.name;
                 $scope.reportModel.filters = $scope.currentReport.filters;
                 $scope.selectModule();
-                if ($scope.currentReport.fields) {
-                    $scope.fields.availableFields = [];
-                    $scope.fields.selectedFields = [];
-                    angular.forEach($scope.module.fields, function (item) {
-                        if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
-                            return;
-                        var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
-                        if (field) {
-                            $scope.fields.selectedFields.push(item);
-                        } else {
-                            $scope.fields.availableFields.push(item);
-                        }
-                    });
 
-                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
-
-                }
                 if ($scope.currentReport.group_field) {
                     $scope.reportModel.group_field = $scope.currentReport.group_field;
                     $scope.reportModel.sort_field = $scope.currentReport.sort_field;
@@ -878,7 +890,7 @@ angular.module('primeapps')
                 }
                 if ($scope.currentReport.report_type === "single") {
                     ReportsService.getWidget($scope.currentReport.id).then(function (result) {
-                        var widget = result.data[0];
+                        var widget = result.data;
                         $scope.reportModel.widget = {
                             color: widget.color,
                             icon: widget.icon
@@ -886,7 +898,6 @@ angular.module('primeapps')
                     });
                 }
                 $scope.reportModel.aggregations = $scope.currentReport.aggregations;
-
 
                 angular.forEach($scope.numberField, function (item) {
                     var aggregation = $filter('filter')($scope.currentReport.aggregations, {field: item.name}, true)[0];
@@ -898,6 +909,7 @@ angular.module('primeapps')
                     $scope.reportModel.aggregations[0].aggregation_type === 'count' ? $scope.countField = {Aggregation: 'count-created_by'} : '';
 
             };
+
             if ($scope.ReportId || $scope.clone) {
                 $scope.setEdit($scope.ReportId);
             }

@@ -360,9 +360,9 @@ namespace PrimeApps.Model.Repositories
             return module;
         }
 
-        private IQueryable<Module> GetModuleQuery(bool extraInclude = false)
+        private IQueryable<Module> GetModuleQuery()
         {
-            var modulex = DbContext.Modules
+            return DbContext.Modules
                 .Include(module => module.Sections)
                 .ThenInclude(section => section.Permissions)
                 .Include(module => module.Fields)
@@ -373,16 +373,6 @@ namespace PrimeApps.Model.Repositories
                 .ThenInclude(field => field.Filters)
                 .Include(module => module.Fields)
                 .ThenInclude(field => field.Permissions);
-
-            if (extraInclude)
-            {
-                modulex.Include(module => module.Relations)
-                    .Include(module => module.Dependencies)
-                    .Include(module => module.Calculations)
-                    .Include(module => module.Components);
-            }
-
-            return modulex;
         }
 
         public async Task<Field> GetFieldByName(string fieldName)
@@ -399,6 +389,34 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(x => x.Name == moduleName && !x.Deleted);
 
             return module.Fields;
+        }
+
+        public async Task<Module> GetByIdFullModule(int id)
+        {
+            var module = await GetModuleFullQuery()
+                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+
+            return module;
+            return module;
+        }
+
+        private IQueryable<Module> GetModuleFullQuery()
+        {
+            return DbContext.Modules
+                .Include(module => module.Sections)
+                .ThenInclude(section => section.Permissions)
+                .Include(module => module.Fields)
+                .ThenInclude(field => field.Validation)
+                .Include(module => module.Fields)
+                .ThenInclude(field => field.Combination)
+                .Include(module => module.Fields)
+                .ThenInclude(field => field.Filters)
+                .Include(module => module.Fields)
+                .ThenInclude(field => field.Permissions)
+                .Include(module => module.Relations)
+                .Include(module => module.Dependencies)
+                .Include(module => module.Calculations)
+                .Include(module => module.Components);
         }
     }
 }

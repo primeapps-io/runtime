@@ -298,7 +298,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetByIdFullModule(moduleId);
 
             if (moduleEntity == null)
                 return NotFound();
@@ -348,7 +348,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetByIdFullModule(moduleId);
 
             if (moduleEntity == null)
                 return NotFound();
@@ -383,7 +383,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetByIdFullModule(moduleId);
 
             if (moduleEntity == null)
                 return NotFound();
@@ -407,7 +407,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetByIdFullModule(moduleId);
 
             if (moduleEntity == null)
                 return NotFound();

@@ -5,8 +5,11 @@ angular.module('primeapps')
     .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
+            $scope.id = $location.search().id ? $location.search().id : 0;
+            if ($scope.id > 0)
+                $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
+            
             $scope.$parent.activeMenuItem = 'views';
-
             $rootScope.breadcrumblist[2].title = 'Views';
 
             $scope.generator = function (limit) {
@@ -18,8 +21,6 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $scope.id = $location.search().id ? $location.search().id : 0;
-
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.requestModel = {
@@ -27,28 +28,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             ViewsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
-            });
-
-            ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
-                var customViews = angular.copy(response.data);
-                for (var i = customViews.length - 1; i >= 0; i--) {
-                    var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                    if (parentModule) {
-                        customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                    }
-                    else {
-                        customViews.splice(i, 1);
-                    }
-                }
-                $scope.customViews = customViews;
-                $scope.customViewsState = customViews;
-                $scope.loading = false;
+                $scope.changePage(1);
             });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -58,8 +58,7 @@ angular.module('primeapps')
                         var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
                         if (parentModule) {
                             customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                        }
-                        else {
+                        } else {
                             customViews.splice(i, 1);
                         }
                     }
@@ -69,7 +68,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
             $scope.deleteView = function (id, event) {
@@ -91,7 +90,7 @@ angular.module('primeapps')
                                         .then(function () {
                                             angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                             $scope.pageTotal--;
-                                            $scope.changePage(1);
+                                            $scope.changePage($scope.activePage);
                                             toastr.success("View is deleted successfully.", "Deleted!");
                                         })
                                         .catch(function () {
@@ -103,8 +102,7 @@ angular.module('primeapps')
                                                 $scope.saving = false;
                                             }
                                         });
-                                }
-                                else {
+                                } else {
                                     angular.element(deleteElement.closest('tr')).removeClass('animated-background');
                                     toastr.warning($filter('translate')('Setup.Modules.OneView'));
                                     return;
@@ -138,8 +136,7 @@ angular.module('primeapps')
                             moduleChanged($scope.module, false);
                             $scope.loadingModal = false;
                         });
-                }
-                else {
+                } else {
                     $scope.isNew = true;
                     $scope.view = {};
                     $scope.module = undefined;
@@ -322,8 +319,7 @@ angular.module('primeapps')
                 if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
                     filterListItem.value = null;
                     filterListItem.disabled = true;
-                }
-                else {
+                } else {
                     filterListItem.disabled = false;
                 }
             };
@@ -420,8 +416,7 @@ angular.module('primeapps')
 
                         if (field.data_type === 'checkbox')
                             filter.value = filter.value.system_code;
-                    }
-                    else {
+                    } else {
                         filter.value = '-';
                     }
 
@@ -431,8 +426,7 @@ angular.module('primeapps')
                 if ($scope.view.sharing_type === 'custom') {
                     if (!$scope.view.shares) {
                         view.sharing_type = 'me';
-                    }
-                    else {
+                    } else {
                         view.shares = [];
 
                         angular.forEach($scope.view.shares, function (user) {
@@ -465,8 +459,7 @@ angular.module('primeapps')
                         .finally(function () {
                             $scope.saving = false;
                         });
-                }
-                else {
+                } else {
                     ViewsService.update(view, $scope.view.id, $scope.view._rev)
                         .then(function () {
                             success();
@@ -485,7 +478,7 @@ angular.module('primeapps')
                     //$state.go('studio.app.filters');
                     $scope.wizardStep = 0;
                     $scope.addNewFiltersModal.hide();
-                    $scope.changePage(1);
+                    $scope.changePage($scope.activePage);
                 }
 
                 function error(data, status) {
@@ -667,181 +660,179 @@ angular.module('primeapps')
                         break;
                 }
 
-			};
+            };
 
-			var setFilter =function (viewFilters, moduleFields, modulePicklists, filterList) {
+            var setFilter = function (viewFilters, moduleFields, modulePicklists, filterList) {
 
-				for (var j = 0; j < viewFilters.length; j++) {
-					var name = viewFilters[j].field;
-					var value = viewFilters[j].value;
+                for (var j = 0; j < viewFilters.length; j++) {
+                    var name = viewFilters[j].field;
+                    var value = viewFilters[j].value;
 
-					if (name.indexOf('.') > -1) {
-						name = name.split('.')[0];
-						viewFilters[j].field = name;
-					}
+                    if (name.indexOf('.') > -1) {
+                        name = name.split('.')[0];
+                        viewFilters[j].field = name;
+                    }
 
-					var field = $filter('filter')(moduleFields, { name: name }, true)[0];
-					var fieldValue = null;
+                    var field = $filter('filter')(moduleFields, {name: name}, true)[0];
+                    var fieldValue = null;
 
-					if (!field)
-						return filterList;
+                    if (!field)
+                        return filterList;
 
-					switch (field.data_type) {
-						case 'picklist':
-							fieldValue = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
-							break;
-						case 'multiselect':
-							fieldValue = [];
-							var multiselectValue = value.split('|');
+                    switch (field.data_type) {
+                        case 'picklist':
+                            fieldValue = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                            break;
+                        case 'multiselect':
+                            fieldValue = [];
+                            var multiselectValue = value.split('|');
 
-							angular.forEach(multiselectValue, function (picklistLabel) {
-								var picklist = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
+                            angular.forEach(multiselectValue, function (picklistLabel) {
+                                var picklist = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
 
-								if (picklist)
-									fieldValue.push(picklist);
-							});
-							break;
-						case 'tag':
-							fieldValue = [];
-							var tagValue = value.split('|');
+                                if (picklist)
+                                    fieldValue.push(picklist);
+                            });
+                            break;
+                        case 'tag':
+                            fieldValue = [];
+                            var tagValue = value.split('|');
 
-							angular.forEach(tagValue, function (label) {
-								fieldValue.push(label);
-							});
-							break;
-						case 'lookup':
-							if (field.lookup_type === 'users') {
-								var user = {};
+                            angular.forEach(tagValue, function (label) {
+                                fieldValue.push(label);
+                            });
+                            break;
+                        case 'lookup':
+                            if (field.lookup_type === 'users') {
+                                var user = {};
 
-								if (value === '0' || value === '[me]') {
-									user.id = 0;
-									user.email = '[me]';
-									user.full_name = $filter('translate')('Common.LoggedInUser');
-								}
-								else {
-									if (value !== '-') {
-										var userItem =
-											$filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
-											];
-										user.id = userItem.Id;
-										user.email = userItem.Email;
-										user.full_name = userItem.FullName;
-									}
+                                if (value === '0' || value === '[me]') {
+                                    user.id = 0;
+                                    user.email = '[me]';
+                                    user.full_name = $filter('translate')('Common.LoggedInUser');
+                                } else {
+                                    if (value !== '-') {
+                                        var userItem =
+                                            $filter('filter')($rootScope.users, {Id: parseInt(value)}, true)[0
+                                                ];
+                                        user.id = userItem.Id;
+                                        user.email = userItem.Email;
+                                        user.full_name = userItem.FullName;
+                                    }
 
-									//TODO: $rootScope.users kaldirilinca duzeltilecek
-									// ModuleService.getRecord('users', value)
-									//     .then(function (lookupRecord) {
-									//         fieldValue = [lookupRecord.data];
-									//     });
-								}
+                                    //TODO: $rootScope.users kaldirilinca duzeltilecek
+                                    // ModuleService.getRecord('users', value)
+                                    //     .then(function (lookupRecord) {
+                                    //         fieldValue = [lookupRecord.data];
+                                    //     });
+                                }
 
-								fieldValue = [user];
-							}
-							else {
-								fieldValue = value;
-							}
-							break;
-						case 'date':
-						case 'date_time':
-						case 'time':
-							if (!$scope.isCostumeDate($scope.view.filters[j])) {
-								fieldValue = new Date(value);
-								$scope.view.filterList[j].costumeDate = "costume";
-								$scope.view.filters[j].costumeDate = "costume";
-							} else {
-								fieldValue = $scope.view.filters[j].value;
-								$scope.view.filterList[j].costumeDate = $scope.view.filters[j].costumeDate;
-								$scope.view.filterList[j].valueX = $scope.view.filters[j].valueX;
-								$scope.view.filterList[j].nextprevdatetype = $scope.view.filters[j].nextprevdatetype;
-							}
-							break;
-						case 'checkbox':
-							fieldValue = $filter('filter')(modulePicklists.yes_no, { system_code: value }, true)[0];
-							break;
-						default:
-							fieldValue = value;
-							break;
-					}
+                                fieldValue = [user];
+                            } else {
+                                fieldValue = value;
+                            }
+                            break;
+                        case 'date':
+                        case 'date_time':
+                        case 'time':
+                            if (!$scope.isCostumeDate($scope.view.filters[j])) {
+                                fieldValue = new Date(value);
+                                $scope.view.filterList[j].costumeDate = "costume";
+                                $scope.view.filters[j].costumeDate = "costume";
+                            } else {
+                                fieldValue = $scope.view.filters[j].value;
+                                $scope.view.filterList[j].costumeDate = $scope.view.filters[j].costumeDate;
+                                $scope.view.filterList[j].valueX = $scope.view.filters[j].valueX;
+                                $scope.view.filterList[j].nextprevdatetype = $scope.view.filters[j].nextprevdatetype;
+                            }
+                            break;
+                        case 'checkbox':
+                            fieldValue = $filter('filter')(modulePicklists.yes_no, {system_code: value}, true)[0];
+                            break;
+                        default:
+                            fieldValue = value;
+                            break;
+                    }
 
-					filterList[j].field = field;
-					filterList[j].operator = operators[viewFilters[j].operator];
-					filterList[j].value = fieldValue;
+                    filterList[j].field = field;
+                    filterList[j].operator = operators[viewFilters[j].operator];
+                    filterList[j].value = fieldValue;
 
-					if (viewFilters[j].operator === 'empty' || viewFilters[j].operator === 'not_empty') {
-						filterList[j].value = null;
-						filterList[j].disabled = true;
-					}
-				}
-				return filterList;
-			};
+                    if (viewFilters[j].operator === 'empty' || viewFilters[j].operator === 'not_empty') {
+                        filterList[j].value = null;
+                        filterList[j].disabled = true;
+                    }
+                }
+                return filterList;
+            };
 
-		$scope.isCostumeDate =  function (filter) {
-			var getNumberRegex = /[^\d.-]/g;
-			if (filter.value.indexOf('now(') > -1) {
-				filter.costumeDate = "now()";
-				return true;
-			}
-			if (filter.value.indexOf('today(') > -1) {
-				if (/\d+/.test(filter.value)) {
-					filter.costumeDate = "costumeN";
-					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
-					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
-					return true;
-				} else {
-					filter.costumeDate = "today()";
-					return true;
-				}
-			}
-			if (filter.value === 'year()') {
-				filter.costumeDate = "year()";
-				return true;
-			}
-			if (filter.value === 'month()') {
-				filter.costumeDate = "month()";
-				return true;
-			}
-			if (filter.value === 'day()') {
-				filter.costumeDate = "day()";
-				return true;
-			}
+            $scope.isCostumeDate = function (filter) {
+                var getNumberRegex = /[^\d.-]/g;
+                if (filter.value.indexOf('now(') > -1) {
+                    filter.costumeDate = "now()";
+                    return true;
+                }
+                if (filter.value.indexOf('today(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeN";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "today()";
+                        return true;
+                    }
+                }
+                if (filter.value === 'year()') {
+                    filter.costumeDate = "year()";
+                    return true;
+                }
+                if (filter.value === 'month()') {
+                    filter.costumeDate = "month()";
+                    return true;
+                }
+                if (filter.value === 'day()') {
+                    filter.costumeDate = "day()";
+                    return true;
+                }
 
-			if (filter.value.indexOf('this_week(') > -1) {
-				if (/\d+/.test(filter.value)) {
-					filter.costumeDate = "costumeW";
-					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
-					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
-					return true;
-				} else {
-					filter.costumeDate = "this_week()";
-					return true;
-				}
-			}
+                if (filter.value.indexOf('this_week(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeW";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_week()";
+                        return true;
+                    }
+                }
 
-			if (filter.value.indexOf('this_month(') > -1) {
-				if (/\d+/.test(filter.value)) {
-					filter.costumeDate = "costumeM";
-					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
-					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
-					return true;
-				} else {
-					filter.costumeDate = "this_month()";
-					return true;
-				}
-			}
+                if (filter.value.indexOf('this_month(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeM";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_month()";
+                        return true;
+                    }
+                }
 
-			if (filter.value.indexOf('this_year(') > -1) {
-				if (/\d+/.test(filter.value)) {
-					filter.costumeDate = "costumeY";
-					filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
-					filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
-					return true;
-				} else {
-					filter.costumeDate = "this_year()";
-					return true;
-				}
-			}
-			return false;
-		}
+                if (filter.value.indexOf('this_year(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeY";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_year()";
+                        return true;
+                    }
+                }
+                return false;
+            }
 
         }
     ]);

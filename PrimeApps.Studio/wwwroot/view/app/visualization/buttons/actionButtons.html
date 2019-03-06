@@ -71,7 +71,7 @@
             <td ng-if="actionButton.trigger == 'All'">{{'Setup.Modules.All' | translate}}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(actionButton);" type="button"
+                    <button ng-click="$event.stopPropagation(); delete(actionButton, $event);" type="button"
                             class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
