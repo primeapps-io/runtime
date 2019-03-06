@@ -339,7 +339,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (relation) {
+            $scope.delete = function (relation, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -349,24 +349,21 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            // var elem = angular.element(event.srcElement);
-                            // angular.element(elem.closest('tr')).addClass('animated-background');
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
 
                             RelationsService.deleteModuleRelation(relation.id)
                                 .then(function () {
 
                                     $scope.pageTotal--;
-                                    // var index = $rootScope.appModules.indexOf(module);
-                                    // $rootScope.appModules.splice(index, 1);
-
-                                    //  angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
-
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
+                                    $scope.changePage($scope.activePage);
 
                                 })
                                 .catch(function () {
-                                    // angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     //$scope.relations = $scope.relationsState;
 
                                     if ($scope.addNewRelationsFormModal) {

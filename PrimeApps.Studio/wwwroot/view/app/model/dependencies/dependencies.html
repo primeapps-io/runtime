@@ -71,7 +71,7 @@
             <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(dependency);" type="button"
+                    <button ng-click="$event.stopPropagation(); delete(dependency, $event);" type="button"
                             class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>

@@ -14,7 +14,7 @@
                         </li>
                         <li>
                             <button type="submit" class="btn add-button btn-radius btn-blue" ladda="organizationSaving"
-                                    ng-disabled="!$parent.$parent.organizationShortnameValid" style="margin-left: 5px">
+                                    style="margin-left: 5px">
                                 <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
                             </button>
                         </li>
@@ -30,7 +30,7 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': organizationForm.$submitted && organizationForm.label.$invalid}">
-                                    <label class="col-sm-6 required-field">Organization Name <span
+                                    <label class="col-sm-6 required-field">Name <span
                                             class="required-label">(required)</span></label>
                                     <input type="text"
                                            name="label"
@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="form-group" style="position: relative;"
                                      ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                                    <label class="col-sm-6 required-field">Organization Identifier <span
+                                    <label class="col-sm-6 required-field">Identifier <span
                                             class="required-label">(required)</span></label>
                                     <input type="text"
                                            name="name"
@@ -69,9 +69,8 @@
                                     </div>
 
                                 </div>
-                                <div class="form-group" style="position: relative;"
-                                     ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                                    <label class="col-sm-6 required-field">Organization Color</label>
+                                <div class="form-group" style="position: relative;">
+                                    <label class="col-sm-6 required-field">Color</label>
                                     <input name="colorpicker" type="color"
                                            class="form-control"
                                            ng-model="$parent.$parent.organization.color">

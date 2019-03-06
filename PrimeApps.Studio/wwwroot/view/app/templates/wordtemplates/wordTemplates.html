@@ -65,7 +65,7 @@
             <td><a href="{{getDownloadUrl(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
             <td class="text-right">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(template.id);" type="button"
+                    <button ng-click="$event.stopPropagation(); delete(template.id, $event);" type="button"
                             class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
