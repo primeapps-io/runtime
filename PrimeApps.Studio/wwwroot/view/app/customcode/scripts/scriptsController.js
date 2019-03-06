@@ -123,7 +123,11 @@ angular.module('primeapps')
             $scope.showFormModal = function (script) {
                 if (script) {
                     $scope.scriptModel = $filter('filter')($scope.scripts, { id: script.id }, true)[0];
-                    $scope.scriptModel.place = $scope.componentPlaceEnums[$scope.scriptModel.place];
+
+                    if (!$scope.scriptModel.place_value)
+                        $scope.scriptModel.place_value = $scope.scriptModel.place;
+
+                    $scope.scriptModel.place = $scope.componentPlaceEnums[$scope.scriptModel.place_value];
                     $scope.id = script.id;
                 }
 
