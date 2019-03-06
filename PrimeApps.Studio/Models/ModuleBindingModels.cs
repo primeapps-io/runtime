@@ -56,6 +56,8 @@ namespace PrimeApps.Studio.Models
         public List<DependencyBindingModel> Dependencies { get; set; }
 
         public List<CalculationBindingModel> Calculations { get; set; }
+        
+        public bool IsComponent { get; set; }
     }
 
     public class SectionBindingModel

@@ -322,6 +322,8 @@ angular.module('primeapps')
             else {
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
+                    
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
