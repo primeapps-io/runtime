@@ -6,133 +6,227 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
-	public class PicklistRepository : RepositoryBaseTenant, IPicklistRepository
-	{
-		public PicklistRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+    public class PicklistRepository : RepositoryBaseTenant, IPicklistRepository
+    {
+        public PicklistRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-		public async Task<Picklist> GetById(int id)
-		{
-			var picklist = await DbContext.Picklists
-				.Include(x => x.Items)
-				.FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+        public async Task<Picklist> GetById(int id)
+        {
+            var picklist = await DbContext.Picklists
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
-			picklist.Items = picklist.Items.OrderBy(x => x.Order).ToList();
+            picklist.Items = picklist.Items.Where(q => !q.Deleted).OrderBy(x => x.Order).ToList();
 
-			return picklist;
-		}
+            return picklist;
+        }
 
-		public async Task<ICollection<Picklist>> GetAll()
-		{
-			var picklists = DbContext.Picklists
-				.Where(x => !x.Deleted && x.LabelEn != "Module")
-				.ToListAsync();
+        public async Task<ICollection<Picklist>> GetAll()
+        {
+            var picklists = DbContext.Picklists
+                .Where(x => !x.Deleted && x.LabelEn != "Module")
+                .ToListAsync();
 
-			return await picklists;
-		}
+            return await picklists;
+        }
 
-		public async Task<ICollection<Picklist>> Find(List<int> ids = null)
-		{
-			var picklistsQuery = DbContext.Picklists
-				.Include(x => x.Items)
-				.Where(x => !x.Deleted);
+        public async Task<ICollection<Picklist>> Find(List<int> ids = null)
+        {
+            var picklistsQuery = DbContext.Picklists
+                .Include(x => x.Items)
+                .Where(x => !x.Deleted);
 
-			if (ids != null && ids.Count > 0)
-			{
-				picklistsQuery = picklistsQuery
-					.Where(x => ids.Contains(x.Id));
-			}
+            if (ids != null && ids.Count > 0)
+            {
+                picklistsQuery = picklistsQuery
+                    .Where(x => ids.Contains(x.Id));
+            }
 
-			var picklists = await picklistsQuery.ToListAsync();
+            var picklists = await picklistsQuery.ToListAsync();
 
-			return picklists;
-		}
+            return picklists;
+        }
 
-		public Task<PicklistItem> GetItemById(int id)
-		{
-			var picklistItem = DbContext.PicklistItems
-				.FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+        public async Task<ICollection<Picklist>> Find(PaginationModel paginationModel)
+        {
+            var picklist = DbContext.Picklists.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit);
 
-			return picklistItem;
-		}
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Picklist).GetProperty(paginationModel.OrderColumn);
 
-		public Task<PicklistItem> GetItemBySystemCode(string systemCode)
-		{
-			var picklistItem = DbContext.PicklistItems
-				.FirstOrDefaultAsync(x => !x.Deleted && x.SystemCode == systemCode);
+                if (paginationModel.OrderType == "asc")
+                {
+                    picklist = picklist.OrderBy(x => propertyInfo.GetValue(x, null));
+                }
+                else
+                {
+                    picklist = picklist.OrderByDescending(x => propertyInfo.GetValue(x, null));
+                }
+            }
 
-			return picklistItem;
-		}
+            return await picklist.ToListAsync();
+        }
 
-		public async Task<ICollection<PicklistItem>> GetItemsAll()
-		{
-			var picklistItems = DbContext.PicklistItems
-				.Where(x => !x.Deleted)
-				.ToListAsync();
+        public async Task<Picklist> GetItemPage(int id, PaginationModel paginationModel)
+        {
+            var picklist = await DbContext.Picklists.Where(x => !x.Deleted && x.Id == id)
+                .Include(x => x.Items).FirstOrDefaultAsync();
 
-			return await picklistItems;
-		}
+            picklist.Items = picklist.Items.Where(x => !x.Deleted)
+                .OrderByDescending(q => q.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
 
-		public async Task<ICollection<PicklistItem>> FindItems(List<int> ids)
-		{
-			if (ids == null || ids.Count < 1)
-				return null;
+            //var picklist = await DbContext.Picklists.Where(x => !x.Deleted && x.Id == id).FirstAsync();
 
-			var picklistItems = DbContext.PicklistItems
-				.Where(x => !x.Deleted)
-				.Where(x => ids.Contains(x.Id))
-				.ToListAsync();
+            //var items = await DbContext.PicklistItems.Where(x => !x.Deleted && x.PicklistId == id)
+            //    .OrderByDescending(q => q.Id)
+            //    .Skip(paginationModel.Offset * paginationModel.Limit)
+            //    .Take(paginationModel.Limit).ToListAsync();
 
-			return await picklistItems;
-		}
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(PicklistItem).GetProperty(paginationModel.OrderColumn);
 
-		public async Task<PicklistItem> FindItemByLabel(int picklistId, string label, string language)
-		{
-			var picklistItem = DbContext.PicklistItems
-				.Where(x => !x.Deleted)
-				.Where(x => x.PicklistId == picklistId);
+                if (paginationModel.OrderType == "asc")
+                {
+                    picklist.Items = picklist.Items.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    picklist.Items = picklist.Items.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+            }
 
-			if (language == "tr")
-				picklistItem = picklistItem.Where(x => x.LabelTr == label);
-			else
-				picklistItem = picklistItem.Where(x => x.LabelEn == label);
+            //picklist.Items = items;
 
-			return await picklistItem.FirstOrDefaultAsync();
-		}
+            return picklist;
+        }
 
-		public async Task<int> Create(Picklist picklist)
-		{
-			DbContext.Picklists.Add(picklist);
+        public async Task<int> Count()
+        {
+            var count = await DbContext.Picklists.Where(x => !x.Deleted).CountAsync();
 
-			return await DbContext.SaveChangesAsync();
-		}
+            return count;
+        }
+        public async Task<int> CountItems(int id)
+        {
+            var count = await DbContext.PicklistItems.CountAsync(x => !x.Deleted && x.PicklistId == id);
 
-		public async Task<int> Update(Picklist picklist)
-		{
-			return await DbContext.SaveChangesAsync();
-		}
+            return count;
+        }
 
-		public async Task<int> DeleteSoft(Picklist picklist)
-		{
-			picklist.Deleted = true;
+        public Task<PicklistItem> GetItemById(int id)
+        {
+            var picklistItem = DbContext.PicklistItems
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
-			return await DbContext.SaveChangesAsync();
-		}
+            return picklistItem;
+        }
 
-		public async Task<int> DeleteHard(Picklist picklist)
-		{
-			DbContext.Picklists.Remove(picklist);
+        public Task<PicklistItem> GetItemBySystemCode(string systemCode)
+        {
+            var picklistItem = DbContext.PicklistItems
+                .FirstOrDefaultAsync(x => !x.Deleted && x.SystemCode == systemCode);
 
-			return await DbContext.SaveChangesAsync();
-		}
-		public Task<Picklist> GetPicklistByLabelEn(string labelEn)
-		{
-			var picklist = DbContext.Picklists
-				.FirstOrDefaultAsync(x => !x.Deleted && x.LabelEn == labelEn);
+            return picklistItem;
+        }
 
-			return picklist;
-		}
-	}
+        public async Task<ICollection<PicklistItem>> GetItemsAll()
+        {
+            var picklistItems = DbContext.PicklistItems
+                .Where(x => !x.Deleted)
+                .ToListAsync();
+
+            return await picklistItems;
+        }
+
+        public async Task<ICollection<PicklistItem>> FindItems(List<int> ids)
+        {
+            if (ids == null || ids.Count < 1)
+                return null;
+
+            var picklistItems = DbContext.PicklistItems
+                .Where(x => !x.Deleted)
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            return await picklistItems;
+        }
+
+        public async Task<PicklistItem> FindItemByLabel(int picklistId, string label, string language)
+        {
+            var picklistItem = DbContext.PicklistItems
+                .Where(x => !x.Deleted)
+                .Where(x => x.PicklistId == picklistId);
+
+            if (language == "tr")
+                picklistItem = picklistItem.Where(x => x.LabelTr == label);
+            else
+                picklistItem = picklistItem.Where(x => x.LabelEn == label);
+
+            return await picklistItem.FirstOrDefaultAsync();
+        }
+
+        public async Task<int> Create(Picklist picklist)
+        {
+            DbContext.Picklists.Add(picklist);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+
+        public async Task<int> AddItem(PicklistItem item)
+        {
+            DbContext.PicklistItems.Add(item);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+
+        public async Task<int> Update(Picklist picklist)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> Update(PicklistItem item)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteSoft(Picklist picklist)
+        {
+            picklist.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> ItemDeleteSoft(PicklistItem picklistItem)
+        {
+            picklistItem.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteHard(Picklist picklist)
+        {
+            DbContext.Picklists.Remove(picklist);
+
+            return await DbContext.SaveChangesAsync();
+        }
+        public Task<Picklist> GetPicklistByLabelEn(string labelEn)
+        {
+            var picklist = DbContext.Picklists
+                .FirstOrDefaultAsync(x => !x.Deleted && x.LabelEn == labelEn);
+
+            return picklist;
+        }
+    }
 }

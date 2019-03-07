@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using PrimeApps.Model.Common.Team;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Common.Organization
 {

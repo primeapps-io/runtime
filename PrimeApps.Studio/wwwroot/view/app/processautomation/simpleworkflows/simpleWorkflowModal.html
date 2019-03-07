@@ -1,11 +1,13 @@
 ﻿<div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
     <div class="modal-header">
         <div class="flex-between">
-            <h4 class="modal-title">{{'Setup.Workflow.EditRule' | translate}}</h4>
+            <h4 class="modal-title">{{workflowModel.name}} {{'Setup.Workflow.EditRule' | translate}}</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" ng-click="cancel();" ng-disabled="saving" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="button" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button" ng-click="cancel();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                    <li><button type="button" ng-click="previousStep(workflowForm, wizardStep)" ng-if="wizardStep>0 && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-left pull-left" style="margin-top: unset;"></i>{{'Common.Previous' | translate}}</button></li>
+                    <li><button type="button" ng-click="nextStep(workflowForm, wizardStep)" ng-if="!lastStepClicked && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-right pull-right"></i>{{'Common.Next' | translate}}</button></li>
+                    <li><button type="button" ng-if="lastStepClicked && wizardStep>=2" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
@@ -23,9 +25,9 @@
                                 <a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
                                 <ul>
                                     <li><a ng-class="{'active':tab==0 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 0 : false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
-                                    <li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>
-                                    <li><a ng-class="{'active':tab==2 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 2 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
-                                    <li><a ng-class="{'active':tab==3 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 3 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
+                                    <!--<li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>-->
+                                    <li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==2 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 2 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
 
                                 </ul>
                             </li>
@@ -40,13 +42,13 @@
                                 <h4>{{'Setup.Workflow.RuleInformation' | translate}}</h4>
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
-                                        <label class="col-sm-12 required-field">* {{'Setup.Workflow.Name' | translate}}:</label>
+                                        <label class="col-sm-12 required-field">{{'Setup.Workflow.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                                         <label class="col-sm-12 required-field">
-                                            * {{'Setup.Workflow.Module' | translate}}:
+                                            {{'Setup.Workflow.Module' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                         </label>
                                         <select class="form-control ng-animate-disabled col-sm-10"
                                                 name="module"
@@ -60,7 +62,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-12">
-                                            {{'Setup.Workflow.Status' | translate}}:
+                                            {{'Setup.Workflow.Status' | translate}}
                                         </label>
                                         <label class="checkbox-inline newinput">
                                             <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
@@ -69,7 +71,7 @@
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': workflowForm.$submitted && workflowForm.operation.$invalid}">
-                                        <label class="col-sm-12">* {{'Setup.Workflow.RuleTrigger' | translate}}: </label>
+                                        <label class="col-sm-12">{{'Setup.Workflow.RuleTrigger' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <label class="checkbox-inline newinput">
                                             <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(workflowForm)"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></small>
                                             <span></span>
@@ -85,16 +87,15 @@
 
                                     </div>
                                     <div class="form-group" ng-show="workflowModel.operation.update">
-                                        <label class="col-sm-12">{{'Setup.Workflow.WhenFieldChanged' | translate}}: </label>
                                         <label class="checkbox-inline newinput">
-                                            <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox">
+                                            <input ng-change="changeFieldCheckboxChanged(workflowModel.changed_field_checkbox)" type="checkbox" ng-model="workflowModel.changed_field_checkbox"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.WhenFieldChanged' | translate"></small>
                                             <span></span>
                                         </label>
                                     </div>
                                     <div class="form-group"
                                          ng-show="workflowModel.changed_field_checkbox && workflowModel.operation.update"
                                          ng-class="{'has-error': workflowForm.$submitted && workflowForm.changed_field.$invalid}">
-                                        <label class="col-sm-12 required-field">* {{'Setup.Workflow.RelatedField' | translate}}:</label>
+                                        <label class="col-sm-12 required-field">{{'Setup.Workflow.RelatedField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <select class="form-control"
                                                 name="changed_field"
                                                 required
@@ -105,7 +106,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-12">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
+                                        <label class="col-sm-12">{{'Setup.Workflow.ExecutionFrequency' | translate}}</label>
                                         <div class="form-group">
                                             <label class="radio-inline newinput" ng-show="workflowModel.operation.update">
                                                 <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
@@ -120,7 +121,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group" ng-show="id && workflowModel.frequency == 'one_time'">
-                                        <label class="col-sm-12">{{'Setup.Workflow.DeleteLogs' | translate}}:</label>
+                                        <label class="col-sm-12">{{'Setup.Workflow.DeleteLogs' | translate}}</label>
                                         <label class="checkbox-inline newinput">
                                             <input type="checkbox" ng-model="workflowModel.delete_logs">
                                             <span></span>
@@ -132,13 +133,6 @@
                                             <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
                                         </div>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="validate(workflowForm) ? $parent.wizardStep = 1: false;">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
-                                            {{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
 
                                     <div ng-if="showPermissionWarning" class="callout callout-warning">
 
@@ -148,7 +142,7 @@
                             <div class="section" ng-show="$parent.wizardStep == 1">
                                 <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                 <div class="panel">
-                                     <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                                     <div class=" table-responsive" ng-show="!loadingFilter">
                                         <table class="filter-table">
                                             <thead>
@@ -362,7 +356,7 @@
                                             </tbody>
                                         </table>
                                         <div style="margin-top: 50px" ng-show="showProcessFilter">
-                                            <label class="col-sm-3">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
+                                            <label class="col-sm-3">{{'Setup.Workflow.ProcessFilterDesc' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <div class="col-sm-9">
                                                 <label class="radio-inline newinput"><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}<span></span></label><br>
 
@@ -377,13 +371,7 @@
                                                 <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
                                             </div>
                                         </div>
-                                        <div class="form-group text-right">
-                                            <button type="button" class="btn btn-primary btn-w-sm"
-                                                    ng-click="validate(workflowForm) ? $parent.wizardStep = 2 : false;">
-                                                <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
-                                                {{'Common.Next' | translate}}
-                                            </button>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -391,10 +379,10 @@
                                 <h4>{{'Setup.Workflow.Actions' | translate}}</h4>
                                 <div class="panel">
                                     <div ng-show="$parent.tab == 0 && $parent.wizardStep == 2">
-                                        <h2>{{'Setup.Workflow.SendNotification' | translate}}</h2>
+                                        <h4 style="font-size:15px;">{{'Setup.Workflow.SendNotification' | translate}}</h4>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
                                             <label class="col-sm-12 required-field">
-                                                {{'Setup.Outlook.RecipientsEmailAdressField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
+                                                To <span class="required-label">({{'Common.Required' | translate }})</span>
                                             </label>
                                             <select class="form-control"
                                                     name="sendNotificationModule"
@@ -402,7 +390,7 @@
                                                     required
                                                     ng-model="workflowModel.send_notification_module"
                                                     ng-change="SendNotificationModuleChanged(); setFormValid(workflowForm); "
-                                                    ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{deleted:'false'} | orderNotZero track by o.id">
+                                                    ng-options="o as o.name for o in fieldUpdateModulesForNotification  track by o.id">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
@@ -438,14 +426,14 @@
                                         </div>
                                         <div>
                                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}">
-                                                <label class="col-sm-12 ">CC:</label>
+                                                <label class="col-sm-12 ">Cc</label>
                                                 <select class="form-control"
                                                         name="sendNotificationCCModule"
                                                         tabindex="1"
                                                         required
                                                         ng-model="workflowModel.send_notification_ccmodule"
                                                         ng-change="SendNotificationCCModuleChanged(); setFormValid(workflowForm);"
-                                                        ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                        ng-options="o as o.name for o in fieldUpdateModulesForNotification  track by o.id">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                             </div>
@@ -482,14 +470,14 @@
                                         </div>
                                         <div>
                                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}">
-                                                <label class="col-sm-12">BCC:</label>
+                                                <label class="col-sm-12">Bcc</label>
                                                 <select class="form-control"
                                                         name="sendNotificationBccModule"
                                                         tabindex="1"
                                                         required
                                                         ng-model="workflowModel.send_notification_bccmodule"
                                                         ng-change="SendNotificationBccModuleChanged(); setFormValid(workflowForm);"
-                                                        ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                        ng-options="o as o.name for o in fieldUpdateModulesForNotification  track by o.id">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                             </div>
@@ -551,10 +539,26 @@
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
                                             <label class="col-sm-12 ">{{'Setup.Workflow.Message' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
 
-                                            <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
+                                            <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                                       mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
                                                       ng-required="true" ng-model="workflowModel.send_notification.message" name="message"
                                                       mentio-iframe-element="iframeElement"></textarea>
+
+                                            <script type="text/ng-template" id="tag-mentions.tpl">
+                                                <ul class="ment-tags">
+                                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                        class="list-group-item clearfix"
+                                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                        {{tag.name}}
+                                                    </li>
+                                                </ul>
+                                            </script>
+                                            <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                                         mentio-trigger-char="'#'" mentio-items="tags"
+                                                         mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
+
+
 
                                             <!--  <script type="text/ng-template" id="tag-mentions.tpl">
                                                 <ul class="ment-tags">
@@ -581,7 +585,7 @@
 
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-sm-12">{{'Setup.Workflow.Schedule' | translate}}:</label>
+                                            <label class="col-sm-12">{{'Setup.Workflow.Schedule' | translate}}</label>
                                             <select class="form-control"
                                                     name="scheduleNotification"
                                                     tabindex="4"
@@ -602,7 +606,7 @@
 
 
                                     </div>
-                                    <div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
+                                    <!--<div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
                                         <h2>{{'Setup.Workflow.AssignTask' | translate}}</h2>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
                                             <label class="col-sm-12">{{taskFields.owner['label_' + language]}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
@@ -653,7 +657,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group" ng-if="taskFields.task_status">
-                                            <label class="col-sm-12">{{taskFields.task_status['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.task_status['label_' + language]}}</label>
                                             <select class="form-control"
                                                     name="taskStatus"
                                                     tabindex="4"
@@ -677,7 +681,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-sm-12">{{taskFields.task_notification['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.task_notification['label_' + language]}}</label>
                                             <select class="form-control"
                                                     name="taskNotification"
                                                     tabindex="6"
@@ -689,7 +693,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group" ng-if="taskFields.description">
-                                            <label class="col-sm-12">{{taskFields.description['label_' + language]}}:</label>
+                                            <label class="col-sm-12">{{taskFields.description['label_' + language]}}</label>
                                             <textarea name="description"
                                                       class="form-control"
                                                       tabindex="7"
@@ -709,9 +713,9 @@
                                                 </p>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div ng-show="$parent.tab == 2 && $parent.wizardStep == 2">
-                                        <h2>{{'Setup.Workflow.FieldUpdate' | translate}}</h2>
+                                    </div>-->
+                                    <div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
+                                        <h4 style="font-size:15px;">{{'Setup.Workflow.FieldUpdate' | translate}}</h4>
                                         <div class="form-group "
                                              ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateOption.$invalid}">
                                             <label class="col-sm-12">
@@ -739,9 +743,9 @@
                                                             name="firstModule"
                                                             tabindex="1"
                                                             required
-                                                            ng-model="workflowModel.field_update.firstModule.module"
+                                                            ng-model="workflowModel.field_update.firstModule"
                                                             ng-change="updateModuleChanged(); setFormValid(workflowForm);"
-                                                            ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                            ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.name">
                                                         <option value="">{{'Common.Select' | translate}}</option>
                                                     </select>
                                                 </div>
@@ -749,8 +753,7 @@
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.firstField.$invalid}"
                                                      ng-if="workflowModel.field_update.firstModule">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">* </span>
-                                                        {{'Setup.Workflow.FieldUpdateFrom' | translate}}:
+                                                        {{'Setup.Workflow.FieldUpdateFrom' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select class="form-control"
                                                             name="firstField"
@@ -767,8 +770,7 @@
                                                 <div class="form-group clearfix"
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondModule.$invalid}">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">* </span>
-                                                        {{'Setup.Workflow.ModuleUpdateTo' | translate}}:
+                                                        {{'Setup.Workflow.ModuleUpdateTo' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select style="width: 100%;"
                                                             ng-disabled="!workflowModel.field_update.first_field"
@@ -776,9 +778,9 @@
                                                             name="secondModule"
                                                             tabindex="1"
                                                             required
-                                                            ng-model="workflowModel.field_update.secondModule.module"
+                                                            ng-model="workflowModel.field_update.secondModule"
                                                             ng-change="updateModuleChanged(); setFormValid(workflowForm);"
-                                                            ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                                            ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.name">
                                                         <option value="">{{'Common.Select' | translate}}</option>
                                                     </select>
                                                 </div>
@@ -786,8 +788,7 @@
                                                      class="form-group clearfix"
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondField.$invalid}">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">* </span>
-                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}}:
+                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select class="form-control"
                                                             name="secondField"
@@ -803,8 +804,7 @@
                                                      class="clearfix form-group"
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondField.$invalid}">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">* </span>
-                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}}:
+                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select class="form-control"
                                                             style="width: 100%;"
@@ -821,8 +821,7 @@
                                                      class="clearfix form-group"
                                                      ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondField.$invalid}">
                                                     <label class="col-sm-12">
-                                                        <span class="required-field">* </span>
-                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}}:
+                                                        {{'Setup.Workflow.FieldUpdateTo' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                     </label>
                                                     <select class="form-control"
                                                             style="width: 100%;"
@@ -841,7 +840,7 @@
                                         <div ng-if="workflowModel.field_update.updateOption == 1">
                                             <div class="form-group"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateModule.$invalid}">
-                                                <label class="col-sm-12"><span class="required-field">* </span> {{'Setup.Workflow.UpdateModule' | translate}}:</label>
+                                                <label class="col-sm-12">{{'Setup.Workflow.UpdateModule' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                                 <select class="form-control"
                                                         name="updateModule"
                                                         tabindex="1"
@@ -856,8 +855,7 @@
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateField.$invalid}"
                                                  ng-if="workflowModel.field_update.module">
                                                 <label class="col-sm-12">
-                                                    <span class="required-field">* </span>
-                                                    {{'Setup.Workflow.UpdateField' | translate}}:
+                                                    {{'Setup.Workflow.UpdateField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                                 </label>
                                                 <select class="form-control"
                                                         name="updateField"
@@ -872,7 +870,7 @@
                                             <div class="form-group"
                                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateValue.$invalid}"
                                                  ng-if="workflowModel.field_update.module && workflowModel.field_update.field">
-                                                <label class="col-sm-5 control-label"><span class="required-field">* </span> {{'Setup.Workflow.UpdateValue' | translate}}:</label>
+                                                <label class="col-sm-5 control-label">{{'Setup.Workflow.UpdateValue' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                                 <input type="text"
                                                        name="updateValue"
                                                        class="form-control ng-animate-disabled"
@@ -1191,8 +1189,8 @@
 
                                         </div>
                                     </div>
-                                    <div ng-show="$parent.tab == 3 && $parent.wizardStep == 2">
-                                        <h2> <h2>{{'Setup.Workflow.WebHook' | translate}}</h2></h2>
+                                    <div ng-show="$parent.tab == 2 && $parent.wizardStep == 2">
+                                        <h4 style="font-size:15px;">{{'Setup.Workflow.WebHook' | translate}}</h4>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookUrl' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <input type="url" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid(workflowForm)" placeholder="http://" />
@@ -1211,11 +1209,11 @@
                                             </label>
                                         </div>
                                         <div class="form-inline" style="margin-bottom: 30px;">
-                                            <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}:</label>
+                                            <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
                                         </div>
                                         <div>
-                                            <div class="form-group table-responsive">
-                                                <table class="filter-table">
+                                            <div class="form-group">
+                                                <table class="table">
                                                     <thead>
                                                         <tr>
                                                             <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
@@ -1266,14 +1264,6 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="validate(workflowForm) ? $parent.wizardStep = 3 : false; getSummary();">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
-                                            {{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                             <div class="section" ng-show="$parent.wizardStep == 3">
@@ -1281,13 +1271,13 @@
                                 <div class="panel">
                                     <div class="table-responsive">
                                         <h5 class="text-center summary-header">{{'Setup.Workflow.SummaryFor' | translate:{name: workflowModel.name} }}</h5>
-                                        <span class="summary-label">{{'Setup.Workflow.Module' | translate}}:</span>
+                                        <span class="summary-label">{{'Setup.Workflow.Module' | translate}}</span>
                                         <p class="summary-content">{{workflowModel.module['label_' + language + '_singular']}}</p>
-                                        <span class="summary-label">{{'Setup.Workflow.RuleTrigger' | translate}}:</span>
+                                        <span class="summary-label">{{'Setup.Workflow.RuleTrigger' | translate}}</span>
                                         <p class="summary-content" ng-bind-html="ruleTriggerText"></p>
-                                        <span class="summary-label" ng-show="ruleFilterText">{{'Setup.Workflow.FilterCriteria' | translate}}:</span>
+                                        <span class="summary-label" ng-show="ruleFilterText">{{'Setup.Workflow.FilterCriteria' | translate}}</span>
                                         <p class="summary-content" ng-show="ruleFilterText" ng-bind-html="ruleFilterText"></p>
-                                        <span class="summary-label">{{'Setup.Workflow.Actions' | translate}}:</span>
+                                        <span class="summary-label">{{'Setup.Workflow.Actions' | translate}}</span>
                                         <p class="summary-content" ng-bind-html="ruleActionsText"></p>
                                         <table class="filter-table" ng-show="hookParameters.length > 0 && showWebhookSummaryTable">
                                             <thead>
@@ -1326,9 +1316,7 @@
                             <div class="modal-body">
                                 <div class="form-group"
                                      ng-class="{'has-error': picklistForm.$submitted && (picklistForm.picklistLabel.$invalid || picklistForm.$error.unique)}">
-                                    <label class="col-sm-12 required-field">
-                                        * {{'Setup.Modules.PicklistName' | translate}}:
-                                    </label>
+                                    <label class="col-sm-12 required-field">{{'Setup.Modules.PicklistName' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="picklistLabel"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -1340,7 +1328,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-12 required-field">
-                                        * {{'Setup.Modules.PicklistOptions' | translate}}:
+                                        {{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                     </label>
                                     <div class="col-sm-12">
                                         <div id="rightTopBar" class="scrollBar"></div>

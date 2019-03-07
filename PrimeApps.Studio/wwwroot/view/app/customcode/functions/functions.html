@@ -2,9 +2,9 @@
     <h2>Functions</h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <li></li>
             <li>
-                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Function</button>
+                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Function
+                </button>
             </li>
         </ul>
     </div>
@@ -91,9 +91,13 @@
             <td>{{getTime(function.created_at)}}</td>
             <td class="text-right">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function)" type="button" class="action-buttons-delete">
+                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"
+                            type="button" class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
                 <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
                         action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
@@ -127,9 +131,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Function {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

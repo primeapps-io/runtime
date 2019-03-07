@@ -2,9 +2,9 @@
     <h2>Components</h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <li></li>
             <li>
-                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Component</button>
+                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> Add New Component
+                </button>
             </li>
         </ul>
     </div>
@@ -45,15 +45,25 @@
         </thead>
         <tbody>
         <tr ng-repeat="item in placeholderArray">
-            <td><div class="animated-background"></div></td>
-            <td><div class="animated-background"></div></td>
-            <td><div class="animated-background"></div></td>
-            <td><div class="animated-background"></div></td>
-            <td><div class="animated-background"></div></td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
         </tr>
         </tbody>
     </table>
-    
+
     <table class="table" ng-if="!loading && components.length !== 0">
         <thead>
         <tr>
@@ -74,7 +84,8 @@
             <td>{{component.order}}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();delete(component.id)" type="button" class="action-buttons-delete">
+                    <button ng-click="$event.stopPropagation();delete(component.id)" type="button"
+                            class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -104,9 +115,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Component {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

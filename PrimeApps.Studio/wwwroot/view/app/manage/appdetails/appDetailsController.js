@@ -6,19 +6,20 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
 
             $scope.appModel = {};
+            $scope.authTheme = {};
+            $scope.appTheme = {};
             $scope.$parent.activeMenuItem = 'appDetails';
             $rootScope.breadcrumblist[2].title = 'App Details';
 
             var uploader = $scope.uploader = new FileUploader({
-                    url: 'storage/upload_logo',
-                    headers: {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId
-                    },
-                    queueLimit: 1
-                })
-            ;
+                url: 'storage/upload_logo',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                    'Accept': 'application/json',
+                    'X-Organization-Id': $rootScope.currentOrgId
+                },
+                queueLimit: 1
+            });
 
             uploader.onWhenAddingFileFailed = function (item, filter, options) {
                 switch (filter.name) {
@@ -67,49 +68,6 @@ angular.module('primeapps')
                 }
             };
 
-            // $scope.checkNameBlur = function () {
-            //     $scope.nameBlur = true;
-            //     $scope.checkName($scope.appModel.name);
-            // };
-            //
-            // $scope.checkName = function (name) {
-            //     if (!name)
-            //         return;
-            //
-            //     $scope.appModel.name = name.replace(/\s/g, '');
-            //     $scope.appModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-            //
-            //     $scope.appModel.name = name.replace(/\s/g, '');
-            //     $scope.appModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-            //
-            //     if (!$scope.nameBlur)
-            //         return;
-            //
-            //     $scope.nameChecking = true;
-            //     $scope.nameValid = null;
-            //
-            //     if (!name || name === '') {
-            //         $scope.nameChecking = false;
-            //         $scope.nameValid = false;
-            //         return;
-            //     }
-            //
-            //     AppDetailsService.isUniqueName(name)
-            //         .then(function (response) {
-            //             $scope.nameChecking = false;
-            //             if (response.data) {
-            //                 $scope.nameValid = true;
-            //             }
-            //             else {
-            //                 $scope.nameValid = false;
-            //             }
-            //         })
-            //         .catch(function () {
-            //             $scope.nameValid = false;
-            //             $scope.nameChecking = false;
-            //         });
-            // };
-
             AppDetailsService.get($scope.appId).then(function (response) {
                 var app = response.data;
                 $scope.appModel.name = app.name;
@@ -119,6 +77,63 @@ angular.module('primeapps')
                 $scope.appModel.status = 1;
                 $scope.appModel.logo = app.logo;
             });
+
+            AppDetailsService.getAppTheme($scope.appId).then(function (response) {
+                var appTheme = response.data;
+                $scope.appTheme.color = appTheme.color;
+                $scope.appTheme.title = appTheme.title;
+                $scope.appTheme.favicon = appTheme.favicon;
+                $scope.appTheme.logo = appTheme.logo;
+            });
+
+            $scope.saveAppTheme = function () {
+                $scope.savingApp = true;
+                var appThemes = {};
+                appThemes.color = $scope.appTheme.color;
+                appThemes.title = $scope.appTheme.title;
+                appThemes.favicon = $scope.appTheme.favicon;
+                appThemes.logo = $scope.appTheme.logo;
+
+
+                AppDetailsService.updateAppTheme($scope.appId, appThemes)
+                    .then(function (response) {
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.savingApp = false;
+                    });
+            };
+
+            AppDetailsService.getAuthTheme($scope.appId).then(function (response) {
+                var authTheme = response.data;
+                $scope.authTheme.banner = authTheme.banner[0].image;
+                $scope.authTheme.color = authTheme.color;
+                $scope.authTheme.title = authTheme.title;
+                $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
+                $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
+                $scope.authTheme.favicon = authTheme.favicon;
+                $scope.authTheme.logo = authTheme.logo;
+            });
+
+            $scope.saveAuthTheme = function () {
+                $scope.savingAuth = true;
+                var authThemes = {};
+                var description = {};
+                description.en = $scope.authTheme.descriptionEn;
+                description.tr = $scope.authTheme.descriptionTr;
+                var banner = [
+                    { description: description, image: $scope.appModel.logo }
+                ];
+                authThemes.logo = $scope.appModel.logo;
+                authThemes.color = $scope.authTheme.color;
+                authThemes.title = $scope.authTheme.title;
+                authThemes.banner = banner;
+                authThemes.favicon = $scope.appModel.logo;
+
+                AppDetailsService.updateAuthTheme($scope.appId, authThemes)
+                    .then(function (response) {
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.savingAuth = false;
+                    });
+            };
 
             $scope.save = function () {
                 $scope.saving = true;
@@ -152,5 +167,6 @@ angular.module('primeapps')
                         });
                 }
             };
+            
         }
     ]);

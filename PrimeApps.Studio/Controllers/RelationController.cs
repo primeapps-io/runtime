@@ -61,8 +61,8 @@ namespace PrimeApps.Studio.Controllers
 		{
 			var relations = await _relationRepository.Find(id,paginationModel);
 
-			if (relations == null)
-				return Ok(null);
+			//if (relations == null)
+				//return Ok(null);
 
 			//foreach (var relation in relations)
 			//{

@@ -35,7 +35,7 @@
                                 <textarea rows="2" name="description" ng-required="true" ng-change="descriptionChange()" style="{{requiredColor}}" class="form-control col-sm-8" maxlength="255" auto-grow ng-model="profile.description" ng-disabled="profile.is_persistent"></textarea>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-12 control-label">{{'Setup.Profiles.Permissions' | translate}} :</label>
+                                <label class="col-sm-12 control-label">{{'Setup.Profiles.Permissions' | translate}}</label>
                                 <div class="col-sm-12 table-responsive">
                                     <table class="table">
                                         <thead>
@@ -80,28 +80,28 @@
                                     <label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.word_pdf_download" ng-disabled="profile.has_admin_rights" />
                                         <small style="font-size:100%;">{{'Setup.Profiles.WordPdfDownload' | translate}}</small>
                                         <span></span></label>
-                                    <label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.document_search" ng-disabled="profile.has_admin_rights" />
-                                        <small style="font-size:100%;">{{'Setup.Profiles.DocumentSearch' | translate}}</small>
-                                        <span></span></label>
-                                    <label class="ui-checkbox newinput" ng-if="moduleLead"><input type="checkbox" ng-model="profile.lead_convert" ng-disabled="profile.has_admin_rights" />
-                                        <small style="font-size:100%;">{{'Setup.Profiles.LeadConvert' | translate}}</small>
-                                        <span></span></label>
-                                    <label class="ui-checkbox newinput">
-                                        <input type="checkbox" ng-model="profile.tasks"
-                                               ng-disabled="profile.has_admin_rights" />
-                                        <small style="font-size:100%;">{{'Setup.Profiles.Tasks' | translate}}</small>
-                                        <span></span>
-                                    </label>
-                                    <label class="ui-checkbox newinput">
-                                        <input type="checkbox" ng-model="profile.calendar"
-                                               ng-disabled="profile.has_admin_rights" />
-                                        <small style="font-size:100%;">{{'Setup.Profiles.Calendar' | translate}}</small>
-                                        <span></span>
-                                    </label>
+                                    <!--<label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.document_search" ng-disabled="profile.has_admin_rights" />-->
+                                        <!--<small style="font-size:100%;">{{'Setup.Profiles.DocumentSearch' | translate}}</small>-->
+                                        <!--<span></span></label>-->
+                                    <!--<label class="ui-checkbox newinput" ng-if="moduleLead"><input type="checkbox" ng-model="profile.lead_convert" ng-disabled="profile.has_admin_rights" />-->
+                                        <!--<small style="font-size:100%;">{{'Setup.Profiles.LeadConvert' | translate}}</small>-->
+                                        <!--<span></span></label>-->
+                                    <!--<label class="ui-checkbox newinput">-->
+                                        <!--<input type="checkbox" ng-model="profile.tasks"-->
+                                               <!--ng-disabled="profile.has_admin_rights" />-->
+                                        <!--<small style="font-size:100%;">{{'Setup.Profiles.Tasks' | translate}}</small>-->
+                                        <!--<span></span>-->
+                                    <!--</label>-->
+                                    <!--<label class="ui-checkbox newinput">-->
+                                        <!--<input type="checkbox" ng-model="profile.calendar"-->
+                                               <!--ng-disabled="profile.has_admin_rights" />-->
+                                        <!--<small style="font-size:100%;">{{'Setup.Profiles.Calendar' | translate}}</small>-->
+                                        <!--<span></span>-->
+                                    <!--</label>-->
                                     <!--<label class="ui-checkbox"><input type="checkbox" ng-model="profile.newsfeed"
                                                                       ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>-->
                                     <label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.dashboard" ng-disabled="profile.has_admin_rights" />
-                                        <small style="font-size:100%;">Pano</small>
+                                        <small style="font-size:100%;">Dashboard</small>
                                         <span></span></label>
                                     <label class="ui-checkbox newinput" ng-if="moduleRehber">
                                         <input type="checkbox"

@@ -11,9 +11,9 @@ namespace PrimeApps.App.Helpers
         public static ApplicationInfoViewModel GetApplicationInfo(IConfiguration configuration, HttpRequest request, string language, Model.Entities.Platform.App app)
         {
             var cdnUrlStatic = "";
-            var cdnUrl = configuration.GetSection("webOptimizer")["cdnUrl"];
+            var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
 
-            if (!string.IsNullOrEmpty(cdnUrl))
+			if (!string.IsNullOrEmpty(cdnUrl))
             {
                 var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;
@@ -30,7 +30,7 @@ namespace PrimeApps.App.Helpers
                 Name = app.Name,
                 Title = theme["title"].ToString(),
                 MultiLanguage = string.IsNullOrEmpty(app.Setting.Language),
-                Logo = app.Logo,
+                Logo = theme["logo"].ToString(),
                 Theme = theme,
                 Color = theme["color"].ToString(),
                 CustomDomain = false,

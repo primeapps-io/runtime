@@ -17,6 +17,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("label_tr"), MaxLength(50), Required]
         public string LabelTr { get; set; }
 
+        [Column("system_code"), MaxLength(50)]
+        public string SystemCode { get; set; }
+
         [Column("migration_id")]
         public string MigrationId { get; set; }
 

@@ -116,36 +116,60 @@ angular.module('primeapps')
 
                 function editUser() {
                     $scope.userUpdating = true;
-                    if ($scope.uploadImage)
+                    if ($scope.uploadImage) {
                         uploader.queue[0].upload();
+                        uploader.onCompleteItem = function (fileItem, pictureUrl, status) {
+                            if (status === 200) {
+                                $scope.userModel.picture = pictureUrl;
+                                SettingService.editUser(userModel)
+                                    .then(function () {
+                                        $scope.userModel.firstName = userModel.firstName;
+                                        $scope.userModel.lastName = userModel.lastName;
+                                        $scope.userModel.email = userModel.email;
+                                        $scope.userModel.picture = userModel.picture;
+                                        $rootScope.me.firstName = userModel.firstName;
+                                        $rootScope.me.lastName = userModel.lastName;
+                                        $rootScope.me.picture = userModel.picture;
+                                        $scope.userUpdating = false;
+                                        $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
 
-                    uploader.onCompleteItem = function (fileItem, pictureUrl, status) {
-                        if (status === 200) {
-                            $scope.userModel.picture = pictureUrl;
-                            SettingService.editUser(userModel)
-                                .then(function () {
-                                    $scope.userModel.firstName = userModel.firstName;
-                                    $scope.userModel.lastName = userModel.lastName;
-                                    $scope.userModel.email = userModel.email;
-                                    $scope.userModel.picture = userModel.picture;
-                                    $rootScope.me.firstName = userModel.firstName;
-                                    $rootScope.me.lastName = userModel.lastName;
-                                    $rootScope.me.picture = userModel.picture;
-                                    $scope.userUpdating = false;
-                                    $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
+                                        if (!emailChanged) {
+                                            toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
+                                        }
+                                        else
+                                            toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
 
-                                    if (!emailChanged) {
-                                        toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
-                                    }
-                                    else
-                                        toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
+                                    })
+                                    .catch(function () {
+                                        $scope.userUpdating = false;
+                                    });
+                            }
+                        };
+                    }
+                    else {
+                        SettingService.editUser(userModel)
+                            .then(function () {
+                                $scope.userModel.firstName = userModel.firstName;
+                                $scope.userModel.lastName = userModel.lastName;
+                                $scope.userModel.email = userModel.email;
+                                $scope.userModel.picture = userModel.picture;
+                                $rootScope.me.firstName = userModel.firstName;
+                                $rootScope.me.lastName = userModel.lastName;
+                                $rootScope.me.picture = userModel.picture;
+                                $scope.userUpdating = false;
+                                $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
 
-                                })
-                                .catch(function () {
-                                    $scope.userUpdating = false;
-                                });
-                        }
-                    };
+                                if (!emailChanged) {
+                                    toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
+                                }
+                                else
+                                    toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
+
+                            })
+                            .catch(function () {
+                                $scope.userUpdating = false;
+                            });
+                    }
                 }
             };
         }

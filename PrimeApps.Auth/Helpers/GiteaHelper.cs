@@ -12,98 +12,84 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.Helpers
 {
-    public interface IGiteaHelper
-    {
-        Task CreateUser(string email, string password, string fullName);
-    }
+	public interface IGiteaHelper
+	{
+		Task<string> GetToken(string email, string password);
+	}
 
-    public class GiteaHelper : IGiteaHelper
-    {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IHttpContextAccessor _context;
-        private IConfiguration _configuration;
+	public class GiteaHelper : IGiteaHelper
+	{
 
-        public GiteaHelper(IHttpContextAccessor context,
-            IConfiguration configuration,
-            IServiceScopeFactory serviceScopeFactory)
-        {
-            _context = context;
-            _configuration = configuration;
-            _serviceScopeFactory = serviceScopeFactory;
-        }
+		private readonly IServiceScopeFactory _serviceScopeFactory;
+		private readonly IHttpContextAccessor _context;
+		private IConfiguration _configuration;
 
-        public async Task CreateUser(string email, string password, string fullName)
-        {
-            if (!bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
-                return;
+		public GiteaHelper(IHttpContextAccessor context,
+			IConfiguration configuration,
+			IServiceScopeFactory serviceScopeFactory)
+		{
+			_context = context;
+			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
+		}
 
-            using (var httpClient = new HttpClient())
-            {
-                var request = new JObject
-                {
-                    ["email"] = email,
-                    ["password"] = password,
-                    ["full_name"] = fullName,
-                    ["username"] = GetUserName(email)
-                };
+		public async Task<string> GetToken(string email, string password)
+		{
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
-                SetHeaders(httpClient, _configuration.GetSection("AppSettings")["GiteaEmail"], _configuration.GetSection("AppSettings")["GiteaPassword"]);
+			if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+			{
+				try
+				{
+					using (var httpClient = new HttpClient())
+					{
+						var request = new JObject
+						{
+							["name"] = "primeapps"
+						};
 
-                var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/admin/users", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+						SetHeaders(httpClient, email, password);
+						var userName = GetUserName(email);
+						var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
+						if (!string.IsNullOrEmpty(giteaUrl))
+						{
+							var response = await httpClient.PostAsync(giteaUrl + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+							var resp = await response.Content.ReadAsStringAsync();
+							var giteaResponse = JObject.Parse(resp);
+							return giteaResponse["sha1"].ToString();
+						}
+						else
+							return string.Empty;
+					}
+				}
+				catch (Exception ex)
+				{
+					ErrorHandler.LogError(ex, "GiteaHelper Get Gitea Token. User:" + email);
+					return string.Empty;
+				}
+			}
+			else
+				return string.Empty;
+		}
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    var resp = await response.Content.ReadAsStringAsync();
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + email + ", password: " + password);
-                }
+		private void SetHeaders(HttpClient client, string email, string password)
+		{
+			client.DefaultRequestHeaders.Accept.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", GetBasicAuthToken(email, password));
+		}
 
-                await CreateAccessToken(email, password);
-            }
-        }
+		private string GetBasicAuthToken(string email, string password)
+		{
+			byte[] bytes = Encoding.GetEncoding(28591).GetBytes(email + ":" + password);
+			return Convert.ToBase64String(bytes);
+		}
 
-        public async Task CreateAccessToken(string email, string password)
-        {
-            if (!bool.Parse(_configuration.GetSection("AppSettings")["EnableGiteaIntegration"]))
-                return;
-
-            var username = GetUserName(email);
-            using (var httpClient = new HttpClient())
-            {
-                var request = new JObject
-                {
-                    ["name"] = "primeapps"
-                };
-
-                SetHeaders(httpClient, email, password);
-
-                var response = await httpClient.PostAsync(_configuration.GetSection("AppSettings")["GiteaUrl"] + "/api/v1/users/" + username + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var resp = await response.Content.ReadAsStringAsync();
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + email + ", password: " + password);
-                }
-            }
-        }
-
-        private void SetHeaders(HttpClient client, string email, string password)
-        {
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", GetBasicAuthToken(email, password));
-        }
-
-        private string GetBasicAuthToken(string email, string password)
-        {
-            byte[] bytes = Encoding.GetEncoding(28591).GetBytes(email + ":" + password);
-            return Convert.ToBase64String(bytes);
-        }
-
-        private string GetUserName(string email)
-        {
-            var query = email.Replace("@", string.Empty).Split(".");
-            Array.Resize(ref query, query.Length - 1);
-            return string.Join("", query);
-        }
-    }
+		private string GetUserName(string email)
+		{
+			var query = email.Replace("@", string.Empty).Split(".");
+			Array.Resize(ref query, query.Length - 1);
+			return string.Join("", query);
+		}
+	}
 }

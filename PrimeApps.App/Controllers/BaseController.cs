@@ -36,10 +36,10 @@ namespace PrimeApps.App.Controllers
         {
             if (AppUser != null)
             {
-                if (previewMode == "app")
-                    repository.CurrentUser = new CurrentUser {UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
-                else
-                    repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode};
+                /*if (previewMode == "app")
+					repository.CurrentUser = new CurrentUser { UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode };
+				else*/
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode };
             }
         }
 
@@ -47,7 +47,7 @@ namespace PrimeApps.App.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = AppUser.TenantId};
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
             }
         }
 
@@ -95,20 +95,25 @@ namespace PrimeApps.App.Controllers
             //var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            var previewMode = configuration.GetSection("AppSettings")["PreviewMode"];
+            var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
             //if (tenantUser == null)
             //{
             var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-            tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode};
+
+            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
 
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
             //cacheHelper.Set(cacheKeyTenantUser, tenantUser);
             //}
 
-            appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
-            appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
+            /*appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
+			appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.ProfileId ?? 0;*/
+            appUser.RoleId = (int)tenantUser.RoleId;
+            appUser.ProfileId = (int)tenantUser.ProfileId;
+
             appUser.HasAdminProfile = previewMode == "app" || tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
             if (previewMode != "app" && tenant.License?.AnalyticsLicenseCount > 0)

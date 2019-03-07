@@ -145,7 +145,7 @@
 		"NameMinimum": "Please enter at least 2 (two) characters to name fields",
 		"ForgotPassword": "Forgot my password",
 		"Logout": "Logout",
-		"PasswordMail": "Enter your registered e-mail address. We'll send you the instructions to reset your password.",
+		"PasswordMail": "Enter your email address below and we'll send you a link to reset your password.",
 		"Send": "Send",
 		"PasswordError": "No user is found with this e-mail address.",
 		"PasswordActivationError": "Your account is not activated.",
@@ -1166,7 +1166,7 @@
 			"DefaultValue": "Default Value",
 			"Field": "Field",
 			"Section": "Section",
-			"AddresType": "Addres Type",
+			"AddresType": "Address Type",
 			"ImageSizeList": "Image Size List View",
 			"ImageSizeDetail": "Image Size Detail View",
 			"FieldViewType": "View Type",
@@ -1268,7 +1268,8 @@
 			"ContentFormat": "Content Format",
 			"Cancel": "Cancel",
 			"ConnectionLogout": "Connection Logout",
-			"Save": "Save"
+			"Save": "Save",
+			"OutlookPlugin": "Outlook Plugin"
 		},
 		"HelpGuide": {
 			"Module": "Module",

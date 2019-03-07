@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.App;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
@@ -62,9 +63,9 @@ namespace PrimeApps.Studio.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-                return Forbid(ApiResponseMessages.PERMISSION);
+//
+//            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+//                return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
 
@@ -72,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -96,21 +97,24 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an app");
 
-            app.Collaborators = new List<AppCollaborator> { new AppCollaborator { UserId = AppUser.Id, Profile = ProfileEnum.Manager } };
+            app.Collaborators = new List<AppCollaborator>
+                {new AppCollaborator {UserId = AppUser.Id, Profile = ProfileEnum.Manager}};
 
             var resultUpdate = await _appDraftRepository.Update(app);
 
             if (resultUpdate < 0)
                 return BadRequest("An error occurred while creating an app");
 
-            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser, Request.Cookies["gitea_token"]));
+            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id,
+                model.TempletId);
+            Queue.QueueBackgroundWorkItem(token =>
+                _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser, Request.Cookies["gitea_token"]));
 
             return Ok(app);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -145,7 +149,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody]JObject request)
+        public async Task<IActionResult> Organizations([FromBody] JObject request)
         {
             var search = "";
             var page = 0;
@@ -157,12 +161,11 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (request["page"].IsNullOrEmpty())
-                    page = (int)request["page"];
+                    page = (int) request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus)int.Parse(request["status"].ToString());
+                    status = (PublishStatus) int.Parse(request["status"].ToString());
             }
-
 
             var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
 
@@ -192,7 +195,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("app_collaborator_add"), HttpPost]
-        public async Task<IActionResult> TeamUserAdd([FromBody]AppCollaborator item)
+        public async Task<IActionResult> TeamUserAdd([FromBody] AppCollaborator item)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -201,6 +204,23 @@ namespace PrimeApps.Studio.Controllers
                 return NotFound();
 
             var result = await _collaboratorRepository.AppCollaboratorAdd(item);
+
+            return Ok(result);
+        }
+
+        [Route("app_collaborator_update/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAppCollaborator(int id, [FromBody] AppCollaborator item)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var appCollaborator = await _collaboratorRepository.GetById(id);
+            appCollaborator.Profile = item.Profile;
+
+            var result = await _collaboratorRepository.Update(appCollaborator);
 
             return Ok(result);
         }
@@ -218,6 +238,70 @@ namespace PrimeApps.Studio.Controllers
             var result = await _collaboratorRepository.Delete(appCollaborator);
 
             return Ok(result);
+        }
+
+        [Route("update_auth_theme/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+
+            var result = await _appDraftRepository.UpdateAuthTheme(id, model);
+
+            return Ok(result);
+        }
+
+        [Route("get_auth_theme/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAuthTheme(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var app = await _appDraftRepository.GetAuthTheme(id);
+
+            if (app != null)
+                return Ok(app.AuthTheme);
+            else
+                return Ok(app);
+        }
+
+        [Route("update_app_theme/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody] JObject model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+
+            var result = await _appDraftRepository.UpdateAppTheme(id, model);
+
+            return Ok(result);
+        }
+
+        [Route("get_app_theme/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAppTheme(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
+
+            var app = await _appDraftRepository.GetAppTheme(id);
+
+            if (app != null)
+                return Ok(app.AppTheme);
+            else
+                return Ok(app);
         }
     }
 }

@@ -9,7 +9,9 @@
     <PackageReference Include="Aspose.Words" Version="19.1.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.31.5" />
-    <PackageReference Include="Hangfire" Version="1.7.0-beta1" />
+    <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.5.0" />
     <PackageReference Include="Humanizer" Version="2.5.16" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.25.4" />
@@ -29,10 +31,7 @@
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\view\app\customcode\scripts\" />
     <Folder Include="wwwroot\view\app\deployments\app\" />
     <Folder Include="wwwroot\view\app\deployments\scripts\" />
-      <Folder Include="wwwroot\view\app\deployment\components" />
-    <Folder Include="wwwroot\view\app\model\picklist\" />
   </ItemGroup>
 </Project>

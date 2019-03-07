@@ -198,7 +198,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/teams/teamsService.js',
-                                cdnUrl + 'view/organization/teams/teamsController.js'
+                                cdnUrl + 'view/organization/teams/teamsController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
                     }
@@ -349,7 +350,7 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                })                .state('studio.app.relations', {
+                }).state('studio.app.relations', {
                     url: '/relations?:id',
                     views: {
                         'app': {
@@ -849,6 +850,33 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.scriptDetail', {
+                    url: '/scriptDetail?:name',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/customcode/scripts/scriptDetail.html',
+                            controller: 'ScriptDetailController'
+                        }
+                    },
+                    resolve: {
+                        componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/customcode/scripts/scriptDetailController.js',
+                                cdnUrl + 'view/app/customcode/scripts/scriptsService.js',
+                                cdnUrl + 'view/app/customcode/scripts/scriptsDeploymentService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.functionDetail', {
                     url: '/functionDetail?:name',
                     views: {
@@ -869,7 +897,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/customcode/functions/functionDetailController.js',
-                                cdnUrl + 'view/app/customcode/functions/functionsService.js'
+                                cdnUrl + 'view/app/customcode/functions/functionsService.js',
+                                cdnUrl + 'view/app/customcode/functions/functionsDeploymentService.js'
                             ]);
                         }]
                     }
@@ -1493,6 +1522,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.users', {
+                    url: '/users',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/users/users.html',
+                            controller: 'UsersController'
+                        }
+                    },
+                    resolve: {
+                        tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/users/usersController.js',
+                                cdnUrl + 'view/app/manage/users/usersService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.appEmailTemplates', {
                     url: '/appEmailTemplates',
                     views: {
@@ -1629,4 +1684,4 @@ angular.module('primeapps')
 
             $urlRouterProvider.otherwise('/all-apps');
         }])
-;
+    ;

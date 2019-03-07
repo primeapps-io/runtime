@@ -230,10 +230,13 @@ namespace PrimeApps.Studio.Controllers
                 var blob = await AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
 
                 outputStream.Position = 0;
-                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-                var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
+                var blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
+                if (!string.IsNullOrEmpty(blobUrl))
+                {
+                    var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
+                    return Ok(result);
+                }
 
-                return Ok(result);
             }
             //rMessage.Content = new StreamContent(outputStream);
             //rMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
@@ -1029,8 +1032,8 @@ namespace PrimeApps.Studio.Controllers
         //    }
         //}
 
-        [HttpPost("export_excel")]
-        public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
+        [Route("export_excel")]
+        public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, int appId, int organizationId, string locale = "", int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
             {

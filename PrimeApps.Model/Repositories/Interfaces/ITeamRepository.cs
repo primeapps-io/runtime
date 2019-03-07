@@ -1,13 +1,13 @@
 ﻿using PrimeApps.Model.Common;
-using PrimeApps.Model.Entities.Console;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface ITeamRepository : IRepositoryBaseConsole
+    public interface ITeamRepository : IRepositoryBaseStudio
     {
         Task<int> Count(int organizationId);
         Task<List<Team>> GetAll();

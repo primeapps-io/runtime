@@ -4,9 +4,7 @@ angular.module('primeapps')
 
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
-
-            $rootScope.subtoggleClass = 'full-toggled2';
-            $rootScope.toggleClass = 'toggled full-toggled';
+ 
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
@@ -42,8 +40,8 @@ angular.module('primeapps')
                 {name: 'street', value: $filter('translate')('Common.Street')}
             ];
             $scope.lookupSearchTypes = [
-                {name: 'starts_with', value: $filter('translate')('Filter.StartsWith')},
-                {name: 'contains', value: $filter('translate')('Filter.Contains')}
+                {name: 'starts_with', value: 'Starts With'},
+                {name: 'contains', value: 'Contains'}
             ];
             $scope.viewTypes = [
                 {name: 'dropdown', value: $filter('translate')('Common.Dropdown')},
@@ -189,11 +187,10 @@ angular.module('primeapps')
                 $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
 
                 $scope.dragger();
-                ModuleService.getPicklists()
 
-                    .then(function onSuccess(picklists) {
-                        $scope.picklists = picklists.data;
-                    });
+                ModuleService.getPicklists().then(function onSuccess(picklists) {
+                    $scope.picklists = picklists.data;
+                });
 
                 var getMultilineTypes = function () {
                     var multilineType1 = {
@@ -211,7 +208,7 @@ angular.module('primeapps')
                 };
 
                 var getLookupTypes = function (refresh) {
-                    helper.getPicklists([0], refresh, $scope.$parent.modules)
+                    helper.getPicklists([0], refresh, $rootScope.appModules)
                         .then(function (picklists) {
                             $scope.lookupTypes = picklists['900000'];
 
@@ -306,10 +303,10 @@ angular.module('primeapps')
                         $scope.deletedModules = deletedModules;
                     });
 
-                ModuleService.getPicklists($scope.module)
-                    .then(function (picklists) {
-                        $scope.picklistsModule = picklists;
-                    });
+                // ModuleService.getPicklists($scope.module)
+                //     .then(function (picklists) {
+                //         $scope.picklistsModule = picklists.data;
+                //     });
 
                 $scope.currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
                 $scope.loading = false;
@@ -325,6 +322,8 @@ angular.module('primeapps')
             else {
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
+                    
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
@@ -503,7 +502,7 @@ angular.module('primeapps')
                 $scope.currentRow = row;
                 $scope.currentColumn = column;
                 $scope.showPermissionWarning = false;
-
+                $scope.fieldActiveSection ="properties";
                 if (!field) {
                     field = $scope.newField();
                 }
@@ -549,7 +548,7 @@ angular.module('primeapps')
                     if (field.default_value && (field.data_type === 'date_time' || field.data_type === 'date' || field.data_type === 'time') && field.default_value === '[now]')
                         field.default_value_now = true;
 
-                    if (field.data_type === 'picklist' || field.data_type === 'multiselect') {
+                    if ((field.data_type === 'picklist' || field.data_type === 'multiselect') && field.picklist_id) {
                         ModuleService.getPicklist(field.picklist_id)
                             .then(function (response) {
                                 $scope.defaulPicklistValues = response.data.items;
@@ -608,31 +607,6 @@ angular.module('primeapps')
                 });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
-                    $timeout(function () {
-                        var scroolElement = document.querySelectorAll(".modal-dialog");
-                        var mainNavLinks = document.querySelectorAll(".modal-menu a");
-
-                        $('a[href^="#"]').on('click', function (e) {
-                            var urlHash = url + this.hash;
-                            window.location.hash = urlHash;
-                            e.preventDefault();
-
-                        });
-
-                        scroolElement[0].addEventListener("scroll", function (event) {
-                            var fromTop = scroolElement[0].scrollTop + 30;
-                            mainNavLinks.forEach(function (link) {
-                                var section = document.querySelector(link.hash);
-
-                                if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-                                    link.classList.add("active");
-                                } else {
-                                    link.classList.remove("active");
-                                }
-
-                            });
-                        });
-                    }, 100)
                 });
 
 
@@ -722,7 +696,7 @@ angular.module('primeapps')
                 $scope.showPermissionWarning = !$scope.currentFieldState.validation.required && $scope.currentField.validation.required;
             };
 
-            $scope.lookupTypeChanged = function (asd) {
+            $scope.lookupTypeChanged = function () {
                 if (!$scope.currentField.lookupType)
                     return;
 
@@ -732,7 +706,21 @@ angular.module('primeapps')
 
                 var lookupModule = $filter('filter')($rootScope.appModules, {name: $scope.currentField.lookupType.value}, true)[0];
 
-                $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                if (lookupModule) {
+                    var filterArray = [
+                        {
+                            column: "Primary",
+                            operator: "is",
+                            value: true
+                        }
+                    ];
+
+                    ModuleService.getModuleFields(lookupModule.name, filterArray).then(function (result) {
+                        $scope.currentField.lookupModulePrimaryField = $filter('filter')(result.data, {primary: true}, true)[0];
+
+                    });
+
+                }
             };
 
             $scope.calendarDateTypeChanged = function () {
@@ -995,9 +983,9 @@ angular.module('primeapps')
                     // field.validation.readonly = false;
                     //
                     // $scope.module.fields.push(field);
-                    // $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
-                    // $scope.fieldModal.hide();
-                    // $scope.moduleChange = new Date();
+                    $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
+                    $scope.fieldModal.hide();
+                    $scope.moduleChange = new Date();
                 }
 
 
@@ -1174,7 +1162,7 @@ angular.module('primeapps')
                     .then(function onSuccess(picklist) {
                         $scope.picklistModel = ModuleService.processPicklist(picklist.data);
                         $scope.showPicklistForm = true;
-                        $scope.bindPicklistDragDrop();
+                        //$scope.bindPicklistDragDrop();
                     });
             };
 
@@ -1246,48 +1234,49 @@ angular.module('primeapps')
                 $scope.picklistSaving = true;
                 ModuleService.preparePicklist($scope.picklistModel);
 
-                if (!$scope.picklistModel.id) {
-                    ModuleService.createPicklist($scope.picklistModel)
-                        .then(function onSuccess(response) {
-                            if (!response.data.id) {
-                                toastr.warning($filter('translate')('Common.NotFound'));
-                                $scope.picklistSaving = false;
-                                return;
-                            }
-
-                            ModuleService.getPicklists()
-                                .then(function (picklists) {
-                                    if (picklists.data) {
-                                        $scope.picklists = picklists.data;
-                                        $scope.currentField.picklist_id = response.data.id;
-                                    }
-                                    $scope.showPicklistForm = false;
-                                })
-                                .catch(function onError() {
-                                    $scope.picklistSaving = true;
-                                });
-                        })
-                        .catch(function onError() {
-                            $scope.picklistSaving = true;
-                        });
-                }
-                else {
-                    ModuleService.updatePicklist($scope.picklistModel)
-                        .then(function onSuccess() {
-                            ModuleService.getPicklists()
-                                .then(function onSuccess(picklists) {
-                                    $scope.picklists = picklists.data;
-                                    $scope.showPicklistForm = false;
-                                    $cache.remove('picklist_' + $scope.picklistModel.id);
-                                })
-                                .catch(function onError() {
-                                    $scope.picklistSaving = true;
-                                });
-                        })
-                        .catch(function onError() {
-                            $scope.picklistSaving = true;
-                        });
-                }
+                //TODO
+                // if (!$scope.picklistModel.id) {
+                //     ModuleService.createPicklist($scope.picklistModel)
+                //         .then(function onSuccess(response) {
+                //             if (!response.data.id) {
+                //                 toastr.warning($filter('translate')('Common.NotFound'));
+                //                 $scope.picklistSaving = false;
+                //                 return;
+                //             }
+                //
+                //             ModuleService.getPicklists()
+                //                 .then(function (picklists) {
+                //                     if (picklists.data) {
+                //                         $scope.picklists = picklists.data;
+                //                         $scope.currentField.picklist_id = response.data.id;
+                //                     }
+                //                     $scope.showPicklistForm = false;
+                //                 })
+                //                 .catch(function onError() {
+                //                     $scope.picklistSaving = true;
+                //                 });
+                //         })
+                //         .catch(function onError() {
+                //             $scope.picklistSaving = true;
+                //         });
+                // }
+                // else {
+                //     ModuleService.updatePicklist($scope.picklistModel)
+                //         .then(function onSuccess() {
+                //             ModuleService.getPicklists()
+                //                 .then(function onSuccess(picklists) {
+                //                     $scope.picklists = picklists.data;
+                //                     $scope.showPicklistForm = false;
+                //                     $cache.remove('picklist_' + $scope.picklistModel.id);
+                //                 })
+                //                 .catch(function onError() {
+                //                     $scope.picklistSaving = true;
+                //                 });
+                //         })
+                //         .catch(function onError() {
+                //             $scope.picklistSaving = true;
+                //         });
+                // }
             };
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
@@ -1409,14 +1398,14 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                //moduleModel.order = 6;//TODO: add an order backend
 
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
-                    ModuleService.moduleCreate(moduleModel).then(function () {
-                        $scope.saving = false;
+                    ModuleService.moduleCreate(moduleModel).then(function (result) {
+                        $scope.saving = false;                        
+                        $rootScope.appModules.push(result.data);                        
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId

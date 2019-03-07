@@ -4,6 +4,9 @@
     "ImportExcel": "Excel'den Aktar",
     "Download": "İndir",
     "TotalRecord": "Kayıt Sayısı",
+    "PageTotal": "Toplam {{name}}",
+    "NoMember": "Kayıt Bulunamadı.",
+    "ItemPerPage": "Sayfa başına öğe", 
     "Edit": "Düzenle",
     "Delete": "Sil",
     "Remove": "Sil",
@@ -27,6 +30,7 @@
     "Filter": "Filtrele",
     "Sort": "Sırala",
     "Everyone": "Herkes",
+    "Status": "Durum",
     "Active": "Aktif",
     "Passive": "Pasif",
     "Find": "Ara",
@@ -986,6 +990,7 @@
       "TitleFilters": "Görünümler",
       "TitleRelations": "Modül İlişkileri",
       "TitleActionButtons": "Aksiyon Butonları",
+      "TitleMenu": "Menüler",
       "NewModule": "Yeni Modül",
       "NewRelation": "Yeni Modül İlişkisi",
       "NewDependency": "Yeni Alan Bağımlılığı",
@@ -1237,28 +1242,28 @@
         "Title": "SMS Ayarları",
         "UserName": "Kullanıcı Adı"
       },
-			"EMail": {
-				"Title": "E-Posta Ayarları",
-				"PersonalTitle": "Kişisel E-Posta Ayarları",
-				"Provider": "Servis Sağlayıcı",
-				"UserName": "Kullanıcı Adı",
-				"Password": "Şifre",
-				"Senders": "Göndericiler",
-				"Alias": "Gönderici Adı",
-				"Address": "E-Posta Adresi",
-				"NewSenderAdd": "Yeni Gönderici Ekle",
-				"NoCustomSender": "Ekli gönderici yok. 'Ekle' butonunu kullanarak yeni gönderici ekleyebilirsiniz.",
-				"NoProvider": "Henüz bir E-Posta servis sağlayıcı tanımlanmamış. Servis sağlayıcı seçerek tanımlama işlemine başlayabilirsiniz:",
-				"ProviderTitle": "Tanımladığınız E-Posta servis sağlayıcı bilgileri:",
-				"NoSender": "En az bir gönderici tanımlanmalı.",
-				"SMTP": {
-					"Title": "SMTP",
-					"Host": "Sunucu",
-					"Port": "Port",
-					"SSLEnable": "Güvenli Bağlantı",
-					"WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir."
-				}
-			}
+      "EMail": {
+        "Title": "E-Posta Ayarları",
+        "PersonalTitle": "Kişisel E-Posta Ayarları",
+        "Provider": "Servis Sağlayıcı",
+        "UserName": "Kullanıcı Adı",
+        "Password": "Şifre",
+        "Senders": "Göndericiler",
+        "Alias": "Gönderici Adı",
+        "Address": "E-Posta Adresi",
+        "NewSenderAdd": "Yeni Gönderici Ekle",
+        "NoCustomSender": "Ekli gönderici yok. 'Ekle' butonunu kullanarak yeni gönderici ekleyebilirsiniz.",
+        "NoProvider": "Henüz bir E-Posta servis sağlayıcı tanımlanmamış. Servis sağlayıcı seçerek tanımlama işlemine başlayabilirsiniz:",
+        "ProviderTitle": "Tanımladığınız E-Posta servis sağlayıcı bilgileri:",
+        "NoSender": "En az bir gönderici tanımlanmalı.",
+        "SMTP": {
+          "Title": "SMTP",
+          "Host": "Sunucu",
+          "Port": "Port",
+          "SSLEnable": "Güvenli Bağlantı",
+          "WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir."
+        }
+      }
     },
     "Outlook": {
       "ContactModuleSettings": "Outlook Ayarları",
@@ -2149,5 +2154,32 @@
     "DefaultValueFalse": "Hayır",
     "MenuElementType": "Menü Öğe Tipi",
     "Modules": "Modüller"
+  },
+  "Picklist": {
+    "Name": "Seçim Listesi Adı",
+    "SystemType": "Sistem Tipi",
+    "SystemCode": "Sistem Kodu",
+    "AddNew": "Yeni Seçim Listesi Ekle",
+    "SaveSortOrder": "Sıralamayı Kaydet",
+    "PicklistItem": "{{name}} Seçim Listesi Elemanları",
+    "SaveSuccess": "Seçim Listesi başarıyla kaydedildi.",
+    "SaveItemSuccess": "Seçim Listesi elemanı başarıyla kaydedildi.",
+    "SaveOrderSuccess": "Seçim Listesi elemanlarının sıralamaları kaydedildi.",
+    "DeleteSuccess": "Seçim Listesi başarıyla silinmiştir.",
+    "DeleteItemSuccess": "Seçim Listesi elemanı başarıyla silinmiştir.",
+    "Items": {
+      "Name": "Adı",
+      "SystemCode": "Sistem Kodu",
+      "Value": "Değer-1",
+      "Value2": "Değer-2",
+      "Value3": "Değer-3",
+      "Order": "Sıra"
+    }
+  },
+  "Team": {
+    "Name": "Adı",
+    "TeamMember": "Takım Üyesi",
+    "Organization": "Organizasyon",
+    "AddNew": "Yeni Takım Ekle" 
   }
 }

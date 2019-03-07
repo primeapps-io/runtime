@@ -1528,7 +1528,9 @@ angular.module('primeapps')
                             switch (dependency.dependency_type) {
                                 case 'list_value':
                                 case 'list_field':
-                                    record[dependency.child_field] = null;
+                                    if (!record.id)
+                                        record[dependency.child_field] = null;
+
                                     var childFieldPicklist = picklistsModule[childField.picklist_id];
 
                                     for (var j = 0; j < childFieldPicklist.length; j++) {

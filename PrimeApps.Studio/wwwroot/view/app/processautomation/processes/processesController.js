@@ -7,7 +7,6 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
-            $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
             //$scope.$parent.menuTopTitle = "Automation";
@@ -40,7 +39,7 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
+            ////var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
 
             //Pagening Start
@@ -73,7 +72,7 @@ angular.module('primeapps')
                 ProcessesService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     var data = fillModule(response.data);
 
-                    $scope.rules = data;
+                    $scope.processes = data;
                     $scope.loading = false;
                 });
 
@@ -99,25 +98,25 @@ angular.module('primeapps')
                 $scope.users.unshift({ id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers') });
 
 
-            var setTaskFields = function () {
-                $scope.taskFields = {};
+            ////var setTaskFields = function () {
+            ////    $scope.taskFields = {};
 
-                ModuleService.getModuleFields(activityModule.name)
-                    .then(function (response) {
-                        if (response) {
-                            activityModule.fields = response.data;
-                            $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                            $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                            $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                            $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                            $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                            $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                            $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
-                        }
-                    });
-            };
+            ////    ModuleService.getModuleFields(activityModule.name)
+            ////        .then(function (response) {
+            ////            if (response) {
+            ////                activityModule.fields = response.data;
+            ////                $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+            ////                $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+            ////                $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+            ////                $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+            ////                $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+            ////                $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+            ////                $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+            ////            }
+            ////        });
+            ////};
 
-            setTaskFields();
+            ////setTaskFields();
 
             $scope.selectProcess = function (id) {
                 $scope.modalLoading = true;
@@ -179,7 +178,7 @@ angular.module('primeapps')
                                             $scope.filteredModules = $rootScope.appModules;
                                             $scope.picklistsModule = picklists;
                                             $scope.getDynamicProcessModules($scope.module, workflow, true);
-                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.dynamicprocessModules);
+                                            $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, picklists, $scope.dynamicprocessModules);
                                             $scope.getUpdatableModules();
                                             $scope.generateHookModules(workflow);
                                             $scope.firstApproverLookupChange(true, workflow);
@@ -311,7 +310,7 @@ angular.module('primeapps')
                 return filterValue;
             };
 
-            $scope.validate = function (tabClick) {
+            $scope.validate = function (tabClick, next) {
                 if (!$scope.workflowForm)
                     $scope.workflowForm = tabClick;
 
@@ -321,7 +320,10 @@ angular.module('primeapps')
                 if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.user.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
-                return $scope.validateActions(tabClick);
+                if ($scope.wizardStep === 2 && !$scope.workflowForm.approverType.$valid && next)
+                    return false;
+
+                return $scope.validateActions(tabClick, next);
             };
 
             $scope.validateOperations = function (tabClick) {
@@ -439,9 +441,13 @@ angular.module('primeapps')
                 $scope.currentLookupField = field;
             };
 
-            $scope.validateActions = function (tabClick) {
+            $scope.validateActions = function (tabClick, next) {
                 if (!$scope.lastStepClicked) {
                     $scope.workflowForm.$submitted = false;
+                    $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                    if ($scope.wizardStep === 2) {
+                        $scope.getSummary();
+                    }
                     return true;
                 }
 
@@ -854,13 +860,17 @@ angular.module('primeapps')
 
             //Modal Start
             $scope.showFormModal = function (id) {
+                $scope.wizardStep = 0;
                 $scope.modalLoading = true;
                 if (id) {
+                    $scope.isNew = false;
                     $scope.id = id;
                     $scope.selectProcess(id);
                 }
-                else
+                else {
+                    $scope.isNew = true;
                     $scope.modalLoading = false;
+                }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({
                     scope: $scope,

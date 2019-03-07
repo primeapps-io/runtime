@@ -18,6 +18,12 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("status"), Required]
         public DeploymentStatus Status { get; set; }
 
+        [Column("revision"), Required]
+        public int Revision { get; set; }
+
+        [Column("build_number"), Required]
+        public int BuildNumber { get; set; }
+
         [Column("version"), Required]
         public string Version { get; set; }
 

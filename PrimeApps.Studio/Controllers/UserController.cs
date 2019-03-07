@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
-using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
@@ -27,14 +27,16 @@ namespace PrimeApps.Studio.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private ITeamRepository _teamRepository;
+        private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _teamRepository = teamRepository;
+            _studioUserRepository = consoleUserRepository;
             _configuration = configuration;
             _storage = storage;
         }
@@ -46,6 +48,7 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_teamRepository);
 
         }
@@ -56,7 +59,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _platformUserRepository.GetWithSettings(AppUser.Email);
 
 
-            var me = new ConsoleUser
+            var me = new Model.Common.User.StudioUser
             {
                 Id = AppUser.Id,
                 Email = user.Email,
@@ -180,6 +183,56 @@ namespace PrimeApps.Studio.Controllers
 
             //this is not a valid request so return fail.
             return Ok("Fail");
+        }
+
+        [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        {
+
+            return Ok();
+        }
+
+        [Route("count"), HttpGet]
+        public async Task<IActionResult> Count()
+        {
+            var value = 100;
+
+            return Ok(value);
+        }
+
+        [Route("get/{id:int}"), HttpGet]
+        public async Task<IActionResult> Get(int id)
+        {
+
+            return Ok();
+        }
+
+        [Route("get_all"), HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+
+            return Ok();
+        }
+
+        [Route("create"), HttpPost]
+        public async Task<IActionResult> Create([FromBody]JObject request)
+        {
+
+            return Ok();
+        }
+
+        [Route("update/{id:int}"), HttpPut]
+        public async Task<IActionResult> Update(int id, [FromBody]JObject request)
+        {
+
+            return Ok();
+        }
+
+        [Route("delete/{id:int}"), HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            return Ok();
         }
     }
 }

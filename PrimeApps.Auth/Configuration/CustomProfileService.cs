@@ -15,18 +15,21 @@ namespace PrimeApps.Auth
     public class CustomProfileService : IProfileService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private IHttpContextAccessor _context;
 
-        public CustomProfileService(UserManager<ApplicationUser> userManager)
+        public CustomProfileService(UserManager<ApplicationUser> userManager, IHttpContextAccessor context)
         {
             _userManager = userManager;
+            _context = context;
         }
+
 
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var sub = context.Subject.GetSubjectId();
-            var giteaToken = context.Subject.FindFirst("gitea_token");
-
-            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken != null ? giteaToken.Value.ToString() : ""));
+            //var giteaToken = context.Subject.FindFirst("gitea_token");
+            var giteaToken = _context.HttpContext.Request.Cookies["test_gitea"];
+            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken != null ? giteaToken : ""));
 
             if (context.Subject.FindFirst("amr").Value != "external")
             {
@@ -46,7 +49,6 @@ namespace PrimeApps.Auth
             {
                 //var c = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
                 //var result = context.HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-
                 context.IssuedClaims.Add(new Claim("email", context.Subject.FindFirst("email").Value));
                 context.IssuedClaims.Add(new Claim("email_confirmed", "true"));
                 context.IssuedClaims.Add(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantId", context.Subject.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantId")));

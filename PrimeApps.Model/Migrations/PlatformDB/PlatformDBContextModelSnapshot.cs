@@ -72,7 +72,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UpdatedAt");
 

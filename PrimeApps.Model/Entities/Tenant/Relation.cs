@@ -46,6 +46,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("detail_view_type")]
         public DetailViewType DetailViewType { get; set; }
 
+        [Column("many_to_many_table_name")]
+        public string ManyToManyTableName { get; set; }
+
         public virtual Module ParentModule { get; set; }
 
         [NotMapped]

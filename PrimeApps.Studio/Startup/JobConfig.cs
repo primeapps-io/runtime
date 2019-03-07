@@ -9,22 +9,29 @@ using PrimeApps.Studio.ActionFilters;
 
 namespace PrimeApps.Studio
 {
-    public partial class Startup
-    {
-        private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
+	public partial class Startup
+	{
+		private static readonly string QueueName = "queue_" + Environment.MachineName.Underscore();
 
-        public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
-        {
-            var enableJobs = bool.Parse(configuration.GetSection("AppSettings")["EnableJobs"]);
+		public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
+		{
+			var enableJobsSetting = configuration.GetValue("AppSettings:EnableJobs", string.Empty);
 
-            if (!enableJobs)
-                return;
+			if (!string.IsNullOrEmpty(enableJobsSetting))
+			{
+				var enableJobs = bool.Parse(enableJobsSetting);
 
-            app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { QueueName, "default" } });
-            app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
-            JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+				if (!enableJobs)
+					return;
+			}
+			else
+				return;
+			
+			app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { QueueName, "default" } });
+			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
+			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
-        }
-    }
+			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+		}
+	}
 }

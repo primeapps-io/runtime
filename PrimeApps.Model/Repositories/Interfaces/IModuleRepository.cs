@@ -44,6 +44,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> Count();
 		Task<ICollection<Module>> Find(PaginationModel paginationModel);
 		Task<ICollection<Field>> GetModuleFieldByName(string moduleName);
+		Task<Module> GetByIdFullModule(int id);
 
 	}
 }

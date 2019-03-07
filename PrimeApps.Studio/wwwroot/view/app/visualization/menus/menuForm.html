@@ -2,14 +2,20 @@
     <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4>
+                <h4 class="modal-title">{{'Setup.Modules.TitleMenu' | translate}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
                             <button type="button" ng-disabled="saving" ng-click="addNewMenuFormModal.hide();  wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
-                        <li>
-                            <button type="submit" ng-disabled="menuLists.length < 1" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                        <li ng-if="wizardStep > 0">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue" ng-click="validate(menuForm, false)"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                        </li>
+                        <li ng-if="!id && wizardStep < 1">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm, true)">{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i></button>
+                        </li>
+                        <li ng-if="id || wizardStep === 1">
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -23,12 +29,12 @@
                         <div class="megalist">
                             <div class="modal-menu">
                                 <ul class="list-unstyled">
-                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
-                                    <li><a ng-class="{'active': wizardStep==1}" ng-click="validate(menuForm) ? wizardStep = 1 : false">{{'Menu.MenuSummary'|translate}}</a></li>
+                                    <li><a ng-class="{'active': wizardStep==0}" ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a></li>
+                                    <li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==1}" ng-click="!loadingModal ? validate(menuForm) ? $parent.$parent.wizardStep = 1 : false: return;">{{'Menu.MenuSummary'|translate}}</a></li>
                                 </ul>
                             </div>
-                            <!--<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
-                            <div class="section" id="section1" ng-show="wizardStep == 0">  <!--&& !loading">-->
+                            <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="section" id="section1" ng-show="wizardStep == 0 && !loadingModal">
                                 <h4>{{'Menu.MenuInformation'|translate}}</h4>
                                 <div class="panel">
                                     <div class=" form-group" ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
@@ -37,7 +43,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}:</label>
+                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}</label>
                                         <textarea rows="2" name="menu_description" class="form-control" maxlength="200" auto-grow ng-model="menu.description"></textarea>
                                     </div>
 
@@ -59,11 +65,11 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm) ? wizardStep = 1 : false;">
-                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
-                                        </button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(menuForm) ? wizardStep = 1 : false;">-->
+                                    <!--<i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}-->
+                                    <!--</button>-->
+                                    <!--</div>-->
 
                                     <div class="form-group" ng-show="menuForm.$submitted && (menuForm.profile_name.$error.required || menuForm.name_menu.$error.required)">
                                         <div class="callout callout-danger">
@@ -83,7 +89,7 @@
                                 <div class="panel">
                                     <div class="form-group">
                                         <div>
-                                            <label class="control-label">{{'Menu.MenuElementType'|translate}}:</label>
+                                            <label class="control-label">{{'Menu.MenuElementType'|translate}}</label>
                                         </div>
                                         <label class="radio-inline newinput">
                                             <input type="radio" ng-change="radioChange()" ng-checked="true" ng-model="menu.display" ng-value="false"> {{'Menu.EnterLabel'|translate}}<span></span>
@@ -94,7 +100,7 @@
                                     </div>
 
                                     <div ng-show="menu.display" class="form-group">
-                                        <label class="control-label">{{'Menu.Modules'|translate}}:</label>
+                                        <label class="control-label">{{'Menu.Modules'|translate}}</label>
                                         <select
                                                 class="form-control ng-animate-disabled"
                                                 name="module_name"
@@ -105,7 +111,7 @@
                                     </div>
 
                                     <div ng-show="!menu.display" class="form-group">
-                                        <label class="control-label">{{'Menu.CategoryName' | translate}}:</label>
+                                        <label class="control-label">{{'Menu.CategoryName' | translate}}</label>
                                         <input name="name" class="form-control " maxlength="50" ng-model="menu.menuItem" />
                                     </div>
 
@@ -117,9 +123,9 @@
                                     <!--bs-select><span class="caret"></span></button>-->
                                     <!--</div>-->
                                     <div ng-show="!menu.display" class="form-group icon-search-list">
-                                        <label class="control-label">{{'Common.Icon' | translate}}:</label>
+                                        <label class="control-label">{{'Common.Icon' | translate}}</label>
                                         <ui-select ng-model="menu.menu_icon">
-                                            <ui-select-match placeholder="Please search an icon">
+                                            <ui-select-match placeholder="Select an icon">
                                                 <div ng-bind-html="$select.selected.label || $select.selected"></div>
                                             </ui-select-match>
                                             <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
@@ -131,9 +137,9 @@
                                     <div class="form-group">
                                         <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
                                     </div>
-                                    <legend />
-                                    <div ng-if="!menuLists.length >= 1 && deleteArray.length <= 1 && id" clas="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                    <div ng-show="menuLists.length >0" class="menu-setup" style="margin-top:50px; ">
+
+                                    <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-show="menuLists.length > 0" class="menu-setup" style="margin-top:50px; ">
                                         <ul ng-model="menuLists" class="custom-menu list-unstyled">
                                             <li ng-repeat="menuList in $parent.menuLists">
                                                 <div class="form-group menu-list">
@@ -151,7 +157,7 @@
                                                         <!--bs-select><span class="caret"></span>-->
                                                         <!--</button>-->
                                                           <ui-select ng-model="menuList.icon">
-                                                            <ui-select-match placeholder="Please search an icon">
+                                                            <ui-select-match placeholder="Select an icon">
                                                                 <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
                                                             <div>
                                                                 <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
@@ -196,7 +202,7 @@
                                                                 <!--bs-select><span class="caret"></span>-->
                                                                 <!--</button>-->
                                                                   <ui-select ng-model="menu.icon">
-                                                                    <ui-select-match placeholder="Please search an icon">
+                                                                    <ui-select-match placeholder="Select an icon">
                                                                         <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
                                                                     <div>
                                                                         <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
@@ -229,7 +235,7 @@
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
                                                             <span ng-show="!menu.isEdit && !menu.name" class="action-buttons-block">
-                                                                <a  class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
+                                                                <a class="action-buttons-delete" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag title="{{'Common.Delete' | translate}}">
                                                                     <i class="fas fa-trash"></i>
                                                                 </a>
                                                             </span>
@@ -239,9 +245,9 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                                    </div>
+                                    <!--<div class="form-group text-right">-->
+                                    <!--<button type="button" class="btn btn-radius btn-blue" ng-click="wizardStep = 0; $parent.$parent.wizardStep=0;">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                         </div>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using PrimeApps.App.Helpers;
+using PrimeApps.Model.Constants;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
@@ -25,13 +26,15 @@ namespace PrimeApps.App.Controllers
         private IServiceScopeFactory _serviceScopeFactory;
         private IDefinitionLoader _definitionLoader;
         private IWorkflowRegistry _workflowRegistry;
+        private IUserRepository _userRepository;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry, IUserRepository userRepository)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _definitionLoader = definitionLoader;
             _workflowRegistry = workflowRegistry;
+            _userRepository = userRepository;
         }
 
         [Authorize]
@@ -46,12 +49,25 @@ namespace PrimeApps.App.Controllers
 
             if (preview != null)
             {
-                var previewDB = CryptoHelper.Decrypt(preview, "222EF106646458CD59995D4378B55DF2");
+                var previewDB = CryptoHelper.Decrypt(preview);
 
                 if (previewDB.Contains("app"))
                 {
                     var appId = int.Parse(previewDB.Split("app_id=")[1]);
-                    var app = await applicationRepository.Get(1);
+                    var app = await applicationRepository.GetByNameAsync("primeapps_preview");
+
+                    var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
+
+                    _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
+
+                    var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
+
+                    if (appDraftUser == null)
+                    {
+                        Response.Cookies.Delete("app_id");
+                        await HttpContext.SignOutAsync();
+                        return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview);
+                    }
 
                     /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
@@ -62,7 +78,6 @@ namespace PrimeApps.App.Controllers
                         return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
                     }*/
 
-                    var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
                     await SetValues(userId, app, null, appId, true);
 
@@ -114,22 +129,32 @@ namespace PrimeApps.App.Controllers
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
         {
-            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
             var lang = Request.Cookies["_lang"];
             var language = lang ?? "tr";
 
-            var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
+            var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
             ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
-            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["StorageUrl"];
+            var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                ViewBag.BlobUrl = storageUrl;
+            }
 
-            if (useCdn)
+            if (!string.IsNullOrEmpty(useCdn) && bool.Parse(useCdn))
             {
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                ViewBag.CdnUrlDynamic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionDynamic + "/";
-                ViewBag.CdnUrlStatic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic + "/";
+                var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
+                if (!string.IsNullOrEmpty(cdnUrl))
+                {
+                    ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
+                    ViewBag.CdnUrlStatic = cdnUrl + "/" + versionStatic + "/";
+                }
             }
             else
             {
@@ -141,7 +166,9 @@ namespace PrimeApps.App.Controllers
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
+
             componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
+
             var components = await componentRepository.GetByType(ComponentType.Component);
 
             var globalSettings = await componentRepository.GetGlobalSettings();
@@ -156,6 +183,7 @@ namespace PrimeApps.App.Controllers
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
                     userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
+
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)

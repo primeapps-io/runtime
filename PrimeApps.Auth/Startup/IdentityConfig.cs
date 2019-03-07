@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
 using PrimeApps.Auth.Providers;
@@ -43,18 +45,21 @@ namespace PrimeApps.Auth
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                 })
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = opt => opt.UseNpgsql(configuration.GetConnectionString("AuthDBConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
-                })
+                .AddConfigurationStore(options => { options.ConfigureDbContext = opt => opt.UseNpgsql(configuration.GetConnectionString("AuthDBConnection"), sql => sql.MigrationsAssembly(migrationsAssembly)); })
                 .AddOperationalStore(options =>
                 {
                     options.ConfigureDbContext = opt => opt.UseNpgsql(configuration.GetConnectionString("AuthDBConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
 
                     options.EnableTokenCleanup = true;
-                    options.TokenCleanupInterval = 3600; //3600 (1 hour)
+                    options.TokenCleanupInterval = 3600;//3600 (1 hour)
                 })
-                .AddSigningCredential(LoadCertificate(configuration));
+                .AddSigningCredential(LoadCertificate());
+
+            //Fix for localhost identity cookie conflict
+            var authority = configuration.GetValue("AppSettings:Authority", string.Empty);
+
+            if (authority.Contains("localhost"))
+                services.ConfigureApplicationCookie(options => { options.Cookie.Name = ".AspNetCore.Identity.Application." + authority.Substring(authority.Length - 4); });
 
             var useLdap = configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
             if(useLdap != null)
@@ -66,15 +71,24 @@ namespace PrimeApps.Auth
             //InitializeDatabase(app);
         }
 
-        private static X509Certificate2 LoadCertificate(IConfiguration configuration)
+        private static X509Certificate2 LoadCertificate()
         {
-            var location = configuration.GetValue("AppSettings:AuthCertLocation", string.Empty);
-            var exportKey = configuration.GetValue("AppSettings:AuthCertExportKey", string.Empty);
+            var assembly = typeof(Startup).GetTypeInfo().Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly, "PrimeApps.Auth");
+            var certificateFileInfo = embeddedFileProvider.GetFileInfo("primeapps_id4.pfx");
 
-            if (location == string.Empty)
-                throw new ArgumentNullException("Authentication Certificate Location is not set!");
+            using (var certificateStream = certificateFileInfo.CreateReadStream())
+            {
+                byte[] certificatePayload;
 
-            return new X509Certificate2(location, exportKey, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+                using (var memoryStream = new MemoryStream())
+                {
+                    certificateStream.CopyTo(memoryStream);
+                    certificatePayload = memoryStream.ToArray();
+                }
+
+                return new X509Certificate2(certificatePayload, "1q2w3e4r5t", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+            }
         }
 
         private void InitializeDatabase(IApplicationBuilder app)
@@ -91,6 +105,7 @@ namespace PrimeApps.Auth
                     {
                         context.Clients.Add(client.ToEntity());
                     }
+
                     context.SaveChanges();
                 }
 
@@ -100,6 +115,7 @@ namespace PrimeApps.Auth
                     {
                         context.IdentityResources.Add(resource.ToEntity());
                     }
+
                     context.SaveChanges();
                 }
 
@@ -109,6 +125,7 @@ namespace PrimeApps.Auth
                     {
                         context.ApiResources.Add(resource.ToEntity());
                     }
+
                     context.SaveChanges();
                 }
             }

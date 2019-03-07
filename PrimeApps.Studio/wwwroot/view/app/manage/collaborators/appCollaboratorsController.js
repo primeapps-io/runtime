@@ -7,6 +7,7 @@ angular.module('primeapps')
 
             $scope.$parent.activeMenuItem = 'appCollaborators';
             $rootScope.breadcrumblist[2].title = 'App Collaborators';
+            $scope.roleLoading = false;
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -16,6 +17,12 @@ angular.module('primeapps')
 
             };
             $scope.generator(10);
+            $scope.colProfiles = [
+                { name: 'Manager', value: 'manager' },
+                { name: 'Developer', value: 'developer' },
+                { name: 'Viewer', value: 'viewer' },
+                { name: 'Tenant Admin', value: 'tenant_admin' }
+            ]
 
             $scope.getTeamsAndCollaborators = function () {
                 $scope.collaboratorsAndTeamsArr = [];
@@ -38,7 +45,7 @@ angular.module('primeapps')
 
                     var organization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrganization.id }, true)[0];
 
-                    AppCollaboratorsService.getTeamsByOrganizationId($scope.$parent.orgId)
+                    AppCollaboratorsService.getTeamsByOrganizationId($rootScope.currentOrgId)
                         .then(function (response) {
                             if (response.data.length > 0) {
 
@@ -57,6 +64,7 @@ angular.module('primeapps')
                                         teamObj.full_name = teams[i].name;
                                         teamObj.id = teams[i].id;
                                         teamObj.type = 'team';
+                                        teamObj.icon = teams[i].icon;
                                         $scope.collaboratorsAndTeamsArr.push(teamObj);
                                     }
                                 }
@@ -120,7 +128,7 @@ angular.module('primeapps')
                 $scope.loadingMembers = true;
                 var appCollaboratorObj = {};
                 appCollaboratorObj.app_id = $scope.$parent.appId;
-                appCollaboratorObj.profile_id = 1;
+                appCollaboratorObj.profile = 'viewer';
 
                 if (item.type == 'user') {
                     appCollaboratorObj.user_id = item.id;
@@ -148,7 +156,20 @@ angular.module('primeapps')
 
             }
 
-            $scope.delete = function (id) {
+            $scope.changeRole = function (appCol) {
+                appCol.updating = true;
+                AppCollaboratorsService.updateAppCollaborator(appCol.id, appCol)
+                    .then(function (response) {
+                        toastr.success('Role is updated successfully');
+                        appCol.updating = false;
+                    })
+                    .catch(function (error) {
+                        toastr.error($filter('translate')('Common.Error'));
+                        appCol.updating = false;
+                    });
+            }
+
+            $scope.delete = function (appCol) {
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -156,19 +177,22 @@ angular.module('primeapps')
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
                 }).then(function (value) {
+                    appCol.deleting = true;
                     if (value) {
-                        if (!id)
+                        if (!appCol.id)
                             return false;
 
-                        AppCollaboratorsService.delete(id)
+                        AppCollaboratorsService.delete(appCol.id)
                             .then(function (response) {
                                 if (response.data) {
                                     toastr.success("Team is deleted successfully.", "Deleted!");
                                     $scope.getTeamsAndCollaborators();
+                                    appCol.deleting = false;
                                 }
                             })
                             .catch(function (result) {
                                 toastr.error($filter('translate')('Common.Error'));
+                                appCol.deleting = false;
                             });
                     }
                 });

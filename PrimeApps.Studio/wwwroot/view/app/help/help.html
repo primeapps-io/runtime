@@ -1,12 +1,12 @@
 <div class="setup-title">
-    <h2>Help</h2>
+    <h2>User Guides</h2>
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>New Introduction</button>
+                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>New Module Guide</button>
             </li>
             <li>
-                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i>New Guides</button>
+                <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i>New Side Help</button>
             </li>
         </ul>
     </div>
@@ -86,9 +86,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Help {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

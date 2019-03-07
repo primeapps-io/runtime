@@ -260,12 +260,13 @@ namespace PrimeApps.App.Controllers
         {
             var acc = new AccountInfo();
             var apps = new List<UserAppInfo>();
-            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-            if (previewMode == "app")
+            /*if (previewMode == "app")
                 acc.user = await _userRepository.GetUserInfoAsync(1, false);
-            else
-                acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+            else*/
+            acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
 
             if (acc.user != null)
             {
@@ -276,7 +277,12 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
-                acc.imageUrl = _configuration.GetSection("AppSettings")["StorageUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
+                var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+                if (!string.IsNullOrEmpty(storageUrl))
+                {
+                    acc.imageUrl = storageUrl + "/record-detail-" + tenant[0].tenantId + "/";
+                }
+
                 acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
                 acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
                 acc.user.tenantId = AppUser.TenantId;
@@ -447,93 +453,93 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetOfficeUsers()
         {
             /*var clientId = "7697cae4-0291-4449-8046-7b1cae642982";
-			var appKey = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
-			var graphResourceID = "https://graph.windows.net";
-			var graphSettings = new GraphSettings
-			{
-				ApiVersion = "2013-11-08",
-				GraphDomainName = "graph.windows.net"
-			};
+            var appKey = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
+            var graphResourceID = "https://graph.windows.net";
+            var graphSettings = new GraphSettings
+            {
+                ApiVersion = "2013-11-08",
+                GraphDomainName = "graph.windows.net"
+            };
 
 
 
-			var signedInUserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			var tenantID = User.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantId");
-			var userObjectID = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+            var signedInUserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tenantID = User.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantId");
+            var userObjectID = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
-			const String appClientID = "7697cae4-0291-4449-8046-7b1cae642982";
-			//const String tenant = tenantID.ToString();
-			const String authString = "https://login.microsoftonline.com/dd7a82b0-2195-409f-b09f-e0e8226753ad/";
-			const String authClientSecret = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
+            const String appClientID = "7697cae4-0291-4449-8046-7b1cae642982";
+            //const String tenant = tenantID.ToString();
+            const String authString = "https://login.microsoftonline.com/dd7a82b0-2195-409f-b09f-e0e8226753ad/";
+            const String authClientSecret = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
 
-			try
-			{
-				// The AuthenticationContext is ADAL's primary class, in which you indicate the tenant to use.
-				var authContext = new AuthenticationContext("https://login.microsoftonline.com/" + tenantID + "/");
+            try
+            {
+                // The AuthenticationContext is ADAL's primary class, in which you indicate the tenant to use.
+                var authContext = new AuthenticationContext("https://login.microsoftonline.com/" + tenantID + "/");
 
-				// The ClientCredential is where you pass in your client_id and client_secret, which are
-				// provided to Azure AD in order to receive an access_token by using the app's identity.
-				var credential = new ClientCredential(clientId, appKey);
+                // The ClientCredential is where you pass in your client_id and client_secret, which are
+                // provided to Azure AD in order to receive an access_token by using the app's identity.
+                var credential = new ClientCredential(clientId, appKey);
 
-				AuthenticationResult result = await authContext.AcquireTokenAsync("https://graph.windows.net", credential);
+                AuthenticationResult result = await authContext.AcquireTokenAsync("https://graph.windows.net", credential);
 
-				HttpClient http = new HttpClient();
-				string url = "https://graph.windows.net/" + tenantID + "/users" + "?" + "api-version=1.6";
+                HttpClient http = new HttpClient();
+                string url = "https://graph.windows.net/" + tenantID + "/users" + "?" + "api-version=1.6";
 
-				// Append the access token for the Graph API to the Authorization header of the request by using the Bearer scheme.
-				HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", User.FindFirstValue("validated_code"));
-				HttpResponseMessage response = await http.SendAsync(request);
+                // Append the access token for the Graph API to the Authorization header of the request by using the Bearer scheme.
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", User.FindFirstValue("validated_code"));
+                HttpResponseMessage response = await http.SendAsync(request);
 
 
 
-				// use the token for querying the graph
-				//var token = await HttpContext.GetTokenAsync("access_token");
-				var graphClient = new ActiveDirectoryClient(new Uri(graphResourceID + '/' + tenantID), () => GetTokenForGraph(tenantID, signedInUserID, userObjectID, clientId, appKey, graphResourceID));
+                // use the token for querying the graph
+                //var token = await HttpContext.GetTokenAsync("access_token");
+                var graphClient = new ActiveDirectoryClient(new Uri(graphResourceID + '/' + tenantID), () => GetTokenForGraph(tenantID, signedInUserID, userObjectID, clientId, appKey, graphResourceID));
 
-				//var users = await graphClient.Users.Where(x => x.ObjectId.Equals(userObjectID)).ExecuteAsync();
-				var userResponse = await graphClient.Users.ExecuteAsync();
-				var users = userResponse.CurrentPage.ToList();
+                //var users = await graphClient.Users.Where(x => x.ObjectId.Equals(userObjectID)).ExecuteAsync();
+                var userResponse = await graphClient.Users.ExecuteAsync();
+                var users = userResponse.CurrentPage.ToList();
 
-				while (userResponse.MorePagesAvailable)
-				{
-					userResponse = await userResponse.GetNextPageAsync();
+                while (userResponse.MorePagesAvailable)
+                {
+                    userResponse = await userResponse.GetNextPageAsync();
 
-					var newUsers = userResponse.CurrentPage.ToList();
-					users.AddRange(newUsers);
-				}
+                    var newUsers = userResponse.CurrentPage.ToList();
+                    users.AddRange(newUsers);
+                }
 
-				users = users.OrderBy(x => x.Mail).ToList();
-				var systemUsers = await _platformUserRepository.GetAllByTenant(AppUser.TenantId);
-				var availableUsers = new JArray();
+                users = users.OrderBy(x => x.Mail).ToList();
+                var systemUsers = await _platformUserRepository.GetAllByTenant(AppUser.TenantId);
+                var availableUsers = new JArray();
 
-				for (var i = users.Count - 1; i >= 0; i--)
-				{
-					var officeUser = users[i];
-					var user = systemUsers.FirstOrDefault(x => x.Email == officeUser.Mail);
-					if (user != null) continue;
-					var data = new JObject
-					{
-						{"id", officeUser.ObjectId},
-						{"email", officeUser.Mail},
-						{"name", officeUser.GivenName},
-						{"surname", officeUser.Surname},
-						{"fullName", officeUser.DisplayName},
-						{"phone", officeUser.TelephoneNumber}
-					};
-					availableUsers.Add(data);
-				}
-				return Ok(availableUsers);
-			}
-			catch (Exception e)
-			{
-				return Ok(false);
-			}*/
+                for (var i = users.Count - 1; i >= 0; i--)
+                {
+                    var officeUser = users[i];
+                    var user = systemUsers.FirstOrDefault(x => x.Email == officeUser.Mail);
+                    if (user != null) continue;
+                    var data = new JObject
+                    {
+                        {"id", officeUser.ObjectId},
+                        {"email", officeUser.Mail},
+                        {"name", officeUser.GivenName},
+                        {"surname", officeUser.Surname},
+                        {"fullName", officeUser.DisplayName},
+                        {"phone", officeUser.TelephoneNumber}
+                    };
+                    availableUsers.Add(data);
+                }
+                return Ok(availableUsers);
+            }
+            catch (Exception e)
+            {
+                return Ok(false);
+            }*/
             return Ok();
         }
 
         /*
-		[Route("UpdateActiveDirectoryEmail"), HttpGet]
+        [Route("UpdateActiveDirectoryEmail"), HttpGet]
         public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)
         {
             var resultControl = await _platformUserRepository.IsActiveDirectoryEmailAvailable(email);
@@ -560,13 +566,13 @@ namespace PrimeApps.App.Controllers
 
         */
         /*private async Task<string> GetTokenForGraph(string tenantID, string signedInUserID, string userObjectID, string clientId, string appKey, string graphResourceID)
-		{
-			 // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
+        {
+             // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
             ClientCredential clientcred = new ClientCredential(clientId, appKey);
             // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's EF DB
             AuthenticationContext authContext = new AuthenticationContext(string.Format("https://login.microsoftonline.com/{0}", tenantID), new AdTokenCache(signedInUserID));
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
-		}*/
+        }*/
     }
 }

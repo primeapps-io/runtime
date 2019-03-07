@@ -14,6 +14,7 @@ using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -235,6 +236,48 @@ namespace PrimeApps.Model.Repositories
             DbContext.AuditLogs.RemoveRange(auditLogs);
             DbContext.Users.Remove(user);
             return await DbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Studio Repository
+        /// </summary>
+        /// <param name="paginationModel"></param>
+        /// <returns></returns>
+
+        public async Task<int> Count()
+        {
+            return await DbContext.Users
+                .Where(x => !x.Deleted & x.Id != 1)
+                .CountAsync();
+        }
+
+        public async Task<ICollection<TenantUser>> Find(PaginationModel paginationModel)
+        {
+            var users = DbContext.Users
+                .Include(x => x.Profile)
+                .Include(x => x.Role)
+                .Where(x => !x.Deleted && x.Id != 1)
+                .OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit);
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    users = users.OrderBy(x => propertyInfo.GetValue(x, null));
+                }
+                else
+                {
+                    users = users.OrderByDescending(x => propertyInfo.GetValue(x, null));
+                }
+
+            }
+
+            return await users.ToListAsync();
+
         }
     }
 }

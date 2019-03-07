@@ -5,6 +5,12 @@ angular.module('primeapps')
     .controller('OrgSettingsController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'OrgSettingsService', 'ModuleService', '$state',
         function ($rootScope, $scope, $filter, $location, helper, OrgSettingsService, ModuleService, $state) {
 
+            if ($rootScope.currentOrganization.role != 'administrator') {
+                toastr.warning($filter('translate')('Common.Forbidden'));
+                $state.go('studio.allApps');
+                return;
+            }
+
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons(2);
 
@@ -17,11 +23,11 @@ angular.module('primeapps')
 
             OrgSettingsService.get($scope.$parent.$parent.$parent.currentOrgId).then(function (response) {
                 var data = response.data;
-                $scope.orgModel.icon = data.icon;
+                $scope.orgModel.icon = data.icon || 'fas fa-building';
                 $scope.orgModel.label = data.label;
                 $scope.orgModel.name = data.name;
                 $scope.orgModel.id = data.id;
-                $scope.orgModel.color = data.color;
+                $scope.orgModel.color = data.color || '#9F5590';
             });
 
             var getMyOrganizations = function () {
@@ -40,7 +46,7 @@ angular.module('primeapps')
             };
 
             $scope.deleteButtonControl = function () {
-                var currentOrg = $filter('filter')($rootScope.organizations, { id: $scope.$parent.$parent.$parent.currentOrgId }, true)[0];
+                var currentOrg = $filter('filter')($rootScope.organizations, {id: $scope.$parent.$parent.$parent.currentOrgId}, true)[0];
                 if (currentOrg.role != 'administrator' || currentOrg.default === true)
                     $scope.orgDeleteDisabled = true;
             };

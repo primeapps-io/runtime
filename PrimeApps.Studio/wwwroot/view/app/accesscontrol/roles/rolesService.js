@@ -7,7 +7,7 @@ angular.module('primeapps')
             return {
 
                 getAll: function () {
-                    return $http.post(config.apiUrl + 'role/find_all', {});
+                    return $http.post(config.apiUrl + 'role/get_all', {});
                 },
 
                 create: function (role) {

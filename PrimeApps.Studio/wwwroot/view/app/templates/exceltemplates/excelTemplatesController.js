@@ -26,24 +26,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             ExcelTemplatesService.count("excel").then(function (response) {
                 $scope.pageTotal = response.data;
-            });
-
-            ExcelTemplatesService.find($scope.requestModel, "excel").then(function (response) {
-                var templates = response.data;
-                angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
-                });
-                $scope.templates = templates;
-                $scope.templatesState = templates;
-
-            }).finally(function () {
-                $scope.loading = false;
+                $scope.changePage(1);
             });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -51,7 +54,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;
@@ -62,16 +65,20 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+
+                $scope.changePage($scope.activePage);
             };
 
             $scope.showFormModal = function (template) {
+                $scope.requiredColor = "";
+                $scope.template = [];
+                if ($scope.fileUpload)
+                    $scope.fileUpload.queue = [];
                 if (template) {
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrlExcel();
-                }
-                else {
-                    $scope.template = [];
+                } else {// if template, isNew we set the first value active
+                    $scope.template.active = true;
                 }
 
                 $scope.addNewExcelTemplateFormModal = $scope.addNewExcelTemplateFormModal || $modal({
@@ -199,7 +206,7 @@ angular.module('primeapps')
                 name: 'excelFilter',
                 fn: function (item, options) {
                     var extension = helper.getFileExtension(item.name);
-                    return true ? (extension == 'xls' || extension == 'xlsx') : false;
+                    return true ? (extension === 'xls' || extension === 'xlsx') : false;
                 }
             });
 
@@ -214,8 +221,7 @@ angular.module('primeapps')
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
                     $scope.templateFileCleared = true;
-                }
-                else {
+                } else {
                     $scope.template.content = undefined;
                     $scope.templateFileCleared = true;
                 }
@@ -223,8 +229,10 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid)
+                if (!uploadForm.$valid) {
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
+                }
 
                 $scope.saving = true;
                 var header = {
@@ -242,9 +250,8 @@ angular.module('primeapps')
                     fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
                         uploadThenComplete(fileItem, tempInfo, status);
                     };
-                    $scope.pageTotal = $scope.pageTotal + 1;
-                }
-                else {
+                    $scope.pageTotal++;
+                } else {
                     if ($scope.templateFileCleared) {
                         //$scope.fileUpload.uploader.start();
                         fileUpload.queue[0].uploader.headers = header;
@@ -253,8 +260,7 @@ angular.module('primeapps')
                         fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
                             uploadThenComplete(fileItem, tempInfo, status);
                         };
-                    }
-                    else {
+                    } else {
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
@@ -285,29 +291,33 @@ angular.module('primeapps')
                 /**template.name
                  * wordTemplates.html'deki değişken adıyla aynı olduğu için modal açıldığında wordTemplatesForm.html'de ki alan değişikliğinde wordTemplates.html'deki alan etkileniyor*/
                 $scope.templateFileCleared = false;
-                $scope.template = template;
+                $scope.template = angular.copy(template);
                 $scope.template.templateName = template.name;
+                $scope.template.active = template.active;
                 $scope.template.templateModule = template.module;
                 $scope.currentContent = angular.copy(template.content);
             };
 
             var success = function () {
+
                 $scope.saving = false;
                 $scope.addNewExcelTemplateFormModal.hide();
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
+
             };
 
-            $scope.getDownloadUrlExcel = function (template) {
-                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            $scope.getDownloadUrlExcel = function (module) {
+                module = module.name;
+                $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
             };
 
             $scope.getDownloadUrl = function (template) {
-                return '/attach/export_excel?fileId=' + template.id + "&tempType=excel" + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId; //template.template_type
+                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -317,11 +327,20 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+
                             ExcelTemplatesService.delete(id).then(function () {
-                                $scope.changePage(1);
-                                $scope.pageTotal = $scope.pageTotal - 1;
+
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                $scope.changePage($scope.activePage);
+                                $scope.pageTotal--;
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
+
                             }).catch(function () {
+                                
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                 $scope.templates = $scope.templatesState;
 
                                 if ($scope.addNewExcelTemplateFormModal) {
@@ -356,8 +375,7 @@ angular.module('primeapps')
                             .catch(function () {
                                 $scope.saving = false;
                             });
-                    }
-                    else {
+                    } else {
                         template.id = $scope.template.id;
 
                         ExcelTemplatesService.update(template)

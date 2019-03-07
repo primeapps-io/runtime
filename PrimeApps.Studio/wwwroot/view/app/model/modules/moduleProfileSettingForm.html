@@ -66,9 +66,9 @@
                                        ng-model="currentProfileSetting.singularName">
                             </div>
                             <div class="form-group icon-search-list">
-                                <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
+                                <label class="col-sm-4">{{'Common.Icon' | translate}}</label>
                                 <ui-select ng-model="currentProfileSetting.menu_icon" ng-disabled="ctrl.disabled">
-                                    <ui-select-match placeholder="Please search an icon">s
+                                    <ui-select-match placeholder="Select an icon">
                                         <div>
                                             <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
                                             <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
@@ -80,7 +80,7 @@
                                 </ui-select>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}:</label>
+                                <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}</label>
                                 <div class="col-sm-12">
                                     <label class="radio-inline newinput">
                                         <input type="radio" name="templateStatus" ng-value="true" ng-model="currentProfileSetting.display" />

@@ -63,7 +63,8 @@ angular.module('primeapps')
                 var subItem = {
                     "id": item.id,
                     "title": item["label_" + $scope.language],
-                    "nodes": []
+                    "nodes": [],
+                    "master": item.master
                 };
                 return subItem;
             };

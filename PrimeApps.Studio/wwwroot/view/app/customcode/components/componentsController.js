@@ -9,7 +9,7 @@ angular.module('primeapps')
 
             $scope.$parent.menuTopTitle = $scope.currentApp.label
             $scope.$parent.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'customCode';
+            $scope.$parent.activeMenuItem = 'components';
 
             $scope.currentApp = $localStorage.get("current_app");
 
@@ -17,7 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.modules = [];
+            $scope.modules = $rootScope.appModules;
 
             $scope.component = {};
             $scope.components = [];
@@ -80,22 +80,7 @@ angular.module('primeapps')
                 $scope.changePage(1)
             };
 
-            $scope.createModal = function () {
-                //$scope.modalLoading = true;
-                openModal();
-                if ($scope.modules.length === 0) {
-                    ComponentsService.getAllModulesBasic()
-                        .then(function (response) {
-                            $scope.modules = response.data;
-                            //$scope.modalLoading = false;
-                        })
-                }
-                else {
-                    //$scope.modalLoading = false;
-                }
-            };
-
-            var openModal = function () {
+            $scope.openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/customcode/components/componentFormModal.html',
@@ -113,11 +98,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
-
-                if ($scope.component.type === 2) {
-                    $scope.component.place = 0;
-                    $scope.component.order = 0;
-                }
+                
+                var module = $filter('filter')($scope.modules, { id: $scope.component.module_id }, true)[0];
+                
+                $scope.component.place = 0;
+                $scope.component.order = 0;
+                $scope.component.name = module.name;
 
                 ComponentsService.create($scope.component)
                     .then(function (response) {

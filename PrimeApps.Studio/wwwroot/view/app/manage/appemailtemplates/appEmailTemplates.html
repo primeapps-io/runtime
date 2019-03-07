@@ -1,45 +1,51 @@
 <div class="setup-title">
     <h2>{{'Common.EmailTemplate' | translate}}</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Templates.AddNewEmailTemplate' | translate}}</button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
+                {{'Setup.Templates.AddNewEmailTemplate' | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-                <th>Subject</th>
-                <th>Language</th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+            <th>Subject</th>
+            <th>Language</th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in placeholderArray">
-                <td class="text-center">
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td class="text-center">
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-                <th>Subject</th>
-                <th>Language</th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+            <th>Subject</th>
+            <th>Language</th>
+        </tr>
         </thead>
         <tbody ng-show="!loading">
-            <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
-                <td>{{template.name}}</td>
-                <td>{{template.subject}}</td>
-                <td>{{template.language}}</td>
-            </tr>
+        <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
+            <td>{{template.name}}</td>
+            <td>{{template.subject}}</td>
+            <td>{{template.language}}</td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -64,9 +70,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Email Templates {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

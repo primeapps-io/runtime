@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.Team;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -39,7 +40,7 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformUserRepository _platformUserRepository;
         private IPlatformRepository _platformRepository;
         private IServiceScopeFactory _serviceScopeFactory;
-        private IConsoleUserRepository _consoleUserRepository;
+		private IStudioUserRepository _studioUserRepository;
         private IApplicationRepository _applicationRepository;
         private ITeamRepository _teamRepository;
         private IGiteaHelper _giteaHelper;
@@ -55,7 +56,7 @@ namespace PrimeApps.Studio.Controllers
             ITeamRepository teamRepository,
             IApplicationRepository applicationRepository,
             IPlatformRepository platformRepository,
-            IConsoleUserRepository consoleUserRepository,
+			IStudioUserRepository studioUserRepository,
             IServiceScopeFactory serviceScopeFactory,
             IPermissionHelper permissionHelper,
             IOrganizationHelper organizationHelper,
@@ -67,7 +68,7 @@ namespace PrimeApps.Studio.Controllers
             _platformUserRepository = platformUserRepository;
             _organizationUserRepository = organizationUserRepository;
             _serviceScopeFactory = serviceScopeFactory;
-            _consoleUserRepository = consoleUserRepository;
+			_studioUserRepository = studioUserRepository;
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
             _teamRepository = teamRepository;
@@ -86,7 +87,7 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_organizationUserRepository);
-            SetCurrentUser(_consoleUserRepository);
+			SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_platformRepository);
             SetCurrentUser(_teamRepository);
 
@@ -331,7 +332,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser, Request.Cookies["gitea_token"]));
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, Request.Cookies["gitea_token"]));
 
             return Ok(organization.Id);
         }
@@ -389,72 +390,75 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, model.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var appInfo = await _applicationRepository.GetByNameAsync(_configuration.GetSection("AppSettings")["ClientId"]);
-
+            var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             var result = 0;
             string password = "";
-            using (var httpClient = new HttpClient())
+            if (!string.IsNullOrEmpty(clientId))
             {
-                var token = await HttpContext.GetTokenAsync("access_token");
-                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_organization_user";
-                httpClient.BaseAddress = new Uri(url);
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
+                var appInfo = await _applicationRepository.GetByNameAsync(clientId);
 
-                var json = JsonConvert.SerializeObject(model);
-                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
-
-                if (!response.IsSuccessStatusCode)
-                    return BadRequest(response);
-
-                using (var content = response.Content)
+                using (var httpClient = new HttpClient())
                 {
-                    var stringResult = content.ReadAsStringAsync().Result;
+                    var token = await HttpContext.GetTokenAsync("access_token");
+                    var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_organization_user";
+                    httpClient.BaseAddress = new Uri(url);
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
 
-                    var jsonResult = JObject.Parse(stringResult);
-                    password = jsonResult["password"].ToString();
-                    var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
+                    var json = JsonConvert.SerializeObject(model);
+                    var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-                    foreach (var template in templates)
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(response);
+
+                    using (var content = response.Content)
                     {
-                        template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
-                        template.Content = template.Content.Replace("{:LastName}", model.LastName);
-                        template.Content = template.Content.Replace("{:Organization}", organization.Label);
-                        template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
-                        template.Content = template.Content.Replace("{:Email}", model.Email);
-                        template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
+                        var stringResult = content.ReadAsStringAsync().Result;
 
-                        if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
-                            template.Content = template.Content.Replace("{:ShowActivateEmail}", "initial");
-                        else
-                            template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
+                        var jsonResult = JObject.Parse(stringResult);
+                        password = jsonResult["password"].ToString();
+                        var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
 
-                        var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-
-                        var myMessage = new MailMessage()
+                        foreach (var template in templates)
                         {
-                            From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
-                            Subject = template.Subject,
-                            Body = template.Content,
-                            IsBodyHtml = true
-                        };
+                            template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
+                            template.Content = template.Content.Replace("{:LastName}", model.LastName);
+                            template.Content = template.Content.Replace("{:Organization}", organization.Label);
+                            template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
+                            template.Content = template.Content.Replace("{:Email}", model.Email);
+                            template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
 
-                        myMessage.To.Add(model.Email);
+                            if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
+                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "initial");
+                            else
+                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
 
-                        var email = new Email(_configuration, _serviceScopeFactory);
-                        email.TransmitMail(myMessage);
+                            var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+
+                            var myMessage = new MailMessage()
+                            {
+                                From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
+                                Subject = template.Subject,
+                                Body = template.Content,
+                                IsBodyHtml = true
+                            };
+
+                            myMessage.To.Add(model.Email);
+
+                            var email = new Email(_configuration, _serviceScopeFactory);
+                            email.TransmitMail(myMessage);
+                        }
                     }
-
                     var platformUser = await _platformUserRepository.Get(model.Email);
 
-                    var consoleUser = new ConsoleUser
+                    var studioUser = new StudioUser
                     {
                         Id = platformUser.Id,
                         UserOrganizations = new List<OrganizationUser>()
                     };
 
-                    consoleUser.UserOrganizations.Add(new OrganizationUser
+						studioUser.UserOrganizations.Add(new OrganizationUser
                     {
                         UserId = platformUser.Id,
                         Role = model.Role,
@@ -463,7 +467,7 @@ namespace PrimeApps.Studio.Controllers
                         CreatedAt = DateTime.Now
                     });
 
-                    result = await _consoleUserRepository.Create(consoleUser);
+						result = await _studioUserRepository.Create(studioUser);
                 }
             }
 
@@ -474,6 +478,9 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> DeleteUser([FromBody]OrganizationUser model)
         {
             if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (model.Role == PrimeApps.Model.Enums.OrganizationRole.Administrator && AppUser.Id == model.UserId)
                 return BadRequest(ModelState);
 
             var organization = await _organizationRepository.Get(AppUser.Id, model.OrganizationId);

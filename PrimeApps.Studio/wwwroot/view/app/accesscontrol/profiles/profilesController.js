@@ -4,39 +4,39 @@ angular.module('primeapps')
 
     .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
-            //$scope.$parent.menuTopTitle = "Authorization";
-            //$scope.$parent.activeMenu = 'authorization';
+
             $scope.$parent.activeMenuItem = 'profiles';
 
             $rootScope.breadcrumblist[2].title = 'Profiles';
 
             $scope.loading = true;
 
-            $scope.moduleLead = $filter('filter')($scope.$parent.modules, { name: 'leads' }, true)[0];
-            $scope.moduleIzinler = $filter('filter')($scope.$parent.modules, { name: 'izinler' }, true)[0];
-            $scope.moduleRehber = $filter('filter')($scope.$parent.modules, { name: 'rehber' }, true)[0];
+            $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
+            $scope.moduleIzinler = $filter('filter')($rootScope.appModules, { name: 'izinler' }, true)[0];
+            $scope.moduleRehber = $filter('filter')($rootScope.appModules, { name: 'rehber' }, true)[0];
 
             $scope.startPageList = [
                 {
                     "value": "Dashboard",
                     "valueLower": "dashboard",
                     "name": $filter('translate')('Layout.Menu.Dashboard')
-                },
-                {
-                    "value": "Newsfeed",
-                    "valueLower": "newsfeed",
-                    "name": $filter('translate')('Layout.Menu.Newsfeed')
-                },
-                {
-                    "value": "Tasks",
-                    "valueLower": "tasks",
-                    "name": $filter('translate')('Layout.Menu.Tasks')
-                },
-                {
-                    "value": "Calendar",
-                    "valueLower": "calendar",
-                    "name": $filter('translate')('Layout.Menu.Calendar')
                 }
+                //,
+                // {
+                //     "value": "Newsfeed",
+                //     "valueLower": "newsfeed",
+                //     "name": $filter('translate')('Layout.Menu.Newsfeed')
+                // },
+                // {
+                //     "value": "Tasks",
+                //     "valueLower": "tasks",
+                //     "name": $filter('translate')('Layout.Menu.Tasks')
+                // },
+                // {
+                //     "value": "Calendar",
+                //     "valueLower": "calendar",
+                //     "name": $filter('translate')('Layout.Menu.Calendar')
+                // }
             ];
 
             if ($scope.moduleRehber) {
@@ -69,7 +69,7 @@ angular.module('primeapps')
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
                 ProfilesService.find($scope.requestModel, 2).then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     $scope.profilesCopy = $scope.profiles;
                     $scope.profile = {};
 
@@ -114,7 +114,7 @@ angular.module('primeapps')
                 });
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     $scope.profile = {};
 
                     $scope.profile.has_admin_rights = false;
@@ -299,12 +299,12 @@ angular.module('primeapps')
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });

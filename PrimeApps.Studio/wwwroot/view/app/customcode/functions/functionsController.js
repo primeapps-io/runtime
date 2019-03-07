@@ -15,15 +15,15 @@ angular.module('primeapps')
             $scope.isFunctionNameBlur = false;
 
             $scope.runtimes = [
-                {id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}"},
-                {id: 2, name: "python (2.7)", value: "python2.7", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 3, name: "python (3.4)", value: "python3.4", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 4, name: "python (3.6)", value: "python3.6", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 5, name: "nodejs (6)", value: "nodejs6", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 6, name: "nodejs (8)", value: "nodejs8", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 7, name: "ruby (2.4)", value: "ruby2.4", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend"},
-                {id: 8, name: "php (7.2)", value: "php7.2", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n"},
-                {id: 9, name: "go (1.10)", value: "go1.10", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}"},
+                { id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}" },
+                { id: 2, name: "python (2.7)", value: "python2.7", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 3, name: "python (3.4)", value: "python3.4", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 4, name: "python (3.6)", value: "python3.6", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 5, name: "nodejs (6)", value: "nodejs6", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 6, name: "nodejs (8)", value: "nodejs8", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 7, name: "ruby (2.4)", value: "ruby2.4", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend" },
+                { id: 8, name: "php (7.2)", value: "php7.2", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n" },
+                { id: 9, name: "go (1.10)", value: "go1.10", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}" },
                 {
                     id: 10,
                     name: "java (1.8)",
@@ -44,7 +44,7 @@ angular.module('primeapps')
                     $scope.function.dependencies = "";
                 }
                 else {
-                    var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
+                    var runtime = $filter('filter')($scope.runtimes, { value: $scope.function.runtime }, true)[0];
                     $scope.function.dependencies = runtime.editorDependencySample;
                 }
             };
@@ -130,13 +130,13 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
-
+                $scope.function.content_type = 'text';
                 FunctionsService.create($scope.function)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         toastr.success("Function is created successfully.");
-                        $state.go('studio.app.functionDetail', {name: $scope.function.name});
+                        $state.go('studio.app.functionDetail', { name: $scope.function.name });
                     })
                     .catch(function (response) {
                         $scope.saving = false;
@@ -144,7 +144,7 @@ angular.module('primeapps')
                     })
             };
 
-            $scope.delete = function (name) {
+            $scope.delete = function (name, e) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -154,11 +154,13 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(e.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             if (name) {
                                 FunctionsService.delete(name)
                                     .then(function (response) {
-                                        toastr.success("Function is deleted successfully.", "Deleted!");
                                         $scope.reload();
+                                        toastr.success("Function is deleted successfully.", "Deleted!");
                                     });
                             }
                         }
@@ -170,6 +172,16 @@ angular.module('primeapps')
                 $scope.functionNameValid = null;
                 $scope.isFunctionNameBlur = false;
                 $scope.createFormModal.hide();
+            };
+
+            $scope.identifierCreate = function () {
+                if (!$scope.function || !$scope.function.label) {
+                    $scope.function.name = null;
+                    return;
+                }
+
+                $scope.function.name = helper.getSlug($scope.function.label, '-');
+                $scope.functionNameBlur($scope.function);
             };
 
             $scope.functionNameBlur = function (name) {

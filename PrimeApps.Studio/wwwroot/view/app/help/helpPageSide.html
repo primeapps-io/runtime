@@ -2,7 +2,7 @@
     <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Help</h4>
+                <h4 class="modal-title">Side Help</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -39,7 +39,7 @@
                                             name="module"
                                             ng-change="relationTypeShow();"
                                             ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                        <option value="">NotSet</option>
+                                        <option value="">Not Set</option>
                                     </select>
                                 </div>
                                 <div class="form-group" ng-show="helpModalObj.relationType">
@@ -54,7 +54,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': helpName.$submitted && helpName.tinymceModel.$invalid}">
-                                    <div class="row" ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
+                                    <div ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
                                         <textarea name="tinymceModel"  ui-tinymce="tinymceOptions" ng-required="true" ng-model="helpModalObj.tinymceModel"></textarea>
                                         <div class="hidden" plupload="imgUpload">
                                             <input id="uploadImage" type="file" add-file="add-file" />

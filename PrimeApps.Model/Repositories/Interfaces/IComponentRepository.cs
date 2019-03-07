@@ -16,8 +16,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<Component>> GetByPlace(ComponentPlace place);
         Task<Component> GetGlobalSettings();
         Task<int> Create(Component component);
-        Task<int> Update(Component organization);
-        Task<int> Delete(Component organization);
+        Task<int> Update(Component component);
+        Task<int> Delete(Component component);
 
     }
 }

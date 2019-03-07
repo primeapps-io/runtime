@@ -738,8 +738,8 @@ angular.module('primeapps')
                     ModuleService.getModuleFields(module.related_module.name).then(function (res) {
                         module.related_module.fields = res.data;
                         var moduleFields = angular.copy(module.related_module.fields);
-                        var relationField = $filter('filter')(moduleFields, { name: module.relation_field, deleted: false }, true)[0];
-                        module.relationField = relationField;
+                        //var relationField = $filter('filter')(moduleFields, { name: module.relation_field, deleted: false }, true)[0];
+                       // module.relationField = relationField;
 
                         moduleFields = $filter('filter')(moduleFields, {
                             display_list: true,
@@ -755,7 +755,7 @@ angular.module('primeapps')
                         var seperatorLookupOrder = 0;
 
                         angular.forEach(moduleFields, function (field) {
-                            if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
+                            if (field.data_type === 'lookup' && field.lookup_type !== 'relation') {
                                 var lookupModule = angular.copy($filter('filter')(allModules, { name: field.lookup_type }, true)[0]);
                                 seperatorLookupOrder += 100;
                                 if (lookupModule === null || lookupModule === undefined) return;
@@ -816,7 +816,7 @@ angular.module('primeapps')
                             else {
                                 var primaryField = $filter('filter')(moduleFields, { primary: true }, true)[0];
 
-                                if (field.name != primaryField.name)
+                                if (field.name !== primaryField.name)
                                     fields.availableFields.push(newField);
                                 else
                                     fields.selectedFields.push(newField);

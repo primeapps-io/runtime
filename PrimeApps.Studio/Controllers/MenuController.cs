@@ -56,8 +56,14 @@ namespace PrimeApps.Studio.Controllers
 				return Ok();
 
 			//var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-			var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+			//if (!string.IsNullOrEmpty(previewMode))
+			//{
 			//tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = previewMode == "app" ? AppUser.AppId : AppUser.TenantId, PreviewMode = previewMode };
+			//}
 			//var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
 			var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
 			//TODO Removed
@@ -72,7 +78,7 @@ namespace PrimeApps.Studio.Controllers
 				//var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
 				//if (hasPermission)
-					menuItems.Add(menuItem);
+				menuItems.Add(menuItem);
 			}
 
 			var menuCategories = menuItems.Where(x => !x.ParentId.HasValue && string.IsNullOrEmpty(x.Route)).ToList();
@@ -87,7 +93,7 @@ namespace PrimeApps.Studio.Controllers
 					//var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
 					//if (hasPermission)
-						menuCategoryItems.Add(menuItem);
+					menuCategoryItems.Add(menuItem);
 				}
 
 				menuCategory.MenuItems = menuCategoryItems;

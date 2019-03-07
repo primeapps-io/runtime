@@ -45,7 +45,7 @@ namespace PrimeApps.Studio.Helpers
             var moduleEntity = new Module
             {
                 Name = moduleModel.Name,
-                SystemType = SystemType.Custom,
+                SystemType = moduleModel.IsComponent ? SystemType.Component : SystemType.System,
                 LabelEnSingular = moduleModel.LabelEnSingular,
                 LabelEnPlural = moduleModel.LabelEnPlural,
                 LabelTrSingular = moduleModel.LabelTrSingular,
@@ -193,6 +193,7 @@ namespace PrimeApps.Studio.Helpers
             moduleEntity.CalendarColorDark = moduleModel.CalendarColorDark;
             moduleEntity.CalendarColorLight = moduleModel.CalendarColorLight;
             moduleEntity.DetailViewType = moduleModel.DetailViewType;
+            moduleEntity.SystemType = moduleModel.IsComponent ? SystemType.Component : SystemType.System;
 
             var moduleChanges = new ModuleChanges();
 

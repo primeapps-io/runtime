@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using LibGit2Sharp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -17,296 +18,398 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
-    [Route("api/functions")]
-    public class FunctionController : DraftBaseController
-    {
-        private IFunctionHelper _functionHelper;
-        private IConfiguration _configuration;
-        private IFunctionRepository _functionRepository;
-        private string _kubernetesClusterRootUrl;
-
-        public FunctionController(IFunctionHelper functionHelper, IConfiguration configuration, IFunctionRepository functionRepository)
-        {
-            _functionHelper = functionHelper;
-            _configuration = configuration;
-            _functionRepository = functionRepository;
-            _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_functionRepository, PreviewMode, AppId, TenantId);
-            base.OnActionExecuting(context);
-        }
-
-        [Route("count"), HttpGet]
-        public async Task<IActionResult> Count()
-        {
-            var count = await _functionRepository.Count();
-
-            return Ok(count);
-        }
-
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
-        {
-            var components = await _functionRepository.Find(paginationModel); ;
-
-            return Ok(components);
-        }
-
-        [Route("get/{id}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
-        {
-            var function = await _functionRepository.Get(id);
-
-            if (function == null)
-                return BadRequest();
-
-            return Ok(function);
-        }
-
-        [Route("get_by_name/{name}"), HttpGet]
-        public async Task<IActionResult> Get(string name)
-        {
-            var function = await _functionRepository.Get(name);
-
-            if (function == null)
-                return BadRequest();
-
-            return Ok(function);
-        }
-
-        [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            JArray functions;
-
-            using (var httpClient = new HttpClient())
-            {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/functions";
-
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await httpClient.GetAsync(url);
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
-
-                var result = JObject.Parse(content);
-                functions = (JArray)result["items"];
-            }
-
-            return Ok(functions);
-        }
-
-        [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]FunctionBindingModel function)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var functionObj = new Function()
-            {
-                Name = function.Name,
-                Label = function.Label,
-                Dependencies = function.Dependencies,
-                Content = function.ContentType == FunctionContentType.Text ? function.Function : "",
-                ContentType = function.ContentType,
-                Runtime = function.Runtime,
-                Handler = function.Handler,
-                Status = PublishStatus.Draft
-            };
+	[Route("api/functions")]
+	public class FunctionController : DraftBaseController
+	{
+        private IBackgroundTaskQueue Queue;
+        private IDeploymentHelper _deploymentHelper;
+		private IFunctionHelper _functionHelper;
+		private IConfiguration _configuration;
+		private IFunctionRepository _functionRepository;
+		private IGiteaHelper _giteaHelper;
+		private IAppDraftRepository _appDraftRepository;
+		private IOrganizationRepository _organizationRepository;
+		private IDeploymentFunctionRepository _deploymentFunctionRepository;
+		private string _kubernetesClusterRootUrl;
+
+        public FunctionController(IBackgroundTaskQueue queue,
+            IConfiguration configuration,
+            IDeploymentHelper deploymentHelper,
+			IFunctionHelper functionHelper,
+			IFunctionRepository functionRepository,
+			IGiteaHelper giteaHelper,
+			IAppDraftRepository appDraftRepository,
+			IOrganizationRepository organizationRepository,
+			IDeploymentFunctionRepository deploymentFunctionRepository)
+		{
+            Queue = queue;
+            _deploymentHelper = deploymentHelper;
+			_functionHelper = functionHelper;
+			_configuration = configuration;
+			_functionRepository = functionRepository;
+			_giteaHelper = giteaHelper;
+			_appDraftRepository = appDraftRepository;
+			_organizationRepository = organizationRepository;
+			_deploymentFunctionRepository = deploymentFunctionRepository;
+			_kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
+		}
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_functionRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_deploymentFunctionRepository, PreviewMode, AppId, TenantId);
+			base.OnActionExecuting(context);
+		}
+
+		[Route("count"), HttpGet]
+		public async Task<IActionResult> Count()
+		{
+			var count = await _functionRepository.Count();
+
+			return Ok(count);
+		}
+
+		[Route("find"), HttpPost]
+		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		{
+			var components = await _functionRepository.Find(paginationModel); ;
+
+			return Ok(components);
+		}
+
+		[Route("get/{id}"), HttpGet]
+		public async Task<IActionResult> Get(int id)
+		{
+			var function = await _functionRepository.Get(id);
+
+			if (function == null)
+				return BadRequest();
+
+			return Ok(function);
+		}
+
+		[Route("get_by_name/{name}"), HttpGet]
+		public async Task<IActionResult> Get(string name)
+		{
+			var function = await _functionRepository.Get(name);
+
+			if (function == null)
+				return BadRequest();
+
+			return Ok(function);
+		}
+
+		[Route("get_all"), HttpGet]
+		public async Task<IActionResult> GetAll()
+		{
+			JArray functions;
+
+			using (var httpClient = new HttpClient())
+			{
+				var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/functions";
+
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				var response = await httpClient.GetAsync(url);
+				var content = await response.Content.ReadAsStringAsync();
+
+				if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
+					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+
+				var result = JObject.Parse(content);
+				functions = (JArray)result["items"];
+			}
+
+			return Ok(functions);
+		}
+
+		[Route("create"), HttpPost]
+		public async Task<IActionResult> Create([FromBody]FunctionBindingModel function)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var functionObj = new Function()
+			{
+				Name = function.Name,
+				Label = function.Label,
+				Dependencies = function.Dependencies,
+				Content = function.ContentType == FunctionContentType.Text ? function.Function : "",
+				ContentType = function.ContentType != FunctionContentType.NotSet ? function.ContentType : FunctionContentType.Text,
+				Runtime = function.Runtime,
+				Handler = function.Handler,
+				Status = PublishStatus.Draft
+			};
+
+			var createResult = await _functionRepository.Create(functionObj);
+
+			if (createResult < 0)
+				return BadRequest("An error occurred while creating an function");
+
+			var functionRequest = _functionHelper.CreateFunctionRequest(function);
+			JObject result;
+
+			using (var httpClient = new HttpClient())
+			{
+				var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions";
+
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
+				var content = await response.Content.ReadAsStringAsync();
+				result = JObject.Parse(content);
+
+				if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.Conflict)
+					return Conflict(result);
+
+				if (!response.IsSuccessStatusCode)
+					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+			}
+
+			var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
+
+			if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+			{
+				var app = await _appDraftRepository.Get((int)AppId);
+				var repository = await _giteaHelper.GetRepositoryInfo(Request.Cookies["gitea_token"], AppUser.Email, app.Name);
+
+				if (repository != null)
+				{
+					var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+
+					if (!string.IsNullOrEmpty(giteaDirectory))
+					{
+						var localPath = giteaDirectory + repository["name"].ToString();
+						_giteaHelper.CloneRepository(Request.Cookies["gitea_token"], repository["clone_url"].ToString(), localPath);
+
+						var fileName = string.Format("functions/{0}.{1}", function.Name, "cs");
+
+						if (!System.IO.File.Exists(fileName))
+						{
+							using (var repo = new Repository(localPath))
+							{
+                            var sample = _functionHelper.GetSampleFunction(function.Runtime, function.Handler);
+								using (FileStream fs = System.IO.File.Create(localPath + "/" + fileName))
+								{
+									Byte[] info = new UTF8Encoding(true).GetBytes(sample);
+									// Add some information to the file.
+									fs.Write(info, 0, info.Length);
+								}
+								//System.IO.File.WriteAllText(localPath, sample);
+								Commands.Stage(repo, "*");
+
+								var signature = new Signature(
+										new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+								// Commit to the repository
+								Commit commit = repo.Commit("Created function " + function.Name, signature, signature);
+								_giteaHelper.Push(repo, Request.Cookies["gitea_token"]);
+
+								repo.Dispose();
+								_giteaHelper.DeleteDirectory(localPath);
+							}
+						}
+					}
+				}
+			}
+			
+			return Ok(functionObj.Id);
+		}
+
+		[Route("update/{name}"), HttpPut]
+		public async Task<IActionResult> Update(string name, [FromBody]FunctionBindingModel function)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var func = await _functionRepository.Get(function.Name);
+
+			if (func == null)
+				return BadRequest("Function not found.");
+
+			func.Name = function.Name;
+			func.Label = function.Label;
+			func.Dependencies = function.Dependencies;
+			func.Content = function.ContentType == FunctionContentType.Text ? function.Function : "";
+			func.ContentType = function.ContentType;
+			func.Runtime = function.Runtime;
+			func.Handler = function.Handler;
+			func.Status = function.Status;
 
-            var createResult = await _functionRepository.Create(functionObj);
+			var updateResult = await _functionRepository.Update(func);
 
-            if (createResult < 0)
-                return BadRequest("An error occurred while creating an function");
+			if (updateResult < 0)
+				return BadRequest("An error occurred while update function");
 
-            var functionRequest = _functionHelper.CreateFunctionRequest(function);
-            JObject result;
+			var functionObj = await _functionHelper.Get(name);
 
-            using (var httpClient = new HttpClient())
-            {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions";
+			if (functionObj.IsNullOrEmpty())
+				return NotFound();
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
-                var content = await response.Content.ReadAsStringAsync();
-                result = JObject.Parse(content);
+			var functionRequest = _functionHelper.CreateFunctionRequest(function, functionObj);
+			JObject result;
 
-                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.Conflict)
-                    return Conflict(result);
+			using (var httpClient = new HttpClient())
+			{
+				var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
 
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
-            }
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
+				var content = await response.Content.ReadAsStringAsync();
 
-            return Ok(functionObj.Id);
-        }
+				if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+					return NotFound();
 
-        [Route("update/{name}"), HttpPut]
-        public async Task<IActionResult> Update(string name, [FromBody]FunctionBindingModel function)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+				if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+					return NotFound();
 
-            var func = await _functionRepository.Get(function.Name);
+				if (!response.IsSuccessStatusCode)
+					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+
+				result = JObject.Parse(content);
+			}
 
-            if (func == null)
-                return BadRequest("Function not found.");
+			return Ok(result);
+		}
 
-            func.Name = function.Name;
-            func.Label = function.Label;
-            func.Dependencies = function.Dependencies;
-            func.Content = function.ContentType == FunctionContentType.Text ? function.Function : "";
-            func.ContentType = function.ContentType;
-            func.Runtime = function.Runtime;
-            func.Handler = function.Handler;
-            func.Status = function.Status;
+		[Route("delete/{name}"), HttpDelete]
+		public async Task<IActionResult> Delete(string name)
+		{
+			var functionObj = await _functionHelper.Get(name);
 
-            var updateResult = await _functionRepository.Update(func);
+			if (functionObj.IsNullOrEmpty())
+				return NotFound();
 
-            if (updateResult < 0)
-                return BadRequest("An error occurred while update function");
+			var function = await _functionRepository.Get(name);
 
-            var functionObj = await _functionHelper.Get(name);
+			if (function == null)
+				return BadRequest();
 
-            if (functionObj.IsNullOrEmpty())
-                return NotFound();
+			var deleteResult = await _functionRepository.Delete(function);
 
-            var functionRequest = _functionHelper.CreateFunctionRequest(function, functionObj);
-            JObject result;
+			if (deleteResult < 0)
+				return BadRequest("An error occurred while deleting an function");
 
-            using (var httpClient = new HttpClient())
-            {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
+			JObject result;
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
-                var content = await response.Content.ReadAsStringAsync();
+			using (var httpClient = new HttpClient())
+			{
+				var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
 
-                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
-                    return NotFound();
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				var response = await httpClient.DeleteAsync(url);
+				var content = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
-                    return NotFound();
+				if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+					return NotFound();
 
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+				if (!response.IsSuccessStatusCode)
+					throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
 
-                result = JObject.Parse(content);
-            }
+				result = JObject.Parse(content);
+			}
 
-            return Ok(result);
-        }
+			return Ok(result);
+		}
 
-        [Route("delete/{name}"), HttpDelete]
-        public async Task<IActionResult> Delete(string name)
-        {
-            var functionObj = await _functionHelper.Get(name);
+		[Route("run/{name}"), AcceptVerbs("GET", "POST")]
+		public async Task<HttpResponseMessage> Run(string name)
+		{
+			var functionUrl = await _functionHelper.GetFunctionUrl(name);
 
-            if (functionObj.IsNullOrEmpty())
-                return NotFound();
+			if (string.IsNullOrWhiteSpace(functionUrl))
+				return new HttpResponseMessage(HttpStatusCode.NotFound);
 
-            var function = await _functionRepository.Get(name);
+			string requestBody;
 
-            if (function == null)
-                return BadRequest();
+			using (var reader = new StreamReader(Request.Body))
+			{
+				requestBody = reader.ReadToEnd();
+			}
 
-            var deleteResult = await _functionRepository.Delete(function);
+			var response = await _functionHelper.Run(functionUrl, Request.Method, requestBody);
 
-            if (deleteResult < 0)
-                return BadRequest("An error occurred while deleting an function");
+			return response;
+		}
 
-            JObject result;
+		[Route("get_pods/{name}"), HttpGet]
+		public async Task<IActionResult> GetPods(string name)
+		{
+			var pods = await _functionHelper.GetPods(name);
 
-            using (var httpClient = new HttpClient())
-            {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
+			return Ok(pods);
+		}
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await httpClient.DeleteAsync(url);
-                var content = await response.Content.ReadAsStringAsync();
+		[Route("get_logs/{podName}"), HttpGet]
+		public async Task<IActionResult> GetLogs(string podName)
+		{
+			var logs = await _functionHelper.GetLogs(podName);
+			var response = new HttpResponseMessage();
 
-                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
-                    return NotFound();
+			if (logs == null)
+				return BadRequest();
 
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+			if (logs.Contains("code\":400"))
+			{
+				var result = JObject.Parse(logs);
+				return BadRequest(result["message"].ToString());
+			}
 
-                result = JObject.Parse(content);
-            }
+			logs = ConvertHelper.ASCIIToHTML(logs);
 
-            return Ok(result);
-        }
+			return Ok(logs);
+		}
 
-        [Route("run/{name}"), AcceptVerbs("GET", "POST")]
-        public async Task<HttpResponseMessage> Run(string name)
-        {
-            var functionUrl = await _functionHelper.GetFunctionUrl(name);
+		[Route("is_unique_name"), HttpGet]
+		public async Task<IActionResult> IsUniqueName(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				return BadRequest(ModelState);
 
-            if (string.IsNullOrWhiteSpace(functionUrl))
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+			var result = await _functionRepository.IsFunctionNameAvailable(name);
 
-            string requestBody;
+			return Ok(result);
+		}
 
-            using (var reader = new StreamReader(Request.Body))
-            {
-                requestBody = reader.ReadToEnd();
-            }
+		[Route("deploy/{name}"), HttpGet]
+		public async Task<IActionResult> Deploy(string name)
+		{
+			var function = await _functionRepository.Get(name);
 
-            var response = await _functionHelper.Run(functionUrl, Request.Method, requestBody);
+			if (function == null)
+				return NotFound("Function is not found.");
 
-            return response;
-        }
+			var functionObj = await _functionHelper.Get(name);
 
-        [Route("get_pods/{name}"), HttpGet]
-        public async Task<IActionResult> GetPods(string name)
-        {
-            var pods = await _functionHelper.GetPods(name);
+			if (functionObj.IsNullOrEmpty())
+				return NotFound();
 
-            return Ok(pods);
-        }
+            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
 
-        [Route("get_logs/{podName}"), HttpGet]
-        public async Task<IActionResult> GetLogs(string podName)
-        {
-            var logs = await _functionHelper.GetLogs(podName);
-            var response = new HttpResponseMessage();
+			var deployment = new DeploymentFunction
+			{
+				FunctionId = function.Id,
+				Status = DeploymentStatus.Running,
+                Version = currentBuildNumber.ToString(),
+                BuildNumber = currentBuildNumber,
+				StartTime = DateTime.Now
+			};
 
-            if (logs == null)
-                return BadRequest();
+			var result = await _deploymentFunctionRepository.Create(deployment);
 
-            if (logs.Contains("code\":400"))
-            {
-                var result = JObject.Parse(logs);
-                return BadRequest(result["message"].ToString());
-            }
+			if (result < 1)
+                return BadRequest("An error occurred while creating an deployment.");
 
-            logs = ConvertHelper.ASCIIToHTML(logs);
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartFunctionDeployment(function, functionObj, name, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
 
-            return Ok(logs);
-        }
-
-        [Route("is_unique_name"), HttpGet]
-        public async Task<IActionResult> IsUniqueName(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return BadRequest(ModelState);
-
-            var result = await _functionRepository.IsFunctionNameAvailable(name);
-
-            return Ok(result);
-        }
-
-    }
+			return Ok();
+		}
+	}
 }

@@ -2,13 +2,30 @@
 
 angular.module('primeapps')
 
-    .controller('pickListsController', ['$rootScope', '$scope', '$state', '$stateParams', 'PickListsService', '$modal',
-        function ($rootScope, $scope, $state, $stateParams, $location, PickListsService, $modal) {
-
-
+    .controller('pickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval) {
             $scope.$parent.activeMenuItem = 'picklists';
-
             $rootScope.breadcrumblist[2].title = 'Picklists';
+            $scope.loading = true;
+            $scope.loadingItem = true;
+            $scope.addItem = false;
+            $scope.editItem = false;
+            $scope.orderChanged = false;
+            $scope.pageOfItem;
+            $scope.itemModel = {};
+            $scope.lastPageValue = 0;
+            $scope.picklistModel = {};
+
+            $scope.requestModel = { //default page value
+                limit: "10",
+                offset: 0,
+                order_column: "label_en"
+            };
+
+            $scope.systemTypes = [
+                { name: "System", order: 3 },
+                { name: "Custom", order: 2 },
+                { name: "Component", order: 1 }];
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -19,133 +36,357 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $scope.loading = true;
-            $scope.wizardStep = 0;
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
+
+
+            PickListsService.getPage($scope.requestModel).then(function (response) {
+                if (response.data) {
+                    $scope.picklists = response.data;
+
+                    PickListsService.count().then(function (count) {
+                        $scope.pageTotal = count.data;
+                        $scope.loading = false;
+                    }).catch(function (reason) {
+                        $scope.loading = false;
+                    });
+                }
+            }).catch(function (reason) {
+                $scope.loadingItem = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                if (page != 0)
+                    requestModel.offset = page - 1;
+                else
+                    requestModel.offset = 0;
+
+                PickListsService.getPage(requestModel).then(function (response) {
+
+                    $scope.picklists = response.data;
+                    $scope.loading = false;
+                }).catch(function (reason) {
+                    $scope.loading = false;
+                });
+
             };
 
-            // ViewsService.count($scope.id).then(function (response) {
-            //     $scope.pageTotal = response.data;
-            // });
-            //
-            // ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
-            //     var customViews = angular.copy(response.data);
-            //     for (var i = customViews.length - 1; i >= 0; i--) {
-            //         var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //         if (parentModule) {
-            //             customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //         } else {
-            //             customViews.splice(i, 1);
-            //         }
-            //     }
-            //     $scope.customViews = customViews;
-            //     $scope.customViewsState = customViews;
-            //     $scope.loading = false;
-            // });
-            //
-            // $scope.changePage = function (page) {
-            //     $scope.loading = true;
-            //     var requestModel = angular.copy($scope.requestModel);
-            //     requestModel.offset = page - 1;
-            //
-            //     ViewsService.find($scope.id, requestModel).then(function (response) {
-            //         var customViews = angular.copy(response.data);
-            //         for (var i = customViews.length - 1; i >= 0; i--) {
-            //             var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //             if (parentModule) {
-            //                 customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //             } else {
-            //                 customViews.splice(i, 1);
-            //             }
-            //         }
-            //         $scope.customViews = customViews;
-            //         $scope.loading = false;
-            //     });
-            // };
-            //
-            // $scope.changeOffset = function () {
-            //     $scope.changePage(1)
-            // };
-            //
-            // $scope.deleteView = function (id) {
-            //     var willDelete =
-            //         swal({
-            //             title: "Are you sure?",
-            //             text: " ",
-            //             icon: "warning",
-            //             buttons: ['Cancel', 'Yes'],
-            //             dangerMode: true
-            //         }).then(function (value) {
-            //             if (value) {
-            //                 if (id) {
-            //                     ViewsService.deleteView(id)
-            //                         .then(function () {
-            //                             $scope.changePage(1);
-            //                             $scope.pageTotal = $scope.pageTotal - 1;
-            //                             toastr.success("Filter is deleted successfully.", "Deleted!");
-            //                         }).catch(function () {
-            //                         $scope.customViews = $scope.customViewsState;
-            //
-            //                         if ($scope.addNewFiltersModal) {
-            //                             $scope.addNewFiltersModal.hide();
-            //                             $scope.saving = false;
-            //                         }
-            //                     });
-            //                 }
-            //                 else {
-            //                     toastr.warning($filter('translate')('Setup.Modules.OneView'));
-            //                     return;
-            //                 }
-            //             }
-            //         });
-            // };
-            //
-            // $scope.showFormModal = function (view) {
-            //     if (view) {
-            //         ViewsService.getView(view.id).then(function (view) {
-            //             $scope.view = angular.copy(view);
-            //             $scope.module = $filter('filter')($rootScope.appModules, {id: view.module_id}, true)[0];
-            //             $scope.view.label = $scope.view['label_' + $scope.language];
-            //             $scope.view.edit = true;
-            //
-            //             // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
-            //
-            //             // if (!$scope.view) {
-            //             //     TODO
-            //             //     $state.go('app.crm.moduleList', { type: module.name });
-            //             //     return;
-            //             // }
-            //
-            //             if ($scope.view.filter_logic && $scope.language === 'tr')
-            //                 $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
-            //
-            //             moduleChanged($scope.module, false);
-            //         });
-            //     }
-            //     else {
-            //         $scope.view = {};
-            //         $scope.module = undefined;
-            //         //moduleChanged($scope.module, true);
-            //     }
-            //     $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
-            //         scope: $scope,
-            //         templateUrl: 'view/app/model/filters/filtersForm.html',
-            //         animation: 'am-fade-and-slide-right',
-            //         backdrop: 'static',
-            //         show: false,
-            //         controller: function ($scope) {
-            //             $scope.$on('dragulardrop', function (e, el) {
-            //                 $scope.viewForm.$setValidity('field', true);
-            //             });
-            //         }
-            //     });
-            //
-            //     $scope.addNewFiltersModal.$promise.then(function () {
-            //         $scope.addNewFiltersModal.show();
-            //     });
-            // };
+            $scope.changePageItem = function (page) {
+                $scope.loadingItem = true;
 
+                PickListsService.get($scope.id).then(function (response) {
+                    $scope.picklist = response.data;
+                    PickListsService.countItems($scope.id)
+                        .then(function (count) {
+                            if (count.data) {
+                                $scope.pageTotalItems = count.data;
+                                $scope.loadingItem = false;
+                            }
+                        }).catch(function (reason) {
+                            $scope.loadingItem = false;
+                            $scope.cancel();
+                        });
+                }).catch(function (reason) {
+                    $scope.loadingItem = false;
+                    $scope.cancel();
+                });
+
+            };
+
+            $scope.changeOffset = function (value) {
+                $scope.lastPageValue = value;
+                $scope.changePage(value);
+            };
+
+            $scope.selectPicklist = function (id) {
+                $scope.modalLoading = true;
+                PickListsService.get(id)
+                    .then(function (response) {
+                        if (response.data) {
+                            $scope.picklist = response.data;
+                            $scope.modalLoading = false;
+                            $scope.bindPicklistDragDrop();
+                        }
+                    }).catch(function (reason) {
+                        $scope.modalLoading = false;
+                        $scope.cancel();
+                    });
+            };
+
+            //Modal Start
+            $scope.showFormModal = function (picklist, editMode) {
+                $scope.modalLoading = true;
+
+                if (editMode) {
+                    $scope.picklistModel = picklist;
+                }
+                else {
+                    if (picklist) {
+                        $scope.picklist = picklist;
+                        $scope.id = picklist.id;
+                        $scope.selectPicklist(picklist.id);
+                    }
+                    else {
+                        $scope.picklist = {};
+                        $scope.id = null;
+                    }
+
+                }
+
+                $scope.modalLoading = false;
+
+                $scope.picklistFormModal = $scope.picklistForm || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/model/picklists/pickListsForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.picklistFormModal.$promise.then(function () {
+                    $scope.picklistFormModal.show();
+                });
+            };
+
+            //Modal Cancel Function
+            $scope.cancel = function () {
+                $scope.picklistFormModal.hide();
+                $scope.orderChanged = false;
+
+                $timeout(function () {
+                    $scope.picklist = {};
+                    $scope.picklistModel = {};
+                    $scope.itemModel = {};
+
+                    $scope.id = null;
+                }, 300);
+            };
+
+            $scope.addMode = function (state) {
+                $scope.addItem = state;
+            };
+
+            //Picklist save & update function
+            $scope.save = function (picklistForm) {
+                $scope.saving = true;
+
+                if (picklistForm && !picklistForm.$valid) {
+                    picklistForm.$submitted = true;
+                    $scope.saving = false;
+                    return false;
+                }
+
+                if (!$scope.picklistModel.label_en) {
+                    $scope.saving = false;
+                    return false;
+                }
+
+                $scope.picklistModel.label_tr = $scope.picklistModel.label_en;
+                $scope.picklistModel.items = [];
+
+                if ($scope.picklistModel.id) {
+                    PickListsService.update($scope.picklistModel)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.SaveSuccess'));
+                            }
+                            $scope.saving = false;
+                            $scope.cancel();
+                            $scope.changeOffset($scope.lastPageValue);
+                        });
+                }
+                else {
+
+                    PickListsService.create($scope.picklistModel)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.SaveSuccess'));
+                            }
+
+                            $scope.saving = false;
+                            $scope.cancel();
+                            $scope.changeOffset($scope.lastPageValue);
+
+                        }).catch(function (reason) {
+                            $scope.saving = false;
+                        });
+                }
+            };
+
+            //Picklist Delete Function
+            $scope.delete = function (id) {
+                if (id) {
+                    PickListsService.delete(id)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.DeleteSuccess'));
+                                $scope.changeOffset($scope.lastPageValue);
+                            }
+                        }).catch(function (reason) {
+                            $scope.loading = false;
+                        });
+                }
+            };
+
+            //Picklist Item Save Function
+            $scope.saveItem = function () {
+                $scope.itemModel.saving = true;
+
+                if (!$scope.itemModel && !$scope.id) {
+                    $scope.itemModel.saving = false;
+                    return false;
+                }
+
+                var length = $scope.picklist.items ? $scope.picklist.items.length : 0;
+                $scope.itemModel.order = length + 1;
+
+                PickListsService.createItem($scope.id, $scope.itemModel)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
+                            //$scope.picklistFormModal.hide();
+                            $scope.addMode(false);
+                            $scope.itemModel = {};
+                            $scope.selectPicklist($scope.id);
+                        }
+
+                        $scope.itemModel.saving = false;
+                    }).catch(function (reason) {
+                        $scope.itemModel.saving = false;
+                    });
+            };
+
+            //Picklist items Update Function
+            $scope.updateItem = function (item) {
+                item.savingItem = true;
+                if (!item || !$scope.id) {
+                    item.savingItem = false;
+                    toastr.warning($filter('translate')('Common.Error'));
+                    return false;
+                }
+
+                PickListsService.updateItem(item.id, item)
+                    .then(function (response) {
+                        if (response.data)
+                            toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
+
+                        item.edit = false;
+                        $timeout(function () {
+                            item.savingItem = false;
+                        }, 300);
+                    }).catch(function (reason) {
+                        item.savingItem = false;
+                    });
+            };
+
+            //Picklist Delete Function
+            $scope.deleteItem = function (item) {
+                item.deletingItem = true;
+                if ($scope.picklist && item.id) {
+                    PickListsService.deleteItem(item.id)
+                        .then(function (response) {
+                            if (response.data) {
+                                toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+                                item.deletingItem = false;
+                                $scope.selectPicklist($scope.picklist.id);
+                            }
+                        }).catch(function (reason) {
+                            item.deletingItem = false;
+                        });
+                }
+            };
+
+            //Save Order Button Action Function when changed of item order state
+            $scope.orderSave = function () {
+                $scope.saving = true;
+
+                if (!$scope.picklist && !$scope.picklist.items) {
+                    $scope.saving = true;
+                    return;
+                }
+
+                for (var i = 0; i < $scope.picklist.items.length; i++) {
+                    $scope.picklist.items[i].order = i + 1;
+                }
+
+                PickListsService.update($scope.picklist)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success($filter('translate')('Picklist.SaveOrderSuccess'));
+                            $scope.saving = false;
+                            $scope.orderChanged = false;
+                            $scope.selectPicklist($scope.picklist.id);
+                        }
+
+                    }).catch(function (reason) {
+                        $scope.saving = false;
+                        $scope.orderChanged = false;
+                    });
+            };
+
+
+            //Picklist item system code auto generator
+            $scope.systemCodeGenerate = function () {
+                if (!$scope.picklistItem['label_' + $scope.language])
+                    $scope.itemModel.system_code = '';
+                else {
+                    var tempCode = $scope.itemModel['label_' + $scope.language].trim();
+                    $scope.itemModel.system_code = tempCode.replace(/ /g, '_');
+                }
+
+            };
+
+
+            // Drag & Drop For Items list
+            $scope.bindPicklistDragDrop = function () {
+                $timeout(function () {
+                    if ($scope.drakePicklist) {
+                        $scope.drakePicklist.destroy();
+                        $scope.drakePicklist = null;
+                    }
+
+                    var picklistContainer = document.querySelector('#picklistContainer');
+                    var picklistOptionContainer = document.querySelector('#picklistOptionContainer');
+                    var rightTopBar = document.getElementById('rightTopBar');
+                    var rightBottomBar = document.getElementById('rightBottomBar');
+                    var timer;
+
+                    $scope.drakePicklist = dragularService([picklistContainer], {
+                        scope: $scope,
+                        containersModel: [$scope.picklist.items],
+                        classes: {
+                            mirror: 'gu-mirror-option pickitemcopy',
+                            transit: 'gu-transit-option'
+                        },
+                        lockY: true, 
+                        moves: function (el, container, handle) {
+                            $scope.orderChanged = true;
+                            return handle.classList.contains('option-handle');
+                        }
+
+                    });
+
+                    registerEvents(rightTopBar, picklistOptionContainer, -5);
+                    registerEvents(rightBottomBar, picklistOptionContainer, 5);
+
+                    function registerEvents(bar, container, inc, speed) {
+                        if (!speed) {
+                            speed = 10;
+                        }
+
+                        angular.element(bar).on('dragularenter', function () {
+                            container.scrollTop += inc;
+
+                            timer = $interval(function moveScroll() {
+                                container.scrollTop += inc;
+                            }, speed);
+                        });
+
+                        angular.element(bar).on('dragularleave dragularrelease', function () {
+                            $interval.cancel(timer);
+                        });
+                    }
+                }, 100);
+            };
         }
     ]);

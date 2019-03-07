@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.Studio.Storage;
 
 namespace PrimeApps.Studio
 {
@@ -36,7 +35,7 @@ namespace PrimeApps.Studio
             //Configure Authentication
             AuthConfiguration(services, Configuration);
 
-            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
+            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("StudioDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
@@ -95,15 +94,19 @@ namespace PrimeApps.Studio
                     opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
 
-            var awsOptions = Configuration.GetAWSOptions();
-            awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
-            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
-            awsOptions.Credentials = new BasicAWSCredentials(
-                Configuration.GetSection("AppSettings")["StorageAccessKey"],
-                Configuration.GetSection("AppSettings")["StorageSecretKey"]);
-            services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<IAmazonS3>();
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                var awsOptions = Configuration.GetAWSOptions();
+                awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+                awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
+                var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
+                awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<IAmazonS3>();
+            }
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -114,10 +117,8 @@ namespace PrimeApps.Studio
                 app.UseDatabaseErrorPage();
             }
 
-            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
-
-            if (enableHeaderForwarding)
+            var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+            if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
             {
                 var fordwardedHeaderOptions = new ForwardedHeadersOptions
                 {
@@ -130,7 +131,8 @@ namespace PrimeApps.Studio
                 app.UseForwardedHeaders(fordwardedHeaderOptions);
             }
 
-            if (enableHttpsRedirection)
+            var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+            if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
             {
                 app.UseHsts().UseHttpsRedirection();
             }

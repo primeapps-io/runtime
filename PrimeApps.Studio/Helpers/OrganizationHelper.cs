@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Console;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 

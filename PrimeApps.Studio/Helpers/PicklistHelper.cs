@@ -12,9 +12,9 @@ namespace PrimeApps.Studio.Helpers
         {
             var picklist = new Picklist
             {
-                SystemType = SystemType.Custom,
+                SystemType = SystemType.System, //Default and static for Studio
                 LabelEn = picklistModel.LabelEn,
-                LabelTr = picklistModel.LabelTr,
+                LabelTr = picklistModel.LabelEn,
                 Items = new List<PicklistItem>()
             };
 
@@ -23,7 +23,7 @@ namespace PrimeApps.Studio.Helpers
                 var picklistItem = new PicklistItem
                 {
                     LabelEn = picklistItemModel.LabelEn,
-                    LabelTr = picklistItemModel.LabelTr,
+                    LabelTr = picklistItemModel.LabelEn,
                     Value = picklistItemModel.Value,
                     Value2 = picklistItemModel.Value2,
                     Value3 = picklistItemModel.Value3,
@@ -40,7 +40,7 @@ namespace PrimeApps.Studio.Helpers
         public static void UpdateEntity(PicklistBindingModel picklistModel, Picklist picklist)
         {
             picklist.LabelEn = picklistModel.LabelEn;
-            picklist.LabelTr = picklistModel.LabelTr;
+            picklist.LabelTr = picklistModel.LabelEn;
 
             foreach (var picklistItem in picklist.Items)
             {
@@ -50,7 +50,7 @@ namespace PrimeApps.Studio.Helpers
                     continue;
 
                 picklistItem.LabelEn = picklistItemModel.LabelEn;
-                picklistItem.LabelTr = picklistItemModel.LabelTr;
+                picklistItem.LabelTr = picklistItemModel.LabelEn;
                 picklistItem.Value = picklistItemModel.Value;
                 picklistItem.Value2 = picklistItemModel.Value2;
                 picklistItem.Value3 = picklistItemModel.Value3;
@@ -67,7 +67,7 @@ namespace PrimeApps.Studio.Helpers
                     picklistItem = new PicklistItem
                     {
                         LabelEn = picklistItemModel.LabelEn,
-                        LabelTr = picklistItemModel.LabelTr,
+                        LabelTr = picklistItemModel.LabelEn,
                         Value = picklistItemModel.Value,
                         Value2 = picklistItemModel.Value2,
                         Value3 = picklistItemModel.Value3,
@@ -86,7 +86,7 @@ namespace PrimeApps.Studio.Helpers
             {
                 Id = picklist.Id,
                 LabelEn = picklist.LabelEn,
-                LabelTr = picklist.LabelTr,
+                LabelTr = picklist.LabelEn,
                 Items = new List<PicklistItemViewModel>()
             };
 
@@ -96,7 +96,7 @@ namespace PrimeApps.Studio.Helpers
                 {
                     Id = picklistItem.Id,
                     LabelEn = picklistItem.LabelEn,
-                    LabelTr = picklistItem.LabelTr,
+                    LabelTr = picklistItem.LabelEn,
                     Value = picklistItem.Value,
                     Value2 = picklistItem.Value2,
                     Value3 = picklistItem.Value3,
@@ -109,6 +109,18 @@ namespace PrimeApps.Studio.Helpers
             }
 
             return picklistViewModel;
+        }
+
+        public static void UpdateItemEntity(PicklistItemBindingModel picklistItemModel, PicklistItem picklistItem)
+        {
+            picklistItem.LabelEn = picklistItemModel.LabelEn;
+            picklistItem.LabelTr = picklistItemModel.LabelEn;
+            picklistItem.Value = picklistItemModel.Value;
+            picklistItem.Value2 = picklistItemModel.Value2;
+            picklistItem.Value3 = picklistItemModel.Value3;
+            picklistItem.Order = picklistItemModel.Order;
+            picklistItem.Inactive = picklistItemModel.Inactive;
+            picklistItem.SystemCode = picklistItemModel.SystemCode;
         }
 
         public static List<PicklistViewModel> MapToViewModel(ICollection<Picklist> picklists)

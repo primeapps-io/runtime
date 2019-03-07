@@ -705,13 +705,18 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnName("label")
+                        .HasMaxLength(100);
+
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnName("name")
-                        .HasMaxLength(15);
+                        .HasMaxLength(100);
 
                     b.Property<int>("Order")
                         .HasColumnName("order");
@@ -1071,6 +1076,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("BuildNumber")
+                        .HasColumnName("build_number");
+
                     b.Property<int>("ComponentId")
                         .HasColumnName("component_id");
 
@@ -1085,6 +1093,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnName("end_time");
+
+                    b.Property<int>("Revision")
+                        .HasColumnName("revision");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");
@@ -1125,6 +1136,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("BuildNumber")
+                        .HasColumnName("build_number");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
 
@@ -1139,6 +1153,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<int>("FunctionId")
                         .HasColumnName("function_id");
+
+                    b.Property<int>("Revision")
+                        .HasColumnName("revision");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnName("start_time");
@@ -2320,6 +2337,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("MigrationId")
                         .HasColumnName("migration_id");
 
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code")
+                        .HasMaxLength(50);
+
                     b.Property<int>("SystemType")
                         .HasColumnName("system_type");
 
@@ -2341,6 +2362,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsUnique();
 
                     b.HasIndex("LabelTr")
+                        .IsUnique();
+
+                    b.HasIndex("SystemCode")
                         .IsUnique();
 
                     b.HasIndex("UpdatedAt");
@@ -2909,6 +2933,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("label_tr_singular")
                         .HasMaxLength(50);
+
+                    b.Property<string>("ManyToManyTableName")
+                        .HasColumnName("many_to_many_table_name");
 
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");

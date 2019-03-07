@@ -11,12 +11,15 @@ namespace PrimeApps.Model.Helpers
     public class CryptoHelper
     {
         private const int Keysize = 128;
+        public const string KeyString = "222EF106646458CD59995D4378B55DF2";
 
         // This constant determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
-        public static string Encrypt(string text, string keyString)
+        public static string Encrypt(string text, string keyString = null)
         {
+            keyString = string.IsNullOrEmpty(keyString) ? KeyString : keyString;
+
             var key = Encoding.UTF8.GetBytes(keyString);
 
             using (var aesAlg = Aes.Create())
@@ -46,8 +49,9 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static string Decrypt(string cipherText, string keyString)
+        public static string Decrypt(string cipherText, string keyString = null)
         {
+            keyString = string.IsNullOrEmpty(keyString) ? KeyString : keyString;
             try
             {
                 var fullCipher = Convert.FromBase64String(cipherText);

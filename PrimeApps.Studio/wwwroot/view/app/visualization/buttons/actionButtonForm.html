@@ -17,20 +17,20 @@
         </div>
         <div class="modal-dialog scroll-style-4">
             <div class="section">
-                <div class="form-group" ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.relatedModule.$invalid}">
-                    <label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
+                <div class="form-group" ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.module.$invalid}">
+                    <label class="col-sm-12 required-field">{{('Setup.Modules.Name' | translate)}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <select name="module"
                             class="form-control ng-animate-disabled col-sm-8"
                             required
                             ng-model="currentActionButton.module"
-                            ng-change="moduleChanged()"
+                            ng-change="moduleChanged(true)"
                             ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.type.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.ActionType' | translate}}: </label>
+                    <label class="col-sm-12 required-field">{{'Setup.Modules.ActionType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <select
                             name="type"
                             class="form-control ng-animate-disabled col-sm-8"
@@ -41,7 +41,7 @@
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.trigger.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.DisplayPage' | translate}}: </label>
+                    <label class="col-sm-12 required-field">{{'Setup.Modules.DisplayPage' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <select
                             name="triggerType"
                             class="form-control ng-animate-disabled col-sm-8"
@@ -52,8 +52,7 @@
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.name.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Modules.ActionButonName' |
-                        translate}}: </label>
+                    <label class="col-sm-12 required-field">{{'Setup.Modules.ActionButonName' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <input type="text"
                            name="name"
                            class="form-control ng-animate-disabled col-sm-8"
@@ -63,7 +62,7 @@
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.url.$invalid}">
-                    <label class="col-sm-4 required-field">* URL</label>
+                    <label class="col-sm-12 required-field">URL <span class="required-label">({{'Common.Required' | translate }})</span></label>
                     <input type="text"
                            name="url"
                            class="form-control ng-animate-disabled col-sm-8"
@@ -72,25 +71,18 @@
                            ng-model="currentActionButton.url">
                 </div>
                 <div ng-if="currentActionButton.type == 2" class="form-group"
-                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.method_type.$invalid}">
-                    <label class="col-sm-4 required-field">* {{'Setup.Workflow.WebHookMethod' | translate}}:</label>
-                    <div class="col-sm-4">
-                        <label class="radio-inline">
-                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
-                                   value="post" required>
-                            POST
-                        </label>
-                        <label class="radio-inline">
-                            <input name="methodType" type="radio" ng-model="currentActionButton.method_type"
-                                   value="get" required>
-                            GET
-                        </label>
-                    </div>
+                     ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.methodType.$invalid}">
+                    <label class="col-sm-12 required-field">{{'Setup.Workflow.WebHookMethod' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                    <label class="radio-inline newinput">
+                        <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="post" required>POST<span></span>
+                    </label>
+                    <label class="radio-inline newinput">
+                        <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="get" required>GET<span></span>
+                    </label>
                 </div>
                 <div class="form-group" ng-if="currentActionButton.type == 2">
                     <div class="row form-inline" style="margin-bottom: 10px;">
-                        <label class="col-sm-4 required-field">{{'Setup.Workflow.WebHookParameters' |
-                            translate}}:</label>
+                        <label class="col-sm-12 required-field">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
                     </div>
                     <div>
                         <div class="col-sm-12 table-responsive">
@@ -104,7 +96,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="parameter in hookParameters">
+                                    <tr ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.hookModule.$invalid && !parameter.parameterName && !parameter.selectedField}" ng-repeat="parameter in hookParameters">
                                         <td style="padding: 1px">
                                             <input type="text" required ng-model="parameter.parameterName" tabindex="2"
                                                    class="form-control" maxlength="500" />
@@ -143,7 +135,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4"> {{'Setup.Modules.CssClass' | translate}}: </label>
+                    <label class="col-sm-12"> {{'Setup.Modules.CssClass' | translate}}</label>
                     <input type="text"
                            name="css_class"
                            class="form-control ng-animate-disabled col-sm-8"

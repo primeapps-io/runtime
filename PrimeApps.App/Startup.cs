@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
@@ -98,17 +97,24 @@ namespace PrimeApps.App
                     opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
 
-            var awsOptions = Configuration.GetAWSOptions();
-            awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
-            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetSection("AppSettings")["StorageUrl"];
-            awsOptions.Credentials = new BasicAWSCredentials(
-                Configuration.GetSection("AppSettings")["StorageAccessKey"],
-                Configuration.GetSection("AppSettings")["StorageSecretKey"]);
-            services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<IAmazonS3>();
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
-            services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                var awsOptions = Configuration.GetAWSOptions();
+                awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+                awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
+                var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
+                awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<IAmazonS3>();
+            }
+
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
+
+            if (!string.IsNullOrEmpty(redisConnection))
+                services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -119,10 +125,8 @@ namespace PrimeApps.App
                 app.UseDatabaseErrorPage();
             }
 
-            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
-
-            if (enableHeaderForwarding)
+            var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+            if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
             {
                 var fordwardedHeaderOptions = new ForwardedHeadersOptions
                 {
@@ -135,7 +139,8 @@ namespace PrimeApps.App
                 app.UseForwardedHeaders(fordwardedHeaderOptions);
             }
 
-            if (enableHttpsRedirection)
+            var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+            if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
             {
                 app.UseHsts().UseHttpsRedirection();
             }

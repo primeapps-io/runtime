@@ -1,27 +1,46 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:5002/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "PrimeApps.App": {
+      "commandName": "Project",
       "launchBrowser": true,
+      "applicationUrl": "http://localhost:5002",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5002",
+        "AppSettings__ClientId": "primeapps_app"
       }
     },
-    "PrimeApps.App": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
+    "PrimeApps.App-Preview": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5003",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5003",
+        "AppSettings__ClientId": "primeapps_preview",
+        "AppSettings__PreviewMode": "app",
+        "AppSettings__AuthenticationServerURL": "http://localhost:5001"
       },
-      "applicationUrl": "http://localhost:5002"
+      "PrimeApps.App-OfisimCRM": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "applicationUrl": "http://localhost:5005",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:5005",
+          "AppSettings__ClientId": "ofisim_crm"
+        }
+      },
+      "PrimeApps.App-OfisimIK": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "applicationUrl": "http://localhost:5006",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:5006",
+          "AppSettings__ClientId": "ofisim_ik"
+        }
+      }
     }
   }
 }

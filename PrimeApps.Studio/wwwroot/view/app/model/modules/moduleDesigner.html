@@ -4,7 +4,6 @@
             <h2>{{module['label_' + language + '_plural']}}</h2>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li></li>
                     <li>
                         <a href="/#/org/{{ orgId}}/app/{{ appId}}/modules" class="btn  btn-radius btn-gray"><i
                                 class="fas fa-angle-left"></i>
@@ -124,24 +123,22 @@
                                    bs-tooltip></i>
                             </span>
                                     </h5>
-                                    <div class="subpanel-body clearfix">
+                                    <div class="subpanel-body clearfix"
+                                         ng-class="{'flexitemx':row.section.column_count === 2}">
                                         <div ng-class="{'col-sm-6': row.section.column_count === 2, 'col-sm-12': row.section.column_count === 1}"
                                              ng-repeat="column in row.columns">
-                                            <div class="cell-container">
+                                            <div class="cell-container"
+                                                 style="{{row.columns[0].cells.length < 1  ?  'min-height:40px' :''}}">
                                                 <div class="form-group"
                                                      ng-repeat="cell in column.cells | filter:{deleted:'!true'}"
                                                 >
-                                                    <label
-                                                            ng-if="!cell.field.custom_label"
-                                                            class="control-label cell-handle"
-                                                            ng-class="{'col-sm-5':row.section.column_count === 2, 'col-sm-4':row.section.column_count === 1, 'required-field':cell.field.validation.required,'pull-right':cell.field.position==='right'}">
+                                                    <label class="control-label cell-handle"
+                                                           ng-class="{'col-sm-5':row.section.column_count === 2, 'col-sm-4':row.section.column_count === 1, 'required-field':cell.field.validation.required,'pull-right':cell.field.position==='right'}">
                                                         <i class="fa fa-arrows pull-left cell-handle"></i>
-                                                        <span ng-show="!cell.field.custom_label && cell.field.show_label "
-                                                              class="cell-handle"
-                                                              style="padding-left: 10px;"><span
-                                                                ng-if="cell.field.validation.required">*</span> {{cell.field['label_' + language]}}:</span>
-                                                        <input type="checkbox" class="cell-handle"
-                                                               ng-show="cell.field.data_type=='checkbox' && cell.field.custom_label">
+                                                        <span class="cell-handle" style="padding-left: 10px;">
+                                                            <span ng-if="cell.field.validation.required">*</span>
+                                                            {{cell.field['label_' + language]}}
+                                                        </span>
                                                     </label>
 
                                                     <div ng-class="{'col-sm-7': row.section.column_count === 2, 'col-sm-8': row.section.column_count === 1, 'checkbox': cell.field.data_type === 'checkbox','col-sm-12':cell.field.position==='left'}">
@@ -264,6 +261,11 @@
                                                              ng-if="cell.field.data_type === 'combination'">
                                                             <span> {{cell.field.dataType['label_' + language]}}</span>
                                                             <i class="k-icon k-i-hyperlink-open-sm"></i>
+                                                        </div>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'tag'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-textbox-hidden"></i>
                                                         </div>
 
 

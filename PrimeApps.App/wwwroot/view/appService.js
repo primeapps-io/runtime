@@ -504,9 +504,9 @@ angular.module('primeapps')
                                     $rootScope.personalConvertShow = $filter('filter')($rootScope.moduleSettings, { key: 'personal_convert_show' }, true)[0];
                                     $rootScope.personalConvertShow = $rootScope.personalConvertShow ? $rootScope.personalConvertShow.value : false;
                                     $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, { type: 2 }, true)[0];
-									$rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'Type': 3 }, true)[0];
+                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'Type': 3 }, true)[0];
 
-									that.setCustomActivityTypes(activityTypes);
+                                    that.setCustomActivityTypes(activityTypes);
 
                                     helper.hideLoader();
                                     deferred.resolve(true);
@@ -916,6 +916,13 @@ angular.module('primeapps')
                     if (module.dependencies) {
                         for (var p = 0; p < module.dependencies.length; p++) {
                             var dependency = module.dependencies[p];
+
+                            var childField = $filter('filter')(module.fields, { name: dependency.child_field, inline_edit: true }, true)[0];
+                            if (childField)
+                                childField.inline_edit = false;
+                            var parentField = $filter('filter')(module.fields, { name: dependency.parent_field, inline_edit: true }, true)[0];
+                            if (parentField)
+                                parentField.inline_edit = false;
 
                             if (dependency.dependency_type === 'display') {
                                 if (!module.display_dependencies)

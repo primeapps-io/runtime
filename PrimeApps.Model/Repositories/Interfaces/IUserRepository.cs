@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.User;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -20,5 +21,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> TerminateUser(TenantUser user);
         Task<ICollection<TenantUser>> GetNonSubscribers();
         Task<int> GetTenantUserCount();
+        Task<int> Count();
+        Task<ICollection<TenantUser>> Find(PaginationModel paginationModel);
     }
 }

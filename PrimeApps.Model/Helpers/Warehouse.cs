@@ -369,7 +369,12 @@ namespace PrimeApps.Model.Helpers
 
 		public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage)
 		{
-			var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
+			var warehouseConnection = _configuration.GetValue("AppSettings:WarehouseConnection", string.Empty);
+			var connection = new SqlConnection();
+			if (!string.IsNullOrEmpty(warehouseConnection))
+			{
+				connection = new SqlConnection(warehouseConnection);
+			}
 			var serverConnection = new ServerConnection(connection);
 			var server = new Server(serverConnection);
 			var database = server.Databases[warehouseDatabaseName];
@@ -387,7 +392,12 @@ namespace PrimeApps.Model.Helpers
 
 		public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage)
 		{
-			var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
+			var warehouseConnection = _configuration.GetValue("AppSettings:WarehouseConnection", string.Empty);
+			var connection = new SqlConnection();
+			if (!string.IsNullOrEmpty(warehouseConnection))
+			{
+				connection = new SqlConnection(warehouseConnection);
+			}
 			var serverConnection = new ServerConnection(connection);
 			var server = new Server(serverConnection);
 			var database = server.Databases[warehouseDatabaseName];
@@ -406,7 +416,12 @@ namespace PrimeApps.Model.Helpers
 
 		public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser)
 		{
-			var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
+			var warehouseConnection = _configuration.GetValue("AppSettings:WarehouseConnection", string.Empty);
+			var connection = new SqlConnection();
+			if (!string.IsNullOrEmpty(warehouseConnection))
+			{
+				connection = new SqlConnection(warehouseConnection);
+			}
 			var serverConnection = new ServerConnection(connection);
 			var server = new Server(serverConnection);
 			var database = server.Databases[warehouseDatabaseName];
