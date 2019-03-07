@@ -37,8 +37,8 @@
 									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==3}" ng-click="!loadingModal ? validate(viewForm) ? $parent.wizardStep = 3 : false : return;">{{'View.ShareInformation' | translate}}</a></li>
 								</ul>
 							</div>
-							<!--<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>-->
-							<div class="section" id="section1" ng-show="wizardStep == 0 ">
+							<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+							<div class="section" id="section1" ng-show="wizardStep == 0 && !loadingModal">
 								<h4>{{'View.ViewInformation' | translate}}</h4>
 								<div class="panel">
 									<div class="form-group" ng-class="{'has-error': viewForm.$submitted && viewForm.module.$invalid}">

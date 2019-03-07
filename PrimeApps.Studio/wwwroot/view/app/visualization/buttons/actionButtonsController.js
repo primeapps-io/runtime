@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id ? $location.search().id : 0;
             if ($scope.id > 0)
                 $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
-            
+
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
 
@@ -219,7 +219,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (actionButton), event {
+            $scope.delete = function (actionButton, event) {
                 // delete actionButton.$$hashKey;
                 // var deleteModel = angular.copy($scope.actionButtons);
                 // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
@@ -236,19 +236,19 @@ angular.module('primeapps')
 
                             var elem = angular.element(event.srcElement);
                             angular.element(elem.closest('tr')).addClass('animated-background');
-                            
+
                             ModuleService.deleteActionButton(actionButton.id)
                                 .then(function () {
                                     // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
                                     // $scope.actionButtons.splice(actionButtonIndex, 1);
-                                    
+
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     $scope.pageTotal--;
                                     $scope.changePage($scope.activePage);
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                 })
                                 .catch(function () {
-                                    
+
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.actionButtons = $scope.actionButtonState;
 
