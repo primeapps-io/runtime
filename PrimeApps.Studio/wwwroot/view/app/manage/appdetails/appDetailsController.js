@@ -2,64 +2,189 @@
 
 angular.module('primeapps')
 
-    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location', 'FileUploader', '$cookies', '$localStorage',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage) {
+    .controller('AppDetailsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AppDetailsService', 'LayoutService', '$http', 'config', '$location', 'FileUploader', '$cookies', '$localStorage', '$q', 'resizeService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AppDetailsService, LayoutService, $http, config, $location, FileUploader, $cookies, $localStorage, $q, resizeService) {
 
             $scope.appModel = {};
             $scope.authTheme = {};
             $scope.appTheme = {};
+            $scope.image = {};
+            $scope.imageTotal = {};
+            $scope.imageRun = {};
             $scope.$parent.activeMenuItem = 'appDetails';
             $rootScope.breadcrumblist[2].title = 'App Details';
 
-            var uploader = $scope.uploader = new FileUploader({
-                url: 'storage/upload_logo',
-                headers: {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
-                    'Accept': 'application/json',
-                    'X-Organization-Id': $rootScope.currentOrgId
-                },
-                queueLimit: 1
-            });
+            $scope.uploaderImage = function (field) {
+                $scope.image[field] = {};
+                var uploader = $scope.uploaderImage[field] = new FileUploader({
+                    url: 'storage/upload_logo',
+                    headers: {
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                        'Accept': 'application/json',
+                        'X-Organization-Id': $rootScope.currentOrgId,
+                        'X-App-Id': $scope.appId
+                    },
+                    queueLimit: 1
+                });
 
-            uploader.onWhenAddingFileFailed = function (item, filter, options) {
-                switch (filter.name) {
-                    case 'imageFilter':
-                        toastr.warning($filter('translate')('Setup.Settings.ImageError'));
-                        break;
-                    case 'sizeFilter':
-                        toastr.warning($filter('translate')('Setup.Settings.SizeError'));
-                        break;
-                }
-            };
+                uploader.onAfterAddingFile = function (item) {
+                    readFile(item._file)
+                        .then(function (image) {
+                            item.image = image;
+                            var img = new Image();
+                            resizeService.resizeImage(item.image, { width: 1024 }, function (err, resizedImage) {
+                                if (err)
+                                    return;
 
-            uploader.onAfterAddingFile = function (item) {
-                $scope.uploadImage = true;
-                $scope.croppedImage = '';
-                var reader = new FileReader();
-                $scope.appModel.logo = item.file.name;
+                                item.file.size = item._file.size;
+                                $scope.fileLoadingCounter++;
+                                var selectedFile = item.uploader.queue[0].file.name;
+                                $scope.imageTotal[field] = selectedFile;
+                                $scope.image[field]['Name'] = item.uploader.queue[0].file.name;
+                                $scope.image[field]['Size'] = item.uploader.queue[0].file.size;
+                                $scope.image[field]['Type'] = item.uploader.queue[0].file.type;
 
-                reader.onload = function (event) {
-                    $scope.$apply(function () {
-                        item.image = event.target.result;
-                    });
+                                $scope.imageRun[field] = item.uploader.queue[0];
+                                var images = $scope.imageRun;
+
+                                if (field === 'authBanner') {
+                                    $scope.authBanner = item.uploader.queue[0];
+                                    var authBanner = images['authBanner'];
+                                    authBanner.upload();
+                                }
+
+                                if (field === 'authLogo') {
+                                    $scope.authLogo = item.uploader.queue[0];
+                                    var authLogo = images['authLogo'];
+                                    authLogo.upload();
+                                }
+
+                                if (field === 'authFavicon') {
+                                    $scope.authFavicon = item.uploader.queue[0];
+                                    var authFavicon = images['authFavicon'];
+                                    authFavicon.upload();
+                                }
+
+                                if (field === 'appLogo') {
+                                    $scope.appLogo = item.uploader.queue[0];
+                                    var appLogo = images['appLogo'];
+                                    appLogo.upload();
+                                }
+                                if (field === 'appThemeLogo') {
+                                    $scope.appThemeLogo = item.uploader.queue[0];
+                                    var appThemeLogo = images['appThemeLogo'];
+                                    appThemeLogo.upload();
+                                }
+
+                                if (field === 'appThemeFavicon') {
+                                    $scope.appThemeFavicon = item.uploader.queue[0];
+                                    var appThemeFavicon = images['appThemeFavicon'];
+                                    appThemeFavicon.upload();
+                                }
+
+                                if (authLogo) {
+                                    authLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.authTheme.logo = logoUrl;
+                                        }
+                                    };
+                                }
+
+                                if (authBanner) {
+                                    authBanner.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.authTheme.banner = logoUrl;
+                                        }
+                                    };
+                                }
+
+                                if (authFavicon) {
+                                    authFavicon.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.authTheme.favicon = logoUrl;
+                                        }
+                                    };
+                                }
+
+                                if (appLogo) {
+                                    appLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.appModel.logo = logoUrl;
+                                        }
+                                    };
+                                }
+
+                                if (appThemeLogo) {
+                                    appThemeLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.appTheme.logo = logoUrl;
+                                        }
+                                    };
+                                }
+
+                                if (appThemeFavicon) {
+                                    appThemeFavicon.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
+                                        if (status === 200) {
+                                            $scope.appTheme.favicon = logoUrl;
+                                        }
+                                    };
+                                }
+                            });
+                        });
                 };
-                reader.readAsDataURL(item._file);
+                uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                    switch (filter.name) {
+                        case 'imgFilter':
+                            ngToast.create({
+                                content: $filter('translate')('Setup.Settings.ImageError'),
+                                className: 'warning'
+                            });
+                            break;
+                        case 'sizeFilter':
+                            ngToast.create({
+                                content: $filter('translate')('Setup.Settings.SizeError'),
+                                className: 'warning'
+                            });
+                            break;
+                    }
+                };
+
+                uploader.filters.push({
+                    name: 'imgFilter',
+                    fn: function (item) {
+                        var extension = helper.getFileExtension(item.name);
+                        return true ? (extension === 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'doc' || extension == 'gif') : false;
+                    }
+                });
+
+                uploader.filters.push({
+                    name: 'sizeFilter',
+                    fn: function (item) {
+                        return item.size < 5242880;// 5mb
+                    }
+                });
+
+                // uploader_image.onSuccessItem = function (item, response) {
+                //     $scope.image[field.name]['UniqueName'] = response.UniqueName;
+                //     $scope.fileLoadingCounter--;
+                // };
+
+                function readFile(file) {
+                    var deferred = $q.defer();
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        deferred.resolve(e.target.result);
+                    };
+
+                    reader.readAsDataURL(file);
+
+                    return deferred.promise;
+                }
+
+                return uploader;
+
             };
-
-            uploader.filters.push({
-                name: 'imageFilter',
-                fn: function (item, options) {
-                    var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                    return '|jpg|png|jpeg|bmp|'.indexOf(type) > -1;
-                }
-            });
-
-            uploader.filters.push({
-                name: 'sizeFilter',
-                fn: function (item) {
-                    return item.size < 5242880;//5 mb
-                }
-            });
 
             $scope.logoRemove = function () {
                 if (uploader.queue[0]) {
@@ -94,7 +219,6 @@ angular.module('primeapps')
                 appThemes.favicon = $scope.appTheme.favicon;
                 appThemes.logo = $scope.appTheme.logo;
 
-
                 AppDetailsService.updateAppTheme($scope.appId, appThemes)
                     .then(function (response) {
                         toastr.success($filter('translate')('Güncelleme Başarılı'));
@@ -104,14 +228,17 @@ angular.module('primeapps')
 
             AppDetailsService.getAuthTheme($scope.appId).then(function (response) {
                 var authTheme = response.data;
-                $scope.authTheme.banner = authTheme.banner[0].image;
+                if (authTheme && authTheme.banner) {
+                    $scope.authTheme.banner = authTheme.banner[0].image;
+                    $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
+                    $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
+                }
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
-                $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
-                $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
                 $scope.authTheme.favicon = authTheme.favicon;
                 $scope.authTheme.logo = authTheme.logo;
             });
+
 
             $scope.saveAuthTheme = function () {
                 $scope.savingAuth = true;
@@ -120,14 +247,13 @@ angular.module('primeapps')
                 description.en = $scope.authTheme.descriptionEn;
                 description.tr = $scope.authTheme.descriptionTr;
                 var banner = [
-                    { description: description, image: $scope.appModel.logo }
+                    { description: description, image: $scope.authTheme.banner }
                 ];
-                authThemes.logo = $scope.appModel.logo;
                 authThemes.color = $scope.authTheme.color;
                 authThemes.title = $scope.authTheme.title;
                 authThemes.banner = banner;
-                authThemes.favicon = $scope.appModel.logo;
-
+                authThemes.favicon = $scope.authTheme.favicon;
+                authThemes.logo = $scope.authTheme.logo;
                 AppDetailsService.updateAuthTheme($scope.appId, authThemes)
                     .then(function (response) {
                         toastr.success($filter('translate')('Güncelleme Başarılı'));
@@ -137,36 +263,34 @@ angular.module('primeapps')
 
             $scope.save = function () {
                 $scope.saving = true;
-                if ($scope.uploadImage) {
-                    var header = {
-                        'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
-                        'Accept': 'application/json',
-                        'X-Organization-Id': $rootScope.currentOrgId,
-                        'X-App-Id': $scope.appId
-                    };
-                    uploader.queue[0].uploader.headers = header;
-                    uploader.queue[0].headers = header;
-                    uploader.queue[0].upload();
-
-                    uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                        if (status === 200) {
-                            $scope.appModel.logo = logoUrl;
-                            AppDetailsService.update($scope.appId, $scope.appModel)
-                                .then(function (response) {
-                                    toastr.success($filter('translate')('Güncelleme Başarılı'));
-                                    $scope.saving = false;
-                                });
-                        }
-                    };
-                }
-                else {
-                    AppDetailsService.update($scope.appId, $scope.appModel)
-                        .then(function (response) {
-                            toastr.success($filter('translate')('Güncelleme Başarılı'));
-                            $scope.saving = false;
-                        });
-                }
+                AppDetailsService.update($scope.appId, $scope.appModel)
+                    .then(function (response) {
+                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        $scope.saving = false;
+                    });
             };
-            
+
+            $scope.addMasterUser = function () {
+                var newCol = {};
+                newCol.role_id = 1;
+                newCol.profile_id = 1;
+                newCol.first_name = "master";
+                newCol.last_name = "test";
+                newCol.email = "master.test@usertest3.com";
+                newCol.password = "1234567";
+                newCol.created_at = new Date();
+
+                AppDetailsService.addAppUser(newCol)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success('Collaborator is saved successfully');
+
+                        }
+                    })
+                    .catch(function () {
+                        toastr.error($filter('translate')('Common.Error'));
+
+                    });
+            };
         }
     ]);
