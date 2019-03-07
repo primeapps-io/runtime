@@ -1583,7 +1583,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        moduleactions: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        moduleActions:  ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
@@ -1591,7 +1591,7 @@ angular.module('primeapps')
                                 });
                             }
                         }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/visualization/buttons/actionButtonsController.js',
                                 cdnUrl + 'view/app/visualization/buttons/actionButtonsService.js',

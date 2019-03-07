@@ -6,13 +6,13 @@
 				<div>
 					<ul class="list-unstyled list-inline">
 						<li>
-							<button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.$parent.wizardStep = 0; wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+							<button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide(); $parent.wizardStep = 0;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
 						</li>
 						<li ng-if="wizardStep > 0">
-							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm) ?  $parent.$parent.wizardStep = $parent.$parent.wizardStep-1 : false"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
 						</li>
 						<li ng-if=" isNew && wizardStep < 3">
-							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, true);">
+							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm) ?  $parent.$parent.wizardStep = $parent.$parent.wizardStep+1 : false ">
 								{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
 							</button>
 						</li>
@@ -31,10 +31,10 @@
 						<div class="megalist">
 							<div class="modal-menu">
 								<ul class="list-unstyled">
-									<li><a ng-class="{'active': wizardStep==0}" ng-click="validate(viewForm) ? $parent.$parent.wizardStep = 0 : false">{{'View.ViewInformation' | translate}}</a></li>
-									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==1}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 1 : false : return;">{{'View.ChooseFields' | translate}}</a></li>
-									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==2}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 2 : false : return;">{{'View.Filter' | translate}}</a></li>
-									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==3}" ng-click="!loadingModal ? validate(viewForm) ? $parent.$parent.wizardStep = 3 : false : return;">{{'View.ShareInformation' | translate}}</a></li>
+									<li><a ng-class="{'active': wizardStep==0}" ng-click="validate(viewForm) ? $parent.wizardStep = 0 : false">{{'View.ViewInformation' | translate}}</a></li>
+									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==1}" ng-click="!loadingModal ? validate(viewForm) ? $parent.wizardStep = 1 : false : return;">{{'View.ChooseFields' | translate}}</a></li>
+									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==2}" ng-click="!loadingModal ? validate(viewForm) ? $parent.wizardStep = 2 : false : return;">{{'View.Filter' | translate}}</a></li>
+									<li ng-class="{'disabled': loadingModal}"><a ng-class="{'active': wizardStep==3}" ng-click="!loadingModal ? validate(viewForm) ? $parent.wizardStep = 3 : false : return;">{{'View.ShareInformation' | translate}}</a></li>
 								</ul>
 							</div>
 							<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>

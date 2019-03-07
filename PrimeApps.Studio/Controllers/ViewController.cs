@@ -185,9 +185,6 @@ namespace PrimeApps.Studio.Controllers
 		{
 			var count = await _viewRepository.Count(id);
 
-			if (count < 1)
-				return NotFound();
-
 			return Ok(count);
 		}
 

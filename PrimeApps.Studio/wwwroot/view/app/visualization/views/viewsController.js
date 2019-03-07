@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.id = $location.search().id ? $location.search().id : 0;
             if ($scope.id > 0)
                 $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
-            
+
             $scope.$parent.activeMenuItem = 'views';
             $rootScope.breadcrumblist[2].title = 'Views';
 
@@ -112,8 +112,9 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (view) {
-                $scope.loadingModal = true;
+
                 if (view) {
+                    $scope.loadingModal = true;
                     $scope.isNew = false;
                     ViewsService.getView(view.id)
                         .then(function (view) {
@@ -237,7 +238,7 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-                    $scope.loadingModal = true;
+                    
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
@@ -326,7 +327,7 @@ angular.module('primeapps')
 
             $scope.save = function (viewForm) {
 
-                if (!viewForm.$valid || !$scope.validate(viewForm, true))
+                if (!viewForm.$valid || !$scope.validate(viewForm))
                     return;
 
                 $scope.saving = true;
@@ -492,7 +493,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.validate = function (viewForm, next) {
+            $scope.validate = function (viewForm) {
 
                 viewForm.$submitted = true;
 
@@ -510,7 +511,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                $scope.wizardStep += $scope.view.id ? $scope.wizardStep : next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                //  $scope.wizardStep += $scope.view.id ? $scope.wizardStep : next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
 

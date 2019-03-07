@@ -881,5 +881,4 @@ angular.module('primeapps')
             };
         }
 
-    ])
-;
+    ]);
