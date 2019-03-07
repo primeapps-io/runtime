@@ -61,7 +61,7 @@
                 {{report.category.name}}
             </td>
             <td>
-                {{ report.report_type}}
+                {{ report.report_type =='tabular' ? 'List':(report.report_type =='single') ? 'Single':'Summary' }}
             </td>
             <td class="text-center">
                 <div class="action-buttons-block">
