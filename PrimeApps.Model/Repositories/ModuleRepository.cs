@@ -150,7 +150,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Module>> GetAll()
         {
-            var modules = await GetModuleQuery()
+            var modules = await GetModuleFullQuery()
                 .Where(x => !x.Deleted)
                 .ToListAsync();
 
