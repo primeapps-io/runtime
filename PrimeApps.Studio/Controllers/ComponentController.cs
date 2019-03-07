@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -8,20 +9,30 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
     [Route("api/component")]
     public class ComponentController : DraftBaseController
     {
+        private IBackgroundTaskQueue Queue;
+        private IDeploymentHelper _deploymentHelper;
         private IModuleRepository _moduleRepository;
         private IComponentRepository _componentRepository;
+        private IDeploymentComponentRepository _deploymentComponentRepository;
+        private IComponentHelper _componentHelper;
         private IConfiguration _configuration;
 
-        public ComponentController(IComponentRepository componentRepository, IModuleRepository moduleRepository, IConfiguration configuration)
+        public ComponentController(IBackgroundTaskQueue queue, IComponentRepository componentRepository, IDeploymentHelper deploymentHelper, IDeploymentComponentRepository deploymentComponentRepository, IComponentHelper componentHelper, IModuleRepository moduleRepository, IConfiguration configuration)
         {
+            Queue = queue;
+            _deploymentHelper = deploymentHelper;
+            _deploymentComponentRepository = deploymentComponentRepository;
             _componentRepository = componentRepository;
             _moduleRepository = moduleRepository;
+            _componentHelper = componentHelper;
             _configuration = configuration;
         }
 
@@ -29,7 +40,7 @@ namespace PrimeApps.Studio.Controllers
         {
             SetContext(context);
             SetCurrentUser(_componentRepository, PreviewMode, AppId, TenantId);
-
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
             base.OnActionExecuting(context);
         }
 
@@ -66,9 +77,15 @@ namespace PrimeApps.Studio.Controllers
             if (module == null)
                 return BadRequest("Module id is not valid.");
 
-            var component = new Component
+            var componentName = module.Name.Replace("_", "");
+            var component = await _componentRepository.Get(componentName);
+
+            if (component != null)
+                return Conflict();
+
+            component = new Component
             {
-                Name = module.Name,
+                Name = componentName,
                 Content = model.Content,
                 ModuleId = model.ModuleId,
                 Type = ComponentType.Component,
@@ -82,6 +99,8 @@ namespace PrimeApps.Studio.Controllers
 
             if (result < 0)
                 return BadRequest("An error occurred while creating an component");
+
+            _componentHelper.CreateSample(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, model);
 
             return Ok(component.Id);
         }
@@ -120,6 +139,48 @@ namespace PrimeApps.Studio.Controllers
                 return Forbid("Component not found!");
 
             await _componentRepository.Delete(component);
+
+            return Ok();
+        }
+
+        [Route("all_files_names/{id:int}"), HttpGet]
+        public async Task<IActionResult> AllFileNames(int id)
+        {
+            var component = await _componentRepository.Get(id);
+
+            if (component == null)
+                return BadRequest("Component is not exist.");
+
+            var nameList = await _componentHelper.GetAllFileNames(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, component.Name);
+
+            return Ok(nameList);
+        }
+
+        [Route("deploy/{id:int}"), HttpGet]
+        public async Task<IActionResult> Deploy(int id)
+        {
+            var component = await _componentRepository.Get(id);
+
+            if (component == null)
+                return NotFound("Component is not found.");
+
+            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber() + 1;
+
+            var deployment = new DeploymentComponent()
+            {
+                ComponentId = component.Id,
+                Status = DeploymentStatus.Running,
+                Version = currentBuildNumber.ToString(),
+                BuildNumber = currentBuildNumber,
+                StartTime = DateTime.Now
+            };
+
+            var result = await _deploymentComponentRepository.Create(deployment);
+
+            if (result < 1)
+                return BadRequest("An error occurred while creating an deployment.");
+
+            //Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(function, functionObj, name, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
 
             return Ok();
         }
