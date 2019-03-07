@@ -225,5 +225,7 @@ namespace PrimeApps.App.Models
         public bool IsOfficeUser { get; set; }
 
 		public bool notCheckIsAdmin { get; set; }
+		
+        public bool DontSendMail { get; set; }
     }
 }
