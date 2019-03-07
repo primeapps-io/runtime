@@ -98,12 +98,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
-                
-                var module = $filter('filter')($scope.modules, { id: $scope.component.module_id }, true)[0];
-                
+
+                var module = $filter('filter')($scope.modules, {id: $scope.component.module_id}, true)[0];
+
                 $scope.component.place = 0;
                 $scope.component.order = 0;
-                $scope.component.name = module.name;
+                $scope.component.name = module.name.replace(/_/g, '');
 
                 ComponentsService.create($scope.component)
                     .then(function (response) {
@@ -112,9 +112,19 @@ angular.module('primeapps')
                         toastr.success("Component is created successfully.");
                         $state.go('studio.app.componentDetail', {id: response.data});
                     })
+                    .catch(function (response) {
+                        if (response.status === 409) {
+                            toastr.warning("Component already exist for module " + module['label_en_singular']);
+                        }
+                        $scope.saving = false;
+                    });
             };
 
-            $scope.delete = function (id) {
+            $scope.getModuleName = function (id) {
+                return $filter('filter')($scope.modules, {id: id}, true)[0]['label_en_singular'];
+            };
+
+            $scope.delete = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -124,11 +134,17 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             if (id) {
                                 ComponentsService.delete(id)
                                     .then(function (response) {
                                         toastr.success("Component is deleted successfully.", "Deleted!");
+                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                         $scope.reload();
+                                    })
+                                    .catch(function () {
+                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     });
                             }
                         }

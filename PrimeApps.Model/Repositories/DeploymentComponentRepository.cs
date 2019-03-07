@@ -45,6 +45,7 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => !x.Deleted & x.ComponentId == functionId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit)
+                .OrderByDescending(x => x.BuildNumber)
                 .ToListAsync();
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)

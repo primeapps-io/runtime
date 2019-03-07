@@ -18,31 +18,31 @@ namespace PrimeApps.Studio.Controllers
     {
         private IBackgroundTaskQueue Queue;
         private IConfiguration _configuration;
-        private IDeploymentFunctionRepository _deploymentFunctionRepository;
+        private IDeploymentComponentRepository _deploymentComponentRepository;
         private IDeploymentHelper _deploymentHelper;
 
         public DeploymentComponentController(IBackgroundTaskQueue queue,
             IConfiguration configuration,
-            IDeploymentFunctionRepository deploymentFunctionRepository,
+            IDeploymentComponentRepository deploymentComponentRepository,
             IDeploymentHelper deploymentHelper)
         {
             Queue = queue;
             _configuration = configuration;
-            _deploymentFunctionRepository = deploymentFunctionRepository;
+            _deploymentComponentRepository = deploymentComponentRepository;
             _deploymentHelper = deploymentHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_deploymentFunctionRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_deploymentComponentRepository, PreviewMode, AppId, TenantId);
             base.OnActionExecuting(context);
         }
 
         [Route("count/{id}"), HttpGet]
         public async Task<IActionResult> Count(int id)
         {
-            var count = await _deploymentFunctionRepository.Count(id);
+            var count = await _deploymentComponentRepository.Count(id);
 
             return Ok(count);
         }
@@ -50,7 +50,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("find/{id}"), HttpPost]
         public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
         {
-            var deployments = await _deploymentFunctionRepository.Find(id, paginationModel); ;
+            var deployments = await _deploymentComponentRepository.Find(id, paginationModel);
 
             return Ok(deployments);
         }
@@ -58,7 +58,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            var deployment = await _deploymentFunctionRepository.Get(id);
+            var deployment = await _deploymentComponentRepository.Get(id);
 
             if (deployment == null)
                 return BadRequest();
@@ -72,9 +72,9 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
+            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber() + 1;
 
-            var deploymentObj = new DeploymentFunction()
+            var deploymentObj = new DeploymentComponent()
             {
                 BuildNumber = currentBuildNumber,
                 Version = currentBuildNumber.ToString(),
@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
                 Status = DeploymentStatus.Running
             };
 
-            var createResult = await _deploymentFunctionRepository.Create(deploymentObj);
+            var createResult = await _deploymentComponentRepository.Create(deploymentObj);
 
             if (createResult < 0)
                 return BadRequest("An error occurred while creating an build.");
@@ -97,7 +97,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var deploymentObj = await _deploymentFunctionRepository.Get(id);
+            var deploymentObj = await _deploymentComponentRepository.Get(id);
 
             if (deployment == null)
                 return BadRequest("Function deployment not found.");
@@ -107,7 +107,7 @@ namespace PrimeApps.Studio.Controllers
             deploymentObj.StartTime = deployment.StartTime;
             deploymentObj.EndTime = deployment.EndTime;
 
-            var result = await _deploymentFunctionRepository.Update(deploymentObj);
+            var result = await _deploymentComponentRepository.Update(deploymentObj);
 
             if (result < 0)
                 return BadRequest("An error occurred while update function deployment.");
@@ -118,12 +118,12 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var function = await _deploymentFunctionRepository.Get(id);
+            var function = await _deploymentComponentRepository.Get(id);
 
             if (function == null)
                 return BadRequest();
 
-            var result = await _deploymentFunctionRepository.Delete(function);
+            var result = await _deploymentComponentRepository.Delete(function);
 
             if (result < 0)
                 return BadRequest("An error occurred while deleting an function deployment.");

@@ -287,6 +287,11 @@ namespace PrimeApps.Studio.Storage
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
+        
+        public static string GetPathComponents(string folderName, string componentName)
+        {
+            return $"components/{folderName}/{componentName}";
+        }
 
         public static ObjectType GetType(string type)
         {

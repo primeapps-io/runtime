@@ -1,46 +1,270 @@
-<div class="setup-title">
-    <h2>{{component.name}}</h2>
-    <ul class="list-unstyled list-inline">
-        <li>
-    <button class="btn add-button" ng-click="edit()"><i class="fas fa-cog"></i> Settings</button>
-        </li>
-    </ul>
-</div>
+<div ng-if="!loading" class="function tab-content">
+    <div class="col-sm-12" style="border: none ;">
+        <div class="setup-liste-header row">
+            <div class="col-sm-12">
+                <div class="setup-title">
+                    <h2>
+                        {{component.label}}
+                        <span style="color: black;font-size: 13px;font-style: italic;font-weight: 600;">
+                            ( {{component.name}} )
+                        </span>
+                    </h2>
+                </div>
+            </div>
+        </div>
 
-
-
-<div ng-if="!loading" class="tab-content" style="padding: 20px;">
-    <div class="setup-title">
-        <h2>Clone this repository</h2>
-        <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
-    </div>
-    <div class="markdown" style="padding-bottom: 20px;">
+        <div ng-if="!loading" class="tab-content" style="padding: 20px;position: relative;">
+            <div class="bs-docs-section">
+                <div class="bs-example" append-source>
+                    <div bs-active-pane="$parent.$parent.$parent.tabManage.activeTab" bs-tabs>
+                        <div data-title="Overview" name="overview" bs-pane>
+                            <div ng-if="!loading" class="tab-content" style="padding: 20px;">
+                                <div class="setup-title">
+                                    <h2>Clone this repository</h2>
+                                    <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+                                </div>
+                                <div class="markdown" style="padding-bottom: 20px;">
         <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
             <code>
-{{giteaUrl}}/{{organization.name}}/test1.git</code>
+{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</code>
         </pre>
-    </div>
-    <div class="setup-title">
-        <h2>Creating a new repository on the command line</h2>
-    </div>
-    <div class="markdown" style="padding-bottom: 20px;">
+                                </div>
+                                <div class="setup-title">
+                                    <h2>Creating a new repository on the command line</h2>
+                                </div>
+                                <div class="markdown" style="padding-bottom: 20px;">
         <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
             <code>
 git init
 git add README.md
 git commit -m "first commit"
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{component.name}}.git</span>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
         </pre>
-    </div>
-    <div class="setup-title">
-        <h2>Pushing an existing repository from the command line</h2>
-    </div>
-    <div class="markdown" style="padding-bottom: 20px;">
+                                </div>
+                                <div class="setup-title">
+                                    <h2>Pushing an existing repository from the command line</h2>
+                                </div>
+                                <div class="markdown" style="padding-bottom: 20px;">
         <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
             <code>
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{component.name}}.git</span>
+git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
         </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-title="Deployments" name="deployment" bs-pane>
+
+                            <div class="tab-content">
+                                <table class="table" ng-show="loadingDeployments">
+                                    <thead>
+                                    <tr>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Version</th>
+                                        <th>Status</th>
+                                        <th width="50"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <tr ng-repeat="item in placeholderArray">
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="animated-background"></div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
+                                    <thead>
+                                    <tr>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Version</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="deployment in deployments">
+                                        <td>{{getTime(deployment.start_time)}}</td>
+                                        <td>{{getTime(deployment.end_time)}}</td>
+                                        <td>{{deployment.version}}</td>
+                                        <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="table-pagination">
+                                    <div>
+                                        <nav aria-label="Page navigation">
+                                            <div paging
+                                                 text-first="&laquo;"
+                                                 ul-class="pagination"
+                                                 active-class="active"
+                                                 page="requestModel.offset"
+                                                 page-size="requestModel.limit"
+                                                 total="$parent.$parent.$parent.$parent.$parent.$parent.pageTotal"
+                                                 scroll-top="true"
+                                                 hide-if-empty="true"
+                                                 show-prev-next="true"
+                                                 show-first-last="true"
+                                                 text-next-class="fas fa-chevron-right"
+                                                 text-prev-class="fas fa-chevron-left"
+                                                 text-first-class="fas fa-step-backward"
+                                                 text-last-class="fas fa-step-forward"
+                                                 paging-action="changePage(page)">
+                                            </div>
+                                        </nav>
+                                    </div>
+                                    <div>
+                                        Total Deployment {{$parent.$parent.$parent.$parent.$parent.$parent.pageTotal}}
+                                    </div>
+                                    <div>
+                                        <span class="pagination-span">Items per page  </span>
+                                        <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                                            <option ng-selected="true" value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                            <option value="150">150</option>
+                                            <option value="200">200</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="$parent.$parent.$parent.tabManage.activeTab === 'deployment'">
+                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="reload()"></i>
+
+                                <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
+                                    <i class="fas fa-plus"></i> Create Deployment
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div data-title="Settings" name="settings" bs-pane>
+                            <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
+                                  novalidate>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group"
+                                             style="position: relative;"
+                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.label.$invalid}">
+                                            <label class="col-sm-4 required-field">Label <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                            <input type="text"
+                                                   name="label"
+                                                   class="form-control ng-animate-disabled col-sm-6"
+                                                   required
+                                                   maxlength="300"
+                                                   focus="true"
+                                                   ng-model="component.label"/>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.module_id.$invalid}">
+                                            <label class="col-sm-4 required-field">Module <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                            <select
+                                                    name="module_id"
+                                                    class="form-control ng-animate-disabled col-sm-8"
+                                                    required
+                                                    ng-model="component.module_id"
+                                                    ng-options="o.id as o['label_' + language + '_singular'] for o in modules">
+                                                <option value="">Select Module</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.url.$invalid}">
+                                            <label class="col-sm-12 required-field">Url </label>
+                                            <div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
+                                                <input type="text"
+                                                       name="url"
+                                                       class="form-control ng-animate-disabled col-sm-6"
+                                                       required
+                                                       ng-disabled="true"
+                                                       maxlength="300"
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.$parent.content.url"/>
+                                            </div>
+                                            <div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
+                                                <input type="text"
+                                                       name="url_parameters"
+                                                       class="form-control ng-animate-disabled col-sm-6"
+                                                       maxlength="300"
+                                                       placeholder="id&name"
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.$parent.content.url_parameters"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.template.$invalid}">
+                                            <label class="col-sm-12 required-field">Template</label>
+                                            <div class="col-sm-11" style="padding-left: 0px !important;">
+                                                <select
+                                                        name="module_id"
+                                                        class="form-control ng-animate-disabled col-sm-8"
+                                                        ng-show="!$parent.$parent.$parent.$parent.$parent.$parent.content.templateUrl"
+                                                        ng-model="$parent.$parent.$parent.$parent.$parent.$parent.$parent.component.content.app.templateUrl"
+                                                        ng-options="o.value as o.value for o in files | filter:isTemplateFile()">
+                                                    <option value="">Select File</option>
+                                                </select>
+                                                <input type="text"
+                                                       name="template"
+                                                       class="form-control ng-animate-disabled col-sm-6"
+                                                       ng-show="$parent.$parent.$parent.$parent.$parent.$parent.content.templateUrl"
+                                                       maxlength="300"
+                                                       focus="true"
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.$parent.component.content.app.templateUrl"/>
+                                            </div>
+                                            <label class="checkbox-inline newinput col-sm-1" style="padding-right: 0px !important;margin-top: 10px;">
+                                                <input type="checkbox" ng-model="$parent.$parent.$parent.$parent.$parent.$parent.content.templateUrl" />
+                                                <small style="font-size:100%;">Url</small>
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.controller.$invalid}">
+                                            <label class="col-sm-4 required-field">Controller Name<span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                            <input type="text"
+                                                   name="controller"
+                                                   class="form-control ng-animate-disabled col-sm-6"
+                                                   maxlength="300"
+                                                   placeholder="SampleController"
+                                                   ng-model="$parent.$parent.$parent.$parent.$parent.$parent.component.content.app.controller"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group"
+                                             style="position: relative;"
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.files.$invalid}">
+                                            <label class="col-sm-4 required-field">Files </label>
+                                            <textarea style="padding-top: 10px;padding-bottom: 10px;min-height: auto !important;margin: 0px;height: 348px;max-height: 348px;width: 641px;"
+                                                      name="files"
+                                                      placeholder="sampleController.js&#10;sampleService.js"
+                                                      class="form-control ng-animate-disabled col-sm-6 ng-pristine ng-untouched ng-valid ng-not-empty"
+                                                      ng-model="$parent.$parent.$parent.$parent.$parent.$parent.component.content.files"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="$parent.$parent.$parent.tabManage.activeTab === 'settings'">
+                                        <button ng-click="$parent.$parent.$parent.$parent.$parent.$parent.$parent.save(functionFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
+                                            <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

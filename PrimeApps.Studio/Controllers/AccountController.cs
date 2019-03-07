@@ -126,7 +126,7 @@ namespace PrimeApps.Studio.Controllers
             return Ok(organization.Id);
         }
 
-        [Route("user_available/{userId}")]
+        [Route("user_available/{userId}"), HttpGet]
         public async Task<IActionResult> UserAvailable(int userId)
         {
             var user = await _studioUserRepository.Get(userId);

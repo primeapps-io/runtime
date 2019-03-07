@@ -41,6 +41,7 @@ namespace PrimeApps.Studio.Controllers
             SetContext(context);
             SetCurrentUser(_componentRepository, PreviewMode, AppId, TenantId);
             SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_deploymentComponentRepository, PreviewMode, AppId, TenantId);
             base.OnActionExecuting(context);
         }
 
@@ -180,7 +181,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occurred while creating an deployment.");
 
-            //Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(function, functionObj, name, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, deployment.Id));
 
             return Ok();
         }

@@ -58,6 +58,7 @@ namespace PrimeApps.Studio
             services.AddScoped<ICalculationHelper, CalculationHelper>();
             services.AddScoped<IChangeLogHelper, ChangeLogHelper>();
             services.AddScoped<IFunctionHelper, FunctionHelper>();
+            services.AddScoped<IComponentHelper, ComponentHelper>();
             services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
             services.AddScoped<IWorkflowHelper, WorkflowHelper>();
             services.AddScoped<IProcessHelper, ProcessHelper>();

@@ -35,62 +35,54 @@
 
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
-                <th>{{'Setup.Workflow.Module' | translate}}</th>
-                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                <th>{{'Setup.Workflow.Status' | translate}}</th>
-                <th style="width: 70px;"></th>
-            </tr>
+        <tr>
+            <th>Label</th>
+            <th>Name</th>
+            <th>Module</th>
+            <th style="width: 70px;"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td> 
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
 
     <table class="table" ng-if="!loading && components.length !== 0">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Module Id</th>
-                <th>Place</th>
-                <th>Order</th>
-                <th style="width: 70px;"></th>
-            </tr>
+        <tr>
+            <th>Label</th>
+            <th>Name</th>
+            <th>Module</th>
+            <th style="width: 70px;"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="component in components" ui-sref="studio.app.componentDetail({id:component.id})">
-                <td>{{component.name}}</td>
-                <td>{{component.type}}</td>
-                <td>{{component.module_id}}</td>
-                <td>{{component.place}}</td>
-                <td>{{component.order}}</td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation();delete(component.id)" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        <tr ng-repeat="component in components" ui-sref="studio.app.componentDetail({id:component.id})">
+            <td>{{component.label}}</td>
+            <td>{{component.name}}</td>
+            <td>{{getModuleName(component.module_id)}}</td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation();delete(component.id, $event)" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination" ng-if="!loading && components.length !== 0">

@@ -17,8 +17,8 @@ angular.module('primeapps')
                 create: function (model) {
                     return $http.post(config.apiUrl + 'component/create', model);
                 },
-                update: function (model) {
-                    return $http.put(config.apiUrl + 'component/update', model);
+                update: function (id, model) {
+                    return $http.put(config.apiUrl + 'component/update/' + id, model);
                 },
                 getAllModulesBasic: function () {
                     return $http.get(config.apiUrl + 'module/get_all_basic');
@@ -28,6 +28,12 @@ angular.module('primeapps')
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'component/delete/' + id);
+                },
+                getFileList: function (id) {
+                    return $http.get(config.apiUrl + 'component/all_files_names/' + id);
+                },
+                deploy: function (id) {
+                    return $http.get(config.apiUrl + 'component/deploy/' + id);
                 }
             };
         }]);
