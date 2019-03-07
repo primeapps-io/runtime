@@ -7,13 +7,13 @@
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()"><i
-                                    class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()">
+                                <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                             </button>
                         </li>
                         <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving"><i
-                                    class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving">
+                                <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                             </button>
                         </li>
                     </ul>
@@ -28,8 +28,9 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-                                    <label class="col-sm-4 required-field">Name <span
-                                            class="required-label">(required)</span></label>
+                                    <label class="col-sm-4 required-field">
+                                        Name <span class="required-label">(required)</span>
+                                    </label>
                                     <input type="text"
                                            name="label"
                                            class="form-control ng-animate-disabled col-sm-8"
@@ -42,7 +43,7 @@
                                 </div>
                                 <div class="form-group" style="position: relative;"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
-                                    <label class="col-sm-4 required-field">Identifier <span class="required-label">({{'Common.Required' | translate }})</label>
+                                    <label class="col-sm-4 required-field">Identifier <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
                                            class="form-control ng-animate-disabled col-sm-6 text-lowercase"
@@ -50,13 +51,13 @@
                                            maxlength="50"
                                            ng-trim="false"
                                            ng-blur="checkNameBlur();"
-                                           ng-change="checkName(appModel.name); $parent.$parent.isAppNameChanged=true;"
+                                           ng-change="checkNameUnique(appModel.name)"
                                            ng-model="appModel.name" />
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"
                                            style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
                                     </div>
-                                    <div ng-if="nameValid">
+                                    <div ng-if="nameValid && appModel.name">
                                         <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
                                            class="fa-sidebar-icon fas fa-check"></i>
                                     </div>

@@ -43,6 +43,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		public override async Task<bool> Process(MessageDTO emailQueueItem, UserItem appUser)
 		{
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			string[] ids;
 			bool isAllSelected = false;
 			string emailTemplate = "",
@@ -81,13 +83,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-						}
-						/// get details of the email queue item.
-						///
-						var notificationId = Convert.ToInt32(emailQueueItem.Id);
+
+						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                        /// get details of the email queue item.
+                        ///
+                        var notificationId = Convert.ToInt32(emailQueueItem.Id);
 
 						//  var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
 
@@ -167,8 +168,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 							using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
 							{
-								moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-								module = await moduleRepository.GetById(emailNotification.ModuleId);
+								moduleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+                                module = await moduleRepository.GetById(emailNotification.ModuleId);
 							}
 
 							moduleName = emailNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
@@ -180,7 +181,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 								/// compose bulk messages for sending.
 								//composerResult = await Compose(emailTemplate, module, emailField, subject, query, ids, language, emailId, cloudantClient, emailClient);
-								composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, databaseContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName, Cc, Bcc);
+								composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, databaseContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName, Cc, Bcc, appUser);
 
 								/// send composed messages through selected provider.
 								emailResponse = await emailClient.Send(composerResult.Messages);
@@ -229,11 +230,13 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		/// <param name="language"></param>
 		/// <param name="cloudantClient"></param>
 		/// <returns></returns>
-		public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, IConfiguration configuration, EMailProvider emailClient, string attachmentLink, string attachmentName, string Cc, string Bcc)
+		public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, IConfiguration configuration, EMailProvider emailClient, string attachmentLink, string attachmentName, string Cc, string Bcc, UserItem appUser)
 		{
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			IList<Message> messages = new List<Message>();
 			IList<string> messageFields = new List<string>();
 			JArray messageStatusList = new JArray();
@@ -322,11 +325,10 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
-							if (!string.IsNullOrEmpty(previewMode))
-							{
-								moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
-							}
-							foreach (string recordId in ids)
+
+							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                            foreach (string recordId in ids)
 							{
 								var status = MessageStatusEnum.Successful;
 								var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenant.Setting.Language);

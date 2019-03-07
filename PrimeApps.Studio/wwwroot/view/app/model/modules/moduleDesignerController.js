@@ -4,9 +4,7 @@ angular.module('primeapps')
 
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
-
-            $rootScope.subtoggleClass = 'full-toggled2';
-            $rootScope.toggleClass = 'toggled full-toggled';
+ 
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
@@ -324,6 +322,8 @@ angular.module('primeapps')
             else {
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
+                    
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
@@ -502,7 +502,7 @@ angular.module('primeapps')
                 $scope.currentRow = row;
                 $scope.currentColumn = column;
                 $scope.showPermissionWarning = false;
-
+                $scope.fieldActiveSection ="properties";
                 if (!field) {
                     field = $scope.newField();
                 }
@@ -607,31 +607,6 @@ angular.module('primeapps')
                 });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
-                    $timeout(function () {
-                        var scroolElement = document.querySelectorAll(".modal-dialog");
-                        var mainNavLinks = document.querySelectorAll(".modal-menu a");
-
-                        $('a[href^="#"]').on('click', function (e) {
-                            var urlHash = url + this.hash;
-                            window.location.hash = urlHash;
-                            e.preventDefault();
-
-                        });
-
-                        scroolElement[0].addEventListener("scroll", function (event) {
-                            var fromTop = scroolElement[0].scrollTop + 30;
-                            mainNavLinks.forEach(function (link) {
-                                var section = document.querySelector(link.hash);
-
-                                if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-                                    link.classList.add("active");
-                                } else {
-                                    link.classList.remove("active");
-                                }
-
-                            });
-                        });
-                    }, 100)
                 });
 
 
@@ -1008,9 +983,9 @@ angular.module('primeapps')
                     // field.validation.readonly = false;
                     //
                     // $scope.module.fields.push(field);
-                    // $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
-                    // $scope.fieldModal.hide();
-                    // $scope.moduleChange = new Date();
+                    $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
+                    $scope.fieldModal.hide();
+                    $scope.moduleChange = new Date();
                 }
 
 
@@ -1423,14 +1398,14 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
-                //moduleModel.order = 6;//TODO: add an order backend
 
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
                 if (!$scope.id || $scope.clone) {
-                    ModuleService.moduleCreate(moduleModel).then(function () {
-                        $scope.saving = false;
+                    ModuleService.moduleCreate(moduleModel).then(function (result) {
+                        $scope.saving = false;                        
+                        $rootScope.appModules.push(result.data);                        
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId

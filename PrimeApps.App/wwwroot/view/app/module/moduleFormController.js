@@ -187,8 +187,7 @@ angular.module('primeapps')
             if ($scope.parentType) {
                 if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
                     $scope.parentModule = $scope.parentType;
-                }
-                else if ($scope.type === 'current_accounts') {
+                } else if ($scope.type === 'current_accounts') {
                     if ($scope.id) {
                         if ($scope.parentType === 'supplier')
                             $scope.parentModule = 'suppliers';
@@ -197,15 +196,13 @@ angular.module('primeapps')
                     } else {
                         $scope.parentModule = $scope.parentType;
                     }
-                }
-                else {
+                } else {
                     var parentTypeField = $filter('filter')($scope.module.fields, {name: $scope.parentType}, true)[0];
 
                     if (!parentTypeField) {
                         $scope.parentType = null;
                         $scope.parentId = null;
-                    }
-                    else {
+                    } else {
                         $scope.parentModule = parentTypeField.lookup_type;
                     }
                 }
@@ -215,23 +212,19 @@ angular.module('primeapps')
                 $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
                 $scope.quoteProductModule = $filter('filter')($rootScope.modules, {name: 'quote_products'}, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            }
-            else if ($scope.type === 'sales_orders') {
+            } else if ($scope.type === 'sales_orders') {
                 $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
                 $scope.orderProductModule = $filter('filter')($rootScope.modules, {name: 'order_products'}, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            }
-            else if ($scope.type === 'purchase_orders') {
+            } else if ($scope.type === 'purchase_orders') {
                 $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
                 $scope.purchaseProductModule = $filter('filter')($rootScope.modules, {name: 'purchase_order_products'}, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            }
-            else if ($scope.type === 'sales_invoices') {
+            } else if ($scope.type === 'sales_invoices') {
                 $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
                 $scope.salesInvoiceProductModule = $filter('filter')($rootScope.modules, {name: 'sales_invoices_products'}, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            }
-            else if ($scope.type === 'purchase_invoices') {
+            } else if ($scope.type === 'purchase_invoices') {
                 $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
                 $scope.purchaseInvoiceProductModule = $filter('filter')($rootScope.modules, {name: 'purchase_invoices_products'}, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
@@ -414,15 +407,12 @@ angular.module('primeapps')
                                     if (($scope.type === 'activities' || $scope.type === 'mails') && $scope.relatedToField) {
                                         $scope.record['related_to'] = lookupRecord;
                                         $scope.record['related_module'] = $filter('filter')(picklists['900000'], {value: $scope.parentType}, true)[0];
-                                    }
-                                    else {
+                                    } else {
                                         if ($scope.parentModule === 'accounts' && $scope.type === 'current_accounts') {
                                             $scope.record['customer'] = lookupRecord;
-                                        }
-                                        else if ($scope.parentModule === 'suppliers' && $scope.type === 'current_accounts') {
+                                        } else if ($scope.parentModule === 'suppliers' && $scope.type === 'current_accounts') {
                                             $scope.record['supplier'] = lookupRecord;
-                                        }
-                                        else {
+                                        } else {
                                             $scope.record[$scope.parentType] = lookupRecord;
                                         }
 
@@ -439,8 +429,7 @@ angular.module('primeapps')
                                         setFieldDependencies();
                                     }
                                 });
-                        }
-                        else {
+                        } else {
                             setFieldDependencies();
                         }
 
@@ -520,8 +509,7 @@ angular.module('primeapps')
                                     userCreateField.hidden = true;
                                     record[userCreateField.name] = false;
                                 }
-                            }
-                            else {
+                            } else {
                                 //Düzenle butonundan Edit Sayfasına gidildiğinde Lisans kontrolü için Lisans bilgileri çekiliyor.
                                 if ($scope.module.name === 'calisanlar') {
                                     ModuleService.getUserLicenseStatus()
@@ -553,8 +541,7 @@ angular.module('primeapps')
 
                                 if (record['currency']) {
                                     currencyValidationSet(true);
-                                }
-                                else {
+                                } else {
 
                                     if ($scope.currencyField.data_type === 'picklist') {
                                         record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], {value: $rootScope.currencySymbol})[0];
@@ -627,8 +614,7 @@ angular.module('primeapps')
 
                                         $scope.loading = false;
                                     });
-                            }
-                            else {
+                            } else {
                                 $scope.record = record;
                                 if ($scope.clone) {
                                     $scope.record.owner = $scope.currentUser;
@@ -730,8 +716,7 @@ angular.module('primeapps')
                             name: 'discount',
                             deleted: '!true'
                         }, true)[0];
-                    }
-                    else if ($scope.currentLookupField.lookup_type === 'accounts') {
+                    } else if ($scope.currentLookupField.lookup_type === 'accounts') {
                         $scope.accountModule = $filter('filter')($rootScope.modules, {name: 'accounts'}, true)[0];
                         discountField = $filter('filter')($scope.accountModule.fields, {
                             name: 'discount',
@@ -759,8 +744,7 @@ angular.module('primeapps')
 
                         if (parentCurrencyField) {
                             return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['currency']);
-                        }
-                        else {
+                        } else {
                             return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
                         }
                     }
@@ -835,7 +819,7 @@ angular.module('primeapps')
                 };
 
                 //Kullanıcı oluştur checkboxında lisans kontrolü.
-                if ($scope.userLicenseKalan == 0 || $scope.userLicenseKalan < 0) {
+                if ($scope.userLicenseKalan === 0 || $scope.userLicenseKalan < 0) {
                     if (!$rootScope.branchAvailable) {
                         var userProfile = $filter('filter')($scope.module.fields, {name: 'kullanici_profili'}, true)[0];
                         var userRole = $filter('filter')($scope.module.fields, {name: 'kullanici_rolu'}, true)[0];
@@ -880,27 +864,27 @@ angular.module('primeapps')
 
                             $scope.submitting = false;
                             return;
-                        }
-                        else {
+                        } else {
                             var profileId = $scope.record.kullanici_profili ? $scope.record.kullanici_profili.id : null;
                             var roleId = $scope.record.kullanici_rolu ? $scope.record.kullanici_rolu.id : null;
 
                             var createUser = function (roleId, profileId, record) {
                                 var inviteModel = {};
                                 inviteModel.email = $scope.record.e_posta;
-                                inviteModel.firstName = $scope.record.ad;
-                                inviteModel.lastName = $scope.record.soyad;
+                                inviteModel.first_name = $scope.record.ad;
+                                inviteModel.last_name = $scope.record.soyad;
                                 inviteModel.profile = profileId;
                                 inviteModel.role = roleId;
-                                inviteModel.fullName = inviteModel.firstName + " " + inviteModel.lastName;
+                                inviteModel.full_name = inviteModel.first_name + " " + inviteModel.last_name;
 
 
-                                if (!inviteModel || !inviteModel.email || !inviteModel.profile || !inviteModel.role || !inviteModel.firstName || !inviteModel.lastName)
+                                if (!inviteModel || !inviteModel.email || !inviteModel.profile || !inviteModel.role || !inviteModel.first_name || !inviteModel.last_name)
                                     return;
 
                                 $scope.userInviting = true;
-                                inviteModel.profileId = inviteModel.profile;
-                                inviteModel.roleId = inviteModel.role;
+                                inviteModel.profile_id = inviteModel.profile;
+                                inviteModel.role_id = inviteModel.role;
+                                inviteModel.dont_send_mail = true;
                                 $scope.addedUser = angular.copy(inviteModel);
 
                                 ModuleService.addUser(inviteModel)
@@ -943,6 +927,7 @@ angular.module('primeapps')
 
                                             $scope.submit(record);
                                             $scope.openCreateUserModal();
+                                          
                                         }
                                     })
                                     .catch(function (response) {
@@ -954,7 +939,7 @@ angular.module('primeapps')
                                             });
                                         }
                                     });
-                            }
+                            };
 
                             if ($rootScope.branchAvailable) {
                                 ModuleService.getRecord('branchs', $scope.record.branch.id)
@@ -965,8 +950,7 @@ angular.module('primeapps')
                                     }).catch(function (error) {
                                     $scope.submitting = false;
                                 });
-                            }
-                            else {
+                            } else {
                                 createUser(roleId, profileId, record);
                             }
                         }
@@ -1011,8 +995,7 @@ angular.module('primeapps')
                                     delete record['kasa'];
                                     delete record['banka'];
                                     isValid = false;
-                                }
-                                else if (!record['kasa'] && !record['banka']) {
+                                } else if (!record['kasa'] && !record['banka']) {
                                     if (!hasShownWarning) {
                                         ngToast.create({
                                             content: $filter('translate')('Common.ChooseBankOrCase'),
@@ -1169,11 +1152,9 @@ angular.module('primeapps')
                                     setTimeout(function () {
                                         result(response.data);
                                     }, 2000)
-                                }
-                                else
+                                } else
                                     result(response.data);
-                            }
-                            else
+                            } else
                                 result(response.data);
 
                             components.run('AfterCreate', 'Script', $scope, record);
@@ -1193,15 +1174,12 @@ angular.module('primeapps')
                                     setTimeout(function () {
                                         $scope.submitting = false;
                                     }, 2000)
-                                }
-                                else
+                                } else
                                     $scope.submitting = false;
-                            }
-                            else
+                            } else
                                 $scope.submitting = false;
                         });
-                }
-                else {
+                } else {
                     //encrypted field
                     for (var f = 0; f < $scope.module.fields.length; f++) {
                         var field = $scope.module.fields[f];
@@ -1242,8 +1220,7 @@ angular.module('primeapps')
                                 if (!record.master_id) {
                                     $scope.submitting = false;
                                     result(response.data);
-                                }
-                                else if ($scope.module.name === 'quotes') {
+                                } else if ($scope.module.name === 'quotes') {
                                     //After record is revised, update the master record's stage
                                     ModuleService.getRecord($scope.module.name, record.master_id)
                                         .then(function onSuccess(recordDataMaster) {
@@ -1266,8 +1243,7 @@ angular.module('primeapps')
                                 error(data, status);
                                 $scope.submitting = false;
                             });
-                    }
-                    else {
+                    } else {
 
                         ModuleService.updateRecord($scope.module.name, record)
                             .then(function onSuccess(response) {
@@ -1282,11 +1258,9 @@ angular.module('primeapps')
                                         setTimeout(function () {
                                             result(response.data);
                                         }, 2000)
-                                    }
-                                    else
+                                    } else
                                         result(response.data);
-                                }
-                                else
+                                } else
                                     result(response.data);
 
                                 components.run('AfterUpdate', 'Script', $scope, record);
@@ -1306,11 +1280,9 @@ angular.module('primeapps')
                                         setTimeout(function () {
                                             $scope.submitting = false;
                                         }, 2000)
-                                    }
-                                    else
+                                    } else
                                         $scope.submitting = false;
-                                }
-                                else
+                                } else
                                     $scope.submitting = false;
                             });
                     }
@@ -1367,12 +1339,10 @@ angular.module('primeapps')
                         if (!$scope.id || $scope.revise) {
                             if (quoteProducts.length) {
                                 insertRecords();
-                            }
-                            else {
+                            } else {
                                 success();
                             }
-                        }
-                        else {
+                        } else {
                             var ids = [];
 
                             angular.forEach($scope.quoteProducts, function (quoteProduct) {
@@ -1385,23 +1355,19 @@ angular.module('primeapps')
                                     .then(function onSuccess() {
                                         if (quoteProducts.length) {
                                             insertRecords();
-                                        }
-                                        else {
+                                        } else {
                                             success();
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 if ($scope.quoteProducts.length) {
                                     insertRecords();
-                                }
-                                else {
+                                } else {
                                     success();
                                 }
                             }
                         }
-                    }
-                    else if ($scope.type === 'sales_invoices') {
+                    } else if ($scope.type === 'sales_invoices') {
                         var salesInvoiceProducts = [];
                         var no = 1;
                         var salesInvoiceProductsOrders = $filter('orderBy')($scope.salesInvoiceProducts, 'order');
@@ -1448,12 +1414,10 @@ angular.module('primeapps')
                         if (!$scope.id || $scope.revise) {
                             if (salesInvoiceProducts.length) {
                                 insertRecords();
-                            }
-                            else {
+                            } else {
                                 success();
                             }
-                        }
-                        else {
+                        } else {
                             var ids = [];
 
                             angular.forEach($scope.salesInvoiceProducts, function (salesInvoiceProduct) {
@@ -1466,25 +1430,21 @@ angular.module('primeapps')
                                     .then(function onSuccess() {
                                         if (salesInvoiceProducts.length) {
                                             insertRecords();
-                                        }
-                                        else {
+                                        } else {
                                             success();
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 if ($scope.salesInvoiceProducts.length) {
                                     insertRecords();
-                                }
-                                else {
+                                } else {
                                     success();
                                 }
                             }
                         }
 
 
-                    }
-                    else if ($scope.type === 'purchase_invoices') {
+                    } else if ($scope.type === 'purchase_invoices') {
                         var purchaseInvoiceProducts = [];
                         var no = 1;
                         var purchaseInvoiceProductsOrders = $filter('orderBy')($scope.purchaseInvoiceProducts, 'order');
@@ -1530,12 +1490,10 @@ angular.module('primeapps')
                         if (!$scope.id || $scope.revise) {
                             if (purchaseInvoiceProducts.length) {
                                 insertRecords();
-                            }
-                            else {
+                            } else {
                                 success();
                             }
-                        }
-                        else {
+                        } else {
                             var ids = [];
 
                             angular.forEach($scope.purchaseInvoiceProducts, function (purchaseInvoiceProduct) {
@@ -1548,23 +1506,19 @@ angular.module('primeapps')
                                     .then(function onSuccess() {
                                         if (purchaseInvoiceProducts.length) {
                                             insertRecords();
-                                        }
-                                        else {
+                                        } else {
                                             success();
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 if ($scope.purchaseInvoiceProducts.length) {
                                     insertRecords();
-                                }
-                                else {
+                                } else {
                                     success();
                                 }
                             }
                         }
-                    }
-                    else if ($scope.type === 'sales_orders') {
+                    } else if ($scope.type === 'sales_orders') {
                         var orderProducts = [];
                         var no = 1;
                         var orderProductsOrder = $filter('orderBy')($scope.orderProducts, 'order');
@@ -1610,12 +1564,10 @@ angular.module('primeapps')
                         if (!$scope.id || $scope.revise) {
                             if (orderProducts.length) {
                                 insertRecords();
-                            }
-                            else {
+                            } else {
                                 success();
                             }
-                        }
-                        else {
+                        } else {
                             var ids = [];
 
                             angular.forEach($scope.orderProducts, function (orderProduct) {
@@ -1628,23 +1580,19 @@ angular.module('primeapps')
                                     .then(function () {
                                         if (orderProducts.length) {
                                             insertRecords();
-                                        }
-                                        else {
+                                        } else {
                                             success();
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 if ($scope.orderProducts.length) {
                                     insertRecords();
-                                }
-                                else {
+                                } else {
                                     success();
                                 }
                             }
                         }
-                    }
-                    else if ($scope.type === 'purchase_orders') {
+                    } else if ($scope.type === 'purchase_orders') {
                         var purchaseProducts = [];
                         var no = 1;
                         var purchaseProductsOrders = $filter('orderBy')($scope.purchaseProducts, 'order');
@@ -1691,12 +1639,10 @@ angular.module('primeapps')
                         if (!$scope.id || $scope.revise) {
                             if (purchaseProducts.length) {
                                 insertRecords();
-                            }
-                            else {
+                            } else {
                                 success();
                             }
-                        }
-                        else {
+                        } else {
                             var ids = [];
 
                             angular.forEach($scope.purchaseProducts, function (purchaseProduct) {
@@ -1709,23 +1655,19 @@ angular.module('primeapps')
                                     .then(function () {
                                         if (purchaseProducts.length) {
                                             insertRecords();
-                                        }
-                                        else {
+                                        } else {
                                             success();
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 if ($scope.purchaseProducts.length) {
                                     insertRecords();
-                                }
-                                else {
+                                } else {
                                     success();
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if ($scope.uploader.queue.length < 1)
                             success();
                     }
@@ -1767,8 +1709,7 @@ angular.module('primeapps')
                             });
 
                             ModuleService.setDefaultValues($scope.module, $scope.record, $scope.picklistsModule);
-                        }
-                        else {
+                        } else {
                             if ($scope.parentId) {
                                 params.type = $scope.parentModule;
                                 params.id = $scope.parentId;
@@ -1792,8 +1733,7 @@ angular.module('primeapps')
 
                             if ($scope.module.name === 'opportunities')
                                 $cache.remove('opportunity' + $scope.id + '_stage_history');
-                        }
-                        else {
+                        } else {
                             cacheKey = (!$scope.relatedToField ? $scope.parentType : 'related_to') + $scope.parentId + '_' + (!$scope.many ? $scope.module.name : $scope.many);
                             var parentCacheKey = $scope.parentType + '_' + $scope.parentType;
                             $cache.remove(cacheKey);
@@ -1840,20 +1780,16 @@ angular.module('primeapps')
                                 $scope.submitting = false;
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['activity_type'].label[$rootScope.language]});
-                            }
-                            else if ($scope.type == 'current_accounts') {
+                            } else if ($scope.type == 'current_accounts') {
                                 $scope.record['transaction_type'] = $filter('filter')(transactionTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
                             }
-                        }
-
-                        else {
+                        } else {
                             if ($scope.module.name === 'stock_transactions') {
                                 setTimeout(function () {
                                     $state.go('app.moduleDetail', params);
                                 }, 500);
-                            }
-                            else {
+                            } else {
                                 if ($scope.module.name === 'calisanlar') {
                                     //Kullanıcı bilgilerinin yer aldığı modalda Detaya Git butonuna basılınca çalışacak fonksiyon.
                                     $scope.goModuleDetail = function () {
@@ -1865,11 +1801,9 @@ angular.module('primeapps')
                                     //gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
                                     if (!$scope.id && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable)) {
                                         $scope.loading = true;
-                                    }
-                                    else
+                                    } else
                                         $state.go('app.moduleDetail', params);
-                                }
-                                else
+                                } else
                                     $state.go('app.moduleDetail', params);
                             }
 
@@ -2030,8 +1964,7 @@ angular.module('primeapps')
                                                             var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: quoteProductRecord.product.currency}, true)[0];
                                                             quoteProductRecord.product.currency = currencyPicklistItem;
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         quoteProductRecord.product.currency = quoteProductRecord.currency;
                                                         quoteProductRecord.product.unit_price = quoteProductRecord.unit_price;
                                                     }
@@ -2048,8 +1981,7 @@ angular.module('primeapps')
                                 });
 
                             getVatList();
-                        }
-                        else if (module === 'sales_orders') {
+                        } else if (module === 'sales_orders') {
                             $scope.orderProductsLoading = true;
 
                             var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
@@ -2113,8 +2045,7 @@ angular.module('primeapps')
                                                             var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: orderProductRecord.product.currency}, true)[0];
                                                             orderProductRecord.product.currency = currencyPicklistItem;
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         orderProductRecord.product.currency = orderProductRecord.currency;
                                                         orderProductRecord.product.unit_price = orderProductRecord.unit_price;
                                                     }
@@ -2130,8 +2061,7 @@ angular.module('primeapps')
                                 });
 
                             getVatList();
-                        }
-                        else if (module === 'purchase_orders') {
+                        } else if (module === 'purchase_orders') {
                             $scope.purchaseProductsLoading = true;
                             var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
                             var additionalFields = [];
@@ -2193,8 +2123,7 @@ angular.module('primeapps')
                                                             var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: purchaseProductRecord.product.currency}, true)[0];
                                                             purchaseProductRecord.product.currency = currencyPicklistItem;
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         purchaseProductRecord.product.currency = purchaseProductRecord.currency;
                                                         purchaseProductRecord.product.unit_price = purchaseProductRecord.unit_price;
                                                     }
@@ -2210,8 +2139,7 @@ angular.module('primeapps')
                                 });
 
                             getVatList();
-                        }
-                        else if (module === 'purchase_invoices') {
+                        } else if (module === 'purchase_invoices') {
                             $scope.purchaseInvoiceProductsLoading = true;
                             var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
                             var additionalFields = [];
@@ -2275,8 +2203,7 @@ angular.module('primeapps')
                                                             var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: purchaseInvoiceProductRecord.product.currency}, true)[0];
                                                             purchaseInvoiceProductRecord.product.currency = currencyPicklistItem;
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         purchaseInvoiceProductRecord.product.currency = purchaseInvoiceProductRecord.currency;
                                                         purchaseInvoiceProductRecord.product.unit_price = purchaseInvoiceProductRecord.unit_price;
                                                     }
@@ -2293,8 +2220,7 @@ angular.module('primeapps')
                                 });
 
                             getVatList();
-                        }
-                        else if (module === 'sales_invoices') {
+                        } else if (module === 'sales_invoices') {
                             $scope.salesInvoiceProductsLoading = true;
                             var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
                             var additionalFields = [];
@@ -2358,8 +2284,7 @@ angular.module('primeapps')
                                                             var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: salesInvoiceProductRecord.product.currency}, true)[0];
                                                             salesInvoiceProductRecord.product.currency = currencyPicklistItem;
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         salesInvoiceProductRecord.product.currency = salesInvoiceProductRecord.currency;
                                                         salesInvoiceProductRecord.product.unit_price = salesInvoiceProductRecord.unit_price;
                                                     }
@@ -2398,8 +2323,7 @@ angular.module('primeapps')
                     var top = (screen.height / 2) - (h / 2);
                     window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
-                }
-                else {
+                } else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
                         scope: $scope,
@@ -2645,8 +2569,7 @@ angular.module('primeapps')
                         //             jsonData[parameterName] = response.data[fieldName];
                         //         })
                         // }
-                    }
-                    else {
+                    } else {
                         if ($scope.record[fieldName])
                             jsonData[parameterName] = $scope.record[fieldName];
                         else
@@ -2673,8 +2596,7 @@ angular.module('primeapps')
                             $scope.webhookRequesting[action.id] = false;
                         });
 
-                }
-                else if (action.method_type === 'get') {
+                } else if (action.method_type === 'get') {
 
                     var query = "";
 

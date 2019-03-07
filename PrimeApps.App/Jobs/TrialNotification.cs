@@ -31,6 +31,7 @@ namespace PrimeApps.App.Jobs
 		{
 			IList<Tenant> trialTenants = new List<Tenant>();
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
@@ -43,10 +44,9 @@ namespace PrimeApps.App.Jobs
 
 					foreach (var tenant in tenants)
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							tenantRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
-						}
+
+						tenantRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+
 						trialTenants = await tenantRepository.GetTrialTenants();
 
 						if (trialTenants.Count == 0)

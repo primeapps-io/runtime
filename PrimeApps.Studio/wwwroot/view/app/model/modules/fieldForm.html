@@ -29,13 +29,19 @@
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <li><a class="active" href="#properties">Properties </a></li>
-                                <li><a href="#validation">Validation </a></li>
-                                <li><a href="#permissions">Permissions </a></li>
+                                <li ng-click="fieldActiveSection = 'properties'">
+                                    <a ng-class="fieldActiveSection ==='properties' ? 'active':''" href="javascript:void(0);">Properties </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'validation'">
+                                    <a ng-class="fieldActiveSection ==='validation' ? 'active':''" href="javascript:void(0);">Validation </a>
+                                </li>
+                                <li ng-click="fieldActiveSection = 'permissions'">
+                                    <a ng-class="fieldActiveSection ==='permissions' ? 'active':''" href="javascript:void(0)">Permissions </a>
+                                </li>
                             </ul>
                         </div>
                         <div>
-                            <div class="section" id="properties">
+                            <div class="section" id="properties" ng-show="fieldActiveSection ==='properties'">
                                 <h4>Properties</h4>
                                 <div class="panel">
                                     <div class="form-group"
@@ -125,7 +131,7 @@
 
                                     <!--Default value options-->
                                     <div class="form-group"
-                                         ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
+                                         ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'lookup' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.userLookup.$invalid}">
                                         <label class="control-label col-sm-12">{{'Setup.Modules.DefaultValue' |
                                             translate}}</label>
@@ -539,16 +545,16 @@
                                         </label>
 
                                     </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-                                        <label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">
-                                            Şifreli Alan
-                                            <input type="checkbox" ng-model="currentField.encrypted"
-                                                   ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
-                                            <span></span>
-                                        </label>
+                                    <!--<div class="form-group"-->
+                                         <!--ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">-->
+                                        <!--<label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">-->
+                                            <!--Şifreli Alan-->
+                                            <!--<input type="checkbox" ng-model="currentField.encrypted"-->
+                                                   <!--ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">-->
+                                            <!--<span></span>-->
+                                        <!--</label>-->
 
-                                    </div>
+                                    <!--</div>-->
                                     <div class="form-group" ng-show="currentField.encrypted">
                                         <label class="col-sm-4">Şifre Sahipleri</label>
                                         <div class="col-sm-8">
@@ -665,7 +671,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="validation">
+                            <div class="section" id="validation" ng-show="fieldActiveSection ==='validation'">
                                 <h4>Validation</h4>
                                 <div class="panel">
                                     <div ng-if="showPermissionWarning" class="callout callout-warning">
@@ -750,7 +756,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" id="permissions">
+                            <div class="section" id="permissions" ng-show="fieldActiveSection ==='permissions'">
                                 <h4> Permissions</h4>
                                 <div class="panel table-responsive">
                                     <table class="table">

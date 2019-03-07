@@ -46,16 +46,16 @@ namespace PrimeApps.App.Jobs.Reminder
 					databaseContext.TenantId = reminderMessage.TenantId;
 
 					var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+					previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 					using (var reminderRepository = new ReminderRepository(databaseContext, _configuration))
 					using (var userRepository = new UserRepository(databaseContext, _configuration))
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							reminderRepository.CurrentUser = userRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-						}
-						/// Get related reminder record from data store.
-						reminder = await reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
+
+						reminderRepository.CurrentUser = userRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                        /// Get related reminder record from data store.
+                        reminder = await reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
 
 						if (reminder == null) return true;
 
@@ -66,9 +66,9 @@ namespace PrimeApps.App.Jobs.Reminder
 
 						using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
 						{
-							platformUserRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+							platformUserRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
-							try
+                            try
 							{
 								switch (reminderType)
 								{

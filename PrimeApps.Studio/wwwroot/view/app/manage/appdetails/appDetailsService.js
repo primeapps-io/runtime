@@ -25,7 +25,11 @@ angular.module('primeapps')
                 },
                 getAppTheme: function (id) {
                     return $http.get(config.apiUrl + 'app/get_app_theme/' + id);
+                },
+                addAppUser: function (appUser) {
+                    return $http.post(config.apiUrl + 'app_draft_user/create', appUser);
                 }
+
             };
         }]);
 

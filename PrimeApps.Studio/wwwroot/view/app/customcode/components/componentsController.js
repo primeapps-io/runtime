@@ -9,7 +9,7 @@ angular.module('primeapps')
 
             $scope.$parent.menuTopTitle = $scope.currentApp.label
             $scope.$parent.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'customCode';
+            $scope.$parent.activeMenuItem = 'components';
 
             $scope.currentApp = $localStorage.get("current_app");
 
@@ -17,7 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.modules = [];
+            $scope.modules = $rootScope.appModules;
 
             $scope.component = {};
             $scope.components = [];
@@ -80,22 +80,7 @@ angular.module('primeapps')
                 $scope.changePage(1)
             };
 
-            $scope.createModal = function () {
-                //$scope.modalLoading = true;
-                openModal();
-                if ($scope.modules.length === 0) {
-                    ComponentsService.getAllModulesBasic()
-                        .then(function (response) {
-                            $scope.modules = response.data;
-                            //$scope.modalLoading = false;
-                        })
-                }
-                else {
-                    //$scope.modalLoading = false;
-                }
-            };
-
-            var openModal = function () {
+            $scope.openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/customcode/components/componentFormModal.html',
@@ -114,10 +99,11 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
-                if ($scope.component.type === 2) {
-                    $scope.component.place = 0;
-                    $scope.component.order = 0;
-                }
+                var module = $filter('filter')($scope.modules, {id: $scope.component.module_id}, true)[0];
+
+                $scope.component.place = 0;
+                $scope.component.order = 0;
+                $scope.component.name = module.name.replace(/_/g, '');
 
                 ComponentsService.create($scope.component)
                     .then(function (response) {
@@ -126,9 +112,19 @@ angular.module('primeapps')
                         toastr.success("Component is created successfully.");
                         $state.go('studio.app.componentDetail', {id: response.data});
                     })
+                    .catch(function (response) {
+                        if (response.status === 409) {
+                            toastr.warning("Component already exist for module " + module['label_en_singular']);
+                        }
+                        $scope.saving = false;
+                    });
             };
 
-            $scope.delete = function (id) {
+            $scope.getModuleName = function (id) {
+                return $filter('filter')($scope.modules, {id: id}, true)[0]['label_en_singular'];
+            };
+
+            $scope.delete = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -138,11 +134,17 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             if (id) {
                                 ComponentsService.delete(id)
                                     .then(function (response) {
                                         toastr.success("Component is deleted successfully.", "Deleted!");
+                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                         $scope.reload();
+                                    })
+                                    .catch(function () {
+                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     });
                             }
                         }

@@ -33,6 +33,7 @@ namespace PrimeApps.App.Jobs
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 				var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+				previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 				using (var userRepository = new UserRepository(databaseContext, _configuration))
@@ -41,10 +42,9 @@ namespace PrimeApps.App.Jobs
 
 					foreach (var tenant in tenants)
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = 1, PreviewMode = previewMode };
-						}
+
+						userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = 1, PreviewMode = previewMode };
+
 						var users = await userRepository.GetAllAsync();
 
 						foreach (var user in users)

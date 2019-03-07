@@ -36,6 +36,7 @@ namespace PrimeApps.App.Jobs
 				var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 				var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+				previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 				{
@@ -51,10 +52,9 @@ namespace PrimeApps.App.Jobs
 							using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
 							using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
 							{
-								if (!string.IsNullOrEmpty(previewMode))
-								{
-									platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
-								}
+
+								platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+
 								var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
 								var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
@@ -67,10 +67,9 @@ namespace PrimeApps.App.Jobs
 								using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
 								using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
 								{
-									if (!string.IsNullOrEmpty(previewMode))
-									{
-										moduleRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
-									}
+
+									moduleRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+
 									var module = await moduleRepository.GetByName("calisanlar");
 
 									if (module == null)

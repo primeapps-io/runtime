@@ -13,28 +13,36 @@ namespace PrimeApps.Model.Repositories
 {
     public class ComponentRepository : RepositoryBaseTenant, IComponentRepository
     {
-        public ComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<int> Count()
         {
             return await DbContext.Components
-               .Where(x => !x.Deleted).CountAsync();
+                .Where(x => !x.Deleted && x.Type == ComponentType.Component).CountAsync();
         }
 
         public async Task<Component> Get(int id)
         {
             return await DbContext.Components
-               .Where(x => !x.Deleted && x.Id == id)
-               .FirstOrDefaultAsync();
+                .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Component)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Component> Get(string name)
+        {
+            return await DbContext.Components
+                .Where(x => !x.Deleted && x.Name == name && x.Type == ComponentType.Component)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<ICollection<Component>> Find(PaginationModel paginationModel)
         {
-            var components = await DbContext.Components
-                .Where(x => !x.Deleted)
+            var components = DbContext.Components
+                .Where(x => !x.Deleted && x.Type == ComponentType.Component)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit)
-                .ToListAsync();
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -42,16 +50,15 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    components = components.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    components = components.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    components = components.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    components = components.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
-            return components;
+            return await components.ToListAsync();
         }
 
         public async Task<List<Component>> GetByType(ComponentType type)
@@ -65,13 +72,13 @@ namespace PrimeApps.Model.Repositories
         public async Task<List<Component>> GetByPlace(ComponentPlace place)
         {
             return await DbContext.Components
-                .Where(x => !x.Deleted && x.Place == place).ToListAsync();
+                .Where(x => !x.Deleted && x.Type == ComponentType.Component && x.Place == place).ToListAsync();
         }
 
         public async Task<Component> GetGlobalSettings()
         {
             return await DbContext.Components
-                .Where(x => !x.Deleted && x.Place == ComponentPlace.GlobalConfig)
+                .Where(x => !x.Deleted && x.Type == ComponentType.Component && x.Place == ComponentPlace.GlobalConfig)
                 .FirstOrDefaultAsync();
         }
 
@@ -81,13 +88,14 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(Component organization)
+        public async Task<int> Update(Component component)
         {
             return await DbContext.SaveChangesAsync();
         }
-        public async Task<int> Delete(Component organization)
+
+        public async Task<int> Delete(Component component)
         {
-            organization.Deleted = true;
+            component.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
     }

@@ -4,10 +4,10 @@ angular.module('primeapps')
 
     .controller('ReportController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'helper', 'ModuleService', 'dragularService', 'ReportsService', 'operators',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, helper, ModuleService, dragularService, ReportsService, operators) {
+            $scope.icons = ModuleService.getIcons();
+            //$scope.reportModel.category_id = parseInt($location.search().categoryId);
+            //$scope.ReportId = parseInt($location.search().Id);
 
-            $scope.reportModel = {};
-            $scope.reportModel.category_id = parseInt($location.search().categoryId);
-            $scope.ReportId = parseInt($location.search().Id);
             $scope.isEdit = $scope.ReportId > 0;
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
@@ -162,6 +162,7 @@ angular.module('primeapps')
                     nextprevdatetype: "Y"
                 }
             ];
+
             $scope.setEdit = function (reportId) {
                 ReportsService.getReport(reportId).then(function (result) {
                     $scope.currentReport = result.data;
@@ -186,9 +187,11 @@ angular.module('primeapps')
             $scope.nextPrevDateChange = function (filter) {
                 $scope.setCostumDate(filter);
             };
+
             $scope.nextPrevDateTypeChange = function (filter) {
                 $scope.setCostumDate(filter);
             };
+
             $scope.setCostumDate = function (filter) {
                 if (filter.valueX === null || filter.valueX === "" || filter.valueX === undefined) {
                     filter.value = "";
@@ -223,10 +226,11 @@ angular.module('primeapps')
                     "availableFields": [],
                     "selectedFields": []
                 };
-                if (!$scope.ReportId) {
-                    ModuleService.getModuleFields($scope.module.name).then(function (response) {
-                        var fields = response.data;
-                        $scope.module.fields = ModuleService.processFields(fields);
+
+                ModuleService.getModuleFields($scope.module.name).then(function (response) {
+                    var fields = response.data;
+                    $scope.module.fields = ModuleService.processFields(fields);
+                    if (!$scope.ReportId) {
 
                         angular.forEach(fields, function (item) {
                             if (item.deleted && item.multiline_type != 'large')
@@ -247,126 +251,148 @@ angular.module('primeapps')
                                 $scope.numberField.push(angular.copy(field));
                             }
                         });
-                    });
-
-
-                }
-
-                ModuleService.getPicklists($scope.module, true)
-                    .then(function (picklists) {
-                        $scope.modulePicklists = picklists.data;
-                        $scope.reportModel.filterList = [];
-
-                        for (var i = 0; i < 10; i++) {
-                            var filter = {};
-                            filter.field = null;
-                            filter.operator = null;
-                            filter.value = null;
-                            filter.no = i + 1;
-
-                            $scope.reportModel.filterList.push(filter);
-                        }
-
-                        if ($scope.reportModel.filters) {
-                            $scope.reportModel.filters = $filter('orderBy')($scope.reportModel.filters, 'no');
-
-                            for (var j = 0; j < $scope.reportModel.filters.length; j++) {
-                                var name = $scope.reportModel.filters[j].field;
-                                var value = $scope.reportModel.filters[j].value;
-
-                                if (name.indexOf('.') > -1) {
-                                    name = name.split('.')[0];
-                                    $scope.reportModel.filters[j].field = name;
-                                }
-
-                                var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
-                                var fieldValue = null;
-
-                                if (!field)
+                    } else {
+                        if ($scope.currentReport.fields) {
+                            $scope.fields.availableFields = [];
+                            $scope.fields.selectedFields = [];
+                            angular.forEach($scope.module.fields, function (item) {
+                                if (item.deleted && item.multiline_type != 'large')
                                     return;
+                                var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
+                                if (field) {
+                                    $scope.fields.selectedFields.push(item);
+                                } else {
+                                    $scope.fields.availableFields.push(item);
+                                }
+                            });
 
-                                switch (field.data_type) {
-                                    case 'picklist':
-                                        fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
-                                        break;
-                                    case 'multiselect':
-                                        fieldValue = [];
-                                        var multiselectValue = value.split('|');
+                            $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
 
-                                        angular.forEach(multiselectValue, function (picklistLabel) {
-                                            var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+                        }
+                    }
+                    ModuleService.getPickItemsLists($scope.module)
+                        .then(function (picklists) {
+                            $scope.modulePicklists = picklists;
+                            $scope.reportModel.filterList = [];
 
-                                            if (picklist)
-                                                fieldValue.push(picklist);
-                                        });
-                                        break;
-                                    case 'lookup':
-                                        if (field.lookup_type === 'users') {
-                                            var user = {};
+                            for (var i = 0; i < 10; i++) {
+                                var filter = {};
+                                filter.field = null;
+                                filter.operator = null;
+                                filter.value = null;
+                                filter.no = i + 1;
 
-                                            if (value === '0' || value === '[me]') {
-                                                user.id = 0;
-                                                user.email = '[me]';
-                                                user.full_name = $filter('translate')('Common.LoggedInUser');
-                                            }
-                                            else {
-                                                if (value != '-') {
-                                                    var userItem =
-                                                        $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0
-                                                            ];
-                                                    user.id = userItem.id;
-                                                    user.email = userItem.email;
-                                                    user.full_name = userItem.full_name;
+                                $scope.reportModel.filterList.push(filter);
+                            }
+
+                            if ($scope.reportModel.filters) {
+                                $scope.reportModel.filters = $filter('orderBy')($scope.reportModel.filters, 'no');
+
+                                for (var j = 0; j < $scope.reportModel.filters.length; j++) {
+                                    var name = $scope.reportModel.filters[j].field;
+                                    var value = $scope.reportModel.filters[j].value;
+
+                                    if (name.indexOf('.') > -1) {
+                                        name = name.split('.')[0];
+                                        $scope.reportModel.filters[j].field = name;
+                                    }
+
+                                    var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
+                                    var fieldValue = null;
+
+                                    if (!field)
+                                        return;
+
+                                    switch (field.data_type) {
+                                        case 'picklist':
+                                            fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                                            break;
+                                        case 'multiselect':
+                                            fieldValue = [];
+                                            var multiselectValue = value.split('|');
+
+                                            angular.forEach(multiselectValue, function (picklistLabel) {
+                                                var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+
+                                                if (picklist)
+                                                    fieldValue.push(picklist);
+                                            });
+                                            break;
+                                        case 'lookup':
+                                            if (field.lookup_type === 'users') {
+                                                var user = {};
+
+                                                if (value === '0' || value === '[me]') {
+                                                    user.id = 0;
+                                                    user.email = '[me]';
+                                                    user.full_name = $filter('translate')('Common.LoggedInUser');
+                                                } else {
+                                                    if (value != '-') {
+                                                        var userItem =
+                                                            $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0
+                                                                ];
+                                                        user.id = userItem.id;
+                                                        user.email = userItem.email;
+                                                        user.full_name = userItem.full_name;
+                                                    }
+
+                                                    //TODO: $rootScope.users kaldirilinca duzeltilecek
+                                                    // ModuleService.getRecord('users', value)
+                                                    //     .then(function (lookupRecord) {
+                                                    //         fieldValue = [lookupRecord.data];
+                                                    //     });
                                                 }
 
-                                                //TODO: $rootScope.users kaldirilinca duzeltilecek
-                                                // ModuleService.getRecord('users', value)
-                                                //     .then(function (lookupRecord) {
-                                                //         fieldValue = [lookupRecord.data];
-                                                //     });
+                                                fieldValue = [user];
+                                            } else {
+                                                fieldValue = value;
+                                            }
+                                            break;
+                                        case 'date':
+                                        case 'date_time':
+                                        case 'time':
+                                            if (!$scope.isCostumeDate($scope.reportModel.filters[j])) {
+                                                fieldValue = new Date(value);
+                                                $scope.reportModel.filterList[j].costumeDate = "costume";
+                                                $scope.reportModel.filters[j].costumeDate = "costume";
+                                            } else {
+                                                fieldValue = $scope.reportModel.filters[j].value;
+                                                $scope.reportModel.filterList[j].costumeDate = $scope.reportModel.filters[j].costumeDate;
+                                                $scope.reportModel.filterList[j].valueX = $scope.reportModel.filters[j].valueX;
+                                                $scope.reportModel.filterList[j].nextprevdatetype = $scope.reportModel.filters[j].nextprevdatetype;
                                             }
 
-                                            fieldValue = [user];
-                                        }
-                                        else {
+                                            break;
+                                        case 'checkbox':
+                                            fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
+                                            break;
+                                        default :
                                             fieldValue = value;
-                                        }
-                                        break;
-                                    case 'date':
-                                    case 'date_time':
-                                    case 'time':
-                                        if (!$scope.isCostumeDate($scope.reportModel.filters[j])) {
-                                            fieldValue = new Date(value);
-                                            $scope.reportModel.filterList[j].costumeDate = "costume";
-                                            $scope.reportModel.filters[j].costumeDate = "costume";
-                                        } else {
-                                            fieldValue = $scope.reportModel.filters[j].value;
-                                            $scope.reportModel.filterList[j].costumeDate = $scope.reportModel.filters[j].costumeDate;
-                                            $scope.reportModel.filterList[j].valueX = $scope.reportModel.filters[j].valueX;
-                                            $scope.reportModel.filterList[j].nextprevdatetype = $scope.reportModel.filters[j].nextprevdatetype;
-                                        }
+                                            break;
+                                    }
 
-                                        break;
-                                    case 'checkbox':
-                                        fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
-                                        break;
-                                    default :
-                                        fieldValue = value;
-                                        break;
-                                }
+                                    $scope.reportModel.filterList[j].field = field;
+                                    $scope.reportModel.filterList[j].operator = operators[$scope.reportModel.filters[j].operator];
+                                    $scope.reportModel.filterList[j].value = fieldValue;
 
-                                $scope.reportModel.filterList[j].field = field;
-                                $scope.reportModel.filterList[j].operator = operators[$scope.reportModel.filters[j].operator];
-                                $scope.reportModel.filterList[j].value = fieldValue;
-
-                                if ($scope.reportModel.filters[j].operator === 'empty' || $scope.reportModel.filters[j].operator === 'not_empty') {
-                                    $scope.reportModel.filterList[j].value = null;
-                                    $scope.reportModel.filterList[j].disabled = true;
+                                    if ($scope.reportModel.filters[j].operator === 'empty' || $scope.reportModel.filters[j].operator === 'not_empty') {
+                                        $scope.reportModel.filterList[j].value = null;
+                                        $scope.reportModel.filterList[j].disabled = true;
+                                    }
                                 }
                             }
-                        }
-                        $scope.loadingFilter = false;
-                    });
+                            $scope.loadingFilter = false;
+                        })
+                        .finally(function () {
+                            $scope.loadingModal = false;
+                        });
+
+                    if ($scope.reportModel.report_type === 'tabular') {
+                        $scope.setFields();
+                    }
+
+                });
+
 
                 $scope.multiselect = function (searchTerm, field) {
                     var picklistItems = [];
@@ -479,8 +505,7 @@ angular.module('primeapps')
                     if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
                         filterListItem.value = null;
                         filterListItem.disabled = true;
-                    }
-                    else {
+                    } else {
                         filterListItem.disabled = false;
                     }
                 };
@@ -492,7 +517,14 @@ angular.module('primeapps')
                 var containerLeft = document.querySelector('#availableFields');
                 var containerRight = document.querySelector('#selectedFields');
 
-                dragularService([containerLeft], {
+                if ($scope.availableFields_ && $scope.selectedFields_) {
+                    $scope.availableFields_.destroy();
+                    $scope.selectedFields_.destroy();
+                    $scope.availableFields_ = null;
+                    $scope.selectedFields_ = null;
+                }
+
+                $scope.availableFields_ = dragularService([containerLeft], {
                     scope: $scope,
                     containersModel: [$scope.fields.availableFields],
                     classes: {
@@ -505,7 +537,7 @@ angular.module('primeapps')
                     }
                 });
 
-                dragularService([containerRight], {
+                $scope.selectedFields_ = dragularService([containerRight], {
                     scope: $scope,
                     classes: {
                         mirror: 'gu-mirror-view',
@@ -560,12 +592,35 @@ angular.module('primeapps')
                 $scope.reportModel.aggregations.splice(index, 1);
             };
 
-            $scope.validate = function (tabClick) {
+            $scope.validate = function (tab) {
                 $scope.reportForm.$submitted = true;
-
-
-                if ($scope.reportForm.$valid)
+                if (tab === 'info') {
+                    $scope.wizardStep = 0;
                     return true;
+                }
+
+
+                if (tab === 'filter' || tab === 'area' || tab === 'summary') {
+                    if ((tab === 'area' || tab === 'filter') && $scope.reportForm.report_type.$valid && $scope.reportForm.module_id.$valid && $scope.reportForm.category_id.$valid && $scope.reportForm.name.$valid) {
+
+                        if (tab === 'filter')
+                            $scope.wizardStep = 1;
+
+                        if (tab === 'area') {
+                            $scope.wizardStep = 2;
+                            $scope.reportForm.$submitted = false;
+                            return true
+                        }
+
+                        return true;
+                    }
+
+                    if (tab === 'summary' && $scope.reportForm.$valid) {
+                        $scope.wizardStep = 3;
+                        return true;
+                    }
+
+                }
 
                 return false;
             };
@@ -616,8 +671,7 @@ angular.module('primeapps')
 
                         if (field.data_type === 'checkbox')
                             filter.value = filter.value.system_code;
-                    }
-                    else {
+                    } else {
                         filter.value = '-';
                     }
 
@@ -705,8 +759,14 @@ angular.module('primeapps')
                     report.widget = {
                         name: report.name,
                         color: $scope.reportModel.widget ? $scope.reportModel.widget.color : null,
-                        icon: $scope.reportModel.widget ? $scope.reportModel.widget.icon : null
+
                     }
+                    if (angular.isObject($scope.reportModel.widget.icon)) {
+                        report.widget.icon = $scope.reportModel.widget.icon.value;
+                    } else {
+                        report.widget.icon = $scope.reportModel.widget.icon;
+                    }
+
                 }
                 if (report.report_type === 'tabular') {
                     report.fields = $scope.getFieldModel();
@@ -718,8 +778,7 @@ angular.module('primeapps')
                     angular.forEach($scope.reportModel.shares, function (user) {
                         report.shares.push(user.id);
                     });
-                }
-                else {
+                } else {
                     report.sharing_type = $scope.reportModel.sharing_type;
                 }
 
@@ -727,13 +786,18 @@ angular.module('primeapps')
                     report.id = $scope.ReportId;
                     ReportsService.updateReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/reports?id=" + result.data.id;
+                        toastr.success("Report is saved successfully.");
+                        $scope.reportModal.hide();
+                        $scope.changePage();
                     });
-                }
-                else {
+                } else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/reports?id=" + result.data.id;
+                        toastr.success("Report is saved successfully.");
+                        $scope.reportModal.hide();
+                        $scope.$parent.$parent.pageTotal++;
+                        $scope.changePage();
+
 
                     });
                 }
@@ -766,12 +830,12 @@ angular.module('primeapps')
                 $scope.reportForm.$submitted = true;
                 if ($scope.reportForm.$valid) {
                     $scope.wizardStep = 3;
-                    // $scope.setValideStep3();
+
                 }
 
             };
 
-           $scope.stepBack = function (step) {
+            $scope.stepBack = function (step) {
                 $scope.wizardStep = step;
             };
 
@@ -810,23 +874,7 @@ angular.module('primeapps')
                 $scope.reportModel.name = $scope.currentReport.name;
                 $scope.reportModel.filters = $scope.currentReport.filters;
                 $scope.selectModule();
-                if ($scope.currentReport.fields) {
-                    $scope.fields.availableFields = [];
-                    $scope.fields.selectedFields = [];
-                    angular.forEach($scope.module.fields, function (item) {
-                        if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
-                            return;
-                        var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
-                        if (field) {
-                            $scope.fields.selectedFields.push(item);
-                        } else {
-                            $scope.fields.availableFields.push(item);
-                        }
-                    });
 
-                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
-
-                }
                 if ($scope.currentReport.group_field) {
                     $scope.reportModel.group_field = $scope.currentReport.group_field;
                     $scope.reportModel.sort_field = $scope.currentReport.sort_field;
@@ -842,7 +890,7 @@ angular.module('primeapps')
                 }
                 if ($scope.currentReport.report_type === "single") {
                     ReportsService.getWidget($scope.currentReport.id).then(function (result) {
-                        var widget = result.data[0];
+                        var widget = result.data;
                         $scope.reportModel.widget = {
                             color: widget.color,
                             icon: widget.icon
@@ -850,7 +898,6 @@ angular.module('primeapps')
                     });
                 }
                 $scope.reportModel.aggregations = $scope.currentReport.aggregations;
-
 
                 angular.forEach($scope.numberField, function (item) {
                     var aggregation = $filter('filter')($scope.currentReport.aggregations, {field: item.name}, true)[0];
@@ -862,6 +909,7 @@ angular.module('primeapps')
                     $scope.reportModel.aggregations[0].aggregation_type === 'count' ? $scope.countField = {Aggregation: 'count-created_by'} : '';
 
             };
+
             if ($scope.ReportId || $scope.clone) {
                 $scope.setEdit($scope.ReportId);
             }

@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
@@ -20,142 +19,143 @@ using PrimeApps.App.Logging;
 
 namespace PrimeApps.App
 {
-	public partial class Startup
-	{
-		public IConfiguration Configuration { get; }
+    public partial class Startup
+    {
+        public IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration;
-		}
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-			//Register DI
-			DIRegister(services, Configuration);
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //Register DI
+            DIRegister(services, Configuration);
 
-			//Configure Authentication
-			AuthConfiguration(services, Configuration);
+            //Configure Authentication
+            AuthConfiguration(services, Configuration);
 
-			var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
-			GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
-			services.AddHangfire(x => x.UseStorage(hangfireStorage));
+            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
+            GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
+            services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
-			//Add Workflow service
-			services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
+            //Add Workflow service
+            services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
 
-			services.Configure<RequestLocalizationOptions>(options =>
-			{
-				var supportedCultures = new[]
-				{
-					new CultureInfo("en-US"),
-					new CultureInfo("tr-TR")
-				};
-				options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
-				options.SupportedCultures = supportedCultures;
-				options.SupportedUICultures = supportedCultures;
-			});
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("tr-TR")
+                };
+                options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
-			services.AddCors(options =>
-			{
-				options.AddPolicy("AllowAll",
-					builder =>
-					{
-						builder
-							.AllowAnyOrigin()
-							.AllowAnyMethod()
-							.AllowAnyHeader()
-							.AllowCredentials();
-					});
-			});
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
+            });
 
-			services.AddMvc(opt =>
-				{
-					opt.CacheProfiles.Add("Nocache",
-						new CacheProfile()
-						{
-							Location = ResponseCacheLocation.None,
-							NoStore = true,
-						});
-				})
-				.AddWebApiConventions()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddJsonOptions(opt =>
-				{
-					opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-					opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-					opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-					opt.SerializerSettings.DateParseHandling = DateParseHandling.None;
-					opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            services.AddMvc(opt =>
+                {
+                    opt.CacheProfiles.Add("Nocache",
+                        new CacheProfile()
+                        {
+                            Location = ResponseCacheLocation.None,
+                            NoStore = true,
+                        });
+                })
+                .AddWebApiConventions()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(opt =>
+                {
+                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+                    opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    opt.SerializerSettings.DateParseHandling = DateParseHandling.None;
+                    opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
 
-					opt.SerializerSettings.ContractResolver = new DefaultContractResolver
-					{
-						NamingStrategy = new SnakeCaseNamingStrategy(),
-					};
-					opt.SerializerSettings.Converters.Add(new StringEnumConverter());
-				})
-				.AddViewLocalization(
-					LanguageViewLocationExpanderFormat.Suffix,
-					opts => { opts.ResourcesPath = "Localization"; })
-				.AddDataAnnotationsLocalization();
+                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy(),
+                    };
+                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+                })
+                .AddViewLocalization(
+                    LanguageViewLocationExpanderFormat.Suffix,
+                    opts => { opts.ResourcesPath = "Localization"; })
+                .AddDataAnnotationsLocalization();
 
-			var awsOptions = Configuration.GetAWSOptions();
-			awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
-			var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-			if (!string.IsNullOrEmpty(storageUrl))
-			{
-				awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
-			}
-			var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
-			var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
-			if (!string.IsNullOrEmpty(storageAccessKey) && !string.IsNullOrEmpty(storageSecretKey))
-			{
-				awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
-			}
-			services.AddDefaultAWSOptions(awsOptions);
-			services.AddAWSService<IAmazonS3>();
-			services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
-			services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
-		}
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                var awsOptions = Configuration.GetAWSOptions();
+                awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+                awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
+                var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
+                awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<IAmazonS3>();
+            }
 
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseDatabaseErrorPage();
-			}
-			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);					
-			if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
-			{
-				var fordwardedHeaderOptions = new ForwardedHeadersOptions
-				{
-					ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-				};
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
 
-				fordwardedHeaderOptions.KnownNetworks.Clear();
-				fordwardedHeaderOptions.KnownProxies.Clear();
+            if (!string.IsNullOrEmpty(redisConnection))
+                services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
+        }
 
-				app.UseForwardedHeaders(fordwardedHeaderOptions);
-			}
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+            }
 
-			var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
-			if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
-			{
-				app.UseHsts().UseHttpsRedirection();
-			}
+            var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+            if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
+            {
+                var fordwardedHeaderOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                };
 
-			app.UseHangfireDashboard();
-			app.UseStaticFiles();
-			app.UseAuthentication();
+                fordwardedHeaderOptions.KnownNetworks.Clear();
+                fordwardedHeaderOptions.KnownProxies.Clear();
 
-			app.UseCors(cors =>
-				cors
-					.AllowAnyHeader()
-					.AllowAnyMethod()
-					.AllowAnyOrigin()
-			);
+                app.UseForwardedHeaders(fordwardedHeaderOptions);
+            }
+
+            var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+            if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
+            {
+                app.UseHsts().UseHttpsRedirection();
+            }
+
+            app.UseHangfireDashboard();
+            app.UseStaticFiles();
+            app.UseAuthentication();
+
+            app.UseCors(cors =>
+                cors
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
+            );
 
 			JobConfiguration(app, Configuration);
 			BpmConfiguration(app, Configuration);
@@ -168,11 +168,11 @@ namespace PrimeApps.App
 					template: "{controller=Home}/{action=Index}/{id?}"
 				);
 
-				routes.MapRoute(
-					name: "DefaultApi",
-					template: "api/{controller}/{id}"
-				);
-			});
-		}
-	}
+                routes.MapRoute(
+                    name: "DefaultApi",
+                    template: "api/{controller}/{id}"
+                );
+            });
+        }
+    }
 }

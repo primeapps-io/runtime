@@ -1,76 +1,83 @@
 <div class="setup-title">
     <h2>{{'Setup.Modules.TitleDependency' | translate}}</h2>
-    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
-        {{'Setup.Modules.NewDependency' | translate}}
-    </button>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
+                {{'Setup.Modules.NewDependency' | translate}}
+            </button>
+        </li>
+    </ul>
 </div>
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Templates.Module' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Templates.Module' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-            <tr ng-repeat="item in placeholderArray">
-                <td class="text-center">
-                    <div>
-                        <div class="animated-background"></div>
-                    </div>
-                </td>
-                <td>
+        <tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td class="text-center">
+                <div>
                     <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td class="text-center">
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+                </div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td class="text-center">
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Templates.Module' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
-                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
-                <th width="50"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Templates.Module' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+            <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+            <th width="50"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'"
-                ng-click="$event.stopPropagation(); showFormModal(dependency)">
-                <td>{{dependency.module['label_'+language+'_plural']}}</td>
-                <td>{{dependency.dependency_type === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
-                    ('Setup.Modules.DependencyTypeValueChange' | translate)}}
-                </td>
-                <td>{{(dependency.module.fields | filter:{name:dependency.parent_field})[0]['label_'+language]}}</td>
-                <td>{{ dependency.child_field ?(dependency.module.fields | filter:{name:dependency.child_field})[0]['label_'+language]: '-'}}</td>
-                <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(dependency);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'"
+            ng-click="$event.stopPropagation(); showFormModal(dependency)">
+            <td>{{dependency.module['label_'+language+'_plural']}}</td>
+            <td>{{dependency.dependency_type === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
+                ('Setup.Modules.DependencyTypeValueChange' | translate)}}
+            </td>
+            <td>{{(dependency.module.fields | filter:{name:dependency.parent_field})[0]['label_'+language]}}</td>
+            <td>{{ dependency.child_field ?(dependency.module.fields |
+                filter:{name:dependency.child_field})[0]['label_'+language]: '-'}}
+            </td>
+            <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); delete(dependency, $event);" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -79,25 +86,23 @@
                 <div paging
                      text-first="&laquo;"
                      ul-class="pagination"
-                active-class="active"
-                page="requestModel.offset"
-                page-size="requestModel.limit"
-                total="pageTotal"
-                scroll-top="true"
-                hide-if-empty="true"
-                show-prev-next="true"
-                show-first-last="true"
-                text-next-class="fas fa-chevron-right"
-                text-prev-class="fas fa-chevron-left"
-                text-first-class="fas fa-step-backward"
-                text-last-class="fas fa-step-forward"
-                paging-action="changePage(page)">
-        </div>
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
             </nav>
         </div>
-        <div>
-            Total Dependencies {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

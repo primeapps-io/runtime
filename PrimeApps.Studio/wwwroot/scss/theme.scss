@@ -1,4 +1,7 @@
-.scroll-style-4{
+.flexy{
+  display:flex;
+}
+.scroll-style-4 {
   &::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
@@ -16,7 +19,8 @@
     border-radius: 5px;
   }
 }
-.scroll-style-5{
+
+.scroll-style-5 {
   &::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
@@ -35,7 +39,7 @@
   }
 }
 
-.scroll-style-6{
+.scroll-style-6 {
   &::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.10);
     border-radius: 10px;
@@ -54,7 +58,6 @@
   }
 }
 
-
 @mixin hoverEffect() {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
@@ -64,7 +67,7 @@
 
 $primeapps-color: #0D6FAA;
 .wrt:before,
-.wrt:after{
+.wrt:after {
   content: ' ';
   display: table;
   margin-left: -15px;
@@ -72,18 +75,18 @@ $primeapps-color: #0D6FAA;
   float: none;
   clear: both;
 }
-.list-yanla{
-  &::after,&:before{
+
+.list-yanla {
+  &::after, &:before {
     content: ' ';
     display: table;
     width: 100%;
   }
-  > li{
+  > li {
     float: left;
     margin-left: 10px;
   }
 }
-
 
 .newupload {
   .uploadlink {
@@ -141,7 +144,7 @@ $primeapps-color: #0D6FAA;
         }
       }
     }
-    
+
   }
 }
 
@@ -325,7 +328,7 @@ $primeapps-color: #0D6FAA;
     ~ span {
       position: relative;
     }
-    
+
   }
   input[disabled="disabled"] {
     cursor: not-allowed;
@@ -338,7 +341,7 @@ $primeapps-color: #0D6FAA;
   &:hover {
     input[type="radio"] {
       ~ span {
-        background-color: rgba(13,111,170,0.5);
+        background-color: rgba(13, 111, 170, 0.5);
         &:after {
           display: block;
         }
@@ -351,7 +354,7 @@ $primeapps-color: #0D6FAA;
     }
     input[type="checkbox"] {
       ~ span {
-        background-color: rgba(13,111,170,0.5);
+        background-color: rgba(13, 111, 170, 0.5);
         &:after {
           display: block;
         }
@@ -827,6 +830,13 @@ button, select {
       color: $primeapps-color;
     }
   }
+  .input-group{
+    .input-group-addon{
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      border-left: 1px solid rgba(0, 0, 0, 0.05);
+    }
+  }
 
   .inner-addon {
     i {
@@ -951,7 +961,7 @@ button, select {
     &:hover {
       background-color: #0d6faa;
     }
-    
+
   }
 
   .navbar-right {
@@ -1138,10 +1148,10 @@ button, select {
       }
     }
   }
-  .tab-content2{
+  .tab-content2 {
     box-shadow: 0px 0px 5px 0 rgba(0, 0, 0, 0.05);
     margin-left: 2px;
-    .table{
+    .table {
       tbody {
         tr {
           td {
@@ -1306,7 +1316,7 @@ button, select {
         padding: 0px;
         border: none;
         border-radius: 0px;
-        border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
         &:last-child {
           border: none;
           margin-bottom: 0px;
@@ -1363,7 +1373,6 @@ button, select {
         border: 0px solid #555555;
         border-radius: 5px;
       }
-      
 
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -1387,6 +1396,17 @@ button, select {
       .view-form {
         .form-control, .filter-table {
           width: 100%;
+          th{
+            padding-left: 0px;
+          }
+          .datetime-pick{
+            float: inherit;
+            display:flex;
+            .time-pick{
+              min-width: 70px !important;
+              width: auto !important;
+            }
+          }
         }
       }
     }
@@ -1396,21 +1416,21 @@ button, select {
       margin: 0 auto !important;
       overflow-y: unset !important;
       padding: 0px;
-      .dragable{
+      .dragable {
         padding: 0px 6px !important;
-        i{
+        i {
           line-height: 30px;
         }
       }
-      .value-map-container{
+      .value-map-container {
         max-height: inherit;
         margin: 0px;
         padding: 20px;
         overflow-x: inherit;
         overflow-y: inherit;
       }
-      .fields{
-        .container-left,.container-right{
+      .fields {
+        .container-left, .container-right {
           overflow-y: auto;
         }
       }
@@ -1420,12 +1440,11 @@ button, select {
     .modal-content {
       border: none;
       height: 100%;
-      .tab-content{
+      .tab-content {
         box-shadow: none;
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
       }
-      .autocomplete
-      {
+      .autocomplete {
         width: 100%;
       }
       tags-input {
@@ -1436,10 +1455,10 @@ button, select {
             border: none;
             background: transparent;
             padding: 0px;
-            &:focus{
+            &:focus {
               outline: none;
             }
-            &.focused{
+            &.focused {
               -webkit-box-shadow: none;
               -moz-box-shadow: none;
               box-shadow: none;
@@ -1515,7 +1534,6 @@ button, select {
         }
 
       }
-
 
     }
     .required-label {
@@ -1644,16 +1662,18 @@ button, select {
       margin-bottom: 10px;
     }
   }
-  .avatarx{
+  .avatarx {
     width: 40px;
     border-radius: 50px;
     overflow: hidden;
     display: inline-block;
-    background: rgba(0,0,0,0.25);
+    background: rgba(0, 0, 0, 0.25);
   }
-  .avatar2x{
-    width: 100px;border-radius: 50px;overflow: hidden;
-    background: rgba(0,0,0,0.25);
+  .avatar2x {
+    width: 100px;
+    border-radius: 50px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.25);
   }
   .top-header {
     display: flex;
@@ -1765,11 +1785,11 @@ button, select {
   }
 
   .btn-yellow {
-    background-color: rgba(255, 157, 0, 0.75);
+    background-color: rgba(224, 131, 64, 0.75);
     color: #fff;
 
     &:hover {
-      background-color: rgba(13, 111, 170, 1);
+      background-color: rgba(224, 131, 64, 1);
     }
   }
 
@@ -1791,6 +1811,11 @@ button, select {
       select {
         background-color: rgba(206, 4, 4, 0.15) !important;
       }
+      .newinput{
+        span{
+          background-color: rgba(206, 4, 4, 0.15) !important;
+        }
+      }
     }
     &.bottom0 {
       margin-bottom: 0px !important;
@@ -1804,7 +1829,7 @@ button, select {
       margin: 0px;
       font-weight: bold !important;
     }
-    
+
     .form-control {
       border-radius: 2px;
       background-color: rgba(0, 0, 0, 0.05);
@@ -1818,7 +1843,7 @@ button, select {
         opacity: 0.5;
       }
     }
-    textarea{
+    textarea {
       &.form-control {
         line-height: 25px;
         max-height: 180px;
@@ -2303,7 +2328,7 @@ button, select {
     input, .form-control {
       background-color: rgba(206, 4, 4, 0.15) !important;
     }
-    .ui-select-bootstrap{
+    .ui-select-bootstrap {
       .form-control {
         background-color: rgba(206, 4, 4, 0.15) !important;
       }
@@ -2319,7 +2344,8 @@ button, select {
         border-radius: 50%;
         border: none;
         background: transparent;
-
+        font-size: 12px;
+        line-height: 20px;
         &:hover {
           color: #000;
         }
@@ -2584,7 +2610,7 @@ button, select {
         position: sticky;
         top: 5%;
         z-index: 2;
-        
+
         .setup-nav {
           background: #fff;
           padding: 20px 10px;
@@ -2594,7 +2620,7 @@ button, select {
           max-height: calc(100vh - 160px);
           overflow-y: auto;
           overflow-x: hidden;
-          
+
           .tooltip {
             display: none !important;
             position: fixed;
@@ -2602,7 +2628,6 @@ button, select {
               white-space: nowrap;
             }
           }
-          
 
           li {
             //border-bottom: solid 1px rgba(0, 0, 0, 0.05);
@@ -2764,6 +2789,24 @@ button, select {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        ul{
+          &:before,&:after{
+            content: ' ';
+            display: table;
+          }
+          &:after{
+            clear: both;
+          }
+          &.list-inline{
+            li{
+              float:left;
+              &:last-child{
+                padding-right: 0px;
+              }
+            }
+            
+          }
+        }
 
         h2 {
           font-size: 16px;
@@ -2777,17 +2820,17 @@ button, select {
             text-overflow: ellipsis;
           }
         }
-        .backclose{
+        .backclose {
           display: block;
         }
-        .backopen{
+        .backopen {
           display: none;
         }
 
       }
 
       &.full-toggled2 {
-        
+
         .content-in2 {
           width: calc(100% - 100px);
         }
@@ -2806,7 +2849,7 @@ button, select {
             .user-text, .costume-bage {
               display: none;
             }
-            .user-info{
+            .user-info {
               justify-content: center;
             }
 
@@ -2845,10 +2888,10 @@ button, select {
             display: none;
           }
         }
-        .backclose{
+        .backclose {
           display: none;
         }
-        .backopen{
+        .backopen {
           display: block;
         }
       }
@@ -3026,15 +3069,14 @@ button, select {
     .draggable-form {
       .form-group {
         padding: 5px 40px 4px 5px;
-        .fa-arrows
-        {
+        .fa-arrows {
           margin-top: 0px;
           color: #FFF;
           position: absolute;
           left: 5px;
           width: 20px;
           height: 20px;
-          background: rgba(0,0,0,0.5);
+          background: rgba(0, 0, 0, 0.5);
           border-radius: 20px;
           margin-top: -10px;
           top: 50%;
@@ -3042,9 +3084,9 @@ button, select {
           text-align: center;
         }
       }
-      .subpanel-heading{
-        .action-buttons{
-          .action-icon{
+      .subpanel-heading {
+        .action-buttons {
+          .action-icon {
             font-size: 14px;
             margin-right: 5px;
           }
@@ -3104,34 +3146,35 @@ button, select {
         line-height: 50px;
         padding: 5px 10px;
       }
-      .ui-select-placeholder,.ui-select-match-text{
+      .ui-select-placeholder, .ui-select-match-text {
         font-size: 14px;
         line-height: 50px;
         font-weight: normal;
       }
     }
-    .ui-select-match-text{
+    .ui-select-match-text {
       padding-right: 20px;
       line-height: 20px;
       display: inline-block;
       float: none !important;
       > div {
         height: 20px;
+        overflow: hidden;
       }
-      span{
-        font-family:"Nunito", sans-serif ;
+      span {
+        font-family: "Nunito", sans-serif;
         font-size: 14px;
         line-height: 20px;
         font-weight: normal;
-        &:before{
+        &:before {
           display: inline-block;
           font: normal normal normal 14px/1 FontAwesome;
         }
-        &.fas{
-          &:before{
-              display: inline-block;
-              font-family: "Font Awesome 5 Free";
-              font-weight: 900;
+        &.fas {
+          &:before {
+            display: inline-block;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
           }
         }
       }
@@ -3153,7 +3196,7 @@ button, select {
           background: #FFF;
         }
       }
-      
+
       .menu-list {
         display: flex;
         align-items: center;
@@ -3234,17 +3277,17 @@ button, select {
 
         }
       }
-      .custom-menu{
+      .custom-menu {
         padding-left: 30px;
         font-size: 14px;
-        li{
+        li {
           background: transparent;
           border-radius: 0px;
         }
         .menu-list {
           margin-top: 0px !important;
           padding: 0px 110px 0px 0px;
-          .action-buttons-block{
+          .action-buttons-block {
             top: -2px;
           }
         }
@@ -3408,7 +3451,7 @@ button, select {
       }
     }
   }
-  .roundedx{
+  .roundedx {
     border-radius: 1000px;
   }
   .imgfix {
@@ -3594,53 +3637,53 @@ button, select {
       }
     }
   }
-  .roleslist{
-    a{
+  .roleslist {
+    a {
       text-decoration: none;
       cursor: pointer;
     }
-    ol{
-      li{
+    ol {
+      li {
         position: relative;
-        > span{
+        > span {
           width: 100%;
           display: block;
           line-height: 25px;
-          background: rgba(0,0,0,0.03);
+          background: rgba(0, 0, 0, 0.03);
           margin-bottom: 5px;
           padding: 5px 10px;
           border-radius: 5px;
           font-weight: bold;
         }
-        &:before{
+        &:before {
           content: '';
           position: absolute;
           left: -15px;
           top: 0px;
           width: 1px;
           height: 15px;
-          background: rgba(0,0,0,0.15);
+          background: rgba(0, 0, 0, 0.15);
         }
-        &:after{
+        &:after {
           content: '';
           position: absolute;
           left: -15px;
           top: 15px;
           width: 10px;
           height: 1px;
-          background: rgba(0,0,0,0.15);
+          background: rgba(0, 0, 0, 0.15);
         }
       }
     }
     > ol {
 
-      > li{
-        &:before,&:after{
+      > li {
+        &:before, &:after {
           display: none;
         }
       }
     }
-    
+
     .action-buttons-block {
       display: inline-block;
       position: absolute;
@@ -3649,7 +3692,7 @@ button, select {
       width: auto;
       line-height: 25px;
 
-      a,button {
+      a, button {
         background: rgba(13, 111, 170, 0.75);
         width: 25px;
         font-size: 10px;
@@ -3688,27 +3731,25 @@ button, select {
           color: rgba(255, 255, 255, 1);
         }
 
-
       }
     }
   }
-  .uploadedfilename{
+  .uploadedfilename {
     padding: 5px 10px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     line-height: 25px;
     text-align: left;
     border-radius: 2px;
-    a{
+    a {
       cursor: pointer;
     }
-    .uploadedfilename
-    {
+    .uploadedfilename {
       font-weight: bold;
     }
-    .clear-button{
+    .clear-button {
       width: 25px;
       height: 25px;
       text-align: center;
@@ -3720,15 +3761,15 @@ button, select {
       border-radius: 100px;
     }
   }
-  .primetabs{
-    li{
+  .primetabs {
+    li {
       text-align: center;
-      a{
-        
-        color: rgba(0,0,0,0.5);
+      a {
+
+        color: rgba(0, 0, 0, 0.5);
       }
-      &.active{
-        a{
+      &.active {
+        a {
           background: #FFF;
           font-weight: bold;
           color: $primeapps-color;
@@ -3736,14 +3777,14 @@ button, select {
       }
     }
   }
-  .primetabs-content{
+  .primetabs-content {
     border-top: none;
     padding-top: 20px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    .tab-pane{
+    .tab-pane {
       display: none;
-      &.active{
+      &.active {
         display: block;
       }
     }
@@ -3759,43 +3800,42 @@ button, select {
     text-align: center;
     font-size: 50px;
   }
-  .extra-info
-  {
-    color: rgba(0,0,0,0.25);
+  .extra-info {
+    color: rgba(0, 0, 0, 0.25);
     cursor: pointer;
-    &:hover{
-      color: rgba(0,0,0,0.5);
+    &:hover {
+      color: rgba(0, 0, 0, 0.5);
     }
   }
-  .categorylist{
-    > li{
+  .categorylist {
+    > li {
       position: relative;
       padding: 5px 10px;
-      background: rgba(0,0,0,0.03);
+      background: rgba(0, 0, 0, 0.03);
       border-radius: 5px;
       line-height: 30px;
       margin-bottom: 5px;
-      > div{
+      > div {
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-weight: bold;
-        color: rgba(0,0,0,0.75);
+        color: rgba(0, 0, 0, 0.75);
       }
-      .form-control{
+      .form-control {
         height: 30px !important;
         background: transparent;
         padding: 10px 0px;
       }
-      &:hover{
-        background: rgba(0,0,0,0.05);
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
       }
     }
   }
-  .new-actions{
+  .new-actions {
     display: inline-block;
     padding-left: 10px;
-    button,a {
+    button, a {
       @include hoverEffect;
       background: rgba(13, 111, 170, 0.5);
       color: rgba(255, 255, 255, 1);
@@ -3806,7 +3846,7 @@ button, select {
       text-align: center;
       border: none;
       border-radius: 50%;
-      display:inline-block;
+      display: inline-block;
 
       &.delete-btn {
         background: #E78D8F;
@@ -3817,9 +3857,9 @@ button, select {
         }
       }
       &.edit-btn {
-        background: rgba(0,0,0,0.25);
+        background: rgba(0, 0, 0, 0.25);
         &:hover {
-          background: rgba(0,0,0,0.5);
+          background: rgba(0, 0, 0, 0.5);
         }
       }
 
@@ -3829,38 +3869,68 @@ button, select {
       }
     }
   }
-  .picklistx{
+  .picklistx {
     flex-grow: 1;
-    > span{
+    > span {
       display: inline-block;
-      &:nth-child(1){
+      &:nth-child(1) {
         width: 20px;
         text-align: center;
       }
-      &:nth-child(2){ width: calc(20% - 10px);}
-      &:nth-child(3){ width: calc(20% - 10px);}
-      &:nth-child(4){ width: calc(20% - 10px);}
-      &:nth-child(5){ width: calc(20% - 10px);}
-      &:nth-child(6){ width: calc(20% - 10px);} 
+      &:nth-child(2) {
+        width: calc(20% - 10px);
+      }
+      &:nth-child(3) {
+        width: calc(20% - 10px);
+      }
+      &:nth-child(4) {
+        width: calc(20% - 10px);
+      }
+      &:nth-child(5) {
+        width: calc(20% - 10px);
+      }
+      &:nth-child(6) {
+        width: calc(20% - 10px);
+      }
     }
   }
-  .picklist-options{
-    .form-control{
+  .picklist-options {
+    .form-control {
       height: 30px;
       line-height: 30px;
     }
   }
-  .pickitemcopy{
+  .pickitemcopy {
+    &.gu-mirror-option{
+      i{
+        display: inherit;
+      }
+    }
     display: table;
     padding: 10px 0px;
-    td{
+    > div {
+      padding: 0px 10px;
+      > span{
+        display: none;
+        &:first-child{
+          display: inline-block;
+        }
+      }
+    }
+    td {
       display: none;
-      &:nth-child(1){ display: inline-block; width: 40px;}
-      &:nth-child(2){ display: inline-block; width: calc(100% - 40px);}
+      &:nth-child(1) {
+        display: inline-block;
+        width: 40px;
+      }
+      &:nth-child(2) {
+        display: inline-block;
+        width: calc(100% - 40px);
+      }
     }
   }
-  
-  .action-button2-plus,.action-button2-delete{
+
+  .action-button2-plus, .action-button2-delete {
     width: 26px;
     height: 26px;
     line-height: 27px;
@@ -3871,37 +3941,39 @@ button, select {
     text-align: center;
     border-radius: 50%;
     margin: 7px 0px;
-    &:hover{
+    &:hover {
       background: rgba(13, 111, 170, 1);
     }
   }
-  .action-button2-delete{
+  .action-button2-delete {
     background: #E78D8F;
-    &:hover{
+    &:hover {
       background: rgba(206, 4, 4, 1);
     }
   }
-  .swal-icon
-  {
+  .swal-icon {
     width: 60px;
     height: 60px;
   }
-  .swal-icon--warning__body{
+  .swal-icon--warning__body {
     height: 30px;
   }
-  .shared-users{
-    .shared-users-input{
+  .shared-users {
+    .shared-users-input {
       max-width: inherit;
     }
   }
-  .flexitemx{
+  .flexitemx {
     display: flex;
-    > div{
-      > .cell-container{
+    > div {
+      > .cell-container {
         min-height: 100%;
       }
     }
-    
+
+  }
+  .instructions-list {
+    list-style: decimal;
   }
 }
 
@@ -3918,7 +3990,10 @@ button, select {
   100% {
     background-position: 468px 0
   }
-  
+}
+.total{
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
 }
 
 .animated-background {

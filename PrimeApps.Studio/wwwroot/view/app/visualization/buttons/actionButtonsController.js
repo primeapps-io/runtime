@@ -2,8 +2,12 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService', '$timeout',
-        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService, $timeout) {
+    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
+        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+
+            $scope.id = $location.search().id ? $location.search().id : 0;
+            if ($scope.id > 0)
+                $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
 
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
@@ -18,21 +22,39 @@ angular.module('primeapps')
             $scope.generator(10);
 
             $scope.loading = true;
-            $scope.id = $location.search().id ? $location.search().id : 0;
 
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
             };
 
+            $scope.activePage = 1;
+            ActionButtonsService.count($scope.id).then(function (response) {
+                $scope.pageTotal = response.data;
+                $scope.changePage(1);
+            });
+
             $scope.changePage = function (page) {
                 $scope.loading = true;
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
                 ActionButtonsService.find($scope.id, requestModel).then(function (response) {
                     $scope.actionButtons = response.data;
                     for (var i = 0; i < response.data.length; i++) {
-                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: response.data[i].module_id }, true)[0];
+                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, {id: response.data[i].module_id}, true)[0];
                         $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
                     }
                     $scope.actionbuttonState = angular.copy($scope.actionButtons);
@@ -41,47 +63,36 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
 
-
-            // if ($scope.id) {
-            ActionButtonsService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = requestModel.offset - 1;
-                ActionButtonsService.find($scope.id, requestModel)
-                    .then(function (actionButtons) {
-                        $scope.actionButtons = actionButtons.data;
-                        for (var i = 0; i < actionButtons.data.length; i++) {
-                            $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: actionButtons.data[i].module_id }, true)[0];
-                            $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
-                        }
-                        $scope.actionbuttonState = angular.copy($scope.actionButtons);
-                        $scope.loading = false;
-                    });
-            });
-            // }
-
-
-            $scope.moduleChanged = function () {
+            $scope.moduleChanged = function (isNew, actionButton) {
                 if ($scope.currentActionButton.module) {
                     $scope.module = $scope.currentActionButton.module;
-                    webhookParameters();
+                    webhookParameters(isNew, actionButton);
                 }
             };
 
             $scope.showFormModal = function (actionButton) {
+
                 if (!actionButton) {
                     actionButton = {};
                     actionButton.type = 3;
                     actionButton.triggerType = 1;
                     actionButton.isNew = true;
                     $scope.currentActionButton = actionButton;
+                    $scope.hookParameters = [];
+                    $scope.hookModules = [];
+                    var parameter = {};
+                    parameter.parameterName = null;
+                    parameter.selectedModules = $scope.hookModules;
+                    parameter.selectedField = null;
+                    $scope.hookParameters.push(parameter);
+
                 } else {
                     $scope.currentActionButton = actionButton;
                     $scope.currentActionButton.module = actionButton.parent_module;
-                    $scope.moduleChanged();
+                    $scope.moduleChanged(false, actionButton);
                 }
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
@@ -109,70 +120,6 @@ angular.module('primeapps')
                         value: 3
                     }
                 ];
-
-                if (actionButton.action_type === 'Webhook')
-                    actionButton.type = 2;
-
-                if (actionButton.action_type === 'ModalFrame')
-                    actionButton.type = 3;
-
-                if (actionButton.trigger === 'Detail')
-                    actionButton.triggerType = 1;
-
-                if (actionButton.trigger === 'Form')
-                    actionButton.triggerType = 2;
-
-                if (actionButton.trigger === 'All')
-                    actionButton.triggerType = 3;
-
-                if (actionButton.type === 3) {
-                    $scope.hookParameters = [];
-
-                    $scope.hookModules = [];
-
-                    angular.forEach($scope.updatableModules, function (module) {
-                        $scope.hookModules.push(module);
-                    });
-
-                    var parameter = {};
-                    parameter.parameterName = null;
-                    parameter.selectedModules = $scope.hookModules;
-                    parameter.selectedField = null;
-
-                    $scope.hookParameters.push(parameter);
-                }
-
-                if (actionButton.method_type && actionButton.parameters && actionButton.type === 2) {
-                    $scope.hookParameters = [];
-
-                    var hookParameterArray = actionButton.parameters.split(',');
-                    $timeout(function () {
-                        angular.forEach(hookParameterArray, function (data) {
-                            var parameter = data.split("|", 3);
-
-                            var editParameter = {};
-                            editParameter.parameterName = parameter[0];
-                            editParameter.selectedModules = angular.copy($scope.updatableModules);
-                            var selectedModule;
-
-                            if ($scope.module.name === parameter[1]) {
-                                selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
-                            }
-                            else {
-                                var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
-                                selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
-                            }
-
-                            if (!selectedModule)
-                                return;
-
-                            editParameter.selectedModule = selectedModule;
-                            editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
-
-                            $scope.hookParameters.push(editParameter);
-                        });
-                    }, 1000);
-                }
 
                 $scope.formModal = $scope.formModal || $modal({
                     scope: $scope,
@@ -211,7 +158,7 @@ angular.module('primeapps')
                     angular.forEach($scope.hookParameters, function (hookParameter) {
                         var moduleName;
                         if ($scope.module.name !== hookParameter.selectedModule.name)
-                            moduleName = $filter('filter')($scope.module.fields, { lookup_type: hookParameter.selectedModule.name }, true)[0].name;
+                            moduleName = $filter('filter')($scope.module.fields, {lookup_type: hookParameter.selectedModule.name}, true)[0].name;
                         else
                             moduleName = hookParameter.selectedModule.name;
 
@@ -240,7 +187,8 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.changePage(1);
+                            $scope.pageTotal++;
+                            $scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
 
@@ -257,7 +205,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.changePage(1);
+                            $scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
@@ -271,7 +219,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (actionButton) {
+            $scope.delete = function (actionButton, event) {
                 // delete actionButton.$$hashKey;
                 // var deleteModel = angular.copy($scope.actionButtons);
                 // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
@@ -285,14 +233,23 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+
                             ModuleService.deleteActionButton(actionButton.id)
                                 .then(function () {
                                     // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
                                     // $scope.actionButtons.splice(actionButtonIndex, 1);
-                                    $scope.changePage(1);
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.pageTotal--;
+                                    $scope.changePage($scope.activePage);
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                 })
                                 .catch(function () {
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.actionButtons = $scope.actionButtonState;
 
                                     if ($scope.formModal) {
@@ -313,7 +270,7 @@ angular.module('primeapps')
             };
 
             //Webhook
-            var webhookParameters = function () {
+            var webhookParameters = function (isNew, actionButton) {
                 $scope.updatableModules = [];
                 $scope.updatableModules.push($scope.module);
 
@@ -323,7 +280,7 @@ angular.module('primeapps')
 
                     angular.forEach($scope.module.fields, function (field) {
                         if (field.lookup_type && field.lookup_type !== $scope.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                            var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                            var module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                             $scope.updatableModules.push(module);
                         }
                     });
@@ -336,12 +293,15 @@ angular.module('primeapps')
                         $scope.hookModules.push(module);
                     });
 
-                    var parameter = {};
-                    parameter.parameterName = null;
-                    parameter.selectedModules = $scope.hookModules;
-                    parameter.selectedField = null;
+                    if (isNew) {
+                        var parameter = {};
+                        parameter.parameterName = null;
+                        parameter.selectedModules = $scope.hookModules;
+                        parameter.selectedField = null;
+                        $scope.hookParameters.push(parameter);
+                    } else
+                        conditions(actionButton);
 
-                    $scope.hookParameters.push(parameter);
                 });
             };
 
@@ -356,8 +316,7 @@ angular.module('primeapps')
                 if (parameter.parameterName && parameter.selectedModules && parameter.selectedField) {
                     if ($scope.hookParameters.length <= 10) {
                         $scope.hookParameters.push(parameter);
-                    }
-                    else {
+                    } else {
                         toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
@@ -370,6 +329,73 @@ angular.module('primeapps')
             $scope.webhookParameterRemove = function (itemname) {
                 var index = $scope.hookParameters.indexOf(itemname);
                 $scope.hookParameters.splice(index, 1);
+            };
+
+            var conditions = function (actionButton) {
+
+                if (actionButton.action_type === 'Webhook')
+                    actionButton.type = 2;
+
+                if (actionButton.action_type === 'ModalFrame')
+                    actionButton.type = 3;
+
+                if (actionButton.trigger === 'Detail')
+                    actionButton.triggerType = 1;
+
+                if (actionButton.trigger === 'Form')
+                    actionButton.triggerType = 2;
+
+                if (actionButton.trigger === 'All')
+                    actionButton.triggerType = 3;
+
+                if (actionButton.type === 3) {
+                    $scope.hookParameters = [];
+
+                    $scope.hookModules = [];
+
+                    angular.forEach($scope.updatableModules, function (module) {
+                        $scope.hookModules.push(module);
+                    });
+
+                    var parameter = {};
+                    parameter.parameterName = null;
+                    parameter.selectedModules = $scope.hookModules;
+                    parameter.selectedField = null;
+
+                    $scope.hookParameters.push(parameter);
+                }
+
+                if (actionButton.method_type && actionButton.parameters && actionButton.type === 2) {
+                    // $timeout(function () {
+
+                    $scope.hookParameters = [];
+                    var hookParameterArray = actionButton.parameters.split(',');
+
+                    angular.forEach(hookParameterArray, function (data) {
+                        var parameter = data.split("|", 3);
+
+                        var editParameter = {};
+                        editParameter.parameterName = parameter[0];
+                        editParameter.selectedModules = angular.copy($scope.updatableModules);
+                        var selectedModule;
+
+                        if ($scope.module.name === parameter[1]) {
+                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: parameter[1]}, true)[0];
+                        } else {
+                            var lookupModuleName = $filter('filter')($scope.module.fields, {name: parameter[1]}, true)[0].lookup_type;
+                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: lookupModuleName}, true)[0];
+                        }
+
+                        if (!selectedModule)
+                            return;
+
+                        editParameter.selectedModule = selectedModule;
+                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, {name: parameter[2]}, true)[0];
+
+                        $scope.hookParameters.push(editParameter);
+                    });
+                    // }, 1000);
+                }
             };
         }
     ]);

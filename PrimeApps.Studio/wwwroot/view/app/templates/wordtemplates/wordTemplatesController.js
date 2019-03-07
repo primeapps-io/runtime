@@ -27,24 +27,27 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             WordTemplatesService.count("module").then(function (response) {
                 $scope.pageTotal = response.data;
-            });
-
-            WordTemplatesService.find($scope.requestModel, "module").then(function (response) {
-                var templates = response.data;
-                angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
-                });
-                $scope.templates = templates;
-                $scope.templatesState = templates;
-
-            }).finally(function () {
-                $scope.loading = false;
+                $scope.changePage(1);
             });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -52,7 +55,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;
@@ -63,19 +66,24 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
 
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
+                $scope.template = [];
+
+                if ($scope.fileUpload)
+                    $scope.fileUpload.queue = [];
+
                 if (template) {
                     // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrl(template);
+                } else {// if template, isNew we set the first value active
+                    $scope.template.active = true;
                 }
-                else {
-                    $scope.template = [];
-                }
+
                 $scope.addNewWordTemplateFormModal = $scope.addNewWordTemplateFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
@@ -187,7 +195,7 @@ angular.module('primeapps')
                 name: 'docFilter',
                 fn: function (item, options) {
                     var extension = helper.getFileExtension(item.name);
-                    return true ? (extension == 'docx' || extension == 'doc') : false;
+                    return true ? (extension === 'docx' || extension === 'doc') : false;
                 }
             });
 
@@ -202,8 +210,7 @@ angular.module('primeapps')
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
                     $scope.templateFileCleared = true;
-                }
-                else {
+                } else {
                     $scope.template.content = undefined;
                     $scope.templateFileCleared = true;
                 }
@@ -211,7 +218,7 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid || !$scope.logoUpload) {
+                if (!uploadForm.$valid) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
@@ -232,8 +239,7 @@ angular.module('primeapps')
                         uploadThenComplete(fileItem, tempInfo, status);
                     };
                     //$scope.fileUpload.uploader.start();
-                }
-                else {
+                } else {
                     if ($scope.templateFileCleared) {
                         fileUpload.queue[0].uploader.headers = header;
                         fileUpload.queue[0].headers = header;
@@ -242,8 +248,7 @@ angular.module('primeapps')
                             uploadThenComplete(fileItem, tempInfo, status);
                         };
                         //$scope.fileUpload.uploader.start();
-                    }
-                    else {
+                    } else {
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
@@ -260,7 +265,7 @@ angular.module('primeapps')
             };
 
             $scope.showTemplateGuideModal = function () {
-
+                $scope.tempalteFieldName = "/" + $filter('translate')('Setup.Templates.TemplateFieldName');
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
@@ -295,15 +300,17 @@ angular.module('primeapps')
                 $scope.templateFileCleared = false;
                 $scope.template = angular.copy(template);
                 $scope.template.templateName = template.name;
+                $scope.template.active = template.active;
                 $scope.template.templateModule = template.module;
                 $scope.currentContent = angular.copy(template.content);
             };
 
-            var success = function () {
+            var success = function (create) {
                 $scope.saving = false;
-                //  $state.go('studio.app.templatesWord');
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
+                $scope.changePage($scope.activePage);
+                $scope.pageTotal = create ? $scope.pageTotal++ : $scope.pageTotal;
             };
 
             //for GuideTemplate
@@ -313,7 +320,7 @@ angular.module('primeapps')
 
                 var lookupModules = [];
                 for (var i = 0; i < module.fields.length; i++) {
-                    if (module.fields[i].data_type == 'lookup') {
+                    if (module.fields[i].data_type === 'lookup') {
                         if (module.name === 'quote_products' && module.fields[i].lookup_type === 'quotes')
                             continue;
 
@@ -321,7 +328,7 @@ angular.module('primeapps')
                             continue;
 
                         for (var j = 0; j < $scope.modules.length; j++) {
-                            if (module.fields[i].lookup_type == $scope.modules[j].name) {
+                            if (module.fields[i].lookup_type === $scope.modules[j].name) {
                                 var lookupModule = angular.copy($scope.modules[j]);
                                 lookupModule.parent_field = module.fields[i];
                                 lookupModules.push(lookupModule);
@@ -345,7 +352,7 @@ angular.module('primeapps')
                 noteModule.label_en_plural = 'Notes';
                 noteModule.order = 9999;
                 noteModule.fields = [];
-                noteModule.fields.push({ id: 1, name: 'text', label_tr: 'Not', label_en: 'Note' });
+                noteModule.fields.push({id: 1, name: 'text', label_tr: 'Not', label_en: 'Note'});
                 noteModule.fields.push({
                     id: 2,
                     name: 'first_name',
@@ -364,7 +371,7 @@ angular.module('primeapps')
                     label_tr: 'Oluşturan - Adı Soyadı',
                     label_en: 'Full Name'
                 });
-                noteModule.fields.push({ id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email' });
+                noteModule.fields.push({id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email'});
                 noteModule.fields.push({
                     id: 6,
                     name: 'created_at',
@@ -392,7 +399,7 @@ angular.module('primeapps')
                 module.relatedModules = [];
 
                 if (module.name === 'quotes') {
-                    var quoteProductsModule = $filter('filter')($scope.modules, { name: 'quote_products' }, true)[0];
+                    var quoteProductsModule = $filter('filter')($scope.modules, {name: 'quote_products'}, true)[0];
                     ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
                         quoteProductsModule = response.data;
                         getLookupModules(quoteProductsModule);
@@ -403,7 +410,7 @@ angular.module('primeapps')
                 }
 
                 if (module.name === 'sales_orders') {
-                    var orderProductsModule = $filter('filter')($scope.modules, { name: 'order_products' }, true)[0];
+                    var orderProductsModule = $filter('filter')($scope.modules, {name: 'order_products'}, true)[0];
                     ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
                         orderProductsModule = response.data;
                         getLookupModules(orderProductsModule);
@@ -414,7 +421,7 @@ angular.module('primeapps')
                 }
 
                 angular.forEach(module.relations, function (relation) {
-                    var relatedModule = $filter('filter')($scope.modules, { name: relation.related_module }, true)[0];
+                    var relatedModule = $filter('filter')($scope.modules, {name: relation.related_module}, true)[0];
                     ModuleService.getModuleByName(relatedModule.name).then(function (response) {
                         relatedModule = response.data;
                         if (relation.deleted || !relatedModule || relatedModule.order === 0)
@@ -426,8 +433,7 @@ angular.module('primeapps')
                             angular.forEach(relatedModule.fields, function (field) {
                                 field.name = relation.related_module + '_id.' + field.name;
                             });
-                        }
-                        else {
+                        } else {
                             getLookupModules(relatedModule);
                         }
 
@@ -456,7 +462,7 @@ angular.module('primeapps')
                 return module.parent_field.name + '.' + (field.multiline_type_use_html ? 'html__' : '') + field.name;
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -466,11 +472,17 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+
                             WordTemplatesService.delete(id).then(function () {
-                                $scope.changePage(1);
-                                $scope.pageTotal = $scope.pageTotal - 1;
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                $scope.changePage($scope.activePage);
+                                $scope.pageTotal--;
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
+                                angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                 $scope.templates = $scope.templatesState;
                                 if ($scope.addNewWordTemplateFormModal) {
                                     $scope.addNewWordTemplateFormModal.hide();
@@ -498,15 +510,12 @@ angular.module('primeapps')
                     if (!$scope.template.id) {
                         WordTemplatesService.create(template)
                             .then(function () {
-                                success();
-                                $scope.changePage(1);
-                                $scope.pageTotal = $scope.pageTotal + 1;
+                                success(true);
                             })
                             .catch(function () {
                                 $scope.saving = false;
                             });
-                    }
-                    else {
+                    } else {
                         template.id = $scope.template.id;
 
                         WordTemplatesService.update(template)

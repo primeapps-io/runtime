@@ -80,6 +80,25 @@
   .infotext {
     padding: 0px 0px 20px 0px; 
   }
+  .login-form{
+    position: relative;
+  }
+  .error{
+    position: absolute;
+    left:0px;
+    bottom:10px;
+    width: 100%;
+    text-align: right;
+    display: block !important;
+    color: red;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 15px;
+    &.error-all,&.error2{
+      text-align: center;
+      bottom: 0px;
+    }
+  }
   .studio-banner {
     object-fit: contain;
     position: absolute;
@@ -87,6 +106,9 @@
     right: 0;
   }
   .form-group{
+    position: relative;
+    margin-bottom: 0px;
+    padding-bottom: 30px;
     .form-control {
       border-radius: 0.35em !important;
       outline: none;
@@ -101,6 +123,7 @@
         position: relative;
         ont-size: 14px;
         text-align: left;
+        margin-bottom: 0px;
         span {
           color: rgba(255,255,255,0.5);
           font-size: 14px;
@@ -142,15 +165,14 @@
         }
       }
     }
+    &.error{
+      margin-bottom: 0px;
+    }
+    
+    
   }
   
-  .error {
-    text-align: center;
-    color: red;
-    font-weight: 400;
-    padding: 5px 0px;
-    font-size: 12px;
-  }
+  
   .login-sec{
     form{
       padding: 20px 0px;
@@ -202,7 +224,11 @@
   .banner-sec{
     padding: 0px;
   }
+  .paddingb20{
+    padding-bottom: 20px;
+  }
   .free-info{
+    padding-bottom: 10px;
     a{
       color: rgba(255, 255, 255, 0.5);
       position: relative;

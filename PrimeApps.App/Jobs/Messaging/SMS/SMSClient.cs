@@ -65,6 +65,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 			SMSResponse smsResponse = new SMSResponse();
 			IList<dynamic> messageStatuses = new List<dynamic>();
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			try
 			{
@@ -76,12 +77,11 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 					using (var settingReporsitory = new SettingRepository(dbContext, _configuration))
 					using (var notifitionRepository = new NotificationRepository(dbContext, _configuration))
 					{
-						if (!string.IsNullOrEmpty(previewMode))
-						{
-							settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-						}
-						/// get sms settings.
-						var smsSettings = settingReporsitory.Get(SettingType.SMS);
+
+						settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                        /// get sms settings.
+                        var smsSettings = settingReporsitory.Get(SettingType.SMS);
 
 						/// email settings are null just return and do nothing.
 						if (smsSettings == null)
@@ -140,11 +140,10 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 							///get related module
 							using (var moduleRepository = new ModuleRepository(dbContext, _configuration))
 							{
-								if (!string.IsNullOrEmpty(previewMode))
-								{
-									moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-								}
-								module = await moduleRepository.GetById(smsNotification.ModuleId);
+
+								moduleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                                module = await moduleRepository.GetById(smsNotification.ModuleId);
 							}
 
 							moduleName = smsNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
@@ -155,7 +154,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 							if (bulkSMSStatus == NotificationStatus.Successful)
 							{
 								/// compose bulk messages for sending.
-								composerResult = await Compose(smsQueueItem, messageTemplate, module, phoneField, query, ids, isAllSelected, smsNotification.CreatedById, language, smsId, dbContext, smsClient);
+								composerResult = await Compose(smsQueueItem, messageTemplate, module, phoneField, query, ids, isAllSelected, smsNotification.CreatedById, language, smsId, dbContext, smsClient, appUser);
 
 								/// send composed messages through selected provider.
 								smsResponse = await smsClient.Send(composerResult.Messages);
@@ -192,9 +191,11 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 			return true;
 		}
 
-		public async Task<SMSComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string phoneField, string query, string[] ids, bool isAllSelected, int userId, string language, string smsId, TenantDBContext dbContext, SMSProvider smsClient)
+		public async Task<SMSComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string phoneField, string query, string[] ids, bool isAllSelected, int userId, string language, string smsId, TenantDBContext dbContext, SMSProvider smsClient, UserItem appUser)
 		{
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
 			IList<Message> messages = new List<Message>();
@@ -289,11 +290,10 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 							{
 								using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 								{
-									if (!string.IsNullOrEmpty(previewMode))
-									{
-										moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
-									}
-									foreach (string recordId in ids)
+
+									moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                                    foreach (string recordId in ids)
 									{
 										var status = MessageStatusEnum.Successful;
 										string phoneNumber = "";
@@ -390,6 +390,8 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 		{
 			/// create required parameters for composing.
 			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			Regex templatePattern = new Regex(@"{(.*?)}");
 			IList<string> messageFields = new List<string>();
 			JArray messageStatusList = new JArray();
@@ -440,12 +442,11 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 				using (var settingReporsitory = new SettingRepository(dbContext, _configuration))
 				using (var notifitionRepository = new NotificationRepository(dbContext, _configuration))
 				{
-					if (!string.IsNullOrEmpty(previewMode))
-					{
-						settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-					}
-					/// get sms settings.
-					var smsSettings = settingReporsitory.Get(SettingType.SMS);
+
+					settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                    /// get sms settings.
+                    var smsSettings = settingReporsitory.Get(SettingType.SMS);
 
 					/// email settings are null just return and do nothing.
 					if (smsSettings == null)

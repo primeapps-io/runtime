@@ -3,8 +3,8 @@
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn btn-radius btn-gray" ng-click="openCategoryModal()">
-                    <i class="fas fa-list"></i> {{'Setup.Report.CategoryManage' | translate}}
+                <button class="btn btn-radius btn-blue" ng-click="openCategoryModal()">
+                    <i class="fas fa-list"></i> Report Categories
                 </button>
             </li>
             <li>
@@ -19,57 +19,59 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Report.ReportName' | translate}}</th>
-                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
-                <th>{{'Setup.Report.ReportType' | translate}}</th>
-                <th width="50"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Report.ReportName' | translate}}</th>
+            <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+            <th>{{'Setup.Report.ReportType' | translate}}</th>
+            <th width="50"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in placeholderArray">
+        <tr ng-repeat="item in placeholderArray">
 
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-                <td>
-                    <div class="animated-background"></div>
-                </td>
-            </tr>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-            <tr>
-                <th>{{'Setup.Report.ReportName' | translate}}</th>
-                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
-                <th>{{'Setup.Report.ReportType' | translate}}</th>
-                <th width="50"></th>
-            </tr>
+        <tr>
+            <th>{{'Setup.Report.ReportName' | translate}}</th>
+            <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+            <th>{{'Setup.Report.ReportType' | translate}}</th>
+            <th width="50"></th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']">
+        <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']"
+            ng-click="openReportDetail(report)">
 
-                <td>
-                    {{report.name}}
-                </td>
-                <td>
-                    {{report.category.name}}
-                </td>
-                <td>
-                    {{ report.report_type}}
-                </td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(report.id);" type="button" class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+            <td>
+                {{report.name}}
+            </td>
+            <td>
+                {{report.category.name}}
+            </td>
+            <td>
+                {{ report.report_type}}
+            </td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); deleteReport(report,$event);" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -79,7 +81,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"
@@ -94,9 +96,7 @@
                 </div>
             </nav>
         </div>
-        <div>
-            Total Reports {{pageTotal}}
-        </div>
+        <div class="total">Total {{pageTotal}}</div>
         <div>
             <span class="pagination-span">Items per page  </span>
             <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">

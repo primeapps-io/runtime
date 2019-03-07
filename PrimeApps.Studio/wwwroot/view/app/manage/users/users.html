@@ -1,0 +1,131 @@
+﻿<div class="setup-title">
+    <h2> {{ selectedUser ? selectedUser.full_name : 'Users' }} </h2>
+    <div>
+        <ul class="list-unstyled list-inline">
+            <li ng-show="!selectedUser">
+                <button class="btn add-button" ng-click="showFormModal()">
+                    <i class="fas fa-plus"></i> Add New User
+                </button>
+            </li>
+        </ul>
+
+    </div>
+</div>
+<div class="tab-content table-responsive" ng-show="!selectedUser">
+    <table class="table" ng-show="loading">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in placeholderArray">
+            <td class="text-center">
+                <div>
+                    <div class="animated-background"></div>
+                </div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-show="!loading">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Profile</th>
+            <th width="50"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="user in users" ng-click="showFormModal(user.id)">
+            <td>
+                {{user.full_name}}
+            </td>
+            <td>
+                {{user.email}}
+            </td>
+            <td>
+                {{user.role.label_en}}
+            </td>
+            <td>
+                {{user.profile.id === 1 ? "Administrator" : user.profile.id === 2 ? "Standart" : user.profile.name }}
+            </td>
+            <td class="text-right">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation();$parent.delete(user.id, $event)" type="button" class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div class="total">Total {{pageTotal}}</div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div ng-show="selectedCollaborator" class="row">
+    <div class="col-md-6 col-lg-4">
+        <div class="tab-content collaborator-detail">
+            <div ng-show="updatingRole" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="">
+                <i class="fas fa-user-circle fa-9x"></i>
+            </div>
+            <div>
+                <h2> {{selectedUser.email}}</h2>
+                <small>Joined :{{selectedUser.created_at | date:'medium'}}</small>
+            </div>
+            <div>
+                <div class="form-group">
+                    <select ng-disabled="removing" required ng-model="userModel.role" name="role" class="form-control ng-animate-disabled" ng-options="role.name for role in roles" ng-change="update(collaboratorModel); updatingRole = true;"></select>
+                </div>
+            </div>
+
+            <div>
+                <button ladda="removing" ng-disabled="updatingRole" ng-click="delete(selectedUser.id)" class="btn btn-red btn-radius">Remove from organization</button>
+            </div>
+        </div>
+    </div>
+
+</div>

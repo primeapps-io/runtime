@@ -5,8 +5,11 @@ angular.module('primeapps')
     .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
 
-            $scope.$parent.activeMenuItem = 'views';
+            $scope.id = $location.search().id ? $location.search().id : 0;
+            if ($scope.id > 0)
+                $scope.$parent.$parent.$parent.$parent.openSubMenu('visualization');
 
+            $scope.$parent.activeMenuItem = 'views';
             $rootScope.breadcrumblist[2].title = 'Views';
 
             $scope.generator = function (limit) {
@@ -18,8 +21,6 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $scope.id = $location.search().id ? $location.search().id : 0;
-
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.requestModel = {
@@ -27,36 +28,36 @@ angular.module('primeapps')
                 offset: 0
             };
 
+            $scope.activePage = 1;
             ViewsService.count($scope.id).then(function (response) {
                 $scope.pageTotal = response.data;
-            });
-
-            ViewsService.find($scope.id, $scope.requestModel).then(function (response) {
-                var customViews = angular.copy(response.data);
-                for (var i = customViews.length - 1; i >= 0; i--) {
-                    var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
-                    if (parentModule) {
-                        customViews[i].parent_module = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
-                    } else {
-                        customViews.splice(i, 1);
-                    }
-                }
-                $scope.customViews = customViews;
-                $scope.customViewsState = customViews;
-                $scope.loading = false;
+                $scope.changePage(1);
             });
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
                 ViewsService.find($scope.id, requestModel).then(function (response) {
                     var customViews = angular.copy(response.data);
                     for (var i = customViews.length - 1; i >= 0; i--) {
-                        var parentModule = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
+                        var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
                         if (parentModule) {
-                            customViews[i].parent_module = $filter('filter')($rootScope.appModules, { id: customViews[i].module_id }, true)[0];
+                            customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
                         } else {
                             customViews.splice(i, 1);
                         }
@@ -67,10 +68,10 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
-            $scope.deleteView = function (id) {
+            $scope.deleteView = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -78,57 +79,70 @@ angular.module('primeapps')
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
-                    }).then(function (value) {
-                        if (value) {
-                            if (id) {
-                                ViewsService.deleteView(id)
-                                    .then(function () {
-                                        $scope.changePage(1);
-                                        $scope.pageTotal = $scope.pageTotal - 1;
-                                        toastr.success("Filter is deleted successfully.", "Deleted!");
-                                    }).catch(function () {
-                                    $scope.customViews = $scope.customViewsState;
+                    })
+                        .then(function (value) {
+                            if (value) {
+                                var deleteElement = angular.element(event.srcElement);
+                                angular.element(deleteElement.closest('tr')).addClass('animated-background');
 
-                                    if ($scope.addNewFiltersModal) {
-                                        $scope.addNewFiltersModal.hide();
-                                        $scope.saving = false;
-                                    }
-                                });
+                                if (id) {
+                                    ViewsService.deleteView(id)
+                                        .then(function () {
+                                            angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                            $scope.pageTotal--;
+                                            $scope.changePage($scope.activePage);
+                                            toastr.success("View is deleted successfully.", "Deleted!");
+                                        })
+                                        .catch(function () {
+                                            $scope.customViews = $scope.customViewsState;
+                                            angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                            toastr.warning($filter('translate')('Common.Error'));
+                                            if ($scope.addNewFiltersModal) {
+                                                $scope.addNewFiltersModal.hide();
+                                                $scope.saving = false;
+                                            }
+                                        });
+                                } else {
+                                    angular.element(deleteElement.closest('tr')).removeClass('animated-background');
+                                    toastr.warning($filter('translate')('Setup.Modules.OneView'));
+                                    return;
+                                }
                             }
-                            else {
-                                toastr.warning($filter('translate')('Setup.Modules.OneView'));
-                                return;
-                            }
-                        }
-                    });
+                        });
             };
 
             $scope.showFormModal = function (view) {
+
                 if (view) {
-                    ViewsService.getView(view.id).then(function (view) {
-                        $scope.view = angular.copy(view);
-                        $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
-                        $scope.view.label = $scope.view['label_' + $scope.language];
-                        $scope.view.edit = true;
+                    $scope.loadingModal = true;
+                    $scope.isNew = false;
+                    ViewsService.getView(view.id)
+                        .then(function (view) {
+                            $scope.view = angular.copy(view);
+                            $scope.module = $filter('filter')($rootScope.appModules, {id: view.module_id}, true)[0];
+                            $scope.view.label = $scope.view['label_' + $scope.language];
+                            $scope.view.edit = true;
 
-                        // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
+                            // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
 
-                        // if (!$scope.view) {
-                        //     TODO
-                        //     $state.go('app.crm.moduleList', { type: module.name });
-                        //     return;
-                        // }
+                            // if (!$scope.view) {
+                            //     TODO
+                            //     $state.go('app.crm.moduleList', { type: module.name });
+                            //     return;
+                            // }
 
-                        if ($scope.view.filter_logic && $scope.language === 'tr')
-                            $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
+                            if ($scope.view.filter_logic && $scope.language === 'tr')
+                                $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
 
-                        moduleChanged($scope.module, false);
-                    });
-                }
-                else {
+                            moduleChanged($scope.module, false);
+                            $scope.loadingModal = false;
+                        });
+                } else {
+                    $scope.isNew = true;
                     $scope.view = {};
                     $scope.module = undefined;
                     //moduleChanged($scope.module, true);
+                    $scope.loadingModal = false;
                 }
                 $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
                     scope: $scope,
@@ -193,7 +207,7 @@ angular.module('primeapps')
                 });
 
                 function accepts(el, target, source) {
-                    if (source != target) {
+                    if (source !== target) {
                         return true;
                     }
                 }
@@ -202,8 +216,11 @@ angular.module('primeapps')
             var moduleChanged = function (module, setView) {
                 $scope.lookupUser = helper.lookupUser;
 
-                if (setView) {
+                if (!$scope.view) {
                     $scope.view = {};
+                }
+
+                if (setView) {
                     $scope.view.system_type = 'custom';
                     $scope.view.sharing_type = 'me';
                 }
@@ -221,7 +238,7 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-                    $scope.modalLoading = true;
+                    
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
@@ -240,12 +257,13 @@ angular.module('primeapps')
 
                             if ($scope.view.filters && $scope.view.filters.length > 0) {
                                 $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
-                                $scope.view.filterList = ViewsService.setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
+                                $scope.view.filterList = setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
                             }
                             dragular();
-                        }).finally(function () {
-                        $scope.modalLoading = false;
-                    });
+                        })
+                        .finally(function () {
+                            $scope.loadingModal = false;
+                        });
                 });
             };
 
@@ -302,15 +320,14 @@ angular.module('primeapps')
                 if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
                     filterListItem.value = null;
                     filterListItem.disabled = true;
-                }
-                else {
+                } else {
                     filterListItem.disabled = false;
                 }
             };
 
             $scope.save = function (viewForm) {
 
-                if (!viewForm.$valid || !$scope.validate(viewForm, true))
+                if (!viewForm.$valid || !$scope.validate(viewForm))
                     return;
 
                 $scope.saving = true;
@@ -337,11 +354,11 @@ angular.module('primeapps')
 
                     view.fields.push(field);
 
-                    if (selectedField.lookup_type && selectedField.lookup_type != 'relation') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
+                    if (selectedField.lookup_type && selectedField.lookup_type !== 'relation') {
+                        var lookupModule = $filter('filter')($rootScope.appModules, {name: selectedField.lookup_type}, true)[0];
                         //TODO dont forget
                         if (lookupModule) {
-                            var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                            var primaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                             var fieldPrimary = {};
                             fieldPrimary.field = selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary';
                             fieldPrimary.order = i + 1;
@@ -357,15 +374,15 @@ angular.module('primeapps')
                     if (!filterItem.field || !filterItem.operator)
                         return;
 
-                    if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value == null || filterItem.value == undefined))
+                    if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty') && (filterItem.value === null || filterItem.value === undefined))
                         return;
 
                     var field = filterItem.field;
                     var fieldName = field.name;
 
-                    if (field.data_type === 'lookup' && field.lookup_type != 'users') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                        var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                    if (field.data_type === 'lookup' && field.lookup_type !== 'users') {
+                        var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
+                        var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                     }
 
@@ -400,8 +417,7 @@ angular.module('primeapps')
 
                         if (field.data_type === 'checkbox')
                             filter.value = filter.value.system_code;
-                    }
-                    else {
+                    } else {
                         filter.value = '-';
                     }
 
@@ -411,8 +427,7 @@ angular.module('primeapps')
                 if ($scope.view.sharing_type === 'custom') {
                     if (!$scope.view.shares) {
                         view.sharing_type = 'me';
-                    }
-                    else {
+                    } else {
                         view.shares = [];
 
                         angular.forEach($scope.view.shares, function (user) {
@@ -445,8 +460,7 @@ angular.module('primeapps')
                         .finally(function () {
                             $scope.saving = false;
                         });
-                }
-                else {
+                } else {
                     ViewsService.update(view, $scope.view.id, $scope.view._rev)
                         .then(function () {
                             success();
@@ -465,7 +479,7 @@ angular.module('primeapps')
                     //$state.go('studio.app.filters');
                     $scope.wizardStep = 0;
                     $scope.addNewFiltersModal.hide();
-                    $scope.changePage(1);
+                    $scope.changePage($scope.activePage);
                 }
 
                 function error(data, status) {
@@ -479,7 +493,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.validate = function (viewForm, next) {
+            $scope.validate = function (viewForm) {
 
                 viewForm.$submitted = true;
 
@@ -487,7 +501,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep != 0) {
+                if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep !== 0) {
                     viewForm.$setValidity('field', false);
                     $scope.background_color = "background-color: #eed3d7";
                     return false;
@@ -497,9 +511,329 @@ angular.module('primeapps')
                     return false;
                 }
 
-                $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                //  $scope.wizardStep += $scope.view.id ? $scope.wizardStep : next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                 return true;
             };
+
+            $scope.costumeDate = "this_day()";
+            $scope.dateFormat = [
+                {
+                    label: $filter('translate')('View.Second'),
+                    value: "s"
+                },
+                {
+                    label: $filter('translate')('View.Minute'),
+                    value: "m"
+                },
+                {
+                    label: $filter('translate')('View.Hour'),
+                    value: "h"
+                },
+                {
+                    label: $filter('translate')('View.Day'),
+                    value: "D"
+                },
+                {
+                    label: $filter('translate')('View.Week'),
+                    value: "W"
+                },
+                {
+                    label: $filter('translate')('View.Month'),
+                    value: "M"
+                },
+                {
+                    label: $filter('translate')('View.Year'),
+                    value: "Y"
+                }
+            ];
+
+            $scope.costumeDateFilter = [
+                {
+                    name: "thisNow",
+                    label: $filter('translate')('View.Now'),
+                    value: "now()"
+                },
+                {
+                    name: "thisToday",
+                    label: $filter('translate')('View.StartOfTheDay'),
+                    value: "today()"
+                },
+                {
+                    name: "thisWeek",
+                    label: $filter('translate')('View.StartOfThisWeek'),
+                    value: "this_week()"
+                },
+                {
+                    name: "thisMonth",
+                    label: $filter('translate')('View.StartOfThisMonth'),
+                    value: "this_month()"
+                },
+                {
+                    name: "thisYear",
+                    label: $filter('translate')('View.StartOfThisYear'),
+                    value: "this_year()"
+                },
+                {
+                    name: "year",
+                    label: $filter('translate')('View.NowYear'),
+                    value: "year()"
+                },
+                {
+                    name: "month",
+                    label: $filter('translate')('View.NowMonth'),
+                    value: "month()"
+                },
+                {
+                    name: "day",
+                    label: $filter('translate')('View.NowDay'),
+                    value: "day()"
+                },
+                {
+                    name: "costume",
+                    label: $filter('translate')('View.CustomDate'),
+                    value: "costume"
+                },
+                {
+                    name: "todayNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheDay'),
+                    value: "costumeN",
+                    nextprevdatetype: "D"
+                },
+                {
+                    name: "weekNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheWeek'),
+                    value: "costumeW",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "monthNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheMonth'),
+                    value: "costumeM",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "yearNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheYear'),
+                    value: "costumeY",
+                    nextprevdatetype: "Y"
+                }
+            ];
+
+            $scope.dateChange = function (filter) {
+                if (filter.costumeDate !== 'costume' && filter.costumeDate !== 'costumeN' && filter.costumeDate !== 'costumeW' && filter.costumeDate !== 'costumeM' && filter.costumeDate !== 'costumeY') {
+                    filter.value = filter.costumeDate;
+                }
+                if (filter.costumeDate === 'costumeN' || filter.costumeDate === 'costumeW' || filter.costumeDate === 'costumeM' || filter.costumeDate === 'costumeY') {
+                    filter.value = "";
+                    filter.valueX = "";
+                    filter.nextprevdatetype = "";
+
+                }
+
+            };
+
+            $scope.nextPrevDateChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
+            $scope.nextPrevDateTypeChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
+            $scope.setCostumDate = function (filter) {
+                if (filter.valueX === null || filter.valueX === "" || filter.valueX === undefined) {
+                    filter.value = "";
+                    return false;
+                }
+                if (filter.nextprevdatetype === undefined) {
+                    filter.nextprevdatetype = $scope.dateFormat[0].value;
+                }
+                switch (filter.costumeDate) {
+                    case "costumeN":
+                        filter.value = "today(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeM":
+                        filter.value = "this_month(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeW":
+                        filter.value = "this_week(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                    case "costumeY":
+                        filter.value = "this_year(" + filter.valueX + filter.nextprevdatetype + ")";
+                        break;
+                }
+
+            };
+
+            var setFilter = function (viewFilters, moduleFields, modulePicklists, filterList) {
+
+                for (var j = 0; j < viewFilters.length; j++) {
+                    var name = viewFilters[j].field;
+                    var value = viewFilters[j].value;
+
+                    if (name.indexOf('.') > -1) {
+                        name = name.split('.')[0];
+                        viewFilters[j].field = name;
+                    }
+
+                    var field = $filter('filter')(moduleFields, {name: name}, true)[0];
+                    var fieldValue = null;
+
+                    if (!field)
+                        return filterList;
+
+                    switch (field.data_type) {
+                        case 'picklist':
+                            fieldValue = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                            break;
+                        case 'multiselect':
+                            fieldValue = [];
+                            var multiselectValue = value.split('|');
+
+                            angular.forEach(multiselectValue, function (picklistLabel) {
+                                var picklist = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+
+                                if (picklist)
+                                    fieldValue.push(picklist);
+                            });
+                            break;
+                        case 'tag':
+                            fieldValue = [];
+                            var tagValue = value.split('|');
+
+                            angular.forEach(tagValue, function (label) {
+                                fieldValue.push(label);
+                            });
+                            break;
+                        case 'lookup':
+                            if (field.lookup_type === 'users') {
+                                var user = {};
+
+                                if (value === '0' || value === '[me]') {
+                                    user.id = 0;
+                                    user.email = '[me]';
+                                    user.full_name = $filter('translate')('Common.LoggedInUser');
+                                } else {
+                                    if (value !== '-') {
+                                        var userItem =
+                                            $filter('filter')($rootScope.users, {Id: parseInt(value)}, true)[0
+                                                ];
+                                        user.id = userItem.Id;
+                                        user.email = userItem.Email;
+                                        user.full_name = userItem.FullName;
+                                    }
+
+                                    //TODO: $rootScope.users kaldirilinca duzeltilecek
+                                    // ModuleService.getRecord('users', value)
+                                    //     .then(function (lookupRecord) {
+                                    //         fieldValue = [lookupRecord.data];
+                                    //     });
+                                }
+
+                                fieldValue = [user];
+                            } else {
+                                fieldValue = value;
+                            }
+                            break;
+                        case 'date':
+                        case 'date_time':
+                        case 'time':
+                            if (!$scope.isCostumeDate($scope.view.filters[j])) {
+                                fieldValue = new Date(value);
+                                $scope.view.filterList[j].costumeDate = "costume";
+                                $scope.view.filters[j].costumeDate = "costume";
+                            } else {
+                                fieldValue = $scope.view.filters[j].value;
+                                $scope.view.filterList[j].costumeDate = $scope.view.filters[j].costumeDate;
+                                $scope.view.filterList[j].valueX = $scope.view.filters[j].valueX;
+                                $scope.view.filterList[j].nextprevdatetype = $scope.view.filters[j].nextprevdatetype;
+                            }
+                            break;
+                        case 'checkbox':
+                            fieldValue = $filter('filter')(modulePicklists.yes_no, {system_code: value}, true)[0];
+                            break;
+                        default:
+                            fieldValue = value;
+                            break;
+                    }
+
+                    filterList[j].field = field;
+                    filterList[j].operator = operators[viewFilters[j].operator];
+                    filterList[j].value = fieldValue;
+
+                    if (viewFilters[j].operator === 'empty' || viewFilters[j].operator === 'not_empty') {
+                        filterList[j].value = null;
+                        filterList[j].disabled = true;
+                    }
+                }
+                return filterList;
+            };
+
+            $scope.isCostumeDate = function (filter) {
+                var getNumberRegex = /[^\d.-]/g;
+                if (filter.value.indexOf('now(') > -1) {
+                    filter.costumeDate = "now()";
+                    return true;
+                }
+                if (filter.value.indexOf('today(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeN";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "today()";
+                        return true;
+                    }
+                }
+                if (filter.value === 'year()') {
+                    filter.costumeDate = "year()";
+                    return true;
+                }
+                if (filter.value === 'month()') {
+                    filter.costumeDate = "month()";
+                    return true;
+                }
+                if (filter.value === 'day()') {
+                    filter.costumeDate = "day()";
+                    return true;
+                }
+
+                if (filter.value.indexOf('this_week(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeW";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_week()";
+                        return true;
+                    }
+                }
+
+                if (filter.value.indexOf('this_month(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeM";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_month()";
+                        return true;
+                    }
+                }
+
+                if (filter.value.indexOf('this_year(') > -1) {
+                    if (/\d+/.test(filter.value)) {
+                        filter.costumeDate = "costumeY";
+                        filter.valueX = parseFloat(filter.value.replace(/[^\d.-]/g, ''));
+                        filter.nextprevdatetype = filter.value.match(/([A-z])\)/g, '')[0].match(/[A-z]/g, '')[0];
+                        return true;
+                    } else {
+                        filter.costumeDate = "this_year()";
+                        return true;
+                    }
+                }
+                return false;
+            }
 
         }
     ]);

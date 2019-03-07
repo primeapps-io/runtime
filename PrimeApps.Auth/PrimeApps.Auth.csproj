@@ -6,6 +6,7 @@
         <DockerTargetOS>Linux</DockerTargetOS>
     </PropertyGroup>
     <ItemGroup>
+	    <PackageReference Include="IdentityServer.LdapExtension" Version="2.1.0" />
         <PackageReference Include="IdentityServer4" Version="2.3.2" />
         <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
         <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
@@ -23,5 +24,10 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="primeapps_id4.pfx" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\images\login\404image.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\images\login\banner\primeapps-background.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\images\login\logos\login_primeapps.png" />
     </ItemGroup>
 </Project>

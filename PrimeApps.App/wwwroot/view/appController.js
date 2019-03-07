@@ -15,7 +15,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;
         $scope.isExpenseExist = false;
-        $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
+        $scope.componentModules = $filter('filter')($rootScope.modules, {system_type: 'component'}, true);
 
         $rootScope.isMobile = function () {
             var check = false;
@@ -95,7 +95,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             AuthService.logout()
                 .then(function (response) {
                     AuthService.logoutComplete();
-                    window.location = response.data['redirect_url'];
+                    if ($location.$$absUrl.contains('preview=')) {
+                        window.location = response.data['redirect_url'] + '?preview=' + $location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1];
+                    }
+                    else {
+                        window.location = response.data['redirect_url'];
+                    }
                     blockUI.stop();
                 });
         };
@@ -132,7 +137,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     $cache.remove('calendar_events');
 
                     $scope.sampleRemoving = false;
-                    ngToast.create({ content: $filter('translate')('Layout.SampleDataRemoveSuccess'), className: 'success' });
+                    ngToast.create({content: $filter('translate')('Layout.SampleDataRemoveSuccess'), className: 'success'});
                     $rootScope.$broadcast('sample-data-removed');
                     $window.location.href = '#/app/dashboard';
                 });
@@ -158,13 +163,14 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
                 if (currentUrl.charAt(index - 1) === ':') {
                     currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '?') {
+                }
+                else if (currentUrl.charAt(index - 1) === '?') {
                     currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '&') {
+                }
+                else if (currentUrl.charAt(index - 1) === '&') {
                     currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
                 }
             });
-
 
             if (canReload && url.includes(currentUrl)) {
                 $state.reload();
@@ -237,37 +243,37 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             if (hash.indexOf('?') > -1)
                 hash = window.location.hash.split('?')[0];
 
-            var help = $filter('filter')(helps.maps, { route: hash, language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+            var help = $filter('filter')(helps.maps, {route: hash, language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
 
             if (help) {
                 return help.help;
             }
             else {
                 if (hash.indexOf('#/app/modules/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: '#/app/modules/', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                 }
 
                 if (hash.indexOf('#/app/module/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: '#/app/module/', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                 }
 
                 if (hash.indexOf('#/app/moduleForm/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: '#/app/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                 }
 
                 if (hash.indexOf('#/app/setup/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: 'default-setup', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: 'default-setup', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                 }
 
                 if (hash.indexOf('#/app/import/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: '#/app/import/', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                 }
 
                 if (help) {
                     return help.help;
                 }
                 else {
-                    help = $filter('filter')(helps.maps, { route: 'default', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                    help = $filter('filter')(helps.maps, {route: 'default', language: $rootScope.language, appId: $rootScope.user.appId}, true)[0];
                     return help.help;
                 }
             }
@@ -290,16 +296,16 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     else
                         $rootScope.$broadcast('sample-data-removed');
 
-                    ngToast.create({ content: $filter('translate')('Layout.ReloadSuccess'), className: 'success' });
+                    ngToast.create({content: $filter('translate')('Layout.ReloadSuccess'), className: 'success'});
                 });
         };
 
         //timetracker modülünü gösterme
-        if ($filter('filter')($rootScope.modules, { name: 'timetrackers' }, true).length > 0)
+        if ($filter('filter')($rootScope.modules, {name: 'timetrackers'}, true).length > 0)
             $scope.isTimetrackerExist = true;
 
         //Yeni Masraf yapısını gösterme
-        if ($filter('filter')($rootScope.modules, { name: 'masraflar' }, true).length > 0)
+        if ($filter('filter')($rootScope.modules, {name: 'masraflar'}, true).length > 0)
             $scope.isExpenseExist = true;
 
         $rootScope.openHelp = function (id) {
@@ -335,11 +341,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     moduleName = hash.split('/')[3].split('?')[0];
                 }
 
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
-
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
                 if (moduleName) {
-                    var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                    var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
                     if (module != null) {
                         if (isModuleList) {
                             HelpService.getModuleType('sidemodal', 'modulelist', module.id)
@@ -454,14 +459,14 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.showHelpModal = function () {
             $scope.openHelpModal = function () {
                 $scope.helpModal = $scope.helpModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/setup/help/helpPageModal.html',
-                        animation: 'am-fade',
-                        backdrop: true,
-                        show: false,
-                        tag: 'helpModal',
-                        container: 'body'
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/setup/help/helpPageModal.html',
+                    animation: 'am-fade',
+                    backdrop: true,
+                    show: false,
+                    tag: 'helpModal',
+                    container: 'body'
+                });
 
                 $scope.helpModal.$promise.then($scope.helpModal.show);
             };
@@ -486,7 +491,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
 
             if (moduleName) {
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
                 if (module != null) {
                     if (isModuleList) {
                         HelpService.getModuleType('modal', 'modulelist', module.id)

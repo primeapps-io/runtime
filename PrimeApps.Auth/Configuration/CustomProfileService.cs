@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using PrimeApps.Auth.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using IdentityModel;
 
 namespace PrimeApps.Auth
 {

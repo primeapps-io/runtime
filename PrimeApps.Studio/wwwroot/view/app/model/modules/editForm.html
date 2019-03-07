@@ -24,7 +24,7 @@
         <div class="modal-dialog scroll-style-4">
             <div class="section">
                 <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
-                    <label class="col-sm-4 required-field">  {{'Setup.Modules.PluralName' | translate}}
+                    <label class="col-sm-4 required-field"> {{'Setup.Modules.PluralName' | translate}}
                         <span class="required-label">(required)</span>
                     </label>
                     <input type="text"
@@ -37,7 +37,8 @@
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
-                    <label class="col-sm-4 required-field">  {{'Setup.Modules.SingularName' | translate}} <span class="required-label">(required)</span></label>
+                    <label class="col-sm-4 required-field"> {{'Setup.Modules.SingularName' | translate}} <span
+                            class="required-label">(required)</span></label>
                     <input type="text"
                            name="labelSingular"
                            class="form-control ng-animate-disabled col-sm-8"
@@ -46,13 +47,12 @@
                            ng-model="module['label_' + language + '_singular']">
                 </div>
                 <div class="form-group icon-search-list">
-                    <label class="col-sm-4">{{'Common.Icon' | translate}}:</label>
+                    <label class="col-sm-4">{{'Common.Icon' | translate}}</label>
 
                     <ui-select ng-model="module.menu_icon" ng-disabled="ctrl.disabled">
                         <ui-select-match placeholder="Select an icon">
                             <div>
                                 <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
                             </div>
                         </ui-select-match>
 
@@ -60,68 +60,77 @@
                             <div ng-bind-html="icon.label"></div>
                         </ui-select-choices>
                     </ui-select>
-
-
                 </div>
+
                 <div class="form-group">
-                    <label class="col-sm-4">{{'Setup.Modules.DisplayOnMenu' | translate}}: </label>
-                    <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.display" ng-value="true"> {{'Common.Yes' | translate}}
-                            <span></span>
-                        </label>
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.display" ng-value="false"> {{'Common.No' | translate}}
-                            <span></span>
-                        </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>{{'Setup.Modules.DisplayOnMenu' | translate}} </label>
+                        </div>
+                        <div class="col-sm-8" style="padding-left: 0;">
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.display" ng-value="true"> {{'Common.Yes' |
+                                translate}}<span></span>
+                            </label>
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.display" ng-value="false"> {{'Common.No' |
+                                translate}}<span></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
             </div>
             <div class="section">
                 <div class="form-group">
-                    <label class="col-sm-4">{{'Setup.Modules.Sharing' | translate}}: </label>
-                    <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.sharing" value="private">
-                            {{'Setup.Modules.SharingPrivate' | translate}}
-                            <span></span>
-                        </label>
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.sharing" value="public">
-                            {{'Setup.Modules.SharingPublic' | translate}}
-                            <span></span>
-                        </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>{{'Setup.Modules.Sharing' | translate}} </label>
+                        </div>
+                        <div class="col-sm-8" style="padding-left: 0;">
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.sharing" value="private">
+                                {{'Setup.Modules.SharingPrivate' | translate}}
+                                <span></span>
+                            </label>
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.sharing" value="public">
+                                {{'Setup.Modules.SharingPublic' | translate}}
+                                <span></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-4">
-                        <i data-trigger="hover"
-                           data-type="info"
-                           data-title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}"
-                           bs-tooltip
-                           data-placement="right"
-                           class="extra-info fas fa-question-circle"></i>
+                <!--TODO-->
+                <!--<div class="form-group">-->
+                <!--<label class="col-sm-4">-->
+                <!--<i data-trigger="hover"-->
+                <!--data-type="info"-->
+                <!--data-title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}"-->
+                <!--bs-tooltip-->
+                <!--data-placement="right"-->
+                <!--class="extra-info fas fa-question-circle"></i>-->
 
-                        {{'Setup.Modules.DisplayOnCalendar' | translate}}:
-                    </label>
-                    <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline newinput" ng-class="!hasCalendarDateFields()  ? 'disabled':'' "
-                               title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">
-                            <input type="radio" ng-model="module.display_calendar" ng-value="true"
-                                   ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}
-                            <span></span>
+                <!--{{'Setup.Modules.DisplayOnCalendar' | translate}}:-->
+                <!--</label>-->
+                <!--<div class="col-sm-8" style="padding-left: 0;">-->
+                <!--<label class="radio-inline newinput" ng-class="!hasCalendarDateFields()  ? 'disabled':'' "-->
+                <!--title="{{!hasCalendarDateFields() ? ('Setup.Modules.CalendarDateTypeMessage' | translate) : ''}}">-->
+                <!--<input type="radio" ng-model="module.display_calendar" ng-value="true"-->
+                <!--ng-disabled="!hasCalendarDateFields()"> {{'Common.Yes' | translate}}-->
+                <!--<span></span>-->
 
-                        </label>
-                        <label class="radio-inline newinput" ng-class="module.name === 'activities' ? 'disabled':''">
-                            <input type="radio" ng-model="module.display_calendar" ng-value="false"
-                                   ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}
-                            <span></span>
-                        </label>
-                    </div>
-                </div>
+                <!--</label>-->
+                <!--<label class="radio-inline newinput" ng-class="module.name === 'activities' ? 'disabled':''">-->
+                <!--<input type="radio" ng-model="module.display_calendar" ng-value="false"-->
+                <!--ng-disabled="module.name === 'activities'"> {{'Common.No' | translate}}-->
+                <!--<span></span>-->
+                <!--</label>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!---->
                 <div class="form-group" ng-if="module.display_calendar">
-                    <label class="col-sm-4">{{'Setup.Modules.CalendarColor' | translate}}: </label>
+                    <label class="col-sm-4">{{'Setup.Modules.CalendarColor' | translate}} </label>
                     <div class="col-sm-8" style="padding-left: 0;">
                         <ul class="color-picker-simple">
                             <li ng-repeat="color in calendarColors"
@@ -132,20 +141,35 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4">{{'Common.DetailViewType' | translate }}: </label>
-                    <div class="col-sm-8" style="padding-left: 0;">
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.detail_view_type" value="tab">
-                            {{'Common.TabbedView' | translate }}
-                            <span></span>
-                        </label>
-                        <label class="radio-inline newinput">
-                            <input type="radio" ng-model="module.detail_view_type" value="flat"> {{'Common.FlatView'
-                            | translate }}
-                            <span></span>
-                        </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>{{'Common.DetailViewType' | translate }} </label>
+                        </div>
+                        <div class="col-sm-8" style="padding-left: 0;">
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.detail_view_type" value="tab">
+                                {{'Common.TabbedView' | translate }}
+                                <span></span>
+                            </label>
+                            <label class="radio-inline newinput">
+                                <input type="radio" ng-model="module.detail_view_type" value="flat"> {{'Common.FlatView'
+                                | translate }}<span></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><label>Components </label></div>
+                        <div class="col-sm-8 newinput">
+                            <label>
+                                <input type="checkbox" ng-model="module.is_component" value="component"><span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="section" ng-show="editForm.$submitted && editForm.$invalid">

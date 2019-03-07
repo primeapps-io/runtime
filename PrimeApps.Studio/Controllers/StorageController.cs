@@ -134,44 +134,41 @@ namespace PrimeApps.Studio.Controllers
         //    return Json(response);
         //}
 
-        //[HttpPost("upload_whole")]
-        //[DisableRequestSizeLimit]
-        //public async Task<IActionResult> UploadWhole()
-        //{
-        //    var parser = new HttpMultipartParser(Request.Body, "file");
-        //    StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+        [HttpPost("upload_attachment")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadWhole()
+        {
+            var parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", OrganizationId, (int)AppId);
 
-        //    //if it is successfully parsed continue.
-        //    if (parser.Success)
-        //    {
-        //        if (parser.FileContents.Length <= 0)
-        //        {
-        //            //check the file size if it is 0 bytes then return client with that error code.
-        //            return BadRequest();
-        //        }
+            //if it is successfully parsed continue.
+            if (parser.Success)
+            {
+                if (parser.FileContents.Length <= 0)
+                {
+                    //check the file size if it is 0 bytes then return client with that error code.
+                    return BadRequest();
+                }
 
-        //        var ext = Path.GetExtension(parser.Filename);
-        //        var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+                var ext = Path.GetExtension(parser.Filename);
+                var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-        //        using (Stream stream = new MemoryStream(parser.FileContents))
-        //        {
-        //            await _storage.Upload(bucketName, uniqueName, stream);
-        //        }
+                var fileName = string.Format("{0}_{1}", AppUser.Id, uniqueName);
 
-        //        var result = new DocumentUploadResult
-        //        {
-        //            ContentType = parser.ContentType,
-        //            UniqueName = uniqueName,
-        //            Chunks = 0
-        //        };
+                using (Stream stream = new MemoryStream(parser.FileContents))
+                {
+                    await _storage.Upload(bucketName, fileName, stream);
+                }
 
-        //        //return content type of the file to the client
-        //        return Ok(result);
-        //    }
+                var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
 
-        //    //this request invalid because there is no file, return fail code to the client.
-        //    return NotFound();
-        //}
+                //return content type.
+                return Ok(url);
+            }
+
+            //this request invalid because there is no file, return fail code to the client.
+            return NotFound();
+        }
 
         [HttpPost("upload_template")]
         [DisableRequestSizeLimit]

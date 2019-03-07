@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using IdentityServer.LdapExtension.Extensions;
+using IdentityServer.LdapExtension.UserModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
@@ -36,7 +38,7 @@ namespace PrimeApps.Auth
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            services.AddIdentityServer(options =>
+            var ser = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
@@ -51,9 +53,20 @@ namespace PrimeApps.Auth
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 3600;//3600 (1 hour)
                 })
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddProfileService<CustomProfileService>()
                 .AddSigningCredential(LoadCertificate());
+
+            //Fix for localhost identity cookie conflict
+            var authority = configuration.GetValue("AppSettings:Authority", string.Empty);
+
+            if (authority.Contains("localhost"))
+                services.ConfigureApplicationCookie(options => { options.Cookie.Name = ".AspNetCore.Identity.Application." + authority.Substring(authority.Length - 4); });
+
+            var useLdap = configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
+            if(useLdap != null)
+                ser.AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("Ldap"), UserStore.InMemory);
+                    
+            ser.AddAspNetIdentity<ApplicationUser>();
+            ser.AddProfileService<CustomProfileService>();
 
             //InitializeDatabase(app);
         }

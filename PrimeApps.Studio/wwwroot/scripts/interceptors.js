@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', '$cookies', '$rootScope',
-        function ($q, $injector, $window, $localStorage, $filter, $cookies, $rootScope) {
+    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', '$cookies', '$rootScope', '$sessionStorage', '$cache',
+        function ($q, $injector, $window, $localStorage, $filter, $cookies, $rootScope, $sessionStorage, $cache) {
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
@@ -50,33 +50,44 @@ angular.module('primeapps')
                             return $q.reject(rejection);
 
                         if (rejection.statusText === 'Unauthorized') {
-                            $localStorage.remove('access_token');
-                            $localStorage.remove('refresh_token');
+                            var http = $injector.get('$http');
+                            http.post(config.apiUrl + 'account/logout', {})
+                                .then(function (response) {
+                                    $localStorage.remove('access_token');
+                                    $localStorage.remove('refresh_token');
+                                    $localStorage.remove('Workgroup');
+                                    $sessionStorage.clear();
+                                    $cache.removeAll();
+
+                                    window.location = response.data['redirect_url'];
+                                });
+                            //$localStorage.remove('access_token');
+                            //$localStorage.remove('refresh_token');
                             // $window.location.href = '/auth/SignOut';
-                        } else {
+                        }
+                        else {
                             $window.location.href = '/';
                         }
-
 
                         return;
                     }
 
                     if (rejection.status === 500 && rejection.config.url.indexOf('/User/MyAccount') > -1) {
-                        $localStorage.remove('access_token');
+                        /*$localStorage.remove('access_token');
                         $localStorage.remove('refresh_token');
 
-                        $window.location.href = '/auth/SignOut';
+                        $window.location.href = '/auth/SignOut';*/
 
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 402) {
-                        $window.location.href = '#/paymentform';
+                        //$window.location.href = '#/paymentform';
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 403) {
-                        $window.location.href = '#/app/dashboard';
+                        //$window.location.href = '#/app/dashboard';
                         toastr.error($filter('translate')('Common.Forbidden'));
 
                         return $q.reject(rejection);
@@ -84,7 +95,7 @@ angular.module('primeapps')
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
-                            $window.location.href = '#/app/dashboard';
+                            //$window.location.href = '#/app/dashboard';
                             toastr.warning($filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'));
                         }
 
@@ -100,8 +111,8 @@ angular.module('primeapps')
                     if (rejection.status === 400 || rejection.status === 409) {
                         return $q.reject(rejection);
                     }
-                    
-                    if(rejection.status === 503 && rejection.config.url.contains('functions/run')){
+
+                    if (rejection.status === 503 && rejection.config.url.contains('functions/run')) {
                         return $q.reject(rejection);
                     }
 

@@ -1,12 +1,13 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
-    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config',
-		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config) {
+    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config', '$localStorage', '$cookies',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config, $localStorage, $cookies) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
+            $scope.lastStepClicked = false;
             $scope.$parent.wizardStep = 0;
             $scope.$parent.tab = 0;
             $scope.rules = [];
@@ -15,38 +16,42 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'simpleworkflows';
             $scope.workflowModel = {};
+            $scope.workflowModel.active = true;
+            $scope.workflowModel.processFilter = 'none';
+            $scope.workflowModel.frequency = 'continuous';
             $rootScope.approvalProcesses = [];
             $rootScope.breadcrumblist[2].title = 'Simple Worflows';
             // $scope.id = $location.search().id;
-			$scope.scheduleItems = SimpleWorkflowsService.getScheduleItems();
-			$scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
+            $scope.scheduleItems = SimpleWorkflowsService.getScheduleItems();
+            $scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
             $scope.showProcessFilter = false;
+            $scope.modules = {};
 
-            var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
+            ////var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
-            ModuleService.getModuleFields(activityModule.name)
-                .then(function (response) {
-                    if (response) {
-                        activityModule.fields = response.data;
-                        $scope.taskFields = {};
+            ////ModuleService.getModuleFields(activityModule.name)
+            ////    .then(function (response) {
+            ////        if (response) {
+            ////            activityModule.fields = response.data;
+            $scope.taskFields = {};
 
-                        if (!activityModule.fields)
-                            return;
+            ////            if (!activityModule.fields)
+            ////                return;
 
-                        $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
-                        $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
-                        $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
-                        $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
-                        $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
-                        $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
-                        $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
+            ////            $scope.taskFields.owner = $filter('filter')(activityModule.fields, { name: 'owner' }, true)[0];
+            ////            $scope.taskFields.subject = $filter('filter')(activityModule.fields, { name: 'subject' }, true)[0];
+            ////            $scope.taskFields.task_due_date = $filter('filter')(activityModule.fields, { name: 'task_due_date' }, true)[0];
+            ////            $scope.taskFields.task_status = $filter('filter')(activityModule.fields, { name: 'task_status' }, true)[0];
+            ////            $scope.taskFields.task_priority = $filter('filter')(activityModule.fields, { name: 'task_priority' }, true)[0];
+            ////            $scope.taskFields.task_notification = $filter('filter')(activityModule.fields, { name: 'task_notification' }, true)[0];
+            ////            $scope.taskFields.description = $filter('filter')(activityModule.fields, { name: 'description' }, true)[0];
 
-                        ModuleService.getPickItemsLists(activityModule, false)
-                            .then(function (picklistsActivity) {
-                                $scope.picklistsActivity = picklistsActivity;
-                            });
-                    }
-                });
+            ////            ModuleService.getPickItemsLists(activityModule, false)
+            ////                .then(function (picklistsActivity) {
+            $scope.picklistsActivity = {};////picklistsActivity;
+            ////                });
+            ////        }
+            ////    });
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -57,7 +62,6 @@ angular.module('primeapps')
             };
 
             $scope.generator(10);
-
 
 
             var uploadSuccessCallback,
@@ -72,15 +76,14 @@ angular.module('primeapps')
             };
 
 
-
             var count = function () {
-				SimpleWorkflowsService.count().then(function (response) {
+                SimpleWorkflowsService.count().then(function (response) {
                     $scope.pageTotal = response.data;
                 });
             };
             count();
 
-			SimpleWorkflowsService.find($scope.requestModel, $rootScope.currentOrgId)
+            SimpleWorkflowsService.find($scope.requestModel, $rootScope.currentOrgId)
                 .then(function (response) {
                     if (response.data) {
                         var data = fillModule(response.data);
@@ -95,7 +98,7 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
                 count();
 
-				SimpleWorkflowsService.find(requestModel)
+                SimpleWorkflowsService.find(requestModel)
                     .then(function (response) {
                         var data = fillModule(response.data);
                         $scope.rules = data;
@@ -123,105 +126,101 @@ angular.module('primeapps')
             };
 
 
-
-
-
-
             var selectRule = function () {
                 $scope.modalLoading = true;
-                ModuleService.getPickItemsLists(activityModule, false)
-                    .then(function (picklistsActivity) {
-                        $scope.picklistsActivity = picklistsActivity;
+                ////ModuleService.getPickItemsLists(activityModule, false)
+                ////    .then(function (picklistsActivity) {
+                ////        $scope.picklistsActivity = picklistsActivity;
 
-                        if (!$scope.id) {
-                            $scope.workflowModel = {};
-                            $scope.workflowModel.active = true;
-                            $scope.workflowModel.processFilter = 'none';
-                            $scope.workflowModel.frequency = 'continuous';
-                            $scope.loading = false;
-                            $scope.modalLoading = false;
-                        }
-                        else {
-							SimpleWorkflowsService.get($scope.id)
-                                .then(function (workflow) {
-                                    $scope.workflowModel = workflow = workflow.data;
-                                    $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0);
+                if (!$scope.id) {
+                    $scope.workflowModel = {};
+                    $scope.workflowModel.active = true;
+                    $scope.workflowModel.processFilter = 'none';
+                    $scope.workflowModel.frequency = 'continuous';
+                    $scope.loading = false;
+                    $scope.modalLoading = false;
+                } else {
+                    SimpleWorkflowsService.get($scope.id)
+                        .then(function (workflow) {
+                            $scope.workflowModel = workflow = workflow.data;
+                            $scope.module = ModuleService.getFieldsOperator(workflow.module, $rootScope.appModules, 0);
 
-                                    $scope.workflowModel.operation = {};
+                            $scope.workflowModel.operation = {};
 
-                                    angular.forEach($scope.workflowModel.operations_array, function (value) {
-                                        if (value)
-                                            $scope.workflowModel.operation[value.toString()] = true;
-                                    });
+                            angular.forEach($scope.workflowModel.operations_array, function (value) {
+                                if (value)
+                                    $scope.workflowModel.operation[value.toString()] = true;
+                            });
 
-                                    if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
-                                        $scope.showProcessFilter = true;
+                            if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
+                                $scope.showProcessFilter = true;
 
-                                    ModuleService.getPickItemsLists($scope.module)
-                                        .then(function (picklists) {
-                                            $scope.modulePicklists = picklists;
-                                            $scope.filters = [];
+                            var newModules = angular.copy($rootScope.appModules);
+                            var userModule = getFakeUserModule();
+                            newModules.push(userModule.module);
 
-                                            for (var i = 0; i < 5; i++) {
-                                                var filter = {};
-                                                filter.id = i;
-                                                filter.field = null;
-                                                filter.operator = null;
-                                                filter.value = null;
-                                                filter.no = i + 1;
+                            ModuleService.getPickItemsLists($scope.module)
+                                .then(function (picklists) {
+                                    $scope.modulePicklists = picklists;
+                                    $scope.filters = [];
 
-                                                $scope.filters.push(filter);
-                                            }
+                                    for (var i = 0; i < 5; i++) {
+                                        var filter = {};
+                                        filter.id = i;
+                                        filter.field = null;
+                                        filter.operator = null;
+                                        filter.value = null;
+                                        filter.no = i + 1;
 
-                                            if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
-                                                $scope.picklistsModule = picklists;
-                                                $scope.getSendNotificationUpdatableModules($scope.module);
-                                                $scope.getDynamicFieldUpdateModules($scope.module);
+                                        $scope.filters.push(filter);
+                                    }
 
-												$scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                                $scope.getUpdatableModules();
-                                                $scope.generateHookModules();
-                                            }
+                                    if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
+                                        $scope.picklistsModule = picklists;
+                                        $scope.getSendNotificationUpdatableModules($scope.module);
+                                        $scope.getDynamicFieldUpdateModules($scope.module);
+                                        $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, newModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                        $scope.getUpdatableModules();
+                                        $scope.generateHookModules();
+                                    } else {
+                                        var fieldUpdateModule;
+                                        if (workflow.field_update.module.split(',').length > 1) {
+                                            var updModule = workflow.field_update.module.split(',')[0];
+                                            if (updModule === $scope.module.name)
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
                                             else {
-                                                var fieldUpdateModule;
-                                                if (workflow.field_update.module.split(',').length > 1) {
-                                                    var updModule = workflow.field_update.module.split(',')[0];
-                                                    if (updModule === $scope.module.name)
-                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: updModule }, true)[0];
-                                                    else {
-                                                        fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
-                                                    }
-                                                }
-                                                else
-                                                    fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
-                                                ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
-                                                    if (response) {
-                                                        fieldUpdateModule.fields = response.data;
-                                                    }
-                                                    ModuleService.getPickItemsLists(fieldUpdateModule)
-                                                        .then(function (picklistUpdateModule) {
-                                                            $scope.picklistsModule = picklistUpdateModule;
-                                                            $scope.getSendNotificationUpdatableModules($scope.module);
-                                                            $scope.getDynamicFieldUpdateModules($scope.module);
-															$scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                                            $scope.getUpdatableModules();
-                                                            $scope.generateHookModules();
-                                                        });
-                                                });
-
+                                                fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: $scope.module.name }, true)[0];
                                             }
-
-                                            $scope.prepareFilters();
-
-                                            $scope.lastStepClicked = true;
-                                            $scope.loading = false;
-                                            $scope.modalLoading = false;
-
+                                        } else
+                                            fieldUpdateModule = $filter('filter')($rootScope.appModules, { name: workflow.field_update.module }, true)[0];
+                                        ModuleService.getModuleFields(fieldUpdateModule.name).then(function (response) {
+                                            if (response) {
+                                                fieldUpdateModule.fields = response.data;
+                                            }
+                                            ModuleService.getPickItemsLists(fieldUpdateModule)
+                                                .then(function (picklistUpdateModule) {
+                                                    $scope.picklistsModule = picklistUpdateModule;
+                                                    $scope.getSendNotificationUpdatableModules($scope.module);
+                                                    $scope.getDynamicFieldUpdateModules($scope.module);
+                                                    $scope.workflowModel = SimpleWorkflowsService.processWorkflow(workflow, $scope.module, newModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                    $scope.getUpdatableModules();
+                                                    $scope.generateHookModules();
+                                                });
                                         });
-                                    // $scope.modalLoading = false;
+
+                                    }
+
+                                    $scope.prepareFilters();
+
+                                    $scope.lastStepClicked = true;
+                                    $scope.loading = false;
+                                    $scope.modalLoading = false;
+
                                 });
-                        }
-                    });
+                            // $scope.modalLoading = false;
+                        });
+                }
+                ////});
             };
 
             $scope.selectModule = function (module) {
@@ -242,8 +241,7 @@ angular.module('primeapps')
                         if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
                             $scope.showProcessFilter = true;
                             $scope.workflowModel.processFilter = 'all';
-                        }
-                        else {
+                        } else {
                             $scope.workflowModel.processFilter = 'none';
                             $scope.showProcessFilter = false;
                         }
@@ -304,25 +302,46 @@ angular.module('primeapps')
                 if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
                     filterListItem.value = null;
                     filterListItem.disabled = true;
-                }
-                else {
+                } else {
                     filterListItem.disabled = false;
                 }
             };
 
+            /* $scope.searchTags = function (term) {
+                   if (!$scope.moduleFields)
+                       $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
+ 
+                 var tagsList = [];
+                 angular.forEach($scope.module.fields, function (item) {
+                     if (item.name === "seperator")
+                         return;
+                     if (item.label.indexOf(term) >= 0) {
+                         tagsList.push(item);
+                     }
+                 });
+ 
+ 
+                 $scope.tags = tagsList;
+                 return tagsList;
+             };
+ */
             $scope.searchTags = function (term) {
+
                 if (!$scope.moduleFields)
-					$scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
+                    $scope.moduleFields = SimpleWorkflowsService.getFields($scope.module);
 
                 var tagsList = [];
                 angular.forEach($scope.moduleFields, function (item) {
                     if (item.name === "seperator")
                         return;
-                    if (item.label.indexOf(term) >= 0) {
+
+                    if (item.name.match('seperator'))
+                        item.name = item.label;
+
+                    if (item.name && item.name.indexOf(term) >= 0) {
                         tagsList.push(item);
                     }
                 });
-
 
                 $scope.tags = tagsList;
                 return tagsList;
@@ -330,217 +349,214 @@ angular.module('primeapps')
 
             var dialog_uid = plupload.guid();
 
-            ///// uploader configuration for image files.
-            //$scope.imgUpload = {
-            //    settings: {
-            //        multi_selection: false,
-            //        url: config.apiUrl + 'Document/upload_attachment',
-            //        headers: {
-            //            'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-            //            'Accept': 'application/json',
-            //            'X-Tenant-Id': $cookies.get('tenant_id')
-            //        },
-            //        multipart_params: {
-            //            container: dialog_uid
-            //        },
-            //        filters: {
-            //            mime_types: [
-            //                { title: "Image files", extensions: "jpg,gif,png" },
-            //            ],
-            //            max_file_size: "2mb"
-            //        },
-            //        resize: { quality: 90 }
-            //    },
-            //    events: {
-            //        filesAdded: function (uploader, files) {
-            //            uploader.start();
-            //            tinymce.activeEditor.windowManager.open({
-            //                title: $filter('translate')('Common.PleaseWait'),
-            //                width: 50,
-            //                height: 50,
-            //                body: [
-            //                    {
-            //                        type: 'container',
-            //                        name: 'container',
-            //                        label: '',
-            //                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-            //                    },
-            //                ],
-            //                buttons: []
-            //            });
-            //        },
-            //        uploadProgress: function (uploader, file) {
-            //        },
-            //        fileUploaded: function (uploader, file, response) {
-            //            tinymce.activeEditor.windowManager.close();
-            //            var resp = JSON.parse(response.response);
-            //            uploadSuccessCallback(resp.public_url, { alt: file.name });
-            //            uploadSuccessCallback = null;
-            //        },
-            //        error: function (file, error) {
-            //            switch (error.code) {
-            //                case -600:
-            //                    tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
-            //                    break;
-            //                default:
-            //                    break;
-            //            }
-            //            if (uploadFailedCallback) {
-            //                uploadFailedCallback();
-            //                uploadFailedCallback = null;
-            //            }
-            //        }
-            //    }
-            //};
+            // uploader configuration for image files.
+            $scope.imgUpload = {
+                settings: {
+                    multi_selection: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Image files", extensions: "jpg,gif,png" },
+                        ],
+                        max_file_size: "2mb"
+                    },
+                    resize: { quality: 90 }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        tinymce.activeEditor.windowManager.close();
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
 
-            //$scope.fileUpload = {
-            //    settings: {
-            //        multi_selection: false,
-            //        unique_names: false,
-            //        url: config.apiUrl + 'Document/upload_attachment',
-            //        headers: {
-            //            'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-            //            'Accept': 'application/json',
-            //            'X-Tenant-Id': $cookies.get('tenant_id')
-            //        },
-            //        multipart_params: {
-            //            container: dialog_uid
-            //        },
-            //        filters: {
-            //            mime_types: [
-            //                { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
-            //            ],
-            //            max_file_size: "50mb"
-            //        }
-            //    },
-            //    events: {
-            //        filesAdded: function (uploader, files) {
-            //            uploader.start();
-            //            tinymce.activeEditor.windowManager.open({
-            //                title: $filter('translate')('Common.PleaseWait'),
-            //                width: 50,
-            //                height: 50,
-            //                body: [
-            //                    {
-            //                        type: 'container',
-            //                        name: 'container',
-            //                        label: '',
-            //                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-            //                    },
-            //                ],
-            //                buttons: []
-            //            });
-            //        },
-            //        uploadProgress: function (uploader, file) {
-            //        },
-            //        fileUploaded: function (uploader, file, response) {
-            //            var resp = JSON.parse(response.response);
-            //            uploadSuccessCallback(resp.public_url, { alt: file.name });
-            //            uploadSuccessCallback = null;
-            //            tinymce.activeEditor.windowManager.close();
-            //        },
-            //        error: function (file, error) {
-            //            switch (error.code) {
-            //                case -600:
-            //                    tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
-            //                    break;
-            //                default:
-            //                    break;
-            //            }
-            //            if (uploadFailedCallback) {
-            //                uploadFailedCallback();
-            //                uploadFailedCallback = null;
-            //            }
-            //        }
-            //    }
-            //};
+            $scope.fileUpload = {
+                settings: {
+                    multi_selection: false,
+                    unique_names: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                        ],
+                        max_file_size: "50mb"
+                    }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                        tinymce.activeEditor.windowManager.close();
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
 
-            //$scope.tinymceOptions = {
-            //    setup: function (editor) {
-            //        editor.addButton('addParameter', {
-            //            type: 'button',
-            //            text: $filter('translate')('EMail.AddParameter'),
-            //            onclick: function () {
-            //                tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
-            //            }
-            //        });
-            //        editor.on("init", function () {
-            //            $scope.loadingModal = false;
-            //        });
-            //    },
-            //    onChange: function (e) {
-            //        debugger;
-            //        // put logic here for keypress and cut/paste changes
-            //    },
-            //    inline: false,
-            //    height: 300,
-            //    language: $scope.language,
-            //    plugins: [
-            //        "advlist autolink lists link image charmap print preview anchor",
-            //        "searchreplace visualblocks code fullscreen",
-            //        "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
-            //    ],
-            //    imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
-            //    toolbar: "addParameter | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image imagetools | undo redo | code preview fullscreen",
-            //    menubar: 'false',
-            //    templates: [
-            //        { title: 'Test template 1', content: 'Test 1' },
-            //        { title: 'Test template 2', content: 'Test 2' }
-            //    ],
-            //    skin: 'lightgray',
-            //    theme: 'modern',
+            $scope.tinymceOptions = {
+                setup: function (editor) {
+                    editor.addButton('addParameter', {
+                        type: 'button',
+                        text: $filter('translate')('EMail.AddParameter'),
+                        onclick: function () {
+                            tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
+                        }
+                    });
+                    editor.on("init", function () {
+                        $scope.loadingModal = false;
+                    });
+                },
+                onChange: function (e) {
+                    debugger;
+                    // put logic here for keypress and cut/paste changes
+                },
+                inline: false,
+                height: 300,
+                language: $scope.language,
+                plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                ],
+                imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
+                toolbar: "addParameter | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image imagetools | undo redo | code preview fullscreen",
+                menubar: 'false',
+                templates: [
+                    { title: 'Test template 1', content: 'Test 1' },
+                    { title: 'Test template 2', content: 'Test 2' }
+                ],
+                skin: 'lightgray',
+                theme: 'modern',
 
-            //    file_picker_callback: function (callback, value, meta) {
-            //        // Provide file and text for the link dialog
-            //        uploadSuccessCallback = callback;
+                file_picker_callback: function (callback, value, meta) {
+                    // Provide file and text for the link dialog
+                    uploadSuccessCallback = callback;
 
-            //        if (meta.filetype == 'file') {
-            //            var uploadButton = document.getElementById('uploadFile');
-            //            uploadButton.click();
-            //        }
+                    if (meta.filetype == 'file') {
+                        var uploadButton = document.getElementById('uploadFile');
+                        uploadButton.click();
+                    }
 
-            //        // Provide image and alt text for the image dialog
-            //        if (meta.filetype == 'image') {
-            //            var uploadButton = document.getElementById('uploadImage');
-            //            uploadButton.click();
-            //        }
-            //    },
-            //    image_advtab: true,
-            //    file_browser_callback_types: 'image file',
-            //    paste_data_images: true,
-            //    paste_as_text: true,
-            //    spellchecker_language: $scope.language,
-            //    images_upload_handler: function (blobInfo, success, failure) {
-            //        var blob = blobInfo.blob();
-            //        uploadSuccessCallback = success;
-            //        uploadFailedCallback = failure;
-            //        $scope.imgUpload.uploader.addFile(blob);
-            //        ///TODO: in future will be implemented to upload pasted data images into server.
-            //    },
-            //    init_instance_callback: function (editor) {
-            //        $scope.iframeElement = editor.iframeElement;
-            //    },
-            //    resize: false,
-            //    width: '99,9%',
-            //    toolbar_items_size: 'small',
-            //    statusbar: false,
-            //    convert_urls: false,
-            //    remove_script_host: false
-            //};
+                    // Provide image and alt text for the image dialog
+                    if (meta.filetype == 'image') {
+                        var uploadButton = document.getElementById('uploadImage');
+                        uploadButton.click();
+                    }
+                },
+                image_advtab: true,
+                file_browser_callback_types: 'image file',
+                paste_data_images: true,
+                paste_as_text: true,
+                spellchecker_language: $scope.language,
+                images_upload_handler: function (blobInfo, success, failure) {
+                    var blob = blobInfo.blob();
+                    uploadSuccessCallback = success;
+                    uploadFailedCallback = failure;
+                    $scope.imgUpload.uploader.addFile(blob);
+                    ///TODO: in future will be implemented to upload pasted data images into server.
+                },
+                init_instance_callback: function (editor) {
+                    $scope.iframeElement = editor.iframeElement;
+                },
+                resize: false,
+                width: '99,9%',
+                toolbar_items_size: 'small',
+                statusbar: false,
+                convert_urls: false,
+                remove_script_host: false
+            };
 
             var getFilterValue = function (filter) {
                 var filterValue = '';
 
                 if (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') {
                     filterValue = filter.value[0].full_name;
-                }
-                else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
+                } else if (filter.field.data_type === 'lookup' && filter.field.lookup_type !== 'users') {
                     filterValue = filter.value.primary_value;
-                }
-                else if (filter.field.data_type === 'picklist') {
+                } else if (filter.field.data_type === 'picklist') {
                     filterValue = filter.value.labelStr;
-                }
-                else if (filter.field.data_type === 'multiselect') {
+                } else if (filter.field.data_type === 'multiselect') {
                     filterValue = '';
 
                     angular.forEach(filter.value, function (picklistItem) {
@@ -548,18 +564,15 @@ angular.module('primeapps')
                     });
 
                     filterValue = filterValue.slice(0, -2);
-                }
-                else if (filter.field.data_type === 'tag') {
+                } else if (filter.field.data_type === 'tag') {
                     filterValue = '';
 
                     angular.forEach(filter.value, function (item) {
                         filterValue += item.text + '; ';
                     });
-                }
-                else if (filter.field.data_type === 'checkbox') {
+                } else if (filter.field.data_type === 'checkbox') {
                     filterValue = filter.value.label[$scope.language];
-                }
-                else {
+                } else {
                     ModuleService.formatFieldValue(filter.field, filter.value, $scope.picklistsActivity);
                     filterValue = angular.copy(filter.field.valueFormatted);
                 }
@@ -682,118 +695,6 @@ angular.module('primeapps')
                 return false;
             };
 
-            $scope.getUpdatableModules = function () {
-                $scope.updatableModules = [];
-                $scope.updatableModules.push($scope.workflowModel.module);
-
-                angular.forEach($scope.workflowModel.module.fields, function (field) {
-                    if (field.lookup_type && field.lookup_type !== $scope.workflowModel.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                        var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                        $scope.updatableModules.push(module);
-                    }
-                });
-
-                $scope.fieldUpdateModules = angular.copy($scope.updatableModules);
-                $scope.fieldUpdateModules.unshift($filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]);
-            };
-
-            //upodatable modules for send_notification
-            $scope.getSendNotificationUpdatableModules = function (module) {
-                var updatableModulesForNotification = [];
-                var notificationObj = {};
-
-                var currentModule;
-                if (module)
-                    currentModule = module;
-                else
-                    currentModule = $scope.workflowModel.module;
-
-                notificationObj.module = currentModule;
-                notificationObj.name = currentModule['label_' + $scope.language + '_singular'];
-                notificationObj.isSameModule = true;
-                notificationObj.systemName = null;
-                notificationObj.id = 1;
-                updatableModulesForNotification.push(notificationObj);
-
-                var id = 2;
-                angular.forEach(currentModule.fields, function (field) {
-
-                    if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
-                        var notificationObj = {};
-                        if (field.lookup_type === currentModule.name) {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
-                            notificationObj.isSameModule = false;
-                            notificationObj.systemName = field.name;
-                            notificationObj.id = id;
-                        } else {
-                            notificationObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            notificationObj.name = field['label_' + $scope.language] + ' ' + '(' + notificationObj.module['label_' + $scope.language + '_singular'] + ')';
-                            notificationObj.isSameModule = false;
-                            notificationObj.systemName = field.name;
-                            notificationObj.id = id;
-                        }
-                        updatableModulesForNotification.push(notificationObj);
-                        id++;
-                    }
-                });
-
-                var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
-
-                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-                notificationObj.name = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0]['label_' + $scope.language + '_singular'];
-                notificationObj.isSameModule = false;
-                notificationObj.systemName = null;
-                notificationObj.id = id;
-                fieldUpdateModulesForNotification.unshift(notificationObj);
-
-                $scope.fieldUpdateModulesForNotification = fieldUpdateModulesForNotification;
-            };
-
-            //upodatable modules for send_notification
-            $scope.getDynamicFieldUpdateModules = function (module) {
-                var dynamicfieldUpdateModules = [];
-                var updateObj = {};
-
-                var currentModule;
-                if (module)
-                    currentModule = module;
-                else
-                    currentModule = $scope.workflowModel.module;
-
-                updateObj.module = currentModule;
-                updateObj.name = currentModule['label_' + $scope.language + '_singular'];
-                updateObj.isSameModule = true;
-                updateObj.systemName = currentModule.name;
-                updateObj.id = 1;
-                dynamicfieldUpdateModules.push(updateObj);
-
-                var id = 2;
-                angular.forEach(currentModule.fields, function (field) {
-
-                    if (field.lookup_type && field.lookup_type !== 'users' && !field.deleted && currentModule.name !== 'activities') {
-                        var updateObj = {};
-                        if (field.lookup_type === currentModule.name) {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
-                            updateObj.isSameModule = false;
-                            updateObj.systemName = field.name;
-                            updateObj.id = id;
-                        } else {
-                            updateObj.module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
-                            updateObj.name = field['label_' + $scope.language] + ' ' + '(' + updateObj.module['label_' + $scope.language + '_singular'] + ')';
-                            updateObj.isSameModule = false;
-                            updateObj.systemName = field.name;
-                            updateObj.id = id;
-                        }
-                        dynamicfieldUpdateModules.push(updateObj);
-                        id++;
-                    }
-                });
-
-                $scope.dynamicfieldUpdateModules = angular.copy(dynamicfieldUpdateModules);
-            };
-
             $scope.generateHookModules = function () {
                 if ($scope.id && $scope.workflowModel.webHook && $scope.workflowModel.webHook.parameters) {
                     $scope.hookParameters = [];
@@ -810,8 +711,7 @@ angular.module('primeapps')
 
                         if ($scope.module.name === parameter[1]) {
                             selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
-                        }
-                        else {
+                        } else {
                             var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
                             selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
                         }
@@ -824,8 +724,7 @@ angular.module('primeapps')
 
                         $scope.hookParameters.push(editParameter);
                     })
-                }
-                else {
+                } else {
                     setWebHookModules();
                 }
             };
@@ -925,30 +824,7 @@ angular.module('primeapps')
                         $scope.workflowModel.send_notification.customBcc = null;
                 }
             };
-            $scope.operationUpdateChanged = function (status) {
-                if (!status) {
-                    $scope.workflowModel.frequency = 'continuous';
 
-                    if ($scope.id)
-                        $scope.workflowModel.delete_logs = false;
-                }
-
-                $scope.workflowModel.changed_field_checkbox = false;
-                $scope.workflowModel.changed_field = null;
-            };
-
-            $scope.changeFieldCheckboxChanged = function (status) {
-                if (!status) {
-                    $scope.workflowModel.changed_field = null;
-                }
-            };
-
-            $scope.frequencyChanged = function (frequency) {
-                if ($scope.id) {
-                    if (frequency === 'continuous')
-                        $scope.workflowModel.delete_logs = false;
-                }
-            };
 
             $scope.updatableField = function (field) {
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
@@ -972,8 +848,7 @@ angular.module('primeapps')
                         lookupRecord = lookupRecord.data;
                         if ($scope.workflowModel.field_update.field.lookup_type === 'users') {
                             lookupRecord.primary_value = lookupRecord['full_name'];
-                        }
-                        else {
+                        } else {
                             var lookupModule = $filter('filter')($rootScope.appModules, { name: $scope.workflowModel.field_update.field.lookup_type }, true)[0];
                             var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                             lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
@@ -1031,8 +906,7 @@ angular.module('primeapps')
                                 if (filter.field.lookup_type === 'users') {
                                     lookupRecord.primary_value = lookupRecord['full_name'];
                                     filter.value = [lookupRecord];
-                                }
-                                else {
+                                } else {
                                     var lookupModule = $filter('filter')($rootScope.appModules, { name: filter.field.lookup_type }, true)[0];
                                     var lookupPrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                     lookupRecord.primary_value = lookupRecord[lookupPrimaryField.name];
@@ -1136,7 +1010,7 @@ angular.module('primeapps')
                 }
 
                 if (tabClick.subjectNotification.$pristine && tabClick.message.$pristine &&
-                    tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
+                    ////tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
                     (tabClick.updateField && tabClick.updateField.$pristine) && (tabClick.updateValue && tabClick.updateValue.$pristine) &&
                     tabClick.callbackUrl.$pristine) {
                     tabClick.$submitted = false;
@@ -1152,14 +1026,14 @@ angular.module('primeapps')
                 if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.message)
                     tabClick.message.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
-                    tabClick.owner.$setValidity('minTags', false);
+                ////if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
+                ////    tabClick.owner.$setValidity('minTags', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
-                    tabClick.subjectTask.$setValidity('required', false);
+                ////if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
+                ////    tabClick.subjectTask.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
-                    tabClick.dueDate.$setValidity('required', false);
+                ////if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
+                ////    tabClick.dueDate.$setValidity('required', false);
 
                 if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field)
                     tabClick.updateField.$setValidity('required', false);
@@ -1175,7 +1049,7 @@ angular.module('primeapps')
                 }
 
                 var isSendNotificationValid = $scope.validateSendNotification();
-                var isCreateTaskValid = $scope.validateCreateTask();
+                var isCreateTaskValid = false;////$scope.validateCreateTask();
                 var isUpdateFieldValid = $scope.validateUpdateField();
                 var isWebhookValid = $scope.validateWebHook();
 
@@ -1205,9 +1079,9 @@ angular.module('primeapps')
 
                 $scope.workflowForm.subjectNotification.$setValidity('required', true);
                 $scope.workflowForm.message.$setValidity('required', true);
-                $scope.workflowForm.owner.$setValidity('minTags', true);
-                $scope.workflowForm.subjectTask.$setValidity('required', true);
-                $scope.workflowForm.dueDate.$setValidity('required', true);
+                ////$scope.workflowForm.owner.$setValidity('minTags', true);
+                ////$scope.workflowForm.subjectTask.$setValidity('required', true);
+                ////$scope.workflowForm.dueDate.$setValidity('required', true);
                 $scope.workflowForm.actions.$setValidity('actionRequired', true);
                 $scope.workflowForm.updateOption.$setValidity('required', true);
                 $scope.workflowForm.callbackUrl.$setValidity('required', true);
@@ -1348,7 +1222,11 @@ angular.module('primeapps')
                                     break;
                             }
 
-                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', { module: $scope.workflowModel.field_update.module['label_' + $scope.language + '_singular'], field: $scope.workflowModel.field_update.field['label_' + $scope.language], value: value }) + '<br>';
+                            $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummary', {
+                                module: $scope.workflowModel.field_update.module['label_' + $scope.language + '_singular'],
+                                field: $scope.workflowModel.field_update.field['label_' + $scope.language],
+                                value: value
+                            }) + '<br>';
                         } else {
                             $scope.ruleActionsText += $filter('translate')('Setup.Workflow.FieldUpdateSummaryDynamic') + '<br>';
 
@@ -1363,7 +1241,10 @@ angular.module('primeapps')
 
 
                         $scope.ruleActionsText += '<b class="operation-highlight">' + $filter('translate')('Setup.Workflow.WebHook') + '</b><br>';
-                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.WebhookSummary', { callbackUrl: $scope.workflowModel.webHook.callbackUrl, methodType: $scope.workflowModel.webHook.methodType }) + '<br>';
+                        $scope.ruleActionsText += $filter('translate')('Setup.Workflow.WebhookSummary', {
+                            callbackUrl: $scope.workflowModel.webHook.callbackUrl,
+                            methodType: $scope.workflowModel.webHook.methodType
+                        }) + '<br>';
 
                         if ($scope.hookParameters.length > 0) {
                             $scope.ruleActionsText += '<br><b>' + $filter('translate')('Setup.Workflow.WebHookParameters') + ':</b><br>';
@@ -1372,8 +1253,7 @@ angular.module('primeapps')
                                 $scope.showWebhookSummaryTable = true;
                                 //if any valid parameter for object
                                 $scope.workflowModel.webHook.hookParameters = $scope.hookParameters;
-                            }
-                            else {
+                            } else {
                                 $scope.showWebhookSummaryTable = false;
                             }
                         }
@@ -1385,8 +1265,7 @@ angular.module('primeapps')
                         .then(function () {
                             getSummary();
                         });
-                }
-                else {
+                } else {
                     getSummary();
                 }
             };
@@ -1406,7 +1285,7 @@ angular.module('primeapps')
                 if ($scope.webHookIsNullOrEmpty())
                     delete $scope.workflowModel.webHook;
 
-				var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
+                var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
 
                 var success = function () {
                     $scope.saving = false;
@@ -1418,15 +1297,14 @@ angular.module('primeapps')
                 };
 
                 if (!$scope.id) {
-					SimpleWorkflowsService.create(workflow)
+                    SimpleWorkflowsService.create(workflow)
                         .then(function () {
                             success();
                         })
                         .catch(function () {
                             $scope.saving = false;
                         });
-                }
-                else {
+                } else {
                     workflow.id = $scope.workflowModel.id;
                     workflow._rev = $scope.workflowModel._rev;
                     workflow.type = $scope.workflowModel.type;
@@ -1436,7 +1314,7 @@ angular.module('primeapps')
                     workflow.updated_at = $scope.workflowModel.updated_at;
                     workflow.deleted = $scope.workflowModel.deleted;
 
-					SimpleWorkflowsService.update($scope.id, workflow)
+                    SimpleWorkflowsService.update($scope.id, workflow)
                         .then(function () {
                             success();
                         })
@@ -1446,7 +1324,8 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (rule) {
+                rule.deleting = true;
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -1455,16 +1334,21 @@ angular.module('primeapps')
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
-                        if (!id)
-                            return false;
-
-						SimpleWorkflowsService.delete(id)
-                            .then(function () {
+                        if (!rule) {
+                            rule.deleting = false;
+                            return;
+                        }
+                        SimpleWorkflowsService.delete(rule.id)
+                            .then(function (response) {
                                 //$scope.cancel();
                                 $scope.workflowModel = {};
+                                $scope.workflowModel.active = true;
+                                $scope.workflowModel.processFilter = 'none';
+                                $scope.workflowModel.frequency = 'continuous';
                                 $scope.id = null;
                                 $scope.changePage(1);
                                 //$state.reload();
+                                rule.deleting = false;
                                 toastr.success("Rule is deleted successfully.", "Deleted!");
                             });
                     }
@@ -1499,8 +1383,7 @@ angular.module('primeapps')
                 if (parameter.parameterName && parameter.selectedModules && parameter.selectedField) {
                     if ($scope.hookParameters.length <= 10) {
                         $scope.hookParameters.push(parameter);
-                    }
-                    else {
+                    } else {
                         toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
                     }
                 }
@@ -1658,15 +1541,19 @@ angular.module('primeapps')
 
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
-                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-                var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                //notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
+                //var resultModule = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
 
-                if (resultModule)
-                    notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
+                ////TODO add fake User Module
+                //if (resultModule)
+                //    notificationObj.name = resultModule['label_' + $scope.language + '_singular'];
 
+                notificationObj.module = getFakeUserModule();
+                notificationObj.name = "User";
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
                 notificationObj.id = id;
+
                 fieldUpdateModulesForNotification.unshift(notificationObj);
 
                 $scope.fieldUpdateModulesForNotification = fieldUpdateModulesForNotification;
@@ -1762,12 +1649,12 @@ angular.module('primeapps')
             //Modal Start
             $scope.showFormModal = function (id) {
                 $scope.modalLoading = true;
+                $scope.modules = $rootScope.appModules;
 
                 if (id) {
-                    $scope.id = id; 
-                    selectRule(); 
-                }
-                else
+                    $scope.id = id;
+                    selectRule();
+                } else
                     $scope.modalLoading = false;
 
                 $scope.ruleFormModal = $scope.ruleFormModal || $modal({
@@ -1780,18 +1667,199 @@ angular.module('primeapps')
 
                 $scope.ruleFormModal.$promise.then(function () {
                     $scope.ruleFormModal.show();
-                }); 
+                });
             };
 
             $scope.cancel = function () {
                 angular.forEach($scope.currentRelation, function (value, key) {
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
-
+                $scope.lastStepClicked = false;
                 $scope.workflowModel = {};
+                $scope.workflowModel.active = true;
+                $scope.workflowModel.processFilter = 'none';
+                $scope.workflowModel.frequency = 'continuous';
                 $scope.id = null;
                 $scope.ruleFormModal.hide();
             };
             //Modal End
+
+            $scope.nextStep = function (form, stepId) {
+                var result = $scope.validate(form);
+                if (result)
+                    if (stepId < 3) {
+                        $scope.$parent.wizardStep = stepId + 1;
+                        if (stepId + 1 == 3) {
+                            $scope.lastStepClicked = true;
+                            $scope.getSummary();
+                        }
+                    }
+
+            };
+
+            $scope.previousStep = function (form, stepId) {
+                var result = $scope.validate(form);
+                if (result)
+                    if (stepId > 0) {
+                        $scope.$parent.wizardStep = stepId - 1;
+
+                        if (stepId - 1 < 3)
+                            $scope.lastStepClicked = false;
+                    }
+            };
+
+            var getFakeUserModule = function () {
+                var userModule = {};
+                userModule.id = 999;
+                userModule.name = 'users';
+                userModule.system_type = 'system';
+                userModule.order = 999;
+                userModule.display = false;
+                userModule.label_en_singular = 'User';
+                userModule.label_en_plural = 'Users';
+                userModule.label_tr_singular = 'Kullanıcı';
+                userModule.label_tr_plural = 'Kullanıcılar';
+                userModule.menu_icon = 'fa fa-users';
+                userModule.sections = [];
+                userModule.fields = [];
+
+                var section = {};
+                section.name = 'user_information';
+                section.system_type = 'system';
+                section.order = 1;
+                section.column_count = 1;
+                section.label_en = 'User Information';
+                section.label_tr = 'Kullanıcı Bilgisi';
+                section.display_form = true;
+                section.display_detail = true;
+
+                var fieldEmail = {};
+                fieldEmail.name = 'email';
+                fieldEmail.system_type = 'system';
+                fieldEmail.data_type = 'email';
+                fieldEmail.order = 2;
+                fieldEmail.section = 1;
+                fieldEmail.section_column = 1;
+                fieldEmail.primary = false;
+                fieldEmail.inline_edit = true;
+                fieldEmail.label_en = 'Email';
+                fieldEmail.label_tr = 'Eposta';
+                fieldEmail.display_list = true;
+                fieldEmail.display_form = true;
+                fieldEmail.display_detail = true;
+                userModule.fields.push(fieldEmail);
+
+                var fieldFirstName = {};
+                fieldFirstName.name = 'first_name';
+                fieldFirstName.system_type = 'system';
+                fieldFirstName.data_type = 'text_single';
+                fieldFirstName.order = 3;
+                fieldFirstName.section = 1;
+                fieldFirstName.section_column = 1;
+                fieldFirstName.primary = false;
+                fieldFirstName.inline_edit = true;
+                fieldFirstName.editable = true;
+                fieldFirstName.show_label = true;
+                fieldFirstName.label_en = 'First Name';
+                fieldFirstName.label_tr = 'Adı';
+                fieldFirstName.display_list = true;
+                fieldFirstName.display_form = true;
+                fieldFirstName.display_detail = true;
+                userModule.fields.push(fieldFirstName);
+
+                var fieldLastName = {};
+                fieldLastName.name = 'last_name';
+                fieldLastName.system_type = 'system';
+                fieldLastName.data_type = 'text_single';
+                fieldLastName.order = 4;
+                fieldLastName.section = 1;
+                fieldLastName.section_column = 1;
+                fieldLastName.primary = false;
+                fieldLastName.inline_edit = true;
+                fieldLastName.editable = true;
+                fieldLastName.show_label = true;
+                fieldLastName.label_en = 'Last Name';
+                fieldLastName.label_tr = 'Soyadı';
+                fieldLastName.display_list = true;
+                fieldLastName.display_form = true;
+                fieldLastName.display_detail = true;
+                userModule.fields.push(fieldLastName);
+
+                var fieldFullName = {};
+                fieldFullName.name = 'full_name';
+                fieldFullName.system_type = 'system';
+                fieldFullName.data_type = 'text_single';
+                fieldFullName.order = 5;
+                fieldFullName.section = 1;
+                fieldFullName.section_column = 1;
+                fieldFullName.primary = true;
+                fieldFullName.inline_edit = true;
+                fieldFullName.editable = true;
+                fieldFullName.show_label = true;
+                fieldFullName.label_en = 'Name';
+                fieldFullName.label_tr = 'Adı Soyadı';
+                fieldFullName.display_list = true;
+                fieldFullName.display_form = true;
+                fieldFullName.display_detail = true;
+                fieldFullName.combination = {};
+                fieldFullName.combination.field_1 = 'first_name';
+                fieldFullName.combination.field_2 = 'last_name';
+                userModule.fields.push(fieldFullName);
+
+                var fieldPhone = {};
+                fieldPhone.name = 'phone';
+                fieldPhone.system_type = 'system';
+                fieldPhone.data_type = 'text_single';
+                fieldPhone.order = 6;
+                fieldPhone.section = 1;
+                fieldPhone.section_column = 1;
+                fieldPhone.primary = false;
+                fieldPhone.inline_edit = true;
+                fieldPhone.label_en = 'Phone';
+                fieldPhone.label_tr = 'Telefon';
+                fieldPhone.display_list = true;
+                fieldPhone.display_form = true;
+                fieldPhone.display_detail = true;
+                userModule.fields.push(fieldPhone);
+
+                var fieldProfileId = {};
+                fieldProfileId.name = 'profile_id';
+                fieldProfileId.system_type = 'system';
+                fieldProfileId.data_type = 'number';
+                fieldProfileId.order = 6;
+                fieldProfileId.section = 1;
+                fieldProfileId.section_column = 1;
+                fieldProfileId.primary = false;
+                fieldProfileId.inline_edit = true;
+                fieldProfileId.editable = true;
+                fieldProfileId.show_label = true;
+                fieldProfileId.label_en = 'Profile Id';
+                fieldProfileId.label_tr = 'Profile Id';
+                fieldProfileId.display_list = true;
+                fieldProfileId.display_form = true;
+                fieldProfileId.display_detail = true;
+                userModule.fields.push(fieldProfileId);
+
+                var fieldRoleId = {};
+                fieldRoleId.name = 'role_id';
+                fieldRoleId.system_type = 'system';
+                fieldRoleId.data_type = 'number';
+                fieldRoleId.order = 7;
+                fieldRoleId.section = 1;
+                fieldRoleId.section_column = 1;
+                fieldRoleId.primary = false;
+                fieldRoleId.inline_edit = true;
+                fieldRoleId.editable = true;
+                fieldRoleId.show_label = true;
+                fieldRoleId.label_en = 'Role Id';
+                fieldRoleId.label_tr = 'Role Id';
+                fieldRoleId.display_list = true;
+                fieldRoleId.display_form = true;
+                fieldRoleId.display_detail = true;
+                userModule.fields.push(fieldRoleId);
+
+                return userModule;
+            }
+
         }
     ]);

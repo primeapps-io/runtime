@@ -1,71 +1,65 @@
-<div class="page-container">
+<div class="setup-layout">
     <div class="row">
-        <div class="col-sm-3">
-            <h4 class="h4-title blue-color font-bold">Settings</h4>
-        </div>
-        <div class="pull-right" style="padding-left: 10px;">
-            <button ng-disabled="orgDeleteDisabled" class="btn btn-radius btn-yellow btn-logout">
-                <i class="fas fa-exchange-alt margin-right-10"></i>Transfer
-            </button>
-
-            <button type="submit" ng-click="delete(orgModel.id)" ng-disabled="orgDeleteDisabled"
-                    class="btn btn-radius btn-red btn-logout" style="" ladda="savinga">
-                <i class="fas fa-trash margin-right-10"></i>Delete
-            </button>
-
-            <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" ladda="saving">
-                <i class="fas fa-save margin-right-10"></i>Save
-            </button>
-        </div>
-
-        <div class="tab-content" style="padding: 50px;margin-top: 50px">
-            <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
-                <div class="row" style="display: flex;align-items: center;">
-                    <div class="col-sm-3" style="border-right: solid 2px #dfdfdf;">
-                        <div style="margin: auto;text-align: center;">
-                            <div class="file-uploader" style="background: none;">
-                                <div class="organization-icon" style="background-color: {{orgModel.color}}">
-                                    <i class="{{orgModel.icon}}"></i>
+        <div class="col-md-offset-3 col-md-6">
+            <div class="setup-title">
+                <h2>Settings</h2>
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <button ng-disabled="orgDeleteDisabled" class="btn btn-radius btn-yellow btn-logout">
+                            <i class="fas fa-exchange-alt margin-right-10"></i>Transfer
+                        </button>
+                    </li>
+                    <li>
+                        <button type="submit" ng-click="delete(orgModel.id)" ng-disabled="orgDeleteDisabled"
+                                class="btn btn-radius btn-red btn-logout" style="" ladda="savinga">
+                            <i class="fas fa-trash margin-right-10"></i>Delete
+                        </button>
+                    </li>
+                    <li>
+                        <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" ladda="saving">
+                            <i class="fas fa-save margin-right-10"></i>Save
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content" style="padding: 50px;">
+                <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
+                    <div class="text-center">
+                        <div class="file-uploader" style="background: none;">
+                            <div class="organization-icon" style="background-color: {{orgModel.color}}">
+                                <i class="{{orgModel.icon}}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
+                            <label class="required-field">Organization Color</label>
+                            <input name="colorpicker" type="color" class="form-control" ng-model="orgModel.color">
+                        </div>
+                    </div>
+                    <div class="form-group form-group icon-search-list">
+                        <label class="required-field">Organization Icon</label>
+                        <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">
+                            <ui-select-match placeholder="Select an icon">
+                                <div>
+                                    <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                    <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group" style="position: relative;"
-                             ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                            <input name="colorpicker" type="color"
-                                   class="form-control"
-                                   ng-model="orgModel.color">
-                        </div>
-                        <div class="form-group icon-search-list">
-                            <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">
-                                <ui-select-match placeholder="Select an icon">
-                                    <div>
-                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                        <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
-                                    </div>
-                                </ui-select-match>
-                                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                    <div ng-bind-html="icon.label"></div>
-                                </ui-select-choices>
+                            </ui-select-match>
+                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                <div ng-bind-html="icon.label"></div>
+                            </ui-select-choices>
 
-                            </ui-select>
+                        </ui-select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required-field">Organization Name</label>
+                        <div>
+                            <input type="text" name="description" class="form-control ng-animate-disabled" required maxlength="50" ng-model="orgModel.label">
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                        <div class="form-group bottom0">
-                            <div class="col-sm-6 col-md-5 col-lg-3"><label class="required-field"
-                                                                           style="line-height: 40px">Organitation
-                                Name</label></div>
-                            <div class="col-sm-6 col-md-7 col-lg-9"><input type="text"
-                                                                           name="description"
-                                                                           class="form-control ng-animate-disabled col-sm-8"
-                                                                           required
-                                                                           maxlength="50"
-                                                                           ng-model="orgModel.label">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>

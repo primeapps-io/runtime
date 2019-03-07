@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -9,12 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class OrganizationRepository : RepositoryBaseConsole, IOrganizationRepository
+    public class OrganizationRepository : RepositoryBaseStudio, IOrganizationRepository
     {
-        public OrganizationRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public OrganizationRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
         public bool IsOrganizationAvaliable(int userId, int organizationId)

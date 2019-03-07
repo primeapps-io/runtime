@@ -113,11 +113,11 @@ namespace PrimeApps.Studio.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
+            return Ok(result); //Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 
-        [Route("add_item/{id:int}")]
+        [Route("add_item/{id:int}"), HttpPost]
         public async Task<IActionResult> AddItem(int id, [FromBody] PicklistItemViewModel picklistItemModel)
         {
             if (!ModelState.IsValid)
@@ -126,6 +126,7 @@ namespace PrimeApps.Studio.Controllers
             var picklistItem = new PicklistItem
             {
                 PicklistId = id,
+                SystemCode = picklistItemModel.SystemCode,
                 LabelEn = picklistItemModel.LabelTr,
                 LabelTr = picklistItemModel.LabelTr,
                 Value = picklistItemModel.Value,
@@ -172,9 +173,12 @@ namespace PrimeApps.Studio.Controllers
                 return NotFound();
 
             PicklistHelper.UpdateItemEntity(item, itemEntity);
-            await _picklistRepository.Update(itemEntity);
+            var result = await _picklistRepository.Update(itemEntity);
 
-            return Ok(itemEntity);
+            if (result > 0)
+                return Ok(itemEntity);
+            else
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
         }
 
         [Route("delete/{id:int}"), HttpDelete]
@@ -185,12 +189,12 @@ namespace PrimeApps.Studio.Controllers
             if (picklistEntity == null)
                 return NotFound();
 
-            await _picklistRepository.DeleteSoft(picklistEntity);
+            var result = await _picklistRepository.DeleteSoft(picklistEntity);
 
-            return Ok();
+            return Ok(result);
         }
 
-        [Route("deleteItem/{id:int}"), HttpDelete]
+        [Route("delete_item/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteItem(int id)
         {
             var picklistEntity = await _picklistRepository.GetItemById(id);
@@ -198,9 +202,9 @@ namespace PrimeApps.Studio.Controllers
             if (picklistEntity == null)
                 return NotFound();
 
-            await _picklistRepository.ItemDeleteSoft(picklistEntity);
+            var result = await _picklistRepository.ItemDeleteSoft(picklistEntity);
 
-            return Ok();
+            return Ok(result);
         }
     }
 }

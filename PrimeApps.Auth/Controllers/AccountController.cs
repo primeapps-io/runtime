@@ -38,9 +38,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Net.Http.Headers;
 using PrimeApps.Auth.Helpers;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common.App;
+using IdentityServer.LdapExtension.UserStore;
 
 namespace PrimeApps.Auth.UI
 {
@@ -104,6 +104,7 @@ namespace PrimeApps.Auth.UI
             _recordRepository = recordRepository;
 
             Queue = queue;
+
         }
 
         /// <summary>
@@ -206,6 +207,57 @@ namespace PrimeApps.Auth.UI
 
             if (ModelState.IsValid)
             {
+                //ldap control
+                var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
+                if (useLdap != null)
+                {
+                    var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
+                    var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
+
+                    if (ldapUser == null)
+                    {
+                        await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+
+                        ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
+
+                        vm.Error = "WrongInfo";
+
+                        if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                            return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                        return View(vm);
+                    }
+                }
+
+                var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+
+                if(!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
+                {
+                    
+                    var platformUser = await _platformUserRepository.Get(model.Username);
+                    
+                    if (platformUser != null)
+                    {
+                        var url = studioUrl + "/api/account/user_available/" + platformUser.Id;
+                        using (var httpClient = new HttpClient())
+                        {
+                            httpClient.DefaultRequestHeaders.Accept.Clear();
+                            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            var isStudioUser = await httpClient.GetAsync(url);
+
+                            if (!isStudioUser.IsSuccessStatusCode)
+                            {
+                                vm.Error = "WrongInfo";
+
+                                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                                return View(vm);
+                            }
+                        }
+                    }
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 var validationSkipDomains = _configuration.GetValue("AppSettings:ValidationSkipDomains", string.Empty);
                 Array validationSkipDomainsArr = null;
@@ -215,6 +267,7 @@ namespace PrimeApps.Auth.UI
 
                 if (result.Succeeded)
                 {
+
                     if (vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
@@ -1458,7 +1511,7 @@ namespace PrimeApps.Auth.UI
 
                 identityUser = await _userManager.FindByEmailAsync(model.Email);
             }
-            else if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Console)
+            else if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Studio)
             {
                 response["Error"] = "UserExist";
                 return response;
@@ -1504,12 +1557,12 @@ namespace PrimeApps.Auth.UI
                         platformUser.Setting.Culture = culture;
                         platformUser.Setting.Language = culture.Substring(0, 2);
                         //tenant.Setting.TimeZone =
-                        platformUser.Setting.Currency = culture;
+                        platformUser.Setting.Currency = culture.Substring(0, 2);
                     }
                     else
                     {
                         platformUser.Setting.Culture = applicationInfo.ApplicationSetting.Culture;
-                        platformUser.Setting.Currency = applicationInfo.ApplicationSetting.Currency;
+                        platformUser.Setting.Currency = applicationInfo.Language;
                         platformUser.Setting.Language = applicationInfo.Language;
                         platformUser.Setting.TimeZone = applicationInfo.ApplicationSetting.TimeZone;
                     }
@@ -1660,10 +1713,10 @@ namespace PrimeApps.Auth.UI
                 }
 
                 var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-                if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Console && !string.IsNullOrEmpty(studioUrl))
+                if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
-                    var url = studioUrl + "/api/register/create";
+                    var url = studioUrl + "/api/account/create";
 
                     var requestModel = new JObject
                     {

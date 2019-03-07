@@ -10,16 +10,19 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Studio.Models;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Studio.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
     public interface IDeploymentHelper
     {
         Task StartFunctionDeployment(Model.Entities.Tenant.Function function, JObject functionObj, string name, int userId, int organizationId, int appId, int deploymentId);
+        Task StartComponentDeployment(Model.Entities.Tenant.Component component, string giteaToken, string email, int appId, int deploymentId, int? tenantId = null);
     }
 
     public class DeploymentHelper : IDeploymentHelper
@@ -29,20 +32,25 @@ namespace PrimeApps.Studio.Helpers
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
         private IHttpContextAccessor _context;
-
+        private IUnifiedStorage _storage;
         private IGiteaHelper _giteaHelper;
         private IFunctionHelper _functionHelper;
+        private IDocumentHelper _documentHelper;
 
         public DeploymentHelper(IConfiguration configuration,
             IServiceScopeFactory serviceScopeFactory,
             IHttpContextAccessor context,
             IGiteaHelper giteaHelper,
-            IFunctionHelper functionHelper)
+            IUnifiedStorage storage,
+            IFunctionHelper functionHelper,
+            IDocumentHelper documentHelper)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _context = context;
             _functionHelper = functionHelper;
+            _documentHelper = documentHelper;
+            _storage = storage;
             _giteaHelper = giteaHelper;
             _currentUser = UserHelper.GetCurrentUser(_context);
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
@@ -52,7 +60,7 @@ namespace PrimeApps.Studio.Helpers
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<ConsoleDBContext>();
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var tenantDBContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
                 using (var _organizationRepository = new OrganizationRepository(databaseContext, _configuration))
@@ -76,7 +84,6 @@ namespace PrimeApps.Studio.Helpers
                         ContentType = function.ContentType
                     };
 
-                    
                     var functionRequest = _functionHelper.CreateFunctionRequest(functionModel, functionObj);
                     JObject result;
 
@@ -101,6 +108,77 @@ namespace PrimeApps.Studio.Helpers
                         deployment.EndTime = DateTime.Now;
 
                         await _deploymentFunctionRepository.Update(deployment);
+                    }
+                }
+            }
+        }
+
+        public async Task StartComponentDeployment(Model.Entities.Tenant.Component component, string giteaToken, string email, int appId, int deploymentId, int? tenantId = null)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                var tenantDBContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+
+                using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                using (var _deploymentComponentRepository = new DeploymentComponentRepository(tenantDBContext, _configuration))
+                {
+                    _appDraftRepository.CurrentUser = _deploymentComponentRepository.CurrentUser = _currentUser;
+
+                    var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
+
+                    if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+                    {
+                        var app = await _appDraftRepository.Get(appId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        if (repository != null)
+                        {
+                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+
+                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            {
+                                var localPath = giteaDirectory + repository["name"].ToString();
+                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
+                                var files = _giteaHelper.GetFileNames(localPath, "components/" + component.Name);
+                                var deployment = await _deploymentComponentRepository.Get(deploymentId);
+
+                                try
+                                {
+                                    foreach (var file in files)
+                                    {
+                                        var path = file["path"].ToString();
+                                        var pathArray = path.Split("/");
+                                        var fileName = pathArray[pathArray.Length - 1];
+
+                                        var code = File.ReadAllText(localPath + "//" + path);
+
+                                        var content = JObject.Parse(component.Content);
+                                        var folderName = content.HasValues && content["level"] != null && content["level"].ToString() != "app" ? "tenant-" + tenantId : "app-" + appId;
+                                        var bucketName = UnifiedStorage.GetPathComponents(folderName, component.Name);
+
+                                        var stream = new MemoryStream();
+                                        var writer = new StreamWriter(stream);
+                                        writer.Write(code);
+                                        writer.Flush();
+                                        stream.Position = 0;
+
+                                        await _storage.Upload(bucketName, fileName, stream);
+                                        //_storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                                    }
+
+                                    deployment.Status = DeploymentStatus.Succeed;
+                                }
+                                catch (Exception ex)
+                                {
+                                    deployment.Status = DeploymentStatus.Failed;
+                                    ErrorHandler.LogError(ex, "Component deployment error.");
+                                }
+
+                                deployment.EndTime = DateTime.Now;
+                                await _deploymentComponentRepository.Update(deployment);
+                                _giteaHelper.DeleteDirectory(localPath);
+                            }
+                        }
                     }
                 }
             }

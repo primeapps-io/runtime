@@ -11,13 +11,12 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Count();
         Task<ICollection<Component>> Find(PaginationModel paginationModel);
         Task<Component> Get(int id);
-
+        Task<Component> Get(string name);
         Task<List<Component>> GetByType(ComponentType type);
         Task<List<Component>> GetByPlace(ComponentPlace place);
         Task<Component> GetGlobalSettings();
         Task<int> Create(Component component);
-        Task<int> Update(Component organization);
-        Task<int> Delete(Component organization);
-
+        Task<int> Update(Component component);
+        Task<int> Delete(Component component);
     }
 }

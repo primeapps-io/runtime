@@ -24,11 +24,9 @@ namespace PrimeApps.Auth
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("AuthDBConnection")));
-           // services.AddDbContext<ConsoleDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("ConsoleDBConnection")));
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            //services.AddScoped(p => new ConsoleDBContext(p.GetService<DbContextOptions<ConsoleDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();

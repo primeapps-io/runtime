@@ -1,3 +1,7 @@
+.flexy {
+  display: flex;
+}
+
 .scroll-style-4::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -668,6 +672,11 @@ button:focus, select:focus {
 .primeapps .input-group-focus .input-group-addon {
   color: #0D6FAA;
 }
+.primeapps .input-group .input-group-addon {
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
 .primeapps .inner-addon i {
   color: #0D6FAA;
 }
@@ -1028,7 +1037,7 @@ button:focus, select:focus {
   padding: 0px;
   border: none;
   border-radius: 0px;
-  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 .primeapps .modal .megalist .section:last-child {
   border: none;
@@ -1094,6 +1103,17 @@ button:focus, select:focus {
 }
 .primeapps .setup-modal .modal-dialog .view-form .form-control, .primeapps .setup-modal .modal-dialog .view-form .filter-table, .primeapps .module-modal .modal-dialog .view-form .form-control, .primeapps .module-modal .modal-dialog .view-form .filter-table {
   width: 100%;
+}
+.primeapps .setup-modal .modal-dialog .view-form .form-control th, .primeapps .setup-modal .modal-dialog .view-form .filter-table th, .primeapps .module-modal .modal-dialog .view-form .form-control th, .primeapps .module-modal .modal-dialog .view-form .filter-table th {
+  padding-left: 0px;
+}
+.primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick {
+  float: inherit;
+  display: flex;
+}
+.primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick {
+  min-width: 70px !important;
+  width: auto !important;
 }
 .primeapps .setup-modal .modal-body, .primeapps .module-modal .modal-body {
   max-height: 100% !important;
@@ -1409,11 +1429,11 @@ button:focus, select:focus {
   background-color: #0d6faa;
 }
 .primeapps .btn-yellow {
-  background-color: rgba(255, 157, 0, 0.75);
+  background-color: rgba(224, 131, 64, 0.75);
   color: #fff;
 }
 .primeapps .btn-yellow:hover {
-  background-color: #0d6faa;
+  background-color: #e08340;
 }
 .primeapps .btn-gray {
   background-color: rgba(0, 0, 0, 0.25);
@@ -1428,6 +1448,9 @@ button:focus, select:focus {
   margin-bottom: 20px !important;
 }
 .primeapps .form-group.has-error select {
+  background-color: rgba(206, 4, 4, 0.15) !important;
+}
+.primeapps .form-group.has-error .newinput span {
   background-color: rgba(206, 4, 4, 0.15) !important;
 }
 .primeapps .form-group.bottom0 {
@@ -1829,6 +1852,8 @@ button:focus, select:focus {
   border-radius: 50%;
   border: none;
   background: transparent;
+  font-size: 12px;
+  line-height: 20px;
 }
 .primeapps .pagination li a:hover {
   color: #000;
@@ -2187,6 +2212,19 @@ button:focus, select:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.primeapps #wrapper .setup-layout .setup-title ul:before, .primeapps #wrapper .setup-layout .setup-title ul:after {
+  content: " ";
+  display: table;
+}
+.primeapps #wrapper .setup-layout .setup-title ul:after {
+  clear: both;
+}
+.primeapps #wrapper .setup-layout .setup-title ul.list-inline li {
+  float: left;
+}
+.primeapps #wrapper .setup-layout .setup-title ul.list-inline li:last-child {
+  padding-right: 0px;
+}
 .primeapps #wrapper .setup-layout .setup-title h2 {
   font-size: 16px;
   margin: 0px;
@@ -2474,6 +2512,7 @@ button:focus, select:focus {
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text > div {
   height: 20px;
+  overflow: hidden;
 }
 .primeapps .ui-select-bootstrap .ui-select-match-text span {
   font-family: "Nunito", sans-serif;
@@ -3135,6 +3174,18 @@ button:focus, select:focus {
   display: table;
   padding: 10px 0px;
 }
+.primeapps .pickitemcopy.gu-mirror-option i {
+  display: inherit;
+}
+.primeapps .pickitemcopy > div {
+  padding: 0px 10px;
+}
+.primeapps .pickitemcopy > div > span {
+  display: none;
+}
+.primeapps .pickitemcopy > div > span:first-child {
+  display: inline-block;
+}
 .primeapps .pickitemcopy td {
   display: none;
 }
@@ -3186,6 +3237,9 @@ button:focus, select:focus {
 .primeapps .flexitemx > div > .cell-container {
   min-height: 100%;
 }
+.primeapps .instructions-list {
+  list-style: decimal;
+}
 
 .placeholder {
   margin: 0 auto;
@@ -3201,6 +3255,11 @@ button:focus, select:focus {
     background-position: 468px 0;
   }
 }
+.total {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .animated-background {
   animation-duration: 0.7s;
   animation-fill-mode: forwards;

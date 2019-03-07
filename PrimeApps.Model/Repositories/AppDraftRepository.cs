@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -11,12 +10,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class AppDraftRepository : RepositoryBaseConsole, IAppDraftRepository
+    public class AppDraftRepository : RepositoryBaseStudio, IAppDraftRepository
     {
-        public AppDraftRepository(ConsoleDBContext dbContext, IConfiguration configuration)
+        public AppDraftRepository(StudioDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration)
         {
         }
@@ -32,6 +32,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<AppDraft> Get(string name)
         {
             return await DbContext.Apps
+                .Include(x => x.Setting)
                 .Where(x => x.Name == name && !x.Deleted)
                 .FirstOrDefaultAsync();
         }
@@ -40,7 +41,8 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Apps
                 .Where(x => x.Id == id && !x.Deleted)
-                .Include(x => x.Organization)
+                //.Include(x => x.Organization)
+                .Include(x => x.Setting)
                 .FirstOrDefaultAsync();
         }
 
@@ -131,8 +133,8 @@ namespace PrimeApps.Model.Repositories
             var appCollabrator = await DbContext.AppCollaborators
                 .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.ToLower().Contains(search.ToLower())) && (status == PublishStatus.NotSet || x.AppDraft.Status == status))
                 .Select(x => x.AppDraft)
-                .Skip(50 * page)
-                .Take(50)
+                .Skip(500 * page)
+                .Take(500)
                 .Distinct()
                 .ToListAsync();
 

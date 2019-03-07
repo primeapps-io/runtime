@@ -9,6 +9,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
+using PrimeApps.Studio.Storage;
 
 namespace PrimeApps.Studio
 {
@@ -19,9 +20,9 @@ namespace PrimeApps.Studio
             services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-            services.AddDbContext<ConsoleDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("ConsoleDBConnection")));
+            services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddScoped(p => new ConsoleDBContext(p.GetService<DbContextOptions<ConsoleDBContext>>()));
+            services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
@@ -48,7 +49,7 @@ namespace PrimeApps.Studio
                     }
                 }
             }
-            services.AddScoped<Warehouse, Warehouse>();
+
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
@@ -57,6 +58,7 @@ namespace PrimeApps.Studio
             services.AddScoped<ICalculationHelper, CalculationHelper>();
             services.AddScoped<IChangeLogHelper, ChangeLogHelper>();
             services.AddScoped<IFunctionHelper, FunctionHelper>();
+            services.AddScoped<IComponentHelper, ComponentHelper>();
             services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
             services.AddScoped<IWorkflowHelper, WorkflowHelper>();
             services.AddScoped<IProcessHelper, ProcessHelper>();
@@ -69,9 +71,11 @@ namespace PrimeApps.Studio
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
             services.AddScoped<IDeploymentHelper, DeploymentHelper>();
-
-            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();
-            services.AddScoped<Email, Email>();
+            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();//What the fuck!
+            services.AddScoped<Email, Email>();//What the fuck!
+            services.AddScoped<Warehouse, Warehouse>();//What the fuck!
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            services.AddScoped<IReportHelper, ReportHelper>();
         }
     }
 }

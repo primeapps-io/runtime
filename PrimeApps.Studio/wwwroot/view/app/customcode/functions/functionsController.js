@@ -78,7 +78,7 @@ angular.module('primeapps')
                 FunctionsService.count()
                     .then(function (response) {
                         $scope.pageTotal = response.data;
-                        
+
                         if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
                             $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
@@ -130,7 +130,7 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
-
+                $scope.function.content_type = 'text';
                 FunctionsService.create($scope.function)
                     .then(function (response) {
                         $scope.saving = false;
@@ -144,7 +144,7 @@ angular.module('primeapps')
                     })
             };
 
-            $scope.delete = function (name, e) {
+            $scope.delete = function (name, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -154,13 +154,16 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            var elem = angular.element(e.srcElement);
+                            var elem = angular.element(event.srcElement);
                             angular.element(elem.closest('tr')).addClass('animated-background');
                             if (name) {
                                 FunctionsService.delete(name)
                                     .then(function (response) {
                                         $scope.reload();
                                         toastr.success("Function is deleted successfully.", "Deleted!");
+                                    })
+                                    .catch(function () {
+                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     });
                             }
                         }
@@ -172,6 +175,16 @@ angular.module('primeapps')
                 $scope.functionNameValid = null;
                 $scope.isFunctionNameBlur = false;
                 $scope.createFormModal.hide();
+            };
+
+            $scope.identifierCreate = function () {
+                if (!$scope.function || !$scope.function.label) {
+                    $scope.function.name = null;
+                    return;
+                }
+
+                $scope.function.name = helper.getSlug($scope.function.label, '-');
+                $scope.functionNameBlur($scope.function);
             };
 
             $scope.functionNameBlur = function (name) {

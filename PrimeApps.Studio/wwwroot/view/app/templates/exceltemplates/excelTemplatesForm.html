@@ -37,7 +37,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-12 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
-                    <div class="col-sm-12" ng-init="template.active = true">
+                    <div class="col-sm-12" >
                         <label class="radio-inline newinput">
                             <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
                             {{'Setup.Templates.TemplateActive' | translate}}<span></span>
@@ -89,7 +89,7 @@
                         <div ng-show="fileUpload.queue.length > 0 || template.content">
                             <div class="uploadedfilename">
                                 <span class="uploadedfilenamein" ng-if="!template.content">{{fileUpload.queue[0]._file["name"]}}</span>
-                                <a class="uploadedfilenamein" href="{{getDownloadUrlExcel(template)}}" target="_blank">{{template.content}}</a>
+                                <a class="uploadedfilenamein" href="{{getDownloadUrl(template)}}" target="_blank">{{template.content}}</a>
                                 <a class="clear-button" ng-disabled="saving" ng-click="remove()"><i class="fas fa-trash"></i></a>
                             </div>
                         </div>

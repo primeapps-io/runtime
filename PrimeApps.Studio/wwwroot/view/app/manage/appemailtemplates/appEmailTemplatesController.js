@@ -173,36 +173,42 @@ angular.module('primeapps')
                     $scope.placeholderArray[i] = i;
                 }
             };
+            
             $scope.generator(10);
-
+            $scope.activePage = 1;
             AppEmailTemplatesService.count($scope.currentApp.name).then(function (response) {
                 $scope.pageTotal = response.data;
+                $scope.changePage(1);
             });
-
-            AppEmailTemplatesService.$scope.currentApp.name($scope.requestModel, $scope.currentApp.name).then(function (response) {
-                $scope.templates = response.data;
-            }).finally(function () {
-                $scope.loading = false;
-            });
+            
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
                 AppEmailTemplatesService.find(requestModel, $scope.currentApp.name).then(function (response) {
                     $scope.templates = response.data;
-                    AppEmailTemplatesService.count($scope.currentApp.name).then(function (response) {
-                        $scope.pageTotal = response.data;
-                    });
-
                 }).finally(function () {
                     $scope.loading = false;
                 });
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
             $scope.templateSave = function (uploadForm) {
@@ -224,7 +230,7 @@ angular.module('primeapps')
                     template.id = $scope.currentTemplate.id;
                     AppEmailTemplatesService.update(template).then(function () {
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage(1);
+                        $scope.changePage($scope.activePage);
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                     }).finally(function () {
                         $scope.saving = false;
@@ -235,7 +241,8 @@ angular.module('primeapps')
                     AppEmailTemplatesService.create(template, $scope.currentApp.name).then(function () {
                         $scope.saving = false;
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage(1);
+                        $scope.pageTotal++;
+                        $scope.changePage($scope.activePage);
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                     });
                 }

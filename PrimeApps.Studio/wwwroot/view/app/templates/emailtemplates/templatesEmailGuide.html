@@ -12,7 +12,7 @@
                         <div class="row row-custom">
                             <div class="col-sm-12">
                                 <div class="form-group" ng-class="{'has-error': viewForm.$submitted && viewForm.label.$invalid}">
-                                    <label for="label" class="control-label col-sm-2">{{'View.ViewName' | translate}}:</label>
+                                    <label for="label" class="control-label col-sm-2">{{'View.ViewName' | translate}}</label>
                                     <div class="col-sm-10">
                                         <input type="text" id="label" name="label" class="form-control" required ng-model="view.label"/>
                                     </div>
@@ -319,7 +319,7 @@
                             </div>
                         </div>
                         <div class="row row-custom form-group filter-logic" ng-class="{'has-error': viewForm.$submitted && viewForm.filterLogic.$invalid}">
-                            <label for="filterLogic" class="control-label col-sm-12">{{'View.FilterLogic' | translate}}:</label>
+                            <label for="filterLogic" class="control-label col-sm-12">{{'View.FilterLogic' | translate}}</label>
                             <div class="col-sm-12">
                                 <input type="text" id="filterLogic" name="filterLogic" class="form-control" maxlength="180" ng-change="viewForm.filterLogic.$setValidity('filterLogic', true)" ng-model="view.filter_logic" />
                                 <span class="filter-logic-example" ng-bind-html="'View.FilterLogicExample' | translate"></span>
@@ -327,7 +327,7 @@
                         </div>
                         <div class="row row-custom form-group filter-logic" ng-if="showProcessFilter">
                             <div style="margin-top: 6px">
-                                <label class="col-sm-12">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
+                                <label class="col-sm-12">* {{'Setup.Workflow.ProcessFilterDesc' | translate}} </label>
                                 <div class="col-sm-12">
                                     <label><input type="radio" ng-click="currenProcessFilter.value='1'" value="1"
                                                   ng-model="processFilter">
@@ -375,7 +375,7 @@
                                     </label>
                                 </div>
                                 <div class="shared-users" ng-if="view.sharing_type === 'custom'">
-                                    <span class="shared-users-label">{{'View.SharedUsers' | translate}}:</span>
+                                    <span class="shared-users-label">{{'View.SharedUsers' | translate}}</span>
                                     <tags-input name="shares"
                                                 class="shared-users-input"
                                                 ng-model="view.shares"

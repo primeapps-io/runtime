@@ -997,7 +997,11 @@ angular.module('primeapps')
                         sortOrders.push(moduleItem.order);
                     });
 
-                    module.order = Math.max.apply(null, sortOrders) + 1;
+                    if ($rootScope.appModules.length < 1)
+                        module.order = 1;
+                    else
+                        module.order = Math.max.apply(null, sortOrders) + 1;         
+                    
                     module.name = 'custom_module_' + 9999;
                     module.sections = [];
                     module.fields = [];
@@ -1926,25 +1930,25 @@ angular.module('primeapps')
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
-                               if (lookupModule) 
-                                that.getModuleFields(lookupModule.name).then(function (response) {
-                                    lookupModule.fields = response.data;
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
+                                if (lookupModule)
+                                    that.getModuleFields(lookupModule.name).then(function (response) {
+                                        lookupModule.fields = response.data;
+                                        field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
 
-                                    if (!field.lookupModulePrimaryField)
-                                        field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                        if (!field.lookupModulePrimaryField)
+                                            field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
-                                    var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
+                                        var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
-                                    field.lookupModulePrimaryField.operators = [];
+                                        field.lookupModulePrimaryField.operators = [];
 
-                                    for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
-                                        var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
-                                        var operatorLookup = operators[operatorIdLookup];
-                                        field.operators.push(operatorLookup);
-                                        field.lookupModulePrimaryField.operators.push(operatorLookup);
-                                    }
-                                });
+                                        for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
+                                            var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
+                                            var operatorLookup = operators[operatorIdLookup];
+                                            field.operators.push(operatorLookup);
+                                            field.lookupModulePrimaryField.operators.push(operatorLookup);
+                                        }
+                                    });
                             }
                             else {
                                 field.operators.push(operators.equals);

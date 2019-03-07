@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("components")]
     public class Component : BaseEntity
     {
-        [JsonProperty("name"), Column("name"), Required, MaxLength(15)]
+        [JsonProperty("name"), Column("name"), Required, MaxLength(100)]
         public string Name { get; set; }
 
         [JsonProperty("content"), Column("content")]
@@ -29,6 +29,9 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [JsonProperty("status"), Column("status")]
         public PublishStatus Status { get; set; }
+
+        [JsonProperty("label"), Column("label"), Required, MaxLength(100)]
+        public string Label { get; set; }
 
         [JsonIgnore]
         public virtual Module Module { get; set; }
