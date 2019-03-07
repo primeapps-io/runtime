@@ -3,8 +3,11 @@ angular.module('primeapps')
     .factory('ScriptsService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
-                get: function () {
+                get: function (id) {
                     return $http.get(config.apiUrl + 'script/get/' + id);
+                },
+                getByName: function (name) {
+                    return $http.get(config.apiUrl + 'script/get_by_name/' + name);
                 },
                 count: function () {
                     return $http.get(config.apiUrl + 'script/count');
@@ -20,6 +23,9 @@ angular.module('primeapps')
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'script/delete/' + id);
-                }
+                },
+                isUniqueName: function (name) {
+                    return $http.get(config.apiUrl + 'script/is_unique_name?name=' + name);
+                },
             };
         }]);

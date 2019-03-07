@@ -29,6 +29,12 @@ namespace PrimeApps.Model.Repositories
                .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Script)
                .FirstOrDefaultAsync();
         }
+        public async Task<bool> IsUniqueName(string name)
+        {
+            return await DbContext.Components
+               .Where(x => !x.Deleted && x.Name == name && x.Type == ComponentType.Script)
+               .AnyAsync();
+        }
 
         public async Task<ICollection<Component>> Find(PaginationModel paginationModel)
         {

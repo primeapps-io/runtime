@@ -850,6 +850,33 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.scriptDetail', {
+                    url: '/scriptDetail?:name',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/customcode/scripts/scriptDetail.html',
+                            controller: 'ScriptDetailController'
+                        }
+                    },
+                    resolve: {
+                        componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/customcode/scripts/scriptDetailController.js',
+                                cdnUrl + 'view/app/customcode/scripts/scriptsService.js',
+                                cdnUrl + 'view/app/customcode/scripts/scriptsDeploymentService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.functionDetail', {
                     url: '/functionDetail?:name',
                     views: {

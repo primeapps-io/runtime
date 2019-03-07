@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<int> Count();
         Task<Component> Get(int id);
+        Task<bool> IsUniqueName(string name);
         Task<ICollection<Component>> Find(PaginationModel paginationModel);
         Task<List<Component>> GetByPlace(ComponentPlace place);
         Task<Component> GetGlobalSettings();

@@ -9,6 +9,8 @@ angular.module('primeapps')
             $scope.scripts = [];
             $scope.scriptModel = {};
             $scope.loading = false;
+            $scope.nameBlur = false;
+            $scope.nameValid = null;
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
             $scope.modules = $rootScope.appModules;
@@ -120,6 +122,57 @@ angular.module('primeapps')
 
             };
 
+            $scope.checkNameBlur = function () {
+                $scope.nameBlur = true;
+                $scope.checkNameUnique($scope.scriptModel.name);
+            };
+
+
+            $scope.checkNameValid = function (name) {
+                if (!name)
+                    return;
+
+                $scope.scriptModel.name = name.replace(/\s/g, '');
+                $scope.scriptModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+                $scope.scriptModel.name = name.replace(/\s/g, '');
+                $scope.scriptModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+                if (!$scope.nameBlur)
+                    return;
+
+                $scope.nameChecking = true;
+                $scope.nameValid = null;
+
+                if (!name || name === '') {
+                    $scope.nameChecking = false;
+                    $scope.nameValid = false;
+                    return;
+                }
+            };
+
+            $scope.checkNameUnique = function (name) {
+                if (!name)
+                    return;
+
+                $scope.checkNameValid(name);
+
+                ScriptsService.isUniqueName(name)
+                    .then(function (response) {
+                        $scope.nameChecking = false;
+                        if (response.data) {
+                            $scope.nameValid = true;
+                        } else {
+                            $scope.nameValid = false;
+                        }
+                    })
+                    .catch(function () {
+                        $scope.nameValid = false;
+                        $scope.nameChecking = false;
+                    });
+            };
+
+
             $scope.showFormModal = function (script) {
                 if (script) {
                     $scope.scriptModel = $filter('filter')($scope.scripts, { id: script.id }, true)[0];
@@ -147,7 +200,20 @@ angular.module('primeapps')
                 $scope.scriptFormModal.hide();
                 $scope.editing = false;
                 $scope.id = null;
+                $scope.nameBlur = false;
+                $scope.nameValid = null;
                 $scope.scriptModel = {};
+            };
+
+            $scope.runDeployment = function () {
+                toastr.success("Deployment Started");
+                FunctionsService.deploy($scope.script.name)
+                    .then(function (response) {
+                        //setAceOption($scope.record.runtime);
+                        $scope.reload();
+                    })
+                    .catch(function (response) {
+                    });
             };
 
         }

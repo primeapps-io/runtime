@@ -119,5 +119,16 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok();
         }
+
+        [Route("is_unique_name"), HttpGet]
+        public async Task<IActionResult> IsUniqueName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(ModelState);
+
+            var result = await _scriptRepository.IsUniqueName(name);
+
+            return result ? Ok(false) : Ok(true);
+        }
     }
 }
