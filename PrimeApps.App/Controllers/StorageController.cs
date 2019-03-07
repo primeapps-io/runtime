@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json.Linq;
 using PrimeApps.App.Extensions;
 using static PrimeApps.App.Storage.UnifiedStorage;
 
@@ -468,6 +469,122 @@ namespace PrimeApps.App.Controllers
 
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
+        }
+        
+         [Route("upload_hex"), HttpPost]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadHex([FromBody]JObject data)
+        {
+            string instanceId,
+              file,
+              description,
+              moduleName,
+              moduleId,
+              recordId,
+              fileName;
+            moduleName = data["module_name"]?.ToString();
+            file = data["file"]?.ToString();
+            description = data["description"]?.ToString();
+            moduleId = data["module_id"]?.ToString();
+            recordId = data["record_id"]?.ToString();
+            fileName = data["file_name"]?.ToString();
+            instanceId = data["instance_id"]?.ToString();
+
+            int parsedModuleId;
+            Guid parsedInstanceId = Guid.NewGuid();
+            int parsedRecordId;
+            byte[] fileBytes;
+
+            if (string.IsNullOrEmpty(file))
+                return BadRequest("Please send file hex string.");
+
+            if (string.IsNullOrEmpty(recordId))
+                return BadRequest("Please send record_id.");
+
+            if (!int.TryParse(recordId, out parsedRecordId))
+                return BadRequest("Please send valid record_id.");
+
+            if (string.IsNullOrEmpty(fileName))
+                return BadRequest("Please send file hex string.");
+
+            if (fileName.Split('.').Length != 2)
+                return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
+
+            if (string.IsNullOrEmpty(instanceId))
+                return BadRequest("Please send instance_id.");
+
+            if (!string.IsNullOrEmpty(instanceId))
+                if (!Guid.TryParse(instanceId, out parsedInstanceId))
+                    return BadRequest("Please send valid instance_id.");
+
+            if (!string.IsNullOrEmpty(moduleId))
+            {
+                var isNumeric = int.TryParse(moduleId, out parsedModuleId);
+                if (!isNumeric)
+                    return BadRequest("Please send integer for module_id parameter.");
+
+                var module = await _moduleRepository.GetById(parsedModuleId);
+
+                if (module == null)
+                    return BadRequest("Module not found.");
+            }
+            else if (!string.IsNullOrEmpty(moduleName))
+            {
+                var module = await _moduleRepository.GetByNameBasic(moduleName);
+
+                if (module == null)
+                    return BadRequest("Module not found.");
+
+                parsedModuleId = module.Id;
+            }
+            else
+                return BadRequest("Please send module_id or module_name paratemer.");
+
+            try
+            {
+                fileBytes = Enumerable.Range(0, file.Length)
+                     .Where(x => x % 2 == 0)
+                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
+                     .ToArray();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
+            }
+
+            var ext = Path.GetExtension(fileName);
+            var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+
+            string uniqueStandardizedName = fileName.Replace(" ", "-");
+
+            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+
+            string bucketPath = UnifiedStorage.GetPath("", AppUser.TenantId);
+
+            using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
+            {
+                await _storage.Upload(bucketPath, uniqueName, bytesToStream);
+            }
+
+            Document currentDoc = new Document()
+            {
+                FileSize = fileBytes.Length,
+                Description = description,
+                ModuleId = parsedModuleId,
+                Name = fileName,
+                CreatedAt = DateTime.UtcNow,
+                Type = UnifiedStorage.GetMimeType(ext),
+                UniqueName = uniqueName,
+                RecordId = parsedRecordId,
+                Deleted = false
+            };
+            
+            if (await _documentRepository.CreateAsync(currentDoc) != null)
+            {
+                return Ok(currentDoc.Id.ToString());
+            }
+
+            return BadRequest("Couldn't Create Document!");
         }
     }
 }
