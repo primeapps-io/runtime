@@ -62,7 +62,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(script);">
+            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ui-sref="studio.app.scriptDetail({name:script.name})">
                 <td>{{script.name}}</td>
                 <td>{{script.module_id}}</td>
                 <td class="text-right">

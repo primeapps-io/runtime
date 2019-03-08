@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptsController', ['$rootScope', '$scope', '$state', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter',
-        function ($rootScope, $scope, $state, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter) {
+    .controller('ScriptsController', ['$rootScope', '$scope', '$state', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter', 'helper',
+        function ($rootScope, $scope, $state, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter, helper) {
             $scope.$parent.activeMenuItem = 'scripts';
             $rootScope.breadcrumblist[2].title = 'Scripts';
             $scope.scripts = [];
@@ -89,12 +89,12 @@ angular.module('primeapps')
                                 toastr.success("Script is created successfully.")
                             }
 
-                            $scope.loading = false;
+                            $scope.saving = false;
                             $scope.cancel();
                             $scope.changeOffset(1);
                         }).catch(function (reason) {
                             toastr.error($filter('translate')('Error'));
-                            $scope.loading = false;
+                            $scope.saving = false;
                         });
                 }
             }
@@ -122,55 +122,60 @@ angular.module('primeapps')
 
             };
 
-            $scope.checkNameBlur = function () {
-                $scope.nameBlur = true;
-                $scope.checkNameUnique($scope.scriptModel.name);
-            };
-
-
-            $scope.checkNameValid = function (name) {
-                if (!name)
-                    return;
-
-                $scope.scriptModel.name = name.replace(/\s/g, '');
-                $scope.scriptModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-
-                $scope.scriptModel.name = name.replace(/\s/g, '');
-                $scope.scriptModel.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-
-                if (!$scope.nameBlur)
-                    return;
-
-                $scope.nameChecking = true;
-                $scope.nameValid = null;
-
-                if (!name || name === '') {
-                    $scope.nameChecking = false;
-                    $scope.nameValid = false;
+            $scope.createIdentifier = function () {
+                if (!$scope.scriptModel || !$scope.scriptModel.label) {
+                    $scope.scriptModel.name = null;
                     return;
                 }
+
+                $scope.scriptModel.name = helper.getSlug($scope.scriptModel.label, '-');
+                $scope.scriptNameBlur($scope.scriptModel);
             };
 
-            $scope.checkNameUnique = function (name) {
-                if (!name)
+
+            $scope.scriptNameBlur = function (name) {
+                if ($scope.isScriptNameBlur && $scope.scriptNameValid)
                     return;
 
-                $scope.checkNameValid(name);
+                $scope.isScriptNameBlur = true;
+                $scope.checkScriptName(name ? name : "");
+            };
 
-                ScriptsService.isUniqueName(name)
+            $scope.checkScriptName = function (script) {
+                if (!script || !script.name)
+                    return;
+
+                script.name = script.name.replace(/\s/g, '');
+                script.name = script.name.replace(/[^a-zA-Z0-9\-]/g, '');
+
+                if (!$scope.isScriptNameBlur)
+                    return;
+
+                $scope.scriptNameChecking = true;
+                $scope.scriptNameValid = null;
+
+                if (!script.name || script.name === '') {
+                    $scope.scriptNameChecking = false;
+                    $scope.scriptNameValid = false;
+                    return;
+                }
+
+                ScriptsService.isUniqueName(script.name)
                     .then(function (response) {
-                        $scope.nameChecking = false;
+                        $scope.scriptNameChecking = false;
                         if (response.data) {
-                            $scope.nameValid = true;
-                        } else {
-                            $scope.nameValid = false;
+                            $scope.scriptNameValid = true;
+                        }
+                        else {
+                            $scope.scriptNameValid = false;
                         }
                     })
                     .catch(function () {
-                        $scope.nameValid = false;
-                        $scope.nameChecking = false;
+                        $scope.scriptNameValid = false;
+                        $scope.scriptNameChecking = false;
                     });
             };
+
 
 
             $scope.showFormModal = function (script) {
@@ -201,7 +206,7 @@ angular.module('primeapps')
                 $scope.editing = false;
                 $scope.id = null;
                 $scope.nameBlur = false;
-                $scope.nameValid = null;
+                $scope.scriptNameValid = null;
                 $scope.scriptModel = {};
             };
 

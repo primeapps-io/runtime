@@ -2,13 +2,16 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ScriptsService', '$localStorage', '$sce', '$window', 'ScriptsDeploymentService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ScriptsService, $localStorage, $sce, $window, ScriptsDeploymentService) {
+    .controller('ScriptDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ScriptsService', '$localStorage', '$sce', '$window', 'ScriptsDeploymentService', 'componentPlaces', 'componentPlaceEnums',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ScriptsService, $localStorage, $sce, $window, ScriptsDeploymentService, componentPlaces, componentPlaceEnums) {
             $scope.loadingDeployments = true;
             $scope.loading = true;
             $scope.modalLoading = false;
             $scope.showConsole = false;
             $scope.refreshLogs = false;
+            $scope.modules = $rootScope.appModules;
+            $scope.componentPlaces = componentPlaces;
+            $scope.componentPlaceEnums = componentPlaceEnums;
 
             $scope.name = $state.params.name;
             $scope.orgId = $state.params.orgId;
@@ -26,6 +29,7 @@ angular.module('primeapps')
             $scope.app = $rootScope.currentApp;
             $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
+
 
             if (!$scope.name) {
                 $state.go('studio.app.scripts');
@@ -61,7 +65,7 @@ angular.module('primeapps')
                             $scope.requestModel.offset = $scope.requestModel.offset - 1;
                         }
 
-                        ScriptsDeploymentService.find($scope.function.id, $scope.requestModel)
+                        ScriptsDeploymentService.find($scope.script.id, $scope.requestModel)
                             .then(function (response) {
                                 $scope.deployments = response.data;
                                 $scope.loadingDeployments = false;
@@ -108,6 +112,11 @@ angular.module('primeapps')
                     }
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
+
+                    if (!$scope.script.place_value)
+                        $scope.script.place_value = $scope.script.place;
+
+                    $scope.script.place = $scope.componentPlaceEnums[$scope.script.place_value];
                     $scope.reload();
                     $scope.loading = false;
                 });
@@ -124,54 +133,69 @@ angular.module('primeapps')
 
             });
 
-            $scope.getFileType = function () {
-                return $filter('filter')($scope.runtimes, { value: $scope.script.runtime })[0].type;
-            };
-
             $scope.closeModal = function () {
                 $scope.script = angular.copy($scope.scriptCopy);
                 $scope.showFormModal.hide();
-            };
-
-            $scope.runScript = function (run) {
-                $scope.running = true;
-                $scope.response = null;
-                ScriptsService.run($scope.name, run.type, run.body)
-                    .then(function (response) {
-                        $scope.response = response.data;
-                        $scope.running = false;
-                    })
-                    .catch(function (response) {
-                        if (response.status === 503) {
-                            toastr.error('No endpoints available for service ' + $scope.script.name);
-                        }
-                        else {
-                            toastr.error('An error occurred while running the script !');
-                        }
-                        $scope.running = false;
-                    });
             };
 
             $scope.asHtml = function () {
                 return $sce.trustAsHtml($scope.logs);
             };
 
-            $scope.checkScriptHandler = function (script) {
-                if (script.handler) {
-                    script.handler = script.handler.replace(/\s/g, '');
-                    script.handler = script.handler.replace(/[^a-zA-Z\.]/g, '');
-                    var dotIndex = script.handler.indexOf('.');
-                    if (dotIndex > -1) {
-                        if (dotIndex == 0) {
-                            script.handler = script.handler.split('.').join('');
+            $scope.createIdentifier = function () {
+                if (!$scope.script || !$scope.script.label) {
+                    $scope.script.name = null;
+                    return;
+                }
+
+                $scope.script.name = helper.getSlug($scope.script.label, '-');
+                $scope.scriptNameBlur($scope.script);
+            };
+
+
+            $scope.scriptNameBlur = function (script) {
+                if ($scope.isScriptNameBlur && $scope.scriptNameValid)
+                    return;
+
+                $scope.isScriptNameBlur = true;
+                $scope.checkScriptName(script ? script : null);
+            };
+
+            $scope.checkScriptName = function (script) {
+                if (!script || !script.name)
+                    return;
+
+                script.name = script.name.replace(/\s/g, '');
+                script.name = script.name.replace(/[^a-zA-Z0-9\-]/g, '');
+
+                if (!$scope.isScriptNameBlur)
+                    return;
+
+                $scope.scriptNameChecking = true;
+                $scope.scriptNameValid = null;
+
+                if (!script.name || script.name === '') {
+                    $scope.scriptNameChecking = false;
+                    $scope.scriptNameValid = false;
+                    return;
+                }
+
+                ScriptsService.isUniqueName(script.name)
+                    .then(function (response) {
+                        $scope.scriptNameChecking = false;
+                        if (response.data) {
+                            $scope.scriptNameValid = true;
                         }
                         else {
-                            script.handler = script.handler.split('.').join('');
-                            script.handler = script.handler.slice(0, dotIndex) + "." + script.handler.slice(dotIndex);
+                            $scope.scriptNameValid = false;
                         }
-                    }
-                }
+                    })
+                    .catch(function () {
+                        $scope.scriptNameValid = false;
+                        $scope.scriptNameChecking = false;
+                    });
             };
+
 
             $scope.save = function (FormValidation) {
                 if (!FormValidation.$valid)
@@ -179,13 +203,24 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
-                ScriptsService.update($scope.name, $scope.script)
+                ScriptsService.update($scope.script)
                     .then(function (response) {
-                        $scope.scriptCopy = angular.copy($scope.script);
-                        $scope.saving = false;
-                        toastr.success("Script saved successfully.");
-                        $scope.saving = false;
+                        if (response.data) {
+                            $scope.scriptCopy = angular.copy($scope.script);
+                            $scope.saving = false;
+                            toastr.success("Script saved successfully.");
+                        }
+                    });
+            };
 
+            $scope.runDeployment = function () {
+                toastr.success("Deployment Started");
+                ScriptsService.deploy($scope.script.name)
+                    .then(function (response) {
+                        //setAceOption($scope.record.runtime);
+                        $scope.reload();
+                    })
+                    .catch(function (response) {
                     });
             };
         }

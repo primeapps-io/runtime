@@ -40,9 +40,9 @@ namespace PrimeApps.Model.Repositories
         public async Task<AppDraft> Get(int id)
         {
             return await DbContext.Apps
+                .Include(x => x.Setting)
                 .Where(x => x.Id == id && !x.Deleted)
                 //.Include(x => x.Organization)
-                .Include(x => x.Setting)
                 .FirstOrDefaultAsync();
         }
 

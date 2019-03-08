@@ -16,10 +16,10 @@ namespace PrimeApps.Model.Repositories
     {
         public DeploymentComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task<int> Count(int functionId)
+        public async Task<int> Count(int componentId)
         {
             return await DbContext.DeploymentsComponent
-               .Where(x => !x.Deleted & x.ComponentId == functionId)
+               .Where(x => !x.Deleted & x.ComponentId == componentId)
                .CountAsync();
         }
 
@@ -38,15 +38,14 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<DeploymentComponent>> Find(int functionId, PaginationModel paginationModel)
+        public async Task<ICollection<DeploymentComponent>> Find(int componentId, PaginationModel paginationModel)
         {
-            var deployments = await DbContext.DeploymentsComponent
+            var deployments = DbContext.DeploymentsComponent
                 .Include(x => x.Component)
-                .Where(x => !x.Deleted & x.ComponentId == functionId)
+                .Where(x => !x.Deleted & x.ComponentId == componentId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit)
-                .OrderByDescending(x => x.BuildNumber)
-                .ToListAsync();
+                .OrderByDescending(x => x.BuildNumber);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -54,16 +53,16 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    deployments = deployments.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                    deployments = deployments.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                    deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
 
             }
 
-            return deployments;
+            return await deployments.ToListAsync();
         }
 
         public async Task<int> Create(DeploymentComponent deployment)
