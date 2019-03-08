@@ -227,28 +227,7 @@ namespace PrimeApps.Studio.Helpers
 
                                 try
                                 {
-                                    //foreach (var file in files)
-                                    //{
-                                    //    var path = file["path"].ToString();
-                                    //    var pathArray = path.Split("/");
-                                    //    var fileName = pathArray[pathArray.Length - 1];
-
                                     code = File.ReadAllText(localPath + "/" + fileName);
-
-                                    //var content = JObject.Parse(script.Content);
-                                    //var folderName = content.HasValues && content["level"] != null && content["level"].ToString() != "app" ? "tenant-" + tenantId : "app-" + appId;
-                                    //var bucketName = UnifiedStorage.GetPathComponents(folderName, script.Name);
-
-                                    //var stream = new MemoryStream();
-                                    //var writer = new StreamWriter(stream);
-                                    //writer.Write(code);
-                                    //writer.Flush();
-                                    //stream.Position = 0;
-
-                                    //await _storage.Upload(bucketName, fileName, stream);
-                                    //_storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-                                    //}
-
                                     deployment.Status = DeploymentStatus.Succeed;
                                 }
                                 catch (Exception ex)
