@@ -44,6 +44,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             $scope.scripts = response.data;
+                            setModule(response.data);
                         }
                         $scope.loading = false;
                     })
@@ -57,6 +58,14 @@ angular.module('primeapps')
 
             $scope.changeOffset = function () {
                 $scope.changePage(1)
+            };
+
+            var setModule = function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var module = $filter('filter')($scope.modules, { id: data[i].module_id }, true);
+                    if (module && module.length > 0)
+                        data[i].module = angular.copy(module[0]);
+                }
             };
 
             $scope.save = function (scriptForm) {

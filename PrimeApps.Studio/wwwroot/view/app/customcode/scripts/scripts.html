@@ -64,7 +64,7 @@
         <tbody>
             <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ui-sref="studio.app.scriptDetail({name:script.name})">
                 <td>{{script.name}}</td>
-                <td>{{script.module_id}}</td>
+                <td>{{script.module ? script.module['label_' + language + '_singular']:'-'}}</td>
                 <td class="text-right">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(script);" type="button"
