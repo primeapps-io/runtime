@@ -475,8 +475,7 @@ namespace PrimeApps.App.Controllers
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadHex([FromBody]JObject data)
         {
-            string instanceId,
-              file,
+            string file,
               description,
               moduleName,
               moduleId,
@@ -488,7 +487,6 @@ namespace PrimeApps.App.Controllers
             moduleId = data["module_id"]?.ToString();
             recordId = data["record_id"]?.ToString();
             fileName = data["file_name"]?.ToString();
-            instanceId = data["instance_id"]?.ToString();
 
             int parsedModuleId;
             Guid parsedInstanceId = Guid.NewGuid();
@@ -509,13 +507,6 @@ namespace PrimeApps.App.Controllers
 
             if (fileName.Split('.').Length != 2)
                 return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
-
-            if (string.IsNullOrEmpty(instanceId))
-                return BadRequest("Please send instance_id.");
-
-            if (!string.IsNullOrEmpty(instanceId))
-                if (!Guid.TryParse(instanceId, out parsedInstanceId))
-                    return BadRequest("Please send valid instance_id.");
 
             if (!string.IsNullOrEmpty(moduleId))
             {
@@ -559,7 +550,7 @@ namespace PrimeApps.App.Controllers
 
             uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
-            string bucketPath = UnifiedStorage.GetPath("", AppUser.TenantId);
+            string bucketPath = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
 
             using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
             {
