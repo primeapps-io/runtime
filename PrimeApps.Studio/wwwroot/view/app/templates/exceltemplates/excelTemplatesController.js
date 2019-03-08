@@ -229,7 +229,7 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid) {
+                if (uploadForm.$invalid || $scope.fileUpload.queue.length < 1) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
@@ -339,7 +339,7 @@ angular.module('primeapps')
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
 
                             }).catch(function () {
-                                
+
                                 angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                 $scope.templates = $scope.templatesState;
 

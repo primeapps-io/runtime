@@ -218,7 +218,7 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if (!uploadForm.$valid) {
+                if (uploadForm.$invalid || $scope.fileUpload.queue.length < 1) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
