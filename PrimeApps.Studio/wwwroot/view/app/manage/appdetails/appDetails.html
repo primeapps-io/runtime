@@ -70,7 +70,6 @@
                            disabled="true"
                            maxlength="50"
                            ng-trim="false"
-                           focus="true"
                            ng-blur="checkNameBlur();"
                            ng-change="checkName(appModel.name)"
                            ng-model="appModel.name" />
@@ -104,85 +103,87 @@
 <div class="tab-content" style="padding: 30px;margin-bottom: 30px;">
     <form name="authThemeForm" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="row">
-            <div class="col-sm-4 col-md-4">
-                <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
-                        <div nv-file-drop="" nv-file-over="" required="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
-                            <div class="">
-                                <img ng-src="{{authTheme.banner}}" style="max-width: 100%" ng-show="!authBanner">
-                                <img ng-src="{{authBanner.image}}" ng-show="authBanner" class="resultimg" />
+            <div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+                <div>
+                    <div style="margin: auto;text-align: center;">
+                        <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
+                            <div nv-file-drop="" nv-file-over="" required="" uploader="uploader" options="{url: '/foo'}"
+                                 over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
+                                <div class="">
+                                    <img ng-src="{{authTheme.banner}}" style="max-width: 100%" ng-show="!authBanner">
+                                    <img ng-src="{{authBanner.image}}" ng-show="authBanner" class="resultimg" />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
+                        <label>Banner</label>
+                    </div>
+                    <div class="text-center form-group">
+                        <label class="newinput">
+                            <input id="authBanner"
+                                   type="file"
+                                   name="authBanner"
+                                   tabindex="authBanner"
+                                   nv-file-select uploader="uploaderImage('authBanner')"
+                                   ng-model='authBanner' />
+                            <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                        </label>
+                    </div>
                 </div>
-                <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
-                    <label>Banner</label>
-                </div>
-                <div class="text-center form-group">
-                    <label class="newinput">
-                        <input id="authBanner"
-                               type="file"
-                               name="authBanner"
-                               tabindex="authBanner"
-                               nv-file-select uploader="uploaderImage('authBanner')"
-                               ng-model='authBanner' />
-                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-sm-4 col-md-4">
-                <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
-                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
-                            <div class="">
-                                <img ng-src="{{authTheme.favicon}}" style="max-width: 100%" ng-show="!authFavicon">
-                                <img ng-src="{{authFavicon.image}}" ng-show="authFavicon" class="resultimg" />
+                <div>
+                    <div style="margin: auto;text-align: center;">
+                        <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
+                            <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
+                                 over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
+                                <div class="">
+                                    <img ng-src="{{authTheme.favicon}}" style="max-width: 100%" ng-show="!authFavicon">
+                                    <img ng-src="{{authFavicon.image}}" ng-show="authFavicon" class="resultimg" />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
+                        <label>Favicon</label>
+                    </div>
+                    <div class="text-center form-group">
+                        <label class="newinput">
+                            <input id="authFavicon"
+                                   type="file"
+                                   name="authFavicon"
+                                   tabindex="authFavicon"
+                                   nv-file-select uploader="uploaderImage('authFavicon')"
+                                   ng-model='authFavicon' />
+                            <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                        </label>
+                    </div>
                 </div>
-                <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
-                    <label>Favicon</label>
-                </div>
-                <div class="text-center form-group">
-                    <label class="newinput">
-                        <input id="authFavicon"
-                               type="file"
-                               name="authFavicon"
-                               tabindex="authFavicon"
-                               nv-file-select uploader="uploaderImage('authFavicon')"
-                               ng-model='authFavicon' />
-                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-sm-4 col-md-4">
-                <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
-                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
-                            <div class="">
-                                <img ng-src="{{authTheme.logo}}" style="max-width: 100%" ng-show="!authLogo">
-                                <img ng-src="{{authLogo.image}}" ng-show="authLogo" class="resultimg" />
+                <div>
+                    <div style="margin: auto;text-align: center;">
+                        <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
+                            <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
+                                 over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
+                                <div class="">
+                                    <img ng-src="{{authTheme.logo}}" style="max-width: 100%" ng-show="!authLogo">
+                                    <img ng-src="{{authLogo.image}}" ng-show="authLogo" class="resultimg" />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
-                    <label>Logo</label>
-                </div>
-                <div class="text-center form-group">
-                    <label class="newinput">
-                        <input id="authLogo"
-                               type="file"
-                               name="authLogo"
-                               tabindex="authLogo"
-                               nv-file-select uploader="uploaderImage('authLogo')"
-                               ng-model='authLogo' />
-                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
-                    </label>
+                    <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
+                        <label>Logo</label>
+                    </div>
+                    <div class="text-center form-group">
+                        <label class="newinput">
+                            <input id="authLogo"
+                                   type="file"
+                                   name="authLogo"
+                                   tabindex="authLogo"
+                                   nv-file-select uploader="uploaderImage('authLogo')"
+                                   ng-model='authLogo' />
+                            <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -205,7 +206,6 @@
                            required
                            maxlength="50"
                            ng-trim="false"
-                           focus="true"
                            ng-model="authTheme.title" />
                 </div>
             </div>
@@ -251,60 +251,62 @@
 <div class="tab-content" style="padding: 30px;margin-bottom: 30px;">
     <form name="appThemeForm" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-4">
-                <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
-                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
-                            <div class="">
-                                <img ng-src="{{appTheme.logo}}" style="max-width: 100%" ng-show="!appThemeLogo">
-                                <img ng-src="{{appThemeLogo.image}}" ng-show="appThemeLogo" class="resultimg" />
+            <div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+                <div>
+                    <div style="margin: auto;text-align: center;">
+                        <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding:0px;">
+                            <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
+                                 over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
+                                <div class="">
+                                    <img ng-src="{{appTheme.logo}}" style="max-width: 100%" ng-show="!appThemeLogo">
+                                    <img ng-src="{{appThemeLogo.image}}" ng-show="appThemeLogo" class="resultimg" />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
+                        <label>Logo</label>
+                    </div>
+                    <div class="text-center form-group">
+                        <label class="newinput">
+                            <input id="appThemeLogo"
+                                   type="file"
+                                   name="appThemeLogo"
+                                   tabindex="appThemeLogo"
+                                   nv-file-select uploader="uploaderImage('appThemeLogo')"
+                                   ng-model='appThemeLogo' />
+                            <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                        </label>
+                    </div>
                 </div>
-                <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
-                    <label>Logo</label>
-                </div>
-                <div class="text-center form-group">
-                    <label class="newinput">
-                        <input id="appThemeLogo"
-                               type="file"
-                               name="appThemeLogo"
-                               tabindex="appThemeLogo"
-                               nv-file-select uploader="uploaderImage('appThemeLogo')"
-                               ng-model='appThemeLogo' />
-                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div style="margin: auto;text-align: center;">
-                    <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding: 0px;">
-                        <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
-                            <div class="">
-                                <img ng-src="{{appTheme.favicon}}" style="max-width: 100%" ng-show="!appThemeFavicon">
-                                <img ng-src="{{appThemeFavicon.image}}" ng-show="appThemeFavicon" class="resultimg" />
+                <div>
+                    <div style="margin: auto;text-align: center;">
+                        <div ng-if="uploader.isHTML5 && appModel.logo" class="file-uploader" style="background: none; padding: 0px;">
+                            <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
+                                 over-class="uploader-over" nv-file-select class="uploader-area drop-zone">
+                                <div class="">
+                                    <img ng-src="{{appTheme.favicon}}" style="max-width: 100%" ng-show="!appThemeFavicon">
+                                    <img ng-src="{{appThemeFavicon.image}}" ng-show="appThemeFavicon" class="resultimg" />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
+                        <label>Favicon</label>
+                    </div>
+                    <div class="text-center form-group">
+                        <label class="newinput">
+                            <input id="appThemeFavicon"
+                                   type="file"
+                                   name="appThemeFavicon"
+                                   tabindex="appThemeFavicon"
+                                   nv-file-select uploader="uploaderImage('appThemeFavicon')"
+                                   ng-model='appThemeFavicon' />
+                            <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
+                        </label>
+                    </div>
                 </div>
-                <div style="text-align: center;padding-top: 10px; padding-bottom: 10px;">
-                    <label>Favicon</label>
-                </div>
-                <div class="text-center form-group">
-                    <label class="newinput">
-                        <input id="appThemeFavicon"
-                               type="file"
-                               name="appThemeFavicon"
-                               tabindex="appThemeFavicon"
-                               nv-file-select uploader="uploaderImage('appThemeFavicon')"
-                               ng-model='appThemeFavicon' />
-                        <span class="btn btn-radius btn-gray"><i class="fas fa-upload"></i> Change image</span>
-                    </label>
-                </div>
+                
             </div>
         </div>
         <div class="row">
