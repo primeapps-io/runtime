@@ -15,21 +15,15 @@ angular.module('primeapps')
             $scope.app = $rootScope.currentApp;
             $scope.modules = $rootScope.appModules;
 
+            if (!$scope.id) {
+                $state.go('studio.app.components');
+            }
+
             /*if (!$scope.orgId || !$scope.appId) {
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
             $scope.loading = true;
-            //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
-            $scope.giteaUrl = giteaUrl;
-
-            $scope.tabManage = {
-                activeTab: "overview"
-            };
-
-            $scope.deployments = [];
-
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -39,33 +33,59 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
+            $scope.$parent.$parent.tabManage = {
+                activeTab: "overview"
+            };
+            
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
             };
-            
-            if (!$scope.id) {
-                $state.go('studio.app.components');
-            }
+            $scope.activePage = 1;
 
-            $scope.reload = function () {
+            ComponentsDeploymentService.count($scope.id)
+                .then(function (response) {
+                    $scope.pageTotal = response.data;
+                    //$scope.changePage(1);
+                });
+
+            $scope.changePage = function (page) {
                 $scope.loadingDeployments = true;
-                ComponentsDeploymentService.count($scope.id)
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+                ComponentsDeploymentService.find($scope.component.id, requestModel)
                     .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset !== 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        ComponentsDeploymentService.find($scope.component.id, $scope.requestModel)
-                            .then(function (response) {
-                                $scope.deployments = response.data;
-                                $scope.loadingDeployments = false;
-                            });
+                        $scope.deployments = response.data;
+                        $scope.loadingDeployments = false;
+                        //$scope.loading = false;
                     });
+
             };
-            
+
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage)
+            };
+
+            //var currentOrganization = $localStorage.get("currentApp");
+            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.giteaUrl = giteaUrl;
+
+            $scope.deployments = [];
+
             ComponentsService.getFileList($scope.id)
                 .then(function (response) {
                     $scope.files = [];
@@ -84,7 +104,6 @@ angular.module('primeapps')
                         toastr.error('Component Not Found !');
                         $state.go('studio.app.components');
                     }
-                    $scope.reload();
                     $scope.content = {};
                     $scope.componentCopy = angular.copy(response.data);
                     $scope.component = response.data;
@@ -101,12 +120,13 @@ angular.module('primeapps')
                         $scope.content.url_parameters = urlParameters.length > 1 ? urlParameters[1] : null;
 
                         if ($scope.component.content.app) {
-                            if ($scope.component.content.app.templateUrl && $scope.component.content.app.templateUrl.contains('http')) {
+                            if ($scope.component.content.app.templateFile && $scope.component.content.app.templateFile.contains('http')) {
                                 $scope.content.templateUrl = true;
                             }
                         }
                     }
 
+                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -122,19 +142,25 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
+                $scope.copyComponent = angular.copy($scope.component);
+
                 if (!$scope.component.content) {
-                    $scope.component.content = {};
+                    $scope.copyComponent.content = {};
                 }
 
                 if ($scope.component.content.files) {
-                    $scope.component.content.files = $scope.component.content.files.split("\n");
+                    $scope.copyComponent.content.files = $scope.component.content.files.split("\n");
                 }
 
-                $scope.component.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : null);
+                if (!$scope.content.templateUrl) {
+                    $scope.copyComponent.content.app.templateUrl = $scope.component.content.app.templateFile;
+                }
 
-                $scope.component.content = JSON.stringify($scope.component.content);
+                $scope.copyComponent.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : null);
 
-                ComponentsService.update($scope.id, $scope.component)
+                $scope.copyComponent.content = JSON.stringify($scope.copyComponent.content);
+
+                ComponentsService.update($scope.id, $scope.copyComponent)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.editing = false;
@@ -146,7 +172,7 @@ angular.module('primeapps')
                 ComponentsService.deploy($scope.id)
                     .then(function (response) {
                         //setAceOption($scope.record.runtime);
-                        $scope.reload();
+                        $scope.changePage(1);
                     })
                     .catch(function (response) {
                     });

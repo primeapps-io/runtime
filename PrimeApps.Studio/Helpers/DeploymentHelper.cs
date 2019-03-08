@@ -122,8 +122,9 @@ namespace PrimeApps.Studio.Helpers
 
                 using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                 using (var _deploymentComponentRepository = new DeploymentComponentRepository(tenantDBContext, _configuration))
+                using (var _componentRepository = new ComponentRepository(tenantDBContext, _configuration))
                 {
-                    _appDraftRepository.CurrentUser = _deploymentComponentRepository.CurrentUser = _currentUser;
+                    _appDraftRepository.CurrentUser = _deploymentComponentRepository.CurrentUser = _componentRepository.CurrentUser = _currentUser;
 
                     var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
@@ -163,7 +164,14 @@ namespace PrimeApps.Studio.Helpers
                                         stream.Position = 0;
 
                                         await _storage.Upload(bucketName, fileName, stream);
-                                        //_storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+
+                                        if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
+                                        {
+                                            var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                                            content["app"]["templateUrl"] = url;
+                                            component.Content = JsonConvert.SerializeObject(content);
+                                            await _componentRepository.Update(component);
+                                        }
                                     }
 
                                     deployment.Status = DeploymentStatus.Succeed;

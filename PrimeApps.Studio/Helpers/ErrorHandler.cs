@@ -17,8 +17,8 @@ namespace PrimeApps.Studio.Helpers
             
             SentrySdk.CaptureException(exception);
 
-            if (Debugger.IsAttached)
-                throw ex;
+            /*if (Debugger.IsAttached)
+                throw ex;*/
             
         }
 

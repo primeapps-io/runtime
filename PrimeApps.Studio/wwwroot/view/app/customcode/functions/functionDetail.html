@@ -143,8 +143,8 @@ git push -u origin master</code>
                                                  text-first="&laquo;"
                                                  ul-class="pagination"
                                                  active-class="active"
-                                                 page="requestModel.offset"
-                                                 page-size="requestModel.limit"
+                                                 page="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.offset"
+                                                 page-size="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.limit"
                                                  total="$parent.$parent.$parent.$parent.$parent.$parent.pageTotal"
                                                  scroll-top="true"
                                                  hide-if-empty="true"
@@ -154,7 +154,7 @@ git push -u origin master</code>
                                                  text-prev-class="fas fa-chevron-left"
                                                  text-first-class="fas fa-step-backward"
                                                  text-last-class="fas fa-step-forward"
-                                                 paging-action="changePage(page)">
+                                                 paging-action="$parent.$parent.$parent.$parent.$parent.$parent.changePage(page)">
                                             </div>
                                         </nav>
                                     </div>
@@ -163,7 +163,7 @@ git push -u origin master</code>
                                     </div>
                                     <div>
                                         <span class="pagination-span">Items per page  </span>
-                                        <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                                        <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.$parent.$parent.changeOffset()">
                                             <option ng-selected="true" value="10">10</option>
                                             <option value="25">25</option>
                                             <option value="50">50</option>
@@ -176,7 +176,7 @@ git push -u origin master</code>
                             </div>
 
                             <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
-                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="reload()"></i>
+                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="changePage(1)"></i>
 
                                 <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
                                     <i class="fas fa-plus"></i> Create Deployment
@@ -325,6 +325,37 @@ git push -u origin master</code>
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-if="loading" class="function tab-content">
+    <div class="col-sm-12" style="border: none ;">
+        <div class="setup-liste-header row">
+            <div class="col-sm-12">
+                <div class="setup-title">
+                    <div style="width: 100px;" class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content" style="padding: 20px;position: relative;">
+            <div class="tab-content" style="padding: 20px;">
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                        <code><div class="animated-background"></div></code>
+                    </pre>
+                </div>
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                        <code><div class="animated-background"></div></code>
+                    </pre>
+                </div>
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                        <code><div class="animated-background"></div></code>
+                    </pre>
                 </div>
             </div>
         </div>
