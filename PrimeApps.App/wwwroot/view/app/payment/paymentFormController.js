@@ -41,7 +41,7 @@ angular.module('primeapps')
                 AuthService.logout()
                     .then(function () {
                         AuthService.logoutComplete();
-                        $window.location.href = '/Auth/SignOut';
+                        $window.location.href = '/logout';
                     });
             };
 
