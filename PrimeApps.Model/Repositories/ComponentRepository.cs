@@ -78,7 +78,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Component> GetGlobalSettings()
         {
             return await DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Component && x.Place == ComponentPlace.GlobalConfig)
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place == ComponentPlace.GlobalConfig)
                 .FirstOrDefaultAsync();
         }
 
