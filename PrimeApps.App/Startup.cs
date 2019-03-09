@@ -92,9 +92,7 @@ namespace PrimeApps.App
                     };
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 })
-                .AddViewLocalization(
-                    LanguageViewLocationExpanderFormat.Suffix,
-                    opts => { opts.ResourcesPath = "Localization"; })
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
 
             var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
@@ -104,9 +102,13 @@ namespace PrimeApps.App
                 var awsOptions = Configuration.GetAWSOptions();
                 awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
                 awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                awsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
+                awsOptions.Profile = "default";
+
                 var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
                 var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
                 awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+
                 services.AddDefaultAWSOptions(awsOptions);
                 services.AddAWSService<IAmazonS3>();
             }

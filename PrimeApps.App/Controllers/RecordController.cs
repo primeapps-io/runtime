@@ -332,7 +332,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             if (moduleEntity == null || record == null)
                 return BadRequest();
@@ -438,7 +438,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             if (moduleEntity == null || record == null)
                 return BadRequest();
@@ -514,7 +514,7 @@ namespace PrimeApps.App.Controllers
         [Route("delete/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(string module, int id)
         {
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
             var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
 
             if (moduleEntity == null || record == null)
@@ -544,7 +544,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             foreach (JObject record in records)
             {
@@ -599,7 +599,7 @@ namespace PrimeApps.App.Controllers
         [Route("delete_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
         public async Task<IActionResult> DeleteBulk(string module, [FromBody]int[] ids)
         {
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             foreach (var id in ids)
             {
@@ -631,7 +631,7 @@ namespace PrimeApps.App.Controllers
         [Route("update_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
         public async Task<IActionResult> UpdateBulk(string module, [FromBody]JObject request)
         {
-            var moduleEntity = await _moduleRepository.GetByName(module);
+            var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
             var ids = (JArray)request["ids"];
             var record = (JObject)request["record"];
 
