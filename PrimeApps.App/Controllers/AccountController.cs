@@ -29,122 +29,124 @@ namespace PrimeApps.App.Controllers
         private IDocumentHelper _documentHelper;
         private IConfiguration _configuration;
 
-        public AccountController(IApplicationRepository applicationRepository, IConfiguration configuration,IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IBackgroundTaskQueue queue, IDocumentHelper documentHelper)
+        public AccountController(IApplicationRepository applicationRepository, IConfiguration configuration, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IBackgroundTaskQueue queue, IDocumentHelper documentHelper)
         {
-	        _platformUserRepository = platformUserRepository;
-	        _platformRepository = platformRepository;
-	        _documentHelper = documentHelper;
-	        _configuration = configuration;
+            _platformUserRepository = platformUserRepository;
+            _platformRepository = platformRepository;
+            _documentHelper = documentHelper;
+            _configuration = configuration;
             _applicationRepository = applicationRepository;
         }
 
 
         [HttpPost]
-		[AllowAnonymous]
-		[Route("user_created")]
-		public async Task<IActionResult> UserCreated([FromBody]JObject request)
-		{
-			if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
-				return BadRequest();
+        [AllowAnonymous]
+        [Route("user_created")]
+        public async Task<IActionResult> UserCreated([FromBody]JObject request)
+        {
+            if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
+                return BadRequest();
 
-			var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
 
-			Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString(), _platformRepository));
+            Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString(), _platformRepository));
 
-			if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
-			{
-				var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
+            if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
+            {
+                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
 
-				var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "email_confirm");
+                var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "email_confirm");
 
-				foreach (var template in templates)
-				{
-					var content = template.Content;
+                foreach (var template in templates)
+                {
+                    var content = template.Content;
 
-					content = content.Replace("{:FirstName}", request["first_name"].ToString());
-					content = content.Replace("{:LastName}", request["last_name"].ToString());
-					content = content.Replace("{:Email}", request["email"].ToString());
-					content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
+                    content = content.Replace("{:FirstName}", request["first_name"].ToString());
+                    content = content.Replace("{:LastName}", request["last_name"].ToString());
+                    content = content.Replace("{:Email}", request["email"].ToString());
+                    content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
 
-					Email notification = new Email(template.Subject, content, _configuration);
+                    Email notification = new Email(template.Subject, content, _configuration);
 
-					var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+                    var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
 
-					if (req != null)
-					{
-						var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
-						var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
-						notification.AddRecipient(request["email"].ToString());
-						notification.AddToQueue(senderEmail, senderName);
-					}
-				}
-			}
-			return Ok();
-		}
-		
-		
-		[HttpPost]
-		[AllowAnonymous]
-		[Route("send_password_reset")]
-		public async Task<IActionResult> SendPasswordReset([FromBody]JObject request)
-		{
-			if (request["email"].IsNullOrEmpty() || request["code"].IsNullOrEmpty())
-				return BadRequest();
+                    if (req != null)
+                    {
+                        var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
+                        var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+                        notification.AddRecipient(request["email"].ToString());
+                        notification.AddToQueue(senderEmail, senderName);
+                    }
+                }
+            }
 
-			var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+            return Ok();
+        }
 
-			var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/Account/ResetPassword?code={0}&guid={1}&returnUrl={2}";
-			var user = await _platformUserRepository.Get(request["email"].ToString());
 
-			var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "password_reset");
-			foreach (var template in templates)
-			{
-				var content = template.Content;
-				string appCodeUrl = "";
-				string appUrl = "";
-				if (int.Parse(request["app_id"].ToString()) == 1)
-				{
-					appCodeUrl = "http://www.ofisim.com/crm/";
-					appUrl = "http://www.ofisim.com/mail/crm/logo.png";
-				}
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("send_password_reset")]
+        public async Task<IActionResult> SendPasswordReset([FromBody]JObject request)
+        {
+            if (request["email"].IsNullOrEmpty() || request["code"].IsNullOrEmpty())
+                return BadRequest();
 
-				else if (int.Parse(request["app_id"].ToString()) == 4)
-				{
-					appCodeUrl = "http://www.ofisim.com/ik/";
-					appUrl = "http://www.ofisim.com/mail/ik/logo.png";
-				}
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
 
-				int startIndex = content.IndexOf("{{F}}");
-				int lastIndex = content.IndexOf("{{/F}}");
+            var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/Account/ResetPassword?code={0}&guid={1}&returnUrl={2}";
+            var user = await _platformUserRepository.Get(request["email"].ToString());
 
-				if (startIndex > -1 && lastIndex > -1)
-					content = content.Remove(startIndex, lastIndex - startIndex + 6);
+            var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "password_reset");
+            foreach (var template in templates)
+            {
+                var content = template.Content;
+                string appCodeUrl = "";
+                string appUrl = "";
+                if (int.Parse(request["app_id"].ToString()) == 1)
+                {
+                    appCodeUrl = "http://www.ofisim.com/crm/";
+                    appUrl = "http://www.ofisim.com/mail/crm/logo.png";
+                }
 
-				else// if (string.Equals(socialMediaIcons, "true"))
-				{
-					content = content.Replace("{{F}}", "");
-					content = content.Replace("{{/F}}", "");
-				}
-				content = content.Replace("{:PasswordResetUrl}", string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()), new Guid(request["guid_id"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
-				content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
-				content = content.Replace("{{APP_URL}}", appCodeUrl);
-				content = content.Replace("{{URL}}", appUrl);
-				Email notification = new Email(template.Subject, content, _configuration);
+                else if (int.Parse(request["app_id"].ToString()) == 4)
+                {
+                    appCodeUrl = "http://www.ofisim.com/ik/";
+                    appUrl = "http://www.ofisim.com/mail/ik/logo.png";
+                }
 
-				var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-				if (req != null)
-				{
-					var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
-					var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+                int startIndex = content.IndexOf("{{F}}");
+                int lastIndex = content.IndexOf("{{/F}}");
 
-					notification.AddRecipient(request["email"].ToString());
-					notification.AddToQueue(senderEmail, senderName);
-				}
-			}
+                if (startIndex > -1 && lastIndex > -1)
+                    content = content.Remove(startIndex, lastIndex - startIndex + 6);
 
-			return Ok();
-		}
-        
+                else// if (string.Equals(socialMediaIcons, "true"))
+                {
+                    content = content.Replace("{{F}}", "");
+                    content = content.Replace("{{/F}}", "");
+                }
+
+                content = content.Replace("{:PasswordResetUrl}", string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()), new Guid(request["guid_id"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
+                content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
+                content = content.Replace("{{APP_URL}}", appCodeUrl);
+                content = content.Replace("{{URL}}", appUrl);
+                Email notification = new Email(template.Subject, content, _configuration);
+
+                var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+                if (req != null)
+                {
+                    var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
+                    var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+
+                    notification.AddRecipient(request["email"].ToString());
+                    notification.AddToQueue(senderEmail, senderName);
+                }
+            }
+
+            return Ok();
+        }
+
         [Route("change_password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
         {
@@ -169,17 +171,6 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
-
-        [Route("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var appInfo = await _applicationRepository.Get(Request.Host.Value);
-
-            Response.Cookies.Delete("tenant_id");
-            await HttpContext.SignOutAsync();
-
-            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
         }
     }
 }

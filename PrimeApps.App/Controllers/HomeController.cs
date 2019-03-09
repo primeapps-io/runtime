@@ -24,16 +24,14 @@ namespace PrimeApps.App.Controllers
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
-        private IDefinitionLoader _definitionLoader;
-        private IWorkflowRegistry _workflowRegistry;
+        private IApplicationRepository _applicationRepository;
         private IUserRepository _userRepository;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry, IUserRepository userRepository)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IApplicationRepository applicationRepository, IUserRepository userRepository)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-            _definitionLoader = definitionLoader;
-            _workflowRegistry = workflowRegistry;
+            _applicationRepository = applicationRepository;
             _userRepository = userRepository;
         }
 
@@ -126,6 +124,17 @@ namespace PrimeApps.App.Controllers
 
             return View();
         }
+        
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
+
+            Response.Cookies.Delete("tenant_id");
+            await HttpContext.SignOutAsync();
+
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain);
+        }
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
         {
@@ -134,11 +143,8 @@ namespace PrimeApps.App.Controllers
 
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
-            var lang = Request.Cookies["_lang"];
-            var language = lang ?? "tr";
-
             var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
-            ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
+            ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, app);
             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
             if (!string.IsNullOrEmpty(storageUrl))
             {
