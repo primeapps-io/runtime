@@ -864,8 +864,9 @@
 			"UserLicenseInfo": "Kullanıcı Bilgileri",
 			"TotalLicenseCount": "Toplam Lisans Hakkınız",
 			"RemainingLicense": "Kalan Lisans Hakkınız",
-			"ModalUserEmail": "Kullanıcı E-Postanız",
-			"UserPassword": "Kullanıcı Şifreniz"
+			"ModalUserEmail": "Kullanıcı E-posta",
+			"UserPassword": "Kullanıcı Şifre",
+			"GoToDetail": "Detaya Git"
 		},
 		"Profiles": {
 			"Title": "Profiller",

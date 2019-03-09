@@ -864,8 +864,9 @@
 			"UserLicenseInfo": "User Information",
 			"TotalLicenseCount": "Total License Count",
 			"RemainingLicense": "Remaining License Count",
-			"ModalUserEmail": "User E-Mail",
-			"UserPassword": "User Password"
+			"ModalUserEmail": "User Email",
+			"UserPassword": "User Password",
+			"GoToDetail": "Go to Detail"
 		},
 		"Profiles": {
 			"Title": "Profiles",

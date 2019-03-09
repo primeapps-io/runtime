@@ -56,7 +56,7 @@ namespace PrimeApps.App.Controllers
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                    _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
+                    _userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty) };
 
                     var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
 
@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
 
             return View();
         }
-        
+
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -146,6 +146,7 @@ namespace PrimeApps.App.Controllers
             var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
             ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, app);
             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+
             if (!string.IsNullOrEmpty(storageUrl))
             {
                 ViewBag.BlobUrl = storageUrl;
@@ -156,6 +157,7 @@ namespace PrimeApps.App.Controllers
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
                 var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
+
                 if (!string.IsNullOrEmpty(cdnUrl))
                 {
                     ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
@@ -168,12 +170,12 @@ namespace PrimeApps.App.Controllers
                 ViewBag.CdnUrlStatic = "";
             }
 
-            string jsonString = "";
+            var jsonString = "";
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
 
-            componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
+            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
 
@@ -188,7 +190,7 @@ namespace PrimeApps.App.Controllers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
+                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
@@ -203,6 +205,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.AppId = app.Id;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
+            ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
         }
     }
 }
