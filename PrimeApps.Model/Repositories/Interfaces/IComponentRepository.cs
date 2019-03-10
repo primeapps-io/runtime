@@ -13,8 +13,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Component> Get(int id);
         Task<Component> Get(string name);
         Task<List<Component>> GetByType(ComponentType type);
-        Task<List<Component>> GetByPlace(ComponentPlace place);
-        Task<Component> GetGlobalSettings();
         Task<int> Create(Component component);
         Task<int> Update(Component component);
         Task<int> Delete(Component component);

@@ -174,12 +174,13 @@ namespace PrimeApps.App.Controllers
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
-
+            var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
+            
             componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
 
-            var globalSettings = await componentRepository.GetGlobalSettings();
+            var globalSettings = await scriptRepository.GetGlobalSettings();
 
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
