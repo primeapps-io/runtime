@@ -20,8 +20,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
 
-        $scope.organizationShortnameValid = null;
-        $scope.isOrganizationShortnameBlur = false;
+        $scope.nameBlur = false;
+        $scope.nameValid = null;
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -208,59 +208,10 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.closeNewOrganizationModal = function () {
-            $scope.organization = {};
-            $scope.organizationShortnameValid = null;
-            $scope.isOrganizationShortnameBlur = false;
             $scope.organizationFormModal.hide();
-        };
-
-        $scope.organizationShortnameBlur = function (organization) {
-            $scope.isOrganizationShortnameBlur = true;
-            $scope.checkOrganizationShortname(organization ? organization : "");
-        };
-
-        $scope.checkOrganizationShortname = function (organization) {
-            if (!organization || !organization.name)
-                return;
-
-            organization.name = organization.name.replace(/\s/g, '');
-            organization.name = organization.name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-
-            organization.name = organization.name.replace(/\s/g, '');
-            organization.name = organization.name.replace(/[^a-zA-Z0-9\_\-]/g, '');
-
-            if (!$scope.isOrganizationShortnameBlur)
-                return;
-
-            $scope.organizationShortnameChecking = true;
-            $scope.organizationShortnameValid = null;
-
-            if (!organization.name || organization.name === '') {
-                $scope.organizationShortnameChecking = false;
-                $scope.organizationShortnameValid = false;
-                return;
-            }
-
-            LayoutService.isOrganizationShortnameUnique(organization.name)
-                .then(function (response) {
-                    $scope.organizationShortnameChecking = false;
-                    if (response.data) {
-                        $scope.organizationShortnameValid = true;
-                    } else {
-                        $scope.organizationShortnameValid = false;
-                    }
-                })
-                .catch(function () {
-                    $scope.organizationShortnameValid = false;
-                    $scope.organizationShortnameChecking = false;
-                });
-        };
-
-        $scope.generateOrganizationShortName = function (organization) {
-            if (!organization || !organization.label || $scope.isOrganizationShortNameChanged)
-                return;
-
-            organization.name = helper.getSlug(organization.label, '-');
+            $scope.organization = {};
+            $scope.nameValid = null;
+            $scope.nameBlur = false;
         };
 
         $scope.saveOrganization = function (organizationForm) {
@@ -271,31 +222,44 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             if (angular.isObject($scope.organization.icon))
                 $scope.organization.icon = $scope.organization.icon.value;
 
-            $scope.organizationFormModal.hide();
-            LayoutService.createOrganization($scope.organization)
+            $scope.checkNameValid($scope.organization.name);
+
+            LayoutService.isOrganizationShortnameUnique($scope.organization.name)
                 .then(function (response) {
-                    $scope.organization.role = 'administrator';
-                    var copyOrganization = angular.copy($scope.organization);
-                    copyOrganization.id = response.data;
+                    $scope.nameChecking = false;
+                    if (response.data) {
+                        $scope.organizationFormModal.hide();
+                        LayoutService.createOrganization($scope.organization)
+                            .then(function (response) {
+                                $scope.organization.role = 'administrator';
+                                var copyOrganization = angular.copy($scope.organization);
+                                copyOrganization.id = response.data;
 
-                    getMyOrganizations();
-                    $scope.changeOrganization(copyOrganization);
-                    $scope.menuOpen[response.data] = true;
-                    toastr.success('Organization ' + $scope.organization.label + ' successfully created.');
-                    $scope.organizationSaving = false;
-                    $scope.organizations.push(copyOrganization);
-                    $scope.organization = {};
-                    $scope.organizationShortnameValid = null;
-                    $scope.isOrganizationShortnameBlur = false;
-                    $state.go('studio.apps', {orgId: response.data});
+                                getMyOrganizations();
+                                $scope.changeOrganization(copyOrganization);
+                                $scope.menuOpen[response.data] = true;
+                                toastr.success('Organization ' + $scope.organization.label + ' successfully created.');
+                                $scope.organizationSaving = false;
+                                $scope.organizations.push(copyOrganization);
+                                $scope.organization = {};
+                                $scope.nameValid = null;
+                                $scope.nameBlur = false;
+                                $state.go('studio.apps', {orgId: response.data});
+                            }).catch(function () {
+                            toastr.error('Organization ' + $scope.organization.label + ' not created.');
+                            $scope.organizationSaving = false;
+                            $scope.nameValid = null;
+                            $scope.nameBlur = false;
+                        });
+                    } else {
+                        $scope.nameValid = false;
+                        $scope.organizationSaving = false;
+                    }
+                }).catch(function () {
+                $scope.nameValid = false;
+                $scope.nameChecking = false;
+            });
 
-                })
-                .catch(function () {
-                    toastr.error('Organization ' + $scope.organization.label + ' not created.');
-                    $scope.organizationSaving = false;
-                    $scope.organizationShortnameValid = null;
-                    $scope.isOrganizationShortnameBlur = false;
-                });
         };
 
         var uploader = $scope.uploader = new FileUploader({
@@ -313,6 +277,64 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.organizationSave = function (newOrganizationForm) {
             if (!newOrganizationForm.$valid)
                 return false;
+        };
+
+        $scope.checkNameBlur = function () {
+            $scope.nameBlur = true;
+            $scope.checkNameUnique($scope.organization.name);
+        };
+
+        $scope.generateAppName = function () {
+            if (!$scope.organization || !$scope.organization.label) {
+                $scope.organization.name = null;
+                return;
+            }
+
+            $scope.organization.name = helper.getSlug($scope.organization.label, '-');
+        };
+
+        $scope.checkNameUnique = function (name) {
+            if (!name)
+                return;
+
+            $scope.checkNameValid(name);
+
+            LayoutService.isOrganizationShortnameUnique(name)
+                .then(function (response) {
+                    $scope.nameChecking = false;
+                    if (response.data) {
+                        $scope.nameValid = true;
+                    } else {
+                        $scope.nameValid = false;
+                    }
+                })
+                .catch(function () {
+                    $scope.nameValid = false;
+                    $scope.nameChecking = false;
+                });
+        };
+
+        $scope.checkNameValid = function (name) {
+            if (!name)
+                return;
+
+            $scope.organization.name = name.replace(/\s/g, '');
+            $scope.organization.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+            $scope.organization.name = name.replace(/\s/g, '');
+            $scope.organization.name = name.replace(/[^a-zA-Z0-9\_\-]/g, '');
+
+            if (!$scope.nameBlur)
+                return;
+
+            $scope.nameChecking = true;
+            $scope.nameValid = null;
+
+            if (!name || name === '') {
+                $scope.nameChecking = false;
+                $scope.nameValid = false;
+                return;
+            }
         };
 
     }

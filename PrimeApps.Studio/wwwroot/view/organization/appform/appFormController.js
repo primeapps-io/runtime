@@ -17,7 +17,7 @@ angular.module('primeapps')
             if ($rootScope.organizations)
                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
-            if ($rootScope.currentOrganization.role != 'administrator') {
+            if ($rootScope.currentOrganization.role !== 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
                 $state.go('studio.allApps');
                 return;
@@ -137,8 +137,8 @@ angular.module('primeapps')
             };
 
             $scope.closeModal = function () {
-                $scope.appModel = {};
                 $scope.appFormModal.hide();
+                $scope.appModel = {};
                 $scope.logoRemove();
                 $scope.nameValid = null;
                 $scope.nameBlur = false;
@@ -272,6 +272,7 @@ angular.module('primeapps')
                                     $scope.appSaving = false;
                                 });
                         } else {
+                            $scope.appSaving = false;
                             $scope.nameValid = false;
                         }
                     })
