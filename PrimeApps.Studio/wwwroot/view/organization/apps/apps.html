@@ -1,14 +1,14 @@
 <div class="page-container">
 
     <div class="row" style="margin-top: 50px">
-        <div class="col-sm-12">
+        <div class="col-sm-12" ng-if="apps.length >0 && !loading">
             <h4 class="h4-title blue-color font-bold">Apps</h4>
         </div>
         <div class="col-sm-6 col-md-3 app-layout-box" ng-show="loading">
             <div class="app-box animated-background"></div>
             <div class="app-info animated-background"></div>
         </div>
-        <div ng-show="!loading">
+        <div ng-if="apps.length > 0 && !loading">
             <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-if="currentOrganization.role ==='administrator'" ui-sref="studio.appsForm({orgId:currentOrgId})" >
                 <div class="app-box">
                     <span class="applogo"><i class="fas fa-layer-group"></i></span>
@@ -41,6 +41,24 @@
                 </div>
             </div>
         </div>
+        
     </div>
-
+    <div class="row" ng-if="apps.length < 1 && !loading">
+        <div>
+            <div class="dashboard apps clearfix" style="padding: 0px !important;" >
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4 new-app-content">
+                        <img src="images/primeapps/create-app-sceen-image.png"
+                             srcset="images/primeapps/create-app-sceen-image@2x.png 2x,
+                         images/primeapps/create-app-sceen-image@3x.png 3x">
+                        <button ng-if="currentOrganization.role ==='administrator'" class="create-app-btn" ui-sref="studio.appsForm({orgId:currentOrgId})">
+                            Add your first app
+                        </button>
+                    </div>
+                    <div class="col-sm-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

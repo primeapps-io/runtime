@@ -10,62 +10,62 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Profiles.ProfileName' | translate}}</th>
-            <th>{{'Setup.Profiles.ProfileDescription' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Profiles.ProfileName' | translate}}</th>
+                <th>{{'Setup.Profiles.ProfileDescription' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
                     <div class="animated-background"></div>
-                </div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Profiles.ProfileName' | translate}}</th>
-            <th>{{'Setup.Profiles.ProfileDescription' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Profiles.ProfileName' | translate}}</th>
+                <th>{{'Setup.Profiles.ProfileDescription' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="profile in profiles" ng-click="showFormModal(profile,false)">
-            <td class="profile-name">{{profile.name}}</td>
-            <td class="profile-description">{{profile.description}}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
-                            class="btn btn-xs btn-default list-action-button"
-                            placement="bottom-right"
-                            data-animation="am-flip-x"
-                            bs-dropdown
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' |
-                                translate}} </a>
-                        </li>
-                        <li ng-show="!profile.has_admin_rights">
-                            <a ng-click="$event.stopPropagation();delete(profile)">{{'Common.Delete' | translate}} </a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
+            <tr ng-repeat="profile in profiles" ng-click="showFormModal(profile,false)">
+                <td class="profile-name">{{profile.name}}</td>
+                <td class="profile-description">{{profile.description}}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right"
+                                data-animation="am-flip-x"
+                                bs-dropdown
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' |
+                                    translate}} </a>
+                            </li>
+                            <li ng-show="!profile.has_admin_rights">
+                                <a ng-click="$event.stopPropagation();delete(profile,$event)">{{'Common.Delete' | translate}} </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -75,7 +75,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"

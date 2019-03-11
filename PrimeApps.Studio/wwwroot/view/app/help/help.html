@@ -56,7 +56,7 @@
                 <td>{{helpside.binding}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(helpside);" type="button" class="action-buttons-delete">
+                        <button ng-click="$event.stopPropagation(); delete(helpside,$event);" type="button" class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -71,7 +71,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"

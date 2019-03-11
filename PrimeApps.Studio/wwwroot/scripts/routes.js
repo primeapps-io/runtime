@@ -1683,6 +1683,7 @@ angular.module('primeapps')
                     }
                 });
 
-            $urlRouterProvider.otherwise('/all-apps');
+            //console.log($rootScope.currentOrgId);
+         $urlRouterProvider.otherwise('/apps?orgId=orgId');
         }])
     ;

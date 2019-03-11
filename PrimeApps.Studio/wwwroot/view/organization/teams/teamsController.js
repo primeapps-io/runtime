@@ -10,9 +10,9 @@ angular.module('primeapps')
                 $state.go('studio.allApps');
                 return;
             }
-        
-            $scope.loading = true;
 
+            $scope.loading = true;
+            $scope.activePage = 1;
             $scope.teamArray = [];
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
@@ -74,8 +74,34 @@ angular.module('primeapps')
 
             };
 
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+                HelpService.find(requestModel)
+                    .then(function (response) {
+                        $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
+                        $scope.loading = false;
+                    });
+
+            };
+
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
             $scope.getOrganizationUserList = function () {
@@ -311,6 +337,7 @@ angular.module('primeapps')
             }
 
             $scope.addNewTeam = function (id) {
+                $scope.teamModel = {};
                 if (id) {
                     $scope.editForm = true;
                     $scope.teamId = id;
@@ -322,12 +349,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -346,7 +373,7 @@ angular.module('primeapps')
 
             $scope.clearModels = function () {
                 $scope.addNewTeamFormModal.hide();
-                $scope.teamModel = {};
+                // $scope.teamModel = {};
             };
 
             $scope.cancel = function () {

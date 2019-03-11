@@ -53,12 +53,14 @@
                         <ui-select-match placeholder="Select an icon">
                             <div>
                                 <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
                             </div>
                         </ui-select-match>
 
                         <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
                             <div ng-bind-html="icon.label"></div>
                         </ui-select-choices>
+                    </ui-select>
                     </ui-select>
                 </div>
 

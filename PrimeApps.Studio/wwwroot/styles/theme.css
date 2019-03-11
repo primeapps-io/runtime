@@ -3240,6 +3240,13 @@ button:focus, select:focus {
 .primeapps .instructions-list {
   list-style: decimal;
 }
+.primeapps .functionx .tab-content {
+  box-shadow: none;
+  border-radius: 0px;
+}
+.primeapps #log-screen {
+  width: 100% !important;
+}
 
 .placeholder {
   margin: 0 auto;

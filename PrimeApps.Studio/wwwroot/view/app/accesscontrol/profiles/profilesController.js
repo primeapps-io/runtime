@@ -6,11 +6,9 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
 
             $scope.$parent.activeMenuItem = 'profiles';
-
+            $scope.activePage = 1;
             $rootScope.breadcrumblist[2].title = 'Profiles';
-
             $scope.loading = true;
-
             $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
             $scope.moduleIzinler = $filter('filter')($rootScope.appModules, { name: 'izinler' }, true)[0];
             $scope.moduleRehber = $filter('filter')($rootScope.appModules, { name: 'rehber' }, true)[0];
@@ -106,12 +104,21 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-
-                ProfilesService.count().then(function (response) {
-                    $scope.pageTotal = response.data;
-                });
 
                 ProfilesService.find(requestModel, 2).then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
@@ -144,10 +151,11 @@ angular.module('primeapps')
                 }).finally(function () {
                     $scope.loading = false;
                 });
+
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
             $scope.SetStartPage = function () {
@@ -231,8 +239,9 @@ angular.module('primeapps')
                     $scope.profileSubmit = false;
                     $scope.saving = false;
                     $scope.profileFormModal.hide();
-                    $scope.changePage(1);
+                    $scope.changePage($scope.activePage);
                     toastr.success($filter('translate')('Setup.Profiles.SubmitSuccess'));
+                    $scope.pageTotal++;
                 }).catch(function () {
                     $scope.profileSubmit = false;
                 });
@@ -299,18 +308,18 @@ angular.module('primeapps')
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });
             };
 
-            $scope.delete = function (profile) {
+            $scope.delete = function (profile, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -320,16 +329,21 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             ProfilesService.delete(profile.id)
                                 .then(function () {
-                                    $scope.changePage(1);
-                                    var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
-                                    $scope.profiles.splice(profileToDeleteIndex, 1);
+                                    $scope.pageTotal--;
+                                    //var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.changePage($scope.activePage);
                                     toastr.success('Profile is deleted successfully.', 'Deleted!');
 
                                 })
                                 .catch(function () {
-
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     if ($scope.profileFormModal) {
                                         $scope.profileFormModal.hide();
                                         $scope.saving = false;
