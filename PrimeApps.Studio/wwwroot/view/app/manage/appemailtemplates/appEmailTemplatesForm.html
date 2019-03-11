@@ -73,13 +73,34 @@
                                     <input name="mail_sender_email" class="form-control" placeholder="{{'Setup.Messaging.EMail.Address' | translate}}" type="email" ng-maxlength="255" ng-model="template.mail_sender_email" required />
                                 </div>
 
-                                <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymceModel.$invalid}">
+                             <!--   <div class="form-group" style="padding-top: 20px" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymceModel.$invalid}">
                                     <div class="row" ng-class="{'has-error': uploadForm.$submitted && tinymceModel.$invalid}">
                                         <textarea name="tinymceModel" ui-tinymce="tinymceOptions" ng-required="true" ng-model="template.tinymce_content"></textarea>
                                         <div class="hidden" plupload="imgUpload">
                                             <input id="uploadImage" type="file" add-file="add-file" />
                                         </div>
                                     </div>
+                                </div>-->
+                                
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymce.$invalid}">
+                                    <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
+                                              mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
+                                              name="tinymce"
+                                              ng-model="template.tinymce_content" ng-required="true"
+                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
+                                   <!-- <script type="text/ng-template" id="tag-mentions.tpl">
+                                        <ul class="ment-tags">
+                                            <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                class="list-group-item clearfix"
+                                                ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                {{tag.name}}
+                                            </li>
+                                        </ul>
+                                    </script>-->
+                               <!--     <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                                 mentio-trigger-char="'#'" mentio-items="tags"
+                                                 mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                                 mentio-select="getTagTextRaw(item)"></mentio-menu>-->
                                 </div>
                             </div>
                         </div>

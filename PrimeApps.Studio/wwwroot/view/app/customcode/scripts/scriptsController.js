@@ -38,6 +38,8 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+                $scope.requestModel.offset = page;
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 ScriptsService.find(requestModel)
@@ -78,12 +80,11 @@ angular.module('primeapps')
                     ScriptsService.update($scope.scriptModel)
                         .then(function (response) {
                             if (response.data) {
-                                toastr.success("Script is updated successfully.")
+                                toastr.success("Script is updated successfully.");
+                                $scope.cancel();
+                                $scope.changeOffset(1);
                             }
-
                             $scope.saving = false;
-                            $scope.cancel();
-                            $scope.changeOffset(1);
                         })
                         .catch(function (reason) {
                             toastr.error($filter('translate')('Error'));
@@ -95,12 +96,12 @@ angular.module('primeapps')
                     ScriptsService.create($scope.scriptModel)
                         .then(function (response) {
                             if (response.data) {
-                                toastr.success("Script is created successfully.")
+                                toastr.success("Script is created successfully.");
+                                $state.go('studio.app.scriptDetail', { name: $scope.scriptModel.name });
+                                $scope.cancel();
                             }
-
                             $scope.saving = false;
-                            $scope.cancel();
-                            $scope.changeOffset(1);
+                            //$scope.changeOffset(1);
                         }).catch(function (reason) {
                             toastr.error($filter('translate')('Error'));
                             $scope.saving = false;
@@ -109,6 +110,7 @@ angular.module('primeapps')
             }
 
             $scope.delete = function (script) {
+
                 script.deleting = true;
 
                 if (!script.id) {
@@ -116,19 +118,30 @@ angular.module('primeapps')
                     return;
                 }
 
-                ScriptsService.delete(script.id)
-                    .then(function (response) {
-                        if (response.data) {
-                            toastr.success("Script is deleted successfully.")
-                        }
+                swal({
+                    title: "Are you sure?",
+                    text: " ",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Yes'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        ScriptsService.delete(script.id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    toastr.success("Script is deleted successfully.");
+                                }
 
+                                script.deleting = false;
+                                $scope.changeOffset(1);
+                            }).catch(function (reason) {
+                                toastr.error($filter('translate')('Error'));
+                                script.deleting = false;
+                            });
+                    }
+                    else
                         script.deleting = false;
-                        $scope.changeOffset(1);
-                    }).catch(function (reason) {
-                        toastr.error($filter('translate')('Error'));
-                        script.deleting = false;
-                    });
-
+                });
             };
 
             $scope.createIdentifier = function () {

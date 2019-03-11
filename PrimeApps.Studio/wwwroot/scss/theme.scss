@@ -3975,6 +3975,15 @@ button, select {
   .instructions-list {
     list-style: decimal;
   }
+  .functionx{
+    .tab-content{
+      box-shadow: none;
+      border-radius: 0px;
+    }
+  }
+  #log-screen{
+    width: 100% !important;
+  }
 }
 
 .placeholder {

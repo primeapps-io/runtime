@@ -33,6 +33,7 @@
     <table class="table" ng-show="loading">
         <thead>
             <tr>
+                <th>Label</th>
                 <th>Name</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th></th>
@@ -56,6 +57,7 @@
     <table class="table" ng-if="!loading && scripts.length !== 0">
         <thead>
             <tr>
+                <th>Label</th>
                 <th>Name</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
                 <th width="50"></th>
@@ -63,6 +65,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ui-sref="studio.app.scriptDetail({name:script.name})">
+                <td>{{script.label}}</td>
                 <td>{{script.name}}</td>
                 <td>{{script.module ? script.module['label_' + language + '_singular']:'-'}}</td>
                 <td class="text-right">

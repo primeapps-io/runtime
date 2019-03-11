@@ -165,7 +165,7 @@ namespace PrimeApps.Studio.Controllers
             if (component == null)
                 return NotFound("Component is not found.");
 
-            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber() + 1;
+            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber(component.Id) + 1;
 
             var deployment = new DeploymentComponent()
             {
