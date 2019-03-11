@@ -43,6 +43,9 @@ angular.module('primeapps')
                 },
                 deleteItem: function (itemId) {
                     return $http.delete(config.apiUrl + 'picklist/delete_item/' + itemId);
+                },
+                isUniqueCheck: function (name) {
+                    return $http.get(config.apiUrl + 'picklist/is_unique_check/' + name);
                 }
             };
         }]);

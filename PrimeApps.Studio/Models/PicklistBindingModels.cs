@@ -12,6 +12,9 @@ namespace PrimeApps.Studio.Models
         [Required, StringLength(50)]
         public string LabelTr { get; set; }
 
+        [StringLength(50)]
+        public string SystemCode { get; set; }
+
         public List<PicklistItemBindingModel> Items { get; set; }
     }
 

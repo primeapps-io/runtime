@@ -73,8 +73,10 @@ angular.module('primeapps')
             $scope.save = function (scriptForm) {
                 $scope.saving = true;
 
-                if (!scriptForm.$valid)
+                if (!scriptForm.$valid) {
+                    $scope.saving = false;
                     return;
+                }
 
                 if ($scope.id) {
                     ScriptsService.update($scope.scriptModel)
@@ -156,8 +158,8 @@ angular.module('primeapps')
 
 
             $scope.scriptNameBlur = function (name) {
-                if ($scope.isScriptNameBlur && $scope.scriptNameValid)
-                    return;
+                //if ($scope.isScriptNameBlur && $scope.scriptNameValid)
+                //    return;
 
                 $scope.isScriptNameBlur = true;
                 $scope.checkScriptName(name ? name : "");

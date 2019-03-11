@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('pickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval',
-        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval) {
+    .controller('pickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval, helper) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
@@ -166,6 +166,46 @@ angular.module('primeapps')
                 $scope.addItem = state;
             };
 
+            //$scope.picklistCodeBlur = function () {
+            //    $scope.picklistModel.system_code = helper.getSlug($scope.picklistModel.system_code, '_');
+            //    $scope.checkNameUnique($scope.picklistModel);
+            //};
+
+            $scope.checkNameUnique = function (picklist) {
+                if (!picklist || !picklist.system_code)
+                    return;
+
+                picklist.system_code = helper.getSlug(picklist.system_code, '_');
+
+                //picklist.system_code = picklist.system_code.replace(/\s/g, '');
+                //picklist.system_code = picklist.system_code.replace(/[^a-zA-Z0-9\-]/g, '');
+
+                $scope.picklistNameChecking = true;
+                $scope.picklistNameValid = null;
+
+                if (!picklist.system_code || picklist.system_code === '') {
+                    picklist.system_code = null;
+                    $scope.picklistNameChecking = true;
+                    $scope.picklistNameValid = true;
+                    return;
+                }
+
+                PickListsService.isUniqueCheck(picklist.system_code)
+                    .then(function (response) {
+                        $scope.picklistNameChecking = false;
+                        if (response.data) {
+                            $scope.picklistNameValid = true;
+                        }
+                        else {
+                            $scope.picklistNameValid = false;
+                        }
+                    })
+                    .catch(function () {
+                        $scope.picklistNameValid = false;
+                        $scope.picklistNameChecking = false;
+                    });
+            };
+
             //Picklist save & update function
             $scope.save = function (picklistForm) {
                 $scope.saving = true;
@@ -181,6 +221,26 @@ angular.module('primeapps')
                     return false;
                 }
 
+                if ($scope.picklistModel.system_code) {
+                    PickListsService.isUniqueCheck($scope.picklistModel.system_code)
+                        .then(function (response) {
+                            if (response.data) {
+                                saveAction();
+                            }
+                            else {
+                                toastr.warning('Please enter a unique system code!');
+                                $scope.saving = false;
+                            }
+                        });
+                }
+                else {
+                    saveAction();
+                }
+
+
+            };
+
+            var saveAction = function () {
                 $scope.picklistModel.label_tr = $scope.picklistModel.label_en;
                 $scope.picklistModel.items = [];
 
@@ -212,6 +272,8 @@ angular.module('primeapps')
                         });
                 }
             };
+
+
 
             //Picklist Delete Function
             $scope.delete = function (id) {
@@ -358,7 +420,7 @@ angular.module('primeapps')
                             mirror: 'gu-mirror-option pickitemcopy',
                             transit: 'gu-transit-option'
                         },
-                        lockY: true, 
+                        lockY: true,
                         moves: function (el, container, handle) {
                             $scope.orderChanged = true;
                             return handle.classList.contains('option-handle');

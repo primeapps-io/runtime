@@ -38,6 +38,7 @@
                                            required
                                            maxlength="100"
                                            focus="true"
+                                           ng-model-options="{ debounce: 200 }"
                                            ng-change="identifierCreate();"
                                            ng-model="function.label" />
                                 </div>
