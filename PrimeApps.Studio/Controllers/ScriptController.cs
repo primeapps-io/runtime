@@ -150,9 +150,12 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return Forbid("Script not found!");
 
-            await _scriptRepository.Delete(script);
+            var result = await _scriptRepository.Delete(script);
 
-            return Ok();
+            if (result < 1)
+                return BadRequest("An error occurred while delete script.");
+
+            return Ok(result);
         }
 
         [Route("is_unique_name"), HttpGet]

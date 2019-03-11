@@ -139,6 +139,8 @@ angular.module('primeapps')
                                 script.deleting = false;
                             });
                     }
+                    else
+                        script.deleting = false;
                 });
             };
 
