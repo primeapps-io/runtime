@@ -56,7 +56,7 @@ namespace PrimeApps.App.Controllers
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                    _userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty) };
+                    _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
 
                     var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
 
@@ -175,8 +175,8 @@ namespace PrimeApps.App.Controllers
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
-            
-            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+
+            scriptRepository.CurrentUser = componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
 
             var components = await componentRepository.GetByType(ComponentType.Component);
 
@@ -191,7 +191,7 @@ namespace PrimeApps.App.Controllers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                    userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
 
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
