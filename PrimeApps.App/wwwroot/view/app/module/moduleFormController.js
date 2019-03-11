@@ -560,8 +560,6 @@ angular.module('primeapps')
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
 
-                            setFieldDependencies();
-
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
                                 var field = $scope.module.fields[f];
@@ -593,6 +591,9 @@ angular.module('primeapps')
                                         $scope.record = record;
                                         $scope.recordState = angular.copy($scope.record);
 
+                                        if ($scope.module.name != 'activities')
+                                            setFieldDependencies();
+
                                         /*
                                          * Record edit denildiğinde sayfa ilk yüklendiğinde fieldValueChange in tetiklenmediği durumlar var.
                                          * (ex: Admin olmayan bir kullanıcı izinler modülünde ki bir record a edit dediğinde fieldValueChange metodu sayfa ilk açıldığında tetiklenmediği için görsel değişiklikler gerçekleşmiyor)
@@ -619,6 +620,10 @@ angular.module('primeapps')
                                 if ($scope.clone) {
                                     $scope.record.owner = $scope.currentUser;
                                 }
+
+                                if ($scope.module.name != 'activities')
+                                    setFieldDependencies();
+
                                 $scope.loading = false;
                             }
 

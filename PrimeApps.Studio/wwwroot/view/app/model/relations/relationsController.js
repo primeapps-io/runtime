@@ -70,6 +70,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (relation) {
+                $scope.moduleLists = [];
                 if (!relation) {
                     relation = {};
                     var sortOrders = [];
@@ -107,7 +108,7 @@ angular.module('primeapps')
                     filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
                 }
                 //Module relations list remove itself
-                $scope.moduleLists = $filter('filter')($rootScope.appModules, filter, true);
+
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
                     scope: $scope,

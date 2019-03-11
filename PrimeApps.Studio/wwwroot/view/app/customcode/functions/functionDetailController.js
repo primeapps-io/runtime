@@ -7,7 +7,6 @@ angular.module('primeapps')
 
             $scope.loadingDeployments = true;
             $scope.loading = true;
-            
             $scope.name = $state.params.name;
             $scope.orgId = $state.params.orgId;
 
@@ -19,6 +18,10 @@ angular.module('primeapps')
             $scope.tabManage = {
                 activeTab: "overview"
             };
+
+            if (!$scope.name) {
+                $state.go('studio.app.functions');
+            }
 
             $scope.deployments = [];
 
@@ -36,32 +39,14 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            $scope.reload = function () {
-                $scope.loadingDeployments = true;
-                FunctionsDeploymentService.count($scope.function.id)
-                    .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        FunctionsDeploymentService.find($scope.function.id, $scope.requestModel)
-                            .then(function (response) {
-                                $scope.deployments = response.data;
-                                $scope.loadingDeployments = false;
-                            });
-                    });
-            };
-
             $scope.changePage = function (page) {
-                $scope.loading = true;
+                $scope.loadingDeployments = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                FunctionsDeploymentService.find(requestModel)
+                FunctionsDeploymentService.find($scope.function.id, requestModel)
                     .then(function (response) {
                         $scope.deployments = response.data;
-                        $scope.loading = false;
+                        $scope.loadingDeployments = false;
                     });
 
             };
@@ -139,7 +124,14 @@ angular.module('primeapps')
                     }
                     $scope.functionCopy = angular.copy(response.data);
                     $scope.function = response.data;
-                    $scope.reload();
+
+                    FunctionsDeploymentService.count($scope.function.id)
+                        .then(function (response) {
+                            $scope.pageTotal = response.data;
+
+                        });
+
+                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -278,7 +270,7 @@ angular.module('primeapps')
                 FunctionsService.deploy($scope.function.name)
                     .then(function (response) {
                         //setAceOption($scope.record.runtime);
-                        $scope.reload();
+                        $scope.changePage(1);
                     })
                     .catch(function (response) {
                     });

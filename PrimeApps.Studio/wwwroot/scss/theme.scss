@@ -149,7 +149,7 @@ $primeapps-color: #0D6FAA;
 }
 
 .resultimg {
-  width: 100% !important;
+  max-width: 100% !important;
   ~ .action-buttons-block {
     display: inline-block;
     position: absolute;
