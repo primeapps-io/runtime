@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
+using PrimeApps.App.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +45,7 @@ namespace PrimeApps.App.Logging
 
                 if(context.Response.StatusCode == 200)
                 {
-
+                    ErrorHandler.LogMessage("test");
                 }
             }
         }
