@@ -197,6 +197,10 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> CountAppTemplate([FromUri]string currentAppName)
 		{
 			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
+			if (app == null)
+			{
+				return Ok(0);
+			}
 			var count = await _platformRepository.Count(app.Id);
 			return Ok(count);
 		}
@@ -205,6 +209,10 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> FindAppTemplate([FromBody]PaginationModel paginationModel, [FromUri]string currentAppName)
 		{
 			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
+			if (app == null)
+			{
+				return Ok();
+			}
 			var templates = await _platformRepository.Find(paginationModel, app.Id);
 			return Ok(templates);
 		}

@@ -13,7 +13,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'template/count_app_email_template?currentAppName=' + currentAppName);
                 },
                 find: function (data, currentAppName) {
-                    return $http.post(config.apiUrl + 'template/find_app_email_template', data);
+                    return $http.post(config.apiUrl + 'template/find_app_email_template?currentAppName=' + currentAppName, data);
                 }
             };
         }]);
