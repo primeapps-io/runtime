@@ -30,10 +30,11 @@ namespace PrimeApps.Model.Repositories
                .FirstOrDefaultAsync();
         }
 
-        public async Task<int> CurrentBuildNumber()
+        public async Task<int> CurrentBuildNumber(int functionId)
         {
             return await DbContext.DeploymentsFunction
                 .OrderByDescending(x => x.Id)
+                .Where(x => x.FunctionId == functionId)
                 .Select(x => x.BuildNumber)
                 .FirstOrDefaultAsync();
         }
