@@ -75,7 +75,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"
@@ -122,7 +122,7 @@
             </div>
 
             <div>
-                <button ladda="removing" ng-disabled="updatingRole || (selectedCollaborator.role === 'administrator' && selectedCollaborator.id == me.id) " ng-click="delete(selectedCollaborator.id)" class="btn btn-red btn-radius">Remove from organization</button>
+                <button ladda="removing" ng-disabled="updatingRole || (selectedCollaborator.role === 'administrator' && selectedCollaborator.id == me.id) " ng-click="delete(selectedCollaborator.id,$event)" class="btn btn-red btn-radius">Remove from organization</button>
             </div>
         </div>
     </div>

@@ -1,13 +1,13 @@
 <div class="setup-title">
     <h2>{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
-    <ul class="list-unstyled list-inline"  ng-show="!selectedTeam">
+    <ul class="list-unstyled list-inline" ng-show="!selectedTeam">
         <li>
             <button class="btn add-button" ng-click="addNewTeam()">
                 <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
             </button>
         </li>
     </ul>
-    <ul class="list-unstyled list-inline"  ng-if="selectedTeam">
+    <ul class="list-unstyled list-inline" ng-if="selectedTeam">
         <li>
             <button class="btn delete-btn btn-red" ng-click="delete(teamId)">
                 <i class="fas fa-trash"></i>{{'Common.Delete' | translate}}
@@ -86,7 +86,7 @@
                                     <a ng-click="$event.stopPropagation(); addNewTeam(team.id)">{{'Common.Edit' | translate}} </a>
                                 </li>
                                 <li>
-                                    <a ng-click="$event.stopPropagation(); delete(team.id)">{{'Common.Delete' | translate}} </a>
+                                    <a ng-click="$event.stopPropagation(); delete(team.id,$event)">{{'Common.Delete' | translate}} </a>
                                 </li>
                             </ul>
                         </div>
@@ -101,7 +101,7 @@
                          text-first="&laquo;"
                          ul-class="pagination"
                          active-class="active"
-                         page="requestModel.offset"
+                         page="page"
                          page-size="requestModel.limit"
                          total="pageTotal"
                          scroll-top="true"

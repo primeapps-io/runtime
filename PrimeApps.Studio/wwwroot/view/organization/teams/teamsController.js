@@ -10,9 +10,9 @@ angular.module('primeapps')
                 $state.go('studio.allApps');
                 return;
             }
-        
-            $scope.loading = true;
 
+            $scope.loading = true;
+            $scope.activePage = 1;
             $scope.teamArray = [];
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
@@ -55,12 +55,21 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                TeamsService.count($rootScope.currentOrgId).then(function (response) {
-                    $scope.$parent.teamCount = response.data;
-                    $scope.pageTotal = response.data;
-                });
 
                 TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     $scope.teamArray = response.data;
@@ -75,7 +84,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
             $scope.getOrganizationUserList = function () {
@@ -212,7 +221,8 @@ angular.module('primeapps')
                                             $scope.submitting = false;
                                             toastr.success('Team created successfully');
                                             $scope.clearModels();
-                                            $scope.changePage(1);
+                                            $scope.changePage($scope.activePage);
+                                            $scope.pageTotal++;
                                         }
                                     })
                                     .catch(function (error) {
@@ -282,33 +292,36 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.deleteUser = function (id) {
-                swal({
-                    title: "Are you sure?",
-                    text: " ",
-                    icon: "warning",
-                    buttons: ['Cancel', 'Yes'],
-                    dangerMode: true
-                }).then(function (value) {
-                    if (value) {
-                        if (!id)
-                            return false;
+            $scope.deleteUser = function (id, event) {
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: " ",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            TeamsService.deleteUser(id, $scope.selectedTeam)
+                                .then(function () {
+                                    $scope.pageTotal--;
+                                    //var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
 
-                        TeamsService.deleteUser(id, $scope.selectedTeam)
-                            .then(function (response) {
-                                if (response) {
-                                    $scope.selectTeam($scope.teamId);
-                                    $scope.getOrganizationUserList();
-                                    $scope.selectedUser = {};
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.changePage($scope.activePage);
                                     toastr.success("Member is deleted successfully.", "Deleted!");
-                                }
-                            })
-                            .catch(function (error) {
-                                toastr.error($filter('translate')('Common.Error'));
-                            });
-                    }
-                })
-            }
+
+                                })
+                                .catch(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                    toastr.error($filter('translate')('Common.Error'));
+                                });
+                        }
+                    });
+            };
 
             $scope.addNewTeam = function (id) {
                 if (id) {
@@ -322,12 +335,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
