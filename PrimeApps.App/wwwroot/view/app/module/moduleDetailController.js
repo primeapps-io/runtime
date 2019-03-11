@@ -46,6 +46,7 @@ angular.module('primeapps')
             $scope.freeze = $location.search().freeze;
             $scope.currentModuleProcess = null;
             $scope.customHide = false;
+            $scope.googleMapsApiKey = googleMapsApiKey;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });

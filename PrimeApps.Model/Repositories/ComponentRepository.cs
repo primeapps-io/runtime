@@ -69,19 +69,6 @@ namespace PrimeApps.Model.Repositories
             return components;
         }
 
-        public async Task<List<Component>> GetByPlace(ComponentPlace place)
-        {
-            return await DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Component && x.Place == place).ToListAsync();
-        }
-
-        public async Task<Component> GetGlobalSettings()
-        {
-            return await DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Component && x.Place == ComponentPlace.GlobalConfig)
-                .FirstOrDefaultAsync();
-        }
-
         public async Task<int> Create(Component component)
         {
             DbContext.Components.Add(component);

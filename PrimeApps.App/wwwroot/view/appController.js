@@ -90,19 +90,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.logout = function () {
-            blockUI.start();
+            AuthService.logoutComplete();
 
-            AuthService.logout()
-                .then(function (response) {
-                    AuthService.logoutComplete();
-                    if ($location.$$absUrl.contains('preview=')) {
-                        window.location = response.data['redirect_url'] + '?preview=' + $location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1];
-                    }
-                    else {
-                        window.location = response.data['redirect_url'];
-                    }
-                    blockUI.stop();
-                });
+            if ($location.$$absUrl.contains('preview='))
+                window.location = '/logout?preview=' + $location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1];
+            else
+                window.location = '/logout';
         };
 
         $scope.go = function (link) {

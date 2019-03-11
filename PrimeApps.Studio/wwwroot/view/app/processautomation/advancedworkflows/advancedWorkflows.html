@@ -1,108 +1,124 @@
+<!--<div class="setup-title">-->
+<!--<h2>Advanced Workflows</h2>-->
+<!--<ul class="list-unstyled list-inline">-->
+<!--<li>-->
+<!--<button class="btn add-button" ui-sref="studio.app.workflowEditor"><i class="fas fa-plus"></i>-->
+<!--{{'Setup.BpmWorkflow.NewRule' | translate}}-->
+<!--</button>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--<div class="tab-content table-responsive">-->
+<!--<table class="table" ng-show="loading">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>{{'Setup.BpmWorkflow.Title' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.Module' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.Status' | translate}}</th>-->
+<!--<th width="70"></th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody>-->
+<!--<tr ng-repeat="item in placeholderArray">-->
+<!--<td>-->
+<!--<div class="animated-background"></div>-->
+<!--</td>-->
+<!--<td>-->
+<!--<div class="animated-background"></div>-->
+<!--</td>-->
+<!--<td>-->
+<!--<div class="animated-background"></div>-->
+<!--</td>-->
+<!--<td>-->
+<!--<div class="animated-background"></div>-->
+<!--</td>-->
+<!--<td>-->
+<!--<div class="animated-background"></div>-->
+<!--</td>-->
+<!--</tr>-->
+
+<!--</tbody>-->
+<!--</table>-->
+<!--<table class="table" ng-show="!loading">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>{{'Setup.BpmWorkflow.Title' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.Module' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>-->
+<!--<th>{{'Setup.BpmWorkflow.Status' | translate}}</th>-->
+<!--<th width="70"></th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody>-->
+<!--<tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">-->
+<!--<td>{{workflow.name}}</td>-->
+<!--<td>{{workflow.module['label_'+language+'_plural']}}</td>-->
+<!--<td>{{workflow.record_operations}}</td>-->
+<!--<td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>-->
+<!--<td class="text-center">-->
+<!--<div class="action-buttons-block">-->
+<!--<button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button"-->
+<!--class="action-buttons-delete">-->
+<!--<i class="fas fa-trash"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
+<!--<div class="table-pagination">-->
+<!--<div>-->
+<!--<nav aria-label="Page navigation">-->
+<!--<div paging-->
+<!--text-first="&laquo;"-->
+<!--ul-class="pagination"-->
+<!--active-class="active"-->
+<!--page="requestModel.offset"-->
+<!--page-size="requestModel.limit"-->
+<!--total="pageTotal"-->
+<!--scroll-top="true"-->
+<!--hide-if-empty="true"-->
+<!--show-prev-next="true"-->
+<!--show-first-last="true"-->
+<!--text-next-class="fas fa-chevron-right"-->
+<!--text-prev-class="fas fa-chevron-left"-->
+<!--text-first-class="fas fa-step-backward"-->
+<!--text-last-class="fas fa-step-forward"-->
+<!--paging-action="changePage(page)">-->
+<!--</div>-->
+<!--</nav>-->
+<!--</div>-->
+<!--<div class="total">Total {{pageTotal}}</div>-->
+<!--<div>-->
+<!--<span class="pagination-span">Items per page  </span>-->
+<!--<select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">-->
+<!--<option ng-selected="true" value="10">10</option>-->
+<!--<option value="25">25</option>-->
+<!--<option value="50">50</option>-->
+<!--<option value="100">100</option>-->
+<!--<option value="150">150</option>-->
+<!--<option value="200">200</option>-->
+<!--</select>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--</div>-->
 <div class="setup-title">
-    <h2>Advanced Workflows</h2>
-    <ul class="list-unstyled list-inline">
-        <li>
-            <button class="btn add-button" ui-sref="studio.app.workflowEditor"><i class="fas fa-plus"></i>
-                {{'Setup.BpmWorkflow.NewRule' | translate}}
-            </button>
-        </li>
-    </ul>
+    <!--<h2>Overview</h2>-->
 </div>
-<div class="tab-content table-responsive">
-    <table class="table" ng-show="loading">
-        <thead>
-        <tr>
-            <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
-            <th width="70"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
-
-        </tbody>
-    </table>
-    <table class="table" ng-show="!loading">
-        <thead>
-        <tr>
-            <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
-            <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
-            <th width="70"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">
-            <td>{{workflow.name}}</td>
-            <td>{{workflow.module['label_'+language+'_plural']}}</td>
-            <td>{{workflow.record_operations}}</td>
-            <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button"
-                            class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="table-pagination">
-        <div>
-            <nav aria-label="Page navigation">
-                <div paging
-                     text-first="&laquo;"
-                     ul-class="pagination"
-                     active-class="active"
-                     page="requestModel.offset"
-                     page-size="requestModel.limit"
-                     total="pageTotal"
-                     scroll-top="true"
-                     hide-if-empty="true"
-                     show-prev-next="true"
-                     show-first-last="true"
-                     text-next-class="fas fa-chevron-right"
-                     text-prev-class="fas fa-chevron-left"
-                     text-first-class="fas fa-step-backward"
-                     text-last-class="fas fa-step-forward"
-                     paging-action="changePage(page)">
-                </div>
-            </nav>
-        </div>
-        <div class="total">Total {{pageTotal}}</div>
-        <div>
-            <span class="pagination-span">Items per page  </span>
-            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                <option ng-selected="true" value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
-                <option value="200">200</option>
-            </select>
-        </div>
+<div class="row">
+    <div class="col-sm-offset-2 col-sm-8">
+        <img class="width100" style="padding-bottom: 30px;padding-top: 50px" src="images/primeapps/workflow.svg">
+        <div style="text-align: center;"><label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;">Awesome new feature is coming up right here</label></div>
+        <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;">Please stay tuned for updates.</label></div>
+        <!--<div style="text-align: center;margin: 15px;">-->
+        <!--<a href="#tutorials" style="border:none; padding: 9px 20px; font-size: 14px;" class="btn add-button btn-radius btn-blue">-->
+        <!--Get Some Help-->
+        <!--</a>-->
+        <!--</div>-->
     </div>
-
 </div>
+
 
 

@@ -173,7 +173,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
+                            var files = [
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
                                 cdnUrl + 'view/app/product/quoteProductsController.js',
@@ -188,12 +188,16 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/product/purchaseInvoiceProductsController.js',
                                 cdnUrl + 'view/app/product/purchaseInvoiceProductsService.js',
                                 cdnUrl + 'view/app/location/locationFormModalController.js'
-                                //google maps keyi dinamik yapıldığında açılacak
-                                //{
-                                //    type: 'js',
-                                //    path: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o&libraries=places'
-                                //}
-                            ]);
+                            ];
+
+                            if (googleMapsApiKey) {
+                                files.push({
+                                    type: 'js',
+                                    path: 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places'
+                                });
+                            }
+
+                            return $ocLazyLoad.load(files);
                         }]
                     }
                 })
@@ -1343,9 +1347,9 @@ angular.module('primeapps')
                 var _components = angular.fromJson(components);
 
                 angular.forEach(_components, function (component) {
-                    if(!component.content)
+                    if (!component.content)
                         return;
-                    
+
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 

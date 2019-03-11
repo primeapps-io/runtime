@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.userModel.phone = $rootScope.user.phone;
             $scope.selectedLanguage = angular.copy($rootScope.language);
             $scope.selectedLocale = angular.copy($rootScope.locale);
-            $scope.customLanguage = customLanguage;
+            $scope.multiLanguage = multiLanguage;
             $scope.showPasswordControl = false;
 
             officeHelper.officeTenantInfo()

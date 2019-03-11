@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', '$cookies', '$rootScope', '$sessionStorage', '$cache',
-        function ($q, $injector, $window, $localStorage, $filter, $cookies, $rootScope, $sessionStorage, $cache) {
+    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', '$cookies', '$rootScope', '$sessionStorage', '$cache', 'config',
+        function ($q, $injector, $window, $localStorage, $filter, $cookies, $rootScope, $sessionStorage, $cache, config) {
             return {
                 request: function (config) {
                     config.headers = config.headers || {};

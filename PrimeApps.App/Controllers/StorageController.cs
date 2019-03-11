@@ -103,7 +103,7 @@ namespace PrimeApps.App.Controllers
 
             int.TryParse(chunksStr, out chunks);
             int.TryParse(chunkStr, out chunk);
-            chunk++; // increase it since s3 chunk indexes starting from 1 instead of 0
+            chunk++;// increase it since s3 chunk indexes starting from 1 instead of 0
 
             MultipartResponse response = new MultipartResponse();
             CompleteMultipartUploadResponse uploadResult;
@@ -126,7 +126,7 @@ namespace PrimeApps.App.Controllers
 
                     response.Status = MultipartStatusEnum.Completed;
 
-                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
+                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL)// Add here the types where publicURLs are required.
                     {
                         response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                     }
@@ -226,7 +226,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("record_file_download")]
-        public async Task<FileStreamResult> RecordFileDownload([FromQuery(Name = "fileName")] string fileName)
+        public async Task<FileStreamResult> RecordFileDownload([FromQuery(Name = "fileName")]string fileName)
         {
             return await _storage.Download(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, fileName);
         }
@@ -271,7 +271,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download")]
-        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)
+        public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")]int fileId)
         {
             var doc = await _documentRepository.GetById(fileId);
             if (doc != null)
@@ -286,7 +286,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download_template")]
-        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int fileId, string tempType)
+        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")]int fileId, string tempType)
         {
             var type = "";
             if (tempType == "excel")
@@ -311,7 +311,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] DocumentDTO document)
+        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
         {
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -430,7 +430,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("upload_import_excel"), HttpPost]
-        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")] int importId)
+        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
@@ -469,113 +469,6 @@ namespace PrimeApps.App.Controllers
 
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
-        }
-        
-         [Route("upload_hex"), HttpPost]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadHex([FromBody]JObject data)
-        {
-            string file,
-              description,
-              moduleName,
-              moduleId,
-              recordId,
-              fileName;
-            moduleName = data["module_name"]?.ToString();
-            file = data["file"]?.ToString();
-            description = data["description"]?.ToString();
-            moduleId = data["module_id"]?.ToString();
-            recordId = data["record_id"]?.ToString();
-            fileName = data["file_name"]?.ToString();
-
-            int parsedModuleId;
-            Guid parsedInstanceId = Guid.NewGuid();
-            int parsedRecordId;
-            byte[] fileBytes;
-
-            if (string.IsNullOrEmpty(file))
-                return BadRequest("Please send file hex string.");
-
-            if (string.IsNullOrEmpty(recordId))
-                return BadRequest("Please send record_id.");
-
-            if (!int.TryParse(recordId, out parsedRecordId))
-                return BadRequest("Please send valid record_id.");
-
-            if (string.IsNullOrEmpty(fileName))
-                return BadRequest("Please send file hex string.");
-
-            if (fileName.Split('.').Length != 2)
-                return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
-
-            if (!string.IsNullOrEmpty(moduleId))
-            {
-                var isNumeric = int.TryParse(moduleId, out parsedModuleId);
-                if (!isNumeric)
-                    return BadRequest("Please send integer for module_id parameter.");
-
-                var module = await _moduleRepository.GetById(parsedModuleId);
-
-                if (module == null)
-                    return BadRequest("Module not found.");
-            }
-            else if (!string.IsNullOrEmpty(moduleName))
-            {
-                var module = await _moduleRepository.GetByNameBasic(moduleName);
-
-                if (module == null)
-                    return BadRequest("Module not found.");
-
-                parsedModuleId = module.Id;
-            }
-            else
-                return BadRequest("Please send module_id or module_name paratemer.");
-
-            try
-            {
-                fileBytes = Enumerable.Range(0, file.Length)
-                     .Where(x => x % 2 == 0)
-                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
-                     .ToArray();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
-            }
-
-            var ext = Path.GetExtension(fileName);
-            var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
-
-            string uniqueStandardizedName = fileName.Replace(" ", "-");
-
-            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
-
-            string bucketPath = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
-
-            using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
-            {
-                await _storage.Upload(bucketPath, uniqueName, bytesToStream);
-            }
-
-            Document currentDoc = new Document()
-            {
-                FileSize = fileBytes.Length,
-                Description = description,
-                ModuleId = parsedModuleId,
-                Name = fileName,
-                CreatedAt = DateTime.UtcNow,
-                Type = UnifiedStorage.GetMimeType(ext),
-                UniqueName = uniqueName,
-                RecordId = parsedRecordId,
-                Deleted = false
-            };
-            
-            if (await _documentRepository.CreateAsync(currentDoc) != null)
-            {
-                return Ok(currentDoc.Id.ToString());
-            }
-
-            return BadRequest("Couldn't Create Document!");
         }
     }
 }

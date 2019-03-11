@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using PrimeApps.Model.Common.App
 @{
-    var customLanguage = string.Empty;
     var appInfo = (ApplicationInfoViewModel)ViewBag.AppInfo;
     var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
     var tenantId = ViewBag.TenantId;
@@ -12,6 +11,7 @@
     var appConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var routeTemplateUrls  = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var googleMapsApiKey = ViewBag.GoogleMapsApiKey;
 }
 
 <!DOCTYPE html>
@@ -78,7 +78,8 @@
     var appConfigs = @appConfigs;
     var version = '@typeof(ControllerContext).Assembly.GetName().Version';
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
-    var customLanguage = '@customLanguage';
+    var customLanguage = '@appInfo.Language';
+    var multiLanguage = ('@appInfo.MultiLanguage' !== 'False');
     var appLogo = '@appInfo.Logo';
     var theme = window.localStorage.getItem('theme');
     var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
@@ -89,6 +90,7 @@
     var encryptedUserId = '@encryptedUserId';
     var trustedUrls = JSON.parse('@trustedUrls');
     var routeTemplateUrls = JSON.parse('@routeTemplateUrls');
+    var googleMapsApiKey = '@googleMapsApiKey';
 
     if (theme) {
         document.body.className = theme;

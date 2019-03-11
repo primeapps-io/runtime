@@ -10,25 +10,37 @@ using PrimeApps.Model.Common.Component;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
     [Route("api/script")]
     public class ScriptController : DraftBaseController
     {
+        private IBackgroundTaskQueue Queue;
+        private IDeploymentHelper _deploymentHelper;
+        private IComponentHelper _componentHelper;
         private IScriptRepository _scriptRepository;
         private IConfiguration _configuration;
+        private IDeploymentComponentRepository _deploymentComponentRepository;
 
-        public ScriptController(IScriptRepository scriptRepository, IConfiguration configuration)
+        public ScriptController(IBackgroundTaskQueue queue, IDeploymentHelper deploymentHelper, IComponentHelper componentHelper,
+            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository)
         {
+            Queue = queue;
+            _deploymentHelper = deploymentHelper;
+            _componentHelper = componentHelper;
             _scriptRepository = scriptRepository;
             _configuration = configuration;
+            _deploymentComponentRepository = deploymentComponentRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
             SetCurrentUser(_scriptRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_deploymentComponentRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -51,9 +63,28 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<Component> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return await _scriptRepository.Get(id);
+            var script = await _scriptRepository.Get(id);
+
+            if (script == null)
+                return BadRequest();
+
+            return Ok(script);
+        }
+
+        [Route("get_by_name/{name}"), HttpGet]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var script = await _scriptRepository.GetByName(name);
+
+            if (script == null)
+                return BadRequest();
+
+            return Ok(script);
         }
 
         [Route("create"), HttpPost]
@@ -78,6 +109,8 @@ namespace PrimeApps.Studio.Controllers
 
             if (result < 0)
                 return BadRequest("An error occurred while creating an script");
+
+            _componentHelper.CreateSampleScript(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, model);
 
             return Ok(script.Id);
         }
@@ -129,6 +162,39 @@ namespace PrimeApps.Studio.Controllers
             var result = await _scriptRepository.IsUniqueName(name);
 
             return result ? Ok(false) : Ok(true);
+        }
+
+        [Route("deploy/{name}")]
+        public async Task<IActionResult> Deploy(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest();
+
+            var script = await _scriptRepository.GetByName(name);
+
+            if (script == null)
+                return NotFound("Script is not found");
+
+
+            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber() + 1;
+
+            var deployment = new DeploymentComponent
+            {
+                ComponentId = script.Id,
+                Status = DeploymentStatus.Running,
+                Version = currentBuildNumber.ToString(),
+                BuildNumber = currentBuildNumber,
+                StartTime = DateTime.Now
+            };
+
+            var result = await _deploymentComponentRepository.Create(deployment);
+
+            if (result < 1)
+                return BadRequest("An error occured while creating an deployment");
+
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartScriptDeployment(script, Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, deployment.Id));
+
+            return Ok();
         }
     }
 }

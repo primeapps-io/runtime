@@ -68,7 +68,7 @@ angular.module('primeapps')
                         if (rejection.statusText === 'Unauthorized') {
                             $localStorage.remove('access_token');
                             $localStorage.remove('refresh_token');
-                            $window.location.href = '/auth/SignOut';
+                            $window.location.href = '/logout';
                         }
                         else {
                             $window.location.href = '/';
@@ -81,7 +81,7 @@ angular.module('primeapps')
                         $localStorage.remove('access_token');
                         $localStorage.remove('refresh_token');
 
-                        $window.location.href = '/auth/SignOut';
+                        $window.location.href = '/logout';
 
                         return $q.reject(rejection);
                     }

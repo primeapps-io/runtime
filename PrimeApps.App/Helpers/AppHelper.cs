@@ -8,19 +8,26 @@ namespace PrimeApps.App.Helpers
 {
     public static class AppHelper
     {
-        public static ApplicationInfoViewModel GetApplicationInfo(IConfiguration configuration, HttpRequest request, string language, Model.Entities.Platform.App app)
+        public static ApplicationInfoViewModel GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app)
         {
+            var language = request.Cookies["_lang"];
+
+            if (string.IsNullOrEmpty(language))
+                language = "en";
+
             var cdnUrlStatic = "";
             var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
 
-			if (!string.IsNullOrEmpty(cdnUrl))
+            if (!string.IsNullOrEmpty(cdnUrl))
             {
                 var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;
             }
 
-            if (string.IsNullOrWhiteSpace(language))
-                language = app.Setting.Language ?? "en";
+            var multiLanguage = string.IsNullOrEmpty(app.Setting.Language);
+
+            if (!multiLanguage)
+                language = app.Setting.Language;
 
             var theme = JObject.Parse(app.Setting.AppTheme);
 

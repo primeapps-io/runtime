@@ -153,7 +153,7 @@ angular.module('primeapps')
                     name: 'imgFilter',
                     fn: function (item) {
                         var extension = helper.getFileExtension(item.name);
-                        return true ? (extension === 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'doc' || extension == 'gif') : false;
+                        return true ? (extension === 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'doc' || extension == 'gif' || extension == 'ico') : false;
                     }
                 });
 

@@ -24,16 +24,14 @@ namespace PrimeApps.App.Controllers
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
-        private IDefinitionLoader _definitionLoader;
-        private IWorkflowRegistry _workflowRegistry;
+        private IApplicationRepository _applicationRepository;
         private IUserRepository _userRepository;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry, IUserRepository userRepository)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IApplicationRepository applicationRepository, IUserRepository userRepository)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-            _definitionLoader = definitionLoader;
-            _workflowRegistry = workflowRegistry;
+            _applicationRepository = applicationRepository;
             _userRepository = userRepository;
         }
 
@@ -127,6 +125,17 @@ namespace PrimeApps.App.Controllers
             return View();
         }
 
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
+
+            Response.Cookies.Delete("tenant_id");
+            await HttpContext.SignOutAsync();
+
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain);
+        }
+
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
         {
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
@@ -134,12 +143,10 @@ namespace PrimeApps.App.Controllers
 
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
-            var lang = Request.Cookies["_lang"];
-            var language = lang ?? "tr";
-
             var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
-            ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, language, app);
+            ViewBag.AppInfo = AppHelper.GetApplicationInfo(_configuration, Request, app);
             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+
             if (!string.IsNullOrEmpty(storageUrl))
             {
                 ViewBag.BlobUrl = storageUrl;
@@ -150,6 +157,7 @@ namespace PrimeApps.App.Controllers
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
                 var cdnUrl = _configuration.GetValue("AppSettings:CdnUrl", string.Empty);
+
                 if (!string.IsNullOrEmpty(cdnUrl))
                 {
                     ViewBag.CdnUrlDynamic = cdnUrl + "/" + versionDynamic + "/";
@@ -162,16 +170,17 @@ namespace PrimeApps.App.Controllers
                 ViewBag.CdnUrlStatic = "";
             }
 
-            string jsonString = "";
+            var jsonString = "";
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
+            var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
 
-            componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
+            scriptRepository.CurrentUser = componentRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode};
 
             var components = await componentRepository.GetByType(ComponentType.Component);
 
-            var globalSettings = await componentRepository.GetGlobalSettings();
+            var globalSettings = await scriptRepository.GetGlobalSettings();
 
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
@@ -197,6 +206,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.AppId = app.Id;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
+            ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
         }
     }
 }

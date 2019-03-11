@@ -44,10 +44,6 @@ angular.module('primeapps')
                     return deferred.promise;
                 },
 
-                logout: function () {
-                    return $http.post(config.apiUrl + 'account/logout', {});
-                },
-
                 checkCampaignCode: function (code, licenseId) {
                     return $http.post(config.apiUrl + 'Public/CheckCampaignCode', {
                         Code: code,

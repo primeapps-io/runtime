@@ -148,6 +148,17 @@ namespace PrimeApps.Model.Repositories
             return modules;
         }
 
+        public async Task<Module> GetByNameWithDependencies(string name)
+        {
+            var module = await DbContext.Modules
+                .Include(x => x.Fields)
+                .ThenInclude(field => field.Permissions)
+                .Include(x => x.Dependencies)
+                .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+
+            return module;
+        }
+
         public async Task<ICollection<Module>> GetAll()
         {
             var modules = await GetModuleFullQuery()
@@ -181,7 +192,7 @@ namespace PrimeApps.Model.Repositories
             if (module.Order == 0)
             {
                 var order = DbContext.Modules.Count();
-                module.Order =(short)(order + 1);
+                module.Order = (short)(order + 1);
             }
 
             DbContext.Modules.Add(module);

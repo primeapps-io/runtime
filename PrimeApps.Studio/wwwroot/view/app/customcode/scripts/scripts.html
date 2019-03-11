@@ -53,7 +53,7 @@
             </tr>
         </tbody>
     </table>
-    <table ng-show="!loading" class="table">
+    <table class="table" ng-if="!loading && scripts.length !== 0">
         <thead>
             <tr>
                 <th>Name</th>
@@ -62,9 +62,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ng-click="showFormModal(script);">
+            <tr ng-repeat="script in scripts | filter:{deleted:'!true'} | orderBy:'order'" ui-sref="studio.app.scriptDetail({name:script.name})">
                 <td>{{script.name}}</td>
-                <td>{{script.module_id}}</td>
+                <td>{{script.module ? script.module['label_' + language + '_singular']:'-'}}</td>
                 <td class="text-right">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(script);" type="button"
@@ -76,7 +76,7 @@
             </tr>
         </tbody>
     </table>
-    <div class="table-pagination">
+    <div class="table-pagination" ng-if="!loading && scripts.length !== 0">
         <div>
             <nav aria-label="Page navigation">
                 <div paging

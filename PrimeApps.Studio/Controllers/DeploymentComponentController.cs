@@ -67,7 +67,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]DeploymentFunctionBindingModel deployment)
+        public async Task<IActionResult> Create([FromBody]DeploymentComponentBindingModel deployment)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -92,7 +92,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update/{id}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]DeploymentFunctionBindingModel deployment)
+        public async Task<IActionResult> Update(int id, [FromBody]DeploymentComponentBindingModel deployment)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -100,7 +100,7 @@ namespace PrimeApps.Studio.Controllers
             var deploymentObj = await _deploymentComponentRepository.Get(id);
 
             if (deployment == null)
-                return BadRequest("Function deployment not found.");
+                return BadRequest("Component deployment not found.");
 
             deploymentObj.Status = deployment.Status;
             deploymentObj.Version = deployment.Version;
@@ -110,7 +110,7 @@ namespace PrimeApps.Studio.Controllers
             var result = await _deploymentComponentRepository.Update(deploymentObj);
 
             if (result < 0)
-                return BadRequest("An error occurred while update function deployment.");
+                return BadRequest("An error occurred while update component deployment.");
 
             return Ok(result);
         }
@@ -126,7 +126,7 @@ namespace PrimeApps.Studio.Controllers
             var result = await _deploymentComponentRepository.Delete(function);
 
             if (result < 0)
-                return BadRequest("An error occurred while deleting an function deployment.");
+                return BadRequest("An error occurred while deleting an component deployment.");
 
             return Ok(result);
         }

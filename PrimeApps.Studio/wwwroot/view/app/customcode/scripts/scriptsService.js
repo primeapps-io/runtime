@@ -19,7 +19,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'script/create', model);
                 },
                 update: function (model) {
-                    return $http.put(config.apiUrl + 'script/update', model);
+                    return $http.put(config.apiUrl + 'script/update/' + model.id, model);
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'script/delete/' + id);
@@ -27,5 +27,8 @@ angular.module('primeapps')
                 isUniqueName: function (name) {
                     return $http.get(config.apiUrl + 'script/is_unique_name?name=' + name);
                 },
+                deploy: function (name) {
+                    return $http.get(config.apiUrl + 'script/deploy/' + name);
+                }
             };
         }]);

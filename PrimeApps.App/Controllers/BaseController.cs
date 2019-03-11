@@ -62,7 +62,7 @@ namespace PrimeApps.App.Controllers
                 AppId = tenant.AppId,
                 TenantId = tenant.Id,
                 TenantGuid = tenant.GuidId,
-                TenantLanguage = tenant.Setting?.Language,
+                TenantLanguage = tenant.Setting?.Language ?? tenant.App.Setting?.Language ?? "en",
                 Email = platformUser.Email,
                 FullName = platformUser.FirstName + " " + platformUser.LastName,
                 IsIntegrationUser = platformUser.IsIntegrationUser
@@ -72,21 +72,21 @@ namespace PrimeApps.App.Controllers
             {
                 appUser.Currency = tenant.App.Setting?.Currency;
                 appUser.Culture = tenant.App.Setting?.Culture;
-                appUser.Language = tenant.App.Setting?.Language;
+                appUser.Language = tenant.App.Setting?.Language ?? "en";
                 appUser.TimeZone = tenant.App.Setting?.TimeZone;
             }
             else if (!tenant.UseUserSettings)
             {
                 appUser.Currency = tenant.Setting?.Currency;
                 appUser.Culture = tenant.Setting?.Culture;
-                appUser.Language = tenant.Setting?.Language;
+                appUser.Language = tenant.Setting?.Language ?? "en";
                 appUser.TimeZone = tenant.Setting?.TimeZone;
             }
             else
             {
                 appUser.Currency = platformUser.Setting?.Currency;
                 appUser.Culture = platformUser.Setting?.Culture;
-                appUser.Language = platformUser.Setting?.Language;
+                appUser.Language = platformUser.Setting?.Language ?? "en";
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 

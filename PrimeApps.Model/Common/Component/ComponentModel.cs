@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Common.Component
         [Column("id"), DataMember(Name = "id")]
         public int Id { get; set; }
 
-        [JsonProperty("name"), DataMember(Name = "name"), Required, MaxLength(15)]
+        [JsonProperty("name"), DataMember(Name = "name"), Required, MaxLength(100)]
         public string Name { get; set; }
 
         [JsonProperty("content"), DataMember(Name = "content")]
@@ -32,7 +32,7 @@ namespace PrimeApps.Model.Common.Component
         [JsonProperty("order"), DataMember(Name = "order")]
         public int Order { get; set; }
 
-        [JsonProperty("label"), DataMember(Name = "label"), Required, MaxLength(400)]
+        [JsonProperty("label"), DataMember(Name = "label"), Required, MaxLength(100)]
         public string Label { get; set; }
 
         [JsonProperty("status"), DataMember(Name = "status")]
