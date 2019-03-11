@@ -163,14 +163,12 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
-
                             $scope.collaboratorModel.email = "";
 
                             $scope.submitting = false;
                             $scope.userPassword = response.data.password;
                             $scope.showNewCollaboratorInfo = true;
-                            $scope.pageTotal++;
-                            $scope.changePage($scope.activePage);
+                            $scope.changePage(1);
                         }
                     })
                     .catch(function () {
@@ -184,7 +182,8 @@ angular.module('primeapps')
                 $scope.getCollaborators();
                 $state.reload();
                 $scope.addNewCollaboratorModal.hide();
-                $scope.showNewCollaboratorInfo = false;
+                //Modal kapanırken inputun kırmızı olmasına sebep oluyordu.
+                // $scope.showNewCollaboratorInfo = false;
             }
 
             $scope.update = function (collaboratorModel) {
@@ -209,56 +208,43 @@ angular.module('primeapps')
                         $scope.updatingRole = false;
                         $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
-            };
+            }
 
-            $scope.delete = function (id, event) {
-                var willDelete =
-                    swal({
-                        title: "Are you sure?",
-                        text: " ",
-                        icon: "warning",
-                        buttons: ['Cancel', 'Yes'],
-                        dangerMode: true
-                    }).then(function (value) {
-                        if (value) {
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
-                            $scope.removing = true;
-                            var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
+            $scope.delete = function (id) {
+                if (!id)
+                    return false;
 
-                            if (!result)
-                                return false;
+                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
 
-                            $scope.removing = true;
-                            var data = {};
-                            data.user_id = id;
-                            data.organization_id = $rootScope.currentOrgId;
-                            data.role = result.role;
-                            CollaboratorsService.delete(data)
-                                .then(function () {
-                                    $scope.pageTotal--;
-                                    //var index = $rootScope.appModules.indexOf(module);
-                                    // $rootScope.appModules.splice(index, 1);
+                if (!result)
+                    return false;
 
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
-                                    toastr.success('Collaborator is deleted successfully');
-                                    $scope.selectedCollaborator = {};
-                                    $scope.$parent.selectedCollaborator = {};
-                                    $scope.collaboratorId = null;
-                                    $scope.$parent.collaboratorId = null;
-                                    $scope.removing = false;
-                                    $scope.getCollaborators();
-                                    $state.reload();
+                $scope.removing = true;
+                var data = {};
+                data.user_id = id;
+                data.organization_id = $rootScope.currentOrgId;
+                data.role = result.role;
 
-                                })
-                                .catch(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
-                                    toastr.error($filter('translate')('Common.Error'));
-                                    $scope.removing = false;
-                                });
+                CollaboratorsService.delete(data)
+                    .then(function (response) {
+                        if (response.data) {
+                            toastr.success('Collaborator is deleted successfully');
+
+                            $scope.selectedCollaborator = {};
+                            $scope.$parent.selectedCollaborator = {};
+                            $scope.collaboratorId = null;
+                            $scope.$parent.collaboratorId = null;
+                            $scope.removing = false;
+                            $scope.getCollaborators();
+                            $state.reload();
                         }
+                    })
+                    .catch(function (error) {
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.removing = false;
                     });
             };
+
+
         }
     ]);
