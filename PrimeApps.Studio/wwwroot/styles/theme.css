@@ -128,7 +128,7 @@
 }
 
 .resultimg {
-  width: 100% !important;
+  max-width: 100% !important;
 }
 .resultimg ~ .action-buttons-block {
   display: inline-block;
