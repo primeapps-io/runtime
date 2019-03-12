@@ -73,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -114,7 +114,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -149,7 +149,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody] JObject request)
+        public async Task<IActionResult> Organizations([FromBody]JObject request)
         {
             var search = "";
             var page = 0;
@@ -161,10 +161,10 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (request["page"].IsNullOrEmpty())
-                    page = (int) request["page"];
+                    page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus) int.Parse(request["status"].ToString());
+                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
             var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
@@ -193,55 +193,10 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(app);
         }
-
-        [Route("app_collaborator_add"), HttpPost]
-        public async Task<IActionResult> TeamUserAdd([FromBody] AppCollaborator item)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (item == null)
-                return NotFound();
-
-            var result = await _collaboratorRepository.AppCollaboratorAdd(item);
-
-            return Ok(result);
-        }
-
-        [Route("app_collaborator_update/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppCollaborator(int id, [FromBody] AppCollaborator item)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-                return Forbid(ApiResponseMessages.PERMISSION);
-
-            var appCollaborator = await _collaboratorRepository.GetById(id);
-            appCollaborator.Profile = item.Profile;
-
-            var result = await _collaboratorRepository.Update(appCollaborator);
-
-            return Ok(result);
-        }
-
-        [Route("app_collaborator_delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> AppCollaboratorDelete(int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-                return Forbid(ApiResponseMessages.PERMISSION);
-
-            var appCollaborator = await _collaboratorRepository.GetById(id);
-            var result = await _collaboratorRepository.Delete(appCollaborator);
-
-            return Ok(result);
-        }
+        
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -273,7 +228,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update_app_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

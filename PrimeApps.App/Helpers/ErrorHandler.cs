@@ -31,5 +31,10 @@ namespace PrimeApps.App.Helpers
         {
             SentrySdk.CaptureMessage(message, level);
         }
+
+        public static void LogInfo(SentryEvent evt)
+        {
+            SentrySdk.CaptureEvent(evt);
+        }
     }
 }

@@ -13,8 +13,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
+using PrimeApps.App.Logging;
 
 namespace PrimeApps.App
 {
@@ -158,15 +160,28 @@ namespace PrimeApps.App
                     .AllowAnyOrigin()
             );
 
-            JobConfiguration(app, Configuration);
-            BpmConfiguration(app, Configuration);
+			JobConfiguration(app, Configuration);
+			BpmConfiguration(app, Configuration);
+
+            var loggingEnabled = Configuration.GetValue("AppSettings:EnableLogging", string.Empty);
+            if (!string.IsNullOrEmpty(loggingEnabled) && bool.Parse(loggingEnabled))
+            {
+                var logging = Configuration.GetSection("Logging").GetChildren().FirstOrDefault();
+                var sentry = Configuration.GetSection("Sentry").GetChildren().FirstOrDefault();
+
+                if (logging != null && sentry != null)
+                {
+                    app.UseMiddleware<RequestLoggingMiddleware>();
+                }
+            }
+            
 
             app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}"
-                );
+			{
+				routes.MapRoute(
+					name: "default",
+					template: "{controller=Home}/{action=Index}/{id?}"
+				);
 
                 routes.MapRoute(
                     name: "DefaultApi",

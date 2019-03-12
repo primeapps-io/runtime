@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace PrimeApps.Studio.Controllers
+namespace PrimeApps.Studio.Models
 {
 	public class ChangePasswordBindingModel
 	{

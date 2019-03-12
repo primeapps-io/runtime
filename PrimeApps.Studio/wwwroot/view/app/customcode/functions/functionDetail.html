@@ -227,7 +227,7 @@ git push -u origin master</code>
                         </form>
 
                         <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'test'">
-                            <button ng-disabled="$parent.$parent.$parent.$parent.$parent.$parent.deployments.length == 0" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
+                            <button ng-disabled="$parent.$parent.$parent.$parent.$parent.deployments.length == 0" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
                                 <i class="fas fa-bolt"></i> Run
                             </button>
                         </div>
@@ -236,34 +236,22 @@ git push -u origin master</code>
                         <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
                               novalidate>
 
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group"
-                                         style="position: relative;"
-                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
-                                        <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
-                                        <input type="text"
-                                               name="name"
-                                               class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                                               required
-                                               maxlength="100"
-                                               ng-blur="functionNameBlur($parent.$parent.function)"
-                                               ng-change="checkFunctionName($parent.$parent.function)"
-                                               ng-disabled="true"
-                                               focus="true"
-                                               ng-model="function.name"/>
-                                        <div ng-if="functionNameChecking">
-                                            <i class="fa fa-spinner fa-spin"
-                                               style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
-                                        </div>
-                                        <div ng-if="functionNameValid">
-                                            <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
-                                               class="fa-sidebar-icon fas fa-check"></i>
-                                        </div>
-                                        <div ng-if="functionNameValid === false">
-                                            <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
-                                               class="fas fa-times"></i>
-                                        </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group"
+                                             style="position: relative;"
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
+                                            <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
+                                            <input type="text"
+                                                   name="name"
+                                                   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                                   required
+                                                   maxlength="100"
+                                                   ng-blur="functionNameBlur($parent.$parent.function)"
+                                                   ng-change="checkFunctionName($parent.$parent.function)"
+                                                   ng-disabled="true"
+                                                   focus="true"
+                                                   ng-model="function.name"/>
                                     </div>
                                     <div class="form-group"
                                          style="position: relative;"
@@ -285,6 +273,7 @@ git push -u origin master</code>
                                                class="form-control ng-animate-disabled col-sm-6 text-lowercase"
                                                required
                                                placeholder="module.handler"
+                                                   ng-disabled="true"
                                                ng-change="checkFunctionHandler($parent.$parent.function)"
                                                ng-model="function.handler"/>
                                     </div>
@@ -297,6 +286,7 @@ git push -u origin master</code>
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
                                                 ng-model="function.runtime"
+                                                    ng-disabled="true"
                                                 ng-change="changeRuntime()"
                                                 ng-options="o.value as o.name for o in runtimes">
                                             <option value="">Select Runtime</option>

@@ -87,12 +87,12 @@ angular.module('primeapps')
             $scope.affectedAreaType = "field";
 
             var getFields = function () {
-                $scope.parentDisplayFields = [];
+               /* $scope.parentDisplayFields = [];
                 $scope.parentValueFields = [];
                 $scope.childValueListFields = [];
                 $scope.childValueTextFields = [];
                 $scope.childDisplayFields = [];
-                $scope.picklistFields = [];
+                $scope.picklistFields = [];*/
 
                 angular.forEach($scope.module.fields, function (field) {
 
@@ -279,6 +279,7 @@ angular.module('primeapps')
             };
 
             var setCurrentDependency = function (dependency) {
+                $scope.currentDependency = {};
                 $scope.currentDependency = angular.copy(dependency);
                 $scope.currentDependency.hasRelationField = true;
                 //$scope.currentDependency.module = dependency.parent_module;
@@ -286,6 +287,14 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (dependency) {
+
+                $scope.parentDisplayFields = [];
+                $scope.parentValueFields = [];
+                $scope.childValueListFields = [];
+                $scope.childValueTextFields = [];
+                $scope.childDisplayFields = [];
+                $scope.picklistFields = [];
+                
                 if (!dependency) {
                     dependency = {};
                     dependency.dependencyType = 'display';
@@ -327,7 +336,7 @@ angular.module('primeapps')
                     if (!$scope.dependencies)
                         $scope.dependencies = [];
 
-                  //  $scope.dependencies.push(dependency);
+                    //  $scope.dependencies.push(dependency);
                 }
                 var dependencyModel = DependenciesService.prepareDependency(angular.copy(dependency), $scope.module);
 

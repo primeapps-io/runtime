@@ -13,8 +13,10 @@ namespace PrimeApps.Model.Repositories
 {
     public class CollaboratorsRepository : RepositoryBaseStudio, ICollaboratorsRepository
     {
-        public CollaboratorsRepository(StudioDBContext dbContext, IConfiguration configuration) 
-            : base(dbContext, configuration) { }
+        public CollaboratorsRepository(StudioDBContext dbContext, IConfiguration configuration)
+            : base(dbContext, configuration)
+        {
+        }
 
         public async Task<List<AppCollaborator>> GetByAppId(int appId)
         {
@@ -22,11 +24,14 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => !x.Deleted && x.AppId == appId).ToListAsync();
         }
 
-        public async Task<List<AppCollaborator>> GetByUserId(int userId)
+        public List<AppCollaborator> GetByUserId(int userId, int organizationId, int? appId)
         {
-            return await DbContext.AppCollaborators
+            var teamIds = DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToList();
+
+            return  DbContext.AppCollaborators
                 .Include(x => x.Team)
-                .Where(x => !x.Deleted && (x.UserId == userId) /*|| x.Team.TeamUsers.Contains(userId)*/).ToListAsync();
+                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && x.AppId == appId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))))
+                .ToList();
         }
 
         public async Task<int> AppCollaboratorAdd(AppCollaborator appCollaborator)
