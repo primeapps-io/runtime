@@ -12,7 +12,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Profile> GetProfileById(int id);
         Task<List<Profile>> GetByParentId(int parentId);
         Task AddUserAsync(int userId, int profileId);
-        Task CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage);
+        Task<Profile> CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage);
         Task<IEnumerable<Profile>> GetAll();
         Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles();
         Task<IEnumerable<ProfileLightDTO>> GetUserProfilesForCache();
