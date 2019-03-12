@@ -55,6 +55,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 TeamsService.count($rootScope.currentOrgId).then(function (response) {
@@ -73,33 +85,7 @@ angular.module('primeapps')
                 });
 
             };
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                HelpService.find(requestModel)
-                    .then(function (response) {
-                        $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                        $scope.loading = false;
-                    });
-
-            };
-
+             
             $scope.changeOffset = function () {
                 $scope.changePage($scope.activePage);
             };
@@ -293,8 +279,8 @@ angular.module('primeapps')
                             .then(function (response) {
                                 if (response.data) {
                                     $scope.changePage(1);
-                                    $scope.teamId = 0;
-                                    $scope.$parent.teamId = 0;
+                                    $scope.teamId = null;
+                                    $scope.$parent.teamId = null;
                                     $scope.addNewTeamFormModal.hide();
                                     $scope.teamModel = {};
                                     $state.reload();
@@ -349,12 +335,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -373,13 +359,15 @@ angular.module('primeapps')
 
             $scope.clearModels = function () {
                 $scope.addNewTeamFormModal.hide();
-                // $scope.teamModel = {};
+                $scope.teamModel = {};
+                $scope.teamId = null;
             };
 
             $scope.cancel = function () {
                 if ($scope.addNewTeamFormModal) {
                     $scope.addNewTeamFormModal.hide();
                     $scope.teamModel = {};
+                    $scope.teamId = null;
                 }
             };
 
