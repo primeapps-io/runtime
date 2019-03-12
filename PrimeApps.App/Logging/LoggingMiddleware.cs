@@ -45,7 +45,7 @@ namespace PrimeApps.App.Logging
 
                 if(context.Response.StatusCode == 200)
                 {
-                    ErrorHandler.LogMessage("test");
+                    ErrorHandler.LogMessage(request + ", RESPONSE: " + response);
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace PrimeApps.App.Logging
         {
             var injectedRequestStream = new MemoryStream();
 
-            var requestLog = $"REQUEST HttpMethod: {request.Method}, Path: {request.Path}, QueryString: {request.Query}";
+            var requestLog = $"REQUEST: HttpMethod: {request.Method}, Path: {request.Path}, QueryString: {request.Query}";
 
             using (var bodyReader = new StreamReader(request.Body))
             {
