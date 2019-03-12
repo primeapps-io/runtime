@@ -128,7 +128,7 @@ namespace PrimeApps.App.Controllers
                     appUrl = "http://www.ofisim.com/mail/ik/logo.png";
                 }
 
-                int startIndex = content.IndexOf("{{F}}");
+                /*int startIndex = content.IndexOf("{{F}}");
                 int lastIndex = content.IndexOf("{{/F}}");
 
                 if (startIndex > -1 && lastIndex > -1)
@@ -138,7 +138,7 @@ namespace PrimeApps.App.Controllers
                 {
                     content = content.Replace("{{F}}", "");
                     content = content.Replace("{{/F}}", "");
-                }
+                }*/
 
                 content = content.Replace("{:PasswordResetUrl}",
                     string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()),
