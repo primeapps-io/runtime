@@ -26,6 +26,7 @@ angular.module('primeapps')
             $scope.dueDateItems = SimpleWorkflowsService.getDueDateItems();
             $scope.showProcessFilter = false;
             $scope.modules = {};
+            $scope.activePage = 1;
 
             ////var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
@@ -94,6 +95,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 count();
@@ -109,8 +122,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function (value) {
-                $scope.changePage(value);
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage);
             };
             //Pagening End
 

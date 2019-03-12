@@ -16,6 +16,7 @@ angular.module('primeapps')
             $scope.hookParameters = [];
             $scope.approvers = [];
             $scope.approversLength = 0;
+            $scope.activePage = 1;
             $scope.scheduleItems = ProcessesService.getScheduleItems();
             $scope.dueDateItems = ProcessesService.getDueDateItems();
             $scope.isEdit = false;
@@ -65,6 +66,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -78,8 +91,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function (value) {
-                $scope.changePage(value);
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage);
             };
 
             var fillModule = function (data) {
