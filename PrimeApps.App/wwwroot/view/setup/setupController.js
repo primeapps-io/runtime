@@ -20,7 +20,7 @@ angular.module('primeapps')
                     var menuItemsAdmin = [
                         { link: '#/app/setup/users', label: 'Setup.Nav.Users', order: 2, app: 'crm' },
                         { link: '#/app/setup/organization', label: 'Setup.Nav.OrganizationSettings', order: 3, app: 'crm' },
-                        { link: '#/app/setup/modules', label: 'Setup.Nav.Customization', order: 6, app: 'crm' },
+                        //{ link: '#/app/setup/modules', label: 'Setup.Nav.Customization', order: 6, app: 'crm' },
                         { link: '#/app/setup/general', label: 'Setup.Nav.System', order: 8, app: 'crm' },
                         //{ link: '#/app/setup/workflows', label: 'Setup.Nav.Workflow', order: 9, app: 'crm' },
                         //{ link: '#/app/setup/approvel_process', label: 'Setup.Nav.ApprovelProcess', order: 10, app: 'crm' },

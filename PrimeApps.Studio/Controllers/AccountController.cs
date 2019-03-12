@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
@@ -22,16 +26,22 @@ namespace PrimeApps.Studio.Controllers
         private IOrganizationRepository _organizationRepository;
         private IStudioUserRepository _studioUserRepository;
         private IGiteaHelper _giteaHelper;
+        private IPlatformRepository _platformRepository;
+        private IConfiguration _configuration;
+
 
         public AccountController(IApplicationRepository applicationRepository,
             IOrganizationRepository organizationRepository,
             IStudioUserRepository studioUserRepository,
-            IGiteaHelper giteaHelper)
+            IGiteaHelper giteaHelper, IPlatformRepository platformRepository, IConfiguration configuration)
         {
             _organizationRepository = organizationRepository;
             _studioUserRepository = studioUserRepository;
             _giteaHelper = giteaHelper;
             _applicationRepository = applicationRepository;
+            _platformRepository = platformRepository;
+            _configuration = configuration;
+
         }
 
         [Route("logout")]
@@ -73,12 +83,13 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] StudioUserBindingModel user)
+        public async Task<IActionResult> Create([FromBody] JObject user)
         {
-            if (string.IsNullOrEmpty(user.Id))
+
+            if (string.IsNullOrEmpty(user["id"].ToString()))
                 return BadRequest("User id is required");
 
-            var decryptId = CryptoHelper.Decrypt(user.Id);
+            var decryptId = CryptoHelper.Decrypt((user["id"].ToString()));
 
             var validId = int.TryParse(decryptId, out int id);
 
@@ -96,14 +107,15 @@ namespace PrimeApps.Studio.Controllers
 
             if (result >= 1)
             {
-                var query = user.Email.Replace("@", "").Split(".");
+                var userEmail = (string)user["email"];
+                var query = userEmail.Replace("@", "").Split(".");
                 Array.Resize(ref query, query.Length - 1);
                 var orgName = string.Join("", query);
 
                 organization = new Organization
                 {
                     Name = orgName,
-                    Label = user.FirstName + " " + user.LastName,
+                    Label = user["first_name"] + " " + user["last_name"],
                     OwnerId = studioUser.Id,
                     CreatedById = studioUser.Id,
                     Default = true,
@@ -120,7 +132,44 @@ namespace PrimeApps.Studio.Controllers
 
                 await _organizationRepository.Create(organization);
 
-                await _giteaHelper.CreateUser(user.Email, user.Password, user.FirstName, user.LastName, orgName);
+                await _giteaHelper.CreateUser((string)user["email"], (string)user["password"], (string)user["first_name"], (string)user["last_name"], orgName);
+            }
+
+            var applicationInfo = await _applicationRepository.Get(int.Parse(user["app_id"].ToString()));
+
+            if (!string.IsNullOrEmpty((string)user["code"]) &&
+                (!bool.Parse((string)user["user_exist"]) || !bool.Parse((string)user["email_confirmed"])))
+            {
+                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain +
+                          "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
+
+                var templates = await _platformRepository.GetAppTemplate(int.Parse(user["app_id"].ToString()),
+                    AppTemplateType.Email, user["culture"].ToString().Substring(0, 2), "email_confirm");
+
+                foreach (var template in templates)
+                {
+                    var content = template.Content;
+
+                    content = content.Replace("{:FirstName}", user["first_name"].ToString());
+                    content = content.Replace("{:LastName}", user["last_name"].ToString());
+                    content = content.Replace("{:Email}", user["email"].ToString());
+                    content = content.Replace("{:Url}",
+                        string.Format(url, user["email"],
+                            WebUtility.UrlEncode((string)user["code"]),
+                            HttpUtility.UrlEncode((string)user["return_url"])));
+
+                    Email notification = new Email(_configuration, null, template.Subject, content);
+
+                    var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+
+                    if (req != null)
+                    {
+                        var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
+                        var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+                        notification.AddRecipient(user["email"].ToString());
+                        notification.AddToQueue(senderEmail, senderName, null, null, content, template.Subject);
+                    }
+                }
             }
 
             return Ok(organization.Id);

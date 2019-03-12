@@ -84,13 +84,18 @@ angular.module('primeapps')
                     relation.order = maxOrder + 1;
                     relation.relation_type = 'one_to_many';
                     relation.isNew = true;
-                } else
+                } else {
                     relation.isNew = false;
+                    var filter = {};
+                    filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
+                    $scope.moduleLists = $filter('filter')($rootScope.appModules, filter, true);
+                }
 
                 $scope.currentRelation = angular.copy(relation);
                 $scope.currentRelation.hasRelationField = true;
                 $scope.currentRelation.module = angular.copy(relation.parent_module);
                 $scope.currentRelationState = angular.copy($scope.currentRelation);
+
                 if (!$scope.currentRelation.detail_view_type)
                     $scope.currentRelation.detail_view_type = 'tab';
 
@@ -103,7 +108,7 @@ angular.module('primeapps')
                     $scope.fields = RelationsService.getFields($scope.currentRelation, $rootScope.appModules);
 
                 //Module relations list remove itself
-                var filter = {};
+                filter = {};
                 if (relation.parent_module) {
                     filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
                 }
@@ -377,10 +382,9 @@ angular.module('primeapps')
             };
 
             $scope.relationTypeChanged = function () {
-                if ($scope.currentRelation.relation_type === 'many_to_many')
-                    if (!$scope.currentRelation.isNew) {
-                        $scope.bindDragDrop();
-                    }
+
+                if ($scope.currentRelation.relation_type === 'many_to_many' && $scope.currentRelation.related_module)
+                    $scope.bindDragDrop();
             };
         }
     ]);

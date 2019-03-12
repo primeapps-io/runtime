@@ -327,12 +327,12 @@ angular.module('primeapps')
                     if (!$scope.dependencies)
                         $scope.dependencies = [];
 
-                    $scope.dependencies.push(dependency);
+                  //  $scope.dependencies.push(dependency);
                 }
-                var relationModel = DependenciesService.prepareDependency(angular.copy(dependency), $scope.module);
+                var dependencyModel = DependenciesService.prepareDependency(angular.copy(dependency), $scope.module);
 
                 var success = function () {
-                    $scope.loading = true;
+                    //$scope.loading = true;
                     toastr.success($filter('translate')('Setup.Modules.DependencySaveSuccess'));
                     $scope.saving = false;
                     $scope.addNewDependencyModal.hide();
@@ -348,17 +348,17 @@ angular.module('primeapps')
                     }
                 };
 
-                if (!relationModel.id) {
-                    DependenciesService.createModuleDependency(relationModel, $scope.module.id)
+                if (!dependencyModel.id) {
+                    DependenciesService.createModuleDependency(dependencyModel, $scope.module.id)
                         .then(function () {
                             success();
-                            $scope.pageTotal = $scope.pageTotal + 1;
+                            $scope.pageTotal++;
                         })
                         .catch(function () {
                             error();
                         });
                 } else {
-                    DependenciesService.updateModuleDependency(relationModel, $scope.module.id)
+                    DependenciesService.updateModuleDependency(dependencyModel, $scope.module.id)
                         .then(function () {
                             success();
                         })
