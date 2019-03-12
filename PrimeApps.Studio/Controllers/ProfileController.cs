@@ -56,9 +56,9 @@ namespace PrimeApps.Studio.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
+           var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
-            return Ok();
+		  return Ok(profile);
         }
 
         /// <summary>

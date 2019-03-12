@@ -19,14 +19,18 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext,
+            configuration)
+        {
+        }
 
-        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration, Warehouse warehouse) : base(dbContext, configuration)
+        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration, Warehouse warehouse) : base(
+            dbContext, configuration)
         {
             _warehouse = warehouse;
         }
 
-        public async Task CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage)
+        public async Task<Profile> CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage)
         {
             Profile newProfile = new Profile()
             {
@@ -93,8 +97,18 @@ namespace PrimeApps.Model.Repositories
                     Profile = newProfile
                 });
             }
+
             DbContext.Profiles.Add(newProfile);
             var result = await DbContext.SaveChangesAsync();
+            if (result > 0)
+            {
+                return newProfile;
+            }
+            else
+            {
+                throw new Exception("");
+            }
+
 
             //if (result > 0)
             //{
@@ -110,8 +124,8 @@ namespace PrimeApps.Model.Repositories
 
         public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
         {
-
-            Profile profileToUpdate = await DbContext.Profiles.Include(x => x.Permissions).Where(x => x.Id == updatedProfileDTO.ID).SingleOrDefaultAsync();
+            Profile profileToUpdate = await DbContext.Profiles.Include(x => x.Permissions)
+                .Where(x => x.Id == updatedProfileDTO.ID).SingleOrDefaultAsync();
 
             if (profileToUpdate == null) return;
 
@@ -200,7 +214,8 @@ namespace PrimeApps.Model.Repositories
         public async Task RemoveAsync(int profileId, int replacementProfileId)
         {
             /// get profile to be removed and the replacement profile
-            Profile profileToDelete = await DbContext.Profiles.Include(x => x.Users).Where(x => x.Id == profileId).SingleOrDefaultAsync();
+            Profile profileToDelete = await DbContext.Profiles.Include(x => x.Users).Where(x => x.Id == profileId)
+                .SingleOrDefaultAsync();
             /// get the list of affected profile to user relations and invited users who has a relation with the removed profile.
             /// TODO: Pending Share Request
             //IList<crmPendingShareRequests> affectedInvitations = session.Query<crmPendingShareRequests>().Where(x => x.Profile == profileToDelete).ToList();
@@ -261,7 +276,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -283,42 +298,42 @@ namespace PrimeApps.Model.Repositories
         public async Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles()
         {
             return await DbContext.Profiles
-                               .Select(x => new ProfileWithUsersDTO()
-                               {
-                                   ID = x.Id,
-                                   Description = x.Description,
-                                   Name = x.Name,
-                                   IsPersistent = x.IsPersistent,
-                                   HasAdminRights = x.HasAdminRights,
-                                   SendEmail = x.SendEmail,
-                                   SendSMS = x.SendSMS,
-                                   ExportData = x.ExportData,
-                                   ImportData = x.ImportData,
-                                   WordPdfDownload = x.WordPdfDownload,
-                                   LeadConvert = x.LeadConvert,
-                                   CreatedBy = x.CreatedById,
-                                   DocumentSearch = x.DocumentSearch,
-                                   Tasks = x.Tasks,
-                                   Calendar = x.Calendar,
-                                   Newsfeed = x.Newsfeed,
-                                   Report = x.Report,
-                                   Dashboard = x.Dashboard,
-                                   Home = x.Home,
-                                   CollectiveAnnualLeave = x.CollectiveAnnualLeave,
-                                   StartPage = x.StartPage,
-                                   ParentId = x.ParentId,
-                                   UserIds = x.Users.Select(z => z.Id).ToList(),
-                                   Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
-                                   {
-                                       ID = x.Id,
-                                       ModuleId = y.ModuleId,
-                                       Type = (int)y.Type,
-                                       Modify = y.Modify,
-                                       Read = y.Read,
-                                       Remove = y.Remove,
-                                       Write = y.Write
-                                   }).ToList()
-                               }).ToListAsync();
+                .Select(x => new ProfileWithUsersDTO()
+                {
+                    ID = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    IsPersistent = x.IsPersistent,
+                    HasAdminRights = x.HasAdminRights,
+                    SendEmail = x.SendEmail,
+                    SendSMS = x.SendSMS,
+                    ExportData = x.ExportData,
+                    ImportData = x.ImportData,
+                    WordPdfDownload = x.WordPdfDownload,
+                    LeadConvert = x.LeadConvert,
+                    CreatedBy = x.CreatedById,
+                    DocumentSearch = x.DocumentSearch,
+                    Tasks = x.Tasks,
+                    Calendar = x.Calendar,
+                    Newsfeed = x.Newsfeed,
+                    Report = x.Report,
+                    Dashboard = x.Dashboard,
+                    Home = x.Home,
+                    CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                    StartPage = x.StartPage,
+                    ParentId = x.ParentId,
+                    UserIds = x.Users.Select(z => z.Id).ToList(),
+                    Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
+                    {
+                        ID = x.Id,
+                        ModuleId = y.ModuleId,
+                        Type = (int) y.Type,
+                        Modify = y.Modify,
+                        Read = y.Read,
+                        Remove = y.Remove,
+                        Write = y.Write
+                    }).ToList()
+                }).ToListAsync();
         }
 
         /// <summary>
@@ -403,10 +418,11 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
+
         public async Task<int> Count()
         {
             var count = DbContext.Profiles
-               .Where(x => !x.Deleted).Count();
+                .Where(x => !x.Deleted).Count();
             return count;
         }
 
@@ -430,52 +446,51 @@ namespace PrimeApps.Model.Repositories
                 {
                     profiles = profiles.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
                 }
-
             }
 
             return profiles;
-
         }
+
         private async Task<List<ProfileWithUsersDTO>> GetPaginationQuery(PaginationModel paginationModel)
         {
             return await DbContext.Profiles
-                               .Where(x => !x.Deleted)
-                               .Select(x => new ProfileWithUsersDTO()
-                               {
-                                   ID = x.Id,
-                                   Description = x.Description,
-                                   Name = x.Name,
-                                   IsPersistent = x.IsPersistent,
-                                   HasAdminRights = x.HasAdminRights,
-                                   SendEmail = x.SendEmail,
-                                   SendSMS = x.SendSMS,
-                                   ExportData = x.ExportData,
-                                   ImportData = x.ImportData,
-                                   WordPdfDownload = x.WordPdfDownload,
-                                   LeadConvert = x.LeadConvert,
-                                   CreatedBy = x.CreatedById,
-                                   DocumentSearch = x.DocumentSearch,
-                                   Tasks = x.Tasks,
-                                   Calendar = x.Calendar,
-                                   Newsfeed = x.Newsfeed,
-                                   Report = x.Report,
-                                   Dashboard = x.Dashboard,
-                                   Home = x.Home,
-                                   CollectiveAnnualLeave = x.CollectiveAnnualLeave,
-                                   StartPage = x.StartPage,
-                                   ParentId = x.ParentId,
-                                   UserIds = x.Users.Select(z => z.Id).ToList(),
-                                   Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
-                                   {
-                                       ID = x.Id,
-                                       ModuleId = y.ModuleId,
-                                       Type = (int)y.Type,
-                                       Modify = y.Modify,
-                                       Read = y.Read,
-                                       Remove = y.Remove,
-                                       Write = y.Write
-                                   }).ToList()
-                               }).ToListAsync();
+                .Where(x => !x.Deleted)
+                .Select(x => new ProfileWithUsersDTO()
+                {
+                    ID = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    IsPersistent = x.IsPersistent,
+                    HasAdminRights = x.HasAdminRights,
+                    SendEmail = x.SendEmail,
+                    SendSMS = x.SendSMS,
+                    ExportData = x.ExportData,
+                    ImportData = x.ImportData,
+                    WordPdfDownload = x.WordPdfDownload,
+                    LeadConvert = x.LeadConvert,
+                    CreatedBy = x.CreatedById,
+                    DocumentSearch = x.DocumentSearch,
+                    Tasks = x.Tasks,
+                    Calendar = x.Calendar,
+                    Newsfeed = x.Newsfeed,
+                    Report = x.Report,
+                    Dashboard = x.Dashboard,
+                    Home = x.Home,
+                    CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                    StartPage = x.StartPage,
+                    ParentId = x.ParentId,
+                    UserIds = x.Users.Select(z => z.Id).ToList(),
+                    Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
+                    {
+                        ID = x.Id,
+                        ModuleId = y.ModuleId,
+                        Type = (int) y.Type,
+                        Modify = y.Modify,
+                        Read = y.Read,
+                        Remove = y.Remove,
+                        Write = y.Write
+                    }).ToList()
+                }).ToListAsync();
         }
     }
 }
