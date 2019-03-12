@@ -15,14 +15,14 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'organization/get_users/' + id);
                 },
                 addAppCollaborator: function (item) {
-                    return $http.post(config.apiUrl + 'app/app_collaborator_add', item);
+                    return $http.post(config.apiUrl + 'app_collaborator/create', item);
                 },
                 updateAppCollaborator: function (id, item) {
-                    return $http.put(config.apiUrl + 'app/app_collaborator_update/' + id, item);
+                    return $http.put(config.apiUrl + 'app_collaborator/update/' + id, item);
                 },
                 delete: function (id) {
-                    return $http.delete(config.apiUrl + 'app/app_collaborator_delete/' + id);
-                },
+                    return $http.delete(config.apiUrl + 'app_collaborator/delete/' + id);
+                }
             };
         }]);
 

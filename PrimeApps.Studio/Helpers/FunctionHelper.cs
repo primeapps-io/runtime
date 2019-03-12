@@ -31,6 +31,7 @@ namespace PrimeApps.Studio.Helpers
         Task<JArray> GetPods(string functionName);
         Task<string> GetLogs(string podName);
         string GetSampleFunction(FunctionRuntime runtime, string moduleHandler);
+        string GetFunctionName(string preview, string currentName, int? tenantId, int? appId);
     }
 
     public class FunctionHelper : IFunctionHelper
@@ -379,6 +380,11 @@ namespace PrimeApps.Studio.Helpers
                 default:
                     return "txt";
             }
+        }
+
+        public string GetFunctionName(string preview, string currentName, int? tenantId, int? appId)
+        {
+            return preview == "app" ? "app" + appId + "-" + currentName : "tenant" + tenantId + "-" + currentName;
         }
     }
 }

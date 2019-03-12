@@ -134,6 +134,13 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, function.Name, TenantId, AppId);
+
+            var checkName = await _functionRepository.IsFunctionNameAvailable(functionName);
+
+            if (!checkName)
+                return Conflict("Function name already exist !");
+
             var functionObj = new Function()
             {
                 Name = function.Name,
@@ -151,6 +158,7 @@ namespace PrimeApps.Studio.Controllers
             if (createResult < 0)
                 return BadRequest("An error occurred while creating an function");
 
+            function.Name = functionName;
             var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
 
@@ -192,8 +200,8 @@ namespace PrimeApps.Studio.Controllers
             func.Dependencies = function.Dependencies;
             func.Content = function.ContentType == FunctionContentType.Text ? function.Function : "";
             func.ContentType = function.ContentType;
-            func.Runtime = function.Runtime;
-            func.Handler = function.Handler;
+            //func.Runtime = function.Runtime;
+            //func.Handler = function.Handler;
             func.Status = function.Status;
 
             var updateResult = await _functionRepository.Update(func);
@@ -201,17 +209,19 @@ namespace PrimeApps.Studio.Controllers
             if (updateResult < 0)
                 return BadRequest("An error occurred while update function");
 
-            var functionObj = await _functionHelper.Get(name);
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, function.Name, TenantId, AppId);
+            var functionObj = await _functionHelper.Get(functionName);
 
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
 
+            function.Name = functionName;
             var functionRequest = _functionHelper.CreateFunctionRequest(function, functionObj);
             JObject result;
 
             using (var httpClient = new HttpClient())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{functionName}";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -252,10 +262,10 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest("An error occurred while deleting an function");
 
             JObject result;
-
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
             using (var httpClient = new HttpClient())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{functionName}";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -277,7 +287,8 @@ namespace PrimeApps.Studio.Controllers
         [Route("run/{name}"), AcceptVerbs("GET", "POST")]
         public async Task<HttpResponseMessage> Run(string name)
         {
-            var functionUrl = await _functionHelper.GetFunctionUrl(name);
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
+            var functionUrl = await _functionHelper.GetFunctionUrl(functionName);
 
             if (string.IsNullOrWhiteSpace(functionUrl))
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -297,7 +308,8 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_pods/{name}"), HttpGet]
         public async Task<IActionResult> GetPods(string name)
         {
-            var pods = await _functionHelper.GetPods(name);
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
+            var pods = await _functionHelper.GetPods(functionName);
 
             return Ok(pods);
         }
@@ -341,7 +353,8 @@ namespace PrimeApps.Studio.Controllers
             if (function == null)
                 return NotFound("Function is not found.");
 
-            var functionObj = await _functionHelper.Get(name);
+            var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
+            var functionObj = await _functionHelper.Get(functionName);
 
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
