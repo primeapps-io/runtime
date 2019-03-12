@@ -28,12 +28,14 @@ namespace PrimeApps.Studio.Controllers
         private IGiteaHelper _giteaHelper;
         private IPlatformRepository _platformRepository;
         private IConfiguration _configuration;
+        private IPlatformUserRepository _platformUserRepository;
+
 
 
         public AccountController(IApplicationRepository applicationRepository,
             IOrganizationRepository organizationRepository,
             IStudioUserRepository studioUserRepository,
-            IGiteaHelper giteaHelper, IPlatformRepository platformRepository, IConfiguration configuration)
+            IGiteaHelper giteaHelper, IPlatformRepository platformRepository, IConfiguration configuration, IPlatformUserRepository platformUserRepository)
         {
             _organizationRepository = organizationRepository;
             _studioUserRepository = studioUserRepository;
@@ -41,6 +43,7 @@ namespace PrimeApps.Studio.Controllers
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
             _configuration = configuration;
+            _platformUserRepository = platformUserRepository;
 
         }
 
@@ -182,6 +185,62 @@ namespace PrimeApps.Studio.Controllers
 
             if (user == null)
                 return Conflict();
+
+            return Ok();
+        }
+
+        [Route("send_password_reset")]
+        public async Task<IActionResult> SendPasswordReset([FromBody] JObject request)
+        {
+            if (request["email"].IsNullOrEmpty() || request["code"].IsNullOrEmpty())
+                return BadRequest();
+
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+
+            var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain +
+                      "/Account/ResetPassword?code={0}&guid={1}&returnUrl={2}";
+            var user = await _platformUserRepository.Get(request["email"].ToString());
+
+            var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()),
+                AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "password_reset");
+            foreach (var template in templates)
+            {
+                var content = template.Content;
+                string appCodeUrl = "";
+                string appUrl = "";
+
+                /*int startIndex = content.IndexOf("{{F}}");
+                int lastIndex = content.IndexOf("{{/F}}");
+
+                if (startIndex > -1 && lastIndex > -1)
+                    content = content.Remove(startIndex, lastIndex - startIndex + 6);
+
+                else // if (string.Equals(socialMediaIcons, "true"))
+                {
+                    content = content.Replace("{{F}}", "");
+                    content = content.Replace("{{/F}}", "");
+                }*/
+
+                content = content.Replace("{:PasswordResetUrl}",
+                    string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()),
+                        new Guid(request["guid_id"].ToString()),
+                        HttpUtility.UrlEncode(request["return_url"].ToString())));
+                content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
+                content = content.Replace("{{APP_URL}}", appCodeUrl);
+                content = content.Replace("{{URL}}", appUrl);
+                Email notification = new Email(_configuration, null, template.Subject, content);
+
+                var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+                if (req != null)
+                {
+                    var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
+                    var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+
+                    notification.AddRecipient(request["email"].ToString());
+                    notification.AddToQueue(senderEmail, senderName, null, null, content, template.Subject);
+
+                }
+            }
 
             return Ok();
         }
