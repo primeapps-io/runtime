@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using PrimeApps.App.Helpers;
+using PrimeApps.App.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,11 +14,13 @@ namespace PrimeApps.App.Logging
 {
     public class RequestLoggingMiddleware
     {
+        public IBackgroundTaskQueue Queue;
         private readonly RequestDelegate _next;
         private readonly ILogger<RequestLoggingMiddleware> _logger;
 
-        public RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
+        public RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger, IBackgroundTaskQueue queue)
         {
+            Queue = queue;
             _next = next;
         }
 
@@ -43,9 +46,9 @@ namespace PrimeApps.App.Logging
                 //Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
                 await responseBody.CopyToAsync(originalBodyStream);
 
-                if(context.Response.StatusCode == 200)
+                if (context.Response.StatusCode == 200)
                 {
-                    ErrorHandler.LogMessage(request + ", RESPONSE: " + response);
+                    Queue.QueueBackgroundWorkItem(async token => ErrorHandler.LogMessage(request + ", RESPONSE: " + response));
                 }
             }
         }

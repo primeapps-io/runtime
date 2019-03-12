@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
 using PrimeApps.App.Logging;
@@ -161,7 +162,19 @@ namespace PrimeApps.App
 
 			JobConfiguration(app, Configuration);
 			BpmConfiguration(app, Configuration);
-            app.UseMiddleware<RequestLoggingMiddleware>();
+
+            var loggingEnabled = Configuration.GetValue("AppSettings:EnableLogging", string.Empty);
+            if (!string.IsNullOrEmpty(loggingEnabled) && bool.Parse(loggingEnabled))
+            {
+                var logging = Configuration.GetSection("Logging").GetChildren().FirstOrDefault();
+                var sentry = Configuration.GetSection("Sentry").GetChildren().FirstOrDefault();
+
+                if (logging != null && sentry != null)
+                {
+                    app.UseMiddleware<RequestLoggingMiddleware>();
+                }
+            }
+            
 
             app.UseMvc(routes =>
 			{
