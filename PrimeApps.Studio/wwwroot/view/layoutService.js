@@ -28,6 +28,9 @@ angular.module('primeapps')
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
                 },
+                getUserAppProfile: function(appId){
+                    return $http.get(config.apiUrl + 'app/user_profile/' + appId);
+                },
                 getIcons: function () {
                     return icons.icons;
                 },

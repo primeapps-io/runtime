@@ -1,16 +1,17 @@
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.ActionFilters;
 
 namespace PrimeApps.Studio.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer"), CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-
-
     public class DraftBaseController : BaseController
     {
+        public static ProfileEnum UserProfile { get; set; }
         public static int? AppId { get; set; }
         public static int? TenantId { get; set; }
         public static string PreviewMode { get; set; }
@@ -42,6 +43,7 @@ namespace PrimeApps.Studio.Controllers
                 context.Result = new UnauthorizedResult();
 
             var appDraftRepository = (IAppDraftRepository)context.HttpContext.RequestServices.GetService(typeof(IAppDraftRepository));
+            var collaboratorRepository = (ICollaboratorsRepository)context.HttpContext.RequestServices.GetService(typeof(ICollaboratorsRepository));
             var tenantRepository = (ITenantRepository)context.HttpContext.RequestServices.GetService(typeof(ITenantRepository));
 
             var appIds = appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
@@ -65,6 +67,22 @@ namespace PrimeApps.Studio.Controllers
 
                 else
                     context.HttpContext.Items.Add("app_id", appId);
+
+                var profiles = collaboratorRepository.GetByUserId(AppUser.Id, OrganizationId, (int)AppId);
+                var managerProfile = profiles.FirstOrDefault(x => x.Profile == ProfileEnum.Manager);
+                if (managerProfile != null)
+                    UserProfile = ProfileEnum.Manager;
+                else
+                {
+                    var developerProfile = profiles.FirstOrDefault(x => x.Profile == ProfileEnum.Developer);
+                    if (developerProfile != null)
+                        UserProfile = ProfileEnum.Developer;
+                    else
+                    {
+                        var developerTenantAdmin = profiles.FirstOrDefault(x => x.Profile == ProfileEnum.TenantAdmin);
+                        UserProfile = developerTenantAdmin != null ? ProfileEnum.TenantAdmin : ProfileEnum.Viewer;
+                    }
+                }
 
                 PreviewMode = "app";
                 AppId = appId;

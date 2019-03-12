@@ -5,7 +5,6 @@ angular.module('primeapps')
     .controller('AppController', ['$rootScope', '$scope', '$filter', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q', '$window',
         function ($rootScope, $scope, $filter, $state, $cookies, $http, config, $localStorage, LayoutService, $q, $window) {
 
-
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
             $rootScope.menuOpen = [];
@@ -24,9 +23,18 @@ angular.module('primeapps')
             $scope.tabTitle = 'Overview';
 
             $scope.getBasicModules = function () {
-                LayoutService.getBasicModules().then(function (result) {
-                    $scope.modules = result.data;
-                });
+                LayoutService.getBasicModules()
+                    .then(function (result) {
+                        $scope.modules = result.data;
+                    });
+
+                LayoutService.getUserAppProfile($scope.appId)
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function () {
+
+                    });
             };
 
             $scope.getBasicModules();
@@ -40,7 +48,6 @@ angular.module('primeapps')
                 if (name != "")
                     $scope.activeMenuItem = "";
             }
-
 
         }
     ]);

@@ -42,19 +42,19 @@ namespace PrimeApps.Model.Repositories
             DbContext.Roles.Add(newRole);
             var result = await DbContext.SaveChangesAsync();
 
-            //if (result > 0)
-            //{
-            //	//if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-            //	//	throw new Exception("Warehouse cannot be null during create/update/delete record.");
+            /*if (result > 0)
+            {
+            	//if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+            	//	throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-            //	if (_warehouse?.DatabaseName != "0")
-            //	{
-            //		BackgroundJob.Enqueue(() => _warehouse.CreateRole(newRole.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
-            //	}
-            //	return newRole.Id;
-            //}
+            	if (_warehouse?.DatabaseName != "0")
+            	{
+            		BackgroundJob.Enqueue(() => _warehouse.CreateRole(newRole.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
+            	}
+            	return newRole.Id;
+            }*/
 
-            return result;
+            return newRole.Id;
         }
 
         public async Task<Role> GetWithCode(string code)
@@ -227,7 +227,7 @@ namespace PrimeApps.Model.Repositories
                 replacementRole = await DbContext.Roles.SingleOrDefaultAsync(x => x.Id == replacementRoleId);
             //firstChild = await DbContext.Roles.SingleOrDefaultAsync(x => x.ReportsToId == roleToDelete.Id);
             var childs = await DbContext.Roles.Where(x => x.ReportsToId == roleToDelete.Id).ToListAsync();
-                
+
             foreach (TenantUser user in roleToDelete.Users)
             {
                 /// change role id for all users in the role to be deleted.
@@ -239,7 +239,7 @@ namespace PrimeApps.Model.Repositories
                 /// if there is a child node under the role, move it under replacement role.
                 firstChild.ReportsToId = replacementRole.Id;
             }*/
-            
+
             foreach (var child in childs)
             {
                 child.ReportsToId = replacementRole.Id;

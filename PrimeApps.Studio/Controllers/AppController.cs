@@ -73,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -114,7 +114,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -149,7 +149,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody] JObject request)
+        public async Task<IActionResult> Organizations([FromBody]JObject request)
         {
             var search = "";
             var page = 0;
@@ -161,10 +161,10 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (request["page"].IsNullOrEmpty())
-                    page = (int) request["page"];
+                    page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus) int.Parse(request["status"].ToString());
+                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
             var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
@@ -196,7 +196,7 @@ namespace PrimeApps.Studio.Controllers
         
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -228,7 +228,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update_app_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
