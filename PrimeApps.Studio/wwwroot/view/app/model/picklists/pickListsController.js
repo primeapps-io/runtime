@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.orderChanged = false;
             $scope.pageOfItem;
             $scope.itemModel = {};
-            $scope.lastPageValue = 0;
+            $scope.activePage = 1;
             $scope.picklistModel = {};
 
             $scope.requestModel = { //default page value
@@ -55,6 +55,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 if (page != 0)
                     requestModel.offset = page - 1;
@@ -93,9 +105,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function (value) {
-                $scope.lastPageValue = value;
-                $scope.changePage(value);
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage);
             };
 
             $scope.selectPicklist = function (id) {
@@ -252,7 +263,7 @@ angular.module('primeapps')
                             }
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset($scope.lastPageValue);
+                            $scope.changeOffset();
                         });
                 }
                 else {
@@ -265,7 +276,7 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset($scope.lastPageValue);
+                            $scope.changeOffset();
 
                         }).catch(function (reason) {
                             $scope.saving = false;
@@ -282,7 +293,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.DeleteSuccess'));
-                                $scope.changeOffset($scope.lastPageValue);
+                                $scope.changeOffset();
                             }
                         }).catch(function (reason) {
                             $scope.loading = false;
