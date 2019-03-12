@@ -191,14 +191,14 @@ angular.module('primeapps')
                 $scope.newModuleList.push(customModule);
             });*/
 
-            $scope.showFormModal = function (id, _clone) {
+            $scope.showFormModal = function (id, cloneSettings) {
                 $scope.loadingModal = true;
                 $scope.id = id;
                 $scope.wizardStep = 0;
                 $scope.menuLists = [];
                 $scope.menu = {};
                 $scope.counter = 1;
-                $scope.clone = angular.copy(_clone);
+                $scope.clone = angular.copy(cloneSettings);
 
                 /**
                  * Profile picklist filter, If exist delete from picklist
