@@ -126,7 +126,6 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return Forbid("Script not found!");
 
-            script.Name = model.Name ?? script.Name;
             script.Content = model.Content ?? script.Content;
             script.ModuleId = model.ModuleId != 0 ? model.ModuleId : script.ModuleId;
             script.Type = ComponentType.Script;
@@ -135,9 +134,12 @@ namespace PrimeApps.Studio.Controllers
             script.Status = model.Status;
             script.Label = model.Label;
 
-            await _scriptRepository.Update(script);
+            var result = await _scriptRepository.Update(script);
 
-            return Ok();
+            if (result < 1)
+                return BadRequest("An error occurred while update script.");
+
+            return Ok(result);
         }
 
         [Route("delete/{id:int}"), HttpDelete]
@@ -148,9 +150,12 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return Forbid("Script not found!");
 
-            await _scriptRepository.Delete(script);
+            var result = await _scriptRepository.Delete(script);
 
-            return Ok();
+            if (result < 1)
+                return BadRequest("An error occurred while delete script.");
+
+            return Ok(result);
         }
 
         [Route("is_unique_name"), HttpGet]
@@ -176,7 +181,7 @@ namespace PrimeApps.Studio.Controllers
                 return NotFound("Script is not found");
 
 
-            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber() + 1;
+            var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber(script.Id) + 1;
 
             var deployment = new DeploymentComponent
             {

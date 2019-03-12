@@ -188,8 +188,8 @@ angular.module('primeapps')
             };
 
             $scope.functionNameBlur = function (name) {
-                if ($scope.isFunctionNameBlur && $scope.functionNameValid)
-                    return;
+                //if ($scope.isFunctionNameBlur && $scope.functionNameValid)
+                //    return;
 
                 $scope.isFunctionNameBlur = true;
                 $scope.checkFunctionName(name ? name : "");
@@ -202,8 +202,8 @@ angular.module('primeapps')
                 func.name = func.name.replace(/\s/g, '');
                 func.name = func.name.replace(/[^a-zA-Z0-9\-]/g, '');
 
-                if (!$scope.isFunctionNameBlur)
-                    return;
+                //if (!$scope.isFunctionNameBlur)
+                //    return;
 
                 $scope.functionNameChecking = true;
                 $scope.functionNameValid = null;

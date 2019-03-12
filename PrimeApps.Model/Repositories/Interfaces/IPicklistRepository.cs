@@ -27,5 +27,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteSoft(Picklist picklist);
         Task<int> DeleteHard(Picklist picklist);
         Task<int> ItemDeleteSoft(PicklistItem picklistItem);
+        Task<bool> isUniqueCheck(string systemCode);
     }
 }

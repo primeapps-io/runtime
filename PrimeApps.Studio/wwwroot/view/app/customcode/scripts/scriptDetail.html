@@ -140,7 +140,7 @@ git push -u origin master</code>
                                                  text-first="&laquo;"
                                                  ul-class="pagination"
                                                  active-class="active"
-                                                 page="requestModel.offset"
+                                                 page="page"
                                                  page-size="requestModel.limit"
                                                  total="pageTotal"
                                                  scroll-top="true"
@@ -196,7 +196,6 @@ git push -u origin master</code>
                                                    required
                                                    maxlength="100"
                                                    focus="true"
-                                                   ng-change="createIdentifier();"
                                                    ng-model="script.label" />
                                         </div>
                                         <div class="form-group"
@@ -210,21 +209,7 @@ git push -u origin master</code>
                                                    maxlength="100"
                                                    ng-disabled="true"
                                                    ng-trim="false"
-                                                   ng-blur="scriptNameBlur(script);"
-                                                   ng-change="checkNameUnique(script.name)"
                                                    ng-model="script.name" />
-                                            <div ng-if="scriptNameChecking">
-                                                <i class="fa fa-spinner fa-spin"
-                                                   style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
-                                            </div>
-                                            <div ng-if="scriptNameValid">
-                                                <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
-                                                   class="fa-sidebar-icon fas fa-check"></i>
-                                            </div>
-                                            <div ng-if="scriptNameValid === false">
-                                                <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
-                                                   class="fas fa-times"></i>
-                                            </div>
                                         </div>
                                         <div class="form-group"
                                              ng-class="{'has-error': scriptForm.$submitted && scriptForm.module_id.$invalid}">
@@ -258,6 +243,36 @@ git push -u origin master</code>
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="loading" class="function tab-content">
+    <div class="col-sm-12" style="border: none ;">
+        <div class="setup-liste-header row">
+            <div class="col-sm-12">
+                <div class="setup-title">
+                    <div style="width: 100px;" class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content" style="padding: 20px;position: relative;">
+            <div class="tab-content" style="padding: 20px;">
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                    <code><div class="animated-background"></div></code>
+                    </pre>
+                </div>
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                    <code><div class="animated-background"></div></code>
+                    </pre>
+                </div>
+                <div class="markdown" style="padding-bottom: 20px;">
+                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+                    <code><div class="animated-background"></div></code>
+                    </pre>
                 </div>
             </div>
         </div>

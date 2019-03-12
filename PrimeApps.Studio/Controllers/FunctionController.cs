@@ -346,7 +346,7 @@ namespace PrimeApps.Studio.Controllers
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
 
-            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
+            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber(function.Id) + 1;
 
             var deployment = new DeploymentFunction
             {

@@ -73,7 +73,7 @@ angular.module('primeapps')
             var isUpdate = false; // up and down menu is click
             var menuUpdate = false;
 
-            var customModules = [
+           /* var customModules = [
                 {
                     label_tr_singular: 'Pano',
                     label_tr_plural: 'Pano',
@@ -183,22 +183,22 @@ angular.module('primeapps')
                     menu_icon: "fa fa-search",
                     display: true
                 }
-            ];
+            ];*/
 
             $scope.newModuleList = angular.copy($rootScope.appModules);
             //push customModules to modules
-            angular.forEach(customModules, function (customModule) {
+          /*  angular.forEach(customModules, function (customModule) {
                 $scope.newModuleList.push(customModule);
-            });
+            });*/
 
-            $scope.showFormModal = function (id, _clone) {
+            $scope.showFormModal = function (id, cloneSettings) {
                 $scope.loadingModal = true;
                 $scope.id = id;
                 $scope.wizardStep = 0;
                 $scope.menuLists = [];
                 $scope.menu = {};
                 $scope.counter = 1;
-                $scope.clone = angular.copy(_clone);
+                $scope.clone = angular.copy(cloneSettings);
 
                 /**
                  * Profile picklist filter, If exist delete from picklist
@@ -404,17 +404,17 @@ angular.module('primeapps')
                         menuListIsUpdate = true;
                     }
 
-                    if ($scope.firstProfileId != $scope.menu.profile_id && !$scope.menu.default) { //profile.id
+                    if ($scope.firstProfileId !== $scope.menu.profile_id && !$scope.menu.default) { //profile.id
                         updateList.profile_id = $scope.menu.profile.id;
                         menuListIsUpdate = true;
                     }
 
-                    if ($scope.firstDefaultMenu != $scope.menu.default) {
+                    if ($scope.firstDefaultMenu !== $scope.menu.default) {
                         updateList.default = $scope.menu.default;
                         menuListIsUpdate = true;
                     }
 
-                    if ($scope.firstMenuDescription != $scope.menu.description) {
+                    if ($scope.firstMenuDescription !== $scope.menu.description) {
                         updateList.description = $scope.menu.description;
                         menuListIsUpdate = true;
                     }
@@ -515,11 +515,12 @@ angular.module('primeapps')
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
                         $scope.saving = false;
+                        $scope.changePage($scope.activePage);
                     }
                 }
                 //If first create
                 else {
-                    var menu = [
+                     menu = [
                         {
                             profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id,
                             name: $scope.menu.name,

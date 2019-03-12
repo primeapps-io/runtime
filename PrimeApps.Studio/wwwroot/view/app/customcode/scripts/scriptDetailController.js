@@ -25,6 +25,7 @@ angular.module('primeapps')
             $scope.response = null;
 
             $scope.pageTotal = 0;
+            $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
             $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
@@ -75,6 +76,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 ScriptsDeploymentService.find(requestModel)
@@ -101,7 +114,7 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage);
             };
 
             ScriptsService.getByName($scope.name)

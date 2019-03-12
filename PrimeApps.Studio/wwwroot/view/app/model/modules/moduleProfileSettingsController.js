@@ -6,6 +6,8 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
             $scope.loading = true;
             var module = $filter('filter')($rootScope.appModules, { name: $stateParams.module }, true)[0];
+            $scope.activePage = 1;
+
 
             if (!module) {
                 toastr.warning($filter('translate')('Common.NotFound'));
@@ -44,12 +46,21 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-
-                ModuleService.profileSettingsCount(module.id).then(function (response) {
-                    $scope.pageTotal = response.data;
-                });
 
                 ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
                     var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
@@ -69,10 +80,11 @@ angular.module('primeapps')
                 }).finally(function () {
                     $scope.loading = false;
                 });
+
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
             $scope.module = angular.copy(module);
@@ -196,7 +208,8 @@ angular.module('primeapps')
                     toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'));
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
-                    $scope.changePage(1);
+                    $scope.changePage($scope.activePage);
+                    $scope.pageTotal++;
                 };
 
                 if (!profileSetting.id) {
@@ -228,12 +241,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (profileSetting) {
-                delete profileSetting.$$hashKey;
-                var deleteModel = angular.copy($scope.profileSettings);
-                var profileSettingIndex = helper.arrayObjectIndexOf(deleteModel, profileSetting);
-                deleteModel.splice(profileSettingIndex, 1);
-
+            $scope.delete = function (profileSetting, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -243,15 +251,21 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             ModuleService.deleteModuleProfileSetting(profileSetting.id)
                                 .then(function () {
-                                    $scope.changePage(1);
-                                    var profileSettingIndex = helper.arrayObjectIndexOf($scope.profileSettings, profileSetting);
-                                    $scope.profileSettings.splice(profileSettingIndex, 1);
+                                    $scope.pageTotal--;
+                                    //var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.changePage($scope.activePage);
                                     toastr.success("Profile setting is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.profileSettings = $scope.profileSettingState;
 
                                     if ($scope.profileSettingsFormModal) {

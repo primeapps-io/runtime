@@ -11,7 +11,7 @@ angular.module('primeapps')
                 return;
             }
 
-            
+
             $scope.collaboratorArray = [];
             // $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
@@ -20,6 +20,7 @@ angular.module('primeapps')
             $scope.collaboratorModel = {};
             $scope.loading = true;
             $scope.showNewCollaboratorInfo = false;
+            $scope.activePage = 1;
 
             $scope.requestModel = {
                 limit: "10",
@@ -48,13 +49,22 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
-                    $scope.$parent.collaboratorCount = response.data;
-                    $scope.pageTotal = response.data;
-                });
                 CollaboratorsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
                     $scope.collaboratorArray = response.data;
                     $scope.$parent.collaboratorArray = response.data;
@@ -64,9 +74,8 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
-
             $scope.getCollaborators = function () {
                 var filter = {};
                 filter.organization_id = $rootScope.currentOrgId;
@@ -92,9 +101,9 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
                 $scope.selectedCollaborator = angular.copy(result);
-                $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.selectedCollaborator.role}, true)[0];
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                 $scope.$parent.activeMenu = "collaborator";
                 $scope.$parent.activeMenuItem = 'collaborator';
             }
@@ -103,27 +112,27 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
                 $scope.collaboratorId = id;
                 $scope.$parent.collaboratorId = id;
                 $scope.selectedCollaborator = angular.copy(result);
                 $scope.$parent.selectedCollaborator = angular.copy(result);
-                $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.$parent.selectedCollaborator.role}, true)[0];
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.$parent.selectedCollaborator.role }, true)[0];
             }
 
             $scope.roles = [
-                {'name': 'Admin', 'value': 'administrator'},
-                {'name': 'Collaborator', 'value': 'collaborator'}
+                { 'name': 'Admin', 'value': 'administrator' },
+                { 'name': 'Collaborator', 'value': 'collaborator' }
             ];
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
@@ -135,7 +144,7 @@ angular.module('primeapps')
                 if (!newCollaboratorForm.$valid)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, {email: $scope.collaboratorModel.email}, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, { email: $scope.collaboratorModel.email }, true)[0];
 
                 if (result)
                     return false;
@@ -154,8 +163,8 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
+                            $scope.sendCollaboratorEmail = $scope.collaboratorModel.email;
                             $scope.collaboratorModel.email = "";
-
                             $scope.submitting = false;
                             $scope.userPassword = response.data.password;
                             $scope.showNewCollaboratorInfo = true;
@@ -173,7 +182,8 @@ angular.module('primeapps')
                 $scope.getCollaborators();
                 $state.reload();
                 $scope.addNewCollaboratorModal.hide();
-                $scope.showNewCollaboratorInfo = false;
+                //Modal kapanırken inputun kırmızı olmasına sebep oluyordu.
+                // $scope.showNewCollaboratorInfo = false;
             }
 
             $scope.update = function (collaboratorModel) {
@@ -196,7 +206,7 @@ angular.module('primeapps')
                     .catch(function (error) {
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.updatingRole = false;
-                        $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.selectedCollaborator.role}, true)[0];
+                        $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                     });
             }
 
@@ -204,7 +214,7 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
 
                 if (!result)
                     return false;
@@ -234,5 +244,26 @@ angular.module('primeapps')
                         $scope.removing = false;
                     });
             };
+
+            $scope.sendEmail = function () {
+                if ($scope.sendCollaboratorEmail) {
+                    $scope.savingEmailPassword = true;
+                    var sendEmailData = {};
+                    sendEmailData.email = $scope.sendCollaboratorEmail;
+                    sendEmailData.app_id = 2;
+                    sendEmailData.culture = "en";
+                    sendEmailData.first_name = $scope.collaboratorModel.first_name;
+                    sendEmailData.password = $scope.userPassword;
+                    CollaboratorsService.sendEmail(sendEmailData)
+                        .then(function (response) {
+                            $scope.savingEmailPassword = false;
+                            toastr.success("Mail sending successfull");
+                        });
+                }
+                else {
+                    toastr.warning("Email the new password to the following recipient not null");
+                }
+            };
+
         }
     ]);

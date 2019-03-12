@@ -14,6 +14,7 @@ angular.module('primeapps')
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
             $scope.modules = $rootScope.appModules;
+            $scope.activePage = 1;
 
             $scope.requestModel = {
                 limit: "10",
@@ -38,6 +39,20 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.requestModel.offset = page;
+
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 ScriptsService.find(requestModel)
@@ -57,7 +72,7 @@ angular.module('primeapps')
             $scope.changePage(1);
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
             var setModule = function (data) {
@@ -71,19 +86,20 @@ angular.module('primeapps')
             $scope.save = function (scriptForm) {
                 $scope.saving = true;
 
-                if (!scriptForm.$valid)
+                if (!scriptForm.$valid) {
+                    $scope.saving = false;
                     return;
+                }
 
                 if ($scope.id) {
                     ScriptsService.update($scope.scriptModel)
                         .then(function (response) {
                             if (response.data) {
-                                toastr.success("Script is updated successfully.")
+                                toastr.success("Script is updated successfully.");
+                                $scope.cancel();
+                                $scope.changeOffset(1);
                             }
-
                             $scope.saving = false;
-                            $scope.cancel();
-                            $scope.changeOffset(1);
                         })
                         .catch(function (reason) {
                             toastr.error($filter('translate')('Error'));
@@ -95,12 +111,12 @@ angular.module('primeapps')
                     ScriptsService.create($scope.scriptModel)
                         .then(function (response) {
                             if (response.data) {
-                                toastr.success("Script is created successfully.")
+                                toastr.success("Script is created successfully.");
+                                $state.go('studio.app.scriptDetail', { name: $scope.scriptModel.name });
+                                $scope.cancel();
                             }
-
                             $scope.saving = false;
-                            $scope.cancel();
-                            $scope.changeOffset(1);
+                            //$scope.changeOffset(1);
                         }).catch(function (reason) {
                             toastr.error($filter('translate')('Error'));
                             $scope.saving = false;
@@ -109,6 +125,7 @@ angular.module('primeapps')
             }
 
             $scope.delete = function (script) {
+
                 script.deleting = true;
 
                 if (!script.id) {
@@ -116,19 +133,30 @@ angular.module('primeapps')
                     return;
                 }
 
-                ScriptsService.delete(script.id)
-                    .then(function (response) {
-                        if (response.data) {
-                            toastr.success("Script is deleted successfully.")
-                        }
+                swal({
+                    title: "Are you sure?",
+                    text: " ",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Yes'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        ScriptsService.delete(script.id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    toastr.success("Script is deleted successfully.");
+                                }
 
+                                script.deleting = false;
+                                $scope.changeOffset(1);
+                            }).catch(function (reason) {
+                                toastr.error($filter('translate')('Error'));
+                                script.deleting = false;
+                            });
+                    }
+                    else
                         script.deleting = false;
-                        $scope.changeOffset(1);
-                    }).catch(function (reason) {
-                        toastr.error($filter('translate')('Error'));
-                        script.deleting = false;
-                    });
-
+                });
             };
 
             $scope.createIdentifier = function () {
@@ -143,8 +171,8 @@ angular.module('primeapps')
 
 
             $scope.scriptNameBlur = function (name) {
-                if ($scope.isScriptNameBlur && $scope.scriptNameValid)
-                    return;
+                //if ($scope.isScriptNameBlur && $scope.scriptNameValid)
+                //    return;
 
                 $scope.isScriptNameBlur = true;
                 $scope.checkScriptName(name ? name : "");

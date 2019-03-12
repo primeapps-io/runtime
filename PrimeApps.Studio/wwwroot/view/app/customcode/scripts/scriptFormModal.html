@@ -37,6 +37,7 @@
                                            required
                                            maxlength="100"
                                            focus="true"
+                                           ng-model-options="{ debounce: 500 }"
                                            ng-change="createIdentifier();"
                                            ng-model="scriptModel.label" />
                                 </div>
@@ -52,7 +53,7 @@
                                            ng-disabled="true"
                                            ng-trim="false"
                                            ng-blur="scriptNameBlur(scriptModel);"
-                                           ng-change="checkNameUnique(scriptModel.name)"
+                                           ng-change="checkScriptName(scriptModel)"
                                            ng-model="scriptModel.name" />
                                     <div ng-if="scriptNameChecking">
                                         <i class="fa fa-spinner fa-spin"

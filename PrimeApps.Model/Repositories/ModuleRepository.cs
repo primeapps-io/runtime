@@ -153,6 +153,8 @@ namespace PrimeApps.Model.Repositories
             var module = await DbContext.Modules
                 .Include(x => x.Fields)
                 .ThenInclude(field => field.Permissions)
+                .Include(x => x.Fields)
+                .ThenInclude(field => field.Combination)
                 .Include(x => x.Dependencies)
                 .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
 

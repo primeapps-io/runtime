@@ -206,5 +206,16 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(result);
         }
+
+        [Route("is_unique_check/{name}")]
+        public async Task<IActionResult> isUniqueCheck(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return NotFound();
+
+            var result = await _picklistRepository.isUniqueCheck(name);
+
+            return Ok(!result);
+        }
     }
 }

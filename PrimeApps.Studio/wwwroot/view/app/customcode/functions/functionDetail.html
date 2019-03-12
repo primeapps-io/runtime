@@ -1,21 +1,19 @@
-<div ng-if="!loading" class="function tab-content" ng-show="$parent.showConsole" id="logger">
-    <div class="col-sm-12" style="border: none;position: fixed;bottom: 0;right: 35px;z-index: 99;width: 99.1%;padding-left: 0;padding-right: 0;background: #c8c9ca;" id="log-screen">
-        <div class="setup-liste-header row" style="margin-left: 0;margin-right: 0;">
-            <div class="col-sm-12">
-                <div class="setup-title" style="height: 30px;">
-                    <h2>Logs</h2>
-                    <div>
-                        <i class="fas fa-refresh" style="font-size: 15px;cursor: pointer;" ng-class="refreshLogs ? 'fa-spin' : ''" ng-click="getLogs()"></i>
-                        <i class="fas fa-chevron-down" style="font-size: 15px;cursor: pointer;padding-left:20px;" ng-click="$parent.showConsole = !$parent.showConsole;"></i>
-                    </div>
-                </div>
+<div ng-if="!loading" class="function" ng-show="$parent.showConsole" id="logger">
+    <div style="" id="log-screen">
+        <div class="setup-title">
+            <h2>Logs</h2>
+            <div>
+                <ul class="list-unstyled list-inline">
+                    <li><button class="btn add-button" ng-click="getLogs()"> <i class="fas fa-refresh" ng-class="refreshLogs ? 'fa-spin' : ''" ></i> </button></li>
+                    <li><button class="btn add-button" ng-click="$parent.showConsole = !$parent.showConsole;"> <i class="fas fa-times"></i> </button></li>
+                </ul>
             </div>
         </div>
 
         <div class="tab-content">
             <div class="ui grid">
                 <div class="sixteen wide column content" style="padding:0px;">
-                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black;">
+                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black; border-radius: 5px;">
                         <pre id="logArea" data-ng-bind-html="asHtml()" style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;max-height: 300px !important;min-height: 100px;"></pre>
                     </div>
                 </div>
@@ -25,311 +23,311 @@
 </div>
 
 
-<div ng-if="!loading" class="function tab-content">
-    <div class="col-sm-12" style="border: none ;">
-        <div class="setup-liste-header row">
-            <div class="col-sm-12">
-                <div class="setup-title">
-                    <h2>
-                        {{function.label}}
-                        <span style="color: black;font-size: 13px;font-style: italic;font-weight: 600;">
-                            ( {{name}}.{{getFileType()}} )
-                        </span>
-                    </h2>
-                    <div>
-                        <i class="fas fa-terminal" data-trigger="hover" data-type="info" data-title="Logs" bs-tooltip="" data-placement="bottom" style="font-size: 20px;cursor: pointer;" ng-click="openTerminal()"></i>
-                    </div>
-                </div>
-            </div>
+<div ng-if="!loading">
+    <div class="setup-title">
+        <h2>
+            {{function.label}}
+            <span style="color: black;font-size: 13px;font-style: italic;font-weight: 600;">
+                        ( {{name}}.{{getFileType()}} )
+                    </span>
+        </h2>
+        <div>
+            <ul class="list-unstyled list-inline">
+                <li>
+                    <button class="btn add-button" ng-click="openTerminal()"><i class="fas fa-terminal"></i> Logs
+                    </button>
+                </li>
+            </ul>
         </div>
+    </div>
 
-        <div ng-if="!loading" class="tab-content" style="padding: 20px;position: relative;">
-            <div class="bs-docs-section">
-                <div class="bs-example" append-source>
-                    <div bs-active-pane="tabManage.activeTab" bs-tabs>
-                        <div data-title="Overview" name="overview" bs-pane>
-                            <div ng-if="!loading" class="tab-content" style="padding: 20px;">
-                                <div class="setup-title">
-                                    <h2>Clone this repository</h2>
-                                    <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
+    <div class="tab-content functionx" style="padding: 20px;position: relative;">
+        <div class="bs-docs-section">
+            <div class="bs-example" append-source>
+                <div bs-active-pane="tabManage.activeTab" bs-tabs>
+                    <div data-title="Overview" name="overview" bs-pane>
+                        <div>
+                            <div class="setup-title">
+                                <h2>Clone this repository</h2>
+                                <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+                            </div>
+                            <div class="markdown" style="padding-bottom: 20px;">
+    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+        <code>
 {{giteaUrl}}/{{organization.name}}/{{app.name}}.git</code>
-        </pre>
-                                </div>
-                                <div class="setup-title">
-                                    <h2>Creating a new repository on the command line</h2>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
+    </pre>
+                            </div>
+                            <div class="setup-title">
+                                <h2>Creating a new repository on the command line</h2>
+                            </div>
+                            <div class="markdown" style="padding-bottom: 20px;">
+    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+        <code>
 git init
 git add README.md
 git commit -m "first commit"
 git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
-        </pre>
-                                </div>
-                                <div class="setup-title">
-                                    <h2>Pushing an existing repository from the command line</h2>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
+    </pre>
+                            </div>
+                            <div class="setup-title">
+                                <h2>Pushing an existing repository from the command line</h2>
+                            </div>
+                            <div class="markdown" style="padding-bottom: 20px;">
+    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+        <code>
 git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
 git push -u origin master</code>
-        </pre>
+    </pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-title="Deployments" name="deployment" bs-pane>
+
+                        <div>
+                            <table class="table" ng-show="loadingDeployments">
+                                <thead>
+                                <tr>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Version</th>
+                                    <th>Status</th>
+                                    <th width="50"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                <tr ng-repeat="item in placeholderArray">
+                                    <td>
+                                        <div class="animated-background"></div>
+                                    </td>
+                                    <td>
+                                        <div class="animated-background"></div>
+                                    </td>
+                                    <td>
+                                        <div class="animated-background"></div>
+                                    </td>
+                                    <td>
+                                        <div class="animated-background"></div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="animated-background"></div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
+                                <thead>
+                                <tr>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Version</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="deployment in deployments">
+                                    <td>{{getTime(deployment.start_time)}}</td>
+                                    <td>{{getTime(deployment.end_time)}}</td>
+                                    <td>{{deployment.version}}</td>
+                                    <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="table-pagination">
+                                <div>
+                                    <nav aria-label="Page navigation">
+                                        <div paging
+                                             text-first="&laquo;"
+                                             ul-class="pagination"
+                                             active-class="active"
+                                             page="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.offset"
+                                             page-size="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.limit"
+                                             total="$parent.$parent.$parent.$parent.$parent.$parent.pageTotal"
+                                             scroll-top="true"
+                                             hide-if-empty="true"
+                                             show-prev-next="true"
+                                             show-first-last="true"
+                                             text-next-class="fas fa-chevron-right"
+                                             text-prev-class="fas fa-chevron-left"
+                                             text-first-class="fas fa-step-backward"
+                                             text-last-class="fas fa-step-forward"
+                                             paging-action="$parent.$parent.$parent.$parent.$parent.$parent.changePage(page)">
+                                        </div>
+                                    </nav>
+                                </div>
+                                <div>
+                                    Total Deployment {{$parent.$parent.$parent.$parent.$parent.$parent.pageTotal}}
+                                </div>
+                                <div>
+                                    <span class="pagination-span">Items per page  </span>
+                                    <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.$parent.$parent.changeOffset()">
+                                        <option ng-selected="true" value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="150">150</option>
+                                        <option value="200">200</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <div data-title="Deployments" name="deployment" bs-pane>
 
-                            <div class="tab-content">
-                                <table class="table" ng-show="loadingDeployments">
-                                    <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                        <th width="50"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                    <tr ng-repeat="item in placeholderArray">
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="animated-background"></div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
-                                    <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="deployment in deployments">
-                                        <td>{{getTime(deployment.start_time)}}</td>
-                                        <td>{{getTime(deployment.end_time)}}</td>
-                                        <td>{{deployment.version}}</td>
-                                        <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div class="table-pagination">
-                                    <div>
-                                        <nav aria-label="Page navigation">
-                                            <div paging
-                                                 text-first="&laquo;"
-                                                 ul-class="pagination"
-                                                 active-class="active"
-                                                 page="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.offset"
-                                                 page-size="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.limit"
-                                                 total="$parent.$parent.$parent.$parent.$parent.$parent.pageTotal"
-                                                 scroll-top="true"
-                                                 hide-if-empty="true"
-                                                 show-prev-next="true"
-                                                 show-first-last="true"
-                                                 text-next-class="fas fa-chevron-right"
-                                                 text-prev-class="fas fa-chevron-left"
-                                                 text-first-class="fas fa-step-backward"
-                                                 text-last-class="fas fa-step-forward"
-                                                 paging-action="$parent.$parent.$parent.$parent.$parent.$parent.changePage(page)">
-                                            </div>
-                                        </nav>
+                        <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
+                            <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="changePage(1)"></i>
+
+                            <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
+                                <i class="fas fa-plus"></i> Create Deployment
+                            </button>
+                        </div>
+                    </div>
+                    <div data-title="Test" name="test" disabled="tabManage.disableTest" bs-pane>
+                        <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" autocomplete="off"
+                              novalidate>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group"
+                                         ng-class="{'has-error': functionRunValidation.$submitted && functionRunValidation.type.$invalid}">
+                                        <label class="col-sm-4 required-field">Type: </label>
+                                        <select
+                                                ng-init="$parent.$parent.$parent.$parent.$parent.$parent.run.type = 'get'"
+                                                name="type"
+                                                class="form-control ng-animate-disabled col-sm-8"
+                                                required
+                                                ng-model="$parent.$parent.$parent.$parent.$parent.$parent.run.type">
+                                            <option value="get">GET</option>
+                                            <option value="post">POST</option>
+                                        </select>
                                     </div>
-                                    <div>
-                                        Total Deployment {{$parent.$parent.$parent.$parent.$parent.$parent.pageTotal}}
+                                    <div class="form-group"
+                                         ng-if="$parent.$parent.$parent.$parent.$parent.$parent.run.type === 'post'"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionRunValidation.$submitted && functionRunValidation.body.$invalid}">
+                                        <label class="col-sm-4 required-field">Body: </label>
+                                        <textarea style="min-height:200px !important;padding-top: 10px;padding-bottom: 10px;resize: none; "
+                                                  name="body"
+                                                  placeholder="{'hello':'world'}"
+                                                  class="form-control ng-animate-disabled col-sm-6"
+                                                  ng-model="$parent.$parent.$parent.$parent.$parent.$parent.run.body"></textarea>
                                     </div>
-                                    <div>
-                                        <span class="pagination-span">Items per page  </span>
-                                        <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.$parent.$parent.changeOffset()">
-                                            <option ng-selected="true" value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="150">150</option>
-                                            <option value="200">200</option>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group"
+                                         ng-if="response"
+                                         style="position: relative;">
+                                        <label class="col-sm-4 required-field">Response: </label>
+                                        <textarea style="min-height:277px !important;padding-top: 10px;padding-bottom: 10px;resize: none;"
+                                                  class="form-control ng-animate-disabled col-sm-6"
+                                                  ng-readonly="true"
+                                                  ng-model="$parent.$parent.$parent.$parent.$parent.$parent.response"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'test'">
+                            <button ng-disabled="$parent.$parent.$parent.$parent.$parent.$parent.deployments.length == 0" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
+                                <i class="fas fa-bolt"></i> Run
+                            </button>
+                        </div>
+                    </div>
+                    <div data-title="Settings" name="settings" bs-pane>
+                        <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
+                              novalidate>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
+                                        <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
+                                        <input type="text"
+                                               name="name"
+                                               class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                               required
+                                               maxlength="100"
+                                               ng-blur="functionNameBlur($parent.$parent.function)"
+                                               ng-change="checkFunctionName($parent.$parent.function)"
+                                               ng-disabled="true"
+                                               focus="true"
+                                               ng-model="function.name"/>
+                                        <div ng-if="functionNameChecking">
+                                            <i class="fa fa-spinner fa-spin"
+                                               style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
+                                        </div>
+                                        <div ng-if="functionNameValid">
+                                            <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
+                                               class="fa-sidebar-icon fas fa-check"></i>
+                                        </div>
+                                        <div ng-if="functionNameValid === false">
+                                            <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
+                                               class="fas fa-times"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.label.$invalid}">
+                                        <label class="col-sm-4 required-field">Label <span class="required-label">(required)</span></label>
+                                        <input type="text"
+                                               name="label"
+                                               class="form-control ng-animate-disabled col-sm-6"
+                                               required
+                                               maxlength="100"
+                                               ng-model="function.label"/>
+                                    </div>
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
+                                        <label class="col-sm-4 required-field">Handler <span class="required-label">(required)</span></label>
+                                        <input type="text"
+                                               name="handler"
+                                               class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                               required
+                                               placeholder="module.handler"
+                                               ng-change="checkFunctionHandler($parent.$parent.function)"
+                                               ng-model="function.handler"/>
+                                    </div>
+
+                                    <div class="form-group"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
+                                        <label class="col-sm-4 required-field">Runtime <span class="required-label">(required)</span></label>
+                                        <select
+                                                name="runtime"
+                                                class="form-control ng-animate-disabled col-sm-8"
+                                                required
+                                                ng-model="function.runtime"
+                                                ng-change="changeRuntime()"
+                                                ng-options="o.value as o.name for o in runtimes">
+                                            <option value="">Select Runtime</option>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.dependencies.$invalid}">
+                                        <label class="col-sm-4 required-field">Dependencies: </label>
+                                        <textarea style="padding-top: 10px;padding-bottom: 10px;min-height: auto !important;margin: 0px;height: 271px;max-height: 271px;width: 641px;"
+                                                  name="dependencies"
+                                                  class="form-control ng-animate-disabled col-sm-6 ng-pristine ng-untouched ng-valid ng-not-empty"
+                                                  ng-model="function.dependencies"></textarea>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
-                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="changePage(1)"></i>
-
-                                <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
-                                    <i class="fas fa-plus"></i> Create Deployment
+                            <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'settings'">
+                                <button ng-click="save(functionFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
+                                    <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                                 </button>
                             </div>
-                        </div>
-                        <div data-title="Test" name="test" disabled="tabManage.disableTest" bs-pane>
-                            <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" autocomplete="off"
-                                  novalidate>
-
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group"
-                                             ng-class="{'has-error': functionRunValidation.$submitted && functionRunValidation.type.$invalid}">
-                                            <label class="col-sm-4 required-field">Type: </label>
-                                            <select
-                                                    ng-init="$parent.$parent.$parent.$parent.$parent.$parent.run.type = 'get'"
-                                                    name="type"
-                                                    class="form-control ng-animate-disabled col-sm-8"
-                                                    required
-                                                    ng-model="$parent.$parent.$parent.$parent.$parent.$parent.run.type">
-                                                <option value="get">GET</option>
-                                                <option value="post">POST</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group"
-                                             ng-if="$parent.$parent.$parent.$parent.$parent.$parent.run.type === 'post'"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionRunValidation.$submitted && functionRunValidation.body.$invalid}">
-                                            <label class="col-sm-4 required-field">Body: </label>
-                                            <textarea style="min-height:200px !important;padding-top: 10px;padding-bottom: 10px;resize: none; "
-                                                      name="body"
-                                                      placeholder="{'hello':'world'}"
-                                                      class="form-control ng-animate-disabled col-sm-6"
-                                                      ng-model="$parent.$parent.$parent.$parent.$parent.$parent.run.body"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group"
-                                             ng-if="response"
-                                             style="position: relative;">
-                                            <label class="col-sm-4 required-field">Response: </label>
-                                            <textarea style="min-height:277px !important;padding-top: 10px;padding-bottom: 10px;resize: none;"
-                                                      class="form-control ng-animate-disabled col-sm-6"
-                                                      ng-readonly="true"
-                                                      ng-model="$parent.$parent.$parent.$parent.$parent.$parent.response"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'test'">
-                                <button ng-disabled="$parent.$parent.$parent.$parent.$parent.$parent.deployments.length == 0" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
-                                    <i class="fas fa-bolt"></i> Run
-                                </button>
-                            </div>
-                        </div>
-                        <div data-title="Settings" name="settings" bs-pane>
-                            <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
-                                  novalidate>
-
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
-                                            <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
-                                            <input type="text"
-                                                   name="name"
-                                                   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                                                   required
-                                                   maxlength="100"
-                                                   ng-blur="functionNameBlur($parent.$parent.function)"
-                                                   ng-change="checkFunctionName($parent.$parent.function)"
-                                                   ng-disabled="true"
-                                                   focus="true"
-                                                   ng-model="function.name"/>
-                                            <div ng-if="functionNameChecking">
-                                                <i class="fa fa-spinner fa-spin"
-                                                   style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
-                                            </div>
-                                            <div ng-if="functionNameValid">
-                                                <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:green;"
-                                                   class="fa-sidebar-icon fas fa-check"></i>
-                                            </div>
-                                            <div ng-if="functionNameValid === false">
-                                                <i style="font-size:24px;position: absolute;bottom: 8px;right: 8px;color:red;"
-                                                   class="fas fa-times"></i>
-                                            </div>
-                                        </div>
-                                        <div class="form-group"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.label.$invalid}">
-                                            <label class="col-sm-4 required-field">Label <span class="required-label">(required)</span></label>
-                                            <input type="text"
-                                                   name="label"
-                                                   class="form-control ng-animate-disabled col-sm-6"
-                                                   required
-                                                   maxlength="100"
-                                                   ng-model="function.label"/>
-                                        </div>
-                                        <div class="form-group"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
-                                            <label class="col-sm-4 required-field">Handler <span class="required-label">(required)</span></label>
-                                            <input type="text"
-                                                   name="handler"
-                                                   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                                                   required
-                                                   placeholder="module.handler"
-                                                   ng-change="checkFunctionHandler($parent.$parent.function)"
-                                                   ng-model="function.handler"/>
-                                        </div>
-
-                                        <div class="form-group"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
-                                            <label class="col-sm-4 required-field">Runtime <span class="required-label">(required)</span></label>
-                                            <select
-                                                    name="runtime"
-                                                    class="form-control ng-animate-disabled col-sm-8"
-                                                    required
-                                                    ng-model="function.runtime"
-                                                    ng-change="changeRuntime()"
-                                                    ng-options="o.value as o.name for o in runtimes">
-                                                <option value="">Select Runtime</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.dependencies.$invalid}">
-                                            <label class="col-sm-4 required-field">Dependencies: </label>
-                                            <textarea style="padding-top: 10px;padding-bottom: 10px;min-height: auto !important;margin: 0px;height: 271px;max-height: 271px;width: 641px;"
-                                                      name="dependencies"
-                                                      class="form-control ng-animate-disabled col-sm-6 ng-pristine ng-untouched ng-valid ng-not-empty"
-                                                      ng-model="function.dependencies"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'settings'">
-                                    <button ng-click="save(functionFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
-                                        <i class="fas fa-save"></i>{{'Common.Save' | translate}}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <div ng-if="loading" class="function tab-content">
     <div class="col-sm-12" style="border: none ;">

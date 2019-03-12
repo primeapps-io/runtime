@@ -126,6 +126,26 @@ namespace PrimeApps.Studio.Helpers
             toList.Add(to);
         }
 
+        public void AddToQueue(string from, string fromName, string cc = "", string bcc = "",string template = "",string subject = "")
+        {
+            var queue = new EmailEntry()
+            {
+                EmailTo = toList,
+                EmailFrom = from,
+                ReplyTo = from,
+                FromName = fromName,
+                CC = cc,
+                Bcc = bcc,
+                Subject = subject,
+                Body = template,
+                UniqueID = null,
+                QueueTime = DateTime.UtcNow,
+                SendOn = SendOn
+            };
+            BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
+
+        }
+
         public void AddToQueue(int recordId = 0, int tenantId = 0, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, string fromEmail = "", string Name = "",string Subject = "",string Template = "")
         {
             if (string.IsNullOrEmpty(from))

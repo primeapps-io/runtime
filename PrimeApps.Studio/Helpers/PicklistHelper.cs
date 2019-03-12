@@ -15,7 +15,8 @@ namespace PrimeApps.Studio.Helpers
                 SystemType = SystemType.System, //Default and static for Studio
                 LabelEn = picklistModel.LabelEn,
                 LabelTr = picklistModel.LabelEn,
-                Items = new List<PicklistItem>()
+                Items = new List<PicklistItem>(),
+                SystemCode = picklistModel.SystemCode
             };
 
             foreach (var picklistItemModel in picklistModel.Items)
@@ -41,6 +42,7 @@ namespace PrimeApps.Studio.Helpers
         {
             picklist.LabelEn = picklistModel.LabelEn;
             picklist.LabelTr = picklistModel.LabelEn;
+            picklist.SystemCode = picklistModel.SystemCode;
 
             foreach (var picklistItem in picklist.Items)
             {

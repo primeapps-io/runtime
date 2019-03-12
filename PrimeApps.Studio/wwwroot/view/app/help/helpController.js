@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.isTimetrackerExist = false;
             $scope.$parent.collapsed = true;
             $scope.id = $location.search().id;
+            $scope.activePage = 1;
 
             $scope.$parent.activeMenuItem = 'help';
             $rootScope.breadcrumblist[2].title = 'Help';
@@ -53,6 +54,7 @@ angular.module('primeapps')
 
             HelpService.count().then(function (response) {
                 $scope.pageTotal = response.data;
+                $scope.changePage(1);
             });
 
 
@@ -63,21 +65,32 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                HelpService.count().then(function (response) {
-                    $scope.pageTotal = response.data;
-                });
+                HelpService.find(requestModel)
+                    .then(function (response) {
+                        $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
+                        $scope.loading = false;
+                    });
 
-                HelpService.find(requestModel).then(function (response) {
-                    $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                    $scope.loading = false;
-                });
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage(1);
+                $scope.changePage($scope.activePage);
             };
 
 
@@ -617,7 +630,6 @@ angular.module('primeapps')
                     $cache.removeAll();
                     $scope.saving = false;
                     $scope.addNewHelpFormModal.hide();
-                    $scope.changePage(1);
                     toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'));
                 }
                 else {
@@ -627,8 +639,9 @@ angular.module('primeapps')
                                 $scope.helpTemplates = response.data;
                                 $scope.saving = false;
                                 $scope.addNewHelpFormModal.hide();
-                                $scope.changePage(1);
+                                $scope.changePage($scope.activePage);
                                 toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'));
+                                $scope.pageTotal++;
                             });
 
                     });
@@ -724,10 +737,13 @@ angular.module('primeapps')
                                     $scope.helpTemplates = response.data;
                                     createHelpList();
                                     // $state.reload();
+                                    $scope.changePage($scope.activePage);
                                     $scope.changeOffset();
                                     $scope.saving = false;
                                     $scope.addNewHelpFormSideModal.hide();
                                     toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'));
+                                    $scope.pageTotal++;
+
                                 });
                         });
                     }
@@ -800,7 +816,7 @@ angular.module('primeapps')
                     $scope.showFormSideModal(template);
             };
 
-            $scope.delete = function (helpside) {
+            $scope.delete = function (helpside, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -810,16 +826,21 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
                             HelpService.delete(helpside.id)
                                 .then(function () {
-                                    $scope.changePage(1);
-                                    var helpToDeleteIndex = helper.arrayObjectIndexOf($scope.helpsides, helpside);
-                                    $scope.helpsides.splice(helpToDeleteIndex, 1);
+                                    $scope.pageTotal--;
+                                    //var index = $rootScope.appModules.indexOf(module);
+                                    // $rootScope.appModules.splice(index, 1);
+
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.changePage($scope.activePage);
                                     toastr.success("Help is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
-
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     if ($scope.addNewHelpFormModal) {
                                         $scope.addNewHelpFormModal.hide();
                                         $scope.saving = false;

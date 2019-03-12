@@ -228,5 +228,10 @@ namespace PrimeApps.Model.Repositories
 
             return picklist;
         }
+
+        public Task<bool> isUniqueCheck(string systemCode)
+        {
+            return DbContext.Picklists.AnyAsync(x => x.SystemCode == systemCode && !x.Deleted); 
+        }
     }
 }

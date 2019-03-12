@@ -221,19 +221,19 @@ angular.module('primeapps')
                 if ($scope.resultModel.recipient) {
                     $scope.savingEmailPassword = true;
                     var sendEmailData = {};
-                    var toAddresses = [];
-                    toAddresses.push($scope.resultModel.recipient);
-                    sendEmailData.to_Addresses = toAddresses;
-                    sendEmailData.template_with_body = "Şifreniz:" + " " + $scope.resultModel.autoPassword;
-                    sendEmailData.subject = 'Kullanıcı Şifreniz';
+                    sendEmailData.email = $scope.resultModel.recipient;
+                    sendEmailData.app_id = 2;
+                    sendEmailData.culture = "en";
+                    sendEmailData.display_name = $scope.resultModel.displayName;
+                    sendEmailData.password = $scope.resultModel.autoPassword;
                     UsersService.sendEmail(sendEmailData)
                         .then(function (response) {
                             if (response.data > 0)
                                 $scope.savingEmailPassword = false;
-                                toastr.success("Mail sending successfull");
+                            toastr.success("Mail sending successfull");
                         });
                 }
-                else{
+                else {
                     toastr.warning("Email the new password to the following recipient not null");
                 }
             };

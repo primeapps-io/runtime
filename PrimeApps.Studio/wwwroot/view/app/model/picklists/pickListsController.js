@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('pickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval',
-        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval) {
+    .controller('pickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval, helper) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.orderChanged = false;
             $scope.pageOfItem;
             $scope.itemModel = {};
-            $scope.lastPageValue = 0;
+            $scope.activePage = 1;
             $scope.picklistModel = {};
 
             $scope.requestModel = { //default page value
@@ -55,6 +55,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 var requestModel = angular.copy($scope.requestModel);
                 if (page != 0)
                     requestModel.offset = page - 1;
@@ -93,9 +105,8 @@ angular.module('primeapps')
 
             };
 
-            $scope.changeOffset = function (value) {
-                $scope.lastPageValue = value;
-                $scope.changePage(value);
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage);
             };
 
             $scope.selectPicklist = function (id) {
@@ -166,6 +177,46 @@ angular.module('primeapps')
                 $scope.addItem = state;
             };
 
+            //$scope.picklistCodeBlur = function () {
+            //    $scope.picklistModel.system_code = helper.getSlug($scope.picklistModel.system_code, '_');
+            //    $scope.checkNameUnique($scope.picklistModel);
+            //};
+
+            $scope.checkNameUnique = function (picklist) {
+                if (!picklist || !picklist.system_code)
+                    return;
+
+                picklist.system_code = helper.getSlug(picklist.system_code, '_');
+
+                //picklist.system_code = picklist.system_code.replace(/\s/g, '');
+                //picklist.system_code = picklist.system_code.replace(/[^a-zA-Z0-9\-]/g, '');
+
+                $scope.picklistNameChecking = true;
+                $scope.picklistNameValid = null;
+
+                if (!picklist.system_code || picklist.system_code === '') {
+                    picklist.system_code = null;
+                    $scope.picklistNameChecking = true;
+                    $scope.picklistNameValid = true;
+                    return;
+                }
+
+                PickListsService.isUniqueCheck(picklist.system_code)
+                    .then(function (response) {
+                        $scope.picklistNameChecking = false;
+                        if (response.data) {
+                            $scope.picklistNameValid = true;
+                        }
+                        else {
+                            $scope.picklistNameValid = false;
+                        }
+                    })
+                    .catch(function () {
+                        $scope.picklistNameValid = false;
+                        $scope.picklistNameChecking = false;
+                    });
+            };
+
             //Picklist save & update function
             $scope.save = function (picklistForm) {
                 $scope.saving = true;
@@ -181,6 +232,26 @@ angular.module('primeapps')
                     return false;
                 }
 
+                if ($scope.picklistModel.system_code) {
+                    PickListsService.isUniqueCheck($scope.picklistModel.system_code)
+                        .then(function (response) {
+                            if (response.data) {
+                                saveAction();
+                            }
+                            else {
+                                toastr.warning('Please enter a unique system code!');
+                                $scope.saving = false;
+                            }
+                        });
+                }
+                else {
+                    saveAction();
+                }
+
+
+            };
+
+            var saveAction = function () {
                 $scope.picklistModel.label_tr = $scope.picklistModel.label_en;
                 $scope.picklistModel.items = [];
 
@@ -192,7 +263,7 @@ angular.module('primeapps')
                             }
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset($scope.lastPageValue);
+                            $scope.changeOffset();
                         });
                 }
                 else {
@@ -205,13 +276,15 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset($scope.lastPageValue);
+                            $scope.changeOffset();
 
                         }).catch(function (reason) {
                             $scope.saving = false;
                         });
                 }
             };
+
+
 
             //Picklist Delete Function
             $scope.delete = function (id) {
@@ -220,7 +293,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.DeleteSuccess'));
-                                $scope.changeOffset($scope.lastPageValue);
+                                $scope.changeOffset();
                             }
                         }).catch(function (reason) {
                             $scope.loading = false;
@@ -358,7 +431,7 @@ angular.module('primeapps')
                             mirror: 'gu-mirror-option pickitemcopy',
                             transit: 'gu-transit-option'
                         },
-                        lockY: true, 
+                        lockY: true,
                         moves: function (el, container, handle) {
                             $scope.orderChanged = true;
                             return handle.classList.contains('option-handle');

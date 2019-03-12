@@ -47,7 +47,7 @@
             <td>{{profileSetting.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(profileSetting);" type="button"
+                    <button ng-click="$event.stopPropagation(); delete(profileSetting,$event);" type="button"
                             class="action-buttons-delete">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -63,7 +63,7 @@
                      text-first="&laquo;"
                      ul-class="pagination"
                      active-class="active"
-                     page="requestModel.offset"
+                     page="page"
                      page-size="requestModel.limit"
                      total="pageTotal"
                      scroll-top="true"

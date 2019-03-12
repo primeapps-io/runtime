@@ -72,7 +72,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber() + 1;
+            var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber(deployment.FunctionId) + 1;
 
             var deploymentObj = new DeploymentFunction()
             {

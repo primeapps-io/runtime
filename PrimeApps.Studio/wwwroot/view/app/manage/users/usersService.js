@@ -38,7 +38,7 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'role/get_all');
                 },
                 sendEmail: function (data) {
-                    return $http.post(config.apiUrl + 'messaging/send_external_email/' , data);
+                    return $http.post(config.apiUrl + 'app_draft_user/send_email_password/' , data);
                 }
             };
         }

@@ -6,6 +6,9 @@
 }
 
 .login-page{
+  input{
+    caret-color:rgba(255, 255, 255, 0.5);
+  }
   body {
     font-family: 'Nunito', sans-serif;
     color: rgba(255, 255, 255, 0.75);

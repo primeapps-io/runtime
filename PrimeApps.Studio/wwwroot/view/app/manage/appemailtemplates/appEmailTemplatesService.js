@@ -1,7 +1,7 @@
 angular.module('primeapps')
 
     .factory('AppEmailTemplatesService', ['$rootScope', '$http', 'config',
-        function ($rootScope, $http, config,) {
+        function ($rootScope, $http, config) {
             return {
                 create: function (appTemplate, currentAppName) {
                     return $http.post(config.apiUrl + 'template/create_app_email_template/' + currentAppName, appTemplate);

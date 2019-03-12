@@ -788,7 +788,7 @@ angular.module('primeapps')
                         $scope.saving = false;
                         toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
-                        $scope.changePage();
+                        $scope.changePage($scope.$parent.$parent.page);
                     });
                 } else {
                     ReportsService.createReport(report).then(function (result) {
@@ -796,7 +796,7 @@ angular.module('primeapps')
                         toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
                         $scope.$parent.$parent.pageTotal++;
-                        $scope.changePage();
+                        $scope.changePage($scope.$parent.$parent.page);
 
 
                     });
