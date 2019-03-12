@@ -8,11 +8,15 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Component;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Models;
 
@@ -27,15 +31,19 @@ namespace PrimeApps.Studio.Helpers
 
     public class ComponentHelper : IComponentHelper
     {
+        private IServiceScopeFactory _serviceScopeFactory;
+        private IHttpContextAccessor _context;
         private IConfiguration _configuration;
         private IGiteaHelper _giteaHelper;
-        private IAppDraftRepository _appDraftRepository;
+        private CurrentUser _currentUser;
 
-        public ComponentHelper(IConfiguration configuration, IGiteaHelper giteaHelper, IAppDraftRepository appDraftRepository)
+        public ComponentHelper(IHttpContextAccessor context, IConfiguration configuration, IGiteaHelper giteaHelper, IServiceScopeFactory serviceScopeFactory)
         {
+            _context = context;
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
             _giteaHelper = giteaHelper;
-            _appDraftRepository = appDraftRepository;
+            _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
         public async Task<JArray> GetAllFileNames(string giteaToken, string email, int appId, string componentName)
@@ -44,26 +52,34 @@ namespace PrimeApps.Studio.Helpers
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                var app = await _appDraftRepository.Get(appId);
-                var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
-                if (repository != null)
+                using (var _scope = _serviceScopeFactory.CreateScope())
                 {
-                    var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-
-                    if (!string.IsNullOrEmpty(giteaDirectory))
+                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
-                        var localPath = giteaDirectory + repository["name"].ToString();
 
-                        _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
+                        var app = await _appDraftRepository.Get(appId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        if (repository != null)
+                        {
+                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                        /*using (var repo = new Repository(localPath))
-                        {*/
-                        var nameList = _giteaHelper.GetFileNames(localPath, "components/" + componentName);
+                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            {
+                                var localPath = giteaDirectory + repository["name"].ToString();
 
-                        _giteaHelper.DeleteDirectory(localPath);
+                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
 
-                        return nameList;
-                        /*}*/
+                                /*using (var repo = new Repository(localPath))
+                                {*/
+                                var nameList = _giteaHelper.GetFileNames(localPath, "components/" + componentName);
+
+                                _giteaHelper.DeleteDirectory(localPath);
+
+                                return nameList;
+                                /*}*/
+                            }
+                        }
                     }
                 }
             }
@@ -77,20 +93,25 @@ namespace PrimeApps.Studio.Helpers
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                var app = await _appDraftRepository.Get(appId);
-                var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
-                if (repository != null)
+                using (var _scope = _serviceScopeFactory.CreateScope())
                 {
-                    var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-
-                    if (!string.IsNullOrEmpty(giteaDirectory))
+                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
-                        var localPath = giteaDirectory + repository["name"].ToString();
+                        var app = await _appDraftRepository.Get(appId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        if (repository != null)
+                        {
+                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                        _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                        Directory.CreateDirectory(localPath + $"/components/{component.Name}");
+                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            {
+                                var localPath = giteaDirectory + repository["name"].ToString();
 
-                        var files = new JArray()
+                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
+                                Directory.CreateDirectory(localPath + $"/components/{component.Name}");
+
+                                var files = new JArray()
                         {
                             new JObject
                             {
@@ -109,40 +130,43 @@ namespace PrimeApps.Studio.Helpers
                             }
                         };
 
-                        using (var repo = new Repository(localPath))
-                        {
-                            foreach (var file in files)
-                            {
-                                var sample = GetSampleComponent(file["type"].ToString());
-
-                                using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                using (var repo = new Repository(localPath))
                                 {
-                                    var info = new UTF8Encoding(true).GetBytes(sample);
-                                    // Add some information to the file.
-                                    fs.Write(info, 0, info.Length);
+                                    foreach (var file in files)
+                                    {
+                                        var sample = GetSampleComponent(file["type"].ToString());
+
+                                        using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                        {
+                                            var info = new UTF8Encoding(true).GetBytes(sample);
+                                            // Add some information to the file.
+                                            fs.Write(info, 0, info.Length);
+                                        }
+                                    }
+
+                                    var status = repo.RetrieveStatus();
+
+                                    if (!status.IsDirty)
+                                        return;
+
+                                    //System.IO.File.WriteAllText(localPath, sample);
+                                    Commands.Stage(repo, "*");
+
+                                    var signature = new Signature(
+                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                    // Commit to the repository
+                                    var commit = repo.Commit("Created component " + component.Name, signature, signature);
+                                    _giteaHelper.Push(repo, giteaToken);
+
+                                    repo.Dispose();
+                                    _giteaHelper.DeleteDirectory(localPath);
                                 }
                             }
-
-                            var status = repo.RetrieveStatus();
-
-                            if (!status.IsDirty)
-                                return;
-
-                            //System.IO.File.WriteAllText(localPath, sample);
-                            Commands.Stage(repo, "*");
-
-                            var signature = new Signature(
-                                new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                            // Commit to the repository
-                            var commit = repo.Commit("Created component " + component.Name, signature, signature);
-                            _giteaHelper.Push(repo, giteaToken);
-
-                            repo.Dispose();
-                            _giteaHelper.DeleteDirectory(localPath);
                         }
                     }
                 }
+
             }
         }
 
@@ -152,47 +176,55 @@ namespace PrimeApps.Studio.Helpers
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                var app = await _appDraftRepository.Get(appId);
-                var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
-                if (repository != null)
+                using (var _scope = _serviceScopeFactory.CreateScope())
                 {
-                    var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-
-                    if (!string.IsNullOrEmpty(giteaDirectory))
+                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
-                        var localPath = giteaDirectory + repository["name"].ToString();
 
-                        _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                        var fileName = $"/scripts/{script.Name}.js";
-                        
-                        using (var repo = new Repository(localPath))
+                        var app = await _appDraftRepository.Get(appId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        if (repository != null)
                         {
-                            var sample = "Console.log('Hello World!');";
+                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                            using (var fs = System.IO.File.Create(localPath + fileName))
+                            if (!string.IsNullOrEmpty(giteaDirectory))
                             {
-                                var info = new UTF8Encoding(true).GetBytes(sample);
-                                // Add some information to the file.
-                                fs.Write(info, 0, info.Length);
+                                var localPath = giteaDirectory + repository["name"].ToString();
+
+                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
+                                var fileName = $"/scripts/{script.Name}.js";
+
+                                using (var repo = new Repository(localPath))
+                                {
+                                    var sample = "Console.log('Hello World!');";
+
+                                    using (var fs = System.IO.File.Create(localPath + fileName))
+                                    {
+                                        var info = new UTF8Encoding(true).GetBytes(sample);
+                                        // Add some information to the file.
+                                        fs.Write(info, 0, info.Length);
+                                    }
+
+                                    var status = repo.RetrieveStatus();
+
+                                    if (!status.IsDirty)
+                                        return;
+
+                                    //System.IO.File.WriteAllText(localPath, sample);
+                                    Commands.Stage(repo, "*");
+
+                                    var signature = new Signature(
+                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                    // Commit to the repository
+                                    var commit = repo.Commit("Created script " + script.Name, signature, signature);
+                                    _giteaHelper.Push(repo, giteaToken);
+
+                                    repo.Dispose();
+                                    _giteaHelper.DeleteDirectory(localPath);
+                                }
                             }
-
-                            var status = repo.RetrieveStatus();
-
-                            if (!status.IsDirty)
-                                return;
-
-                            //System.IO.File.WriteAllText(localPath, sample);
-                            Commands.Stage(repo, "*");
-
-                            var signature = new Signature(
-                                new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                            // Commit to the repository
-                            var commit = repo.Commit("Created script " + script.Name, signature, signature);
-                            _giteaHelper.Push(repo, giteaToken);
-
-                            repo.Dispose();
-                            _giteaHelper.DeleteDirectory(localPath);
                         }
                     }
                 }

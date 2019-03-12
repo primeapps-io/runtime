@@ -14,6 +14,7 @@ angular.module('primeapps')
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
             $scope.modules = $rootScope.appModules;
+            $scope.activePage = 1;
 
             $scope.requestModel = {
                 limit: "10",
@@ -38,6 +39,18 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
                 $scope.requestModel.offset = page;
 
                 var requestModel = angular.copy($scope.requestModel);
@@ -59,7 +72,7 @@ angular.module('primeapps')
             $scope.changePage(1);
 
             $scope.changeOffset = function () {
-                $scope.changePage(1)
+                $scope.changePage($scope.activePage)
             };
 
             var setModule = function (data) {
