@@ -584,5 +584,38 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(result);
         }
+
+        [Route("send_email_password"), HttpPost]
+        public async Task<IActionResult> SendEmailPassword([FromBody]JObject data)
+        {
+            var applicationInfo = await _applicationRepository.Get(int.Parse(data["app_id"].ToString()));
+
+            var templates = await _platformRepository.GetAppTemplate(int.Parse(data["app_id"].ToString()),
+                     AppTemplateType.Email, data["culture"].ToString().Substring(0, 2), "add_collaborator");
+
+            foreach (var template in templates)
+            {
+                var content = template.Content;
+
+                content = content.Replace("{:FirstName}", data["first_name"].ToString());
+                content = content.Replace("{:Email}", data["email"].ToString());
+                content = content.Replace("{:Password}", data["password"].ToString());
+
+
+                Email notification = new Email(_configuration, null, template.Subject, content);
+
+                var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+
+                if (req != null)
+                {
+                    var senderEmail = (string)req["MailSenderEmail"] ?? applicationInfo.Setting.MailSenderEmail;
+                    var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
+                    notification.AddRecipient(data["email"].ToString());
+                    notification.AddToQueue(senderEmail, senderName, null, null, content, template.Subject);
+                }
+            }
+
+            return Ok();
+        }
     }
 }

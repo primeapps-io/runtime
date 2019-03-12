@@ -163,8 +163,8 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
+                            $scope.sendCollaboratorEmail = $scope.collaboratorModel.email;
                             $scope.collaboratorModel.email = "";
-
                             $scope.submitting = false;
                             $scope.userPassword = response.data.password;
                             $scope.showNewCollaboratorInfo = true;
@@ -245,6 +245,25 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.sendEmail = function () {
+                if ($scope.sendCollaboratorEmail) {
+                    $scope.savingEmailPassword = true;
+                    var sendEmailData = {};
+                    sendEmailData.email = $scope.sendCollaboratorEmail;
+                    sendEmailData.app_id = 2;
+                    sendEmailData.culture = "en";
+                    sendEmailData.first_name = $scope.collaboratorModel.first_name;
+                    sendEmailData.password = $scope.userPassword;
+                    CollaboratorsService.sendEmail(sendEmailData)
+                        .then(function (response) {
+                            $scope.savingEmailPassword = false;
+                            toastr.success("Mail sending successfull");
+                        });
+                }
+                else {
+                    toastr.warning("Email the new password to the following recipient not null");
+                }
+            };
 
         }
     ]);

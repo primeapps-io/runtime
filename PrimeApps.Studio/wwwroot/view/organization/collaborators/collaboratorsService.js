@@ -32,6 +32,8 @@ angular.module('primeapps')
                 delete: function (colobotaros) {
                     return $http.post(config.apiUrl + 'organization/delete_user', colobotaros);
                 },
-
+                sendEmail: function (data) {
+                    return $http.post(config.apiUrl + 'organization/send_email_password/', data);
+                }
             };
         }]);
