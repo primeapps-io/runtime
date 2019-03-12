@@ -193,52 +193,7 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(app);
         }
-
-        [Route("app_collaborator_add"), HttpPost]
-        public async Task<IActionResult> TeamUserAdd([FromBody] AppCollaborator item)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (item == null)
-                return NotFound();
-
-            var result = await _collaboratorRepository.AppCollaboratorAdd(item);
-
-            return Ok(result);
-        }
-
-        [Route("app_collaborator_update/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppCollaborator(int id, [FromBody] AppCollaborator item)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-                return Forbid(ApiResponseMessages.PERMISSION);
-
-            var appCollaborator = await _collaboratorRepository.GetById(id);
-            appCollaborator.Profile = item.Profile;
-
-            var result = await _collaboratorRepository.Update(appCollaborator);
-
-            return Ok(result);
-        }
-
-        [Route("app_collaborator_delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> AppCollaboratorDelete(int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-                return Forbid(ApiResponseMessages.PERMISSION);
-
-            var appCollaborator = await _collaboratorRepository.GetById(id);
-            var result = await _collaboratorRepository.Delete(appCollaborator);
-
-            return Ok(result);
-        }
+        
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
