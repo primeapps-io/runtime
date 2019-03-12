@@ -24,7 +24,7 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => !x.Deleted && x.AppId == appId).ToListAsync();
         }
 
-        public List<AppCollaborator> GetByUserId(int userId, int organizationId, int appId)
+        public List<AppCollaborator> GetByUserId(int userId, int organizationId, int? appId)
         {
             var teamIds = DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToList();
 

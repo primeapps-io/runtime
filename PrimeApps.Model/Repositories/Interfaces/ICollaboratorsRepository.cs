@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface ICollaboratorsRepository : IRepositoryBaseStudio
     {
         Task<List<AppCollaborator>> GetByAppId(int appId);
-        List<AppCollaborator> GetByUserId(int userId, int organizationId, int appId);
+        List<AppCollaborator> GetByUserId(int userId, int organizationId, int? appId);
         Task<int> AppCollaboratorAdd(AppCollaborator appCollaborator);
         Task<int> Delete(AppCollaborator appCollaborator);
         Task<AppCollaborator> GetById(int id);

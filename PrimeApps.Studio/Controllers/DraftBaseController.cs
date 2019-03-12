@@ -68,7 +68,7 @@ namespace PrimeApps.Studio.Controllers
                 else
                     context.HttpContext.Items.Add("app_id", appId);
 
-                var profiles = collaboratorRepository.GetByUserId(AppUser.Id, OrganizationId, (int)AppId);
+                var profiles = collaboratorRepository.GetByUserId(AppUser.Id, OrganizationId, AppId);
                 var managerProfile = profiles.FirstOrDefault(x => x.Profile == ProfileEnum.Manager);
                 if (managerProfile != null)
                     UserProfile = ProfileEnum.Manager;
