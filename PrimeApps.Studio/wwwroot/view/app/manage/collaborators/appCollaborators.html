@@ -45,7 +45,14 @@
             <tbody>
                 <tr ng-repeat="appCol in appCollaborators">
                     <td>
-                        <i class="{{appCol.icon}}" style="margin-right: 5px;"></i>{{appCol.name}}
+                        <div class="user-info">
+                            <div class="user-image">
+                                <i ng-class="appCol.icon"></i>
+                            </div>
+                            <div class="user-text">
+                                <h2 class="ng-binding">{{appCol.name}}</h2>
+                            </div>
+                        </div>
                     </td>
                     <td class="form-group">
                         <div style="position:relative;">
