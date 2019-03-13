@@ -368,7 +368,7 @@
     "FilterLogic": "Filter Logic",
     "FilterLogicExample": "<span style=\"font-weight: bold;\">Example:</span> ((1 and 2) or 3)",
     "Order": "Order",
-    "ViewName": "Filter Name",
+    "ViewName": "View Name",
     "AvailableFields": "Available Fields",
     "SelectedFields": "Selected Fields",
     "No": "No",
