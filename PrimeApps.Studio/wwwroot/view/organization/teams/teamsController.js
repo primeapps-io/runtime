@@ -4,6 +4,16 @@ angular.module('primeapps')
 
     .controller('TeamsController', ['$rootScope', '$scope', '$filter', 'TeamsService', '$state', '$modal', 'ModuleService',
         function ($rootScope, $scope, $filter, TeamsService, $state, $modal, ModuleService) {
+            $scope.loading = true;
+            $scope.activePage = 1;
+            $scope.stepNo = 0;
+            $scope.teamArray = [];
+            $scope.orgranizationUserArray = [];
+            $scope.teamModel = {};
+            $scope.selectedUser = {};
+            $scope.teamId;
+            $scope.icons = ModuleService.getIcons(2);
+            $scope.editForm = false;
 
             if ($rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
@@ -11,13 +21,6 @@ angular.module('primeapps')
                 return;
             }
 
-            $scope.loading = true;
-            $scope.activePage = 1;
-            $scope.teamArray = [];
-            $scope.orgranizationUserArray = [];
-            $scope.teamModel = {};
-            $scope.teamId;
-            $scope.icons = ModuleService.getIcons(2);
 
             //$scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
@@ -85,16 +88,20 @@ angular.module('primeapps')
                 });
 
             };
-             
+
             $scope.changeOffset = function () {
                 $scope.changePage($scope.activePage);
+            };
+
+            $scope.setStep = function (value) {
+                $scope.stepNo = value;
             };
 
             $scope.getOrganizationUserList = function () {
                 $scope.loadingMembers = true;
                 $scope.generator(10);
 
-                TeamsService.getOrganizationUsers($rootScope.currentOrgId) //TODO Organization ID
+                TeamsService.getOrganizationUsers($rootScope.currentOrgId) 
                     .then(function (response) {
                         if (response.data) {
                             var userList = response.data;
@@ -119,7 +126,6 @@ angular.module('primeapps')
                 if (id)
                     $scope.teamId = id;
 
-                $scope.$parent.teamId = id;
                 $scope.loadingMembers = true;
                 $scope.generator(10);
                 TeamsService.get(id)
@@ -129,9 +135,6 @@ angular.module('primeapps')
                             $scope.teamOrganizationName = $filter('filter')($rootScope.organizations, { id: $scope.selectedTeam.organization_id }, true)[0].label;
                         }
 
-                        //$scope.$parent.menuTopTitle = $scope.selectedTeam.name;
-                        $scope.$parent.activeMenu = "teams";
-                        $scope.$parent.activeMenuItem = 'team';
                         $scope.getOrganizationUserList();
                     });
             }
@@ -153,25 +156,6 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                     });
 
-            }
-
-            $scope.$parent.selectTeam = function (id) {
-                if (id)
-                    $scope.teamId = id;
-
-                $scope.$parent.teamId = id;
-                $scope.loadingTeamMembers = true;
-
-                TeamsService.get(id)
-                    .then(function (response) {
-                        if (response.data)
-                            $scope.selectedTeam = response.data;
-
-                        //$scope.$parent.menuTopTitle = $scope.selectedTeam.name;
-                        $scope.$parent.activeMenu = "teams";
-                        $scope.$parent.activeMenuItem = 'team';
-                        $scope.getOrganizationUserList();
-                    });
             }
 
             $scope.checkNameBlur = function () {
@@ -224,7 +208,7 @@ angular.module('primeapps')
                                             $scope.submitting = false;
                                             toastr.success('Team created successfully');
                                             $scope.clearModels();
-                                            $scope.changePage(1);
+                                            $scope.changeOffset();
                                         }
                                     })
                                     .catch(function (error) {
@@ -239,7 +223,7 @@ angular.module('primeapps')
                                         if (response.data) {
                                             toastr.success($filter('translate')('Common.Success'));
                                             $scope.clearModels();
-                                            $scope.changePage(1);
+                                            $scope.changeOffset();
                                             $scope.submitting = false;
                                         }
                                     })
@@ -263,7 +247,9 @@ angular.module('primeapps')
                     });
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (team) {
+                team.deleting = true;
+
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -272,29 +258,32 @@ angular.module('primeapps')
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
-                        if (!id)
+                        if (!team.id) {
+                            team.deleting = false;
                             return false;
-
-                        TeamsService.delete(id)
+                        }
+                        TeamsService.delete(team.id)
                             .then(function (response) {
                                 if (response.data) {
-                                    $scope.changePage(1);
-                                    $scope.teamId = null;
-                                    $scope.$parent.teamId = null;
-                                    $scope.addNewTeamFormModal.hide();
-                                    $scope.teamModel = {};
-                                    $state.reload();
+                                    $scope.changeOffset();
+                                    $scope.teamId = null; 
+                                    $scope.teamModel = {}; 
                                     toastr.success("Team is deleted successfully.", "Deleted!");
                                 }
+                                team.deleting = false;
                             })
                             .catch(function (result) {
                                 toastr.error($filter('translate')('Common.Error'));
+                                team.deleting = false;
                             });
                     }
+                    else
+                        team.deleting = false;
                 });
             };
 
-            $scope.deleteUser = function (id) {
+            $scope.deleteUser = function (user) {
+                user.deleting = true;
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -303,10 +292,12 @@ angular.module('primeapps')
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
-                        if (!id)
+                        if (!user.user_id) {
+                            user.deleting = false;
                             return false;
+                        }
 
-                        TeamsService.deleteUser(id, $scope.selectedTeam)
+                        TeamsService.deleteUser(user.user_id, $scope.selectedTeam)
                             .then(function (response) {
                                 if (response) {
                                     $scope.selectTeam($scope.teamId);
@@ -314,11 +305,15 @@ angular.module('primeapps')
                                     $scope.selectedUser = {};
                                     toastr.success("Member is deleted successfully.", "Deleted!");
                                 }
+                                user.deleting = false;
                             })
                             .catch(function (error) {
                                 toastr.error($filter('translate')('Common.Error'));
+                                user.deleting = false;
                             });
                     }
+                    else
+                        user.deleting = false;
                 })
             }
 
@@ -368,6 +363,7 @@ angular.module('primeapps')
                     $scope.addNewTeamFormModal.hide();
                     $scope.teamModel = {};
                     $scope.teamId = null;
+                    $scope.stepNo = 0;
                 }
             };
 

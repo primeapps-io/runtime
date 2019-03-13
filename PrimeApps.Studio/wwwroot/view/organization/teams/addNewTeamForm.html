@@ -1,7 +1,5 @@
-﻿<div class="modal setup-modal modal-700" tabindex="-1" role="dialog">
-    <form name="addNewTeamForm" class="form-horizontal form-custom" ng-submit="save(addNewTeamForm);" autocomplete="off"
-          novalidate>
-
+﻿<div class="modal setup-modal modal-{{editForm ? '800':'600'}}" tabindex="-1" role="dialog">
+    <form name="addNewTeamForm" class="form-horizontal form-custom" ng-submit="save(addNewTeamForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
                 <h4 ng-show="!editForm" class="modal-title">{{'Team.AddNew' | translate}}</h4>
@@ -29,8 +27,14 @@
             <div class="modal-content padding-0">
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
-                        <div class="section" id="section1">
-                            <div class="panel">
+                        <div class="megalist" id="section1">
+                            <div class="modal-menu">
+                                <ul class="list-unstyled" ng-if="editForm">
+                                    <li><a ng-class="{'active':stepNo == 0}" ng-click="setStep(0);">Settings</a></li>
+                                    <li><a ng-class="{'active':stepNo == 1}" ng-click="setStep(1);">Members</a></li>
+                                </ul>
+                            </div>
+                            <div class="panel" ng-show="stepNo == 0">
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': addNewTeamForm.$submitted && addNewTeamForm.name.$invalid}">
@@ -62,6 +66,61 @@
                                             <div ng-bind-html="icon.label"></div>
                                         </ui-select-choices>
                                     </ui-select>
+                                </div>
+                            </div>
+                            <div class="panel" ng-show="stepNo == 1 && editForm">
+                                <ui-select ng-model="selectedUser.full_name" class="bigwhiteselect"
+                                           on-select="selectUserForTeam($select.selected.user_id)">
+                                    <ui-select-match allow-clear="true" placeholder="Add collaborators from {{teamOrganizationName}}">
+                                        {{$select.selected.full_name}}
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
+                                        <span ng-bind-html="item.full_name | highlight: $select.search"></span>
+                                    </ui-select-choices>
+                                </ui-select>
+                                <div class="tab-content" style="margin-top: 30px;">
+                                    <div class="table-responsive" ng-show="loadingMembers">
+                                        <table class="table" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{'Team.Name' | translate}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in placeholderArray">
+                                                    <td>
+                                                        <div class="animated-background"></div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="table-responsive" ng-show="!loadingMembers">
+                                        <div ng-show="selectedTeam.team_users.length < 1" style="padding:30px"><p>{{'Common.NoMember' | translate}}</p></div>
+                                        <table class="table table-hover" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{'Team.Name' | translate}}</th>
+                                                    <th style="width: 50px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="user in selectedTeam.team_users">
+                                                    <td>
+                                                        {{user.full_name}}
+                                                        <p class="small">{{user.email}}</p>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <div class="action-buttons-block">
+                                                            <button ng-click="$event.stopPropagation();deleteUser(user)" ladda="user.deleting" type="button" class="action-buttons-delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

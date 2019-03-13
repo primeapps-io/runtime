@@ -7,21 +7,9 @@
             </button>
         </li>
     </ul>
-    <ul class="list-unstyled list-inline" ng-if="selectedTeam">
-        <li>
-            <button class="btn delete-btn btn-red" ng-click="delete(teamId)">
-                <i class="fas fa-trash"></i>{{'Common.Delete' | translate}}
-            </button>
-        </li>
-        <li>
-            <button class="btn btn-blue" ng-click="addNewTeam(teamId)">
-                <i class="fas fa-pen"></i> {{'Common.Edit' | translate}}
-            </button>
-        </li>
-    </ul>
 </div>
 
-<div class="tab-content" ng-show="!selectedTeam">
+<div class="tab-content">
     <div class="table-responsive" ng-show="loading">
         <table class="table">
             <thead>
@@ -58,7 +46,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-click="selectTeam(team.id)" ng-repeat="team in teamArray">
+                <tr ng-click="selectTeam(team.id);addNewTeam(team.id);" ng-repeat="team in teamArray">
                     <td>
                         <div class="user-info">
                             <div class="user-image">
@@ -73,22 +61,9 @@
                     <td>{{team.organizationName}}</td>
                     <td class="text-right">
                         <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation()" type="button" data-toggle="dropdown"
-                                    class="btn btn-xs btn-default list-action-button"
-                                    placement="bottom-right"
-                                    data-animation="am-flip-x"
-                                    bs-dropdown
-                                    aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
+                            <button ng-click="$event.stopPropagation();delete(team)" ladda="team.deleting" type="button" class="action-buttons-delete">
+                                <i class="fas fa-trash"></i>
                             </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a ng-click="$event.stopPropagation(); addNewTeam(team.id)">{{'Common.Edit' | translate}} </a>
-                                </li>
-                                <li>
-                                    <a ng-click="$event.stopPropagation(); delete(team.id,$event)">{{'Common.Delete' | translate}} </a>
-                                </li>
-                            </ul>
                         </div>
                     </td>
                 </tr>
@@ -128,61 +103,6 @@
                     <option value="200">200</option>
                 </select>
             </div>
-        </div>
-    </div>
-</div>
-<div ng-show="selectedTeam">
-    <ui-select ng-model="selectedUser" class="bigwhiteselect"
-               on-select="selectUserForTeam($select.selected.user_id)">
-        <ui-select-match allow-clear="true" placeholder="Add collaborators from {{teamOrganizationName}}">
-            {{$select.selected.full_name}}
-        </ui-select-match>
-        <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
-            <span ng-bind-html="item.full_name | highlight: $select.search"></span>
-        </ui-select-choices>
-    </ui-select>
-    <div class="tab-content" style="margin-top: 30px;">
-        <div class="table-responsive" ng-show="loadingMembers">
-            <table class="table" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
-                <thead>
-                    <tr>
-                        <th>{{'Team.Name' | translate}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="item in placeholderArray">
-                        <td>
-                            <div class="animated-background"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="table-responsive" ng-show="!loadingMembers">
-            <div ng-show="selectedTeam.team_users.length < 1" style="padding:30px"><p>{{'Common.NoMember' | translate}}</p></div>
-            <table class="table table-hover" ng-show="selectedTeam && selectedTeam.team_users.length > 0">
-                <thead>
-                    <tr>
-                        <th>{{'Team.Name' | translate}}</th>
-                        <th style="width: 50px;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="user in selectedTeam.team_users">
-                        <td>
-                            {{user.full_name}}
-                            <p class="small">{{user.email}}</p>
-                        </td>
-                        <td class="text-right">
-                            <div class="action-buttons-block">
-                                <button ng-click="$event.stopPropagation();deleteUser(user.user_id)" type="button" class="action-buttons-delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
