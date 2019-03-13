@@ -287,18 +287,35 @@ angular.module('primeapps')
 
 
             //Picklist Delete Function
-            $scope.delete = function (id) {
-                if (id) {
-                    PickListsService.delete(id)
-                        .then(function (response) {
-                            if (response.data) {
-                                toastr.success($filter('translate')('Picklist.DeleteSuccess'));
-                                $scope.changeOffset();
-                            }
-                        }).catch(function (reason) {
-                            $scope.loading = false;
-                        });
-                }
+            $scope.delete = function (id) { 
+                if (!id) {
+                    $scope.loading = false;
+                    return false;
+                } 
+
+                swal({
+                    title: "Are you sure?",
+                    text: " ",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Yes'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        $scope.loading = true;
+                        PickListsService.delete(id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    toastr.success($filter('translate')('Picklist.DeleteSuccess'));
+                                    $scope.changeOffset();
+                                }
+                            }).catch(function (reason) {
+                                $scope.loading = false;
+                            });
+                    }
+                    else
+                        $scope.loading = false;
+                });
+
             };
 
             //Picklist Item Save Function
