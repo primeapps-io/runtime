@@ -8,6 +8,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'appCollaborators';
             $rootScope.breadcrumblist[2].title = 'App Collaborators';
             $scope.roleLoading = false;
+            $scope.teams = [];
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -49,22 +50,22 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data.length > 0) {
 
-                                var teams = response.data;
+                                $scope.teams = response.data;
 
-                                for (var i = 0; i < teams.length; i++) {
+                                for (var i = 0; i < $scope.teams.length; i++) {
 
                                     var isExistTeam = false;
                                     if (teamArr.length > 0) {
-                                        if ($filter('filter')(teamArr, { team_id: teams[i].id }, true).length > 0)
+                                        if ($filter('filter')(teamArr, { team_id: $scope.teams[i].id }, true).length > 0)
                                             isExistTeam = true;
                                     }
 
                                     if (!isExistTeam) {
                                         var teamObj = {};
-                                        teamObj.full_name = teams[i].name;
-                                        teamObj.id = teams[i].id;
+                                        teamObj.full_name = $scope.teams[i].name;
+                                        teamObj.id = $scope.teams[i].id;
                                         teamObj.type = 'team';
-                                        teamObj.icon = teams[i].icon;
+                                        teamObj.icon = $scope.teams[i].icon;
                                         $scope.collaboratorsAndTeamsArr.push(teamObj);
                                     }
                                 }
@@ -98,10 +99,15 @@ angular.module('primeapps')
 
                                             if (appCol.user_id) {
                                                 appCol.name = $filter('filter')(collabs, { user_id: appCol.user_id }, true)[0].full_name;
+                                                appCol.icon = 'fa fa-user';
                                             }
 
                                             if (appCol.team_id) {
-                                                appCol.name = $filter('filter')(teams, { id: appCol.team_id }, true)[0].name;
+                                                appCol.name = $filter('filter')($scope.teams, { id: appCol.team_id }, true)[0].name;
+                                                var result = $filter('filter')($scope.teams, { id: appCol.team_id }, true)[0];
+
+                                                if (result)
+                                                    appCol.icon = angular.copy(result.icon);
                                             }
                                         }
                                     }
