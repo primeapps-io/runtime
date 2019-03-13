@@ -31,7 +31,7 @@ namespace PrimeApps.Studio.Helpers
         Task<string> GetFile(string fileName, string organizationName, string appName, CustomCodeType type);
         void Push(Repository repo, string token);
         Task<JObject> GetRepositoryInfo(string token, string email, string repositoryName);
-        void CloneRepository(string token, string cloneUrl, string localFolder);
+        bool CloneRepository(string token, string cloneUrl, string localFolder, bool deleteIfExist = true);
         Task CreateUser(string email, string password, string firstName, string lastName, string orgName);
         Task CreateOrganization(string uniqueName, string fullName, string email, string token, string type = "token");
         Task CreateRepository(int organizationId, string appName, UserItem appUser, string token);
@@ -153,14 +153,20 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public void CloneRepository(string token, string cloneUrl, string localFolder)
+        public bool CloneRepository(string token, string cloneUrl, string localFolder, bool deleteIfExist = true)
         {
             if (Directory.Exists(localFolder))
-                DeleteDirectory(localFolder);
-            
+            {
+                if (deleteIfExist)
+                    DeleteDirectory(localFolder);
+                else
+                    return false;
+            }
+
             var cloneOptions = GetOptions("clone", token);
 
             Repository.Clone(cloneUrl, localFolder, cloneOptions);
+            return true;
         }
 
         public async Task CreateUser(string email, string password, string firstName, string lastName, string orgName)

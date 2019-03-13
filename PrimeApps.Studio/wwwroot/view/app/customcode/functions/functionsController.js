@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('FunctionsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage) {
+    .controller('FunctionsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'FunctionsService', '$localStorage', '$q',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, FunctionsService, $localStorage, $q) {
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
@@ -36,6 +36,8 @@ angular.module('primeapps')
 
             $scope.closeModal = function () {
                 $scope.function = {};
+                $scope.functionNameValid = null;
+                $scope.isFunctionNameBlur = false;
                 $scope.createFormModal.hide();
             };
 
@@ -169,14 +171,7 @@ angular.module('primeapps')
                         }
                     });
             };
-
-            $scope.closeFunctionModal = function () {
-                $scope.function = {};
-                $scope.functionNameValid = null;
-                $scope.isFunctionNameBlur = false;
-                $scope.createFormModal.hide();
-            };
-
+            
             $scope.identifierCreate = function () {
                 if (!$scope.function || !$scope.function.label) {
                     $scope.function.name = null;
@@ -195,6 +190,7 @@ angular.module('primeapps')
                 $scope.checkFunctionName(name ? name : "");
             };
 
+            var canceller = $q.defer();
             $scope.checkFunctionName = function (func) {
                 if (!func || !func.name)
                     return;
@@ -205,6 +201,11 @@ angular.module('primeapps')
                 //if (!$scope.isFunctionNameBlur)
                 //    return;
 
+                if ($scope.functionNameChecking) {
+                    canceller.resolve("Cancel Request");
+                    canceller = $q.defer();
+                }
+
                 $scope.functionNameChecking = true;
                 $scope.functionNameValid = null;
 
@@ -214,8 +215,9 @@ angular.module('primeapps')
                     return;
                 }
 
-                FunctionsService.isFunctionNameUnique(func.name)
+                FunctionsService.isFunctionNameUnique(func.name, canceller)
                     .then(function (response) {
+                        console.log("response:" + response.data);
                         $scope.functionNameChecking = false;
                         if (response.data) {
                             $scope.functionNameValid = true;
@@ -223,11 +225,11 @@ angular.module('primeapps')
                         else {
                             $scope.functionNameValid = false;
                         }
-                    })
-                    .catch(function () {
-                        $scope.functionNameValid = false;
-                        $scope.functionNameChecking = false;
-                    });
+                    }).catch(angular.noop);
+                /*.catch(function () {
+                    $scope.functionNameValid = false;
+                    $scope.functionNameChecking = false;
+                })*/
             };
 
             $scope.checkFunctionHandler = function (func) {

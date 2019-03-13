@@ -33,100 +33,106 @@
                 <path class="st5" d="M85.33,27.725,77.523,52.753l-5.157-1.61,7.807-25.028c.566-1.814,2.179-2.925,3.6-2.48S85.9,25.911,85.33,27.725Zm.417-14.456a2.986,2.986,0,1,0,2.985,2.986A2.986,2.986,0,0,0,85.747,13.269Z" fill="#0d6faa"/>
             </svg>
         </a>
-		
-		<form asp-route="Register" class="login-form" role="form" id="register-form">
-			<div class="form-group">
-				<div class="row">
-					<div class="col">
-						<label for="FirstName" class="labelx"><span>@Localizer["FirstName"]</span>
-							<input class="form-control" asp-for="FirstName" id="FirstName" autofocus autocomplete="off" style="width:100%;">
-						</label>
-					</div>
-					<div class="col">
-						<label for="LastName" class="labelx"><span>@Localizer["LastName"]</span>
-							<input class="form-control" asp-for="LastName" id="LastName" autofocus autocomplete="off" style="width:100%;">
-						</label>
-					</div>
-				</div>
-				<div class="error-fullname d-none"></div>
-			</div>
-			<div class="form-group">
-				<label for="Email" class="labelx"><span>@Localizer["Email"]</span>
-					<input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
-				</label>
-				<div class="error-email d-none"></div>
-			</div>
-			<div class="form-group">
-				<label for="Password" class="labelx"><span>@Localizer["Password"]</span>
-					<input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
-				</label>
-				<div class="error-pass d-none"></div>
-			</div>
-			
-			<div class="free-info">
-				@Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
-			</div>
-			<div class="text-center paddingb20">
-				<button type="submit" class="btn btn-login ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
-			</div>
-			<div class="error-all d-none"></div>
-			@if (!string.IsNullOrEmpty(error) && error == "UserExist")
-			{
-				<div class="error2 error">@Localizer[error]</div>
-			}
-		</form>
-	</div>
+
+        <form asp-route="Register" class="login-form" role="form" id="register-form">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col">
+                        <label for="FirstName" class="labelx">
+                            <span>@Localizer["FirstName"]</span>
+                            <input class="form-control" asp-for="FirstName" id="FirstName" autofocus autocomplete="off" style="width: 100%;">
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label for="LastName" class="labelx">
+                            <span>@Localizer["LastName"]</span>
+                            <input class="form-control" asp-for="LastName" id="LastName" autofocus autocomplete="off" style="width: 100%;">
+                        </label>
+                    </div>
+                </div>
+                <div class="error-fullname d-none"></div>
+            </div>
+            <div class="form-group">
+                <label for="Email" class="labelx">
+                    <span>@Localizer["Email"]</span>
+                    <input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
+                </label>
+                <div class="error-email d-none"></div>
+            </div>
+            <div class="form-group">
+                <label for="Password" class="labelx">
+                    <span>@Localizer["Password"]</span>
+                    <input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
+                </label>
+                <div class="error-pass d-none"></div>
+            </div>
+
+            <div class="free-info">
+                @Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
+            </div>
+            <div class="text-center paddingb20">
+                <button type="submit" class="btn btn-login ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
+            </div>
+            <div class="error-all d-none"></div>
+            @if (!string.IsNullOrEmpty(error) && error == "UserExist")
+            {
+                <div class="error2 error">@Localizer[error]</div>
+            }
+        </form>
+    </div>
 </div>
 <div class="text-center">
-	<a href="@Url.Action("Login", "Account", new { ReturnUrl = Model.ReturnUrl })" class="buttonx">@Localizer["LoginForm"]</a>
+    <a href="@Url.Action("Login", "Account", new {ReturnUrl = Model.ReturnUrl})" class="buttonx">@Localizer["LoginForm"]</a>
 </div>
-
 
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function () {
-            $(document).on('click', '#auth-flow-forgot-password', function () {
-                var data = {
-                    email: $("#swal-input-email").val(),
-                    client: "@client"
-                }
+        $(document).ready(function() {
+            $(document).on('click',
+                '#auth-flow-forgot-password',
+                function() {
+                    var data = {
+                        email: $("#swal-input-email").val(),
+                        client: "@client"
+                    }
 
-                return fetch('/Account/ExternalLoginForgotPassword', {
-                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                    dataType: 'json',
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8',
-                        // "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    redirect: 'follow', // manual, *follow, error
-                    referrer: 'no-referrer', // no-referrer, *client
-                    body: JSON.stringify(data), // body data type must match "Content-Type" header)
-                })
-                    .then(response => {
-                        return response.text();
-                    })
-                    .then(res => {
-                        if (!JSON.parse(res.toLowerCase())) {
+                    return fetch('/Account/ExternalLoginForgotPassword',
+                            {
+                                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                                dataType: 'json',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=utf-8',
+                                    // "Content-Type": "application/x-www-form-urlencoded",
+                                },
+                                redirect: 'follow', // manual, *follow, error
+                                referrer: 'no-referrer', // no-referrer, *client
+                                body: JSON.stringify(data), // body data type must match "Content-Type" header)
+                            })
+                        .then(response => {
+                            return response.text();
+                        })
+                        .then(res => {
+                            if (!JSON.parse(res.toLowerCase())) {
+                                return false;
+                            }
+                            $(".swal-forgot-password").toggleClass("swal-hide");
+                            return true;
+                        })
+                        .catch(error => {
                             return false;
-                        }
-                        $(".swal-forgot-password").toggleClass("swal-hide");
-                        return true;
-                    })
-                    .catch(error => {
-                        return false;
-                    })
-            });
+                        })
+                });
 
             if ("@error" === "AlreadyRegisteredExternalLogin") {
                 swal({
                     title: "@Localizer["ExternalLoginVerifyTitle"]",
                     html:
                         "@Html.Raw(string.Format(Localizer["ExternalLoginVerifyContent"].Value, ViewBag.AuthFlowTitle == null ? "" : ViewBag.AuthFlowTitle))" +
-                        '<input type="text" readonly="" disabled="" value="@email" id="swal-input-email" class="swal2-input">' +
-                        '<input type="password" min- id="swal-input-password" placeholder="@Localizer["Password"]" class="swal2-input">' +
-                        '<a id="auth-flow-forgot-password" href="javascript:void(0);" class="col-md-12 swal-forgot-password" style="text-align: right;font-size: 13px;float: left;padding-right: 0px;padding-bottom: 10px;">Parolamı Unuttum</a>' +
-                        '<label style="text-align: center;font-size: 13px;padding-right: 0px;color: #28a745;" class="swal-hide swal-forgot-password">@Localizer["ForgotPasswordSuccess"]</label>',
+                            '<input type="text" readonly="" disabled="" value="@email" id="swal-input-email" class="swal2-input">' +
+                            '<input type="password" min- id="swal-input-password" placeholder="@Localizer["Password"]" class="swal2-input">' +
+                            '<a id="auth-flow-forgot-password" href="javascript:void(0);" class="col-md-12 swal-forgot-password" style="text-align: right;font-size: 13px;float: left;padding-right: 0px;padding-bottom: 10px;">Parolamı Unuttum</a>' +
+                            '<label style="text-align: center;font-size: 13px;padding-right: 0px;color: #28a745;" class="swal-hide swal-forgot-password">@Localizer["ForgotPasswordSuccess"]</label>',
                     type: 'info',
                     inputAttributes: {
                         autocapitalize: 'off'
@@ -136,16 +142,21 @@
                     confirmButtonText: "@Localizer["Login"]",
                     showLoaderOnConfirm: true,
                     preConfirm: (login) => {
-                        return fetch('/user/verify_user', {
-                            method: "POST", // *GET, POST, PUT, DELETE, etc.
-                            headers: {
-                                "Content-Type": "application/json; charset=utf-8",
-                                // "Content-Type": "application/x-www-form-urlencoded",
-                            },
-                            redirect: "follow", // manual, *follow, error
-                            referrer: "no-referrer", // no-referrer, *client
-                            body: JSON.stringify({ email: $("#swal-input-email").val(), password: $("#swal-input-password").val(), client:"@client"  }), // body data type must match "Content-Type" header)
-                        })
+                        return fetch('/user/verify_user',
+                                {
+                                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                                    headers: {
+                                        "Content-Type": "application/json; charset=utf-8",
+                                        // "Content-Type": "application/x-www-form-urlencoded",
+                                    },
+                                    redirect: "follow", // manual, *follow, error
+                                    referrer: "no-referrer", // no-referrer, *client
+                                    body: JSON.stringify({
+                                        email: $("#swal-input-email").val(),
+                                        password: $("#swal-input-password").val(),
+                                        client: "@client"
+                                    }), // body data type must match "Content-Type" header)
+                                })
                             .then(response => {
                                 return response.text();
                             })
@@ -175,153 +186,154 @@
             }
 
 
-				var postTry = false;
+            var postTry = false;
 
-				$("#FirstName,#LastName, #Email, #Password").keyup(function() {
-					$(".server-error").text("");
-					$(".server-error").removeClass("error");
-					if (postTry) {
-						if (fieldsHasValue()) {
-							$(".error-all").removeClass("error");
-							$(".error-all").text("");
-							emailValidator();
-							passwordValidator();
-							fullNameValidator();
-						} else {
-							removeFieldErrors();
-							$(".error-all").addClass("error");
-							$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
-						}
-					}
-				});
+            $("#FirstName,#LastName, #Email, #Password").keyup(function() {
+                $("#Email").val($("#Email").val().toLowerCase());
+                $(".server-error").text("");
+                $(".server-error").removeClass("error");
+                if (postTry) {
+                    if (fieldsHasValue()) {
+                        $(".error-all").removeClass("error");
+                        $(".error-all").text("");
+                        emailValidator();
+                        passwordValidator();
+                        fullNameValidator();
+                    } else {
+                        removeFieldErrors();
+                        $(".error-all").addClass("error");
+                        $(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+                    }
+                }
+            });
 
-				$(".btn-login").click(function(e) {
-					postTry = true;
-					var l = Ladda.create(this);
-					l.start();
-					if (fieldsHasValue()) {
-						$(".error-all").removeClass("error");
-						$(".error-all").text("");
+            $(".btn-login").click(function(e) {
+                postTry = true;
+                var l = Ladda.create(this);
+                l.start();
+                if (fieldsHasValue()) {
+                    $(".error-all").removeClass("error");
+                    $(".error-all").text("");
 
-						var isEmailValid = emailValidator();
-						var isPasswordValid = passwordValidator();
-						var isFullNameValid = fullNameValidator();
+                    var isEmailValid = emailValidator();
+                    var isPasswordValid = passwordValidator();
+                    var isFullNameValid = fullNameValidator();
 
-						if (!isEmailValid || !isPasswordValid || !isFullNameValid) {
-							e.stopPropagation();
-							e.preventDefault();
-							l.stop();
-						} else {
-							$("#register-form").submit();
-						}
-					} else {
-						$(".error-all").addClass("error");
-						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+                    if (!isEmailValid || !isPasswordValid || !isFullNameValid) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        l.stop();
+                    } else {
+                        $("#register-form").submit();
+                    }
+                } else {
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["RegisterFieldsRequired"]");
 
-						e.stopPropagation();
-						e.preventDefault();
-						l.stop();
-					}
-				});
+                    e.stopPropagation();
+                    e.preventDefault();
+                    l.stop();
+                }
+            });
 
-				function fieldsHasValue() {
-					var emailValue = $("#Email").val();
-					var passwordValue = $("#Password").val();
-					var firstNameValue = $("#FirstName").val();
-					var lastNameValue = $("#LastName").val();
+            function fieldsHasValue() {
+                var emailValue = $("#Email").val();
+                var passwordValue = $("#Password").val();
+                var firstNameValue = $("#FirstName").val();
+                var lastNameValue = $("#LastName").val();
 
-					if (emailValue === "" || passwordValue === "" || firstNameValue === "" || lastNameValue === "") {
-						return false;
-					}
-					return true;
-				}
+                if (emailValue === "" || passwordValue === "" || firstNameValue === "" || lastNameValue === "") {
+                    return false;
+                }
+                return true;
+            }
 
-				function fullNameValidator () {
-					var isValid = true;
-					var firstNameValue = $("#FirstName").val();
-					var lastNameValue = $("#LastName").val();
+            function fullNameValidator() {
+                var isValid = true;
+                var firstNameValue = $("#FirstName").val();
+                var lastNameValue = $("#LastName").val();
 
-					if (firstNameValue === "" || lastNameValue === "") {
-						removeFieldErrors();
-						$(".error-all").addClass("error");
-						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
-						isValid = false;
-					} else if (firstNameValue.length < 2 || lastNameValue.length < 2) {
-						$(".error-fullname").addClass("error");
-						$(".error-fullname").text("@Localizer["NameMinimum"]");
-						isValid = false;
-					} else {
-						$(".error-fullname").removeClass("error");
-						$(".error-fullname").text("");
-					}
-					return isValid;
-				}
+                if (firstNameValue === "" || lastNameValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+                    isValid = false;
+                } else if (firstNameValue.length < 2 || lastNameValue.length < 2) {
+                    $(".error-fullname").addClass("error");
+                    $(".error-fullname").text("@Localizer["NameMinimum"]");
+                    isValid = false;
+                } else {
+                    $(".error-fullname").removeClass("error");
+                    $(".error-fullname").text("");
+                }
+                return isValid;
+            }
 
-				function emailValidator() {
-					var isValid = true;
-					var fieldValue = $("#Email").val().toLowerCase().replace(/\ /g, "");
-					var result = /^[a-z0-9._%+-]+@@[a-z0-9.-]+$/.test(fieldValue);
-					if (fieldValue === "") {
-						removeFieldErrors();
-						$(".error-all").addClass("error");
-						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
-						isValid = false;
-					} else if (!result) {
-						$(".error-email").addClass("error");
-						$(".error-email").text("@Localizer["InvalidEmail"]");
-						isValid = false;
-					} else {
-						$(".error-email").removeClass("error");
-						$(".error-email").text("");
-					}
-					return isValid;
-				}
+            function emailValidator() {
+                var isValid = true;
+                var fieldValue = $("#Email").val().toLowerCase().replace(/\ /g, "");
+                var result = /^[a-z0-9._%+-]+@@[a-z0-9.-]+$/.test(fieldValue);
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+                    isValid = false;
+                } else if (!result) {
+                    $(".error-email").addClass("error");
+                    $(".error-email").text("@Localizer["InvalidEmail"]");
+                    isValid = false;
+                } else {
+                    $(".error-email").removeClass("error");
+                    $(".error-email").text("");
+                }
+                return isValid;
+            }
 
-				function passwordValidator() {
-					var isValid = true;
-					var fieldValue = $("#Password").val();
+            function passwordValidator() {
+                var isValid = true;
+                var fieldValue = $("#Password").val();
 
-					if (fieldValue === undefined) {
-						return isValid;
-					}
+                if (fieldValue === undefined) {
+                    return isValid;
+                }
 
-					if (fieldValue === "") {
-						removeFieldErrors();
-						$(".error-all").addClass("error");
-						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
-						isValid = false;
-					} else if (fieldValue.length < 6) {
-						$(".error-pass").addClass("error");
-						$(".error-pass").text("@Localizer["PasswordMinimum"]");
-						isValid = false;
-					} else {
-						$(".error-pass").removeClass("error");
-						$(".error-pass").text("");
-					}
-					return isValid;
-				}
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+                    isValid = false;
+                } else if (fieldValue.length < 6) {
+                    $(".error-pass").addClass("error");
+                    $(".error-pass").text("@Localizer["PasswordMinimum"]");
+                    isValid = false;
+                } else {
+                    $(".error-pass").removeClass("error");
+                    $(".error-pass").text("");
+                }
+                return isValid;
+            }
 
-				function removeFieldErrors() {
-					$(".error-pass").removeClass("error");
-					$(".error-pass").text("");
-					$(".error-email").removeClass("error");
-					$(".error-email").text("");
-					$(".error-firstname").removeClass("error");
-					$(".error-firstname").text("");
-					$(".error-lastname").removeClass("error");
-					$(".error-lastname").text("");
-					$(".error-fullname").removeClass("error");
-					$(".error-fullname").text("");
-					$(".error").text("");
-				}
+            function removeFieldErrors() {
+                $(".error-pass").removeClass("error");
+                $(".error-pass").text("");
+                $(".error-email").removeClass("error");
+                $(".error-email").text("");
+                $(".error-firstname").removeClass("error");
+                $(".error-firstname").text("");
+                $(".error-lastname").removeClass("error");
+                $(".error-lastname").text("");
+                $(".error-fullname").removeClass("error");
+                $(".error-fullname").text("");
+                $(".error").text("");
+            }
 
-				$("input").focus(function(e) {
-					$(e.target).closest(".input-group").addClass("input-focus");
-				});
+            $("input").focus(function(e) {
+                $(e.target).closest(".input-group").addClass("input-focus");
+            });
 
-				$("input").blur(function(e) {
-					$(e.target).closest(".input-group").removeClass("input-focus");
-				});
-			});
+            $("input").blur(function(e) {
+                $(e.target).closest(".input-group").removeClass("input-focus");
+            });
+        });
     </script>
 }

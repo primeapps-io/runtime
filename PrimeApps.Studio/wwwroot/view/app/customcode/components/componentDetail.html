@@ -179,6 +179,7 @@ git push -u origin master</code>
                                                     name="module_id"
                                                     class="form-control ng-animate-disabled col-sm-8"
                                                     required
+                                                    ng-disabled="true"
                                                     ng-model="component.module_id"
                                                     ng-options="o.id as o['label_' + language + '_singular'] for o in modules">
                                                 <option value="">Select Module</option>
@@ -209,6 +210,7 @@ git push -u origin master</code>
                                              ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.template.$invalid}">
                                             <label class="col-sm-12 required-field">Template</label>
                                             <div class="col-sm-11" style="padding-left: 0px !important;">
+                                                <i ng-if="!$parent.$parent.$parent.$parent.$parent.content.templateUrl" class="fas fa-refresh ng-scope pull-right" ng-class="filesLoading ? 'fa-spin' : ''" style="z-index:999;position: absolute;right: 30px;top: 5px;font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="getFileList()"></i>
                                                 <select
                                                         name="module_id"
                                                         class="form-control ng-animate-disabled col-sm-8"

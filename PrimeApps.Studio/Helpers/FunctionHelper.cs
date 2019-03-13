@@ -49,6 +49,7 @@ namespace PrimeApps.Studio.Helpers
             _configuration = configuration;
             _giteaHelper = giteaHelper;
             _currentUser = UserHelper.GetCurrentUser(_context);
+            _serviceScopeFactory = serviceScopeFactory;
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
@@ -99,7 +100,10 @@ namespace PrimeApps.Studio.Helpers
                                         var status = repo.RetrieveStatus();
 
                                         if (!status.IsDirty)
+                                        {
+                                            _giteaHelper.DeleteDirectory(localPath);
                                             return;
+                                        }
 
                                         // Commit to the repository
                                         var commit = repo.Commit("Created function " + function.Name, signature, signature);
@@ -113,8 +117,6 @@ namespace PrimeApps.Studio.Helpers
                         }
                     }
                 }
-
-
             }
         }
 

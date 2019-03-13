@@ -75,6 +75,7 @@ namespace PrimeApps.Model.Repositories
                     LabelTrSingular = x.LabelTrSingular,
                     LabelTrPlural = x.LabelTrPlural,
                     Order = x.Order,
+                    SystemType = x.SystemType,
                     Display = x.Display
                 })
                 .ToListAsync();

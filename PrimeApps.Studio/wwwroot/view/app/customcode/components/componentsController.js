@@ -17,7 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.modules = $rootScope.appModules;
+            $scope.modules =$filter('filter')( $rootScope.appModules, {system_type: 'component'}, true);
 
             $scope.component = {};
             $scope.components = [];

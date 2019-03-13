@@ -43,8 +43,8 @@ angular.module('primeapps')
                 getLogs: function (name) {
                     return $http.get(config.apiUrl + 'functions/get_logs/' + name);
                 },
-                isFunctionNameUnique: function (name) {
-                    return $http.get(config.apiUrl + 'functions/is_unique_name?name=' + name);
+                isFunctionNameUnique: function (name, canceller) {
+                    return $http.get(config.apiUrl + 'functions/is_unique_name?name=' + name, {timeout: canceller.promise});
                 },
                 deploy: function (name) {
                     return $http.get(config.apiUrl + 'functions/deploy/' + name);
