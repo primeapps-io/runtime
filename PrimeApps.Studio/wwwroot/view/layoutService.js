@@ -28,8 +28,8 @@ angular.module('primeapps')
                 me: function () {
                     return $http.get(config.apiUrl + 'user/me');
                 },
-                getUserAppProfile: function(appId){
-                    return $http.get(config.apiUrl + 'app/user_profile/' + appId);
+                getUserAppProfile: function () {
+                    return $http.get(config.apiUrl + 'app_collaborator/get_user_profile');
                 },
                 getIcons: function () {
                     return icons.icons;
@@ -273,13 +273,14 @@ angular.module('primeapps')
                     promises.push($http.get(config.apiUrl + 'module/get_all_basic'));
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
                     promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
-
+                    promises.push($http.get(config.apiUrl + 'app_collaborator/get_user_profile'));
                     return $q.all(promises)
                         .then(function (response) {
                             $rootScope.appModules = response[0].data;
                             $rootScope.appProfiles = response[1].data;
                             var result = response[2];
                             $rootScope.currentApp = result.data;
+                            $rootScope.currentApp.user_profile = response[3].data;
                             $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 
                             if (!angular.isArray($rootScope.breadcrumblist))

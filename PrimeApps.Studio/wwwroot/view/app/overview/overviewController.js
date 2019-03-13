@@ -8,7 +8,6 @@ angular.module('primeapps')
             $rootScope.appLoading = true;
             LayoutService.getAppData()
                 .then(function (response) {
-
                     $rootScope.appLoading = false;
                     $scope.$parent.menuTopTitle = $rootScope.currentApp.label;
                 });

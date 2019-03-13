@@ -37,6 +37,7 @@ angular.module('primeapps')
                         start: ['$rootScope', 'studio',
                             function ($rootScope, studio) {
                                 $rootScope.currentAppId = null;
+                                $rootScope.currentApp = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
@@ -59,6 +60,7 @@ angular.module('primeapps')
                         start: ['$rootScope', 'studio',
                             function ($rootScope, studio) {
                                 $rootScope.currentAppId = null;
+                                $rootScope.currentApp = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
@@ -160,7 +162,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
 
                                 $rootScope.breadcrumblist = [{}, {}, {}];
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
@@ -194,6 +196,7 @@ angular.module('primeapps')
                         start: ['$rootScope', 'organization',
                             function ($rootScope, organization) {
                                 $rootScope.currentAppId = null;
+                                $rootScope.currentApp = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
@@ -217,6 +220,7 @@ angular.module('primeapps')
                         start: ['$rootScope', 'organization',
                             function ($rootScope, organization) {
                                 $rootScope.currentAppId = null;
+                                $rootScope.currentApp = null;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
@@ -351,31 +355,31 @@ angular.module('primeapps')
                         }]
                     }
                 }).state('studio.app.relations', {
-                    url: '/relations?:id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/app/model/relations/relations.html',
-                            controller: 'RelationsController'
-                        }
-                    },
-                    resolve: {
-                        relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
-                                $state.go('studio.app.overview', {
-                                    orgId: $rootScope.currentOrgId,
-                                    appId: $rootScope.currentAppId
-                                });
-                            }
-                        }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/model/relations/relationsController.js',
-                                cdnUrl + 'view/app/model/relations/relationsService.js',
-                                cdnUrl + 'view/app/model/modules/moduleService.js'
-                            ]);
-                        }]
+                url: '/relations?:id',
+                views: {
+                    'app': {
+                        templateUrl: cdnUrl + 'view/app/model/relations/relations.html',
+                        controller: 'RelationsController'
                     }
-                })
+                },
+                resolve: {
+                    relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            $state.go('studio.app.overview', {
+                                orgId: $rootScope.currentOrgId,
+                                appId: $rootScope.currentAppId
+                            });
+                        }
+                    }],
+                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        return $ocLazyLoad.load([
+                            cdnUrl + 'view/app/model/relations/relationsController.js',
+                            cdnUrl + 'view/app/model/relations/relationsService.js',
+                            cdnUrl + 'view/app/model/modules/moduleService.js'
+                        ]);
+                    }]
+                }
+            })
 
                 .state('studio.app.views', {
                     url: '/views?:id',
@@ -1584,7 +1588,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        moduleActions:  ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        moduleActions: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
@@ -1684,6 +1688,6 @@ angular.module('primeapps')
                 });
 
             //console.log($rootScope.currentOrgId);
-         $urlRouterProvider.otherwise('/apps?orgId=orgId');
+            $urlRouterProvider.otherwise('/apps?orgId=orgId');
         }])
-    ;
+;

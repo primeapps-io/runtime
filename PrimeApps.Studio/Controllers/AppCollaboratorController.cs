@@ -11,6 +11,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
+using Sentry.Protocol;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.Studio.Controllers
@@ -79,6 +80,12 @@ namespace PrimeApps.Studio.Controllers
             var result = await _collaboratorRepository.Delete(appCollaborator);
 
             return Ok(result);
+        }
+        
+        [Route("get_user_profile"), HttpGet]
+        public IActionResult GetUserProfile()
+        {
+            return Ok(UserProfile);
         }
     }
 }

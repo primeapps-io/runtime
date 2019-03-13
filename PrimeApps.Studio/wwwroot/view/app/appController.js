@@ -27,14 +27,6 @@ angular.module('primeapps')
                     .then(function (result) {
                         $scope.modules = result.data;
                     });
-
-                LayoutService.getUserAppProfile($scope.appId)
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function () {
-
-                    });
             };
 
             $scope.getBasicModules();

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -246,11 +247,6 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{name}"), HttpDelete]
         public async Task<IActionResult> Delete(string name)
         {
-            var functionObj = await _functionHelper.Get(name);
-
-            if (functionObj.IsNullOrEmpty())
-                return NotFound();
-
             var function = await _functionRepository.Get(name);
 
             if (function == null)
@@ -272,11 +268,8 @@ namespace PrimeApps.Studio.Controllers
                 var response = await httpClient.DeleteAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
-                    return NotFound();
-
                 if (!response.IsSuccessStatusCode)
-                    throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
+                    ErrorHandler.LogError(new Exception(content), "Kubernetes error for delete function process. StatusCode: " + response.StatusCode + " Content: " + content);
 
                 result = JObject.Parse(content);
             }
