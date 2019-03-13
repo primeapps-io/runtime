@@ -191,6 +191,8 @@ namespace PrimeApps.Studio.Helpers
                         else
                         {
                             deployment.Status = DeploymentStatus.Failed;
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
                         }
                     }
@@ -256,6 +258,8 @@ namespace PrimeApps.Studio.Helpers
                         else
                         {
                             deployment.Status = DeploymentStatus.Failed;
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
                         }
                     }
