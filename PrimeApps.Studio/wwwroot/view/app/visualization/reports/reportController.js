@@ -12,6 +12,7 @@ angular.module('primeapps')
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
             $scope.reportModel.chart = {};
+            $scope.reportModel.sharing_type="everybody";
             $scope.chartTypes = [
                 {
                     label: $filter('translate')('Report.Chart.ColumnChart2d'),

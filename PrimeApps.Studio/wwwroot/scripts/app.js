@@ -144,7 +144,7 @@ angular.module('primeapps',
             }
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-                console.log(toState.url);
+              
                 var currentUrl = toState.url;
                 // $rootScope.allMenuPanelOpen =true;
                 if (currentUrl.indexOf("moduleDesigner") > 0 || currentUrl.indexOf("workflowEditor") > 0) {

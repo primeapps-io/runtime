@@ -222,7 +222,7 @@ angular.module('primeapps')
 
                 if (setView) {
                     $scope.view.system_type = 'custom';
-                    $scope.view.sharing_type = 'me';
+                    $scope.view.sharing_type = 'everybody';
                 }
 
                 /*var cacheKey = module.name + '_' + module.name;
