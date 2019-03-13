@@ -18,7 +18,7 @@ RUN dotnet build "PrimeApps.Studio.csproj" --no-restore -c Debug -o /app
 FROM build AS publish
 RUN dotnet publish "PrimeApps.Studio.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
 
-sudo yum install git
+RUN yum install git
 
 FROM base AS final
 COPY --from=publish /app .

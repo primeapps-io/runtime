@@ -18,8 +18,8 @@ RUN dotnet build "PrimeApps.Studio.csproj" --no-restore -c Debug -o /app
 FROM build AS publish
 RUN dotnet publish "PrimeApps.Studio.csproj" --no-restore --self-contained false -c Debug -o /app
 
-RUN sudo apt-get update
-RUN sudo apt-get install git
+RUN apt-get update
+RUN apt-get install git
 
 FROM base AS final
 WORKDIR /app
