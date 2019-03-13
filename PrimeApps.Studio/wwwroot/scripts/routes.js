@@ -304,7 +304,7 @@ angular.module('primeapps')
                 })
 
                 .state('studio.app.moduleDesigner', {
-                    url: '/moduleDesigner?:id',
+                    url: '/moduleDesigner?:id:clone',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/modules/moduleDesigner.html',
