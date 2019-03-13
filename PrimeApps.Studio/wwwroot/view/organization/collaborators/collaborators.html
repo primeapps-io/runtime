@@ -1,8 +1,8 @@
 <div class="setup-title">
-    <h2> {{ selectedCollaborator ? selectedCollaborator.full_name:'Collaborators' }} </h2>
+    <h2> Collaborators </h2>
     <div>
         <ul class="list-unstyled list-inline">
-            <li ng-show="!selectedCollaborator">
+            <li>
                 <button class="btn add-button" ng-click="addNewCollaborator()">
                     <i class="fas fa-plus"></i> Add New Collaborator
                 </button>
@@ -22,7 +22,7 @@
     </div>
     <br />
 </form>-->
-<div class="tab-content table-responsive" ng-show="!selectedCollaborator">
+<div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -48,10 +48,11 @@
             <tr>
                 <th>Name</th>
                 <th>Role</th>
+                <th style="width: 50px;"></th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="user in collaboratorArray" ng-click="selectCollaborators(user.id)">
+            <tr ng-repeat="user in collaboratorArray">
                 <td>
                     <div class="user-info">
                         <div class="user-image">
@@ -64,7 +65,24 @@
                         </div>
                     </div>
                 </td>
-                <td>{{user.role ? user.role:'-'}}</td>
+                <td class="form-group">
+                    <div style="position:relative;">
+                        <select name="profile" ng-disabled="user.updating || (user.role === 'administrator' && user.id == me.id)"
+                                class="form-control ng-animate-disabled"
+                                ng-model="user.role"
+                                ng-change="update(user)"
+                                ng-options="o.value as o.name for o in roles"></select>
+
+                        <span style="position:absolute;z-index:1;left:50%;top:50%;margin-left:-12px;margin-top:-12px;"><img src="../../../../images/loading.gif" ng-show="user.updating" /></span>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(user)" ladda="user.deleting" type="button" class="action-buttons-delete" ng-disabled="user.id === me.id">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -104,9 +122,9 @@
         </div>
     </div>
 </div>
-<div class="row">
+<!--<div class="row">
     <div class="col-md-8 col-lg-6">
-        <div class="tab-content collaborator-detail" ng-show="selectedCollaborator" >
+        <div class="tab-content collaborator-detail" ng-show="selectedCollaborator">
             <div ng-show="updatingRole" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
             <div class="">
                 <i class="fas fa-user-circle fa-9x"></i>
@@ -127,4 +145,4 @@
         </div>
     </div>
 
-</div>
+</div>-->

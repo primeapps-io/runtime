@@ -17,10 +17,14 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Role</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="item in placeholderArray">
+                    <td>
+                        <div class="animated-background"></div>
+                    </td>
                     <td>
                         <div class="animated-background"></div>
                     </td>
@@ -41,11 +45,11 @@
             <tbody>
                 <tr ng-repeat="appCol in appCollaborators">
                     <td>
-                        {{appCol.name}}
+                        <i class="{{appCol.icon}}" style="margin-right: 5px;"></i>{{appCol.name}}
                     </td>
                     <td class="form-group">
                         <div style="position:relative;">
-                            <select name="profile" ng-disabled="appCol.updating"
+                            <select name="profile" ng-disabled="appCol.updating || (appCol.profile === 'manager' && appCol.user_id == me.id)"
                                     class="form-control ng-animate-disabled"
                                     ng-model="appCol.profile"
                                     ng-change="changeRole(appCol)"
@@ -56,7 +60,7 @@
                     </td>
                     <td class="text-right">
                         <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation(); delete(appCol)" ladda="appCol.deleting" type="button" class="action-buttons-delete">
+                            <button ng-click="$event.stopPropagation(); delete(appCol)" ladda="appCol.deleting" type="button" class="action-buttons-delete" ng-disabled="appCol.user_id === me.id">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
