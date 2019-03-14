@@ -1430,6 +1430,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.branding', {
+                    url: '/branding',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/branding/branding.html',
+                            controller: 'BrandingController'
+                        }
+                    },
+                    resolve: {
+                        appdetails: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/branding/brandingController.js',
+                                cdnUrl + 'view/app/manage/branding/brandingService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.appCollaborators', {
                     url: '/appCollaborators',
                     views: {

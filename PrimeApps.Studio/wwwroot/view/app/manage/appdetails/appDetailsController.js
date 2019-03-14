@@ -47,85 +47,16 @@ angular.module('primeapps')
                                 $scope.imageRun[field] = item.uploader.queue[0];
                                 var images = $scope.imageRun;
 
-                                if (field === 'authBanner') {
-                                    $scope.authBanner = item.uploader.queue[0];
-                                    var authBanner = images['authBanner'];
-                                    authBanner.upload();
-                                }
-
-                                if (field === 'authLogo') {
-                                    $scope.authLogo = item.uploader.queue[0];
-                                    var authLogo = images['authLogo'];
-                                    authLogo.upload();
-                                }
-
-                                if (field === 'authFavicon') {
-                                    $scope.authFavicon = item.uploader.queue[0];
-                                    var authFavicon = images['authFavicon'];
-                                    authFavicon.upload();
-                                }
-
                                 if (field === 'appLogo') {
                                     $scope.appLogo = item.uploader.queue[0];
                                     var appLogo = images['appLogo'];
                                     appLogo.upload();
-                                }
-                                if (field === 'appThemeLogo') {
-                                    $scope.appThemeLogo = item.uploader.queue[0];
-                                    var appThemeLogo = images['appThemeLogo'];
-                                    appThemeLogo.upload();
-                                }
-
-                                if (field === 'appThemeFavicon') {
-                                    $scope.appThemeFavicon = item.uploader.queue[0];
-                                    var appThemeFavicon = images['appThemeFavicon'];
-                                    appThemeFavicon.upload();
-                                }
-
-                                if (authLogo) {
-                                    authLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                                        if (status === 200) {
-                                            $scope.authTheme.logo = logoUrl;
-                                        }
-                                    };
-                                }
-
-                                if (authBanner) {
-                                    authBanner.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                                        if (status === 200) {
-                                            $scope.authTheme.banner = logoUrl;
-                                        }
-                                    };
-                                }
-
-                                if (authFavicon) {
-                                    authFavicon.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                                        if (status === 200) {
-                                            $scope.authTheme.favicon = logoUrl;
-                                        }
-                                    };
                                 }
 
                                 if (appLogo) {
                                     appLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
                                         if (status === 200) {
                                             $scope.appModel.logo = logoUrl;
-                                        }
-                                    };
-                                }
-
-                                if (appThemeLogo) {
-                                    appThemeLogo.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                                        if (status === 200) {
-                                            $scope.appTheme.logo = logoUrl;
-                                        }
-                                    };
-                                }
-
-                                if (appThemeFavicon) {
-                                    appThemeFavicon.uploader.onCompleteItem = function (fileItem, logoUrl, status) {
-                                        if (status === 200) {
-                                            $scope.appTheme.favicon = logoUrl;
                                         }
                                     };
                                 }
@@ -186,12 +117,12 @@ angular.module('primeapps')
 
             };
 
-            $scope.logoRemove = function () {
-                if (uploader.queue[0]) {
-                    //uploader.queue[0].image = null;
-                    uploader.queue[0].remove();
-                }
-            };
+            // $scope.logoRemove = function () {
+            //     if (uploader.queue[0]) {
+            //         //uploader.queue[0].image = null;
+            //         uploader.queue[0].remove();
+            //     }
+            // };
 
             AppDetailsService.get($scope.appId).then(function (response) {
                 var app = response.data;
@@ -203,64 +134,6 @@ angular.module('primeapps')
                 $scope.appModel.logo = app.logo;
             });
 
-            AppDetailsService.getAppTheme($scope.appId).then(function (response) {
-                var appTheme = response.data;
-                $scope.appTheme.color = appTheme.color;
-                $scope.appTheme.title = appTheme.title;
-                $scope.appTheme.favicon = appTheme.favicon;
-                $scope.appTheme.logo = appTheme.logo;
-            });
-
-            $scope.saveAppTheme = function () {
-                $scope.savingApp = true;
-                var appThemes = {};
-                appThemes.color = $scope.appTheme.color;
-                appThemes.title = $scope.appTheme.title;
-                appThemes.favicon = $scope.appTheme.favicon;
-                appThemes.logo = $scope.appTheme.logo;
-
-                AppDetailsService.updateAppTheme($scope.appId, appThemes)
-                    .then(function (response) {
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
-                        $scope.savingApp = false;
-                    });
-            };
-
-            AppDetailsService.getAuthTheme($scope.appId).then(function (response) {
-                var authTheme = response.data;
-                if (authTheme && authTheme.banner) {
-                    $scope.authTheme.banner = authTheme.banner[0].image;
-                    $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
-                    $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
-                }
-                $scope.authTheme.color = authTheme.color;
-                $scope.authTheme.title = authTheme.title;
-                $scope.authTheme.favicon = authTheme.favicon;
-                $scope.authTheme.logo = authTheme.logo;
-            });
-
-
-            $scope.saveAuthTheme = function () {
-                $scope.savingAuth = true;
-                var authThemes = {};
-                var description = {};
-                description.en = $scope.authTheme.descriptionEn;
-                description.tr = $scope.authTheme.descriptionTr;
-                var banner = [
-                    { description: description, image: $scope.authTheme.banner }
-                ];
-                authThemes.color = $scope.authTheme.color;
-                authThemes.title = $scope.authTheme.title;
-                authThemes.banner = banner;
-                authThemes.favicon = $scope.authTheme.favicon;
-                authThemes.logo = $scope.authTheme.logo;
-                AppDetailsService.updateAuthTheme($scope.appId, authThemes)
-                    .then(function (response) {
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
-                        $scope.savingAuth = false;
-                    });
-            };
-
             $scope.save = function () {
                 $scope.saving = true;
                 AppDetailsService.update($scope.appId, $scope.appModel)
@@ -270,27 +143,27 @@ angular.module('primeapps')
                     });
             };
 
-            $scope.addMasterUser = function () {
-                var newCol = {};
-                newCol.role_id = 1;
-                newCol.profile_id = 1;
-                newCol.first_name = "master";
-                newCol.last_name = "test";
-                newCol.email = "master.test@usertest3.com";
-                newCol.password = "1234567";
-                newCol.created_at = new Date();
-
-                AppDetailsService.addAppUser(newCol)
-                    .then(function (response) {
-                        if (response.data) {
-                            toastr.success('Collaborator is saved successfully');
-
-                        }
-                    })
-                    .catch(function () {
-                        toastr.error($filter('translate')('Common.Error'));
-
-                    });
-            };
+            // $scope.addMasterUser = function () {
+            //     var newCol = {};
+            //     newCol.role_id = 1;
+            //     newCol.profile_id = 1;
+            //     newCol.first_name = "master";
+            //     newCol.last_name = "test";
+            //     newCol.email = "master.test@usertest3.com";
+            //     newCol.password = "1234567";
+            //     newCol.created_at = new Date();
+            //
+            //     AppDetailsService.addAppUser(newCol)
+            //         .then(function (response) {
+            //             if (response.data) {
+            //                 toastr.success('Collaborator is saved successfully');
+            //
+            //             }
+            //         })
+            //         .catch(function () {
+            //             toastr.error($filter('translate')('Common.Error'));
+            //
+            //         });
+            // };
         }
     ]);
