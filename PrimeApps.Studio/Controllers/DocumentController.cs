@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Document;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -31,9 +32,10 @@ namespace PrimeApps.Studio.Controllers
 		private ISettingRepository _settingRepository;
 		private IConfiguration _configuration;
 		private IDocumentHelper _documentHelper;
+        private IPermissionHelper _permissionHelper;
 
-		private IRecordHelper _recordHelper;
-		public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration, IDocumentHelper documentHelper)
+        private IRecordHelper _recordHelper;
+		public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration, IDocumentHelper documentHelper, IPermissionHelper permissionHelper)
 		{
 			_documentRepository = documentRepository;
 			_recordRepository = recordRepository;
@@ -43,8 +45,9 @@ namespace PrimeApps.Studio.Controllers
 			_picklistRepository = picklistRepository;
 			_settingRepository = settingRepository;
 			_configuration = configuration;
+            _permissionHelper = permissionHelper;
 
-			_documentHelper = documentHelper;
+            _documentHelper = documentHelper;
 			_recordHelper = recordHelper;
 		}
 
@@ -65,7 +68,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("upload_hex"), HttpPost]
 		public async Task<IActionResult> UploadHex([FromBody]JObject data)
 		{
-			string instanceId,
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            string instanceId,
 			  file,
 			  description,
 			  moduleName,
@@ -194,7 +200,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("Upload"), HttpPost]
 		public async Task<IActionResult> Upload()
 		{
-			DocumentUploadResult result;
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            DocumentUploadResult result;
 			var isUploaded = _documentHelper.Upload(Request.Body, out result);
 
 			if (!isUploaded && result == null)
@@ -213,7 +222,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("Upload_Excel"), HttpPost]
 		public async Task<IActionResult> UploadExcel()
 		{
-			DocumentUploadResult result;
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            DocumentUploadResult result;
 			var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
 
 			if (!isUploaded && result == null)
@@ -236,8 +248,11 @@ namespace PrimeApps.Studio.Controllers
 		[Route("upload_attachment"), HttpPost]
 		public async Task<IActionResult> UploadAttachment()
 		{
-			//Parse stream and get file properties.
-			HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            //Parse stream and get file properties.
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
 			String blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
 			//if it is successfully parsed continue.
 			if (parser.Success)
@@ -312,8 +327,11 @@ namespace PrimeApps.Studio.Controllers
 		[Route("upload_document_file"), HttpPost]
 		public async Task<IActionResult> UploadDocumentFile()
 		{
-			//Parse stream and get file properties.
-			HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            //Parse stream and get file properties.
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
 			String blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
 			//if it is successfully parsed continue.
 			if (parser.Success)
@@ -439,7 +457,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("remove_document"), HttpPost]
 		public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
 		{
-			string tenantId,
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            string tenantId,
 				module,
 				recordId,
 				fieldName,
@@ -482,7 +503,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("upload_large"), HttpPost]
 		public async Task<IActionResult> UploadLarge()
 		{
-			var parser = new HttpMultipartParser(Request.Body, "file");
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            var parser = new HttpMultipartParser(Request.Body, "file");
 
 			//if it is successfully parsed continue.
 			if (parser.Success)
@@ -525,8 +549,14 @@ namespace PrimeApps.Studio.Controllers
 		/// <param name="document">The document.</param>
 		public async Task<IActionResult> Create([FromBody]DocumentDTO document)
 		{
-			//get entity name if this document is uploading to a specific entity.
-			string uniqueStandardizedName = document.FileName.Replace(" ", "-");
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (UserProfile == ProfileEnum.Viewer)
+                return Unauthorized();
+
+            //get entity name if this document is uploading to a specific entity.
+            string uniqueStandardizedName = document.FileName.Replace(" ", "-");
 
 			uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
@@ -560,8 +590,10 @@ namespace PrimeApps.Studio.Controllers
 		/// <param name="document">The document.</param>
 		public async Task<IActionResult> ImageCreate([FromBody]JObject data)
 		{
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
 
-			string UniqueFileName, MimeType, TenantId;
+            string UniqueFileName, MimeType, TenantId;
 			UniqueFileName = data["UniqueFileName"]?.ToString();
 			MimeType = data["MimeType"]?.ToString();
 			TenantId = data["TenantId"]?.ToString();
@@ -588,9 +620,11 @@ namespace PrimeApps.Studio.Controllers
 		[Route("GetEntityDocuments"), HttpPost]
 		public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModel req)
 		{
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.View))
+                return StatusCode(403);
 
-			//Get last 5 entity documents and return it to the client.
-			var result = await _documentRepository.GetTopEntityDocuments(new DocumentRequest()
+            //Get last 5 entity documents and return it to the client.
+            var result = await _documentRepository.GetTopEntityDocuments(new DocumentRequest()
 			{
 				TenantId = req.TenantId,
 				ModuleId = req.ModuleId,
@@ -611,9 +645,9 @@ namespace PrimeApps.Studio.Controllers
 		[Route("GetDocuments"), HttpPost]
 		public async Task<IActionResult> GetDocuments([FromBody]DocumentRequest req)
 		{
-			//validate the instance id by the session instances.
+            //validate the instance id by the session instances.
 
-			if (req.TenantId != AppUser.TenantId)
+            if (req.TenantId != AppUser.TenantId)
 			{
 				//if the requested instance does not belong to the current session, than return Forbidden status message
 				return Forbid();
@@ -640,8 +674,8 @@ namespace PrimeApps.Studio.Controllers
 		[Route("GetDocument"), HttpPost]
 		public async Task<IActionResult> GetDocumentById([FromBody] int fileID)
 		{
-			//get the document record from database
-			var doc = await _documentRepository.GetById(fileID);
+            //get the document record from database
+            var doc = await _documentRepository.GetById(fileID);
 			if (doc != null)
 			{
 				return Ok(doc);
@@ -764,8 +798,11 @@ namespace PrimeApps.Studio.Controllers
 		[Route("Remove"), HttpPost]
 		public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
 		{
-			//if the document is not null open a new session and transaction
-			var result = await _documentRepository.RemoveAsync(doc.ID);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            //if the document is not null open a new session and transaction
+            var result = await _documentRepository.RemoveAsync(doc.ID);
 			if (result != null)
 			{
 				//Update storage license for instance.
@@ -783,7 +820,13 @@ namespace PrimeApps.Studio.Controllers
 		[Route("Modify"), HttpPost]
 		public async Task<IActionResult> Modify([FromBody]DocumentDTO document)
 		{
-			var updatedDoc = await _documentRepository.UpdateAsync(new Document()
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (UserProfile == ProfileEnum.Viewer)
+                return Unauthorized();
+
+            var updatedDoc = await _documentRepository.UpdateAsync(new Document()
 			{
 				Id = document.ID,
 				Description = document.Description,
@@ -804,7 +847,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("document_search"), HttpPost]
 		public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
 		{
-			if (filterRequest != null && filterRequest.Filters.Count > 0)
+            if (filterRequest != null && filterRequest.Filters.Count > 0)
 			{
 				DocumentSearch search = new DocumentSearch();
 
@@ -825,7 +868,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("find"), HttpPost]
 		public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
 		{
-			var documents = await _documentRepository.GetDocumentsByLimit(request);
+            var documents = await _documentRepository.GetDocumentsByLimit(request);
 
 			return documents;
 		}
@@ -833,7 +876,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("count"), HttpPost]
 		public async Task<int> Count([FromBody]DocumentFindRequest request)
 		{
-			return await _documentRepository.Count(request);
+            return await _documentRepository.Count(request);
 		}
 
 		public string GetMimeType(string name)

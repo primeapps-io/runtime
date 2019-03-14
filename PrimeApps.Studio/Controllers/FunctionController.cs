@@ -35,6 +35,7 @@ namespace PrimeApps.Studio.Controllers
         private IAppDraftRepository _appDraftRepository;
         private IOrganizationRepository _organizationRepository;
         private IDeploymentFunctionRepository _deploymentFunctionRepository;
+        private IPermissionHelper _permissionHelper;
         private string _kubernetesClusterRootUrl;
 
         public FunctionController(IBackgroundTaskQueue queue,
@@ -45,7 +46,7 @@ namespace PrimeApps.Studio.Controllers
             IGiteaHelper giteaHelper,
             IAppDraftRepository appDraftRepository,
             IOrganizationRepository organizationRepository,
-            IDeploymentFunctionRepository deploymentFunctionRepository)
+            IDeploymentFunctionRepository deploymentFunctionRepository, IPermissionHelper permissionHelper)
         {
             Queue = queue;
             _deploymentHelper = deploymentHelper;
@@ -56,6 +57,7 @@ namespace PrimeApps.Studio.Controllers
             _appDraftRepository = appDraftRepository;
             _organizationRepository = organizationRepository;
             _deploymentFunctionRepository = deploymentFunctionRepository;
+            _permissionHelper = permissionHelper;
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
@@ -70,6 +72,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _functionRepository.Count();
 
             return Ok(count);
@@ -78,6 +83,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var components = await _functionRepository.Find(paginationModel);
 
             return Ok(components);
@@ -86,6 +94,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var function = await _functionRepository.Get(id);
 
             if (function == null)
@@ -97,6 +108,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_by_name/{name}"), HttpGet]
         public async Task<IActionResult> Get(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var function = await _functionRepository.Get(name);
 
             if (function == null)
@@ -108,6 +122,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             JArray functions;
 
             using (var httpClient = new HttpClient())
@@ -132,6 +149,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]FunctionBindingModel function)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -194,6 +214,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{name}"), HttpPut]
         public async Task<IActionResult> Update(string name, [FromBody]FunctionBindingModel function)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -253,6 +276,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{name}"), HttpDelete]
         public async Task<IActionResult> Delete(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var function = await _functionRepository.Get(name);
 
             if (function == null)
@@ -307,6 +333,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_pods/{name}"), HttpGet]
         public async Task<IActionResult> GetPods(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
             var pods = await _functionHelper.GetPods(functionName);
 
@@ -316,6 +345,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_logs/{podName}"), HttpGet]
         public async Task<IActionResult> GetLogs(string podName)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var logs = await _functionHelper.GetLogs(podName);
             var response = new HttpResponseMessage();
 
@@ -336,6 +368,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("is_unique_name"), HttpGet]
         public async Task<IActionResult> IsUniqueName(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (string.IsNullOrEmpty(name))
                 return BadRequest(ModelState);
 
@@ -347,6 +382,12 @@ namespace PrimeApps.Studio.Controllers
         [Route("deploy/{name}"), HttpGet]
         public async Task<IActionResult> Deploy(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (UserProfile == ProfileEnum.Viewer)
+                return Unauthorized();
+
             var function = await _functionRepository.Get(name);
 
             if (function == null)

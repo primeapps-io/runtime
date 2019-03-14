@@ -13,6 +13,7 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -31,8 +32,9 @@ namespace PrimeApps.Studio.Controllers
         private Warehouse _warehouse;
 
         private IModuleHelper _moduleHelper;
+        private IPermissionHelper _permissionHelper;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration, IPermissionHelper permissionHelper)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
@@ -41,6 +43,7 @@ namespace PrimeApps.Studio.Controllers
             _warehouse = warehouse;
             _configuration = configuration;
             _menuRepository = menuRepository;
+            _permissionHelper = permissionHelper;
 
             _moduleHelper = moduleHelper;
         }
@@ -60,6 +63,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _moduleRepository.Count();
 
             return Ok(count);
@@ -68,6 +74,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return Forbid();
+
             var modules = await _moduleRepository.Find(paginationModel);
 
             return Ok(modules);
@@ -76,6 +85,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_by_id/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return Forbid();
+
             var module = await _moduleRepository.GetById(id);
 
             return Ok(module);
@@ -84,6 +96,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_by_name/{name:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpGet]
         public async Task<IActionResult> GetByName(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return Forbid();
+
             var module = await _moduleRepository.GetByName(name);
 
             return Ok(module);
@@ -110,6 +125,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -207,6 +225,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]ModuleBindingModel module)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -276,6 +297,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+                return Forbid();
+
             var moduleEntity = await _moduleRepository.GetById(id);
 
             if (moduleEntity == null)
@@ -295,6 +319,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create_relation/{moduleId:int}"), HttpPost]
         public async Task<IActionResult> CreateRelation(int moduleId, [FromBody]RelationBindingModel relation)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -345,6 +372,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateRelation(int moduleId, int id, [FromBody]RelationBindingModel relation)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -367,6 +397,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_relation/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteRelation(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+                return Forbid();
+
             var relationEntity = await _moduleRepository.GetRelation(id);
 
             if (relationEntity == null)
@@ -380,6 +413,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create_dependency/{moduleId:int}"), HttpPost]
         public async Task<IActionResult> CreateDependency(int moduleId, [FromBody]DependencyBindingModel dependency)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -404,6 +440,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateDependency(int moduleId, int id, [FromBody]DependencyBindingModel dependency)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -426,6 +465,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_field/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateField(int id, [FromBody]FieldBindingModel field)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+                return Forbid();
+
             var fieldEntity = await _moduleRepository.GetField(id);
 
             if (fieldEntity == null)
@@ -440,6 +482,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_dependency/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteDependency(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+                return Forbid();
+
             var dependencyEntity = await _moduleRepository.GetDependency(id);
 
             if (dependencyEntity == null)
@@ -453,6 +498,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_module_settings"), HttpGet]
         public async Task<IActionResult> GetModuleSettings()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return Forbid();
+
             var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 
             return Ok(moduleSettings);
@@ -461,6 +509,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_module_fields"), HttpGet]
         public async Task<IActionResult> GetModuleFieldByName([FromUri]string moduleName)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+                return Forbid();
+
             var fields = await _moduleRepository.GetModuleFieldByName(moduleName);
 
             return Ok(fields);

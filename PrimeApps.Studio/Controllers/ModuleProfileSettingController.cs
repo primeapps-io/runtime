@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -18,12 +19,13 @@ namespace PrimeApps.Studio.Controllers
     {
         private IModuleProfileSettingRepository _moduleProfileSettingRepository;
         private IConfiguration _configuration;
+        private IPermissionHelper _permissionHelper;
 
-
-        public ModuleProfileSettingController(IModuleProfileSettingRepository moduleProfileSettingRepository, IConfiguration configuration)
+        public ModuleProfileSettingController(IModuleProfileSettingRepository moduleProfileSettingRepository, IConfiguration configuration, IPermissionHelper permissionHelper)
         {
             _moduleProfileSettingRepository = moduleProfileSettingRepository;
             _configuration = configuration;
+            _permissionHelper = permissionHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -45,6 +47,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module_profile_settings", RequestTypeEnum.Create))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -63,6 +68,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module_profile_settings", RequestTypeEnum.Update))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -80,6 +88,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "module_profile_settings", RequestTypeEnum.Delete))
+                return Forbid();
+
             var moduleProfileSettingEntity = await _moduleProfileSettingRepository.GetByIdBasic(id);
 
             if (moduleProfileSettingEntity == null)

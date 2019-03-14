@@ -24,15 +24,17 @@ namespace PrimeApps.Studio.Controllers
 		private ISettingRepository _settingsRepository;
 		private IModuleRepository _moduleRepository;
 		private IConfiguration _configuration;
+        private IPermissionHelper _permissionHelper;
 
-		public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository, IModuleRepository moduleRepository, IConfiguration configuration)
+        public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPermissionHelper permissionHelper)
 		{
 			_profileRepository = profileRepository;
 			_menuRepository = menuRepository;
 			_settingsRepository = settingsRepository;
 			_moduleRepository = moduleRepository;
 			_configuration = configuration;
-		}
+            _permissionHelper = permissionHelper;
+        }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
@@ -188,7 +190,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("create"), HttpPost]
 		public async Task<IActionResult> Create([FromBody]List<Menu> menuList)
 		{
-			if (!ModelState.IsValid)
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
+                return Forbid();
+
+            if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			var defaultMenu = new JObject();
@@ -235,7 +240,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("delete/{id:int}"), HttpDelete]
 		public async Task<IActionResult> Delete([FromUri]int id)
 		{
-			if (id < 0)
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
+                return Forbid();
+
+            if (id < 0)
 				return BadRequest("id is required");
 
 			var menuEntity = await _menuRepository.GetById(id);
@@ -253,7 +261,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("update/{id:int}"), HttpPut]
 		public async Task<IActionResult> Update(int id, [FromBody]List<Menu> menuList)
 		{
-			if (!ModelState.IsValid)
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
+                return Forbid();
+
+            if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			if (id < 0)
@@ -298,12 +309,14 @@ namespace PrimeApps.Studio.Controllers
 		[Route("create/menu_items"), HttpPost]
 		public async Task<IActionResult> CreateMenuItems([FromBody]JObject request)
 		{
-			/**
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
+                return Forbid();
+            /**
 			 * moduleItem: modül
 			 * profileItem: profil 
 			 * menuItem:label-Tanım Giriş
 			 */
-			if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			if (!request["module"].HasValues)
@@ -389,7 +402,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("delete/menu_items"), HttpDelete]
 		public async Task<IActionResult> DeleteMenuItems([FromBody]int[] ids)
 		{
-			var menuItemsEntity = new MenuItem();
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
+                return Forbid();
+
+            var menuItemsEntity = new MenuItem();
 			foreach (var id in ids)
 			{
 				if (id < 0)
@@ -408,7 +424,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("update/menu_items"), HttpPut]
 		public async Task<IActionResult> UpdateMenuItems([FromBody]JObject request)
 		{
-			var menuItem = new MenuItem();
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
+                return Forbid();
+
+            var menuItem = new MenuItem();
 			for (int i = 0; i < ((JArray)request["menuLabel"]).Count; i++)
 			{
 				menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["id"]);
