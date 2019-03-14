@@ -192,13 +192,14 @@
                         var l = Ladda.create($(".btn-login")[0]);
                         l.start();
                     }
-                })
+                });
             }
 
 
             var postTry = false;
 
             $("#FirstName,#LastName, #Email, #Password").keyup(function() {
+                $("#Email").val($("#Email").val().toLowerCase());
                 $(".server-error").text("");
                 $(".server-error").removeClass("error");
                 if (postTry) {

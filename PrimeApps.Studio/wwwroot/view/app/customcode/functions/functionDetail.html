@@ -4,8 +4,12 @@
             <h2>Logs</h2>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button class="btn add-button" ng-click="getLogs()"> <i class="fas fa-refresh" ng-class="refreshLogs ? 'fa-spin' : ''" ></i> </button></li>
-                    <li><button class="btn add-button" ng-click="$parent.showConsole = !$parent.showConsole;"> <i class="fas fa-times"></i> </button></li>
+                    <li>
+                        <button class="btn add-button" ng-click="getLogs()"><i class="fas fa-refresh" ng-class="refreshLogs ? 'fa-spin' : ''"></i></button>
+                    </li>
+                    <li>
+                        <button class="btn add-button" ng-click="$parent.showConsole = !$parent.showConsole;"><i class="fas fa-times"></i></button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -28,13 +32,13 @@
         <h2>
             {{function.label}}
             <span style="color: black;font-size: 13px;font-style: italic;font-weight: 600;">
-                        ( {{name}}.{{getFileType()}} )
-                    </span>
+                ( {{name}}.{{getFileType()}} )
+            </span>
         </h2>
         <div>
             <ul class="list-unstyled list-inline">
                 <li>
-                    <button class="btn add-button" ng-click="openTerminal()"><i class="fas fa-terminal"></i> Logs
+                    <button class="btn add-button" ng-click="openTerminal()" data-trigger="hover" data-type="info" data-title="{{$parent.deployments.length === 0 ? 'Need deployment for log information.' : ''}}" bs-tooltip data-placement="bottom"><i class="fas fa-terminal"></i> Logs
                     </button>
                 </li>
             </ul>
@@ -127,8 +131,8 @@ git push -u origin master</code>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="deployment in deployments">
-                                    <td>{{getTime(deployment.start_time)}}</td>
-                                    <td>{{getTime(deployment.end_time)}}</td>
+                                    <td>{{getTime(deployment, 'start')}}</td>
+                                    <td>{{getTime(deployment, 'end')}}</td>
                                     <td>{{deployment.version}}</td>
                                     <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
                                 </tr>
@@ -227,7 +231,7 @@ git push -u origin master</code>
                         </form>
 
                         <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'test'">
-                            <button ng-disabled="$parent.$parent.$parent.$parent.$parent.deployments.length == 0" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
+                            <button data-trigger="hover" data-type="info" data-title="{{$parent.$parent.$parent.$parent.$parent.deployments.length == 0 ? 'Need deployment for function test.' : ''}}" bs-tooltip data-placement="bottom" class="btn btn-radius btn-blue col-sm-12" ladda="$parent.$parent.$parent.$parent.$parent.$parent.running" style="margin-right: 10px;" ng-click="runFunction($parent.$parent.$parent.$parent.$parent.$parent.run)">
                                 <i class="fas fa-bolt"></i> Run
                             </button>
                         </div>
@@ -236,22 +240,22 @@ git push -u origin master</code>
                         <form ng-if="!modalLoading" name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off"
                               novalidate>
 
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group"
-                                             style="position: relative;"
-                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
-                                            <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
-                                            <input type="text"
-                                                   name="name"
-                                                   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                                                   required
-                                                   maxlength="100"
-                                                   ng-blur="functionNameBlur($parent.$parent.function)"
-                                                   ng-change="checkFunctionName($parent.$parent.function)"
-                                                   ng-disabled="true"
-                                                   focus="true"
-                                                   ng-model="function.name"/>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.name.$invalid}">
+                                        <label class="col-sm-4 required-field">Identifier <span class="required-label">(required)</span> </label>
+                                        <input type="text"
+                                               name="name"
+                                               class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                               required
+                                               maxlength="100"
+                                               ng-blur="functionNameBlur($parent.$parent.function)"
+                                               ng-change="checkFunctionName($parent.$parent.function)"
+                                               ng-disabled="true"
+                                               focus="true"
+                                               ng-model="function.name"/>
                                     </div>
                                     <div class="form-group"
                                          style="position: relative;"
@@ -273,7 +277,7 @@ git push -u origin master</code>
                                                class="form-control ng-animate-disabled col-sm-6 text-lowercase"
                                                required
                                                placeholder="module.handler"
-                                                   ng-disabled="true"
+                                               ng-disabled="true"
                                                ng-change="checkFunctionHandler($parent.$parent.function)"
                                                ng-model="function.handler"/>
                                     </div>
@@ -286,7 +290,7 @@ git push -u origin master</code>
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
                                                 ng-model="function.runtime"
-                                                    ng-disabled="true"
+                                                ng-disabled="true"
                                                 ng-change="changeRuntime()"
                                                 ng-options="o.value as o.name for o in runtimes">
                                             <option value="">Select Runtime</option>

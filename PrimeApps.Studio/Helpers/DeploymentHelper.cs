@@ -133,6 +133,7 @@ namespace PrimeApps.Studio.Helpers
                     {
                         var app = await _appDraftRepository.Get(appId);
                         var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
                             var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
@@ -142,7 +143,6 @@ namespace PrimeApps.Studio.Helpers
                                 var localPath = giteaDirectory + repository["name"].ToString();
                                 _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
                                 var files = _giteaHelper.GetFileNames(localPath, "components/" + component.Name);
-                                var deployment = await _deploymentComponentRepository.Get(deploymentId);
 
                                 try
                                 {
@@ -188,6 +188,13 @@ namespace PrimeApps.Studio.Helpers
                                 _giteaHelper.DeleteDirectory(localPath);
                             }
                         }
+                        else
+                        {
+                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
+                            ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
+                        }
                     }
                 }
             }
@@ -212,6 +219,7 @@ namespace PrimeApps.Studio.Helpers
                     {
                         var app = await _appDraftRepository.Get(appId);
                         var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
                             var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
@@ -222,7 +230,6 @@ namespace PrimeApps.Studio.Helpers
                                 var localPath = giteaDirectory + repository["name"].ToString();
                                 _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
                                 // var files = _giteaHelper.GetFileNames(localPath, "components/" + script.Name);
-                                var deployment = await _deploymentComponentRepository.Get(deploymentId);
                                 var fileName = $"/scripts/{script.Name}.js";
 
                                 try
@@ -247,6 +254,13 @@ namespace PrimeApps.Studio.Helpers
                                 if (result > 0)
                                     _giteaHelper.DeleteDirectory(localPath);
                             }
+                        }
+                        else
+                        {
+                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
+                            ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
                         }
                     }
                 }

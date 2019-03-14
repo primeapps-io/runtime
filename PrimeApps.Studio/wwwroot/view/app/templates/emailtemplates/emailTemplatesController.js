@@ -16,7 +16,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.newtemplate = {};
             $scope.newtemplate.system_type = 'custom';
-            $scope.newtemplate.sharing_type = 'me';
+            $scope.newtemplate.sharing_type = 'everybody';
             var uploadSuccessCallback,
                 uploadFailedCallback;
 

@@ -338,7 +338,7 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                        picklists: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
                             if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,

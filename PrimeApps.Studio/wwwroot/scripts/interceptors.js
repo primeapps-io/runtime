@@ -116,6 +116,11 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
+                    //request cancelled
+                    if (rejection.status === -1) {
+                        return $q.reject(rejection);
+                    }
+
                     toastr.error($filter('translate')('Common.Error'));
 
                     return $q.reject(rejection);

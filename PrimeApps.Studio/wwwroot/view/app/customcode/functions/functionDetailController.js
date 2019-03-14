@@ -51,8 +51,19 @@ angular.module('primeapps')
 
             };
 
-            $scope.getTime = function (time) {
-                return moment(time).format("DD-MM-YYYY HH:ss");
+            $scope.getTime = function (deployment, type) {
+                if (type === 'start') {
+                    return moment(deployment.start_time).format("DD-MM-YYYY HH:ss");
+                }
+                else {
+                    if (deployment.status === 'running') {
+                        return '';
+                    }
+                    else {
+                        return moment(deployment.end_time).format("DD-MM-YYYY HH:ss");
+                    }
+                }
+
             };
 
             $scope.getIcon = function (status) {
@@ -157,6 +168,11 @@ angular.module('primeapps')
             };
 
             $scope.runFunction = function (run) {
+                if ($scope.deployments.length === 0) {
+                    toastr.info('Need deployment for function test !');
+                    return;
+                }
+
                 $scope.running = true;
                 $scope.response = null;
                 FunctionsService.run($scope.name, run.type, run.body)
@@ -180,6 +196,11 @@ angular.module('primeapps')
             };
 
             $scope.openTerminal = function () {
+                if ($scope.deployments.length === 0) {
+                    toastr.info('Need deployment for getting log information !');
+                    return;
+                }
+
                 var layout = document.getElementsByClassName("setup-layout");
                 var logger = document.getElementById("log-screen");
                 logger.style.width = (layout[0].offsetWidth - 15) + "px";

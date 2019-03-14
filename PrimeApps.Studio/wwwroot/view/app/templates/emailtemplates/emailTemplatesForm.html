@@ -1,17 +1,22 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave(uploadForm);" autocomplete="off" novalidate>
+    <form name="uploadForm" class="form-horizontal form-custom" ng-submit="templateSave(uploadForm);" autocomplete="off"
+          novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Templates.UploadTemplate' | translate}}</h4>
+                <h4 class="modal-title">Email  Template</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray " ng-disabled="saving" ng-click="addNewEmailTemplateFormModal.hide();">
+                            <button type="button" class="btn add-button btn-radius btn-gray " ng-disabled="saving"
+                                    ng-click="addNewEmailTemplateFormModal.hide();">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
                             </button>
                         </li>
                         <li>
-                            <button type="submit" ladda="saving" ng-disabled="saving" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                            <button type="submit" ladda="saving" ng-disabled="saving"
+                                    class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save'
+                                | translate}}
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -23,8 +28,10 @@
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
-                                    <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
+                                    <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999"
+                                                                                          class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <select class="form-control pull-left"
                                             ng-change="changeModule();"
                                             ng-required="true"
@@ -35,33 +42,41 @@
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.TemplateName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_name" />
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                    <label>{{'Template.TemplateName' | translate}} <span style="color: #999"
+                                                                                         class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <input type="text" name="templateName" class="form-control" ng-required="true"
+                                           ng-model="newtemplate.template_name"/>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.Subject' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="newtemplate.template_subject" />
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                    <label>{{'Template.Subject' | translate}} <span style="color: #999"
+                                                                                    class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <input type="text" name="templateName" class="form-control" ng-required="true"
+                                           ng-model="newtemplate.template_subject"/>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <div><label>{{'Template.Sharing' | translate}} </label></div>
-                                    <label class="checkbox-inline newinput">
-                                        <input type="radio" ng-model="newtemplate.sharing_type" value="me">
-                                        {{'View.ShareMe' | translate}}
-                                        <span></span>
-                                    </label><br />
-                                    <label class="checkbox-inline newinput">
-                                        <input type="radio" ng-model="newtemplate.sharing_type" value="everybody">
-                                        {{'View.ShareEveryone' | translate}}
-                                        <span></span>
-                                    </label><br>
-                                    <label class="checkbox-inline newinput">
-                                        <input type="radio" ng-model="newtemplate.sharing_type" value="custom">
-                                        {{'View.ShareCustom' | translate}}
-                                        <span></span>
-                                    </label>
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                    <!--<div><label>{{'Template.Sharing' | translate}} </label></div>-->
+                                    <!--<label class="checkbox-inline newinput">-->
+                                        <!--<input type="radio" ng-model="newtemplate.sharing_type" value="me">-->
+                                        <!--{{'View.ShareMe' | translate}}-->
+                                        <!--<span></span>-->
+                                    <!--</label><br/>-->
+                                    <!--<label class="checkbox-inline newinput">-->
+                                        <!--<input type="radio" ng-model="newtemplate.sharing_type" value="everybody">-->
+                                        <!--{{'View.ShareEveryone' | translate}}-->
+                                        <!--<span></span>-->
+                                    <!--</label><br>-->
+                                    <!--<label class="checkbox-inline newinput">-->
+                                        <!--<input type="radio" ng-model="newtemplate.sharing_type" value="custom">-->
+                                        <!--{{'View.ShareCustom' | translate}}-->
+                                        <!--<span></span>-->
+                                    <!--</label>-->
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div ng-if="newtemplate.sharing_type === 'custom'">
                                         {{'Template.SharedUsers' | translate}}
                                     </div>
@@ -82,7 +97,8 @@
                                         </tags-input>
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymce.$invalid}">
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymce.$invalid}">
                                     <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                               mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
                                               name="tinymce"
@@ -97,7 +113,8 @@
                                             </li>
                                         </ul>
                                     </script>
-                                    <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                    <mentio-menu class="mention-scrollbar" id="hastmenu2"
+                                                 mentio-for="'tinyMceTextArea2'"
                                                  mentio-trigger-char="'#'" mentio-items="tags"
                                                  mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
                                                  mentio-select="getTagTextRaw(item)"></mentio-menu>

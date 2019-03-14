@@ -36,7 +36,7 @@ angular.module('primeapps')
             $scope.$parent.$parent.tabManage = {
                 activeTab: "overview"
             };
-            
+
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
@@ -86,18 +86,25 @@ angular.module('primeapps')
 
             $scope.deployments = [];
 
-            ComponentsService.getFileList($scope.id)
-                .then(function (response) {
-                    $scope.files = [];
-                    angular.forEach(response.data, function (file) {
-                        var path = {'path': file.path, 'value': file.path.replace('components/' + $scope.component.name + '/', '')};
-                        $scope.files.push(path)
+            $scope.getFileList = function () {
+                $scope.filesLoading = true;
+                ComponentsService.getFileList($scope.id)
+                    .then(function (response) {
+                        $scope.files = [];
+                        angular.forEach(response.data, function (file) {
+                            var path = {'path': file.path, 'value': file.path.replace('components/' + $scope.component.name + '/', '')};
+                            $scope.files.push(path);
+                            $scope.filesLoading = false;
+                        });
+                    })
+                    .catch(function (response) {
+                        console.log('error: ' + response);
+                        $scope.filesLoading = false;
                     });
-                })
-                .catch(function (response) {
-                    console.log('error: ' + response);
-                });
-
+            };
+            
+            $scope.getFileList();
+            
             ComponentsService.get($scope.id)
                 .then(function (response) {
                     if (!response.data) {
@@ -156,7 +163,7 @@ angular.module('primeapps')
                     $scope.copyComponent.content.app.templateUrl = $scope.component.content.app.templateFile;
                 }
 
-                $scope.copyComponent.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : null);
+                $scope.copyComponent.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : '');
 
                 $scope.copyComponent.content = JSON.stringify($scope.copyComponent.content);
 
@@ -164,6 +171,12 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.editing = false;
+                        toastr.success("Component updated successfully.");
+                    })
+                    .catch(function(){
+                        $scope.saving = false;
+                        $scope.editing = false;
+                        toastr.error("Component not updated successfully.");
                     })
             };
 

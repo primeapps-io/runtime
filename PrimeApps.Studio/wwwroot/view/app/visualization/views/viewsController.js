@@ -22,7 +22,6 @@ angular.module('primeapps')
             $scope.generator(10);
 
             $scope.loading = true;
-            $scope.wizardStep = 0;
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
@@ -112,7 +111,7 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (view) {
-
+                $scope.wizardStep = 0;
                 if (view) {
                     $scope.loadingModal = true;
                     $scope.isNew = false;
@@ -238,7 +237,7 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-                    
+
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
@@ -477,7 +476,6 @@ angular.module('primeapps')
                     //swal("Good job!", "You clicked the button!", "success");
                     toastr.success("Filter is saved successfully.");
                     //$state.go('studio.app.filters');
-                    $scope.wizardStep = 0;
                     $scope.addNewFiltersModal.hide();
                     $scope.changePage($scope.activePage);
                 }

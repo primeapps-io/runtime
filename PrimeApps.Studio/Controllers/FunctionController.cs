@@ -135,6 +135,11 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var isNameUnique = await _functionRepository.IsFunctionNameAvailable(function.Name);
+
+            if (!isNameUnique)
+                return Conflict("Function name already used.");
+
             var functionName = _functionHelper.GetFunctionName(PreviewMode, function.Name, TenantId, AppId);
 
             var checkName = await _functionRepository.IsFunctionNameAvailable(functionName);
@@ -179,7 +184,8 @@ namespace PrimeApps.Studio.Controllers
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
             }
-
+            
+            function.Name = functionObj.Name;
             _functionHelper.CreateSample(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, function);
 
             return Ok(functionObj.Id);
@@ -368,7 +374,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occurred while creating an deployment.");
 
-            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartFunctionDeployment(function, functionObj, name, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartFunctionDeployment(function, functionObj, functionName, AppUser.Id, OrganizationId, (int)AppId, deployment.Id));
 
             return Ok();
         }

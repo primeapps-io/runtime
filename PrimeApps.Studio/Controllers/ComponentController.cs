@@ -78,6 +78,9 @@ namespace PrimeApps.Studio.Controllers
             if (module == null)
                 return BadRequest("Module id is not valid.");
 
+            if (module.SystemType != SystemType.Component)
+                return BadRequest("Module type is not component");
+
             var componentName = module.Name.Replace("_", "");
             var component = await _componentRepository.Get(componentName);
 
