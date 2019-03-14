@@ -142,27 +142,48 @@ angular.module('primeapps',
                 $window.location.href = '/';
                 return;
             }
+            $rootScope.cacheMenuStatus = {
+                "homeMenu": 'Open',
+                "appMenu": 'Open',
+                "status": false
+
+            };
+            
+            $rootScope.toggleClass = '';
+            $rootScope.subtoggleClass = '';
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-              
-                var currentUrl = toState.url;
-                // $rootScope.allMenuPanelOpen =true;
-                if (currentUrl.indexOf("moduleDesigner") > 0 || currentUrl.indexOf("workflowEditor") > 0) {
-                    if (!$rootScope.subtoggleClass || $rootScope.subtoggleClass == null)
-                        $rootScope.subtoggleClass = 'full-toggled2';
-                    if (!$rootScope.toggleClass || $rootScope.toggleClass == null)
-                        $rootScope.toggleClass = 'toggled full-toggled';
 
-                    $rootScope.allMenuPanelClose = true;
-                } else {
-                    if ($rootScope.allMenuPanelClose) {
-                        if ($rootScope.subtoggleClass == null)
-                            $rootScope.subtoggleClass = 'full-toggled2';
-                        if (!$rootScope.toggleClass || $rootScope.toggleClass == null)
-                            $rootScope.toggleClass = 'toggled full-toggled';
-                        $rootScope.allMenuPanelOpen = true;
+                var currentUrl = toState.url;
+
+
+                if (currentUrl.indexOf("moduleDesigner") > 0 || currentUrl.indexOf("workflowEditor") > 0) {
+
+                    if ($rootScope.subtoggleClass == '') {
+                        $rootScope.subtoggleClass = 'full-toggled2';
+                        $rootScope.cacheMenuStatus.homeMenu = 'Closed';
                     }
 
+                    if ($rootScope.toggleClass == '') {
+                        $rootScope.toggleClass = 'toggled full-toggled';
+                        $rootScope.cacheMenuStatus.appMenu = 'closed';
+                    }
+                    $rootScope.cacheMenuStatus.status = true;
+
+
+                } else {
+                    
+                    if ($rootScope.cacheMenuStatus.status == true) {
+                        if ($rootScope.cacheMenuStatus.homeMenu != 'Open')
+                            $rootScope.subtoggleClass = '';
+
+                        if ($rootScope.cacheMenuStatus.appMenu != 'Open')
+                            $rootScope.toggleClass = '';
+
+                        $rootScope.cacheMenuStatus.appMenu = 'Open';
+                        $rootScope.cacheMenuStatus.homeMenu = 'Open';
+                        $rootScope.cacheMenuStatus.status = false;
+                    }
 
                 }
 

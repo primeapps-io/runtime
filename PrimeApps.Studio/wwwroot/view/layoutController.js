@@ -5,12 +5,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         angular.element($window).on('load resize', function () {
             if ($window.innerWidth < 1200) {
                 $scope.$apply(function () {
-                    $scope.toggleClass = 'full-toggled toggled';
+                    $rootScope.toggleClass = 'toggled full-toggled';
                     $rootScope.subtoggleClass = 'full-toggled2';
                 });
             } else {
                 $scope.$apply(function () {
-                    $scope.toggleClass = '';
+                    $rootScope.toggleClass = '';
                     $rootScope.subtoggleClass = '';
                 });
             }
@@ -18,6 +18,10 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
+        };     
+        
+        $rootScope.toggledOrgMenu= function () {
+            $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled';
         };
 
         $scope.nameBlur = false;
@@ -139,32 +143,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             }
         };
 
-        $scope.toggleLeftMenu = function () {
-            angular.element($scope.sidebar).toggleClass('toggled');
-            angular.element($scope.sidebar).toggleClass('full-toggled');
-            angular.element($scope.navbar).toggleClass('toggled');
-            angular.element($scope.navbar).toggleClass('full-toggled');
-            angular.element($scope.bottomlinks).toggleClass('hidden');
-
-            $scope.isAvailableForSmallDevice();
-
-            $scope.toggled = !$scope.toggled;
-        };
-
-        $scope.toggleFullLeftMenu = function () {
-            angular.element($scope.sidebar).toggleClass('full-toggled');
-            angular.element($scope.sidebar).toggleClass('toggled');
-            angular.element($scope.navbar).toggleClass('full-toggled');
-            angular.element($scope.navbar).toggleClass('toggled');
-            angular.element($scope.bottomlinks).toggleClass('hidden');
-
-            var dropdownMenus = angular.element(document.getElementsByClassName('dropdown-menu'));
-
-            for (var i = 0; i < dropdownMenus.length; i++) {
-                angular.element(document.getElementsByClassName('dropdown-menu'))[i].click();
-            }
-        };
-
+ 
         $scope.toggleAppMenu = function ($timeout) {
             angular.element($scope.appLauncher).toggleClass('toggled');
         };
