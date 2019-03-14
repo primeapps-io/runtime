@@ -36,8 +36,10 @@ namespace PrimeApps.Auth
                 var claims = _userManager.GetClaimsAsync(user).Result;
 
                 var giteaToken = claims.FirstOrDefault(x => x.Type == "gitea_token")?.Value;
-                
-                context.IssuedClaims.Add(new Claim("gitea_token", giteaToken));
+
+                if (!string.IsNullOrEmpty(giteaToken))
+                    context.IssuedClaims.Add(new Claim("gitea_token", giteaToken));
+
                 context.IssuedClaims.Add(new Claim("email", user.Email));
                 context.IssuedClaims.Add(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
                 context.IssuedClaims.Add(new Claim("external_login", "false"));
@@ -57,6 +59,7 @@ namespace PrimeApps.Auth
                 context.IssuedClaims.Add(new Claim("external_login", "true"));
                 //context.IssuedClaims.Add(new Claim("validated_code", context.Subject.FindFirstValue("validated_code")));
             }
+
             return Task.CompletedTask;
         }
 
