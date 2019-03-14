@@ -132,8 +132,11 @@ namespace PrimeApps.App.Controllers
 
             Response.Cookies.Delete("tenant_id");
             await HttpContext.SignOutAsync();
-
-            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain);
+            
+            var preview = HttpContext.Request.Query["preview"].ToString();
+            preview = !string.IsNullOrEmpty(preview) ? "?preview=" + preview : "";
+            
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview );
         }
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
