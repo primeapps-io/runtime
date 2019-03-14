@@ -748,8 +748,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", provider},
+                        { "returnUrl", returnUrl },
+                        { "scheme", provider },
                     }
                 };
                 return Challenge(props, provider);
@@ -1275,8 +1275,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", AccountOptions.WindowsAuthenticationSchemeName},
+                        { "returnUrl", returnUrl },
+                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
                     }
                 };
 
@@ -1732,7 +1732,6 @@ namespace PrimeApps.Auth.UI
                         ["culture"] = CultureInfo.CurrentCulture.Name,
                         ["user_exist"] = newPlatformUser,
                         ["email_confirmed"] = identityUser.EmailConfirmed
-
                     };
 
                     using (var httpClient = new HttpClient())
@@ -1741,13 +1740,13 @@ namespace PrimeApps.Auth.UI
                         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         var userCreatedResponse = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
 
-                        /*if (!userCreatedResponse.IsSuccessStatusCode)
+                        if (!userCreatedResponse.IsSuccessStatusCode)
                         {
-                            DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
-                            response["Error"] = "TenantCreateError";
-                            return response;
-                            //TODO Loglara Eklenebilir.
-                        }*/
+                            var result = await userCreatedResponse.Content?.ReadAsStringAsync();
+
+                            if (!string.IsNullOrEmpty(result))
+                                ErrorHandler.LogError(new Exception(result), "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " + url + ", Request: " + requestModel.ToJsonString());
+                        }
                     }
                 }
             }
