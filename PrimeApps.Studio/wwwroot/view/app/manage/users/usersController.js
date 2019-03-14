@@ -130,12 +130,11 @@ angular.module('primeapps')
                                 toastr.success('User is saved successfully');
                                 if ($scope.userModel.auto_pass) {
                                     $scope.showPassword = true;
-                                    $scope.resultModel = {};
+                                    $scope.resultModel = {recipient: $rootScope.me.email};
                                     $scope.resultModel.autoPassword = response.data.password;
                                     $scope.resultModel.displayName = $scope.userModel.first_name + ' ' + $scope.userModel.last_name;
                                     $scope.resultModel.email = $scope.userModel.email;
-                                }
-                                else {
+                                } else {
                                     $scope.userFormModal.hide();
                                 }
                                 $scope.changePage(1);
@@ -146,15 +145,13 @@ angular.module('primeapps')
                         .catch(function (response) {
                             if (response.data && response.data.message) {
                                 toastr.error(response.data.message);
-                            }
-                            else {
+                            } else {
                                 toastr.error($filter('translate')('Common.Error'));
                             }
                             $scope.saving = false;
                             $scope.closeModal();
                         });
-                }
-                else {
+                } else {
                     UsersService.update($scope.userModel.id, $scope.userModel)
                         .then(function (response) {
                             toastr.success('User is saved successfully');
@@ -186,23 +183,25 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (id) {
                 if (id) {
-                    $scope.userModel = $filter('filter')($scope.users, { id: id }, true)[0];
+                    $scope.userModel = $filter('filter')($scope.users, {id: id}, true)[0];
                     $scope.editing = true;
-                }
-                else {
-                    $scope.userModel = {};
+                } else {
+                    $scope.userModel = {
+                        profile_id: 1,
+                        role_id: 1
+                    };
                     $scope.resultModel = {};
                     $scope.userModel.auto_pass = "true";
                     $scope.editing = false;
                 }
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/manage/users/userFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/manage/users/userFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.userFormModal.$promise.then(function () {
                     $scope.userFormModal.show();
@@ -228,12 +227,10 @@ angular.module('primeapps')
                     sendEmailData.password = $scope.resultModel.autoPassword;
                     UsersService.sendEmail(sendEmailData)
                         .then(function (response) {
-                            if (response.data > 0)
-                                $scope.savingEmailPassword = false;
+                            $scope.savingEmailPassword = false;
                             toastr.success("Mail sending successfull");
                         });
-                }
-                else {
+                } else {
                     toastr.warning("Email the new password to the following recipient not null");
                 }
             };
