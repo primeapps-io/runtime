@@ -1744,8 +1744,10 @@ namespace PrimeApps.Auth.UI
                         {
                             var result = await userCreatedResponse.Content?.ReadAsStringAsync();
 
-                            if (!string.IsNullOrEmpty(result))
-                                ErrorHandler.LogError(new Exception(result), "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " + url + ", Request: " + requestModel.ToJsonString());
+                            if (string.IsNullOrEmpty(result))
+                                result = "";
+
+                            ErrorHandler.LogError(new Exception(result), "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " + url + ", Request: " + requestModel.ToJsonString());
                         }
                     }
                 }
