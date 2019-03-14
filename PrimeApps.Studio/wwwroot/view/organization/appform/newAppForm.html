@@ -67,7 +67,9 @@
                                            data-trigger="hover" data-type="info" data-title="This app identifier already used by another user." bs-tooltip data-placement="bottom"></i>
                                     </div>
                                 </div>
-
+                                <div style="margin-top:-20px">
+                                    <span style="font-weight:200;font-size:small" ng-show="appModel.name">{{appModel.name}}.app.primeapps.io</span>
+                                </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
                                     <label class="col-sm-4 required-field">Description</label>
