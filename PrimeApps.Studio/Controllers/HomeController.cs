@@ -35,11 +35,12 @@ namespace PrimeApps.Studio.Controllers
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
-            var emailConfirmed = jwtToken.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
-
+            var emailConfirmed = jwtToken?.Claims.First(claim => claim.Type == "email_confirmed")?.Value;
+            
             if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
             {
-                var giteaToken = Request.Cookies["gitea_token"];
+                var giteaToken = jwtToken?.Claims.First(claim => claim.Type == "gitea_token")?.Value;
+                //var giteaToken = Request.Cookies["gitea_token"];
                 //var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
                 if (giteaToken != null)
                     Response.Cookies.Append("gitea_token", giteaToken);
