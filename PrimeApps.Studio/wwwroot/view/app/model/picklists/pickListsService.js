@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .factory('PickListsService', ['$rootScope', '$http', 'config',
+    .factory('PicklistsService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
                 get: function (id) {

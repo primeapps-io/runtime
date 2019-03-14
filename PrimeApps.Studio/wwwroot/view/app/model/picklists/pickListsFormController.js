@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('pickListsFormController', ['$rootScope', '$scope', '$state', '$stateParams', 'PickListsService', '$modal',
-        function ($rootScope, $scope, $state, $stateParams, PickListsService, $modal) {
+    .controller('picklistsFormController', ['$rootScope', '$scope', '$state', '$stateParams', 'PicklistsService', '$modal',
+        function ($rootScope, $scope, $state, $stateParams, PicklistsService, $modal) {
             $scope.loadingItem = true;
             $scope.modalLoading = true;
             $scope.id = $scope.$parent.id;
@@ -32,9 +32,9 @@ angular.module('primeapps')
                 $scope.requestModelItem.offset = page - 1;
                 var requestModel = angular.copy($scope.requestModelItem);
 
-                PickListsService.getItemPage($scope.id, requestModel).then(function (response) {
+                PicklistsService.getItemPage($scope.id, requestModel).then(function (response) {
                     $scope.picklist = response.data;
-                    PickListsService.countItems($scope.id)
+                    PicklistsService.countItems($scope.id)
                         .then(function (count) {
                             if (count.data) {
                                 $scope.pageTotalItems = count.data;

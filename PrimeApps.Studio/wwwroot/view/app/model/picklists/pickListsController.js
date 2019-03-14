@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('PickListsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PickListsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper',
-        function ($rootScope, $scope, $filter, $state, $stateParams, PickListsService, $modal, dragularService, $timeout, $interval, helper) {
+    .controller('PicklistsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PicklistsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PicklistsService, $modal, dragularService, $timeout, $interval, helper) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
@@ -38,11 +38,11 @@ angular.module('primeapps')
 
 
 
-            PickListsService.getPage($scope.requestModel).then(function (response) {
+            PicklistsService.getPage($scope.requestModel).then(function (response) {
                 if (response.data) {
                     $scope.picklists = response.data;
 
-                    PickListsService.count().then(function (count) {
+                    PicklistsService.count().then(function (count) {
                         $scope.pageTotal = count.data;
                         $scope.loading = false;
                     }).catch(function (reason) {
@@ -73,7 +73,7 @@ angular.module('primeapps')
                 else
                     requestModel.offset = 0;
 
-                PickListsService.getPage(requestModel).then(function (response) {
+                PicklistsService.getPage(requestModel).then(function (response) {
 
                     $scope.picklists = response.data;
                     $scope.loading = false;
@@ -86,9 +86,9 @@ angular.module('primeapps')
             $scope.changePageItem = function (page) {
                 $scope.loadingItem = true;
 
-                PickListsService.get($scope.id).then(function (response) {
+                PicklistsService.get($scope.id).then(function (response) {
                     $scope.picklist = response.data;
-                    PickListsService.countItems($scope.id)
+                    PicklistsService.countItems($scope.id)
                         .then(function (count) {
                             if (count.data) {
                                 $scope.pageTotalItems = count.data;
@@ -111,7 +111,7 @@ angular.module('primeapps')
 
             $scope.selectPicklist = function (id) {
                 $scope.modalLoading = true;
-                PickListsService.get(id)
+                PicklistsService.get(id)
                     .then(function (response) {
                         if (response.data) {
                             $scope.picklist = response.data;
@@ -201,7 +201,7 @@ angular.module('primeapps')
                     return;
                 }
 
-                PickListsService.isUniqueCheck(picklist.system_code)
+                PicklistsService.isUniqueCheck(picklist.system_code)
                     .then(function (response) {
                         $scope.picklistNameChecking = false;
                         if (response.data) {
@@ -233,7 +233,7 @@ angular.module('primeapps')
                 }
 
                 if ($scope.picklistModel.system_code) {
-                    PickListsService.isUniqueCheck($scope.picklistModel.system_code)
+                    PicklistsService.isUniqueCheck($scope.picklistModel.system_code)
                         .then(function (response) {
                             if (response.data) {
                                 saveAction();
@@ -256,7 +256,7 @@ angular.module('primeapps')
                 $scope.picklistModel.items = [];
 
                 if ($scope.picklistModel.id) {
-                    PickListsService.update($scope.picklistModel)
+                    PicklistsService.update($scope.picklistModel)
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.SaveSuccess'));
@@ -268,7 +268,7 @@ angular.module('primeapps')
                 }
                 else {
 
-                    PickListsService.create($scope.picklistModel)
+                    PicklistsService.create($scope.picklistModel)
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.SaveSuccess'));
@@ -302,7 +302,7 @@ angular.module('primeapps')
                 }).then(function (value) {
                     if (value) {
                         $scope.loading = true;
-                        PickListsService.delete(id)
+                        PicklistsService.delete(id)
                             .then(function (response) {
                                 if (response.data) {
                                     toastr.success($filter('translate')('Picklist.DeleteSuccess'));
@@ -330,7 +330,7 @@ angular.module('primeapps')
                 var length = $scope.picklist.items ? $scope.picklist.items.length : 0;
                 $scope.itemModel.order = length + 1;
 
-                PickListsService.createItem($scope.id, $scope.itemModel)
+                PicklistsService.createItem($scope.id, $scope.itemModel)
                     .then(function (response) {
                         if (response.data) {
                             toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
@@ -355,7 +355,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                PickListsService.updateItem(item.id, item)
+                PicklistsService.updateItem(item.id, item)
                     .then(function (response) {
                         if (response.data)
                             toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
@@ -373,7 +373,7 @@ angular.module('primeapps')
             $scope.deleteItem = function (item) {
                 item.deletingItem = true;
                 if ($scope.picklist && item.id) {
-                    PickListsService.deleteItem(item.id)
+                    PicklistsService.deleteItem(item.id)
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
@@ -399,7 +399,7 @@ angular.module('primeapps')
                     $scope.picklist.items[i].order = i + 1;
                 }
 
-                PickListsService.update($scope.picklist)
+                PicklistsService.update($scope.picklist)
                     .then(function (response) {
                         if (response.data) {
                             toastr.success($filter('translate')('Picklist.SaveOrderSuccess'));
