@@ -467,7 +467,11 @@ namespace PrimeApps.Auth.UI
             {
                 var giteaToken = await _giteaHelper.GetToken(model.Email, model.Password);
                 if (!string.IsNullOrEmpty(giteaToken))
+                {
+                    var user = await _userManager.FindByNameAsync(model.Email);
+                    await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
                     Response.Cookies.Append("gitea_token", giteaToken);
+                }
             }
 
             var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, lockoutOnFailure: false);

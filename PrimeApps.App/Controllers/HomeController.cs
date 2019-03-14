@@ -51,8 +51,9 @@ namespace PrimeApps.App.Controllers
 
                 if (previewDB.Contains("app"))
                 {
+                    var previewClient = _configuration.GetValue("AppSettings:PreviewClient", string.Empty);
                     var appId = int.Parse(previewDB.Split("app_id=")[1]);
-                    var app = await applicationRepository.GetByNameAsync("primeapps_preview");
+                    var app = await applicationRepository.GetByNameAsync(!string.IsNullOrEmpty(previewClient) ? previewClient : "primeapps_preview");
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
