@@ -32,6 +32,13 @@ angular.module('primeapps')
 
             }
 
+            $scope.passwordChange = function () {
+                if ($scope.userModel.auto_pass) {
+                    $scope.userModel.auto_pass = false;
+                }
+
+            }
+
             function populateform(enterlength) {
                 document.pgenerate.output.value = generatepass(enterlength)
             }
