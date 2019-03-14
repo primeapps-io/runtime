@@ -63,9 +63,9 @@ namespace PrimeApps.Studio.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-//
-//            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-//                return Forbid(ApiResponseMessages.PERMISSION);
+            //
+            //            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+            //                return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
 
@@ -90,6 +90,8 @@ namespace PrimeApps.Studio.Controllers
                 OrganizationId = OrganizationId,
                 TempletId = model.TempletId,
                 Status = PublishStatus.Draft,
+                Setting = new AppDraftSetting()
+
             };
 
             var result = await _appDraftRepository.Create(app);
@@ -193,7 +195,7 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(app);
         }
-        
+
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)

@@ -7,8 +7,8 @@ angular.module('primeapps')
 
             //$scope.$parent.menuTopTitle = "Identity";
             //$scope.$parent.activeMenu = 'identity';
-            $scope.$parent.activeMenuItem = 'identity';
-            $rootScope.breadcrumblist[2].title = 'Identity';
+            $scope.$parent.activeMenuItem = 'authentication';
+            $rootScope.breadcrumblist[2].title = 'Authentication';
 
             console.log("IdentityController");
 
