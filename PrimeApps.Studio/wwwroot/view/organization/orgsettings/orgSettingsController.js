@@ -63,7 +63,7 @@ angular.module('primeapps')
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
                         $rootScope.currentOrganization.icon = $scope.orgModel.icon;
                         $rootScope.currentOrganization.color = $scope.orgModel.color;
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        toastr.success($filter('translate')('Organization  update successfully'));
                         $scope.saving = false;
                     });
             };
