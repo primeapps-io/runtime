@@ -443,7 +443,9 @@ angular.module('primeapps')
             };
 
             $scope.showEditModal = function (isModuleSaving) {
+                $scope.modalLoading = true;
                 $scope.moduleState = angular.copy($scope.module);
+                $scope.modalLoading = false;
                 $scope.isModuleSaving = isModuleSaving;
                 $scope.editModal = $scope.editModal || $modal({
                     scope: $scope,
