@@ -298,12 +298,12 @@ namespace PrimeApps.Auth.UI
 
                     var user = await _userManager.FindByNameAsync(model.Username);
 
-                    if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo?.Domain))
+                    /*if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo?.Domain))
                     {
                         var giteaToken = await _giteaHelper.GetToken(model.Username, model.Password);
                         if (!string.IsNullOrEmpty(giteaToken))
                             Response.Cookies.Append("gitea_token", giteaToken);
-                    }
+                    }*/
 
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 

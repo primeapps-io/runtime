@@ -15,8 +15,8 @@ angular.module('primeapps')
                     { link: '#/app/setup/settings', label: 'Setup.Nav.PersonalSettings', order: 1, app: 'crm' },
                     { link: '#/app/setup/importhistory', label: 'Setup.Nav.Data', order: 7, app: 'crm' }
                 ];
-
-                if (helper.hasAdminRights()) {
+               
+              /*  if (helper.hasAdminRights()) {
                     var menuItemsAdmin = [
                         { link: '#/app/setup/users', label: 'Setup.Nav.Users', order: 2, app: 'crm' },
                         { link: '#/app/setup/organization', label: 'Setup.Nav.OrganizationSettings', order: 3, app: 'crm' },
@@ -33,7 +33,7 @@ angular.module('primeapps')
 
                     var allMenuItemsAdmin = $scope.menuItems.concat(menuItemsAdmin);
                     $scope.menuItems = $filter('orderBy')(allMenuItemsAdmin, 'order');
-                }
+                }*/
 
                 // Disabled due to removal of license and payment system
                 //if (!$rootScope.licenseStatus.License.IsSingleWorkgroupLimited) {
