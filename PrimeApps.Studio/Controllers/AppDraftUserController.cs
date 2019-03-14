@@ -80,15 +80,14 @@ namespace PrimeApps.Studio.Controllers
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             var result = 0;
             string password = "";
+
             if (!string.IsNullOrEmpty(clientId))
             {
                 var appInfo = await _applicationRepository.GetByNameAsync(clientId);
 
                 using (var httpClient = new HttpClient())
                 {
-                    var token = await HttpContext.GetTokenAsync("access_token");
                     var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_app_draft_user";
-                    httpClient.BaseAddress = new Uri(url);
                     httpClient.DefaultRequestHeaders.Accept.Clear();
                     httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
@@ -118,7 +117,6 @@ namespace PrimeApps.Studio.Controllers
                             RoleId = userModel.RoleId,
                             Culture = AppUser.Culture,
                             Currency = AppUser.Currency
-
                         };
 
                         await _userRepository.CreateAsync(tenantUser);
@@ -191,7 +189,7 @@ namespace PrimeApps.Studio.Controllers
             var applicationInfo = await _applicationRepository.Get(int.Parse(data["app_id"].ToString()));
 
             var templates = await _platformRepository.GetAppTemplate(int.Parse(data["app_id"].ToString()),
-                     AppTemplateType.Email, data["culture"].ToString().Substring(0, 2), "app_draft_user");
+                AppTemplateType.Email, data["culture"].ToString().Substring(0, 2), "app_draft_user");
 
             foreach (var template in templates)
             {
