@@ -329,12 +329,12 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.pickLists', {
+                .state('studio.app.picklists', {
                     url: '/picklists?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/picklists/picklists.html',
-                            controller: 'pickListsController'
+                            controller: 'picklistsController'
                         }
                     },
                     resolve: {
@@ -348,8 +348,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/model/picklists/pickListsController.js',
-                                cdnUrl + 'view/app/model/picklists/pickListsService.js',
+                                cdnUrl + 'view/app/model/picklists/picklistsController.js',
+                                cdnUrl + 'view/app/model/picklists/picklistsService.js',
                                 cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
