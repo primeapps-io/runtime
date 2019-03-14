@@ -5,6 +5,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using PrimeApps.Auth.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
@@ -28,17 +29,15 @@ namespace PrimeApps.Auth
         {
             var sub = context.Subject.GetSubjectId();
             //var giteaToken = context.Subject.FindFirst("gitea_token");
-            var giteaToken = _context.HttpContext.Request.Cookies["test_gitea"];
-            context.IssuedClaims.Add(new Claim("gitea_token", giteaToken != null ? giteaToken : ""));
 
             if (context.Subject.FindFirst("amr").Value != "external")
             {
                 var user = _userManager.FindByIdAsync(context.Subject.GetSubjectId()).Result;
+                var claims = _userManager.GetClaimsAsync(user).Result;
 
-                /*var claims = new Claim[]
-				{
-					new Claim("foo", "bar")
-				};*/
+                var giteaToken = claims.FirstOrDefault(x => x.Type == "gitea_token")?.Value;
+                
+                context.IssuedClaims.Add(new Claim("gitea_token", giteaToken));
                 context.IssuedClaims.Add(new Claim("email", user.Email));
                 context.IssuedClaims.Add(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
                 context.IssuedClaims.Add(new Claim("external_login", "false"));
