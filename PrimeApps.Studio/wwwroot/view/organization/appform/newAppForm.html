@@ -1,3 +1,4 @@
+
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
     <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm)" autocomplete="off"
           novalidate>
@@ -52,7 +53,10 @@
                                            ng-trim="false"
                                            ng-blur="checkNameBlur();"
                                            ng-change="checkNameUnique(appModel.name)"
-                                           ng-model="appModel.name" />
+                                           ng-model="appModel.name"
+                                           id="subdomain"/>
+                                    <input type="text" id="subdomaintwo" value=".app.primeapps.io" disabled/>
+                                    
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"
                                            style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
@@ -67,9 +71,9 @@
                                            data-trigger="hover" data-type="info" data-title="This app identifier already used by another user." bs-tooltip data-placement="bottom"></i>
                                     </div>
                                 </div>
-                                <div style="margin-top:-20px">
-                                    <span style="font-weight:200;font-size:small" ng-show="appModel.name">{{appModel.name}}.app.primeapps.io</span>
-                                </div>
+                                <!--<div style="margin-top:-20px">-->
+                                    <!--<span style="font-weight:200;font-size:small" ng-show="appModel.name">{{appModel.name}}.app.primeapps.io</span>-->
+                                <!--</div>-->
                                 <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
                                     <label class="col-sm-4 required-field">Description</label>
