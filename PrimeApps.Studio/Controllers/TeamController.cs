@@ -64,7 +64,7 @@ namespace PrimeApps.Studio.Controllers
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var result = await _teamRepository.Create(new Team
-                {Name = model.Name, OrganizationId = OrganizationId, Icon = model.Icon});
+            { Name = model.Name, OrganizationId = OrganizationId, Icon = model.Icon });
 
             return Ok(result);
         }
@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
             team.Name = model.Name;
             team.Icon = model.Icon;
 
-            var result = _teamRepository.Update(team);
+            var result = await _teamRepository.Update(team);
 
             return Ok(result);
         }
@@ -187,15 +187,18 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("is_unique_name"), HttpGet]
-        public async Task<IActionResult> IsUniqueName(string name)
+        [Route("is_unique_name"), HttpPost]
+        public async Task<IActionResult> IsUniqueName([FromBody]TeamModel teamModel)
         {
-            if (string.IsNullOrEmpty(name))
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var team = await _teamRepository.GetByName(name);
+            var team = await _teamRepository.GetByName(teamModel.Name);
 
-            return team == null ? Ok(true) : Ok(false);
+            if (team == null || team.Id == teamModel.Id)
+                return Ok(true);
+            else
+                return Ok(false);
         }
 
         [Route("team_user_add/{id:int}"), HttpPost]

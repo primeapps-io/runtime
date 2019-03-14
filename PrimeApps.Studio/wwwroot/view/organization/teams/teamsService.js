@@ -41,8 +41,8 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'team/team_user_add/' + userId, teamUser);
                 },
 
-                isUniqueName: function (name) {
-                    return $http.get(config.apiUrl + 'team/is_unique_name?name=' + name);
+                isUniqueName: function (team) {
+                    return $http.post(config.apiUrl + 'team/is_unique_name', team);
                 },
 
                 //TODO 

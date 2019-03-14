@@ -334,7 +334,7 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/picklists/picklists.html',
-                            controller: 'picklistsController'
+                            controller: 'PicklistsController'
                         }
                     },
                     resolve: {

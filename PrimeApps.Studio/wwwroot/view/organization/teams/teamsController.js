@@ -101,7 +101,7 @@ angular.module('primeapps')
                 $scope.loadingMembers = true;
                 $scope.generator(10);
 
-                TeamsService.getOrganizationUsers($rootScope.currentOrgId) 
+                TeamsService.getOrganizationUsers($rootScope.currentOrgId)
                     .then(function (response) {
                         if (response.data) {
                             var userList = response.data;
@@ -160,17 +160,17 @@ angular.module('primeapps')
 
             $scope.checkNameBlur = function () {
                 $scope.nameBlur = true;
-                $scope.checkName($scope.teamModel.name);
+                $scope.checkName($scope.teamModel);
             };
 
-            $scope.checkName = function (name) {
+            $scope.checkName = function (team) {
                 if (!$scope.nameBlur)
                     return;
 
                 $scope.nameChecking = true;
                 $scope.nameValid = false;
 
-                TeamsService.isUniqueName(name)
+                TeamsService.isUniqueName(team)
                     .then(function (response) {
                         $scope.nameChecking = false;
                         if (response.data) {
@@ -192,16 +192,22 @@ angular.module('primeapps')
 
                 $scope.submitting = true;
 
-                TeamsService.isUniqueName($scope.teamModel.name)
+                var request = {
+                    id: $scope.teamId ? $scope.teamId : 0,
+                    name: $scope.teamModel.name,
+                };
+
+                if (angular.isObject($scope.teamModel.icon))
+                    request.icon = $scope.teamModel.icon.value;
+                else
+                    request.icon = $scope.teamModel.icon;
+
+                TeamsService.isUniqueName(request)
                     .then(function (response) {
                         $scope.nameChecking = false;
                         if (response.data) {
                             $scope.nameValid = true;
                             if (!$scope.teamId) {
-                                var request = {
-                                    name: $scope.teamModel.name,
-                                    icon: $scope.teamModel.icon.value
-                                };
                                 TeamsService.create(request)
                                     .then(function (response) {
                                         if (response.data) {
@@ -218,9 +224,9 @@ angular.module('primeapps')
                                     });
                             }
                             else { //Edit team
-                                TeamsService.update($scope.teamId, $scope.teamModel)
+                                TeamsService.update($scope.teamId, request)
                                     .then(function (response) {
-                                        if (response.data) {
+                                        if (response.data >= 0) {
                                             toastr.success($filter('translate')('Common.Success'));
                                             $scope.clearModels();
                                             $scope.changeOffset();
@@ -266,8 +272,8 @@ angular.module('primeapps')
                             .then(function (response) {
                                 if (response.data) {
                                     $scope.changeOffset();
-                                    $scope.teamId = null; 
-                                    $scope.teamModel = {}; 
+                                    $scope.teamId = null;
+                                    $scope.teamModel = {};
                                     toastr.success("Team is deleted successfully.", "Deleted!");
                                 }
                                 team.deleting = false;
