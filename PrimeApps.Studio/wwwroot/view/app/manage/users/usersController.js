@@ -13,7 +13,28 @@ angular.module('primeapps')
             $scope.userModel = {};
             $scope.resultModel = {};
             $scope.loading = true;
-            $scope.userModel.auto_pass = "true";
+            $scope.userModel.auto_pass = "false";
+
+            var keylist = "abcdefghijklmnopqrstuvwxyz123456789";
+
+            $scope.generatePass = function () {
+                if ($scope.userModel.auto_pass) {
+                    var temp = '';
+                    for (var i = 0; i < 7; i++) {
+                        temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
+                    }
+
+                    $scope.userModel.password = temp;
+                } else {
+                    $scope.userModel.password = "";
+                }
+
+
+            }
+
+            function populateform(enterlength) {
+                document.pgenerate.output.value = generatepass(enterlength)
+            }
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
