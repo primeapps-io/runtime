@@ -153,7 +153,7 @@ angular.module('primeapps',
             $rootScope.subtoggleClass = '';
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-                if ($rootScope.currentApp) { //FOR PAGE PERMISSION
+                if ($rootScope.currentApp && toState.name.indexOf('studio.app.') > -1) { //FOR PAGE PERMISSION
                     var pageName = toState.name.replace('studio.app.', '');
                     var menuName = toState.views.app.templateUrl.replace('view/app/', '');
 
