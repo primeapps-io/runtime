@@ -110,12 +110,10 @@ namespace PrimeApps.Studio.Controllers
         {
             JArray functions;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _functionHelper.SetClientOptions())
             {
                 var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/functions";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -168,12 +166,10 @@ namespace PrimeApps.Studio.Controllers
             var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
                 result = JObject.Parse(content);
@@ -226,12 +222,10 @@ namespace PrimeApps.Studio.Controllers
             var functionRequest = _functionHelper.CreateFunctionRequest(function, functionObj);
             JObject result;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -265,12 +259,10 @@ namespace PrimeApps.Studio.Controllers
 
             JObject result;
             var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.DeleteAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
