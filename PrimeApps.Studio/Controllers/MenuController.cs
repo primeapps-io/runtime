@@ -191,7 +191,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> Create([FromBody]List<Menu> menuList)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -241,7 +241,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> Delete([FromUri]int id)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
-                return Forbid();
+                return StatusCode(403);
 
             if (id < 0)
 				return BadRequest("id is required");
@@ -262,7 +262,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> Update(int id, [FromBody]List<Menu> menuList)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -310,7 +310,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> CreateMenuItems([FromBody]JObject request)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
-                return Forbid();
+                return StatusCode(403);
             /**
 			 * moduleItem: modül
 			 * profileItem: profil 
@@ -403,7 +403,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> DeleteMenuItems([FromBody]int[] ids)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
-                return Forbid();
+                return StatusCode(403);
 
             var menuItemsEntity = new MenuItem();
 			foreach (var id in ids)
@@ -425,7 +425,7 @@ namespace PrimeApps.Studio.Controllers
 		public async Task<IActionResult> UpdateMenuItems([FromBody]JObject request)
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             var menuItem = new MenuItem();
 			for (int i = 0; i < ((JArray)request["menuLabel"]).Count; i++)

@@ -75,7 +75,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
-                return Forbid();
+                return StatusCode(403);
 
             var modules = await _moduleRepository.Find(paginationModel);
 
@@ -86,7 +86,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
-                return Forbid();
+                return StatusCode(403);
 
             var module = await _moduleRepository.GetById(id);
 
@@ -97,7 +97,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> GetByName(string name)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
-                return Forbid();
+                return StatusCode(403);
 
             var module = await _moduleRepository.GetByName(name);
 
@@ -126,7 +126,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -226,7 +226,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Update(int id, [FromBody]ModuleBindingModel module)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -298,7 +298,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
-                return Forbid();
+                return StatusCode(403);
 
             var moduleEntity = await _moduleRepository.GetById(id);
 
@@ -320,7 +320,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> CreateRelation(int moduleId, [FromBody]RelationBindingModel relation)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -373,7 +373,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UpdateRelation(int moduleId, int id, [FromBody]RelationBindingModel relation)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -398,7 +398,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> DeleteRelation(int id)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
-                return Forbid();
+                return StatusCode(403);
 
             var relationEntity = await _moduleRepository.GetRelation(id);
 
@@ -414,7 +414,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> CreateDependency(int moduleId, [FromBody]DependencyBindingModel dependency)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -441,7 +441,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UpdateDependency(int moduleId, int id, [FromBody]DependencyBindingModel dependency)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -466,7 +466,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UpdateField(int id, [FromBody]FieldBindingModel field)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
-                return Forbid();
+                return StatusCode(403);
 
             var fieldEntity = await _moduleRepository.GetField(id);
 
@@ -483,7 +483,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> DeleteDependency(int id)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
-                return Forbid();
+                return StatusCode(403);
 
             var dependencyEntity = await _moduleRepository.GetDependency(id);
 
@@ -499,7 +499,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> GetModuleSettings()
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
-                return Forbid();
+                return StatusCode(403);
 
             var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 
@@ -510,7 +510,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> GetModuleFieldByName([FromUri]string moduleName)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
-                return Forbid();
+                return StatusCode(403);
 
             var fields = await _moduleRepository.GetModuleFieldByName(moduleName);
 

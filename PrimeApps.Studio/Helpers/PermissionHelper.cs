@@ -96,7 +96,7 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else if (profile == ProfileEnum.Developer)
                         {
-                            hasPermission = true;
+                            hasPermission = false;
                         }
                     }
                     else if (requestType == RequestTypeEnum.Create)
@@ -183,6 +183,7 @@ namespace PrimeApps.Studio.Helpers
                 case "deployment_component":
                 case "functions":
                 case "deployment_function":
+                case "script":
                     if (requestType == RequestTypeEnum.View)
                     {
                         if (profile == ProfileEnum.Viewer)
@@ -413,6 +414,375 @@ namespace PrimeApps.Studio.Helpers
                     }
                     break;
                 case "module_profile_settings":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "picklist":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "app_draft_user":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = false;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = false;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = false;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = false;
+                        }
+                    }
+                    break;
+                case "process":
+                case "process_request":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "report":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "profile":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "rule":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "template":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
+                case "view":
                     if (requestType == RequestTypeEnum.View)
                     {
                         if (profile == ProfileEnum.Viewer)

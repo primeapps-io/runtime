@@ -23,16 +23,18 @@ namespace PrimeApps.Studio.Controllers
 		private IUserRepository _userRepository;
 		private IDashboardRepository _dashboardRepository;
 		private IRecordHelper _recordHelper;
+        private IPermissionHelper _permissionHelper;
 
-		public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
+        public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper, IPermissionHelper permissionHelper)
 		{
 			_viewRepository = viewRepository;
 			_userRepository = userRepository;
 			_dashboardRepository = dashboardRepository;
 			_recordHelper = recordHelper;
-		}
+            _permissionHelper = permissionHelper;
+        }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
@@ -45,7 +47,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("get/{id:int}"), HttpGet]
 		public async Task<IActionResult> Get(int id)
 		{
-			var viewEntity = await _viewRepository.GetById(id);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var viewEntity = await _viewRepository.GetById(id);
 
 			if (viewEntity == null)
 				return NotFound();
@@ -58,7 +63,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("get_all/{moduleId:int}"), HttpGet]
 		public async Task<IActionResult> GetAll(int moduleId)
 		{
-			if (moduleId < 1)
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            if (moduleId < 1)
 				return BadRequest("Module id is required!");
 
 			var viewEntities = await _viewRepository.GetAll(moduleId);
@@ -70,7 +78,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("get_all"), HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			var viewEntities = await _viewRepository.GetAll();
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var viewEntities = await _viewRepository.GetAll();
 			var viewsViewModel = ViewHelper.MapToViewModel(viewEntities);
 
 			return Ok(viewsViewModel);
@@ -79,7 +90,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("create"), HttpPost]
 		public async Task<IActionResult> Create([FromBody]ViewBindingModel view)
 		{
-			if (!_recordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (!_recordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
 				ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
 
 			if (!ModelState.IsValid)
@@ -100,7 +114,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("update/{id:int}"), HttpPut]
 		public async Task<IActionResult> Update(int id, [FromBody]ViewBindingModel view)
 		{
-			var viewEntity = await _viewRepository.GetById(id);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.Update))
+                return StatusCode(403);
+
+            var viewEntity = await _viewRepository.GetById(id);
 
 			if (viewEntity == null)
 				return NotFound();
@@ -133,7 +150,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("delete/{id:int}"), HttpDelete]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var viewEntity = await _viewRepository.GetById(id);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            var viewEntity = await _viewRepository.GetById(id);
 
 			if (viewEntity == null)
 				return NotFound();
@@ -147,7 +167,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("get_view_state/{moduleId:int}"), HttpGet]
 		public async Task<IActionResult> GetViewState(int moduleId)
 		{
-			if (moduleId < 1)
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            if (moduleId < 1)
 				return BadRequest("Module id is required!");
 
 			var viewState = await _viewRepository.GetViewState(moduleId, AppUser.Id);
@@ -158,7 +181,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("set_view_state"), HttpPut]
 		public async Task<IActionResult> SetViewState([FromBody] ViewStateBindingModel viewState)
 		{
-			var viewStateEntity = await _viewRepository.GetViewState(viewState.ModuleId, AppUser.Id);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var viewStateEntity = await _viewRepository.GetViewState(viewState.ModuleId, AppUser.Id);
 
 			if (!viewState.Id.HasValue && viewStateEntity == null)
 			{
@@ -183,7 +209,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("count/{id:int}"), HttpGet]
 		public async Task<IActionResult> Count(int id)
 		{
-			var count = await _viewRepository.Count(id);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var count = await _viewRepository.Count(id);
 
 			return Ok(count);
 		}
@@ -191,7 +220,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("find/{id:int}"), HttpPost]
 		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
 		{
-			var views = await _viewRepository.Find(id, paginationModel);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var views = await _viewRepository.Find(id, paginationModel);
 
 			if (views == null)
 				return NotFound();
