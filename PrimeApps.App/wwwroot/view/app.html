@@ -73,7 +73,7 @@
                         <span>{{user.first_name}} {{user.last_name}}</span>
                     </span>
                 </li>
-                <li ng-show="!preview">
+                <li >
                     <a href class="nav-link ng-scope"
                        ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
                        data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
