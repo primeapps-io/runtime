@@ -150,7 +150,7 @@ namespace PrimeApps.Studio.Controllers
 
             var result = await _scriptRepository.Update(script);
 
-            if (result < 1)
+            if (result < 0)
                 return BadRequest("An error occurred while update script.");
 
             return Ok(result);
