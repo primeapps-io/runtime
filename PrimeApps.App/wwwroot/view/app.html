@@ -73,7 +73,7 @@
                         <span>{{user.first_name}} {{user.last_name}}</span>
                     </span>
                 </li>
-                <li ng-show="!preview">
+                <li >
                     <a href class="nav-link ng-scope"
                        ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
                        data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
@@ -117,7 +117,7 @@
                         </div>
                         <div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
                             <div class="panel-body" ng-class="{'toggled-menu':toggled}">
-                                <li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
+                                <li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'| filter:{display:'true'}">
                                     <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
                                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
                                         <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
