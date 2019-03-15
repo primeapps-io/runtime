@@ -277,7 +277,7 @@
             <!--<span>Tenants</span>-->
             <!--</a>-->
             <!--</li>-->
-            <li ng-class="activeMenuItem ==='users' ? 'active' :''">
+            <li ng-class="activeMenuItem ==='users' ? 'active' :''"> 
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/users" data-trigger="hover" data-type="info"
                    data-title="Users" bs-tooltip data-placement="right">
                     <i class="fas fa-user"></i>
@@ -291,16 +291,16 @@
             <!--<span>Notifications</span>-->
             <!--</a>-->
             <!--</li>-->
-            <li ng-class="activeMenuItem =='auditTrail' ? 'active':''">
+            <li ng-class="subMenuOpen =='security' ? 'active':''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/auditTrail" data-trigger="hover" data-type="info"
-                   data-title="AuditTrail" bs-tooltip data-placement="right">
+                   data-title="Security" bs-tooltip data-placement="right">
                     <i class="fas fa-shield-alt"></i>
                     <span>Security</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem =='authentication' ? 'active sub-open':''">
+            <li ng-class="subMenuOpen =='identity' ? 'active sub-open':''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/authentication" data-trigger="hover" data-type="info"
-                   data-title="Authentication" bs-tooltip data-placement="right">
+                   data-title="Identity" bs-tooltip data-placement="right">
                     <i class="fas fa-key"></i>
                     <span>Identity</span>
                 </a>
@@ -319,13 +319,6 @@
             <!--<span>Diagnostics</span>-->
             <!--</a>-->
             <!--</li>-->
-            <li ng-class="activeMenuItem ==='branding' ?  'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/branding" data-trigger="hover" data-type="info"
-                   data-title="Branding" bs-tooltip data-placement="right">
-                    <i class="fas fa-star"></i>
-                    <span>Branding</span>
-                </a>
-            </li>
             <li ng-class="activeMenuItem ==='extensions' ?  'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info"
                    data-title="Extensions" bs-tooltip data-placement="right">
