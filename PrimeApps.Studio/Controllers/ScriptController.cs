@@ -24,9 +24,10 @@ namespace PrimeApps.Studio.Controllers
         private IScriptRepository _scriptRepository;
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
+        private IModuleRepository _moduleRepository;
 
         public ScriptController(IBackgroundTaskQueue queue, IDeploymentHelper deploymentHelper, IComponentHelper componentHelper,
-            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository)
+            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository)
         {
             Queue = queue;
             _deploymentHelper = deploymentHelper;
@@ -34,6 +35,7 @@ namespace PrimeApps.Studio.Controllers
             _scriptRepository = scriptRepository;
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
+            _moduleRepository = moduleRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -41,6 +43,7 @@ namespace PrimeApps.Studio.Controllers
             SetContext(context);
             SetCurrentUser(_scriptRepository, PreviewMode, AppId, TenantId);
             SetCurrentUser(_deploymentComponentRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -93,9 +96,20 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var module = await _moduleRepository.GetById(model.ModuleId);
+
+            if (module == null)
+                return BadRequest("Module id is not valid.");
+
+            var scriptName = model.Name.Trim().Replace(" ", "-");
+            var checkName = await _scriptRepository.IsUniqueName(scriptName);
+
+            if (checkName)
+                return Conflict();
+
             var script = new Component
             {
-                Name = model.Name,
+                Name = scriptName,
                 Content = model.Content,
                 ModuleId = model.ModuleId,
                 Type = ComponentType.Script,

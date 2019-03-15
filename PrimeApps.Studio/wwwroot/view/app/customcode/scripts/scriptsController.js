@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptsController', ['$rootScope', '$scope', '$state', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter', 'helper',
-        function ($rootScope, $scope, $state, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter, helper) {
+    .controller('ScriptsController', ['$rootScope', '$scope', '$state', '$timeout', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter', 'helper',
+        function ($rootScope, $scope, $state, $timeout, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter, helper) {
             $scope.$parent.activeMenuItem = 'scripts';
             $rootScope.breadcrumblist[2].title = 'Scripts';
             $scope.scripts = [];
@@ -86,8 +86,9 @@ angular.module('primeapps')
             $scope.save = function (scriptForm) {
                 $scope.saving = true;
 
-                if (!scriptForm.$valid) {
+                if (!scriptForm.$valid || !$scope.scriptNameValid) {
                     $scope.saving = false;
+                    toastr.warning('Please enter a valid fields.');
                     return;
                 }
 
@@ -97,12 +98,12 @@ angular.module('primeapps')
                             if (response.data) {
                                 toastr.success("Script is updated successfully.");
                                 $scope.cancel();
-                                $scope.changeOffset(1);
+                                $scope.changeOffset();
                             }
                             $scope.saving = false;
                         })
                         .catch(function (reason) {
-                            toastr.error($filter('translate')('Error'));
+                            toastr.error($filter('translate')('Common.Error'));
                             $scope.saving = false;
                         });
 
@@ -114,11 +115,12 @@ angular.module('primeapps')
                                 toastr.success("Script is created successfully.");
                                 $state.go('studio.app.scriptDetail', { name: $scope.scriptModel.name });
                                 $scope.cancel();
+                                $scope.saving = false;
                             }
                             $scope.saving = false;
                             //$scope.changeOffset(1);
                         }).catch(function (reason) {
-                            toastr.error($filter('translate')('Error'));
+                            toastr.error($filter('translate')('Common.Error'));
                             $scope.saving = false;
                         });
                 }
@@ -148,7 +150,7 @@ angular.module('primeapps')
                                 }
 
                                 script.deleting = false;
-                                $scope.changeOffset(1);
+                                $scope.changeOffset();
                             }).catch(function (reason) {
                                 toastr.error($filter('translate')('Error'));
                                 script.deleting = false;
@@ -244,7 +246,10 @@ angular.module('primeapps')
                 $scope.id = null;
                 $scope.nameBlur = false;
                 $scope.scriptNameValid = null;
-                $scope.scriptModel = {};
+                $timeout(function () {
+                    $scope.scriptModel = {};
+                }, 1000);
+
             };
 
             $scope.runDeployment = function () {
