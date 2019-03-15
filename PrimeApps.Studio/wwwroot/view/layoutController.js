@@ -60,38 +60,38 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.preview = function () {
 
-            if (!$scope.appLoading && $scope.appModules.length > 0) {
-                $rootScope.previewActivating = true;
+            //  if (!$scope.appLoading && $scope.appModules.length > 0) {
+            $rootScope.previewActivating = true;
 
-                LayoutService.appDraftUserCount()
-                    .then(function (response) {
-                        if (response.data <= 0) {
-                            $rootScope.subMenuOpen = 'manage';
-                            $state.go('studio.app.users', {
-                                orgId: $rootScope.currentOrgId,
-                                appId: $rootScope.currentAppId
-                            });
+            LayoutService.appDraftUserCount()
+                .then(function (response) {
+                    if (response.data <= 0) {
+                        $rootScope.subMenuOpen = 'manage';
+                        $state.go('studio.app.users', {
+                            orgId: $rootScope.currentOrgId,
+                            appId: $rootScope.currentAppId
+                        });
 
-                            toastr.warning('You need to add a user to preview the application.', null, {
-                                timeOut: 5000,
-                                extendedTimeOut: 5000
+                        toastr.warning('You need to add a user to preview the application.', null, {
+                            timeOut: 5000,
+                            extendedTimeOut: 5000
+                        });
+                        $rootScope.previewActivating = false;
+                        return;
+                    } else {
+                        LayoutService.getPreviewToken()
+                            .then(function (response) {
+                                $scope.previewActivating = false;
+                                $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
+                            })
+                            .catch(function (response) {
+                                $scope.previewActivating = false;
                             });
-                            $rootScope.previewActivating = false;
-                            return;
-                        } else {
-                            LayoutService.getPreviewToken()
-                                .then(function (response) {
-                                    $scope.previewActivating = false;
-                                    $window.open(previewUrl + '?preview=' + encodeURIComponent(response.data), '_blank');
-                                })
-                                .catch(function (response) {
-                                    $scope.previewActivating = false;
-                                });
-                        }
-                    });
-            }
-            else
-                toastr.warning('We’re very excited to see what your app looks like too. But you need to create at least one module and one user to get this activated.', null);
+                    }
+                });
+            // }
+            // else
+            // toastr.warning('We’re very excited to see what your app looks like too. But you need to create at least one module and one user to get this activated.', null);
         };
 
         $scope.logout = function () {

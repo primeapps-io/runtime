@@ -70,18 +70,6 @@
                                            data-trigger="hover" data-type="info" data-title="Function name already used." bs-tooltip data-placement="bottom"></i>
                                     </div>
                                 </div>
-                                <div class="form-group"
-                                     style="position: relative;"
-                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
-                                    <label class="col-sm-4 required-field">Handler <span class="required-label">(required)</span></label>
-                                    <input type="text"
-                                           name="handler"
-                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                                           required
-                                           placeholder="(for c# and java) module.handler, (others) handler"
-                                           ng-change="checkFunctionHandler($parent.$parent.function)"
-                                           ng-model="function.handler"/>
-                                </div>
 
                                 <div class="form-group"
                                      ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
@@ -95,6 +83,20 @@
                                         <option value="">Select Runtime</option>
                                     </select>
                                 </div>
+                                
+                                <div class="form-group"
+                                     style="position: relative;"
+                                     ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.handler.$invalid}">
+                                    <label class="col-sm-4 required-field">Handler <span class="required-label">(required)</span></label>
+                                    <input type="text"
+                                           name="handler"
+                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                           required
+                                           placeholder="(for c# and java) module.handler, (others) handler"
+                                           ng-change="checkFunctionHandler($parent.$parent.function)"
+                                           ng-model="function.handler"/>
+                                </div>
+                                
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.dependencies.$invalid}">
