@@ -10,6 +10,7 @@ angular.module('primeapps')
             if (!window.localStorage.getItem('access_token')) {
                 return;
             }
+
             //app
             $stateProvider
                 .state('studio', {
@@ -162,7 +163,7 @@ angular.module('primeapps')
                                     $state.go('studio.allApps');
                                 }
 
-                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: $rootScope.currentOrgId})[0];
+                                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
 
                                 $rootScope.breadcrumblist = [{}, {}, {}];
                                 $rootScope.breadcrumblist[0].title = $rootScope.currentOrganization.label;
@@ -243,10 +244,11 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        app: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter', 'studio',
-                            function ($rootScope, LayoutService, $stateParams, $state, $filter, studio) {
+                        app: ['$rootScope', 'LayoutService', '$stateParams', '$state', '$filter', 'studio', 'helper',
+                            function ($rootScope, LayoutService, $stateParams, $state, $filter, studio, helper) {
                                 $rootScope.currentAppId = parseInt($stateParams.appId);
                                 $rootScope.currentOrgId = parseInt($stateParams.orgId);
+                                $rootScope.permission = true;
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
@@ -287,7 +289,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         modules: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -313,7 +315,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         moduledesigner: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -334,12 +336,12 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/model/picklists/picklists.html',
-                            controller: 'picklistsController'
+                            controller: 'PicklistsController'
                         }
                     },
                     resolve: {
                         picklists: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -355,31 +357,31 @@ angular.module('primeapps')
                         }]
                     }
                 }).state('studio.app.relations', {
-                url: '/relations?:id',
-                views: {
-                    'app': {
-                        templateUrl: cdnUrl + 'view/app/model/relations/relations.html',
-                        controller: 'RelationsController'
-                    }
-                },
-                resolve: {
-                    relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
-                            $state.go('studio.app.overview', {
-                                orgId: $rootScope.currentOrgId,
-                                appId: $rootScope.currentAppId
-                            });
+                    url: '/relations?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/relations/relations.html',
+                            controller: 'RelationsController'
                         }
-                    }],
-                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                        return $ocLazyLoad.load([
-                            cdnUrl + 'view/app/model/relations/relationsController.js',
-                            cdnUrl + 'view/app/model/relations/relationsService.js',
-                            cdnUrl + 'view/app/model/modules/moduleService.js'
-                        ]);
-                    }]
-                }
-            })
+                    },
+                    resolve: {
+                        relations: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/relations/relationsController.js',
+                                cdnUrl + 'view/app/model/relations/relationsService.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
 
                 .state('studio.app.views', {
                     url: '/views?:id',
@@ -391,7 +393,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         filters: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -418,7 +420,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         dependencies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -445,7 +447,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         templatesEmail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -472,7 +474,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         templatesExcel: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -498,7 +500,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         templatesWord: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -524,7 +526,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         templatesEmailGuide: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -549,7 +551,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         advancedWorkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -575,7 +577,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         workflowEditor: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -604,7 +606,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         simpleworkflows: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -630,7 +632,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         processes: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -656,7 +658,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         reports: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -682,7 +684,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         dashboards: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -708,7 +710,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         warehouse: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -734,7 +736,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         bi: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -760,7 +762,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         components: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -787,7 +789,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -813,7 +815,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         components: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -839,7 +841,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         components: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -865,7 +867,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -892,7 +894,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -919,7 +921,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         profiles: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -945,7 +947,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         moduleprofilesettings: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -971,7 +973,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         roles: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -997,7 +999,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         menus: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1024,7 +1026,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         help: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1050,7 +1052,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         deployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1076,7 +1078,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         passwordpolicies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1102,7 +1104,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         functionsdeployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1128,7 +1130,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         passwordpolicies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1154,7 +1156,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         diagnostics: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1180,7 +1182,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         extensions: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1206,7 +1208,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         certificates: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1232,7 +1234,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         passwordpolicies: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1258,7 +1260,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         audittrail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1284,7 +1286,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         cors: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1310,7 +1312,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         networkaccess: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1336,7 +1338,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         authentication: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1362,7 +1364,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         identity: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1388,7 +1390,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         singlesignon: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1414,7 +1416,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         appdetails: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1430,6 +1432,32 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.branding', {
+                    url: '/branding',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/branding/branding.html',
+                            controller: 'BrandingController'
+                        }
+                    },
+                    resolve: {
+                        appdetails: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/branding/brandingController.js',
+                                cdnUrl + 'view/app/manage/branding/brandingService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.appCollaborators', {
                     url: '/appCollaborators',
                     views: {
@@ -1440,7 +1468,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         appcollaborators: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1485,7 +1513,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         notifications: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1511,7 +1539,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1537,7 +1565,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         tenants: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1563,7 +1591,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         templatesEmail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1589,7 +1617,7 @@ angular.module('primeapps')
                     },
                     resolve: {
                         moduleActions: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                                 $state.go('studio.app.overview', {
                                     orgId: $rootScope.currentOrgId,
                                     appId: $rootScope.currentAppId
@@ -1615,7 +1643,7 @@ angular.module('primeapps')
                         }
                     },
                     report: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp) {
+                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
                             $state.go('studio.app.overview', {
                                 orgId: $rootScope.currentOrgId,
                                 appId: $rootScope.currentAppId
@@ -1690,4 +1718,4 @@ angular.module('primeapps')
             //console.log($rootScope.currentOrgId);
             $urlRouterProvider.otherwise('/apps?orgId=orgId');
         }])
-;
+    ;

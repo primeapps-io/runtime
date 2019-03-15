@@ -53,13 +53,14 @@ angular.module('primeapps')
                 ModuleService.find(requestModel)
                     .then(function (response) {
                         $scope.modules = response.data;
+                        $rootScope.appModules = $scope.modules;
                         $scope.loading = false;
                     });
 
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage)
+                $scope.changePage($scope.activePage);
             };
 
             $scope.delete = function (module, event) {
@@ -92,5 +93,44 @@ angular.module('primeapps')
                         }
                     });
             };
+
+            $scope.showEditModal = function (moduleId) {
+                $scope.modalLoading = true;
+                $scope.editModal = $scope.editModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/editForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+                $scope.icons = ModuleService.getIcons();
+               // $scope.module = $filter('filter')($scope.modules, {id: moduleId}, true)[0];
+               // $scope.module.is_component = angular.equals($scope.module.system_type, "component");
+                 ModuleService.getModuleById(moduleId).then(function (result) {
+                     $scope.module = result.data;
+                     $scope.module.is_component = angular.equals($scope.module.system_type, "component");
+                     $scope.modalLoading = false;
+                 });
+                $scope.editModal.$promise.then($scope.editModal.show);
+            };
+
+            $scope.cancelModule = function () {
+                $scope.editModal.hide();
+            };
+
+            $scope.saveSettings = function (editForm) {
+                if (editForm.$invalid)
+                    return;
+
+                $scope.saving = true;
+                ModuleService.moduleUpdate($scope.module, $scope.module.id).then(function () {
+                    toastr.success($filter('translate')('Setup.Modules.SaveSuccess'));
+                    $scope.editModal.hide();
+                    $scope.changePage($scope.activePage);
+                }).finally(function () {
+                    $scope.saving = false;
+                       
+                });
+            }
         }
     ]);

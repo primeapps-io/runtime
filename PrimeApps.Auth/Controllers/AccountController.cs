@@ -132,7 +132,7 @@ namespace PrimeApps.Auth.UI
             Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(language)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddYears(1)}
             );
 
             return Redirect(returnUrl);
@@ -160,7 +160,7 @@ namespace PrimeApps.Auth.UI
             var cookieLang = AuthHelper.CurrentLanguage(Request);
 
             if (cookieLang != vm.Language)
-                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = vm.Language, returnUrl = vm.ReturnUrl });
+                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new {language = vm.Language, returnUrl = vm.ReturnUrl});
 
             if (vm.IsExternalLoginOnly)
             {
@@ -229,6 +229,8 @@ namespace PrimeApps.Auth.UI
                 }
 
                 var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+                var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+                previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
                 if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
                 {
@@ -265,7 +267,7 @@ namespace PrimeApps.Auth.UI
 
                 if (result.Succeeded)
                 {
-                    if (vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (previewMode != "app" && vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
@@ -298,12 +300,15 @@ namespace PrimeApps.Auth.UI
 
                     var user = await _userManager.FindByNameAsync(model.Username);
 
-                    if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo?.Domain))
+                    /*if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo?.Domain))
                     {
                         var giteaToken = await _giteaHelper.GetToken(model.Username, model.Password);
                         if (!string.IsNullOrEmpty(giteaToken))
+                        {
+                            await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
                             Response.Cookies.Append("gitea_token", giteaToken);
-                    }
+                        }
+                    }*/
 
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 
@@ -350,7 +355,7 @@ namespace PrimeApps.Auth.UI
             var cookieLang = AuthHelper.CurrentLanguage(Request);
 
             if (cookieLang != vm.Language)
-                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = vm.Language, returnUrl = vm.ReturnUrl });
+                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new {language = vm.Language, returnUrl = vm.ReturnUrl});
 
             /*
             * If you want to make the user email field read only. Set true to ReadOnly variable.
@@ -462,7 +467,11 @@ namespace PrimeApps.Auth.UI
             {
                 var giteaToken = await _giteaHelper.GetToken(model.Email, model.Password);
                 if (!string.IsNullOrEmpty(giteaToken))
+                {
+                    var user = await _userManager.FindByNameAsync(model.Email);
+                    await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
                     Response.Cookies.Append("gitea_token", giteaToken);
+                }
             }
 
             var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, lockoutOnFailure: false);
@@ -500,10 +509,10 @@ namespace PrimeApps.Auth.UI
                 }
             };
 
-            var createUserRespone = await CreateUser(new RegisterInputModel { Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName }, application, "");
+            var createUserRespone = await CreateUser(new RegisterInputModel {Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName}, application, "");
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
-                return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
+                return BadRequest(new {ErrorMessage = createUserRespone["Error"].ToString()});
 
             return Ok();
         }
@@ -550,7 +559,7 @@ namespace PrimeApps.Auth.UI
             vm.Email = email;
 
             if (cookieLang != vm.Language)
-                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+                return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new {language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value});
 
             //vm.ReadOnly = false;
 
@@ -683,7 +692,7 @@ namespace PrimeApps.Auth.UI
                         var externalLoginResetPasswordResult = await ExternalAuthHelper.ResetPassword(externalLogin, action, obj);
 
                         if (externalLoginResetPasswordResult.IsSuccessStatusCode)
-                            return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
+                            return RedirectToAction("Login", "Account", new {vm.ReturnUrl, Success = "PasswordChanged"});
                         else
                         {
                             vm.Error = "InvalidToken";
@@ -695,7 +704,7 @@ namespace PrimeApps.Auth.UI
                     }
                 }
 
-                return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
+                return RedirectToAction("Login", "Account", new {vm.ReturnUrl, Success = "PasswordChanged"});
             }
 
             vm.Error = "InvalidToken";
@@ -927,10 +936,10 @@ namespace PrimeApps.Auth.UI
                 // build a return URL so the upstream provider will redirect back
                 // to us after the user has logged out. this allows us to then
                 // complete our single sign-out processing.
-                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+                string url = Url.Action("Logout", new {logoutId = vm.LogoutId});
 
                 // this triggers a redirect to the external provider for sign-out
-                return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+                return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
             }
 
             if (!string.IsNullOrEmpty(model.ReturnUrl))
@@ -1140,7 +1149,7 @@ namespace PrimeApps.Auth.UI
                     EnableLocalLogin = false,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
-                    ExternalProviders = new ExternalProvider[] { new ExternalProvider { AuthenticationScheme = context.IdP } },
+                    ExternalProviders = new ExternalProvider[] {new ExternalProvider {AuthenticationScheme = context.IdP}},
                     ApplicationInfo = applicationInfo,
                     Language = applicationInfo.Language,
                     Success = success,
@@ -1199,7 +1208,7 @@ namespace PrimeApps.Auth.UI
 
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId, string returnUrl)
         {
-            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
+            var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt};
 
             vm.ReturnUrl = returnUrl;
 
@@ -1426,7 +1435,7 @@ namespace PrimeApps.Auth.UI
             var id_token = externalResult.Properties.GetTokenValue("id_token");
             if (id_token != null)
             {
-                localSignInProps.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = id_token } });
+                localSignInProps.StoreTokens(new[] {new AuthenticationToken {Name = "id_token", Value = id_token}});
             }
         }
 
@@ -1633,10 +1642,10 @@ namespace PrimeApps.Auth.UI
 
                         await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, applicationInfo.Id);
 
-                        _userRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
-                        _profileRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
-                        _roleRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
-                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        _userRepository.CurrentUser = new CurrentUser {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
+                        _profileRepository.CurrentUser = new CurrentUser {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
+                        _roleRepository.CurrentUser = new CurrentUser {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
+                        _recordRepository.CurrentUser = new CurrentUser {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
 
                         _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
 
@@ -1656,7 +1665,7 @@ namespace PrimeApps.Auth.UI
                         if (platformUser.TenantsAsUser == null)
                             platformUser.TenantsAsUser = new List<UserTenant>();
 
-                        platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
+                        platformUser.TenantsAsUser.Add(new UserTenant {Tenant = tenant, PlatformUser = platformUser});
 
                         //user.TenantId = user.Id;
                         //tenant.License.HasAnalyticsLicense = true;
@@ -1732,7 +1741,6 @@ namespace PrimeApps.Auth.UI
                         ["culture"] = CultureInfo.CurrentCulture.Name,
                         ["user_exist"] = newPlatformUser,
                         ["email_confirmed"] = identityUser.EmailConfirmed
-
                     };
 
                     using (var httpClient = new HttpClient())
@@ -1741,13 +1749,15 @@ namespace PrimeApps.Auth.UI
                         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         var userCreatedResponse = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
 
-                        /*if (!userCreatedResponse.IsSuccessStatusCode)
+                        if (!userCreatedResponse.IsSuccessStatusCode)
                         {
-                            DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
-                            response["Error"] = "TenantCreateError";
-                            return response;
-                            //TODO Loglara Eklenebilir.
-                        }*/
+                            var result = await userCreatedResponse.Content?.ReadAsStringAsync();
+
+                            if (string.IsNullOrEmpty(result))
+                                result = "";
+
+                            ErrorHandler.LogError(new Exception(result), "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " + url + ", Request: " + requestModel.ToJsonString());
+                        }
                     }
                 }
             }

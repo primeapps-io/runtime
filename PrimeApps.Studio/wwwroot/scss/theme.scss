@@ -1,3 +1,12 @@
+#subdomaintwo{
+  background: none;
+  position: absolute;
+  bottom: 2px;
+  right: -5px;
+  border: none;
+}
+
+
 .flexy{
   display:flex;
 }
@@ -1745,7 +1754,7 @@ button, select {
       border-radius: 5px;
       box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
       background-color: #ffffff;
-      margin: 20px;
+      margin-bottom: 20px;
       font-size: 70px;
       line-height: 70px;
       color: rgba(0, 0, 0, 0.25);
@@ -3983,6 +3992,26 @@ button, select {
   }
   #log-screen{
     width: 100% !important;
+  }
+  .comingsoontext{
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 30px;
+    right: 20px;
+    margin-left: -50px;
+    margin-top: -50px;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.75);
+    color: rgba(0, 0, 0, 0.75);
+    border-radius: 100px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+    font-weight: bold;
+    
   }
 }
 

@@ -218,11 +218,15 @@ angular.module('primeapps')
 
                 ScriptsService.update($scope.script)
                     .then(function (response) {
-                        if (response.data) {
-                            $scope.scriptCopy = angular.copy($scope.script);
-                            $scope.saving = false;
+                        if (response.data)
                             toastr.success("Script saved successfully.");
-                        }
+
+                        $scope.scriptCopy = angular.copy($scope.script);
+                        $scope.saving = false;
+                    })
+                    .catch(function (reason) {
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.saving = false;
                     });
             };
 
@@ -234,6 +238,7 @@ angular.module('primeapps')
                         $scope.reload();
                     })
                     .catch(function (response) {
+                        toastr.error($filter('translate')('Common.Error'));
                     });
             };
         }

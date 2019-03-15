@@ -1,5 +1,6 @@
 ﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="resultForm" class="form-horizontal form-custom" ng-submit="sendMail(resultForm)" autocomplete="off" novalidate ng-if="showPassword">
+    <form name="resultForm" class="form-horizontal form-custom" ng-submit="sendMail(resultForm)" autocomplete="off"
+          novalidate ng-if="showPassword">
 
         <div class="modal-header">
             <div class="flex-between">
@@ -29,7 +30,7 @@
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-disabled="true"
-                                           ng-model="resultModel.displayName" />
+                                           ng-model="resultModel.displayName"/>
                                 </div>
                                 <div class="form-group" style="position: relative;">
                                     <label class="col-sm-12 required-field">Email </label>
@@ -39,7 +40,7 @@
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-disabled="true"
-                                           ng-model="resultModel.email" />
+                                           ng-model="resultModel.email"/>
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;">
@@ -51,25 +52,27 @@
                                            required
                                            ng-disabled="true"
                                            focus="true"
-                                           ng-model="resultModel.autoPassword" />
+                                           ng-model="resultModel.autoPassword"/>
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;">
                                     <label class="checkbox-inline newinput">
-                                        <input type="checkbox" ng-model="result.sendPassword" ng-checked="true" />
+                                        <input type="checkbox" ng-model="result.sendPassword" ng-checked="true"/>
                                         <small style="font-size:100%;">Send password in email</small>
                                         <span></span>
                                     </label>
                                 </div>
                                 <div class="form-group" style="position: relative;">
-                                    <label class="col-sm-12 required-field">Email the new password to the following recipient </label>
+                                    <label class="col-sm-12 required-field">Email the new password to the following
+                                        recipient </label>
                                     <input type="text"
                                            name="recipient"
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
-                                           ng-model="resultModel.recipient" />
+                                           ng-model="resultModel.recipient"/>
                                 </div>
-                                <button type="button" ng-click="sendEmailPassowrd()" class="btn add-button btn-radius btn-blue" ladda="savingEmailPassword">
+                                <button type="button" ng-click="sendEmailPassowrd()"
+                                        class="btn add-button btn-radius btn-blue" ladda="savingEmailPassword">
                                     <i class="fas fa-envelope margin-right-10"></i>Send Email
                                 </button>
                             </div>
@@ -79,19 +82,22 @@
             </div>
         </div>
     </form>
-    <form name="userForm" class="form-horizontal form-custom" ng-submit="save(userForm);" autocomplete="off" novalidate ng-if="!showPassword">
+    <form name="userForm" class="form-horizontal form-custom" ng-submit="save(userForm);" autocomplete="off" novalidate
+          ng-if="!showPassword">
         <div class="modal-header">
             <div class="flex-between">
                 <h4 class="modal-title">User</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()" ng-disabled="saving">
+                            <button type="button" class="btn add-button btn-radius btn-gray" ng-click="closeModal()"
+                                    ng-disabled="saving">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
                             </button>
                         </li>
                         <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="saving" style="margin-left: 5px">
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="saving"
+                                    style="margin-left: 5px">
                                 <i class="fas fa-save margin-right-10"></i>{{'Common.Save' | translate}}
                             </button>
                         </li>
@@ -108,94 +114,94 @@
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.first_name.$invalid}">
-                                    <label class="col-sm-12 required-field">First Name <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">First Name <span class="required-label">(required)</span>
+                                    </label>
                                     <input type="text"
                                            name="first_name"
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            maxlength="100"
                                            focus="true"
-                                           ng-model="userModel.first_name" />
+                                           ng-model="userModel.first_name"/>
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.last_name.$invalid}">
-                                    <label class="col-sm-12 required-field">Last Name <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">Last Name <span class="required-label">(required)</span>
+                                    </label>
                                     <input type="text"
                                            name="last_name"
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            maxlength="100"
-                                           ng-model="userModel.last_name" />
+                                           ng-model="userModel.last_name"/>
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
                                      ng-class="{'has-error': userForm.$submitted && userForm.email.$invalid}">
-                                    <label class="col-sm-12 required-field">Email <span class="required-label">(required)</span> </label>
+                                    <label class="col-sm-12 required-field">Email <span class="required-label">(required)</span>
+                                    </label>
                                     <input type="text"
                                            name="email"
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-disabled="editing"
                                            maxlength="100"
-                                           ng-model="userModel.email" />
+                                           ng-model="userModel.email"/>
                                 </div>
-
-                                <div class="form-group"
-                                     style="position: relative;" ng-if="!editing">
-                                    <label class="radio-inline newinput">
-                                        <input type="radio" ng-model="userModel.auto_pass" name="passwordType" value="true" ng-checked="true" />
-                                        <small style="font-size:100%;">Automatic password creation</small>
-                                        <span></span>
-                                    </label>
-                                    <label class="radio-inline newinput">
-                                        <input type="radio" ng-model="userModel.auto_pass" name="passwordType" value="false" />
-                                        <small style="font-size:100%;">Let me create the password</small>
-                                        <span></span>
-                                    </label>
-                                </div>
-
                                 <div class="form-group"
                                      style="position: relative;"
-                                     ng-if="userModel.auto_pass =='false' && !editing"
+                                     ng-if="!editing"
                                      ng-class="{'has-error': userForm.$submitted && userForm.password.$invalid}">
-                                    <label class="col-sm-12 required-field">Password <span class="required-label"></span> </label>
-                                    <input type="password"
+                                    <label class="col-sm-12 required-field">Password <span
+                                            class="required-label"></span> </label>
+                                    <input type="text"
                                            name="password"
                                            class="form-control ng-animate-disabled col-sm-12"
                                            maxlength="100"
                                            minlength="6"
-                                           ng-model="userModel.password" />
+                                           ng-change="passwordChange()"
+                                           ng-model="userModel.password"/>
+                                </div>
+                                
+                                <div class="form-group"
+                                     style="position: relative;" >
+                                    <label class="radio-inline newinput">
+                                        <input type="checkbox" ng-model="userModel.auto_pass" name="passwordType" ng-change="generatePass()"/>
+                                        <small style="font-size:100%;">Automatically create a new password for me
+                                        </small>
+                                        <span></span>
+                                    </label>
                                 </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': userForm.$submitted && userForm.profile.$invalid}">
-                                    <label class="col-sm-12 required-field">Profile <span class="required-label">(required)</span></label>
-                                    <select name="profile"
-                                            class="form-control ng-animate-disabled col-sm-12"
-                                            required
-                                            ng-model="userModel.profile_id"
-                                            ng-options="o.id as o.name for o in profiles | filter:{deleted: false}">
-                                        <option value="">Select Profile</option>
-                                    </select>
-                                </div>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.profile.$invalid}">
+                                        <label class="col-sm-12 required-field">Profile <span class="required-label">(required)</span></label>
+                                        <select name="profile"
+                                                class="form-control ng-animate-disabled col-sm-12"
+                                                required
+                                                ng-model="userModel.profile_id"
+                                                ng-options="o.id as o.name for o in profiles | filter:{deleted: false}">
+                                            <option value="">Select Profile</option>
+                                        </select>
+                                    </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': userForm.$submitted && userForm.role.$invalid}">
-                                    <label class="col-sm-12 required-field">Role <span class="required-label">(required)</span></label>
-                                    <select name="role"
-                                            class="form-control ng-animate-disabled col-sm-12"
-                                            required
-                                            ng-model="userModel.role_id"
-                                            ng-options="o.id as o.label_en for o in roles">
-                                        <option value="">Select Role</option>
-                                    </select>
+                                    <div class="form-group"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.role.$invalid}">
+                                        <label class="col-sm-12 required-field">Role <span class="required-label">(required)</span></label>
+                                        <select name="role"
+                                                class="form-control ng-animate-disabled col-sm-12"
+                                                required
+                                                ng-model="userModel.role_id"
+                                                ng-options="o.id as o.label_en for o in roles">
+                                            <option value="">Select Role</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </form>
 </div>

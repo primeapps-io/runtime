@@ -9,7 +9,8 @@
                 </li>
             </ul>
             <ul class="list-unstyled list-yanla">
-                <li style="margin-left:  10px" ng-show="!appLoading && currentAppId && appModules.length > 0">
+                <!--ng-show="!appLoading && currentAppId && appModules.length > 0"-->
+                <li style="margin-left:  10px" ng-if="currentAppId" >
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
                             ng-click="preview()"
@@ -108,7 +109,7 @@
 
         </ul>
         <div class="footer">
-            <div class="menu-togle" ng-click="toggleLeftMenu()">
+            <div class="menu-togle" ng-click="toggledOrgMenu()">
                 <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Collapse"
                    bs-tooltip data-placement="top"></i>
                 <i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Expand"

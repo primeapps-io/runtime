@@ -24,10 +24,11 @@ namespace PrimeApps.Studio.Controllers
         private IScriptRepository _scriptRepository;
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
+        private IModuleRepository _moduleRepository;
         private IPermissionHelper _permissionHelper;
 
         public ScriptController(IBackgroundTaskQueue queue, IDeploymentHelper deploymentHelper, IComponentHelper componentHelper,
-            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IPermissionHelper permissionHelper)
+            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository, IPermissionHelper permissionHelper)
         {
             Queue = queue;
             _deploymentHelper = deploymentHelper;
@@ -35,6 +36,7 @@ namespace PrimeApps.Studio.Controllers
             _scriptRepository = scriptRepository;
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
+            _moduleRepository = moduleRepository;
             _permissionHelper = permissionHelper;
         }
 
@@ -43,6 +45,7 @@ namespace PrimeApps.Studio.Controllers
             SetContext(context);
             SetCurrentUser(_scriptRepository, PreviewMode, AppId, TenantId);
             SetCurrentUser(_deploymentComponentRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -110,9 +113,20 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var module = await _moduleRepository.GetById(model.ModuleId);
+
+            if (module == null)
+                return BadRequest("Module id is not valid.");
+
+            var scriptName = model.Name.Trim().Replace(" ", "-");
+            var checkName = await _scriptRepository.IsUniqueName(scriptName);
+
+            if (checkName)
+                return Conflict();
+
             var script = new Component
             {
-                Name = model.Name,
+                Name = scriptName,
                 Content = model.Content,
                 ModuleId = model.ModuleId,
                 Type = ComponentType.Script,
@@ -156,7 +170,7 @@ namespace PrimeApps.Studio.Controllers
 
             var result = await _scriptRepository.Update(script);
 
-            if (result < 1)
+            if (result < 0)
                 return BadRequest("An error occurred while update script.");
 
             return Ok(result);

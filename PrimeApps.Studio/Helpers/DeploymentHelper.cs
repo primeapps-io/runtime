@@ -136,57 +136,51 @@ namespace PrimeApps.Studio.Helpers
                         var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var files = _giteaHelper.GetFileNames(localPath, "components/" + component.Name);
 
-                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            try
                             {
-                                var localPath = giteaDirectory + repository["name"].ToString();
-                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                                var files = _giteaHelper.GetFileNames(localPath, "components/" + component.Name);
-
-                                try
+                                foreach (var file in files)
                                 {
-                                    foreach (var file in files)
+                                    var path = file["path"].ToString();
+                                    var pathArray = path.Split("/");
+                                    var fileName = pathArray[pathArray.Length - 1];
+
+                                    var code = File.ReadAllText(localPath + "//" + path);
+
+                                    var content = JObject.Parse(component.Content);
+                                    var folderName = content.HasValues && content["level"] != null && content["level"].ToString() != "app" ? "tenant-" + tenantId : "app-" + appId;
+                                    var bucketName = UnifiedStorage.GetPathComponents(folderName, component.Name);
+
+                                    var stream = new MemoryStream();
+                                    var writer = new StreamWriter(stream);
+                                    writer.Write(code);
+                                    writer.Flush();
+                                    stream.Position = 0;
+
+                                    await _storage.Upload(bucketName, fileName, stream);
+
+                                    if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
                                     {
-                                        var path = file["path"].ToString();
-                                        var pathArray = path.Split("/");
-                                        var fileName = pathArray[pathArray.Length - 1];
-
-                                        var code = File.ReadAllText(localPath + "//" + path);
-
-                                        var content = JObject.Parse(component.Content);
-                                        var folderName = content.HasValues && content["level"] != null && content["level"].ToString() != "app" ? "tenant-" + tenantId : "app-" + appId;
-                                        var bucketName = UnifiedStorage.GetPathComponents(folderName, component.Name);
-
-                                        var stream = new MemoryStream();
-                                        var writer = new StreamWriter(stream);
-                                        writer.Write(code);
-                                        writer.Flush();
-                                        stream.Position = 0;
-
-                                        await _storage.Upload(bucketName, fileName, stream);
-
-                                        if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
-                                        {
-                                            var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-                                            content["app"]["templateUrl"] = url;
-                                            component.Content = JsonConvert.SerializeObject(content);
-                                            await _componentRepository.Update(component);
-                                        }
+                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                                        content["app"]["templateUrl"] = url;
+                                        component.Content = JsonConvert.SerializeObject(content);
+                                        await _componentRepository.Update(component);
                                     }
-
-                                    deployment.Status = DeploymentStatus.Succeed;
-                                }
-                                catch (Exception ex)
-                                {
-                                    deployment.Status = DeploymentStatus.Failed;
-                                    ErrorHandler.LogError(ex, "Component deployment error.");
                                 }
 
-                                deployment.EndTime = DateTime.Now;
-                                await _deploymentComponentRepository.Update(deployment);
-                                _giteaHelper.DeleteDirectory(localPath);
+                                deployment.Status = DeploymentStatus.Succeed;
                             }
+                            catch (Exception ex)
+                            {
+                                deployment.Status = DeploymentStatus.Failed;
+                                ErrorHandler.LogError(ex, "Component deployment error.");
+                            }
+
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
+                            _giteaHelper.DeleteDirectory(localPath);
                         }
                         else
                         {
@@ -222,38 +216,33 @@ namespace PrimeApps.Studio.Helpers
                         var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
                             var code = "";
 
-                            if (!string.IsNullOrEmpty(giteaDirectory))
+                             var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            // var files = _giteaHelper.GetFileNames(localPath, "components/" + script.Name);
+                            var fileName = $"/scripts/{script.Name}.js";
+
+                            try
                             {
-                                var localPath = giteaDirectory + repository["name"].ToString();
-                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                                // var files = _giteaHelper.GetFileNames(localPath, "components/" + script.Name);
-                                var fileName = $"/scripts/{script.Name}.js";
-
-                                try
-                                {
-                                    code = File.ReadAllText(localPath + "/" + fileName);
-                                    deployment.Status = DeploymentStatus.Succeed;
-                                }
-                                catch (Exception ex)
-                                {
-                                    deployment.Status = DeploymentStatus.Failed;
-                                    ErrorHandler.LogError(ex, "Script deployment error.");
-                                }
-
-                                deployment.EndTime = DateTime.Now;
-                                await _deploymentComponentRepository.Update(deployment);
-
-                                var entity = await _scriptRepository.Get(script.Id);
-                                entity.Content = code;
-
-                                var result = await _scriptRepository.Update(entity);
-
-                                if (result > 0)
-                                    _giteaHelper.DeleteDirectory(localPath);
+                                code = File.ReadAllText(localPath + "/" + fileName);
+                                deployment.Status = DeploymentStatus.Succeed;
                             }
+                            catch (Exception ex)
+                            {
+                                deployment.Status = DeploymentStatus.Failed;
+                                ErrorHandler.LogError(ex, "Script deployment error.");
+                            }
+
+                            deployment.EndTime = DateTime.Now;
+                            await _deploymentComponentRepository.Update(deployment);
+
+                            var entity = await _scriptRepository.Get(script.Id);
+                            entity.Content = code;
+
+                            var result = await _scriptRepository.Update(entity);
+
+                            if (result > 0)
+                                _giteaHelper.DeleteDirectory(localPath);
                         }
                         else
                         {

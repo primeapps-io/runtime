@@ -118,7 +118,7 @@ namespace PrimeApps.Studio.Controllers
                 organization = new Organization
                 {
                     Name = orgName,
-                    Label = user["first_name"] + " " + user["last_name"],
+                    Label = "My Organization",
                     OwnerId = studioUser.Id,
                     CreatedById = studioUser.Id,
                     Default = true,
