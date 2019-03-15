@@ -260,7 +260,7 @@ angular.module('primeapps')
                     CollaboratorsService.sendEmail(sendEmailData)
                         .then(function (response) {
                             $scope.savingEmailPassword = false;
-                            toastr.success("Mail sending successfull");
+                            toastr.success("Email sent successfullyl");
                         });
                 }
                 else {

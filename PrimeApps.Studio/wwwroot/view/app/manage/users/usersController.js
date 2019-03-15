@@ -202,7 +202,7 @@ angular.module('primeapps')
                 }
 
                 //TODO mail sending
-                toastr.success("Mail sending successfull");
+                toastr.success("Email sent successfullyl");
                 $scope.closeModal();
                 $scope.changePage(1);
                 $scope.saving = false;
@@ -256,7 +256,7 @@ angular.module('primeapps')
                     UsersService.sendEmail(sendEmailData)
                         .then(function (response) {
                             if (response.data > 0)
-                                toastr.success("Mail sending successfull");
+                                toastr.success("Email sent successfullyl");
                             $scope.savingEmailPassword = false; 
                         })
                         .catch(function (reason) {
