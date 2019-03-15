@@ -88,12 +88,10 @@ namespace PrimeApps.Studio.Helpers
                     var functionRequest = _functionHelper.CreateFunctionRequest(functionModel, functionObj);
                     JObject result;
 
-                    using (var httpClient = new HttpClient())
+                    using (var httpClient = _functionHelper.SetClientOptions())
                     {
-                        var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
-
-                        httpClient.DefaultRequestHeaders.Accept.Clear();
-                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{name}";
+                        
                         var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                         var content = await response.Content.ReadAsStringAsync();
 

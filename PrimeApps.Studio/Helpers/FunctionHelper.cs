@@ -32,6 +32,7 @@ namespace PrimeApps.Studio.Helpers
         Task<string> GetLogs(string podName);
         string GetSampleFunction(FunctionRuntime runtime, string moduleHandler);
         string GetFunctionName(string preview, string currentName, int? tenantId, int? appId);
+        HttpClient SetClientOptions();
     }
 
     public class FunctionHelper : IFunctionHelper
@@ -42,6 +43,7 @@ namespace PrimeApps.Studio.Helpers
         private IGiteaHelper _giteaHelper;
         private CurrentUser _currentUser;
         private string _kubernetesClusterRootUrl;
+        private string _kubernetesClusterAccessToken;
 
         public FunctionHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IGiteaHelper giteaHelper)
         {
@@ -51,6 +53,7 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
             _serviceScopeFactory = serviceScopeFactory;
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
+            _kubernetesClusterAccessToken = _configuration["AppSettings:KubernetesClusterAccessToken"];
         }
 
         public async void CreateSample(string giteaToken, string email, int appId, FunctionBindingModel function)
@@ -122,7 +125,7 @@ namespace PrimeApps.Studio.Helpers
                 ["metadata"] = new JObject()
             };
             function["metadata"]["name"] = model.Name;
-            function["metadata"]["namespace"] = "default";
+            function["metadata"]["namespace"] = "functions";
             function["spec"] = new JObject
             {
                 ["function"] = "",
@@ -151,12 +154,10 @@ namespace PrimeApps.Studio.Helpers
         {
             JObject function;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -176,12 +177,9 @@ namespace PrimeApps.Studio.Helpers
         {
             string functionUrl;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/default/services/" + functionName;
-
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/" + functionName;
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -198,7 +196,7 @@ namespace PrimeApps.Studio.Helpers
                 if (!function["spec"].IsNullOrEmpty() && !function["spec"]["ports"].IsNullOrEmpty())
                     port = (int)((JArray)function["spec"]["ports"])[0]["port"];
 
-                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/default/services/{functionName}:{port}/proxy/";
+                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/{functionName}:{port}/proxy/";
             }
 
             return functionUrl;
@@ -206,11 +204,8 @@ namespace PrimeApps.Studio.Helpers
 
         public async Task<HttpResponseMessage> Run(string functionUrl, string functionHttpMethod, string functionRequestBody)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = SetClientOptions())
             {
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
                 HttpResponseMessage response;
                 var httpMethod = new HttpMethod(functionHttpMethod);
 
@@ -236,12 +231,10 @@ namespace PrimeApps.Studio.Helpers
         {
             JArray pods;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = SetClientOptions())
             {
                 var url = $"{_kubernetesClusterRootUrl}/api/v1/pods?labelSelector=function%3D{functionName}";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -259,12 +252,10 @@ namespace PrimeApps.Studio.Helpers
         {
             string logs;
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/default/pods/{podName}/log";
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/pods/{podName}/log";
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -380,6 +371,17 @@ namespace PrimeApps.Studio.Helpers
         public string GetFunctionName(string preview, string currentName, int? tenantId, int? appId)
         {
             return preview == "app" ? "app" + appId + "-" + currentName : "tenant" + tenantId + "-" + currentName;
+        }
+
+        public HttpClient SetClientOptions()
+        {
+            var httpClientHandler = new HttpClientHandler {ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true};
+            var client = new HttpClient(httpClientHandler);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _kubernetesClusterAccessToken);
+
+            return client;
         }
     }
 }
