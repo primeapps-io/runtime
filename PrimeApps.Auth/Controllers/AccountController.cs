@@ -229,6 +229,8 @@ namespace PrimeApps.Auth.UI
                 }
 
                 var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+                var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+                previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
                 if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
                 {
@@ -265,7 +267,7 @@ namespace PrimeApps.Auth.UI
 
                 if (result.Succeeded)
                 {
-                    if (vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (previewMode != "app" && vm.ApplicationInfo != null && (validationSkipDomainsArr == null || validationSkipDomainsArr.Length < 1 || Array.IndexOf(validationSkipDomainsArr, Request.Host.Host) < 0) && vm.ApplicationInfo.ApplicationSetting.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
@@ -302,7 +304,10 @@ namespace PrimeApps.Auth.UI
                     {
                         var giteaToken = await _giteaHelper.GetToken(model.Username, model.Password);
                         if (!string.IsNullOrEmpty(giteaToken))
+                        {
+                            await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
                             Response.Cookies.Append("gitea_token", giteaToken);
+                        }
                     }
 
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
@@ -462,7 +467,11 @@ namespace PrimeApps.Auth.UI
             {
                 var giteaToken = await _giteaHelper.GetToken(model.Email, model.Password);
                 if (!string.IsNullOrEmpty(giteaToken))
+                {
+                    var user = await _userManager.FindByNameAsync(model.Email);
+                    await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
                     Response.Cookies.Append("gitea_token", giteaToken);
+                }
             }
 
             var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, lockoutOnFailure: false);

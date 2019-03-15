@@ -20,9 +20,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
-        };     
-        
-        $rootScope.toggledOrgMenu= function () {
+        };
+
+        $rootScope.toggledOrgMenu = function () {
             $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled';
         };
 
@@ -61,6 +61,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.preview = function () {
+
+            //  if (!$scope.appLoading && $scope.appModules.length > 0) {
             $rootScope.previewActivating = true;
 
             LayoutService.appDraftUserCount()
@@ -89,7 +91,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                             });
                     }
                 });
-
+            // }
+            // else
+            // toastr.warning('We’re very excited to see what your app looks like too. But you need to create at least one module and one user to get this activated.', null);
         };
 
         $scope.logout = function () {
@@ -145,7 +149,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             }
         };
 
- 
+
         $scope.toggleAppMenu = function ($timeout) {
             angular.element($scope.appLauncher).toggleClass('toggled');
         };

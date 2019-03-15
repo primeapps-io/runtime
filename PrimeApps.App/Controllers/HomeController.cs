@@ -51,8 +51,9 @@ namespace PrimeApps.App.Controllers
 
                 if (previewDB.Contains("app"))
                 {
+                    var previewClient = _configuration.GetValue("AppSettings:PreviewClient", string.Empty);
                     var appId = int.Parse(previewDB.Split("app_id=")[1]);
-                    var app = await applicationRepository.GetByNameAsync("primeapps_preview");
+                    var app = await applicationRepository.GetByNameAsync(!string.IsNullOrEmpty(previewClient) ? previewClient : "primeapps_preview");
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
@@ -132,8 +133,11 @@ namespace PrimeApps.App.Controllers
 
             Response.Cookies.Delete("tenant_id");
             await HttpContext.SignOutAsync();
-
-            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain);
+            
+            var preview = HttpContext.Request.Query["preview"].ToString();
+            preview = !string.IsNullOrEmpty(preview) ? "?preview=" + preview : "";
+            
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview );
         }
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)

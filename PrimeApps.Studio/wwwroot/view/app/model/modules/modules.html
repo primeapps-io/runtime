@@ -100,6 +100,11 @@
                             <a  ui-sref="studio.app.moduleDesigner({id:module.id , clone:module.name})" ng-click="$event.stopPropagation();">
                                 {{'Common.Copy' | translate}}
                             </a>
+                        </li> 
+                        <li>
+                            <a   ng-click="$event.stopPropagation(); showEditModal(module.id);">
+                               Settings
+                            </a>
                         </li>                        <li>
                             <a ng-click="$event.stopPropagation(); delete(module,$event)">
                                 {{'Common.Remove' | translate}}

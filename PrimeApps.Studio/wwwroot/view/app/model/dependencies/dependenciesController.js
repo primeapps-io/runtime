@@ -70,29 +70,32 @@ angular.module('primeapps')
 
             $scope.moduleChanged = function () {
 
-                if (!$scope.currentDependency.module.fields) {
-                    var moduleName = $scope.currentDependency.module.name;
-                    ModuleService.getModuleByName(moduleName).then(function (response) {
-                        $scope.module = response.data;
-                        $scope.sections = $scope.module.sections;
+                $scope.parentDisplayFields = [];
+                $scope.parentValueFields = [];
+                $scope.childValueListFields = [];
+                $scope.childValueTextFields = [];
+                $scope.childDisplayFields = [];
+                $scope.picklistFields = [];
+
+                if ($scope.currentDependency.module)
+                    if (!$scope.currentDependency.module.fields) {
+                        var moduleName = $scope.currentDependency.module.name;
+                        ModuleService.getModuleByName(moduleName).then(function (response) {
+                            $scope.module = response.data;
+                            $scope.sections = $scope.module.sections;
+                            prepareDependency();
+                        });
+                    } else {
+                        $scope.module = angular.copy($scope.currentDependency.module);
+                        $scope.sections = $scope.currentDependency.module.sections;
                         prepareDependency();
-                    });
-                } else {
-                    $scope.module = angular.copy($scope.currentDependency.module);
-                    $scope.sections = $scope.currentDependency.module.sections;
-                    prepareDependency();
-                }
+                    }
                 $scope.modalLoading = false;
             };
             $scope.affectedAreaType = "field";
 
             var getFields = function () {
-               /* $scope.parentDisplayFields = [];
-                $scope.parentValueFields = [];
-                $scope.childValueListFields = [];
-                $scope.childValueTextFields = [];
-                $scope.childDisplayFields = [];
-                $scope.picklistFields = [];*/
+
 
                 angular.forEach($scope.module.fields, function (field) {
 
@@ -294,7 +297,7 @@ angular.module('primeapps')
                 $scope.childValueTextFields = [];
                 $scope.childDisplayFields = [];
                 $scope.picklistFields = [];
-                
+
                 if (!dependency) {
                     dependency = {};
                     dependency.dependencyType = 'display';

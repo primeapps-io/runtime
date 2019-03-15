@@ -21,8 +21,7 @@ angular.module('primeapps')
             $scope.colProfiles = [
                 { name: 'Manager', value: 'manager' },
                 { name: 'Developer', value: 'developer' },
-                { name: 'Viewer', value: 'viewer' },
-                { name: 'Tenant Admin', value: 'tenant_admin' }
+                { name: 'Viewer', value: 'viewer' }
             ]
 
             $scope.getTeamsAndCollaborators = function () {

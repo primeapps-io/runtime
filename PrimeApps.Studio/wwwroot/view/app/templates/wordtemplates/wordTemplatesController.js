@@ -221,7 +221,7 @@ angular.module('primeapps')
                 if ((uploadForm.$invalid || !$scope.template.content) && $scope.template.id) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
-                } else if (uploadForm.$invalid || $scope.fileUpload.queue.length < 1) {
+                } else if ((uploadForm.$invalid || $scope.fileUpload.queue.length < 1) && !$scope.template.id) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }

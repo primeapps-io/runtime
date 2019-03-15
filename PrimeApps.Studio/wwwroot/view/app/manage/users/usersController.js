@@ -13,7 +13,35 @@ angular.module('primeapps')
             $scope.userModel = {};
             $scope.resultModel = {};
             $scope.loading = true;
-            $scope.userModel.auto_pass = "true";
+            $scope.userModel.auto_pass = "false";
+
+            var keylist = "abcdefghijklmnopqrstuvwxyz123456789";
+
+            $scope.generatePass = function () {
+                if ($scope.userModel.auto_pass) {
+                    var temp = '';
+                    for (var i = 0; i < 7; i++) {
+                        temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
+                    }
+
+                    $scope.userModel.password = temp;
+                } else {
+                    $scope.userModel.password = "";
+                }
+
+
+            }
+
+            $scope.passwordChange = function () {
+                if ($scope.userModel.auto_pass) {
+                    $scope.userModel.auto_pass = false;
+                }
+
+            }
+
+            function populateform(enterlength) {
+                document.pgenerate.output.value = generatepass(enterlength)
+            }
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -130,12 +158,11 @@ angular.module('primeapps')
                                 toastr.success('User is saved successfully');
                                 if ($scope.userModel.auto_pass) {
                                     $scope.showPassword = true;
-                                    $scope.resultModel = {};
+                                    $scope.resultModel = {recipient: $rootScope.me.email};
                                     $scope.resultModel.autoPassword = response.data.password;
                                     $scope.resultModel.displayName = $scope.userModel.first_name + ' ' + $scope.userModel.last_name;
                                     $scope.resultModel.email = $scope.userModel.email;
-                                }
-                                else {
+                                } else {
                                     $scope.userFormModal.hide();
                                 }
                                 $scope.changePage(1);
@@ -146,15 +173,13 @@ angular.module('primeapps')
                         .catch(function (response) {
                             if (response.data && response.data.message) {
                                 toastr.error(response.data.message);
-                            }
-                            else {
+                            } else {
                                 toastr.error($filter('translate')('Common.Error'));
                             }
                             $scope.saving = false;
                             $scope.closeModal();
                         });
-                }
-                else {
+                } else {
                     UsersService.update($scope.userModel.id, $scope.userModel)
                         .then(function (response) {
                             toastr.success('User is saved successfully');
@@ -186,11 +211,13 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (id) {
                 if (id) {
-                    $scope.userModel = $filter('filter')($scope.users, { id: id }, true)[0];
+                    $scope.userModel = $filter('filter')($scope.users, {id: id}, true)[0];
                     $scope.editing = true;
-                }
-                else {
-                    $scope.userModel = {};
+                } else {
+                    $scope.userModel = {
+                        profile_id: 1,
+                        role_id: 1
+                    };
                     $scope.resultModel = {};
                     $scope.userModel.auto_pass = "true";
                     $scope.editing = false;
@@ -236,8 +263,7 @@ angular.module('primeapps')
                             toastr.warning("Mail sending failed")
                             $scope.savingEmailPassword = false;
                         });
-                }
-                else {
+                } else {
                     toastr.warning("Email the new password to the following recipient not null");
                 }
             };
