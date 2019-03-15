@@ -69,49 +69,42 @@ namespace PrimeApps.Studio.Helpers
 
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
 
-                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            var fileName = $"functions/{function.Name}.cs";
+
+                            if (!System.IO.File.Exists(fileName))
                             {
-                                var localPath = giteaDirectory + repository["name"].ToString();
-
-                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-
-                                var fileName = $"functions/{function.Name}.cs";
-
-                                if (!System.IO.File.Exists(fileName))
+                                using (var repo = new Repository(localPath))
                                 {
-                                    using (var repo = new Repository(localPath))
+                                    var sample = GetSampleFunction(function.Runtime, function.Handler);
+                                    using (var fs = System.IO.File.Create(localPath + "/" + fileName))
                                     {
-                                        var sample = GetSampleFunction(function.Runtime, function.Handler);
-                                        using (var fs = System.IO.File.Create(localPath + "/" + fileName))
-                                        {
-                                            var info = new UTF8Encoding(true).GetBytes(sample);
-                                            // Add some information to the file.
-                                            fs.Write(info, 0, info.Length);
-                                        }
-
-                                        //System.IO.File.WriteAllText(localPath, sample);
-                                        Commands.Stage(repo, "*");
-
-                                        var signature = new Signature(
-                                            new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                                        var status = repo.RetrieveStatus();
-
-                                        if (!status.IsDirty)
-                                        {
-                                            _giteaHelper.DeleteDirectory(localPath);
-                                            return;
-                                        }
-
-                                        // Commit to the repository
-                                        var commit = repo.Commit("Created function " + function.Name, signature, signature);
-                                        _giteaHelper.Push(repo, giteaToken);
-
-                                        repo.Dispose();
-                                        _giteaHelper.DeleteDirectory(localPath);
+                                        var info = new UTF8Encoding(true).GetBytes(sample);
+                                        // Add some information to the file.
+                                        fs.Write(info, 0, info.Length);
                                     }
+
+                                    //System.IO.File.WriteAllText(localPath, sample);
+                                    Commands.Stage(repo, "*");
+
+                                    var signature = new Signature(
+                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                    var status = repo.RetrieveStatus();
+
+                                    if (!status.IsDirty)
+                                    {
+                                        _giteaHelper.DeleteDirectory(localPath);
+                                        return;
+                                    }
+
+                                    // Commit to the repository
+                                    var commit = repo.Commit("Created function " + function.Name, signature, signature);
+                                    _giteaHelper.Push(repo, giteaToken);
+
+                                    repo.Dispose();
+                                    _giteaHelper.DeleteDirectory(localPath);
                                 }
                             }
                         }

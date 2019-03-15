@@ -61,24 +61,14 @@ namespace PrimeApps.Studio.Helpers
                         var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString(), false);
 
-                            if (!string.IsNullOrEmpty(giteaDirectory))
-                            {
-                                var localPath = giteaDirectory + repository["name"].ToString();
+                            var nameList = _giteaHelper.GetFileNames(localPath, "components/" + componentName);
 
-                                var result = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath, false);
+                            if (!string.IsNullOrEmpty(localPath))
+                                _giteaHelper.DeleteDirectory(localPath);
 
-                                /*using (var repo = new Repository(localPath))
-                                {*/
-                                var nameList = _giteaHelper.GetFileNames(localPath, "components/" + componentName);
-
-                                if (result)
-                                    _giteaHelper.DeleteDirectory(localPath);
-
-                                return nameList;
-                                /*}*/
-                            }
+                            return nameList;
                         }
                     }
                 }
@@ -102,73 +92,67 @@ namespace PrimeApps.Studio.Helpers
                         var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-
-                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            if (!Directory.Exists(localPath + $"/components/{component.Name}"))
                             {
-                                var localPath = giteaDirectory + repository["name"].ToString();
+                                Directory.CreateDirectory(localPath + $"/components/{component.Name}");
 
-                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                                if (!Directory.Exists(localPath + $"/components/{component.Name}"))
+                                var files = new JArray()
                                 {
-                                    Directory.CreateDirectory(localPath + $"/components/{component.Name}");
-
-                                    var files = new JArray()
+                                    new JObject
                                     {
-                                        new JObject
-                                        {
-                                            ["filePath"] = $"components/{component.Name}/sample.html",
-                                            ["type"] = "html"
-                                        },
-                                        new JObject
-                                        {
-                                            ["filePath"] = $"components/{component.Name}/sampleController.js",
-                                            ["type"] = "controller"
-                                        },
-                                        new JObject
-                                        {
-                                            ["filePath"] = $"components/{component.Name}/sampleService.js",
-                                            ["type"] = "service"
-                                        }
-                                    };
-
-                                    using (var repo = new Repository(localPath))
+                                        ["filePath"] = $"components/{component.Name}/sample.html",
+                                        ["type"] = "html"
+                                    },
+                                    new JObject
                                     {
-                                        foreach (var file in files)
-                                        {
-                                            var sample = GetSampleComponent(file["type"].ToString());
-
-                                            using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
-                                            {
-                                                var info = new UTF8Encoding(true).GetBytes(sample);
-                                                // Add some information to the file.
-                                                fs.Write(info, 0, info.Length);
-                                            }
-                                        }
-
-                                        var status = repo.RetrieveStatus();
-
-                                        if (!status.IsDirty)
-                                        {
-                                            _giteaHelper.DeleteDirectory(localPath);
-                                            return;
-                                        }
-
-                                        //System.IO.File.WriteAllText(localPath, sample);
-                                        Commands.Stage(repo, "*");
-
-                                        var signature = new Signature(
-                                            new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                                        // Commit to the repository
-                                        var commit = repo.Commit("Created component " + component.Name, signature, signature);
-                                        _giteaHelper.Push(repo, giteaToken);
-
-                                        repo.Dispose();
+                                        ["filePath"] = $"components/{component.Name}/sampleController.js",
+                                        ["type"] = "controller"
+                                    },
+                                    new JObject
+                                    {
+                                        ["filePath"] = $"components/{component.Name}/sampleService.js",
+                                        ["type"] = "service"
                                     }
+                                };
+
+                                using (var repo = new Repository(localPath))
+                                {
+                                    foreach (var file in files)
+                                    {
+                                        var sample = GetSampleComponent(file["type"].ToString());
+
+                                        using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                        {
+                                            var info = new UTF8Encoding(true).GetBytes(sample);
+                                            // Add some information to the file.
+                                            fs.Write(info, 0, info.Length);
+                                        }
+                                    }
+
+                                    var status = repo.RetrieveStatus();
+
+                                    if (!status.IsDirty)
+                                    {
+                                        _giteaHelper.DeleteDirectory(localPath);
+                                        return;
+                                    }
+
+                                    //System.IO.File.WriteAllText(localPath, sample);
+                                    Commands.Stage(repo, "*");
+
+                                    var signature = new Signature(
+                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                    // Commit to the repository
+                                    var commit = repo.Commit("Created component " + component.Name, signature, signature);
+                                    _giteaHelper.Push(repo, giteaToken);
+
+                                    repo.Dispose();
                                 }
-                                _giteaHelper.DeleteDirectory(localPath);
                             }
+
+                            _giteaHelper.DeleteDirectory(localPath);
                         }
                     }
                 }
@@ -190,47 +174,40 @@ namespace PrimeApps.Studio.Helpers
                         var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
                         if (repository != null)
                         {
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var fileName = $"/scripts/{script.Name}.js";
 
-                            if (!string.IsNullOrEmpty(giteaDirectory))
+                            using (var repo = new Repository(localPath))
                             {
-                                var localPath = giteaDirectory + repository["name"].ToString();
+                                var sample = "Console.log('Hello World!');";
 
-                                _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), localPath);
-                                var fileName = $"/scripts/{script.Name}.js";
-
-                                using (var repo = new Repository(localPath))
+                                using (var fs = System.IO.File.Create(localPath + fileName))
                                 {
-                                    var sample = "Console.log('Hello World!');";
-
-                                    using (var fs = System.IO.File.Create(localPath + fileName))
-                                    {
-                                        var info = new UTF8Encoding(true).GetBytes(sample);
-                                        // Add some information to the file.
-                                        fs.Write(info, 0, info.Length);
-                                    }
-
-                                    var status = repo.RetrieveStatus();
-
-                                    if (!status.IsDirty)
-                                    {
-                                        _giteaHelper.DeleteDirectory(localPath);
-                                        return;
-                                    }
-
-                                    //System.IO.File.WriteAllText(localPath, sample);
-                                    Commands.Stage(repo, "*");
-
-                                    var signature = new Signature(
-                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                                    // Commit to the repository
-                                    var commit = repo.Commit("Created script " + script.Name, signature, signature);
-                                    _giteaHelper.Push(repo, giteaToken);
-
-                                    repo.Dispose();
-                                    _giteaHelper.DeleteDirectory(localPath);
+                                    var info = new UTF8Encoding(true).GetBytes(sample);
+                                    // Add some information to the file.
+                                    fs.Write(info, 0, info.Length);
                                 }
+
+                                var status = repo.RetrieveStatus();
+
+                                if (!status.IsDirty)
+                                {
+                                    _giteaHelper.DeleteDirectory(localPath);
+                                    return;
+                                }
+
+                                //System.IO.File.WriteAllText(localPath, sample);
+                                Commands.Stage(repo, "*");
+
+                                var signature = new Signature(
+                                    new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                // Commit to the repository
+                                var commit = repo.Commit("Created script " + script.Name, signature, signature);
+                                _giteaHelper.Push(repo, giteaToken);
+
+                                repo.Dispose();
+                                _giteaHelper.DeleteDirectory(localPath);
                             }
                         }
                     }

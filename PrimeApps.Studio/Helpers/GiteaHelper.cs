@@ -31,7 +31,7 @@ namespace PrimeApps.Studio.Helpers
         Task<string> GetFile(string fileName, string organizationName, string appName, CustomCodeType type);
         void Push(Repository repo, string token);
         Task<JObject> GetRepositoryInfo(string token, string email, string repositoryName);
-        bool CloneRepository(string token, string cloneUrl, string localFolder, bool deleteIfExist = true);
+        string CloneRepository(string token, string cloneUrl, string folderName, bool deleteIfExist = true);
         Task CreateUser(string email, string password, string firstName, string lastName, string orgName);
         Task CreateOrganization(string uniqueName, string fullName, string email, string token, string type = "token");
         Task CreateRepository(int organizationId, string appName, UserItem appUser, string token);
@@ -153,20 +153,29 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public bool CloneRepository(string token, string cloneUrl, string localFolder, bool deleteIfExist = true)
+        public string CloneRepository(string token, string cloneUrl, string folderName, bool deleteIfExist = true)
         {
+            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            if (string.IsNullOrEmpty(giteaDirectory))
+                return null;
+
+            var localFolder = giteaDirectory + folderName;
+
             if (Directory.Exists(localFolder))
             {
                 if (deleteIfExist)
                     DeleteDirectory(localFolder);
                 else
-                    return false;
+                    return null;
             }
+
+            if (!Directory.Exists(giteaDirectory))
+                Directory.CreateDirectory(giteaDirectory);
 
             var cloneOptions = GetOptions("clone", token);
 
             Repository.Clone(cloneUrl, localFolder, cloneOptions);
-            return true;
+            return localFolder;
         }
 
         public async Task CreateUser(string email, string password, string firstName, string lastName, string orgName)
@@ -311,18 +320,15 @@ namespace PrimeApps.Studio.Helpers
                         }
 
                         var cloneUrl = JObject.Parse(resp)["clone_url"].ToString();
-                        var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                        var localFolder = "";
                         var templateUrl = "";
 
-                        if (!string.IsNullOrEmpty(giteaDirectory) && !string.IsNullOrEmpty(giteaUrl))
+                        if (!string.IsNullOrEmpty(giteaUrl))
                         {
-                            localFolder = giteaDirectory + appName;
                             templateUrl = giteaUrl + "/primeapps/template.git";
                         }
 
                         //Clone auto generated repository in local folder.
-                        CloneRepository(token, cloneUrl, localFolder);
+                        var localFolder = CloneRepository(token, cloneUrl, appName);
 
                         using (var repo = new Repository(localFolder))
                         {
