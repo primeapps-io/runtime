@@ -16,6 +16,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.isTimetrackerExist = false;
         $scope.isExpenseExist = false;
         $scope.componentModules = $filter('filter')($rootScope.modules, {system_type: 'component'}, true);
+        $scope.preview = $location.$$absUrl.contains('preview=');
 
         $rootScope.isMobile = function () {
             var check = false;
@@ -92,7 +93,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.logout = function () {
             AuthService.logoutComplete();
 
-            if ($location.$$absUrl.contains('preview='))
+            if ($scope.preview)
                 window.location = '/logout?preview=' + $location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1];
             else
                 window.location = '/logout';
