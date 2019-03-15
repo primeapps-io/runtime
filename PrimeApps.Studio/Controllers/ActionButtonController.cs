@@ -74,9 +74,6 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Update))
                 return StatusCode(403);
 
-            if (UserProfile == ProfileEnum.Viewer)
-                return Unauthorized();
-
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
@@ -98,9 +95,6 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            if (UserProfile == ProfileEnum.Viewer)
-                return Unauthorized();
-
             var actionButtonEntity = await _actionButtonRepository.GetByIdBasic(id);
 
 			if (actionButtonEntity == null)
@@ -113,7 +107,10 @@ namespace PrimeApps.Studio.Controllers
 
 		[Route("count/{id:int}"), HttpGet]
 		public async Task<IActionResult> Count(int id)
-		{
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var count = await _actionButtonRepository.Count(id);
 
 			return Ok(count);
@@ -121,7 +118,10 @@ namespace PrimeApps.Studio.Controllers
 
 		[Route("find/{id:int}"), HttpPost]
 		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
-		{
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var modules = await _actionButtonRepository.Find(id, paginationModel);
 
 			return Ok(modules);

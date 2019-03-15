@@ -63,7 +63,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
                 return StatusCode(403);
 
             var count = await _moduleRepository.Count();
@@ -125,7 +125,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -225,7 +225,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]ModuleBindingModel module)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -297,7 +297,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
             var moduleEntity = await _moduleRepository.GetById(id);
@@ -319,7 +319,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("create_relation/{moduleId:int}"), HttpPost]
         public async Task<IActionResult> CreateRelation(int moduleId, [FromBody]RelationBindingModel relation)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -372,7 +372,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateRelation(int moduleId, int id, [FromBody]RelationBindingModel relation)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -397,7 +397,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_relation/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteRelation(int id)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
             var relationEntity = await _moduleRepository.GetRelation(id);
@@ -413,7 +413,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("create_dependency/{moduleId:int}"), HttpPost]
         public async Task<IActionResult> CreateDependency(int moduleId, [FromBody]DependencyBindingModel dependency)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Create))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -440,7 +440,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateDependency(int moduleId, int id, [FromBody]DependencyBindingModel dependency)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
@@ -465,7 +465,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_field/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateField(int id, [FromBody]FieldBindingModel field)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Update))
                 return StatusCode(403);
 
             var fieldEntity = await _moduleRepository.GetField(id);
@@ -482,7 +482,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_dependency/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteDependency(int id)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
             var dependencyEntity = await _moduleRepository.GetDependency(id);
