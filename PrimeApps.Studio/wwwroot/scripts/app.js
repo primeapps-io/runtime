@@ -148,11 +148,23 @@ angular.module('primeapps',
                 "status": false
 
             };
-            
+
             $rootScope.toggleClass = '';
             $rootScope.subtoggleClass = '';
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+                if ($rootScope.currentApp) { //FOR PAGE PERMISSION
+                    var pageName = toState.name.replace('studio.app.', '');
+                    var menuName = toState.views.app.templateUrl.replace('view/app/', '');
+
+                    if (menuName)
+                        menuName = menuName.split('/')[0];
+
+                    $rootScope.permission = helper.checkUserProfile(menuName, pageName);
+
+                    if (!$rootScope.permission)
+                        toastr.error('You are not authorized for this operation.');
+                }
 
                 var currentUrl = toState.url;
 
@@ -172,7 +184,7 @@ angular.module('primeapps',
 
 
                 } else {
-                    
+
                     if ($rootScope.cacheMenuStatus.status == true) {
                         if ($rootScope.cacheMenuStatus.homeMenu != 'Open')
                             $rootScope.subtoggleClass = '';

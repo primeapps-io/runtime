@@ -197,12 +197,12 @@ angular.module('primeapps')
                 }
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/manage/users/userFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/manage/users/userFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.userFormModal.$promise.then(function () {
                     $scope.userFormModal.show();
@@ -229,8 +229,12 @@ angular.module('primeapps')
                     UsersService.sendEmail(sendEmailData)
                         .then(function (response) {
                             if (response.data > 0)
-                                $scope.savingEmailPassword = false;
-                            toastr.success("Mail sending successfull");
+                                toastr.success("Mail sending successfull");
+                            $scope.savingEmailPassword = false; 
+                        })
+                        .catch(function (reason) {
+                            toastr.warning("Mail sending failed")
+                            $scope.savingEmailPassword = false;
                         });
                 }
                 else {

@@ -9,6 +9,20 @@ angular.module('primeapps')
         future: new Date('2100-12-12').getTime()
     })
 
+    .constant('appMenus', {
+        overview: [],
+        model: ['modules', 'relations', 'dependencies', 'picklists'],
+        automation: ['simpleworkflows', 'approvalprocesses', 'advancedWorkflows'],
+        visualization: ['views', 'reports', 'menus', 'buttons'],
+        templates: ['templatesEmail', 'templatesWord', 'templatesExcel'],
+        customcode: ['scripts', 'components', 'functions'],
+        accessControl: ['profiles', 'roles'],
+        help: [],
+        manage: ['appDetails', 'appCollaborators', 'users', 'security', 'identity', 'extensions',
+            'appEmailTemplates', 'tenants', 'notifications', 'singleSingOn', 'authentication', 'networkAccess',
+            'cors', 'auditTrail', 'passwordPolicies', 'certificates', 'diagnostics', 'passwordPolicies','componentsDeployment']
+    })
+
     .constant('entityTypes', {
         user: '11111111-1111-1111-1111-111111111111',
         task: '22222222-2222-2222-2222-222222222222',
