@@ -2,7 +2,8 @@
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="save(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Word Templates
+                <h4 class="modal-title">
+                    Word Templates
                 </h4>
                 <div>
                     <ul class="list-unstyled list-inline">
@@ -69,7 +70,7 @@
                             </label>
                             <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Template file must not exceed 10 MB.</span>
                         </div>
-                        <div ng-show="fileUpload.queue.length > 0 || template.content">
+                        <div ng-show="fileUpload.queue.length > 0 || template.content" style="{{requiredColor}}">
                             <div class="uploadedfilename">
                                 <span class="uploadedfilenamein" ng-if="!template.content">{{fileUpload.queue[0]._file["name"]}}</span>
                                 <a class="uploadedfilenamein" href="{{getDownloadUrl(template)}}" target="_blank">{{template.content}}</a>

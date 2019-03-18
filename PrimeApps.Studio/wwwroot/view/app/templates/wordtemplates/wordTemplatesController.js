@@ -55,7 +55,7 @@ angular.module('primeapps')
 
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
                     $scope.templatesState = templates;
@@ -225,6 +225,11 @@ angular.module('primeapps')
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
+                else if ($scope.fileUpload.queue[0].file.size <= 0) {
+                    toastr.warning("File cannot be empty!");
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
+                    return;
+                }
 
                 $scope.saving = true;
                 var header = {
@@ -356,7 +361,7 @@ angular.module('primeapps')
                 noteModule.label_en_plural = 'Notes';
                 noteModule.order = 9999;
                 noteModule.fields = [];
-                noteModule.fields.push({id: 1, name: 'text', label_tr: 'Not', label_en: 'Note'});
+                noteModule.fields.push({ id: 1, name: 'text', label_tr: 'Not', label_en: 'Note' });
                 noteModule.fields.push({
                     id: 2,
                     name: 'first_name',
@@ -375,7 +380,7 @@ angular.module('primeapps')
                     label_tr: 'Oluşturan - Adı Soyadı',
                     label_en: 'Full Name'
                 });
-                noteModule.fields.push({id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email'});
+                noteModule.fields.push({ id: 5, name: 'email', label_tr: 'Oluşturan - Eposta', label_en: 'Email' });
                 noteModule.fields.push({
                     id: 6,
                     name: 'created_at',
@@ -403,7 +408,7 @@ angular.module('primeapps')
                 module.relatedModules = [];
 
                 if (module.name === 'quotes') {
-                    var quoteProductsModule = $filter('filter')($rootScope.appModules, {name: 'quote_products'}, true)[0];
+                    var quoteProductsModule = $filter('filter')($rootScope.appModules, { name: 'quote_products' }, true)[0];
                     ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
                         quoteProductsModule = response.data;
                         getLookupModules(quoteProductsModule);
@@ -414,7 +419,7 @@ angular.module('primeapps')
                 }
 
                 if (module.name === 'sales_orders') {
-                    var orderProductsModule = $filter('filter')($rootScope.appModules, {name: 'order_products'}, true)[0];
+                    var orderProductsModule = $filter('filter')($rootScope.appModules, { name: 'order_products' }, true)[0];
                     ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
                         orderProductsModule = response.data;
                         getLookupModules(orderProductsModule);
@@ -425,7 +430,7 @@ angular.module('primeapps')
                 }
 
                 angular.forEach(module.relations, function (relation) {
-                    var relatedModule = $filter('filter')($rootScope.appModules, {name: relation.related_module}, true)[0];
+                    var relatedModule = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
                     ModuleService.getModuleByName(relatedModule.name).then(function (response) {
                         relatedModule = response.data;
                         if (relation.deleted || !relatedModule || relatedModule.order === 0)
@@ -530,6 +535,10 @@ angular.module('primeapps')
                                 $scope.saving = false;
                             });
                     }
+                }
+                else {
+                    toastr.error($filter('translate')('Common.Error'));
+                    $scope.saving = false;
                 }
             };
         }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -21,8 +22,9 @@ namespace PrimeApps.Studio.Controllers
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
         private IWorkflowHelper _workflowHelper;
+        private IPermissionHelper _permissionHelper;
 
-        public RuleController(IConfiguration configuration, IWorkflowRepository workflowRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper)
+        public RuleController(IConfiguration configuration, IWorkflowRepository workflowRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper, IPermissionHelper permissionHelper)
         {
             _configuration = configuration;
 
@@ -30,6 +32,7 @@ namespace PrimeApps.Studio.Controllers
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _workflowHelper = workflowHelper;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -45,6 +48,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var workflowEntity = await _workflowRepository.GetById(id);
 
             if (workflowEntity == null)
@@ -68,6 +74,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var worflowEntities = await _workflowRepository.GetAllBasic();
 
             return Ok(worflowEntities);
@@ -76,6 +85,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -88,6 +100,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _workflowRepository.Count();
 
             return Ok(count);
@@ -96,6 +111,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]WorkflowBindingModel workflow)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (workflow.Actions == null || (workflow.Actions.SendNotification == null && workflow.Actions.CreateTask == null && workflow.Actions.FieldUpdate == null && workflow.Actions.WebHook == null))
                 ModelState.AddModelError("request._actions", "At least one action required.");
 
@@ -116,6 +134,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<dynamic> Update(int id, [FromBody]WorkflowBindingModel workflow)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             var workflowEntity = await _workflowRepository.GetById(id);
 
             if (workflowEntity == null)
@@ -134,6 +155,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "rule", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var workflowEntity = await _workflowRepository.GetById(id);
 
             if (workflowEntity == null)

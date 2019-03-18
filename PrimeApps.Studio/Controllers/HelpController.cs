@@ -28,8 +28,9 @@ namespace PrimeApps.Studio.Controllers
 		private IConfiguration _configuration;
 		private Warehouse _warehouse;
 		private IModuleHelper _moduleHelper;
+        private IPermissionHelper _permissionHelper;
 
-		public HelpController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository)
+        public HelpController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
 		{
 			_relationRepository = relationRepository;
 			_profileRepository = profileRepository;
@@ -39,6 +40,7 @@ namespace PrimeApps.Studio.Controllers
 			_moduleHelper = moduleHelper;
             _helpRepository = helpRepository;
             _userRepository = userRepository;
+            _permissionHelper = permissionHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -117,6 +119,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]HelpBindingModel help)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "help", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -135,6 +140,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]HelpBindingModel help)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "help", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -152,6 +160,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "help", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var helpEntity = await _helpRepository.GetByIdBasic(id);
 
             if (helpEntity == null)

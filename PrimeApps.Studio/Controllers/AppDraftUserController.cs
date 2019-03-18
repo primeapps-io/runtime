@@ -35,9 +35,9 @@ namespace PrimeApps.Studio.Controllers
         private IModuleHelper _moduleHelper;
         private IApplicationRepository _applicationRepository;
         private IPlatformRepository _platformRepository;
+        private IPermissionHelper _permissionHelper;
 
-
-        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository)
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper)
         {
             _relationRepository = relationRepository;
             _profileRepository = profileRepository;
@@ -48,6 +48,7 @@ namespace PrimeApps.Studio.Controllers
             _userRepository = userRepository;
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -68,6 +69,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]AppDraftUserModel userModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -134,6 +138,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]AppDraftUserModel userModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             var user = await _userRepository.GetById(id);
             if (user == null)
                 return BadRequest();
@@ -156,6 +163,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var user = await _userRepository.GetById(id);
 
             if (user == null)
@@ -170,6 +180,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _userRepository.Count();
 
             return Ok(count);
@@ -178,6 +191,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var users = await _userRepository.Find(paginationModel);
 
             return Ok(users);
