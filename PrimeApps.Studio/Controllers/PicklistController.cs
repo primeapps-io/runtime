@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
@@ -17,6 +18,7 @@ namespace PrimeApps.Studio.Controllers
     public class PicklistController : DraftBaseController
     {
         private IPicklistRepository _picklistRepository;
+        private IPermissionHelper _permissionHelper;
 
         public PicklistController(IPicklistRepository picklistRepository)
         {
@@ -34,6 +36,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var picklistEntity = await _picklistRepository.GetById(id);
 
             if (picklistEntity == null)
@@ -47,6 +52,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var picklistEntities = await _picklistRepository.GetAll();
 
             return Ok(picklistEntities);
@@ -55,6 +63,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]List<int> ids)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var picklistEntities = await _picklistRepository.Find(ids);
             var picklistsViewModel = PicklistHelper.MapToViewModel(picklistEntities);
 
@@ -64,6 +75,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_page"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -75,6 +89,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_item_page/{id:int}"), HttpPost]
         public async Task<IActionResult> GetItemPage(int id, [FromBody] PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -102,6 +119,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]PicklistBindingModel picklist)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -120,6 +140,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("add_item/{id:int}"), HttpPost]
         public async Task<IActionResult> AddItem(int id, [FromBody] PicklistItemViewModel picklistItemModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -147,6 +170,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]PicklistBindingModel picklist)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -164,6 +190,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_item/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateItem(int id, [FromBody]PicklistItemBindingModel item)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -184,6 +213,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var picklistEntity = await _picklistRepository.GetById(id);
 
             if (picklistEntity == null)
@@ -197,6 +229,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_item/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteItem(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var picklistEntity = await _picklistRepository.GetItemById(id);
 
             if (picklistEntity == null)
@@ -210,6 +245,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("is_unique_check/{name}")]
         public async Task<IActionResult> isUniqueCheck(string name)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (string.IsNullOrWhiteSpace(name))
                 return NotFound();
 

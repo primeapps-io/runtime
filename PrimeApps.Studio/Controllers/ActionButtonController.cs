@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -17,11 +19,13 @@ namespace PrimeApps.Studio.Controllers
 	public class ActionButtonController : DraftBaseController
 	{
 		private IActionButtonRepository _actionButtonRepository;
+        private IPermissionHelper _permissionHelper;
 
-		public ActionButtonController(IActionButtonRepository actionButtonRepository)
+        public ActionButtonController(IActionButtonRepository actionButtonRepository, IPermissionHelper permissionHelper)
 		{
 			_actionButtonRepository = actionButtonRepository;
-		}
+            _permissionHelper = permissionHelper;
+        }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
@@ -34,7 +38,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("get/{id:int}"), HttpGet]
 		public async Task<IActionResult> GetActionButtons(int id)
 		{
-			var buttons = await _actionButtonRepository.GetByModuleId(id);
+            var buttons = await _actionButtonRepository.GetByModuleId(id);
 
 			if (buttons == null)
 				return NotFound();
@@ -45,7 +49,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("create"), HttpPost]
 		public async Task<IActionResult> Create([FromBody]ActionButtonBindingModel actionbutton)
 		{
-			if (!ModelState.IsValid)
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			var actionButtonEntity = ActionButtonHelper.CreateEntity(actionbutton);
@@ -64,7 +71,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("update/{id:int}"), HttpPut]
 		public async Task<IActionResult> Update(int id, [FromBody]ActionButtonBindingModel actionbutton)
 		{
-			if (!ModelState.IsValid)
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Update))
+                return StatusCode(403);
+
+            if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			var actionButtonEntity = await _actionButtonRepository.GetById(id);
@@ -82,7 +92,10 @@ namespace PrimeApps.Studio.Controllers
 		[Route("delete/{id:int}"), HttpDelete]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var actionButtonEntity = await _actionButtonRepository.GetByIdBasic(id);
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            var actionButtonEntity = await _actionButtonRepository.GetByIdBasic(id);
 
 			if (actionButtonEntity == null)
 				return NotFound();
@@ -94,16 +107,22 @@ namespace PrimeApps.Studio.Controllers
 
 		[Route("count/{id:int}"), HttpGet]
 		public async Task<IActionResult> Count(int id)
-		{
-			var count = await _actionButtonRepository.Count(id);
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            var count = await _actionButtonRepository.Count(id);
 
 			return Ok(count);
 		}
 
 		[Route("find/{id:int}"), HttpPost]
 		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
-		{
-			var modules = await _actionButtonRepository.Find(id, paginationModel);
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "action_button", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
+            var modules = await _actionButtonRepository.Find(id, paginationModel);
 
 			return Ok(modules);
 		}

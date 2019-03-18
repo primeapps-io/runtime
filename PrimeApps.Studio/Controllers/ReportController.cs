@@ -22,14 +22,16 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IReportHelper _reportHelper;
         private IRecordHelper _recordHelper;
+        private IPermissionHelper _permissionHelper;
 
         public ReportController(IReportRepository reportRepository, IConfiguration configuration,
-            IReportHelper reportHelper, IRecordHelper recordHelper)
+            IReportHelper reportHelper, IRecordHelper recordHelper, IPermissionHelper permissionHelper)
         {
             _reportRepository = reportRepository;
             _configuration = configuration;
             _reportHelper = reportHelper;
             _recordHelper = recordHelper;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -43,6 +45,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _reportRepository.Count();
 
             return Ok(count);
@@ -52,6 +57,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var reports = await _reportRepository.Find(paginationModel);
 
             return Ok(reports);
@@ -60,6 +68,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_by_id/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var report = await _reportRepository.GetById(id);
 
             return Ok(report);
@@ -68,6 +79,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_categories"), HttpGet]
         public async Task<IActionResult> GetAllCategory()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var categories = await _reportRepository.GetAllCategories();
 
             return Ok(categories);
@@ -76,6 +90,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create_category"), HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] ReportCategoryBindingModel reportCategory)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -94,6 +111,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update_category/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] ReportCategoryBindingModel reportCategory)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -111,6 +131,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete_category/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteCategory(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var reportCategoryEntity = await _reportRepository.GetCategoryById(id);
 
             if (reportCategoryEntity == null)
@@ -124,6 +147,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_report/{id:int}"), HttpGet]
         public async Task<IActionResult> GetReport(int Id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var report = await _reportRepository.GetById(Id);
 
             return Ok(report);
@@ -132,6 +158,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_chart/{report:int}"), HttpGet]
         public async Task<IActionResult> GetChart(int report)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
             var response = new
@@ -157,6 +186,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_widget/{report:int}"), HttpGet]
         public async Task<IActionResult> GetWidget(int report)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var widget = await _reportRepository.GetWidgetByReportId(report);
             return Ok(widget);
         }
@@ -164,6 +196,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody] ReportBindingModel report)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
 
             if (!ModelState.IsValid)
@@ -211,6 +246,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody] ReportBindingModel report)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
 
             if (!ModelState.IsValid)
@@ -261,6 +299,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var reportEntity = await _reportRepository.GetById(id);
 
             if (reportEntity == null)

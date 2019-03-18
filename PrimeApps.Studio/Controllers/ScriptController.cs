@@ -25,9 +25,10 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
         private IModuleRepository _moduleRepository;
+        private IPermissionHelper _permissionHelper;
 
         public ScriptController(IBackgroundTaskQueue queue, IDeploymentHelper deploymentHelper, IComponentHelper componentHelper,
-            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository)
+            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository, IPermissionHelper permissionHelper)
         {
             Queue = queue;
             _deploymentHelper = deploymentHelper;
@@ -36,6 +37,7 @@ namespace PrimeApps.Studio.Controllers
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
             _moduleRepository = moduleRepository;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -52,6 +54,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _scriptRepository.Count();
 
             return Ok(count);
@@ -60,6 +65,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var scripts = await _scriptRepository.Find(paginationModel); ;
 
             return Ok(scripts);
@@ -68,6 +76,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var script = await _scriptRepository.Get(id);
 
             if (script == null)
@@ -79,6 +90,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_by_name/{name}"), HttpGet]
         public async Task<IActionResult> GetByName(string name)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -93,6 +107,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody] ComponentModel model)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -132,6 +149,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]ComponentModel model)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -159,6 +179,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var script = await _scriptRepository.Get(id);
 
             if (script == null)
@@ -175,6 +198,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("is_unique_name"), HttpGet]
         public async Task<IActionResult> IsUniqueName(string name)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (string.IsNullOrEmpty(name))
                 return BadRequest(ModelState);
 
@@ -186,6 +212,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("deploy/{name}")]
         public async Task<IActionResult> Deploy(string name)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (string.IsNullOrWhiteSpace(name))
                 return BadRequest();
 

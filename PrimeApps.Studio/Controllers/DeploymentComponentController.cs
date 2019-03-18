@@ -20,16 +20,18 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
         private IDeploymentHelper _deploymentHelper;
+        private IPermissionHelper _permissionHelper;
 
         public DeploymentComponentController(IBackgroundTaskQueue queue,
             IConfiguration configuration,
             IDeploymentComponentRepository deploymentComponentRepository,
-            IDeploymentHelper deploymentHelper)
+            IDeploymentHelper deploymentHelper, IPermissionHelper permissionHelper)
         {
             Queue = queue;
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
             _deploymentHelper = deploymentHelper;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -42,6 +44,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count/{id}"), HttpGet]
         public async Task<IActionResult> Count(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _deploymentComponentRepository.Count(id);
 
             return Ok(count);
@@ -50,6 +55,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find/{id}"), HttpPost]
         public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var deployments = await _deploymentComponentRepository.Find(id, paginationModel);
 
             return Ok(deployments);
@@ -58,6 +66,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var deployment = await _deploymentComponentRepository.Get(id);
 
             if (deployment == null)
@@ -69,6 +80,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]DeploymentComponentBindingModel deployment)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -94,6 +108,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]DeploymentComponentBindingModel deployment)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -118,6 +135,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var function = await _deploymentComponentRepository.Get(id);
 
             if (function == null)

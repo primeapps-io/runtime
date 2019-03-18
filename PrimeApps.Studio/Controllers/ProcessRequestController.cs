@@ -18,6 +18,7 @@ namespace PrimeApps.Studio.Controllers
         private IRecordRepository _recordRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
+        private IPermissionHelper _permissionHelper;
 
         private ICalculationHelper _calculationHelper;
         private IProcessHelper _processHelper;
@@ -26,13 +27,14 @@ namespace PrimeApps.Studio.Controllers
         public ProcessRequestController(IConfiguration configuration, IProcessRequestRepository processRequestRepository,
             IModuleRepository moduleRepository, IRecordRepository recordRepository,
             IProcessHelper processHelper, IRecordHelper recordHelper,
-            ICalculationHelper calculationHelper, Warehouse warehouse)
+            ICalculationHelper calculationHelper, Warehouse warehouse, IPermissionHelper permissionHelper)
         {
             _configuration = configuration;
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
             _warehouse = warehouse;
+            _permissionHelper = permissionHelper;
 
             _calculationHelper = calculationHelper;
             _processHelper = processHelper;
@@ -54,6 +56,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_requests/{id:int}"), HttpGet]
         public async Task<IActionResult> GetAll(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process_request", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
 
             return Ok(processRequestEntities);
@@ -62,6 +67,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("approve_multiple_request"), HttpPut]
         public async Task<IActionResult> ApproveMultipleRequest([FromBody]JObject request)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process_request", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
@@ -25,11 +26,12 @@ namespace PrimeApps.Studio.Controllers
         private IPicklistRepository _picklistRepository;
         private IProcessHelper _processHelper;
         private Warehouse _warehouse;
+        private IPermissionHelper _permissionHelper;
 
         public ProcessController(IConfiguration configuration, IProcessRepository processRepository,
             IModuleRepository moduleRepository, IPicklistRepository picklistRepository,
             IViewRepository viewRepository, IProcessHelper processHelper,
-            Warehouse warehouse)
+            Warehouse warehouse, IPermissionHelper permissionHelper)
         {
             _configuration = configuration;
             _processRepository = processRepository;
@@ -38,6 +40,7 @@ namespace PrimeApps.Studio.Controllers
             _processHelper = processHelper;
             _viewRepository = viewRepository;
             _warehouse = warehouse;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -55,6 +58,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.View))
+                return StatusCode(403);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -66,6 +72,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _processRepository.Count();
 
             return Ok(count);
@@ -74,6 +83,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var processEntity = await _processRepository.GetAllById(id);
 
             if (processEntity == null)
@@ -87,6 +99,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var processEntities = await _processRepository.GetAllBasic();
 
             return Ok(processEntities);
@@ -95,6 +110,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ProcessBindingModel process)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.Create))
+                return StatusCode(403);
+
             if (process.Approvers == null)
                 ModelState.AddModelError("request._actions", "At least one action required.");
 
@@ -136,6 +154,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<dynamic> Update(int id, [FromBody]ProcessBindingModel process)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             var processEntity = await _processRepository.GetById(id);
 
             if (processEntity == null)
@@ -154,6 +175,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var processEntity = await _processRepository.GetById(id);
 
             if (processEntity == null)

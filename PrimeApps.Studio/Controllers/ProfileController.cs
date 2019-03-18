@@ -24,8 +24,9 @@ namespace PrimeApps.Studio.Controllers
 		private IConfiguration _configuration;
 		private Warehouse _warehouse;
 		private IModuleHelper _moduleHelper;
+        private IPermissionHelper _permissionHelper;
 
-		public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository)
+        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
 		{
 			_relationRepository = relationRepository;
 			_profileRepository = profileRepository;
@@ -34,9 +35,10 @@ namespace PrimeApps.Studio.Controllers
 			_configuration = configuration;
 			_moduleHelper = moduleHelper;
             _userRepository = userRepository;
+            _permissionHelper = permissionHelper;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
@@ -53,6 +55,8 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Create))
+                return StatusCode(403);
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
@@ -68,6 +72,8 @@ namespace PrimeApps.Studio.Controllers
         [Route("update"), HttpPost]
         public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Update))
+                return StatusCode(403);
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
@@ -82,6 +88,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("remove"), HttpPost]
         public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
 
 
@@ -95,6 +104,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all"), HttpPost]
         public async Task<IActionResult> GetAll()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
+                return StatusCode(403);
+
             IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
 
             return Ok(profileList);
@@ -107,6 +119,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("change_user_profile"), HttpPost]
         public async Task<IActionResult> ChangeUserProfile([FromBody]ProfileTransferDTO transfer)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Update))
+                return StatusCode(403);
+
             await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
             /// update session cache
 
@@ -116,6 +131,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_all_basic"), HttpGet]
         public async Task<IActionResult> GetAllBasic()
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var profiles = await _profileRepository.GetAll();
 
             return Ok(profiles);
@@ -124,6 +142,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Delete))
+                return StatusCode(403);
+
             var profileEntity = await _profileRepository.GetByIdBasic(id);
 
             if (profileEntity == null)
@@ -137,6 +158,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count([FromUri]TemplateType templateType)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var count = await _profileRepository.Count();
 
             //if (count < 1)
@@ -148,6 +172,9 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
+                return StatusCode(403);
+
             var templates = await _profileRepository.Find(paginationModel);
 
             //if (templates == null)
