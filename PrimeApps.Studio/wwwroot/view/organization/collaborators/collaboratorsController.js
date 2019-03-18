@@ -212,21 +212,19 @@ angular.module('primeapps')
                     });
             }
 
-            $scope.delete = function (collaborator) {
-                collaborator.deleting = true;
-
-                if (!collaborator) {
-                    collaborator.deleting = false;
+            $scope.delete = function (collaborator) { 
+                if (!collaborator) 
                     return false;
-                }
+                
                 swal({
                     title: "Are you sure?",
                     text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
-                }).then(function (value) {
+                }).then(function (value) { 
                     if (value) {
+                        collaborator.deleting = true; 
                         var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
 
                         if (!result) {
@@ -254,7 +252,7 @@ angular.module('primeapps')
                                 collaborator.deleting = false;
                             });
                     }
-                    else { 
+                    else {
                         collaborator.deleting = false;
                     }
                 });

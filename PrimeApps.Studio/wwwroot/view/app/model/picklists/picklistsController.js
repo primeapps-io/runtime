@@ -148,7 +148,7 @@ angular.module('primeapps')
 
                 $scope.picklistFormModal = $scope.picklistForm || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/model/picklists/pickListsForm.html',
+                    templateUrl: 'view/app/model/picklists/picklistsForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
