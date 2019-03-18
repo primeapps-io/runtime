@@ -2,7 +2,8 @@
     <h2>Profiles</h2>
     <ul class="list-unstyled list-inline">
         <li>
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Profile
+            <button class="btn add-button" ng-click="showFormModal()">
+                <i class="fas fa-plus"></i> Add New Profile
             </button>
         </li>
     </ul>
@@ -13,7 +14,7 @@
             <tr>
                 <th>{{'Setup.Profiles.ProfileName' | translate}}</th>
                 <th>{{'Setup.Profiles.ProfileDescription' | translate}}</th>
-                <th width="50"></th>
+                <th width="70"></th>
             </tr>
         </thead>
         <tbody>
@@ -56,8 +57,12 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a ng-click="$event.stopPropagation();showFormModal(profile,true)">{{'Common.Copy' |
-                                    translate}} </a>
+                                <a ng-click="$event.stopPropagation();showFormModal(profile,true)">
+                                    {{
+'Common.Copy' |
+                                    translate
+                                    }}
+                                </a>
                             </li>
                             <li ng-show="!profile.has_admin_rights">
                                 <a ng-click="$event.stopPropagation();delete(profile,$event)">{{'Common.Delete' | translate}} </a>
