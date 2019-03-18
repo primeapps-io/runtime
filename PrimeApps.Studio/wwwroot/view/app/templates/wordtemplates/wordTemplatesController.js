@@ -269,6 +269,7 @@ angular.module('primeapps')
 
             $scope.showTemplateGuideModal = function () {
                 $scope.tempalteFieldName = "/" + $filter('translate')('Setup.Templates.TemplateFieldName');
+                $scope.selectedModule = null;
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
@@ -330,9 +331,9 @@ angular.module('primeapps')
                         if (module.name === 'order_products' && module.fields[i].lookup_type === 'sales_order')
                             continue;
 
-                        for (var j = 0; j < $scope.modules.length; j++) {
-                            if (module.fields[i].lookup_type === $scope.modules[j].name) {
-                                var lookupModule = angular.copy($scope.modules[j]);
+                        for (var j = 0; j < $rootScope.appModules.length; j++) {
+                            if (module.fields[i].lookup_type === $rootScope.appModules[j].name) {
+                                var lookupModule = angular.copy($rootScope.appModules[j]);
                                 lookupModule.parent_field = module.fields[i];
                                 lookupModules.push(lookupModule);
                                 break;
@@ -402,7 +403,7 @@ angular.module('primeapps')
                 module.relatedModules = [];
 
                 if (module.name === 'quotes') {
-                    var quoteProductsModule = $filter('filter')($scope.modules, {name: 'quote_products'}, true)[0];
+                    var quoteProductsModule = $filter('filter')($rootScope.appModules, {name: 'quote_products'}, true)[0];
                     ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
                         quoteProductsModule = response.data;
                         getLookupModules(quoteProductsModule);
@@ -413,7 +414,7 @@ angular.module('primeapps')
                 }
 
                 if (module.name === 'sales_orders') {
-                    var orderProductsModule = $filter('filter')($scope.modules, {name: 'order_products'}, true)[0];
+                    var orderProductsModule = $filter('filter')($rootScope.appModules, {name: 'order_products'}, true)[0];
                     ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
                         orderProductsModule = response.data;
                         getLookupModules(orderProductsModule);
@@ -424,7 +425,7 @@ angular.module('primeapps')
                 }
 
                 angular.forEach(module.relations, function (relation) {
-                    var relatedModule = $filter('filter')($scope.modules, {name: relation.related_module}, true)[0];
+                    var relatedModule = $filter('filter')($rootScope.appModules, {name: relation.related_module}, true)[0];
                     ModuleService.getModuleByName(relatedModule.name).then(function (response) {
                         relatedModule = response.data;
                         if (relation.deleted || !relatedModule || relatedModule.order === 0)
