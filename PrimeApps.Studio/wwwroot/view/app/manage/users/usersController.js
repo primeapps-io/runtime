@@ -4,6 +4,10 @@ angular.module('primeapps')
 
     .controller('UsersController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'UsersService',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, UsersService) {
+            function validateEmail(email) {
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(email);
+            }
 
             $scope.$parent.activeMenuItem = 'users';
             $rootScope.breadcrumblist[2].title = 'Users';
@@ -11,25 +15,19 @@ angular.module('primeapps')
             $scope.profiles = [];
             $scope.users = [];
             $scope.userModel = {};
-            $scope.resultModel = {};
             $scope.loading = true;
             $scope.userModel.auto_pass = "false";
 
-            var keylist = "abcdefghijklmnopqrstuvwxyz123456789";
+            var keylist = "xNXRKA0IOYmPP7jgN088zdEwNqqi7erpdMhsoqAVJ0r0sBaeDDCq4sbS2FkDRnEWa5FyYerM);2$0ZUA;I:1^]Rs1LGiS:v;!SO,#jqTq0<1B[.rwtn8K:-0FO:O,";
 
             $scope.generatePass = function () {
-                if ($scope.userModel.auto_pass) {
-                    var temp = '';
-                    for (var i = 0; i < 7; i++) {
-                        temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
-                    }
 
-                    $scope.userModel.password = temp;
-                } else {
-                    $scope.userModel.password = "";
+                var temp = '';
+                for (var i = 0; i < 8; i++) {
+                    temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
                 }
-
-
+                $scope.userModel.password = temp;
+                ;
             }
 
             $scope.passwordChange = function () {
@@ -39,9 +37,6 @@ angular.module('primeapps')
 
             }
 
-            function populateform(enterlength) {
-                document.pgenerate.output.value = generatepass(enterlength)
-            }
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -141,14 +136,11 @@ angular.module('primeapps')
                 if (!userForm.$valid) {
                     return;
                 }
+
                 $scope.saving = true;
-                $scope.resultModel = {};
 
                 if (!$scope.editing) {
-                    if ($scope.userModel.auto_pass == 'true') {
-                        delete $scope.userModel.password;
-                    }
-
+                    
                     $scope.userModel.created_at = new Date();
                     $scope.userModel.is_active = true;
 
@@ -156,18 +148,13 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success('User is saved successfully');
-                                if ($scope.userModel.auto_pass) {
-                                    $scope.showPassword = true;
-                                    $scope.resultModel = {recipient: $rootScope.me.email};
-                                    $scope.resultModel.autoPassword = response.data.password;
-                                    $scope.resultModel.displayName = $scope.userModel.first_name + ' ' + $scope.userModel.last_name;
-                                    $scope.resultModel.email = $scope.userModel.email;
-                                } else {
-                                    $scope.userFormModal.hide();
-                                }
                                 $scope.changePage(1);
+                                if ($scope.resultModel.sendPassword) {
+                                    $scope.sendEmailPassword($scope.userModel, $scope.resultModel);
+                                }
+
                                 $scope.saving = false;
-                                $scope.userModel = null;
+                                $scope.userFormModal.hide();
                             }
                         })
                         .catch(function (response) {
@@ -186,7 +173,7 @@ angular.module('primeapps')
                             $scope.userFormModal.hide();
                             $scope.changePage($scope.activePage);
                             $scope.saving = false;
-                            $scope.userModel = null;
+
                         })
                         .catch(function () {
                             toastr.error($filter('translate')('Common.Error'));
@@ -196,20 +183,9 @@ angular.module('primeapps')
 
             };
 
-            $scope.sendEmail = function (resultForm) {
-                if (!userForm.$valid) {
-                    return;
-                }
-
-                //TODO mail sending
-                toastr.success("Email sent successfullyl");
-                $scope.closeModal();
-                $scope.changePage(1);
-                $scope.saving = false;
-
-            };
 
             $scope.showFormModal = function (id) {
+
                 if (id) {
                     $scope.userModel = $filter('filter')($scope.users, {id: id}, true)[0];
                     $scope.editing = true;
@@ -218,10 +194,14 @@ angular.module('primeapps')
                         profile_id: 1,
                         role_id: 1
                     };
-                    $scope.resultModel = {};
                     $scope.userModel.auto_pass = "true";
                     $scope.editing = false;
+                    $scope.resultModel = {
+                        sendPassword: true,
+                        recipient: $rootScope.me.email + ';'
+                    };
                 }
+
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
                     scope: $scope,
@@ -238,34 +218,31 @@ angular.module('primeapps')
 
             $scope.closeModal = function () {
                 $scope.userFormModal.hide();
-                $scope.userModel = null;
-                $scope.showPassword = false;
-                $scope.autoPassword = null;
-                $scope.resultModel = {};
+
             };
 
-            $scope.sendEmailPassowrd = function () {
-                if ($scope.resultModel.recipient) {
-                    $scope.savingEmailPassword = true;
+            $scope.sendEmailPassword = function (userModel, resultModel) {
+
+                if (userModel.auto_pass) {
+
                     var sendEmailData = {};
-                    sendEmailData.email = $scope.resultModel.recipient;
                     sendEmailData.app_id = 2;
                     sendEmailData.culture = "en";
-                    sendEmailData.display_name = $scope.resultModel.displayName;
-                    sendEmailData.password = $scope.resultModel.autoPassword;
-                    UsersService.sendEmail(sendEmailData)
-                        .then(function (response) {
-                            if (response.data > 0)
-                                toastr.success("Email sent successfullyl");
-                            $scope.savingEmailPassword = false; 
-                        })
-                        .catch(function (reason) {
-                            toastr.warning("Mail sending failed")
-                            $scope.savingEmailPassword = false;
-                        });
-                } else {
-                    toastr.warning("Email the new password to the following recipient not null");
+                    sendEmailData.display_name = userModel.first_name + ' ' + userModel.last_name;
+                    sendEmailData.password = userModel.password;
+                    var emails = resultModel.recipient.split(";");
+
+                    for (var i = 0; i < emails.length; i++) {
+                        if (validateEmail(emails[i])) {
+                            sendEmailData.email = emails[i];
+                            UsersService.sendEmail(sendEmailData);
+                        }
+                    }
+
+
                 }
+
+
             };
         }
     ]);
