@@ -504,7 +504,7 @@ angular.module('primeapps')
                                     $rootScope.personalConvertShow = $filter('filter')($rootScope.moduleSettings, {key: 'personal_convert_show'}, true)[0];
                                     $rootScope.personalConvertShow = $rootScope.personalConvertShow ? $rootScope.personalConvertShow.value : false;
                                     $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, {type: 2}, true)[0];
-                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, {'Type': 3}, true)[0];
+                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, {type: 3}, true)[0];
 
                                     that.setCustomActivityTypes(activityTypes);
 
