@@ -10,7 +10,7 @@
             </ul>
             <ul class="list-unstyled list-yanla">
                 <!--ng-show="!appLoading && currentAppId && appModules.length > 0"-->
-                <li style="margin-left:  10px" ng-if="currentAppId" >
+                <li style="margin-left:  10px" ng-if="currentAppId">
                     <button style="border:none; padding: 9px 20px; font-size: 14px; " type="button"
                             ladda="previewActivating"
                             ng-click="preview()"
@@ -20,9 +20,7 @@
                     </button>
                 </li>
                 <li>
-                    <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh">
-                        <i class="fas fa-question"></i>
-                    </button>
+                    <a href="https://www.primeapps.io/platform/tutorials" class="rigth-oval-toolbar-item shadowh" role="button"><i class="fas fa-question"></i></a>
                 </li>
                 <li ng-show="!me.picture">
                     <button style="border:none" type="button" class="rigth-oval-toolbar-item shadowh"
@@ -74,8 +72,8 @@
             </li>
 
             <!--<li class="sidebar-li " ng-class="currentPath == '/all-apps'  ? 'open' :''">-->
-                <!--<a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"-->
-                   <!--href="/#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>-->
+            <!--<a data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"-->
+            <!--href="/#"><i class="fas fa-layer-group"></i> <span>All Apps</span></a>-->
             <!--</li>-->
             <li class="sidebar-li" ng-repeat="organization in organizations | orderBy:'id'"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
@@ -90,12 +88,12 @@
                            href="/#/apps?orgId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
                     </li>
                     <li ng-if="organization.role ==='administrator'"><a data-trigger="hover" data-type="info" data-title="People" bs-tooltip data-placement="right"
-                           ng-class="currentPath.indexOf('teams')>0 || currentPath.indexOf('collaborators')>0  ? 'active' :'' "
-                           href="/#/org/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
+                                                                        ng-class="currentPath.indexOf('teams')>0 || currentPath.indexOf('collaborators')>0  ? 'active' :'' "
+                                                                        href="/#/org/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
                     <li ng-if="organization.role ==='administrator'"><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"
-                           ng-class="currentPath.indexOf('orgsettings')>0  ? 'active' :'' "
-                           href="/#/orgsettings"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                                                                        ng-class="currentPath.indexOf('orgsettings')>0  ? 'active' :'' "
+                                                                        href="/#/orgsettings"><i class="fas fa-cog"></i> <span>Settings</span></a>
                     </li>
                 </ul>
             </li>
