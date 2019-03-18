@@ -15,7 +15,7 @@ angular.module('primeapps')
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
             if ($rootScope.currentOrganization.role !== 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
@@ -27,7 +27,7 @@ angular.module('primeapps')
                 title: $rootScope.currentOrganization.label,
                 link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = {title: "Create App"};
+            $rootScope.breadcrumblist[1] = { title: "Create App" };
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
@@ -60,6 +60,7 @@ angular.module('primeapps')
 
             uploader.onAfterAddingFile = function (item) {
                 $scope.croppedImage = '';
+                $scope.uploadLogo = true;
                 var reader = new FileReader();
 
                 reader.onload = function (event) {
@@ -68,7 +69,6 @@ angular.module('primeapps')
                     });
                 };
                 reader.readAsDataURL(item._file);
-                $scope.logoUpload = true;
             };
 
             uploader.filters.push({
@@ -125,12 +125,12 @@ angular.module('primeapps')
             $scope.openModal = function () {
                 $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/appform/newAppForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/appform/newAppForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -197,7 +197,7 @@ angular.module('primeapps')
                 if (uploader.queue[0]) {
                     //uploader.queue[0].image = null;
                     uploader.queue[0].remove();
-                    $scope.logoUpload = false;
+                    $scope.uploadLogo = false;
                 }
             };
 
@@ -211,13 +211,12 @@ angular.module('primeapps')
             };
 
             $scope.save = function (newAppForm) {
-                if (!newAppForm.$valid || !$scope.logoUpload) {
-                    $scope.requiredColor = 'background-color:#f8dada';
-                    return false;
-                }
+                // if (!newAppForm.$valid || !$scope.logoUpload) {
+                //     $scope.requiredColor = 'background-color:#f8dada';
+                //     return false;
+                // }
 
                 $scope.appSaving = true;
-
                 $scope.checkNameValid($scope.appModel.name);
 
                 AppFormService.isUniqueName($scope.appModel.name)
@@ -237,10 +236,31 @@ angular.module('primeapps')
                                         'X-Organization-Id': $rootScope.currentOrgId,
                                         'X-App-Id': response.data.id
                                     };
-                                    uploader.queue[0].uploader.headers = header;
-                                    uploader.queue[0].headers = header;
-                                    uploader.queue[0].upload();
 
+                                    if ($scope.uploadLogo) {
+                                        uploader.queue[0].uploader.headers = header;
+                                        uploader.queue[0].headers = header;
+                                        uploader.queue[0].upload();
+                                    }
+                                    else {
+                                        var url = 'images/default-app-logo.png';
+                                        var dummy;
+                                        $http.get(url, { responseType: "blob" })
+                                            .then(function (response, status, headers, config) {
+                                                var mimetype = response.data.type;
+                                                var file = new File([response.data], "default.jpg", { type: mimetype });
+
+                                                dummy = new FileUploader.FileItem(uploader, {});
+                                                dummy._file = file;
+                                                dummy.progress = 100;
+                                                dummy.isUploaded = true;
+                                                dummy.isSuccess = true;
+                                                uploader.queue.push(dummy);
+                                                uploader.queue[0].uploader.headers = header;
+                                                uploader.queue[0].headers = header;
+                                                uploader.uploadItem(dummy);
+                                            });
+                                    }
                                     uploader.onCompleteItem = function (fileItem, logoUrl, status) {
                                         if (status === 200) {
                                             $scope.updateApp = {};
