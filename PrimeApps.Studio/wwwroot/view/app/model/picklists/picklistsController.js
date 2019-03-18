@@ -287,11 +287,11 @@ angular.module('primeapps')
 
 
             //Picklist Delete Function
-            $scope.delete = function (id) { 
+            $scope.delete = function (id) {
                 if (!id) {
                     $scope.loading = false;
                     return false;
-                } 
+                }
 
                 swal({
                     title: "Are you sure?",
@@ -342,7 +342,9 @@ angular.module('primeapps')
 
                         $scope.itemModel.saving = false;
                     }).catch(function (reason) {
-                        $scope.itemModel.saving = false;
+                        if (reason.status === 409)
+                            toastr.warning('System code value must be unique!')
+                            $scope.itemModel.saving = false;
                     });
             };
 
