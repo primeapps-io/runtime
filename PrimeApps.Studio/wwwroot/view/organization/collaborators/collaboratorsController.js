@@ -26,7 +26,7 @@ angular.module('primeapps')
                 limit: "10",
                 offset: 0
             };
-             
+
             $scope.roles = [
                 { name: 'Admin', value: 'administrator' },
                 { name: 'Collaborator', value: 'collaborator' }
@@ -105,7 +105,7 @@ angular.module('primeapps')
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0]; 
+                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
                 $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
                 //$scope.$parent.activeMenu = "collaborator";
                 //$scope.$parent.activeMenuItem = 'collaborator';
@@ -123,7 +123,7 @@ angular.module('primeapps')
             //    $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
             //}
 
-          
+
 
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
@@ -219,33 +219,45 @@ angular.module('primeapps')
                     collaborator.deleting = false;
                     return false;
                 }
+                swal({
+                    title: "Are you sure?",
+                    text: " ",
+                    icon: "warning",
+                    buttons: ['Cancel', 'Yes'],
+                    dangerMode: true
+                }).then(function (value) {
+                    if (value) {
+                        var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
-
-                if (!result) {
-                    collaborator.deleting = false;
-                    return false;
-                }
-                 
-                var data = {};
-                data.user_id = collaborator.id;
-                data.organization_id = $rootScope.currentOrgId;
-                data.role = result.role;
-
-                CollaboratorsService.delete(data)
-                    .then(function (response) {
-                        if (response.data) {
-                            toastr.success('Collaborator is deleted successfully');
-                              
+                        if (!result) {
                             collaborator.deleting = false;
-                            $scope.getCollaborators();
-                            $state.reload();
+                            return false;
                         }
-                    })
-                    .catch(function (error) {
-                        toastr.error($filter('translate')('Common.Error'));
+
+                        var data = {};
+                        data.user_id = collaborator.id;
+                        data.organization_id = $rootScope.currentOrgId;
+                        data.role = result.role;
+
+                        CollaboratorsService.delete(data)
+                            .then(function (response) {
+                                if (response.data) {
+                                    toastr.success('Collaborator is deleted successfully');
+
+                                    collaborator.deleting = false;
+                                    $scope.getCollaborators();
+                                    $state.reload();
+                                }
+                            })
+                            .catch(function (error) {
+                                toastr.error($filter('translate')('Common.Error'));
+                                collaborator.deleting = false;
+                            });
+                    }
+                    else { 
                         collaborator.deleting = false;
-                    });
+                    }
+                });
             };
 
             $scope.sendEmail = function () {
