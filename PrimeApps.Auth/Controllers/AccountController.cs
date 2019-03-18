@@ -581,7 +581,10 @@ namespace PrimeApps.Auth.UI
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
+            {
                 vm.Error = "ForgotNotFound";
+                return View("Custom/ForgotPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
