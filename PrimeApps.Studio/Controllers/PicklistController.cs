@@ -146,6 +146,11 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var isUnique = await _picklistRepository.GetItemUniqueBySystemCode(picklistItemModel.SystemCode);
+
+            if (isUnique)
+                return Conflict();
+
             var picklistItem = new PicklistItem
             {
                 PicklistId = id,

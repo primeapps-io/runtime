@@ -89,6 +89,7 @@ namespace PrimeApps.Studio.Helpers
                 Id = picklist.Id,
                 LabelEn = picklist.LabelEn,
                 LabelTr = picklist.LabelEn,
+                SystemCode = picklist.SystemCode,
                 Items = new List<PicklistItemViewModel>()
             };
 
