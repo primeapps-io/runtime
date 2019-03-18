@@ -327,8 +327,7 @@
                                     </div>
                                     <!--End of Default value options-->
 
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'lookup'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
+                                    <div class="form-group" ng-if="currentField.dataType.name === 'lookup'">
                                         <label class="col-sm-4">{{'Setup.Modules.SearchType' | translate}}</label>
                                         <select name="lookup_search_type"
                                                 class="form-control ng-animate-disabled col-sm-8"

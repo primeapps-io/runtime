@@ -277,7 +277,7 @@
             <!--<span>Tenants</span>-->
             <!--</a>-->
             <!--</li>-->
-            <li ng-class="activeMenuItem ==='users' ? 'active' :''"> 
+            <li ng-class="activeMenuItem ==='users' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/users" data-trigger="hover" data-type="info"
                    data-title="Users" bs-tooltip data-placement="right">
                     <i class="fas fa-user"></i>
@@ -319,6 +319,13 @@
             <!--<span>Diagnostics</span>-->
             <!--</a>-->
             <!--</li>-->
+            <li ng-class="activeMenuItem ==='branding' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/branding" data-trigger="hover" data-type="info"
+                   data-title="Branding" bs-tooltip data-placement="right">
+                    <i class="fas fa-star"></i>
+                    <span>Branding</span>
+                </a>
+            </li>
             <li ng-class="activeMenuItem ==='extensions' ?  'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/extensions" data-trigger="hover" data-type="info"
                    data-title="Extensions" bs-tooltip data-placement="right">

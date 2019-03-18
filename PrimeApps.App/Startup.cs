@@ -130,6 +130,7 @@ namespace PrimeApps.App
             }
 
             var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+
             if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
             {
                 var fordwardedHeaderOptions = new ForwardedHeadersOptions
@@ -144,9 +145,23 @@ namespace PrimeApps.App
             }
 
             var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+
             if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
             {
                 app.UseHsts().UseHttpsRedirection();
+            }
+
+            var loggingEnabled = Configuration.GetValue("AppSettings:EnableLogging", string.Empty);
+
+            if (!string.IsNullOrEmpty(loggingEnabled) && bool.Parse(loggingEnabled))
+            {
+                var logging = Configuration.GetSection("Logging").GetChildren().FirstOrDefault();
+                var sentry = Configuration.GetSection("Sentry").GetChildren().FirstOrDefault();
+
+                if (logging != null && sentry != null)
+                {
+                    app.UseMiddleware<RequestLoggingMiddleware>();
+                }
             }
 
             app.UseHangfireDashboard();
@@ -160,28 +175,15 @@ namespace PrimeApps.App
                     .AllowAnyOrigin()
             );
 
-			JobConfiguration(app, Configuration);
-			BpmConfiguration(app, Configuration);
-
-            var loggingEnabled = Configuration.GetValue("AppSettings:EnableLogging", string.Empty);
-            if (!string.IsNullOrEmpty(loggingEnabled) && bool.Parse(loggingEnabled))
-            {
-                var logging = Configuration.GetSection("Logging").GetChildren().FirstOrDefault();
-                var sentry = Configuration.GetSection("Sentry").GetChildren().FirstOrDefault();
-
-                if (logging != null && sentry != null)
-                {
-                    app.UseMiddleware<RequestLoggingMiddleware>();
-                }
-            }
-            
+            JobConfiguration(app, Configuration);
+            BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
-			{
-				routes.MapRoute(
-					name: "default",
-					template: "{controller=Home}/{action=Index}/{id?}"
-				);
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}"
+                );
 
                 routes.MapRoute(
                     name: "DefaultApi",

@@ -49,7 +49,7 @@
 												ng-model="module"
 												ng-change="selectedModuleChanged(module)"
 												ng-disabled="view.edit===true"
-												ng-options="o as o['label_' + language + '_plural'] for o in modules | orderNotZero | orderBy:'order' track by o.name">
+												ng-options="o as o['label_' + language + '_plural'] for o in appModules | orderNotZero | orderBy:'order' track by o.name">
 											<option value="">{{'Common.Select' | translate}}</option>
 										</select>
 									</div>

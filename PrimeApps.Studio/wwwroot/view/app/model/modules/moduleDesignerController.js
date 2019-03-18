@@ -598,6 +598,11 @@ angular.module('primeapps')
                 $scope.currentFieldState = angular.copy(field);
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, {name: $scope.currentField.data_type}, true)[0];
+                if($scope.currentField.dataType.name === 'lookup')
+                    $scope.currentField.lookup_search_type = "starts_with";
+                else
+                    $scope.currentField.lookup_search_type = "";
+                
                 $scope.setMultilineDataType();
                 var url = angular.copy(window.location.hash);
                 $scope.fieldModal = $scope.fieldModal || $modal({
@@ -941,7 +946,7 @@ angular.module('primeapps')
                 }
 
                 $scope.showAdvancedOptions = false;
-
+                
                 if ($scope.currentField.lookupType) {
                     if ($scope.currentField.show_as_dropdown) {
                         // $scope.currentField.inline_edit = false;
@@ -950,7 +955,7 @@ angular.module('primeapps')
                     delete $scope.currentField.lookupType;
                     delete $scope.currentField.temporary_default_value;
                 }
-
+                
                 if ($scope.currentField.dataType.name === 'checkbox' && !$scope.currentField.default_value)
                     $scope.currentField.default_value = false;
 

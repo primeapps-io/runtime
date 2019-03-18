@@ -23,7 +23,7 @@
                                             class="ng-animate-disabled col-sm-6 form-control"
                                             ng-model="selectedModule"
                                             ng-change="moduleChanged(selectedModule)"
-                                            ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in modules | filter:{name:'!users', order: '!0'} | orderBy:'order'">
+                                            ng-options="moduleItem['label_' + language + '_plural'] for moduleItem in appModules  | filter:{name:'!users', order: '!0'} | orderBy:'order'">
                                         <option value="">{{'Setup.Templates.SelectMainModul' | translate}}</option>
                                     </select>
                                 </div>
