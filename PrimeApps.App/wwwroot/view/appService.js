@@ -87,9 +87,6 @@ angular.module('primeapps')
                                 return;
                             }
 
-                            if (responseAccount.data.user.email.indexOf('app_') > -1)
-                                $rootScope.preview = true;
-
                             var promises = [];
                             promises.push($http.get(config.apiUrl + 'module/get_all'));
                             promises.push($http.get(config.apiUrl + 'messaging/get_config'));

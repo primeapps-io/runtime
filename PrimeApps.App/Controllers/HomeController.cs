@@ -48,59 +48,68 @@ namespace PrimeApps.App.Controllers
             if (preview != null)
             {
                 var previewDB = CryptoHelper.Decrypt(preview);
-
-                if (previewDB.Contains("app"))
+                if (!string.IsNullOrEmpty(previewDB))
                 {
-                    var previewClient = _configuration.GetValue("AppSettings:PreviewClient", string.Empty);
-                    var appId = int.Parse(previewDB.Split("app_id=")[1]);
-                    var app = await applicationRepository.GetByNameAsync(!string.IsNullOrEmpty(previewClient) ? previewClient : "primeapps_preview");
-
-                    var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
-
-                    _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
-
-                    var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
-
-                    if (appDraftUser == null)
+                    if (previewDB.Contains("app"))
                     {
-                        Response.Cookies.Delete("app_id");
-                        await HttpContext.SignOutAsync();
-                        return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview);
+                        var previewClient = _configuration.GetValue("AppSettings:PreviewClient", string.Empty);
+                        var appId = int.Parse(previewDB.Split("app_id=")[1]);
+                        var app = await applicationRepository.GetByNameAsync(!string.IsNullOrEmpty(previewClient) ? previewClient : "primeapps_preview");
+
+                        var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
+
+                        _userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = appId, PreviewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty)};
+
+                        var appDraftUser = await _userRepository.GetByEmail(HttpContext.User.FindFirst("email").Value);
+
+                        if (appDraftUser == null)
+                        {
+                            Response.Cookies.Delete("app_id");
+                            await HttpContext.SignOutAsync();
+                            return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview);
+                        }
+
+                        /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+    
+                        if (tenant == null)
+                        {
+                            Response.Cookies.Delete("app_id");
+                            await HttpContext.SignOutAsync();
+                            return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
+                        }*/
+
+
+                        await SetValues(userId, app, null, appId, true);
+
+                        Response.Cookies.Append("app_id", appId.ToString());
                     }
-
-                    /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
-
-                    if (tenant == null)
+                    else
                     {
-                        Response.Cookies.Delete("app_id");
-                        await HttpContext.SignOutAsync();
-                        return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
-                    }*/
+                        var tenantId = int.Parse(previewDB.Split("tenant_id=")[1]);
+                        var tenant = tenantRepository.Get(tenantId);
 
+                        if (tenant == null)
+                        {
+                            Response.Cookies.Delete("tenant_id");
+                            await HttpContext.SignOutAsync();
+                            throw new Exception("Tenant Not Found !!");
+                        }
 
-                    await SetValues(userId, app, null, appId, true);
+                        var app = await applicationRepository.Get(tenant.AppId);
 
-                    Response.Cookies.Append("app_id", appId.ToString());
+                        var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
+
+                        await SetValues(userId, app, tenant.Id, null, true);
+
+                        Response.Cookies.Append("tenant_id", tenant.Id.ToString());
+                    }
                 }
                 else
                 {
-                    var tenantId = int.Parse(previewDB.Split("tenant_id=")[1]);
-                    var tenant = tenantRepository.Get(tenantId);
-
-                    if (tenant == null)
-                    {
-                        Response.Cookies.Delete("tenant_id");
-                        await HttpContext.SignOutAsync();
-                        throw new Exception("Tenant Not Found !!");
-                    }
-
-                    var app = await applicationRepository.Get(tenant.AppId);
-
-                    var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
-
-                    await SetValues(userId, app, tenant.Id, null, true);
-
-                    Response.Cookies.Append("tenant_id", tenant.Id.ToString());
+                    Response.Cookies.Delete("app_id");
+                    Response.Cookies.Delete("tenant_id");
+                    await HttpContext.SignOutAsync();
+                    ErrorHandler.LogError(new Exception("Preview token is not valid or null!"), "Primeapps.App -> HomeController -> Preview");
                 }
             }
             else
@@ -133,11 +142,11 @@ namespace PrimeApps.App.Controllers
 
             Response.Cookies.Delete("tenant_id");
             await HttpContext.SignOutAsync();
-            
+
             var preview = HttpContext.Request.Query["preview"].ToString();
             preview = !string.IsNullOrEmpty(preview) ? "?preview=" + preview : "";
-            
-            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview );
+
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview);
         }
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)

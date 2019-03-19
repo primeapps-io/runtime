@@ -19,37 +19,38 @@
                     <div bs-active-pane="$parent.$parent.$parent.$parent.tabManage.activeTab" bs-tabs>
                         <div data-title="Overview" name="overview" bs-pane>
                             <div ng-if="!loading" class="tab-content" style="padding: 20px;">
-                                <div class="setup-title">
-                                    <h2>Clone this repository</h2>
-                                    <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">1</p>
+                                    <h2 style="padding-bottom: 10px;">Clone</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
-{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</code>
+                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+                                    <code>
+git clone {{giteaUrl.slice(0, giteaUrl.indexOf('//')) + '//' + organization.name}}@{{giteaUrl.slice(giteaUrl.indexOf('//') + 2)}}/{{organization.name}}/{{app.name}}.git
+Enter your account password</code>
         </pre>
                                 </div>
-                                <div class="setup-title">
-                                    <h2>Creating a new repository on the command line</h2>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">2</p>
+                                    <h2 style="padding-bottom: 10px;">Deploy</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
-git push -u origin master</code>
+                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+                                    <code>
+Open project folder in IDE ( We recomended Visual Studio Code )
+Add some files and make some changes in {{component.name}} folder</code>
         </pre>
                                 </div>
-                                <div class="setup-title">
-                                    <h2>Pushing an existing repository from the command line</h2>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">3</p>
+                                    <h2 style="padding-bottom: 10px;">Push</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
-        <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-            <code>
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
-git push -u origin master</code>
+                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
+                                    <code>
+git add .
+git commit -m "your commit message"
+git push</code>
         </pre>
                                 </div>
                             </div>
