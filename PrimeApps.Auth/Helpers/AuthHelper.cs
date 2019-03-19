@@ -49,6 +49,9 @@ namespace PrimeApps.Auth.UI
 
             var theme = JObject.Parse(app.Setting.AuthTheme);
 
+            var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
+            
             var application = new ApplicationInfoViewModel
             {
                 Id = app.Id,
@@ -72,7 +75,8 @@ namespace PrimeApps.Auth.UI
                     ExternalLogin = app.Setting.ExternalAuth,
                     RegistrationType = app.Setting.RegistrationType,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
-                }
+                },
+                Preview = preview
             };
 
             return application;

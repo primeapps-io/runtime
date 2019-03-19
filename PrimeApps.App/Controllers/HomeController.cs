@@ -213,6 +213,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
+            ViewBag.Preview = previewMode == "app";
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;

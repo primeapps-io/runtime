@@ -27,6 +27,7 @@ namespace PrimeApps.Model.Common.App
         public string Favicon { get; set; }
         public bool MultiLanguage { get; set; }
         public string CdnUrl { get; set; }
+        public bool Preview { get; set; }
         public ApplicationSettingViewModel ApplicationSetting { get; set; }
     }
 

@@ -229,8 +229,7 @@ namespace PrimeApps.Auth.UI
                 }
 
                 var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-                var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-                previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+                var previewMode = vm.ApplicationInfo.Preview ? "app" : "tenant";
 
                 if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
                 {

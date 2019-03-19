@@ -92,8 +92,8 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.logout = function () {
             AuthService.logoutComplete();
 
-            if ($scope.preview)
-                window.location = '/logout?preview=' + $location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1];
+            if ($rootScope.preview)
+                window.location = '/logout?preview=' + encodeURIComponent($location.$$absUrl.replace('#' + $location.$$url, '').split('preview=')[1]);
             else
                 window.location = '/logout';
         };

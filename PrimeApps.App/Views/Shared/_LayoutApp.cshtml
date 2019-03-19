@@ -10,8 +10,9 @@
     var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
     var appConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var trustedUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["trusted_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
-    var routeTemplateUrls  = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
+    var routeTemplateUrls = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["route_template_urls"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var googleMapsApiKey = ViewBag.GoogleMapsApiKey;
+    var preview = ViewBag.Preview;
 }
 
 <!DOCTYPE html>
@@ -91,7 +92,8 @@
     var trustedUrls = JSON.parse('@trustedUrls');
     var routeTemplateUrls = JSON.parse('@routeTemplateUrls');
     var googleMapsApiKey = '@googleMapsApiKey';
-
+    var preview = '@preview'.toLowerCase() === 'true';
+    
     if (theme) {
         document.body.className = theme;
     } else {
