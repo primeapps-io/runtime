@@ -321,8 +321,9 @@ angular.module('primeapps')
             } else {
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
-                    $scope.module.is_component = angular.equals($scope.module.system_type, "component");
-
+                    $scope.pureModule = angular.copy($scope.module);
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
+                    
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
@@ -1395,7 +1396,7 @@ angular.module('primeapps')
                 if (deletedFields.length)
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
-                var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
+                var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules, $scope.pureModule);
 
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;

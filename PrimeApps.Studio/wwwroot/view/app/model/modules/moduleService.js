@@ -1289,7 +1289,7 @@ angular.module('primeapps')
                     module.fields = fields;
                 },
 
-                prepareModule: function (module, picklistsModule, deletedModules) {
+                prepareModule: function (module, picklistsModule, deletedModules, pureModule) {
                     var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
 
                     if (module.name.indexOf('custom_module') > -1) {
@@ -1484,6 +1484,12 @@ angular.module('primeapps')
                         else
                             field.permissions = undefined;
                     });
+
+                    //daha önce silinmiş bir field ile aynı isimde field eklerken hata olmaması için yazıldı
+                    for (var i = 0; i < pureModule.fields.length; i++) {
+                        if (pureModule.fields[i].deleted)
+                            module.fields.push(pureModule.fields[i]);
+                    }
 
                     angular.forEach(module.fields, function (field) {
                         delete field.dataType;
