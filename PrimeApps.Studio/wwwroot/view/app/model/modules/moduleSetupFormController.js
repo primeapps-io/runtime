@@ -1240,7 +1240,7 @@ angular.module('primeapps')
                 if (deletedFields.length)
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
-                var moduleModel = ModuleSetupService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules);
+                var moduleModel = ModuleSetupService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules, $scope.pureModule);
                 var resultPromise;
 
                 if (!$scope.id || $scope.clone) {
