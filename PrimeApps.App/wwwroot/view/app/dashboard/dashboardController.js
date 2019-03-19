@@ -376,12 +376,6 @@ angular.module('primeapps')
                 DashboardService.getDashboards().then(function (result) {
                     $scope.dashboards = result.data;
 
-                    if ($rootScope.preview) {
-                        var result = $filter('filter')($scope.dashboards, { name: 'Genel Pano' }, true)[0];
-                        if (result)
-                            result.name = $scope.language == 'en' ? 'General Board' : 'Genel Pano';
-                    }
-
                     $scope.activeDashboard = $filter('filter')($scope.dashboards, {
                         sharing_type: 'me',
                         user_id: $rootScope.user.id
