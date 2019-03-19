@@ -72,7 +72,7 @@
             }
 
             <div class="language">
-                @if (multiLanguage)
+                @*@if (multiLanguage)
                 {
                     if (otherLang == "tr")
                     {
@@ -84,7 +84,7 @@
                         <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
                         <span>|</span>
                     }
-                }
+                }*@
                 <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
             </div>
         </div>
