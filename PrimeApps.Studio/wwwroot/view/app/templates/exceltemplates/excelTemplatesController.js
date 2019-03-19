@@ -242,6 +242,11 @@ angular.module('primeapps')
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }
+                else if ($scope.fileUpload.queue[0].file.size <= 0) {
+                    toastr.error("File cannot be empty!");
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
+                    return;
+                }
 
                 $scope.saving = true;
                 var header = {
