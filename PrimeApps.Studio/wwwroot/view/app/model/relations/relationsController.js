@@ -228,6 +228,8 @@ angular.module('primeapps')
 
             $scope.save = function (relationForm) {
                 if (!relationForm.$valid) {
+                    if (relationForm.$error.required)
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
                 }
 

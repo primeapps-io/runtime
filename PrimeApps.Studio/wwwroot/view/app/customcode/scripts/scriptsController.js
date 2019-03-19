@@ -88,7 +88,7 @@ angular.module('primeapps')
 
                 if (!scriptForm.$valid || !$scope.scriptNameValid) {
                     $scope.saving = false;
-                    toastr.warning('Please enter a valid fields.');
+                    toastr.error('Please enter a valid fields.');
                     return;
                 }
 

@@ -54,7 +54,10 @@
                                            ng-change="checkNameUnique(appModel.name)"
                                            ng-model="appModel.name"
                                            id="subdomain" />
-                                    <input type="text" id="subdomaintwo" value=".app.primeapps.io" disabled />
+                                    <span style="right: 10px;" id="subdomaintwo">
+                                        .app.primeapps.io
+                                    </span>
+                                    <!--<input type="text" id="subdomaintwo" value="" disabled />-->
 
                                     <div ng-if="nameChecking">
                                         <i class="fa fa-spinner fa-spin"

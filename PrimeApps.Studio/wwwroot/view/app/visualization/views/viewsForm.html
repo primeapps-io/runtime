@@ -57,13 +57,13 @@
 										<label for="label" class="control-label col-sm-12">{{'View.ViewName' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
 										<input type="text" id="label" name="label" class="form-control" required ng-model="view.label"/>
 									</div>
-									<div class="form-group" ng-show="viewForm.$submitted && (viewForm.label.$error.required || viewForm.module.$error.required )">
+									<!--<div class="form-group" ng-show="viewForm.$submitted && (viewForm.label.$error.required || viewForm.module.$error.required )">
 										<div class="callout callout-danger">
 											<p ng-if="viewForm.label.$error.required && viewForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
 											<p ng-if="viewForm.label.$error.required && !viewForm.module.$error.required">Label is required</p>
 											<p ng-if="viewForm.module.$error.required && !viewForm.label.$error.required">Module is required</p>
 										</div>
-									</div>
+									</div>-->
 									<!--<div class="form-group text-right">-->
 									<!--<button type="button" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm, wizardStep, true)">-->
 									<!--{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>-->

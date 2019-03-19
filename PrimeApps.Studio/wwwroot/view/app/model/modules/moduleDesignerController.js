@@ -4,7 +4,7 @@ angular.module('primeapps')
 
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
- 
+
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
@@ -318,12 +318,11 @@ angular.module('primeapps')
 
                 $scope.initModuleDesginer();
 
-            }
-            else {
+            } else {
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
-                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
-                    
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component");
+
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
@@ -504,11 +503,10 @@ angular.module('primeapps')
                 $scope.currentRow = row;
                 $scope.currentColumn = column;
                 $scope.showPermissionWarning = false;
-                $scope.fieldActiveSection ="properties";
+                $scope.fieldActiveSection = "properties";
                 if (!field) {
                     field = $scope.newField();
-                }
-                else {
+                } else {
                     if (field.data_type === 'lookup')
                         field.lookupType = $filter('filter')($scope.lookupTypes, {value: field.lookup_type}, true)[0];
 
@@ -525,16 +523,14 @@ angular.module('primeapps')
                                     lookupObject.primary_value = response.data[field.lookupModulePrimaryField.name];
                                     field.temporary_default_value = lookupObject;
                                 });
-                        }
-                        else {
+                        } else {
                             if (field.default_value === '[me]') {
                                 var lookupObject = {};
                                 lookupObject.id = 0;
                                 lookupObject.email = '[me]';
                                 lookupObject.full_name = $filter('translate')('Common.LoggedInUser');
                                 field.default_value = [lookupObject];
-                            }
-                            else {
+                            } else {
                                 ModuleService.getRecord(field.lookup_type, lookupId, true)
                                     .then(function (response) {
                                         var lookupObject = {};
@@ -558,8 +554,7 @@ angular.module('primeapps')
                                     if (field.data_type === 'picklist') {
                                         field.default_value = parseInt(field.default_value);
                                         field.default_value = $filter('filter')($scope.defaulPicklistValues, {id: parseInt(field.default_value)}, true)[0];
-                                    }
-                                    else if (field.data_type === 'multiselect') {
+                                    } else if (field.data_type === 'multiselect') {
                                         var picklistIds = field.default_value.split(';');
                                         var values = [];
 
@@ -598,11 +593,11 @@ angular.module('primeapps')
                 $scope.currentFieldState = angular.copy(field);
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, {name: $scope.currentField.data_type}, true)[0];
-                if($scope.currentField.dataType.name === 'lookup')
+                if ($scope.currentField.dataType.name === 'lookup')
                     $scope.currentField.lookup_search_type = "starts_with";
                 else
                     $scope.currentField.lookup_search_type = "";
-                
+
                 $scope.setMultilineDataType();
                 var url = angular.copy(window.location.hash);
                 $scope.fieldModal = $scope.fieldModal || $modal({
@@ -695,8 +690,7 @@ angular.module('primeapps')
                     angular.forEach($scope.currentField.permissions, function (permission) {
                         permission.type = 'full';
                     });
-                }
-                else {
+                } else {
                     $scope.currentField.permissions = $scope.currentFieldState.permissions;
                 }
 
@@ -736,8 +730,7 @@ angular.module('primeapps')
                         $scope.currentField.validation = {};
 
                     $scope.currentField.validation.required = true;
-                }
-                else {
+                } else {
                     $scope.currentField.validation.required = $scope.currentFieldState.validation.required;
                 }
             };
@@ -755,8 +748,7 @@ angular.module('primeapps')
                     $scope.currentField.dataType.maxLength = 5;
                     $scope.currentField.dataType.max = 32000;
                     $scope.multiLineShowHtml = true;
-                }
-                else {
+                } else {
                     $scope.currentField.dataType.maxLength = 4;
                     $scope.currentField.dataType.max = 2000;
                     $scope.multiLineShowHtml = false;
@@ -891,8 +883,7 @@ angular.module('primeapps')
                     }
 
                     section.isNew = true;
-                }
-                else {
+                } else {
                     $scope.currentSectionState = angular.copy(section);
                 }
 
@@ -911,8 +902,13 @@ angular.module('primeapps')
             };
 
             $scope.saveSettings = function (editForm) {
-                if (!editForm.$valid)
+                
+                if (!editForm.$valid) {
+                    if (editForm.$error.required)
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     return;
+                }
 
                 $scope.moduleLabelNotChanged = false;
 
@@ -946,7 +942,7 @@ angular.module('primeapps')
                 }
 
                 $scope.showAdvancedOptions = false;
-                
+
                 if ($scope.currentField.lookupType) {
                     if ($scope.currentField.show_as_dropdown) {
                         // $scope.currentField.inline_edit = false;
@@ -955,7 +951,7 @@ angular.module('primeapps')
                     delete $scope.currentField.lookupType;
                     delete $scope.currentField.temporary_default_value;
                 }
-                
+
                 if ($scope.currentField.dataType.name === 'checkbox' && !$scope.currentField.default_value)
                     $scope.currentField.default_value = false;
 
@@ -1034,8 +1030,7 @@ angular.module('primeapps')
                     $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
                     $scope.sectionModal.hide();
                     $scope.moduleChange = new Date();
-                }
-                else {
+                } else {
                     $scope.sectionModal.hide();
                 }
             };
@@ -1046,8 +1041,7 @@ angular.module('primeapps')
                 if (field.name.indexOf('custom_field') > -1) {
                     var fieldIndex = helper.arrayObjectIndexOf($scope.module.fields, field);
                     $scope.module.fields.splice(fieldIndex, 1);
-                }
-                else {
+                } else {
                     field.deleted = true;
                     field.order = 999;
 
@@ -1075,13 +1069,11 @@ angular.module('primeapps')
                         if (field.name.indexOf('custom_field') > -1) {
                             var fieldIndex = helper.arrayObjectIndexOf($scope.module.fields, field);
                             $scope.module.fields.splice(fieldIndex, 1);
-                        }
-                        else {
+                        } else {
                             field.deleted = true;
                         }
                     });
-                }
-                else {
+                } else {
                     section.deleted = true;
 
                     angular.forEach(sectionFields, function (field) {
@@ -1388,8 +1380,7 @@ angular.module('primeapps')
                                             updateView(views);
 
                                         });
-                                }
-                                else {
+                                } else {
                                     updateView(cache.views, cacheKey);
                                 }
                             }
@@ -1411,16 +1402,15 @@ angular.module('primeapps')
 
                 if (!$scope.id || $scope.clone) {
                     ModuleService.moduleCreate(moduleModel).then(function (result) {
-                        $scope.saving = false;                        
-                        $rootScope.appModules.push(result.data);                        
+                        $scope.saving = false;
+                        $rootScope.appModules.push(result.data);
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId
                         });
                     });
                     $scope.editModal.hide();
-                }
-                else {
+                } else {
                     ModuleService.moduleUpdate(moduleModel, moduleModel.id).then(function () {
                         $scope.saving = false;
                         $state.go('studio.app.modules', {

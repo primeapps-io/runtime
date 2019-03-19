@@ -496,11 +496,25 @@ angular.module('primeapps')
                 viewForm.$submitted = true;
 
                 if (!viewForm.label.$valid || !viewForm.module.$valid) {
+
+                    if (viewForm.label.$error.required && viewForm.module.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));  
+                    
+                    if (viewForm.label.$error.required && !viewForm.module.$error.required)
+                        toastr.error("Label is required");
+                    
+                    if (viewForm.module.$error.required && !viewForm.label.$error.required)
+                        toastr.error("Module is required");
+                    
                     return false;
                 }
 
                 if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep !== 0) {
-                    viewForm.$setValidity('field', false);
+                   // viewForm.$setValidity('field', false);
+                    
+                    if (viewForm.$error.field)
+                        toastr.error($filter('translate')('View.FieldError'));
+                    
                     $scope.background_color = "background-color: #eed3d7";
                     return false;
                 }

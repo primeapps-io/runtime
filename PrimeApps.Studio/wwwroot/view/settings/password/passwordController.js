@@ -5,10 +5,11 @@ angular.module('primeapps')
     .controller('PasswordController', ['$rootScope', '$scope', '$filter', '$modal', 'SettingService',
         function ($rootScope, $scope, $filter, $modal, SettingService) {
 
-           // $scope.$parent.menuTopTitle = "Settings";
+            // $scope.$parent.menuTopTitle = "Settings";
             $scope.$parent.activeMenuItem = 'password';
 
             $scope.changePassword = function (passwordModel) {
+
                 if ($scope.passwordForm.$valid) {
                     $scope.passwordUpdating = true;
 
@@ -31,6 +32,22 @@ angular.module('primeapps')
 
                             $scope.passwordUpdating = false;
                         });
+                } else if ($scope.passwordForm.$invalid) {
+
+                    if ($scope.passwordForm.$error.required && !$scope.passwordForm.$error.compareTo && !$scope.passwordForm.$error.minlength && !$scope.passwordForm.$error.wrongPassword)
+                        toastr.error($filter('translate')('Setup.Settings.ErrorEmpty'));
+
+                    if ($scope.passwordForm.$error.compareTo)
+                        toastr.error($filter('translate')('Setup.Settings.PasswordNotMatch'));
+
+                    if ($scope.passwordForm.$error.minlength)
+                        toastr.error($filter('translate')('Setup.Settings.PasswordMinimum'));
+
+                    if ($scope.passwordForm.$error.wrongPassword)
+                        toastr.error($filter('translate')('Setup.Settings.PasswordWrong'));
+
+                    return;
+
                 }
             };
         }

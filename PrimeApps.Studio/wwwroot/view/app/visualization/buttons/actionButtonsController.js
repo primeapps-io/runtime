@@ -135,8 +135,14 @@ angular.module('primeapps')
             };
 
             $scope.save = function (actionButtonForm) {
-                if (!actionButtonForm.$valid)
+                
+                if (!actionButtonForm.$valid) {
+                    if (actionButtonForm.$error.required)
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+                    
                     return;
+                }
+
 
                 $scope.saving = true;
                 var actionButton = angular.copy($scope.currentActionButton);
