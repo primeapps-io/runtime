@@ -160,13 +160,10 @@ angular.module('primeapps',
             editableOptions.theme = 'bs3';
             $rootScope.theme = $localStorage.read('theme');
             var queryString = helper.parseQueryString($window.location.hash.substr(2));
-            var preview = $location.$$absUrl.contains('preview=');
             var lang = queryString.lang;
             var isAuthenticated = AuthService.isAuthenticated();
 
-            if (preview) {
-                $rootScope.preview = true;
-            }
+            $rootScope.preview = preview;
 
             if (lang && (lang === 'en' || lang === 'tr')) {
                 $localStorage.write('NG_TRANSLATE_LANG_KEY', lang);

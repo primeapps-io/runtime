@@ -29,7 +29,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<PlatformUser> Get(string email)
         {
-            return await DbContext.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
+            return await DbContext.Users
+                .Where(x => x.Email == email)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<List<PlatformUser>> GetByIds(List<int> ids)
@@ -47,7 +49,6 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
         {
-
             var user = await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser).ThenInclude(y => (y as UserTenant).Tenant).ThenInclude(z => z.Setting)
@@ -73,12 +74,13 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Users.Where(x => x.Email == email).Select(x => x.Id).SingleOrDefaultAsync();
         }
+
         public async Task<PlatformUser> GetWithSettings(string email)
         {
             return await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser)
-                    .ThenInclude(y => (y as UserTenant).Tenant)
+                .ThenInclude(y => (y as UserTenant).Tenant)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
         }
@@ -92,7 +94,7 @@ namespace PrimeApps.Model.Repositories
 
             //if (cachedPlatformUser != null)
             //{
-                //tenantKey += cachedPlatformUser.Id;
+            //tenantKey += cachedPlatformUser.Id;
             //    var cachedTenant = await CacheHelper.GetAsync<Tenant>(tenantKey);
 
             //    if (cachedTenant != null)
@@ -108,7 +110,7 @@ namespace PrimeApps.Model.Repositories
             var user = await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser)
-                    .ThenInclude(y => (y as UserTenant).Tenant)
+                .ThenInclude(y => (y as UserTenant).Tenant)
                 .Include(x => x.TenantsAsOwner)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
@@ -133,7 +135,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Tenants
                 .Include(x => x.Owner)
-                    .ThenInclude(x => x.Setting)
+                .ThenInclude(x => x.Setting)
                 .Where(x => x.Id == tenantId)
                 .SingleOrDefaultAsync();
         }
@@ -164,12 +166,12 @@ namespace PrimeApps.Model.Repositories
             //}
 
             user = DbContext.UserTenants
-               .Include(x => x.Tenant)
-               .Include(x => x.Tenant).ThenInclude(z => z.Setting)
-               .Include(x => x.Tenant).ThenInclude(z => z.License)
-               .Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
-               .Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
-               .SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
+                .Include(x => x.Tenant)
+                .Include(x => x.Tenant).ThenInclude(z => z.Setting)
+                .Include(x => x.Tenant).ThenInclude(z => z.License)
+                .Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
+                .Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
+                .SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
 
             return user?.PlatformUser;
         }
@@ -202,7 +204,7 @@ namespace PrimeApps.Model.Repositories
         {
             var user = await DbContext.Users
                 .Include(x => x.TenantsAsUser)
-                    .ThenInclude(y => (y as UserTenant).Tenant)
+                .ThenInclude(y => (y as UserTenant).Tenant)
                 .Include(x => x.TenantsAsOwner)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
@@ -221,9 +223,9 @@ namespace PrimeApps.Model.Repositories
         public async Task<List<PlatformUser>> GetAllByTenant(int tenantId)
         {
             var tenant = await DbContext.Tenants
-                 .Include(x => x.TenantUsers)
-                 .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
-                 .FirstOrDefaultAsync(x => x.Id == tenantId);
+                .Include(x => x.TenantUsers)
+                .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+                .FirstOrDefaultAsync(x => x.Id == tenantId);
 
             return tenant?.TenantUsers.Select(x => x.PlatformUser).ToList();
         }
@@ -263,7 +265,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> GetTenantModuleLicenseCount(int tenantId)
         {
             var moduleLicenseCount = await DbContext.TenantLicenses.Where(x => x.TenantId == tenantId)
-                  .Select(x => x.ModuleLicenseCount).SingleOrDefaultAsync();
+                .Select(x => x.ModuleLicenseCount).SingleOrDefaultAsync();
 
             return moduleLicenseCount;
         }
@@ -272,7 +274,5 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Users.Include(x => x.Setting).SingleOrDefault(x => x.Email == email);
         }
-
-
     }
 }

@@ -72,11 +72,18 @@ angular.module('primeapps')
                         return;
                     }
 
-                    if (rejection.status === 500 && rejection.config.url.indexOf('/User/MyAccount') > -1) {
-                        /*$localStorage.remove('access_token');
-                        $localStorage.remove('refresh_token');
+                    if (rejection.status === 500 && rejection.config.url.indexOf('/user/me') > -1) {
+                        var http = $injector.get('$http');
+                        http.post(config.apiUrl + 'account/logout', {})
+                            .then(function (response) {
+                                $localStorage.remove('access_token');
+                                $localStorage.remove('refresh_token');
+                                $localStorage.remove('Workgroup');
+                                $sessionStorage.clear();
+                                $cache.removeAll();
 
-                        $window.location.href = '/auth/SignOut';*/
+                                window.location = response.data['redirect_url'];
+                            });
 
                         return $q.reject(rejection);
                     }

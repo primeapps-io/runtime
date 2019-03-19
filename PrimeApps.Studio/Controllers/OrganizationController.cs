@@ -40,7 +40,7 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformUserRepository _platformUserRepository;
         private IPlatformRepository _platformRepository;
         private IServiceScopeFactory _serviceScopeFactory;
-		private IStudioUserRepository _studioUserRepository;
+        private IStudioUserRepository _studioUserRepository;
         private IApplicationRepository _applicationRepository;
         private ITeamRepository _teamRepository;
         private IGiteaHelper _giteaHelper;
@@ -56,7 +56,7 @@ namespace PrimeApps.Studio.Controllers
             ITeamRepository teamRepository,
             IApplicationRepository applicationRepository,
             IPlatformRepository platformRepository,
-			IStudioUserRepository studioUserRepository,
+            IStudioUserRepository studioUserRepository,
             IServiceScopeFactory serviceScopeFactory,
             IPermissionHelper permissionHelper,
             IOrganizationHelper organizationHelper,
@@ -68,7 +68,7 @@ namespace PrimeApps.Studio.Controllers
             _platformUserRepository = platformUserRepository;
             _organizationUserRepository = organizationUserRepository;
             _serviceScopeFactory = serviceScopeFactory;
-			_studioUserRepository = studioUserRepository;
+            _studioUserRepository = studioUserRepository;
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
             _teamRepository = teamRepository;
@@ -87,10 +87,9 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_platformUserRepository);
             SetCurrentUser(_organizationUserRepository);
-			SetCurrentUser(_studioUserRepository);
+            SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_platformRepository);
             SetCurrentUser(_teamRepository);
-
         }
 
         [Route("get/{id:int}"), HttpGet]
@@ -135,7 +134,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("teams"), HttpPost]
-        public async Task<IActionResult> Teams([FromBody] OrganizationTeamModel model)
+        public async Task<IActionResult> Teams([FromBody]OrganizationTeamModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -171,7 +170,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("apps"), HttpPost]
-        public async Task<IActionResult> Apps([FromBody] JObject request)
+        public async Task<IActionResult> Apps([FromBody]JObject request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -225,20 +224,20 @@ namespace PrimeApps.Studio.Controllers
                 OwnerId = organization.OwnerId,
                 Default = organization.Default,
                 Teams = organization.Teams.Where(x => !x.Deleted).Select(x =>
-                    new TeamModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        Icon = x.Icon,
-                        TeamUsers = x.TeamUsers.Select(y =>
-                            new TeamUserModel
-                            {
-                                UserId = y.UserId
-                            })
-                        .ToList(),
-                        Deleted = x.Deleted
-                    })
-                .ToList(),
+                        new TeamModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Icon = x.Icon,
+                            TeamUsers = x.TeamUsers.Select(y =>
+                                    new TeamUserModel
+                                    {
+                                        UserId = y.UserId
+                                    })
+                                .ToList(),
+                            Deleted = x.Deleted
+                        })
+                    .ToList(),
                 Apps = organizationApps,
                 Users = new List<OrganizationUserModel>()
             };
@@ -306,7 +305,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] OrganizationModel model)
+        public async Task<IActionResult> Create([FromBody]OrganizationModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -377,7 +376,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("add_user"), HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] OrganizationUserModel model)
+        public async Task<IActionResult> AddUser([FromBody]OrganizationUserModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -450,6 +449,7 @@ namespace PrimeApps.Studio.Controllers
                             email.TransmitMail(myMessage);
                         }
                     }
+
                     var platformUser = await _platformUserRepository.Get(model.Email);
 
                     var studioUser = new StudioUser
@@ -458,7 +458,7 @@ namespace PrimeApps.Studio.Controllers
                         UserOrganizations = new List<OrganizationUser>()
                     };
 
-						studioUser.UserOrganizations.Add(new OrganizationUser
+                    studioUser.UserOrganizations.Add(new OrganizationUser
                     {
                         UserId = platformUser.Id,
                         Role = model.Role,
@@ -467,11 +467,11 @@ namespace PrimeApps.Studio.Controllers
                         CreatedAt = DateTime.Now
                     });
 
-						result = await _studioUserRepository.Create(studioUser);
+                    result = await _studioUserRepository.Create(studioUser);
                 }
             }
 
-            return StatusCode(201, new { password = password });
+            return StatusCode(201, new {password = password});
         }
 
         [Route("delete_user"), HttpPost]
@@ -550,7 +550,6 @@ namespace PrimeApps.Studio.Controllers
                 {
                     collaborators = collaborators.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
                 }
-
             }
 
             if (collaborators == null)
@@ -591,7 +590,7 @@ namespace PrimeApps.Studio.Controllers
             var applicationInfo = await _applicationRepository.Get(int.Parse(data["app_id"].ToString()));
 
             var templates = await _platformRepository.GetAppTemplate(int.Parse(data["app_id"].ToString()),
-                     AppTemplateType.Email, data["culture"].ToString().Substring(0, 2), "add_collaborator");
+                AppTemplateType.Email, data["culture"].ToString().Substring(0, 2), "add_collaborator");
 
             foreach (var template in templates)
             {
