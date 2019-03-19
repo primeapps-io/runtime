@@ -139,6 +139,14 @@ namespace PrimeApps.Model.Repositories
             return picklistItem;
         }
 
+        public Task<bool> GetItemUniqueBySystemCode(string systemCode)
+        {
+            var result = DbContext.PicklistItems
+                .AnyAsync(x => x.SystemCode == systemCode);
+
+            return result;
+        }
+
         public async Task<ICollection<PicklistItem>> GetItemsAll()
         {
             var picklistItems = DbContext.PicklistItems
@@ -231,7 +239,7 @@ namespace PrimeApps.Model.Repositories
 
         public Task<bool> isUniqueCheck(string systemCode)
         {
-            return DbContext.Picklists.AnyAsync(x => x.SystemCode == systemCode && !x.Deleted); 
+            return DbContext.Picklists.AnyAsync(x => x.SystemCode == systemCode && !x.Deleted);
         }
     }
 }

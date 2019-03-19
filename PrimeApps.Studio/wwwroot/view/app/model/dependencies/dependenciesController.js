@@ -328,8 +328,13 @@ angular.module('primeapps')
             };
 
             $scope.save = function (dependencyForm) {
-                if (!dependencyForm.$valid)
+                
+                if (!dependencyForm.$valid) {
+                    if (dependencyForm.$error.required)
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
+                }
+
 
                 $scope.saving = true;
                 var dependency = angular.copy($scope.currentDependency);

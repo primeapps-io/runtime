@@ -207,7 +207,12 @@ angular.module('primeapps')
             };
 
             $scope.submit = function (profileForm) {
+
                 if (!profileForm.$valid) {
+
+                    if (profileForm.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
                     $scope.requiredColor = 'background-color:#f8dada';
                     return;
                 }

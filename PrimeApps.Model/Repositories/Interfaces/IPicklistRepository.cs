@@ -17,6 +17,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> CountItems(int id);
         Task<PicklistItem> GetItemById(int id);
         Task<PicklistItem> GetItemBySystemCode(string systemCode);
+        Task<bool> GetItemUniqueBySystemCode(string systemCode);
         Task<ICollection<PicklistItem>> GetItemsAll();
         Task<ICollection<PicklistItem>> FindItems(List<int> ids);
         Task<PicklistItem> FindItemByLabel(int picklistId, string label, string language);

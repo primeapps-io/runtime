@@ -8,6 +8,7 @@
     var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
     var multiLanguage = Model.ApplicationInfo.MultiLanguage;
     var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+    var preview = Context.Request.QueryString.Value.Contains("primeapps_preview") ? true : false;
 }
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
@@ -72,7 +73,7 @@
             }
 
             <div class="language">
-                @if (multiLanguage)
+                @if (multiLanguage && !preview)
                 {
                     if (otherLang == "tr")
                     {

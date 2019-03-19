@@ -46,37 +46,38 @@
                     <div bs-active-pane="tabManage.activeTab" bs-tabs>
                         <div data-title="Overview" name="overview" bs-pane>
                             <div ng-if="!loading" class="tab-content" style="padding: 20px;">
-                                <div class="setup-title">
-                                    <h2>Clone this repository</h2>
-                                    <small>Need help cloning? Visit <a href="http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository" target="_blank" rel="nofollow">Help</a>.</small>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">1</p>
+                                    <h2 style="padding-bottom: 10px;">Clone</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
                                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
                                     <code>
-{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</code>
+git clone {{giteaUrl.slice(0, giteaUrl.indexOf('//')) + '//' + organization.name}}@{{giteaUrl.slice(giteaUrl.indexOf('//') + 2)}}/{{organization.name}}/{{app.name}}.git
+Enter your account password</code>
         </pre>
                                 </div>
-                                <div class="setup-title">
-                                    <h2>Creating a new repository on the command line</h2>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">2</p>
+                                    <h2 style="padding-bottom: 10px;">Deploy</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
                                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
                                     <code>
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
-git push -u origin master</code>
+Open project folder in IDE ( We recomended Visual Studio Code )
+Make some changes in {{component.name}} file</code>
         </pre>
                                 </div>
-                                <div class="setup-title">
-                                    <h2>Pushing an existing repository from the command line</h2>
+                                <div class="setup-title" style="justify-content: normal;">
+                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">3</p>
+                                    <h2 style="padding-bottom: 10px;">Push</h2>
                                 </div>
                                 <div class="markdown" style="padding-bottom: 20px;">
                                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
                                     <code>
-git remote add origin <span class="clone-url">{{giteaUrl}}/{{organization.name}}/{{app.name}}.git</span>
-git push -u origin master</code>
+git add .
+git commit -m "your commit message"
+git push</code>
         </pre>
                                 </div>
                             </div>
@@ -86,51 +87,51 @@ git push -u origin master</code>
                             <div class="tab-content">
                                 <table class="table" ng-show="loadingDeployments">
                                     <thead>
-                                        <tr>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
-                                            <th>Version</th>
-                                            <th>Status</th>
-                                            <th width="50"></th>
-                                        </tr>
+                                    <tr>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Version</th>
+                                        <th>Status</th>
+                                        <th width="50"></th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                        <tr ng-repeat="item in placeholderArray">
-                                            <td>
-                                                <div class="animated-background"></div>
-                                            </td>
-                                            <td>
-                                                <div class="animated-background"></div>
-                                            </td>
-                                            <td>
-                                                <div class="animated-background"></div>
-                                            </td>
-                                            <td>
-                                                <div class="animated-background"></div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="animated-background"></div>
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                    <tr ng-repeat="item in placeholderArray">
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td>
+                                            <div class="animated-background"></div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="animated-background"></div>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                                 <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
                                     <thead>
-                                        <tr>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
-                                            <th>Version</th>
-                                            <th>Status</th>
-                                        </tr>
+                                    <tr>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Version</th>
+                                        <th>Status</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="deployment in deployments">
-                                            <td>{{getTime(deployment.start_time)}}</td>
-                                            <td>{{getTime(deployment.end_time)}}</td>
-                                            <td>{{deployment.version}}</td>
-                                            <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
-                                        </tr>
+                                    <tr ng-repeat="deployment in deployments">
+                                        <td>{{getTime(deployment.start_time)}}</td>
+                                        <td>{{getTime(deployment.end_time)}}</td>
+                                        <td>{{deployment.version}}</td>
+                                        <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
+                                    </tr>
                                     </tbody>
                                 </table>
                                 <div class="table-pagination">
@@ -196,7 +197,7 @@ git push -u origin master</code>
                                                    required
                                                    maxlength="100"
                                                    focus="true"
-                                                   ng-model="script.label" />
+                                                   ng-model="script.label"/>
                                         </div>
                                         <div class="form-group"
                                              style="position: relative;"
@@ -209,7 +210,7 @@ git push -u origin master</code>
                                                    maxlength="100"
                                                    ng-disabled="true"
                                                    ng-trim="false"
-                                                   ng-model="script.name" />
+                                                   ng-model="script.name"/>
                                         </div>
                                         <div class="form-group"
                                              ng-class="{'has-error': scriptForm.$submitted && scriptForm.module_id.$invalid}">

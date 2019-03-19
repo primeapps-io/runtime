@@ -94,14 +94,14 @@ angular.module('primeapps')
                     url: 'appTemplates',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/templates/appTemplates.html',
+                            templateUrl: cdnUrl + 'view/app/templates/appTemplates.html',
                             controller: 'AppTemplatesController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/templates/appTemplatesController.js'
+                                cdnUrl + 'view/app/templates/appTemplatesController.js'
                             ]);
                         }]
                     }

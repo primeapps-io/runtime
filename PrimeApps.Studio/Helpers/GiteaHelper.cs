@@ -221,8 +221,6 @@ namespace PrimeApps.Studio.Helpers
 
                 await CreateAccessToken(email, password);
             }
-
-            ;
         }
 
         public async Task CreateOrganization(string uniqueName, string fullName, string email, string token, string type = "token")

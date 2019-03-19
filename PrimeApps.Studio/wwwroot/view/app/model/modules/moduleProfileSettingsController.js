@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
             $scope.loading = true;
-            var module = $filter('filter')($rootScope.appModules, { name: $stateParams.module }, true)[0];
+            var module = $filter('filter')($rootScope.appModules, {name: $stateParams.module}, true)[0];
             $scope.activePage = 1;
 
 
@@ -36,7 +36,7 @@ angular.module('primeapps')
             ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
                 var templates = response.data;
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
                 });
                 $scope.templates = templates;
 
@@ -63,10 +63,10 @@ angular.module('primeapps')
                 requestModel.offset = page - 1;
 
                 ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
-                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
+                    var data = $filter('filter')(response.data, {module_id: $scope.module.id}, true);
                     for (var i = 0; i < data.length; i++) {
                         for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            var profileName = $filter('filter')($rootScope.appProfiles, {id: parseInt(data[i].profile_list[j])}, true)[0].name;
                             if (!data[i].profileName)
                                 data[i].profileName = profileName;
                             else
@@ -91,10 +91,10 @@ angular.module('primeapps')
 
             var getModuleProfileSettings = function () {
                 ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
-                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
+                    var data = $filter('filter')(response.data, {module_id: $scope.module.id}, true);
                     for (var i = 0; i < data.length; i++) {
                         for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
+                            var profileName = $filter('filter')($rootScope.appProfiles, {id: parseInt(data[i].profile_list[j])}, true)[0].name;
                             if (!data[i].profileName)
                                 data[i].profileName = profileName;
                             else
@@ -118,14 +118,14 @@ angular.module('primeapps')
                 $scope.icons = ModuleService.getIcons();
 
                 $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
+                    return $filter('filter')($rootScope.appProfiles, {deleted: false, has_admin_rights: false}, true);
                 };
 
                 if (profileSetting) {
                     var profileList = [];
                     if (profileSetting.profile_list.length > 0) {
                         for (var k = 0; k < profileSetting.profile_list.length; k++) {
-                            var profile = $filter('filter')($rootScope.appProfiles, { id: parseInt(profileSetting.profile_list[k]) }, true)[0];
+                            var profile = $filter('filter')($rootScope.appProfiles, {id: parseInt(profileSetting.profile_list[k])}, true)[0];
                             profileList.push(profile);
                         }
                     }
@@ -151,12 +151,12 @@ angular.module('primeapps')
                 $scope.currentProfileSettingState = angular.copy($scope.currentProfileSetting);
 
                 $scope.profileSettingsFormModal = $scope.profileSettingsFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.profileSettingsFormModal.$promise.then(function () {
                     $scope.profileSettingsFormModal.show();
@@ -165,8 +165,12 @@ angular.module('primeapps')
 
             //submit
             $scope.save = function (moduleProfileSettingForm) {
-                if (!moduleProfileSettingForm.$valid)
+                
+                if (!moduleProfileSettingForm.$valid) {
+                    if (moduleProfileSettingForm.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));
                     return;
+                }
 
                 $scope.saving = true;
                 var profileSetting = angular.copy($scope.currentProfileSetting);

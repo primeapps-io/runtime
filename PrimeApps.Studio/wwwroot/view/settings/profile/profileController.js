@@ -91,10 +91,11 @@ angular.module('primeapps')
             }
 
             $scope.editUser = function (userModel) {
+
                 if ($scope.userForm.$valid) {
                     var emailChanged = false;
 
-                    if (user.email != userModel.email)
+                    if (user.email !== userModel.email)
                         emailChanged = true;
 
                     if (emailChanged) {
@@ -108,10 +109,18 @@ angular.module('primeapps')
 
                                 editUser();
                             });
-                    }
-                    else {
+                    } else {
                         editUser();
                     }
+                } else if ($scope.userForm.$invalid) {
+
+                    if ($scope.userForm.$error.required)
+                        toastr.error($filter('translate')('Setup.Settings.ErrorEmpty'));
+
+                    if ($scope.userForm.$error.minlength)
+                        toastr.error($filter('translate')('Setup.Settings.NameMinimum'));
+
+                    return;
                 }
 
                 function editUser() {
@@ -135,8 +144,7 @@ angular.module('primeapps')
 
                                         if (!emailChanged) {
                                             toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
-                                        }
-                                        else
+                                        } else
                                             toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
 
                                     })
@@ -145,8 +153,7 @@ angular.module('primeapps')
                                     });
                             }
                         };
-                    }
-                    else {
+                    } else {
                         SettingService.editUser(userModel)
                             .then(function () {
                                 $scope.userModel.firstName = userModel.firstName;
@@ -161,8 +168,7 @@ angular.module('primeapps')
 
                                 if (!emailChanged) {
                                     toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
-                                }
-                                else
+                                } else
                                     toastr.success($filter('translate')('Setup.Settings.UpdateSuccessEmail'));
 
                             })

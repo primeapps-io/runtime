@@ -229,10 +229,21 @@ angular.module('primeapps')
 
             $scope.save = function (uploadForm) {
 
-                if ((uploadForm.$invalid || !$scope.template.content) && $scope.template.id) {
+                if (uploadForm.$error.required) {
+                    toastr.error($filter('translate')('Module.RequiredError'));
+                    return;
+                }
+
+
+                if ((uploadForm.$invalid || $scope.fileUpload.queue.length < 1) && $scope.template.id) {
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 } else if ((uploadForm.$invalid || $scope.fileUpload.queue.length < 1) && !$scope.template.id) {
+                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
+                    return;
+                }
+                else if ($scope.fileUpload.queue[0].file.size <= 0) {
+                    toastr.error("File cannot be empty!");
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
                 }

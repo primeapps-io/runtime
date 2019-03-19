@@ -23,7 +23,7 @@ angular.module('primeapps')
             };
 
             $scope.rolesToTree = function (roles) {
-                var root = $filter('filter')(roles, { master: true })[0];
+                var root = $filter('filter')(roles, {master: true})[0];
                 var rootItem = $scope.getItem(root);
                 var subs = $scope.getChildren(roles, rootItem);
                 var tree = [];
@@ -40,8 +40,7 @@ angular.module('primeapps')
 
                     if (subs2.length === 0) {
                         $scope.addChild(root, subItem);
-                    }
-                    else {
+                    } else {
                         var child = $scope.traverseTree(roles, subs2, subItem);
                         $scope.addChild(root, child);
                     }
@@ -51,7 +50,7 @@ angular.module('primeapps')
             };
 
             $scope.getChildren = function (roles, root) {
-                var children = $filter('filter')(roles, { reports_to: root.id }, true);
+                var children = $filter('filter')(roles, {reports_to: root.id}, true);
                 return children;
             };
 
@@ -72,8 +71,8 @@ angular.module('primeapps')
             $scope.showDeleteForm = function (roleId) {
 
                 $scope.selectedRoleId = roleId;
-                $scope.transferRoles = $filter('filter')($scope.roles, { id: '!' + roleId });
-                $scope.transferRoles = $filter('filter')($scope.transferRoles, { reports_to: '!' + roleId });
+                $scope.transferRoles = $filter('filter')($scope.roles, {id: '!' + roleId});
+                $scope.transferRoles = $filter('filter')($scope.transferRoles, {reports_to: '!' + roleId});
 
                 ////TODO: Add loop here
                 //var reportsTo = $filter('filter')($scope.transferRoles, {reports_to: roleId})[0];
@@ -144,15 +143,15 @@ angular.module('primeapps')
                     RolesService.getAll()
                         .then(function (response) {
                             $scope.allRoles = response.data;
-                            $scope.roles = $filter('filter')($scope.allRoles, { id: '!' + $scope.id });
+                            $scope.roles = $filter('filter')($scope.allRoles, {id: '!' + $scope.id});
 
                             if ($scope.id) {
-                                $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
+                                $scope.role = $filter('filter')($scope.allRoles, {id: $scope.id}, true)[0];
                                 $scope.role.label = $scope.role['label_' + $scope.language];
                                 $scope.role.description = $scope.role['description_' + $scope.language];
 
                                 if (!$scope.role.master) {
-                                    $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
+                                    $scope.role.reports_to = $filter('filter')($scope.allRoles, {id: $scope.role.reports_to}, true)[0].id;
                                 }
 
                                 if ($scope.role.share_data == undefined || $scope.role.share_data == null) {
@@ -165,14 +164,12 @@ angular.module('primeapps')
                                 //     if (user)
                                 //         $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
                                 // });
-                            }
-                            else if (reportsTo) {
+                            } else if (reportsTo) {
                                 $scope.role.reports_to = reportsTo;
                             }
                             $scope.loading = false;
                         });
-                }
-                else {
+                } else {
                     $scope.role = {};
                     $scope.role.share_data = false;
                 }
@@ -191,6 +188,7 @@ angular.module('primeapps')
             };
 
             $scope.save = function (roleForm) {
+
                 if (roleForm.$valid) {
                     $scope.saving = true;
 
@@ -206,8 +204,7 @@ angular.module('primeapps')
 
                     if (!$scope.id) {
                         result = RolesService.create(role);
-                    }
-                    else {
+                    } else {
                         result = RolesService.update(role, roleChange);
                     }
 
@@ -227,6 +224,12 @@ angular.module('primeapps')
                     }).finally(function () {
                         $scope.saving = false;
                     });
+                } else if(roleForm.$invalid){
+                    
+                    if (roleForm.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
+                    return;
                 }
             };
 

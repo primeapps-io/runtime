@@ -340,7 +340,7 @@ angular.module('primeapps')
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/app/manage/appemailtemplates/appEmailTemplatesForm.html',
+					templateUrl: 'view/app/templates/appemailtemplates/appEmailTemplatesForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false

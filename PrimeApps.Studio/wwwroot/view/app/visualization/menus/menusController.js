@@ -26,13 +26,13 @@ angular.module('primeapps')
                 limit: '10',
                 offset: 0
             };
-            
+
             $scope.activePage = 1;
             MenusService.count().then(function (response) {
                 $scope.pageTotal = response.data;
                 $scope.changePage(1);
             });
-            
+
             $scope.changePage = function (page) {
                 $scope.loading = true;
 
@@ -73,123 +73,123 @@ angular.module('primeapps')
             var isUpdate = false; // up and down menu is click
             var menuUpdate = false;
 
-           /* var customModules = [
-                {
-                    label_tr_singular: 'Pano',
-                    label_tr_plural: 'Pano',
-                    label_en_singular: 'Pano',
-                    label_en_plural: 'Pano',
-                    name: 'dashboard',
-                    route: "dashboard",
-                    custom: true,
-                    menu_icon: 'fa fa-pie-chart',
-                    display: true
-                },
-                {
-                    label_tr_singular: "Haber Akışı",
-                    label_tr_plural: "Haber Akışları",
-                    label_en_singular: 'News Feed',
-                    label_en_plural: 'News Feed',
-                    name: 'newsfeed',
-                    route: "newsfeed",
-                    custom: true,
-                    menu_icon: 'fa fa-comments',
-                    display: true
-                },
-                {
-                    label_tr_singular: "Takvim",
-                    label_tr_plural: "Takvim",
-                    label_en_singular: 'Calendar',
-                    label_en_plural: 'Calendar',
-                    name: 'calendar',
-                    route: "calendar",
-                    custom: true,
-                    menu_icon: 'fa fa-calendar',
-                    display: true
-                },
-                {
-                    label_tr_singular: "İş Listesi",
-                    label_tr_plural: "İş Listesi",
-                    label_en_singular: 'Task',
-                    label_en_plural: 'Task',
-                    name: 'tasks',
-                    route: "tasks",
-                    custom: true,
-                    menu_icon: 'fa fa-check-square-o',
-                    display: true
-                },
-                {
-                    label_tr_singular: "Raporlar",
-                    label_tr_plural: "Raporlar",
-                    label_en_singular: 'Reports',
-                    label_en_plural: 'Reports',
-                    name: 'reports',
-                    route: "reports",
-                    custom: true,
-                    menu_icon: 'fa fa-bar-chart',
-                    display: true
-                },
-                {
-                    label_tr_singular: "Masraf",
-                    label_tr_plural: "Masraflarım",
-                    label_en_singular: 'Expense',
-                    label_en_plural: 'Expenses',
-                    name: 'expense',
-                    route: "expense",
-                    custom: true,
-                    menu_icon: 'fa fa-credit-card',
-                    display: true
-                },
-                {
-                    label_tr_singular: "Timesheet",
-                    label_tr_plural: "Timesheet",
-                    label_en_singular: "Timesheet",
-                    label_en_plural: "Timesheet",
-                    name: "timesheet",
-                    route: "timesheet",
-                    custom: true,
-                    menu_icon: "fa fa-calendar-o",
-                    display: true
-                }, {
-                    label_tr_singular: "Zaman Çizelgem",
-                    label_tr_plural: "Zaman Çizelgem",
-                    label_en_singular: "Timetracker",
-                    label_en_plural: "Timetracker",
-                    name: "timetracker",
-                    route: "timetracker",
-                    custom: true,
-                    menu_icon: "fa fa-calendar-o",
-                    display: true
-                },
-                {
-                    label_tr_singular: "İş Zekası",
-                    label_tr_plural: "İş Zekası",
-                    label_en_singular: "Analytic",
-                    label_en_plural: "Analytics",
-                    name: "analytics",
-                    route: "analytics",
-                    custom: true,
-                    menu_icon: "fa fa-line-chart",
-                    display: true
-                },
-                {
-                    label_tr_singular: "Döküman Ara",
-                    label_tr_plural: "Döküman Ara",
-                    label_en_singular: "Document Search",
-                    label_en_plural: "Document Search",
-                    name: "documentSearch",
-                    route: "documentSearch",
-                    custom: true,
-                    menu_icon: "fa fa-search",
-                    display: true
-                }
-            ];*/
+            /* var customModules = [
+                 {
+                     label_tr_singular: 'Pano',
+                     label_tr_plural: 'Pano',
+                     label_en_singular: 'Pano',
+                     label_en_plural: 'Pano',
+                     name: 'dashboard',
+                     route: "dashboard",
+                     custom: true,
+                     menu_icon: 'fa fa-pie-chart',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Haber Akışı",
+                     label_tr_plural: "Haber Akışları",
+                     label_en_singular: 'News Feed',
+                     label_en_plural: 'News Feed',
+                     name: 'newsfeed',
+                     route: "newsfeed",
+                     custom: true,
+                     menu_icon: 'fa fa-comments',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Takvim",
+                     label_tr_plural: "Takvim",
+                     label_en_singular: 'Calendar',
+                     label_en_plural: 'Calendar',
+                     name: 'calendar',
+                     route: "calendar",
+                     custom: true,
+                     menu_icon: 'fa fa-calendar',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "İş Listesi",
+                     label_tr_plural: "İş Listesi",
+                     label_en_singular: 'Task',
+                     label_en_plural: 'Task',
+                     name: 'tasks',
+                     route: "tasks",
+                     custom: true,
+                     menu_icon: 'fa fa-check-square-o',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Raporlar",
+                     label_tr_plural: "Raporlar",
+                     label_en_singular: 'Reports',
+                     label_en_plural: 'Reports',
+                     name: 'reports',
+                     route: "reports",
+                     custom: true,
+                     menu_icon: 'fa fa-bar-chart',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Masraf",
+                     label_tr_plural: "Masraflarım",
+                     label_en_singular: 'Expense',
+                     label_en_plural: 'Expenses',
+                     name: 'expense',
+                     route: "expense",
+                     custom: true,
+                     menu_icon: 'fa fa-credit-card',
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Timesheet",
+                     label_tr_plural: "Timesheet",
+                     label_en_singular: "Timesheet",
+                     label_en_plural: "Timesheet",
+                     name: "timesheet",
+                     route: "timesheet",
+                     custom: true,
+                     menu_icon: "fa fa-calendar-o",
+                     display: true
+                 }, {
+                     label_tr_singular: "Zaman Çizelgem",
+                     label_tr_plural: "Zaman Çizelgem",
+                     label_en_singular: "Timetracker",
+                     label_en_plural: "Timetracker",
+                     name: "timetracker",
+                     route: "timetracker",
+                     custom: true,
+                     menu_icon: "fa fa-calendar-o",
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "İş Zekası",
+                     label_tr_plural: "İş Zekası",
+                     label_en_singular: "Analytic",
+                     label_en_plural: "Analytics",
+                     name: "analytics",
+                     route: "analytics",
+                     custom: true,
+                     menu_icon: "fa fa-line-chart",
+                     display: true
+                 },
+                 {
+                     label_tr_singular: "Döküman Ara",
+                     label_tr_plural: "Döküman Ara",
+                     label_en_singular: "Document Search",
+                     label_en_plural: "Document Search",
+                     name: "documentSearch",
+                     route: "documentSearch",
+                     custom: true,
+                     menu_icon: "fa fa-search",
+                     display: true
+                 }
+             ];*/
 
             $scope.newModuleList = angular.copy($rootScope.appModules);
             //push customModules to modules
-          /*  angular.forEach(customModules, function (customModule) {
-                $scope.newModuleList.push(customModule);
-            });*/
+            /*  angular.forEach(customModules, function (customModule) {
+                  $scope.newModuleList.push(customModule);
+              });*/
 
             $scope.showFormModal = function (id, cloneSettings) {
                 $scope.loadingModal = true;
@@ -210,8 +210,7 @@ angular.module('primeapps')
 
                 if (id) {
                     setMenuList(id);
-                }
-                else {
+                } else {
                     $scope.loadingModal = false;
                 }
                 $scope.addNewMenuFormModal = $scope.addNewMenuFormModal || $modal({
@@ -306,8 +305,20 @@ angular.module('primeapps')
                 if (menuForm.$valid) {
                     $scope.wizardStep += next ? 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                     return true;
+                } else if (menuForm.$invalid) {
+                    if (menuForm.name_menu.$error.required && menuForm.profile_name.$error.required) {
+                        toastr.error($filter('translate')('Menu.RequiredError'));
+                    }
+                    if (!menuForm.name_menu.$error.required && menuForm.profile_name.$error.required) {
+                        toastr.error($filter('translate')('Menu.ProfileRequiredError'));
+                    }
+                    if (!menuForm.profile_name.$error.required && menuForm.name_menu.$error.required) {
+                        toastr.error($filter('translate')('Menu.MenuNameRequiredError'));
+                    }
+
+                    return false;
                 }
-                return false;
+
             };
 
             $scope.addItem = function () {
@@ -431,13 +442,21 @@ angular.module('primeapps')
                         //we just check if createArray item isUpdate
                         if (isUpdate)
                             angular.forEach($scope.createArray, function (createItem) {
-                                var findItem = $filter('filter')($scope.menuLists, {parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType}, true)[0];
+                                var findItem = $filter('filter')($scope.menuLists, {
+                                    parentId: 0,
+                                    name: createItem.name,
+                                    menuModuleType: createItem.menuModuleType
+                                }, true)[0];
                                 if (findItem)
                                     createItem.no = findItem.no;
                                 else
                                     for (var i = 0; i < $scope.menuLists.length; i++) {
                                         if ($scope.menuLists[i].items.length > 0) {
-                                            findItem = $filter('filter')($scope.menuLists[i].items, {id: 0, name: createItem.name, menuModuleType: createItem.menuModuleType}, true)[0];
+                                            findItem = $filter('filter')($scope.menuLists[i].items, {
+                                                id: 0,
+                                                name: createItem.name,
+                                                menuModuleType: createItem.menuModuleType
+                                            }, true)[0];
                                             if (findItem)
                                                 createItem.no = findItem.no;
                                         }
@@ -467,8 +486,7 @@ angular.module('primeapps')
                                     }).finally(function () {
                                         $scope.saving = false;
                                     });
-                                }
-                                else {
+                                } else {
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.saving = false;
                                     $scope.addNewMenuFormModal.hide();
@@ -502,16 +520,14 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                         });
-                    }
-                    else if (menuUpdate) {
+                    } else if (menuUpdate) {
                         resultPromise.then(function onSuccess() {
                             toastr.success($filter('translate')('Menu.UpdateSucces'));
                             $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage($scope.activePage);
                         });
-                    }
-                    else {
+                    } else {
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
                         $scope.saving = false;
@@ -520,7 +536,7 @@ angular.module('primeapps')
                 }
                 //If first create
                 else {
-                     menu = [
+                    menu = [
                         {
                             profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id,
                             name: $scope.menu.name,
@@ -547,8 +563,7 @@ angular.module('primeapps')
                 if (!subMenuNo) {
                     var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
                     menu.isEdit = true;
-                }
-                else {
+                } else {
                     var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
                     var menuItem = $filter('filter')(menu.items, {no: subMenuNo}, true)[0];
                     menuItem.isEdit = true;
@@ -562,8 +577,7 @@ angular.module('primeapps')
                     menu.icon = sub_menu_icon;
                     menu.isEdit = false;
                     //$scope.updateMenuItemArray.push(menu);
-                }
-                else {
+                } else {
                     var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
                     var menuItem = $filter('filter')(menu.items, {no: subMenuNo}, true)[0];
                     menuItem.icon = sub_menu_icon;
@@ -680,8 +694,7 @@ angular.module('primeapps')
                             menuItem.menuId = no;
                         });
                     $scope.menuLists = menuList;
-                }
-                else {
+                } else {
 
                     var menu = $filter('filter')($scope.menuLists, {no: no}, true)[0];
                     var menuItem = $filter('filter')(menu.items, {no: menuItemNo}, true)[0];
@@ -717,8 +730,7 @@ angular.module('primeapps')
                         angular.forEach(menuList[index].items, function (menuItem) {
                             menuItem.menuId = no;
                         });
-                }
-                else {
+                } else {
                     var menu = $filter('filter')($scope.menuLists, {no: no}, true)[0];
                     var menuItem = $filter('filter')(menu.items, {no: menuItemNo}, true)[0];
                     var prev = angular.copy(menu.items[index + 1]);
@@ -830,8 +842,7 @@ angular.module('primeapps')
                                 ids.push(deleteItem.id);
                             });
                         }
-                    }
-                    else {
+                    } else {
                         //First Level Label was deleting
                         if (deleteLabel.items && deleteLabel.items.length > 0) {
                             ids.push(deleteLabel.id);

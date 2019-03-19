@@ -12,7 +12,7 @@ angular.module('primeapps')
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
             $scope.reportModel.chart = {};
-            $scope.reportModel.sharing_type="everybody";
+            $scope.reportModel.sharing_type = "everybody";
             $scope.chartTypes = [
                 {
                     label: $filter('translate')('Report.Chart.ColumnChart2d'),
@@ -715,8 +715,17 @@ angular.module('primeapps')
 
 
             $scope.save = function () {
-                if (!$scope.reportForm.$valid)
+                
+                if (!$scope.reportForm.$valid) {
+                    if ($scope.reportForm.reportName.$error.required || $scope.reportForm.module.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
+                    if ($scope.reportForm.$error.operations)
+                        toastr.error($filter('translate')('Report.ReportTypeRequiredError'));
+                    
                     return false;
+                }
+
 
                 $scope.saving = true;
                 var report = {};

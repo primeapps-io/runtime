@@ -14,59 +14,60 @@
 <div class="tab-content table-responsive" ng-show="!selectedUser">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Role</th>
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th width="70"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
                     <div class="animated-background"></div>
-                </div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Profile</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Profile</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="user in users" ng-click="showFormModal(user.id)">
-            <td>
-                {{user.full_name}}
-            </td>
-            <td>
-                {{user.email}}
-            </td>
-            <td>
-                {{user.role.label_en}}
-            </td>
-            <td>
-                {{user.profile.id === 1 ? "Administrator" : user.profile.id === 2 ? "Standart" : user.profile.name }}
-            </td>
-            <td class="text-right">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();$parent.delete(user.id, $event)" type="button" class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
+            <tr ng-repeat="user in users" ng-click="showFormModal(user.id)">
+                <td>
+                    {{user.full_name}}
+                </td>
+                <td>
+                    {{user.email}}
+                </td>
+                <td>
+                    {{user.role.label_en}}
+                </td>
+                <td>
+                    {{user.profile.id === 1 ? "Administrator" : user.profile.id === 2 ? "Standart" : user.profile.name }}
+                </td>
+                <td class="text-right">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();$parent.delete(user.id, $event)" type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">
