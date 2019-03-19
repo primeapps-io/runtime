@@ -322,7 +322,7 @@ angular.module('primeapps')
                     setDashboard();
                 }
                 else//TODO: Delete after new dashboard development finished
-                // setOldDashboard();
+                    // setOldDashboard();
 
                     $scope.getSummaryJsonValue = function (data) {
                         var obj = angular.fromJson(data);
@@ -375,6 +375,12 @@ angular.module('primeapps')
             } else {
                 DashboardService.getDashboards().then(function (result) {
                     $scope.dashboards = result.data;
+
+                    if ($rootScope.preview) {
+                        var result = $filter('filter')($scope.dashboards, { name: 'Genel Pano' }, true)[0];
+                        if (result)
+                            result.name = $scope.language == 'en' ? 'General Board' : 'Genel Pano';
+                    }
 
                     $scope.activeDashboard = $filter('filter')($scope.dashboards, {
                         sharing_type: 'me',
