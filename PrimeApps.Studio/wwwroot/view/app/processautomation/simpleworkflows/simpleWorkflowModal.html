@@ -5,9 +5,9 @@
             <div>
                 <ul class="list-unstyled list-inline">
                     <li><button type="button" ng-click="cancel();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="button" ng-click="previousStep(workflowForm, wizardStep)" ng-if="wizardStep>0 && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-left pull-left" style="margin-top: unset;"></i>{{'Common.Previous' | translate}}</button></li>
-                    <li><button type="button" ng-click="nextStep(workflowForm, wizardStep)" ng-if="!lastStepClicked && !id" class="btn add-button btn-radius btn-blue"><i class="fa fa-angle-right pull-right"></i>{{'Common.Next' | translate}}</button></li>
-                    <li><button type="button" ng-if="lastStepClicked && wizardStep>=2" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li ng-if="$parent.$parent.$parent.wizardStep>0 && !id"><button type="button" ng-click="previousStep(workflowForm, wizardStep)" class="btn btn-radius btn-blue"><i class="fa fa-angle-left"></i>{{'Common.Previous' | translate}}</button></li>
+                    <li ng-if="!lastStepClicked && !id"><button type="button" ng-click="nextStep(workflowForm, wizardStep)" class="btn btn-radius btn-blue ng-binding">{{'Common.Next' | translate}}<i class="fa fa-angle-right"></i></button></li>
+                    <li ng-if="lastStepClicked && $parent.$parent.$parent.wizardStep>2"><button type="button" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
@@ -19,26 +19,26 @@
                 <div class="megalist">
                     <div class="modal-menu">
                         <ul class="list-unstyled">
-                            <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
-                            <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.$parent.wizardStep==0}" ng-click="validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 0 : false">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.$parent.wizardStep==1}" ng-click="validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
                             <li>
-                                <a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
+                                <a ng-class="{'active':$parent.$parent.$parent.wizardStep==2}" ng-click="validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
                                 <ul>
-                                    <li><a ng-class="{'active':tab==0 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 0 : false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==0 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 0 : false; workflowForm.$submitted = false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
                                     <!--<li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>-->
-                                    <li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
-                                    <li><a ng-class="{'active':tab==2 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 2 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==1 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 1 : false;workflowForm.$submitted = false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==2 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 2 : false;workflowForm.$submitted = false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
 
                                 </ul>
                             </li>
-                            <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.$parent.wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
 
                         </ul>
                     </div>
                     <div>
                         <form name="$parent.workflowForm" class="form-horizontal form-custom" ng-submit="saveField(workflowForm);"
                               ng-if="!$parent.showPicklistForm" autocomplete="off" novalidate>
-                            <div class="section" ng-show="$parent.wizardStep == 0">
+                            <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 0">
                                 <h4>{{'Setup.Workflow.RuleInformation' | translate}}</h4>
                                 <div class="panel">
                                     <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
@@ -139,7 +139,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="section" ng-show="$parent.wizardStep == 1">
+                            <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 1">
                                 <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                 <div class="panel">
                                     <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
@@ -375,10 +375,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="section" ng-show="$parent.wizardStep == 2">
+                            <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 2">
                                 <h4>{{'Setup.Workflow.Actions' | translate}}</h4>
                                 <div class="panel">
-                                    <div ng-show="$parent.tab == 0 && $parent.wizardStep == 2">
+                                    <div ng-show="$parent.$parent.$parent.$parent.tab == 0 && $parent.$parent.$parent.$parent.wizardStep == 2">
                                         <h4 style="font-size:15px;">{{'Setup.Workflow.SendNotification' | translate}}</h4>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.sendNotificationModule.$invalid}">
                                             <label class="col-sm-12 required-field">
@@ -714,7 +714,7 @@
                                             </div>
                                         </div>
                                     </div>-->
-                                    <div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
+                                    <div ng-show="$parent.$parent.$parent.$parent.tab == 1 && $parent.$parent.$parent.$parent.wizardStep == 2">
                                         <h4 style="font-size:15px;">{{'Setup.Workflow.FieldUpdate' | translate}}</h4>
                                         <div class="form-group "
                                              ng-class="{'has-error': workflowForm.$submitted && workflowForm.updateOption.$invalid}">
@@ -1189,7 +1189,7 @@
 
                                         </div>
                                     </div>
-                                    <div ng-show="$parent.tab == 2 && $parent.wizardStep == 2">
+                                    <div ng-show="$parent.$parent.$parent.$parent.tab == 2 && $parent.$parent.$parent.$parent.wizardStep == 2">
                                         <h4 style="font-size:15px;">{{'Setup.Workflow.WebHook' | translate}}</h4>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookUrl' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
@@ -1266,7 +1266,7 @@
 
                                 </div>
                             </div>
-                            <div class="section" ng-show="$parent.wizardStep == 3">
+                            <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 3">
                                 <h4>{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</h4>
                                 <div class="panel">
                                     <div class="table-responsive">
