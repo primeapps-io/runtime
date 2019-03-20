@@ -25,11 +25,11 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<List<Team>> GetAll()
+        public async Task<List<Team>> GetAll(int organizationId)
         {
             return await DbContext.Teams.Include(x => x.Organization)
                 .Include(x => x.TeamUsers)
-                .Where(x => !x.Deleted)
+                .Where(x => !x.Deleted && x.OrganizationId == organizationId)
                .ToListAsync();
         }
 
@@ -49,9 +49,9 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Team> GetByName(string name)
+        public async Task<Team> GetByName(string name, int organizationId)
         {
-            return await DbContext.Teams.Where(x => x.Name == name && !x.Deleted).FirstOrDefaultAsync();
+            return await DbContext.Teams.Where(x => x.Name == name && !x.Deleted && x.OrganizationId == organizationId).FirstOrDefaultAsync();
         }
 
         public async Task<List<Team>> GetByOrganizationId(int organizationId)

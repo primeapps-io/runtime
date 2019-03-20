@@ -40,7 +40,7 @@ angular.module('primeapps')
             };
             $scope.generator(10);
 
-            TeamsService.count($rootScope.currentOrgId).then(function (response) {
+            TeamsService.count().then(function (response) {
                 $scope.$parent.teamCount = response.data;
                 $scope.pageTotal = response.data;
             });
@@ -72,7 +72,7 @@ angular.module('primeapps')
 
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                TeamsService.count($rootScope.currentOrgId).then(function (response) {
+                TeamsService.count().then(function (response) {
                     $scope.$parent.teamCount = response.data;
                     $scope.pageTotal = response.data;
                 });
@@ -147,7 +147,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is added successfully');
-                            $scope.selectTeam($scope.teamId); 
+                            $scope.selectTeam($scope.teamId);
                             $scope.selectedUser = {};
                         }
                     })
@@ -305,7 +305,7 @@ angular.module('primeapps')
                         TeamsService.deleteUser(user.user_id, $scope.selectedTeam)
                             .then(function (response) {
                                 if (response) {
-                                    $scope.selectTeam($scope.teamId); 
+                                    $scope.selectTeam($scope.teamId);
                                     $scope.selectedUser = {};
                                     toastr.success("Member is deleted successfully.", "Deleted!");
                                 }
@@ -365,7 +365,7 @@ angular.module('primeapps')
             $scope.cancel = function () {
                 if ($scope.addNewTeamFormModal) {
                     $scope.addNewTeamFormModal.hide();
-                    $scope.teamModel = {};
+                    $scope.teamModel = {}; 
                     $scope.teamId = null;
                     $scope.stepNo = 0;
                 }

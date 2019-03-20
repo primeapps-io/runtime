@@ -5,8 +5,8 @@ angular.module('primeapps')
     .factory('OrganizationService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
-                teamCount: function (id) {
-                    return $http.get(config.apiUrl + 'team/count/' + id);
+                teamCount: function () {
+                    return $http.get(config.apiUrl + 'team/count');
                 },
 
                 collaboratorCount: function (id) {
