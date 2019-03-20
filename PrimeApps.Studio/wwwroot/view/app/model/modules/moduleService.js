@@ -1486,9 +1486,11 @@ angular.module('primeapps')
                     });
 
                     //daha önce silinmiş bir field ile aynı isimde field eklerken hata olmaması için yazıldı
-                    for (var i = 0; i < pureModule.fields.length; i++) {
-                        if (pureModule.fields[i].deleted)
-                            module.fields.push(pureModule.fields[i]);
+                    if (pureModule) {
+                        for (var i = 0; i < pureModule.fields.length; i++) {
+                            if (pureModule.fields[i].deleted)
+                                module.fields.push(pureModule.fields[i]);
+                        }
                     }
 
                     angular.forEach(module.fields, function (field) {
