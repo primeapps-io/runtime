@@ -147,8 +147,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is added successfully');
-                            $scope.selectTeam($scope.teamId);
-                            $scope.getOrganizationUserList();
+                            $scope.selectTeam($scope.teamId); 
                             $scope.selectedUser = {};
                         }
                     })
@@ -306,8 +305,7 @@ angular.module('primeapps')
                         TeamsService.deleteUser(user.user_id, $scope.selectedTeam)
                             .then(function (response) {
                                 if (response) {
-                                    $scope.selectTeam($scope.teamId);
-                                    $scope.getOrganizationUserList();
+                                    $scope.selectTeam($scope.teamId); 
                                     $scope.selectedUser = {};
                                     toastr.success("Member is deleted successfully.", "Deleted!");
                                 }
