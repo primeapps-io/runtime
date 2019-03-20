@@ -451,27 +451,49 @@ namespace PrimeApps.Studio.Controllers
                     }
 
                     var platformUser = await _platformUserRepository.Get(model.Email);
+                    var studioUser = await _studioUserRepository.Get(platformUser.Id);
 
-                    var studioUser = new StudioUser
+                    if (studioUser == null)
                     {
-                        Id = platformUser.Id,
-                        UserOrganizations = new List<OrganizationUser>()
-                    };
+                        studioUser = new StudioUser
+                        {
+                            Id = platformUser.Id,
+                            UserOrganizations = new List<OrganizationUser>()
+                        };
 
-                    studioUser.UserOrganizations.Add(new OrganizationUser
+                        studioUser.UserOrganizations.Add(new OrganizationUser
+                        {
+                            UserId = platformUser.Id,
+                            Role = model.Role,
+                            OrganizationId = model.OrganizationId,
+                            CreatedById = AppUser.Id,
+                            CreatedAt = DateTime.Now
+                        });
+
+                        await _studioUserRepository.Create(studioUser);
+                    }
+                    else
                     {
-                        UserId = platformUser.Id,
-                        Role = model.Role,
-                        OrganizationId = model.OrganizationId,
-                        CreatedById = AppUser.Id,
-                        CreatedAt = DateTime.Now
-                    });
+                        studioUser = new StudioUser
+                        {
+                            UserOrganizations = new List<OrganizationUser>()
+                        };
 
-                    result = await _studioUserRepository.Create(studioUser);
+                        studioUser.UserOrganizations.Add(new OrganizationUser
+                        {
+                            UserId = platformUser.Id,
+                            Role = model.Role,
+                            OrganizationId = model.OrganizationId,
+                            CreatedById = AppUser.Id,
+                            CreatedAt = DateTime.Now
+                        });
+
+                        await _studioUserRepository.Update(studioUser);
+                    }
                 }
             }
 
-            return StatusCode(201, new {password = password});
+            return StatusCode(201, new { password = password });
         }
 
         [Route("delete_user"), HttpPost]

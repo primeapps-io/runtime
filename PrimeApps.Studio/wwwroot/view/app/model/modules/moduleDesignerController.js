@@ -323,7 +323,7 @@ angular.module('primeapps')
                     $scope.module = result.data;
                     $scope.pureModule = angular.copy($scope.module);
                     $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
-                    
+
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
                         $state.go('app.dashboard');
@@ -903,7 +903,7 @@ angular.module('primeapps')
             };
 
             $scope.saveSettings = function (editForm) {
-                
+
                 if (!editForm.$valid) {
                     if (editForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));

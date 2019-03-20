@@ -155,7 +155,7 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var teams = await _teamRepository.GetAll();
+            var teams = await _teamRepository.GetAll(OrganizationId);
 
             return Ok(teams);
         }
@@ -179,10 +179,10 @@ namespace PrimeApps.Studio.Controllers
             return Ok(teams);
         }
 
-        [Route("count/{organizationId:int}"), HttpGet]
-        public async Task<IActionResult> Count(int organizationId)
+        [Route("count"), HttpGet]
+        public async Task<IActionResult> Count()
         {
-            var count = await _teamRepository.Count(organizationId);
+            var count = await _teamRepository.Count(OrganizationId);
 
             return Ok(count);
         }
@@ -193,7 +193,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var team = await _teamRepository.GetByName(teamModel.Name);
+            var team = await _teamRepository.GetByName(teamModel.Name, OrganizationId);
 
             if (team == null || team.Id == teamModel.Id)
                 return Ok(true);

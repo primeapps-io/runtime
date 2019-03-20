@@ -40,7 +40,7 @@
                 </td>
                 <td>
                     <div class="animated-background"></div>
-                </td> 
+                </td>
                 <td>
                     <div class="animated-background"></div>
                 </td>
@@ -56,7 +56,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="user in collaboratorArray">
+            <tr ng-repeat="user in collaboratorArray" style="cursor:inherit;">
                 <td>
                     <div class="user-info">
                         <div class="user-image">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </td>
-                <td class="form-group">
+                <td>
                     <div style="position:relative;">
                         <select name="profile" ng-disabled="user.updating || (user.role === 'administrator' && user.id == me.id)"
                                 class="form-control ng-animate-disabled"

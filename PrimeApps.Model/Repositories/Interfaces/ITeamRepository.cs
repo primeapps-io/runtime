@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface ITeamRepository : IRepositoryBaseStudio
     {
         Task<int> Count(int organizationId);
-        Task<List<Team>> GetAll();
+        Task<List<Team>> GetAll(int organizationId);
         Task<Team> GetByTeamId(int id);
         Task<List<Team>> GetByUserId(int userId);
-        Task<Team> GetByName(string name);
+        Task<Team> GetByName(string name, int organizationId);
         Task<List<Team>> GetByOrganizationId(int organizationId);
         Task<ICollection<Team>> Find(PaginationModel paginationModel, int organizationId);
         Task<int> Create(Team team);

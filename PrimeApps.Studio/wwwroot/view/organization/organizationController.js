@@ -10,7 +10,7 @@ angular.module('primeapps')
             // $scope.activeMenuItem = 'organization';
             // $scope.tabTitle='organization';
 
-            OrganizationService.teamCount($rootScope.currentOrgId)
+            OrganizationService.teamCount()
                 .then(function (response) {
                     $scope.$parent.teamCount = response.data;
                 });

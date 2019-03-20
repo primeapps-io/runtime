@@ -98,20 +98,20 @@ angular.module('primeapps')
                     if (user.email !== userModel.email)
                         emailChanged = true;
 
-                    if (emailChanged) {
-                        AuthService.isUniqueEmail(userModel.email)
-                            .then(function (data) {
-                                if (!data.data) {
-                                    $scope.userForm.$setValidity('uniqueEmail', false);
-                                    $scope.userUpdating = false;
-                                    return;
-                                }
-
-                                editUser();
-                            });
-                    } else {
-                        editUser();
-                    }
+                    // if (emailChanged) {
+                    //     AuthService.isUniqueEmail(userModel.email)
+                    //         .then(function (data) {
+                    //             if (!data.data) {
+                    //                 $scope.userForm.$setValidity('uniqueEmail', false);
+                    //                 $scope.userUpdating = false;
+                    //                 return;
+                    //             }
+                    //
+                    //             editUser();
+                    //         });
+                    // } else {
+                    //     editUser();
+                    // }
                 } else if ($scope.userForm.$invalid) {
 
                     if ($scope.userForm.$error.required)

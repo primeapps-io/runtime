@@ -30,13 +30,16 @@
                         <div class="modal-menu">
                             <ul class="list-unstyled">
                                 <li ng-click="fieldActiveSection = 'properties'">
-                                    <a ng-class="fieldActiveSection ==='properties' ? 'active':''" href="javascript:void(0);">Properties </a>
+                                    <a ng-class="fieldActiveSection ==='properties' ? 'active':''"
+                                       href="javascript:void(0);">Properties </a>
                                 </li>
                                 <li ng-click="fieldActiveSection = 'validation'">
-                                    <a ng-class="fieldActiveSection ==='validation' ? 'active':''" href="javascript:void(0);">Validation </a>
+                                    <a ng-class="fieldActiveSection ==='validation' ? 'active':''"
+                                       href="javascript:void(0);">Validation </a>
                                 </li>
                                 <li ng-click="fieldActiveSection = 'permissions'">
-                                    <a ng-class="fieldActiveSection ==='permissions' ? 'active':''" href="javascript:void(0)">Permissions </a>
+                                    <a ng-class="fieldActiveSection ==='permissions' ? 'active':''"
+                                       href="javascript:void(0)">Permissions </a>
                                 </li>
                             </ul>
                         </div>
@@ -436,7 +439,6 @@
                                         </label>
                                         <textarea class="form-control ng-animate-disabled"
                                                   ng-model="currentField.placeholder"
-                                                  ng-disabled="currentField.default_value || currentField.show_label"
                                                   maxlength="500"
                                                   ng-required="!currentField.show_label && !currentField.editable"
                                                   auto-grow></textarea>
@@ -513,12 +515,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-4 radio-inline newinput"
-                                               ng-if="currentField.dataType.name == 'text_single'"
+                                               ng-if="currentField.dataType.name == 'text_single' || currentField.dataType.name == 'image' "
                                                ng-class="currentField.default_value ? 'disabled':''">{{'Setup.Modules.ShowLabel'
                                             | translate}}
                                             <input type="checkbox" name="show_label"
                                                    ng-disabled="currentField.default_value"
-                                                   ng-if="currentField.dataType.name == 'text_single'"
                                                    ng-change="changeShowLabel()"
                                                    ng-model="currentField.show_label">
                                             <span></span>
@@ -535,7 +536,7 @@
                                         </label>
                                     </div>
                                     <div class="form-group"
-                                         ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'  && currentField.dataType.name !='json' ">
+                                         ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'  && currentField.dataType.name !='json' &&  currentField.dataType.name !='image' ">
                                         <label ng-class="(!currentField.isNew && currentField.validation.unique != true) ? 'disabled': ''"
                                                class="newinput">{{'Setup.Modules.UniqueValue' | translate}}
                                             <input ng-disabled="!currentField.isNew && currentField.validation.unique != true"
@@ -546,13 +547,13 @@
 
                                     </div>
                                     <!--<div class="form-group"-->
-                                         <!--ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">-->
-                                        <!--<label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">-->
-                                            <!--Şifreli Alan-->
-                                            <!--<input type="checkbox" ng-model="currentField.encrypted"-->
-                                                   <!--ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">-->
-                                            <!--<span></span>-->
-                                        <!--</label>-->
+                                    <!--ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">-->
+                                    <!--<label class="col-sm-4 newinput" ng-class="!currentField.isNew ? 'disabled':''">-->
+                                    <!--Şifreli Alan-->
+                                    <!--<input type="checkbox" ng-model="currentField.encrypted"-->
+                                    <!--ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">-->
+                                    <!--<span></span>-->
+                                    <!--</label>-->
 
                                     <!--</div>-->
                                     <div class="form-group" ng-show="currentField.encrypted">

@@ -131,7 +131,7 @@ angular.module('primeapps')
                 if (id) {
                     $scope.loading = true;
                     $scope.id = reportsTo ? undefined : id;//parseInt($location.search().id);
-                    var reportsTo = reportsTo ? id : undefined;//parseInt($location.search().reportsTo);
+                    reportsTo = reportsTo ? id : undefined;//parseInt($location.search().reportsTo);
                     $scope.roleUsers = [];
                     $scope.role = {};
                     $scope.role.share_data = false;

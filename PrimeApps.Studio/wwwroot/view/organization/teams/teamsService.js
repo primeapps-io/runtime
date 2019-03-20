@@ -9,8 +9,8 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'team/find/' + id, model);
                 },
 
-                count: function (id) {
-                    return $http.get(config.apiUrl + 'team/count/' + id);
+                count: function () {
+                    return $http.get(config.apiUrl + 'team/count');
                 },
 
                 get: function (id) {
