@@ -202,6 +202,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.saveOrganization = function (organizationForm) {
             if (!organizationForm.$valid)
                 return;
+
+            if (!$scope.nameValid) {
+                toastr.warning("Organization Identifier value must be unique! ");
+                return;
+            }
             $scope.organizationSaving = true;
 
             if (angular.isObject($scope.organization.icon))
@@ -229,21 +234,21 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $scope.organization = {};
                                 $scope.nameValid = null;
                                 $scope.nameBlur = false;
-                                $state.go('studio.apps', {orgId: response.data});
+                                $state.go('studio.apps', { orgId: response.data });
                             }).catch(function () {
-                            toastr.error('Organization ' + $scope.organization.label + ' not created.');
-                            $scope.organizationSaving = false;
-                            $scope.nameValid = null;
-                            $scope.nameBlur = false;
-                        });
+                                toastr.error('Organization ' + $scope.organization.label + ' not created.');
+                                $scope.organizationSaving = false;
+                                $scope.nameValid = null;
+                                $scope.nameBlur = false;
+                            });
                     } else {
                         $scope.nameValid = false;
                         $scope.organizationSaving = false;
                     }
                 }).catch(function () {
-                $scope.nameValid = false;
-                $scope.nameChecking = false;
-            });
+                    $scope.nameValid = false;
+                    $scope.nameChecking = false;
+                });
 
         };
 
