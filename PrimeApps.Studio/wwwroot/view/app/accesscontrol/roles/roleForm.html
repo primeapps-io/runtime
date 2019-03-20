@@ -17,7 +17,8 @@
         </div>
 
         <div class="modal-dialog scroll-style-4">
-            <div class="modal-content padding-0">
+            <div ng-if="loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div  ng-if="!loading" class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
                         <div id="field-form-body" class="modal-body">
@@ -33,7 +34,7 @@
                                         <textarea rows="3" name="description" class="form-control col-sm-12" maxlength="200" auto-grow ng-model="role.description"></textarea>
                                     </div>
 
-                                    <div ng-if="!roles.length<=0" class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
+                                    <div ng-if="!roles.length<=0 && !role.master" class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
                                         <label class="col-sm-12 control-label">{{'Setup.Roles.ReportsTo' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <ui-select name="reportsTo" class="ng-animate-disabled"
                                                    on-select="roleUpdateChange()"
