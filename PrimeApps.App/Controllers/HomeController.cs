@@ -134,7 +134,7 @@ namespace PrimeApps.App.Controllers
 
             return View();
         }
-
+    
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -147,6 +147,15 @@ namespace PrimeApps.App.Controllers
             preview = !string.IsNullOrEmpty(preview) ? "?preview=" + preview : "";
 
             return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview);
+        }
+        
+        
+        [Route("register")]
+        public async Task<IActionResult> Register()
+        {
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
+
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
         }
 
         private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
