@@ -37,13 +37,13 @@
             <input type="hidden" asp-for="@Model.ReturnUrl"/>
             <div class="form-group">
                 <label for="Username" class="labelx"><span>@Localizer["Email"]</span>
-                    <input class="form-control" asp-for="Username" id="Email" autofocus autocomplete="off">
+                    <input class="form-control" asp-for="Username" id="Email" >
                 </label>
                 <div class="error-email d-none"></div>
             </div>
             <div class="form-group">
                 <label for="Password" class="labelx"><span>@Localizer["Password"]</span>
-                    <input type="password" class="form-control" asp-for="Password" id="Password" autocomplete="off">
+                    <input type="password" class="form-control" asp-for="Password" id="Password" autocomplete="new-password" >
                 </label>
                 <div class="error-pass d-none"></div>
             </div>

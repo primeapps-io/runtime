@@ -161,23 +161,29 @@ body{
           }
         }
         .form-control{
-          background: transparent;
+          background-color: transparent !important;
           border: none;
           border-radius: 100px;
-          transition: background-color 10000000s ease-out 0s;
+          background-image: none;
+          //transition: background-color 10000000s ease-out 0s;
           -webkit-text-fill-color: #fff !important;
           padding-left: 0;
           padding-right: 0;
+          border-radius: 0 !important;
+          
         }
       }
     }
     &.error{
       margin-bottom: 0px;
     }
-    
-    
   }
-  
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+  }
   
   .login-sec{
     form{

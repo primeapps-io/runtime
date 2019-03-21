@@ -155,16 +155,23 @@ body {
   color: rgba(255, 255, 255, 0.75);
 }
 .login-page .form-group label.labelx .form-control {
-  background: transparent;
+  background-color: transparent !important;
   border: none;
   border-radius: 100px;
-  transition: background-color 10000000s ease-out 0s;
+  background-image: none;
   -webkit-text-fill-color: #fff !important;
   padding-left: 0;
   padding-right: 0;
+  border-radius: 0 !important;
 }
 .login-page .form-group.error {
   margin-bottom: 0px;
+}
+.login-page input:-webkit-autofill,
+.login-page input:-webkit-autofill:hover,
+.login-page input:-webkit-autofill:focus,
+.login-page input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
 }
 .login-page .login-sec form {
   padding: 20px 0px;
