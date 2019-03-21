@@ -213,26 +213,26 @@ angular.module('primeapps')
                     "value": "/app/dashboard",
                     "type": "other"
                 },
-                {
-                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Newsfeed'),
-                    "value": "/app/newsfeed",
-                    "type": "other"
-                },
+                // {
+                //     "label_en_singular": $filter('translate')('Setup.HelpGuide.Newsfeed'),
+                //     "value": "/app/newsfeed",
+                //     "type": "other"
+                // },
                 {
                     "label_en_singular": $filter('translate')('Setup.HelpGuide.Report'),
                     "value": "/app/reports",
                     "type": "other"
-                },
-                {
-                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Tasks'),
-                    "value": "/app/tasks",
-                    "type": "other"
-                },
-                {
-                    "label_en_singular": $filter('translate')('Setup.HelpGuide.Calendar'),
-                    "value": "/app/calendar",
-                    "type": "other"
                 }
+                // {
+                //     "label_en_singular": $filter('translate')('Setup.HelpGuide.Tasks'),
+                //     "value": "/app/tasks",
+                //     "type": "other"
+                // },
+                // {
+                //     "label_en_singular": $filter('translate')('Setup.HelpGuide.Calendar'),
+                //     "value": "/app/calendar",
+                //     "type": "other"
+                // }
             );
 
             var dialog_uid = plupload.guid();
