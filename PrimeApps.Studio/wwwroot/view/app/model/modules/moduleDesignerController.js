@@ -1436,6 +1436,6 @@ angular.module('primeapps')
 
             }
 
+            $scope.showEditModal(false);
         }
-
     ]);
