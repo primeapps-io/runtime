@@ -23,6 +23,17 @@
         <div class="modal-dialog scroll-style-4">
             <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
             <div ng-if="!modalLoading" class="section">
+                <div class="form-group"
+                     ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
+                    <label class="col-sm-4 required-field"> {{'Setup.Modules.SingularName' | translate}} <span
+                            class="required-label">(required)</span></label>
+                    <input type="text"
+                           name="labelSingular"
+                           class="form-control ng-animate-disabled col-sm-8"
+                           required
+                           maxlength="50"
+                           ng-model="module['label_' + language + '_singular']">
+                </div>
                 <div class="form-group" ng-class="{'has-error': editForm.$submitted && editForm.labelPlural.$invalid}">
                     <label class="col-sm-4 required-field"> {{'Setup.Modules.PluralName' | translate}}
                         <span class="required-label">(required)</span>
@@ -34,17 +45,6 @@
                            maxlength="50"
                            focus="currentLabelState"
                            ng-model="module['label_' + language + '_plural']">
-                </div>
-                <div class="form-group"
-                     ng-class="{'has-error': editForm.$submitted && editForm.labelSingular.$invalid}">
-                    <label class="col-sm-4 required-field"> {{'Setup.Modules.SingularName' | translate}} <span
-                            class="required-label">(required)</span></label>
-                    <input type="text"
-                           name="labelSingular"
-                           class="form-control ng-animate-disabled col-sm-8"
-                           required
-                           maxlength="50"
-                           ng-model="module['label_' + language + '_singular']">
                 </div>
                 <div class="form-group icon-search-list">
                     <label class="col-sm-4">{{'Common.Icon' | translate}}</label>

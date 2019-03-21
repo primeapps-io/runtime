@@ -11,6 +11,19 @@ angular.module('primeapps')
                 return;
             }
 
+            $scope.colors = [
+                { value: '#D72A20' },
+                { value: '#833CA3' },
+                { value: '#17ACFE' },
+                { value: '#33ffff' },
+                { value: '#229C51' },
+                { value: '#FFAD1C' },
+                { value: '#1C3E7D' },
+                { value: '#C35E21' }, 
+                { value: '#F3C937' }, 
+                { value: '#6B2F5D' }, 
+            ];
+
             $scope.orgModel = {};
             $scope.icons = ModuleService.getIcons(2);
 
@@ -63,7 +76,7 @@ angular.module('primeapps')
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
                         $rootScope.currentOrganization.icon = $scope.orgModel.icon;
                         $rootScope.currentOrganization.color = $scope.orgModel.color;
-                        toastr.success($filter('translate')('Organization  update successfully'));
+                        toastr.success($filter('translate')('Organization is updated successfully.'));
                         $scope.saving = false;
                     });
             };

@@ -33,8 +33,11 @@
                     </div>
                     <div class="form-group">
                         <div ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                            <label class="required-field">Organization Color</label>
-                            <input name="colorpicker" type="color" class="form-control" ng-model="orgModel.color">
+                            <div class="colorpickx" style="text-align:center;background:unset;margin-bottom:unset;">
+                                <div style="display:inline-block;">
+                                    <span ng-repeat="color in colors" ng-click="orgModel.color=color.value" ng-class="{'active':orgModel.color==color.value}" style="background: {{color.value}}"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-group icon-search-list">
@@ -43,7 +46,7 @@
                             <ui-select-match placeholder="Select an icon">
                                 <div>
                                     <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                    <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                    <span ng-ifcolorpicker="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
                                 </div>
                             </ui-select-match>
                             <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">

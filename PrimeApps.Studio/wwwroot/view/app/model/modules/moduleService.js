@@ -983,7 +983,7 @@ angular.module('primeapps')
 
                 prepareDefaults: function (module) {
                     module.system_type = 'custom';
-                    module.label_en_plural = defaultLabels.DefaultModuleNameEn;
+                    module.label_en_plural = defaultLabels.DefaultModuleNameEn+"s";
                     module.label_en_singular = defaultLabels.DefaultModuleNameEn;
                     module.label_tr_plural = defaultLabels.DefaultModuleNameTr;
                     module.label_tr_singular = defaultLabels.DefaultModuleNameTr;
