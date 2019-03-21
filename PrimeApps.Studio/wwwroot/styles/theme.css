@@ -3292,7 +3292,7 @@ button:focus, select:focus {
   border-radius: 10px;
   background: #FFF;
   position: relative;
-  margin: 5px;
+  margin: 7px;
   cursor: pointer;
   float: left;
 }

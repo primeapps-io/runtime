@@ -33,13 +33,11 @@
                     </div>
                     <div class="form-group">
                         <div ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                            <label class="required-field">Organization Color</label>
-                            <div class="colorpickx">
-                                <span style="background: #0b2e13"></span>
-                                <span class="active" style="background: #0b2e13"></span>
-                                <span style="background: #0b2e13"></span>
+                            <div class="colorpickx" style="text-align:center;background:unset;margin-bottom:unset;">
+                                <div style="display:inline-block;">
+                                    <span ng-repeat="color in colors" ng-click="orgModel.color=color.value" ng-class="{'active':orgModel.color==color.value}" style="background: {{color.value}}"></span>
+                                </div>
                             </div>
-                            <input name="colorpicker" type="color" class="form-control" ng-model="orgModel.color">
                         </div>
                     </div>
                     <div class="form-group form-group icon-search-list">

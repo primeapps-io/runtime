@@ -163,18 +163,31 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.reloading = true;
         };
 
+        $scope.colors = [
+            { value: '#D72A20' },
+            { value: '#833CA3' },
+            { value: '#17ACFE' },
+            { value: '#33ffff' },
+            { value: '#229C51' },
+            { value: '#FFAD1C' },
+            { value: '#1C3E7D' },
+            { value: '#C35E21' },
+            { value: '#F3C937' },
+            { value: '#6B2F5D' },
+        ];
+
         $scope.newOrganization = function () {
             $scope.icons = LayoutService.getIcons();
             $scope.organization = {};
-            var colorPalet = [
-                '#1157A3',
-                '#9F5590',
-                '#92C549',
-                '#F1638B',
-                '#CE0404'
-            ];
+            //var colorPalet = [
+            //    '#1157A3',
+            //    '#9F5590',
+            //    '#92C549',
+            //    '#F1638B',
+            //    '#CE0404'
+            //];
 
-            var orgColor = colorPalet[Math.floor(Math.random() * colorPalet.length)];
+            var orgColor = $scope.colors[Math.floor(Math.random() * $scope.colors.length)].value;
             $scope.organization.color = orgColor;
             $scope.organization.icon = 'fas fa-building';
 
