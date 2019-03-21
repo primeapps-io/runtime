@@ -338,8 +338,13 @@ angular.module('primeapps')
                                             } else {
                                                 mainMenuItem.display = true;
                                                 for (var o = 0; o < mainMenuItem.menu_items.length; o++) {
-                                                    var result_mainMenuItem_module = $filter('filter')($rootScope.modules, {id: mainMenuItem.menu_items[o].module_id}, true)[0];
-                                                    mainMenuItem.menu_items[o].display = result_mainMenuItem_module.display;
+                                                    //Componenets don't have module_id
+                                                    if (mainMenuItem.menu_items[o].module_id){
+                                                        var result_mainMenuItem_module = $filter('filter')($rootScope.modules, {id: mainMenuItem.menu_items[o].module_id}, true)[0];
+                                                        mainMenuItem.menu_items[o].display = result_mainMenuItem_module.display;
+                                                    } 
+                                                  else
+                                                        mainMenuItem.menu_items[o].display = true;
                                                 }
                                             }
                                         }
