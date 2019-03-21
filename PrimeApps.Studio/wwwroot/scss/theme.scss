@@ -4013,6 +4013,59 @@ button, select {
     font-weight: bold;
     
   }
+  .colorpickx{
+    padding:5px;
+    background: rgba(0,0,0,0.05);
+    display: block;
+    margin-bottom:20px;
+    &:after{
+      content:'';
+      width: 100%;
+      display: table;
+    }
+    span{
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      border-radius: 10px;
+      background: #FFF;
+      position: relative;
+      margin: 5px;
+      cursor: pointer;
+      float:left;
+      &:after{
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        display: inline-block;
+        left: 50%;
+        top: 50%;
+        border: 1px solid $primeapps-color;
+        @include hoverEffect();
+        visibility: hidden;
+        opacity: 0;
+      }
+      &:hover{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: .5;
+        }
+      }
+      &.active{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+  }
 }
 
 .placeholder {

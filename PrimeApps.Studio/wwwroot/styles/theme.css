@@ -3274,6 +3274,58 @@ button:focus, select:focus {
   font-size: 16px;
   font-weight: bold;
 }
+.primeapps .colorpickx {
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.05);
+  display: block;
+  margin-bottom: 20px;
+}
+.primeapps .colorpickx:after {
+  content: "";
+  width: 100%;
+  display: table;
+}
+.primeapps .colorpickx span {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 10px;
+  background: #FFF;
+  position: relative;
+  margin: 5px;
+  cursor: pointer;
+  float: left;
+}
+.primeapps .colorpickx span:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  border: 1px solid #0D6FAA;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  visibility: hidden;
+  opacity: 0;
+}
+.primeapps .colorpickx span:hover:after {
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  visibility: visible;
+  opacity: 0.5;
+}
+.primeapps .colorpickx span.active:after {
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  visibility: visible;
+  opacity: 1;
+}
 
 .placeholder {
   margin: 0 auto;
