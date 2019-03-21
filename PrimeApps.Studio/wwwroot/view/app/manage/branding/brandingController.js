@@ -197,7 +197,7 @@ angular.module('primeapps')
 
                 BrandingService.updateAppTheme($scope.appId, appThemes)
                     .then(function (response) {
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        toastr.success($filter('translate')('Branding is updated successfully.'));
                         $scope.savingApp = false;
                     });
             };
@@ -232,7 +232,7 @@ angular.module('primeapps')
                 authThemes.logo = $scope.authTheme.logo;
                 BrandingService.updateAuthTheme($scope.appId, authThemes)
                     .then(function (response) {
-                        toastr.success($filter('translate')('Güncelleme Başarılı'));
+                        toastr.success($filter('translate')('Branding is updated successfully.'));
                         $scope.savingAuth = false;
                     });
             };
