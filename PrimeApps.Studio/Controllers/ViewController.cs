@@ -116,7 +116,14 @@ namespace PrimeApps.Studio.Controllers
 		{
             if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.Update))
                 return StatusCode(403);
+		
+            
+            if (!_recordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
+	            ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
 
+            if (!ModelState.IsValid)
+	            return BadRequest(ModelState);
+            
             var viewEntity = await _viewRepository.GetById(id);
 
 			if (viewEntity == null)
