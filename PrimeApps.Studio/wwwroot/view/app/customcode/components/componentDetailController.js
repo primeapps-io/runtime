@@ -98,13 +98,12 @@ angular.module('primeapps')
                         });
                     })
                     .catch(function (response) {
-                        console.log('error: ' + response);
                         $scope.filesLoading = false;
                     });
             };
-            
+
             $scope.getFileList();
-            
+
             ComponentsService.get($scope.id)
                 .then(function (response) {
                     if (!response.data) {
@@ -159,7 +158,7 @@ angular.module('primeapps')
                     $scope.copyComponent.content.files = $scope.component.content.files.split("\n");
                 }
 
-                if (!$scope.content.templateUrl) {
+                if (!$scope.content.templateUrl && $scope.component.content.app && $scope.component.content.app.templateFile) {
                     $scope.copyComponent.content.app.templateUrl = $scope.component.content.app.templateFile;
                 }
 
@@ -173,7 +172,7 @@ angular.module('primeapps')
                         $scope.editing = false;
                         toastr.success("Component updated successfully.");
                     })
-                    .catch(function(){
+                    .catch(function () {
                         $scope.saving = false;
                         $scope.editing = false;
                         toastr.error("Component not updated successfully.");

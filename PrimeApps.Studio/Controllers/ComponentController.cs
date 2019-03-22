@@ -115,7 +115,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an component");
 
-            _componentHelper.CreateSample(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, model);
+            _componentHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
 
             return Ok(component.Id);
         }
@@ -175,7 +175,7 @@ namespace PrimeApps.Studio.Controllers
             if (component == null)
                 return BadRequest("Component is not exist.");
 
-            var nameList = await _componentHelper.GetAllFileNames(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, component.Name);
+            var nameList = await _componentHelper.GetAllFileNames(Request.Cookies["gitea_token"], (int)AppId, component.Name, OrganizationId);
 
             return Ok(nameList);
         }
@@ -207,7 +207,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occurred while creating an deployment.");
 
-            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, deployment.Id));
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, Request.Cookies["gitea_token"], (int)AppId, deployment.Id, OrganizationId));
 
             return Ok();
         }
