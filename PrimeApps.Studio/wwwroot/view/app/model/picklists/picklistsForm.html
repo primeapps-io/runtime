@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-dialog scroll-style-4"> 
+    <div class="modal-dialog scroll-style-4">
         <div ng-show="!picklist.id" class="form-group">
             <form name="picklistForm" class="form-horizontal form-custom">
 
@@ -77,7 +77,7 @@
             <!--<label class="required-field">{{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>-->
             <div id="rightTopBar" class="scrollBar"></div>
             <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
-                
+
                 <table class="table table-striped" ng-show="modalLoading">
                     <thead>
                         <tr>
@@ -90,7 +90,7 @@
                             <th width="120"></th>
                         </tr>
                     </thead>
-                    <tbody  class="picklist-options">
+                    <tbody class="picklist-options">
                         <tr ng-repeat="item in placeholderArray">
                             <td><div class="animated-background"></div></td>
                             <td><div class="animated-background"></div></td>
@@ -139,7 +139,7 @@
                                 <input name="value3" class="form-control" maxlength="100" ng-model="itemModel.value3"
                                        placeholder="{{'Picklist.Items.Value3'| translate}}" />
                             </td>
-                            <td class="text-center">
+                            <td class="text-right">
                                 <div class="new-actions">
                                     <button title="{{'Common.Save' | translate}}" ladda="itemModel.saving"
                                             ng-click="saveItem();">
@@ -153,7 +153,7 @@
                             </td>
                         </tr>
                         <tr ng-repeat="picklistItem in picklist.items track by picklistItem.order"
-                            ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}" >
+                            ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
                             <td ng-class="picklistItem.edit ? 'text-center':'option-dragging option-handle text-center'">
                                 <i ng-show="!picklistItem.edit" class="fa fa-arrows option-dragging option-handle"></i>
                             </td>
@@ -206,7 +206,7 @@
                                             title="{{picklistItem.inactive ? 'Common.Activate':'Common.Deactivate' | translate}}">
                                         <i ng-class="picklistItem.inactive ? 'fas fa-eye-slash':'fas fa-eye'"></i>
                                     </button>
-                                    <button ng-show="picklistItem.id" ng-click="picklistItem.edit=true" class="edit-btn"
+                                    <button ng-show="picklistItem.id" ng-click="editModeOpen(picklistItem)" class="edit-btn"
                                             title="{{'Common.Edit' | translate}}">
                                         <i class="fas fa-pen"></i>
                                     </button>
@@ -218,11 +218,10 @@
                                 </div>
                                 <div class="new-actions" ng-show="picklistItem.edit">
                                     <button title="{{'Common.Save' | translate}}" ladda="picklistItem.savingItem"
-                                            ng-click="updateItem(picklistItem)">
+                                            ng-click="updateItem(picklistItem); editModeClose(picklistItem);">
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button class="delete-btn" ng-click="picklistItem.edit=false"
-                                            ladda="picklistItem.deletingItem" title="{{'Common.Cancel' | translate}}">
+                                    <button title="{{'Common.Cancel' | translate}}" class="delete-btn" ng-click="editModeClose(picklistItem);">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>

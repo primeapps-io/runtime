@@ -209,7 +209,7 @@ namespace PrimeApps.Studio.Controllers
             PicklistHelper.UpdateItemEntity(item, itemEntity);
             var result = await _picklistRepository.Update(itemEntity);
 
-            if (result > 0)
+            if (result >= 0)
                 return Ok(itemEntity);
             else
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
