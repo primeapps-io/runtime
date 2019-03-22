@@ -22,6 +22,9 @@ namespace PrimeApps.Model.Common.Organization
         [JsonProperty("email"), DataMember(Name = "email"), Required]
         public string Email { get; set; }
 
+        [JsonProperty("password"), DataMember(Name = "password")]
+        public string Password { get; set; }
+
         [JsonProperty("first_name"), DataMember(Name = "first_name")]
         public string FirstName { get; set; }
 
