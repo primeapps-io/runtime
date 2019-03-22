@@ -29,7 +29,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': HelpPage.$submitted && HelpPage.helpName.$invalid}">
                                     <label class="col-sm-12 required-field"> {{'Setup.HelpGuide.HelpScreenName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <input name="helpName" class="form-control" required ng-model="helpModalObj.helpName" />
+                                    <input name="helpName" class="form-control" required maxlength="50" ng-model="helpModalObj.helpName" />
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-12 required-field"> Module</label>
