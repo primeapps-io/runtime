@@ -9,9 +9,9 @@ angular.module('primeapps')
             $scope.activePage = 1;
             $rootScope.breadcrumblist[2].title = 'Profiles';
             $scope.loading = true;
-            $scope.moduleLead = $filter('filter')($rootScope.appModules, {name: 'leads'}, true)[0];
-            $scope.moduleIzinler = $filter('filter')($rootScope.appModules, {name: 'izinler'}, true)[0];
-            $scope.moduleRehber = $filter('filter')($rootScope.appModules, {name: 'rehber'}, true)[0];
+            $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
+            $scope.moduleIzinler = $filter('filter')($rootScope.appModules, { name: 'izinler' }, true)[0];
+            $scope.moduleRehber = $filter('filter')($rootScope.appModules, { name: 'rehber' }, true)[0];
 
             $scope.startPageList = [
                 {
@@ -93,7 +93,7 @@ angular.module('primeapps')
                         has_admin_rights: true
                     })[0].permissions;
                     //Create
-                    var dashboard = $filter('filter')($scope.startPageList, {value: "Dashboard"}, true)[0];
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
                     $scope.profile.PageStart = dashboard;
 
                     $scope.loading = false;
@@ -149,7 +149,7 @@ angular.module('primeapps')
                         has_admin_rights: true
                     })[0].permissions;
                     //Create
-                    var dashboard = $filter('filter')($scope.startPageList, {value: "Dashboard"}, true)[0];
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
                     $scope.profile.PageStart = dashboard;
 
                     $scope.loading = false;
@@ -170,7 +170,7 @@ angular.module('primeapps')
                 $scope.profile[setValue] = true;
 
                 if ($scope.profile.PageStart.value === "Newsfeed") {
-                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, {Type: 3}, true)[0];
+                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
                     startPageNewsfeedControl.Read = true;
                 }
 
@@ -182,12 +182,12 @@ angular.module('primeapps')
                 var existingProfile = null;
 
                 if (!$scope.profile.id) {
-                    existingProfile = $filter('filter')($scope.profilesCopy, {Name: $scope.profile.name}, true)[0];
+                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.name }, true)[0];
 
                     if (existingProfile)
                         isValid = false;
                 } else {
-                    existingProfile = $filter('filter')($scope.profilesCopy, {Name: $scope.profile.name}, true)[0];
+                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.name }, true)[0];
 
                     if (existingProfile && existingProfile.id !== $scope.profile.id)
                         isValid = false;
@@ -223,12 +223,12 @@ angular.module('primeapps')
                 var result = null;
 
                 $scope.profile.start_page = $scope.profile.PageStart.valueLower;
-                var setPage = $filter('filter')($scope.startPageList, {value: $scope.profile.PageStart.value}, true)[0];
+                var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
 
                 $scope.profile[setPage.value] = true;
 
                 if ($scope.profile.startpage === "newsfeed") {
-                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, {Type: 3}, true)[0];
+                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
                     startPageNewsfeedControl.Read = true;
                 }
 
@@ -250,7 +250,9 @@ angular.module('primeapps')
                     $scope.profileFormModal.hide();
                     $scope.changePage($scope.activePage);
                     toastr.success($filter('translate')('Setup.Profiles.SubmitSuccess'));
-                    $scope.pageTotal++;
+                    if (!$scope.profile.id) {
+                        $scope.pageTotal++;
+                    }
                     if (response.data && response.data != null) {
                         $rootScope.appProfiles.push(response.data);
                     }
@@ -262,28 +264,28 @@ angular.module('primeapps')
 
             var editProfile = function (profile) {
                 if (profile.id) {
-                    $scope.profile = $filter('filter')($scope.profiles, {id: profile.id}, true)[0];
+                    $scope.profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
 
                     //Update
-                    var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
+                    var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                     $scope.profile.PageStart = setPageStart;
 
                     if ($scope.profile.parent_id != 0) {
-                        $scope.profile.parent_id = $filter('filter')($scope.profiles, {id: $scope.profile.parent_id}, true)[0];
+                        $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: $scope.profile.parent_id }, true)[0];
                     }
                 }
             };
 
             var cloneProfile = function (profile) {
-                var profile = $filter('filter')($scope.profiles, {id: profile.id}, true)[0];
+                var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
                 $scope.profile = profile;
                 delete $scope.profile.user_ids;
                 delete $scope.profile.is_persistent;
                 delete $scope.profile.CreatedBy;
                 delete $scope.profile.id;
-                var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
+                var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                 $scope.profile.PageStart = setPageStart;
-                $scope.profile.parent_id = $filter('filter')($scope.profiles, {id: profile.parent_id}, true)[0];
+                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
             };
 
             $scope.showFormModal = function (profile, isCopy) {
@@ -318,17 +320,17 @@ angular.module('primeapps')
                         has_admin_rights: true
                     })[0].permissions;
                     //Create
-                    var dashboard = $filter('filter')($scope.startPageList, {value: "Dashboard"}, true)[0];
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
                     $scope.profile.PageStart = dashboard;
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });

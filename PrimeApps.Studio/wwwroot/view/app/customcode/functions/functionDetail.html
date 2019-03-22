@@ -285,7 +285,7 @@ git push</code>
 
                                     <div class="form-group"
                                          ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.runtime.$invalid}">
-                                        <label class="col-sm-4 required-field">Runtime <span class="required-label">(required)</span></label>
+                                        <label class="col-sm-4 required-field">Programming Language <span class="required-label">(required)</span></label>
                                         <select
                                                 name="runtime"
                                                 class="form-control ng-animate-disabled col-sm-8"
@@ -294,7 +294,7 @@ git push</code>
                                                 ng-disabled="true"
                                                 ng-change="changeRuntime()"
                                                 ng-options="o.value as o.name for o in runtimes">
-                                            <option value="">Select Runtime</option>
+                                            <option value="">Select Programming Language</option>
                                         </select>
                                     </div>
                                 </div>

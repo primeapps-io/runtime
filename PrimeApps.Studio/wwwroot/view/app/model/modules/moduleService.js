@@ -333,8 +333,7 @@ angular.module('primeapps')
                             if (record && record['currency']) {
                                 if (angular.isObject(record['currency'])) {
                                     recordCurrencySymbol = record['currency'].value;
-                                }
-                                else {
+                                } else {
                                     var currencyField = $filter('filter')(module.fields, {name: 'currency'}, true)[0];
                                     var currencyPicklistItem = $filter('filter')(picklists[currencyField.picklist_id], {labelStr: record['currency']})[0];
 
@@ -358,8 +357,7 @@ angular.module('primeapps')
                             if (!angular.isObject(value)) {
                                 var picklistItem = $filter('filter')(picklists[field.picklist_id], {labelStr: value}, true)[0];
                                 field.valueFormatted = picklistItem ? picklistItem.label[$rootScope.language] : value;
-                            }
-                            else {
+                            } else {
                                 field.valueFormatted = value.label[$rootScope.language];
                             }
                             break;
@@ -370,8 +368,7 @@ angular.module('primeapps')
                                 if (!angular.isObject(item)) {
                                     var picklistItem = $filter('filter')(picklists[field.picklist_id], {labelStr: item}, true)[0];
                                     field.valueFormatted += (picklistItem ? picklistItem.label[$rootScope.language] : item) + '; ';
-                                }
-                                else {
+                                } else {
                                     field.valueFormatted += (item.label ? item.label[$rootScope.language] : '') + '; ';
                                 }
                             }
@@ -385,8 +382,7 @@ angular.module('primeapps')
                                 if (!angular.isObject(item)) {
 
                                     field.valueFormatted += " " + item + ";";
-                                }
-                                else {
+                                } else {
                                     field.valueFormatted += " " + item;
                                 }
                             }
@@ -521,8 +517,7 @@ angular.module('primeapps')
 
                             if (!picklistCache) {
                                 picklistIds.push(fieldItem.picklist_id);
-                            }
-                            else {
+                            } else {
                                 picklistCache = $filter('orderByLabel')(picklistCache, $rootScope.language);
 
                                 if (fieldItem.picklist_sortorder && !fieldItem.deleted)
@@ -662,8 +657,7 @@ angular.module('primeapps')
                         if (field.data_type === 'lookup') {
                             if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
 
-                            }
-                            else {
+                            } else {
 
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
@@ -673,8 +667,7 @@ angular.module('primeapps')
 
                             }
 
-                        }
-                        else {
+                        } else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];
@@ -720,8 +713,7 @@ angular.module('primeapps')
                                     profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
-                            }
-                            else {
+                            } else {
                                 section.permissions.push({
                                     id: sectionPermission.id,
                                     profile_id: profile.id,
@@ -772,8 +764,7 @@ angular.module('primeapps')
                                     }
 
                                 });
-                            }
-                            else {
+                            } else {
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
                                 field.operators.push(operators.empty);
@@ -785,15 +776,13 @@ angular.module('primeapps')
                                         field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
                                     }
-                                }
-                                else if (field.lookup_type === 'profiles') {
+                                } else if (field.lookup_type === 'profiles') {
                                     var lookupModule = $filter('filter')(modules, {name: 'profiles'}, true)[0];
                                     if (lookupModule) {
                                         field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
 
                                     }
-                                }
-                                else if (field.lookup_type === 'roles') {
+                                } else if (field.lookup_type === 'roles') {
                                     var lookupModule = $filter('filter')(modules, {name: 'roles'}, true)[0];
                                     if (lookupModule) {
                                         field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
@@ -801,8 +790,7 @@ angular.module('primeapps')
                                 }
                             }
 
-                        }
-                        else {
+                        } else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];
@@ -920,20 +908,16 @@ angular.module('primeapps')
 
                             if (field.lookup_type === 'users') {
                                 lookupRecord.primary_value = lookupRecord['full_name'];
-                            }
-                            else if (field.lookup_type === 'profiles') {
+                            } else if (field.lookup_type === 'profiles') {
                                 lookupRecord.primary_value = lookupRecord['name'];
-                            }
-                            else if (field.lookup_type === 'roles') {
+                            } else if (field.lookup_type === 'roles') {
                                 lookupRecord.primary_value = lookupRecord['label_' + $rootScope.user.tenant_language];
-                            }
-                            else if (field.lookup_type === 'relation') {
+                            } else if (field.lookup_type === 'relation') {
                                 if (record[field.lookup_relation] && record['related_to'])
                                     lookupRecord = record['related_to'];
                                 else
                                     lookupRecord = null;
-                            }
-                            else {
+                            } else {
                                 var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
                                 var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {
                                     primary: true,
@@ -983,7 +967,7 @@ angular.module('primeapps')
 
                 prepareDefaults: function (module) {
                     module.system_type = 'custom';
-                    module.label_en_plural = defaultLabels.DefaultModuleNameEn;
+                    module.label_en_plural = defaultLabels.DefaultModuleNameEn+"s";
                     module.label_en_singular = defaultLabels.DefaultModuleNameEn;
                     module.label_tr_plural = defaultLabels.DefaultModuleNameTr;
                     module.label_tr_singular = defaultLabels.DefaultModuleNameTr;
@@ -1000,8 +984,8 @@ angular.module('primeapps')
                     if ($rootScope.appModules.length < 1)
                         module.order = 1;
                     else
-                        module.order = Math.max.apply(null, sortOrders) + 1;         
-                    
+                        module.order = Math.max.apply(null, sortOrders) + 1;
+
                     module.name = 'custom_module_' + 9999;
                     module.sections = [];
                     module.fields = [];
@@ -1313,8 +1297,7 @@ angular.module('primeapps')
                             if (i < 20) {
                                 module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + i;
                                 i++;
-                            }
-                            else {
+                            } else {
                                 var dt = new Date();
                                 module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + dt.getTime();
                             }
@@ -1350,8 +1333,7 @@ angular.module('primeapps')
                                         lastPart = lastPart.replace(/[0-9]/g, '');
                                         slugParts.pop();
                                         cleanSlug = slugParts.join('_') + '_' + lastPart;
-                                    }
-                                    else {
+                                    } else {
                                         sectionNameNumber = existingSection.name.replace(/\D/g, '');
                                         cleanSlug = existingSection.name.replace(/[0-9]/g, '');
                                     }
@@ -1369,8 +1351,7 @@ angular.module('primeapps')
                                         section.name = newSlug;
                                 }
                                 while (existingSection)
-                            }
-                            else
+                            } else
                                 section.name = newSectionName;
                         }
                         //permissions
@@ -1520,8 +1501,7 @@ angular.module('primeapps')
                                         lastPart = lastPart.replace(/[0-9]/g, '');
                                         slugParts.pop();
                                         cleanSlug = slugParts.join('_') + '_' + lastPart;
-                                    }
-                                    else {
+                                    } else {
                                         fieldNameNumber = existingField.name.replace(/\D/g, '');
                                         cleanSlug = existingField.name.replace(/[0-9]/g, '');
                                     }
@@ -1539,8 +1519,7 @@ angular.module('primeapps')
                                         field.name = newSlug;
                                 }
                                 while (existingField);
-                            }
-                            else {
+                            } else {
                                 field.name = slug;
                             }
                         }
@@ -1559,8 +1538,7 @@ angular.module('primeapps')
 
                     if (deletedModulesCache) {
                         deferred.resolve(deletedModulesCache);
-                    }
-                    else {
+                    } else {
                         $http.get(config.apiUrl + 'module/get_all_deleted')
                             .then(function (response) {
                                 $cache.put('modulesDeleted', response.data);
@@ -1652,8 +1630,7 @@ angular.module('primeapps')
                         if (selectedField) {
                             newField.order = selectedField.order;
                             fields.selectedFields.push(newField);
-                        }
-                        else {
+                        } else {
                             var primaryField = $filter('filter')(moduleFields, {primary: true}, true)[0];
 
                             if (field.name !== primaryField.name)
@@ -1865,8 +1842,7 @@ angular.module('primeapps')
 
                             if (currentRecord && angular.equals(newCurrentRecord[field.name], newRecord[field.name]))
                                 delete newRecord[field.name];
-                        }
-                        else {
+                        } else {
                             newRecord[field.name] = null;
                         }
                     }
@@ -1892,8 +1868,7 @@ angular.module('primeapps')
                             newRecord.shared_user_groups = null;
 
                         delete newRecord.shared_read;
-                    }
-                    else {
+                    } else {
                         newRecord.shared_users = null;
                         newRecord.shared_user_groups = null;
                         delete newRecord.shared_read;
@@ -1920,8 +1895,7 @@ angular.module('primeapps')
                             newRecord.shared_user_groups_edit = null;
 
                         delete newRecord.shared_edit;
-                    }
-                    else {
+                    } else {
                         newRecord.shared_users_edit = null;
                         newRecord.shared_user_groups_edit = null;
                         delete newRecord.shared_edit;
@@ -1957,8 +1931,7 @@ angular.module('primeapps')
                                             field.lookupModulePrimaryField.operators.push(operatorLookup);
                                         }
                                     });
-                            }
-                            else {
+                            } else {
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
                                 field.operators.push(operators.empty);
@@ -1987,8 +1960,7 @@ angular.module('primeapps')
                                 //}
                             }
 
-                        }
-                        else {
+                        } else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];

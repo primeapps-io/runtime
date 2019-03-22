@@ -5,6 +5,17 @@ angular.module('primeapps')
     .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
         function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
 
+            $scope.moduleChange = false;
+            $scope.$on('$locationChangeStart', function (event) {
+                if ($scope.moduleChange) {
+
+                    if (!confirm($filter('translate')('Module.LeavePageWarning'))) {
+                        event.preventDefault();
+                    }
+
+                }
+            });
+            
             $rootScope.breadcrumblist[2].title = 'Module Designer';
             $scope.loading = true;
 
@@ -322,7 +333,7 @@ angular.module('primeapps')
                 ModuleService.getModuleById($scope.id).then(function (result) {
                     $scope.module = result.data;
                     $scope.pureModule = angular.copy($scope.module);
-                    $scope.module.is_component = angular.equals($scope.module.system_type, "component") ;
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component");
 
                     if (!$scope.module) {
                         toastr.warning($filter('translate')('Common.NotFound'));
@@ -922,7 +933,7 @@ angular.module('primeapps')
                     $scope.saveModule();
             };
 
-            $scope.saveField = function (fieldForm) {
+            $scope.saveField = function (fieldForm) {             
                 if (!fieldForm.$valid) {
                     $timeout(function () {
                         var scroller = document.getElementById('field-form-body');
@@ -1425,6 +1436,6 @@ angular.module('primeapps')
 
             }
 
+            $scope.showEditModal(false);
         }
-
     ]);

@@ -162,11 +162,11 @@ angular.module('primeapps')
             };
 
             $scope.$on('dragulardrop', function (e, el) {
-                if ($scope.fields.selectedFields.length < 1)
+                if ($scope.fields.selectedFields.length < 1) {
                     $scope.background_color = "background-color: #eed3d7";
-                else
+                    toastr.error($filter('translate')('View.FieldError'));
+                } else
                     $scope.background_color = "background-color: #fbfbfb";
-                //$scope.viewForm.$setValidity('field', true);
             });
 
             var dragular = function () {
@@ -324,7 +324,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.save = function (viewForm) {
+            $scope.save = function (viewForm, wizardStep) {
 
                 if (!viewForm.$valid || !$scope.validate(viewForm))
                     return;
@@ -482,11 +482,17 @@ angular.module('primeapps')
 
                 function error(data, status) {
                     if (status === 400) {
-                        if (data.model_state && data.model_state['view._filter_logic'])
-                            $scope.viewForm.filterLogic.$setValidity('filterLogic', false);
+                        if (data && data['FilterLogic']) {
+                            viewForm.filterLogic.$setValidity('filterLogic', false);
+                            toastr.error($filter('translate')('View.InvalidFilterLogic'));
+                            $scope.wizardStep = 2;
+                        }
 
-                        if (data.model_state && data.model_state['request._filter_logic'])
-                            $scope.viewForm.filterLogic.$setValidity('filterLogicFilters', false);
+                        if (data && data['request._filter_logic']) {
+                            viewForm.filterLogic.$setValidity('filterLogicFilters', false);
+                            toastr.error($filter('translate')('View.InvalidFilterLogicFilters'));
+                            $scope.wizardStep = 2;
+                        }
                     }
                 }
             };
@@ -498,23 +504,24 @@ angular.module('primeapps')
                 if (!viewForm.label.$valid || !viewForm.module.$valid) {
 
                     if (viewForm.label.$error.required && viewForm.module.$error.required)
-                        toastr.error($filter('translate')('Module.RequiredError'));  
-                    
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
                     if (viewForm.label.$error.required && !viewForm.module.$error.required)
                         toastr.error("Label is required");
-                    
+
                     if (viewForm.module.$error.required && !viewForm.label.$error.required)
                         toastr.error("Module is required");
-                    
+
                     return false;
                 }
 
                 if ($scope.fields && $scope.fields.selectedFields.length < 1 && $scope.wizardStep !== 0) {
-                   // viewForm.$setValidity('field', false);
-                    
+
+                    viewForm.$setValidity('field', false);
+
                     if (viewForm.$error.field)
                         toastr.error($filter('translate')('View.FieldError'));
-                    
+
                     $scope.background_color = "background-color: #eed3d7";
                     return false;
                 }
@@ -845,7 +852,15 @@ angular.module('primeapps')
                     }
                 }
                 return false;
-            }
+            };
 
+            $scope.filterChange = function (viewForm) {
+
+                if (viewForm.filterLogic.$invalid) {
+                    viewForm.filterLogic.$valid = true;
+                    viewForm.filterLogic.$invalid = false;
+                    viewForm.$valid = true;
+                }
+            };
         }
     ]);
