@@ -4,6 +4,7 @@ angular.module('primeapps')
 
     .controller('OrgSettingsController', ['$rootScope', '$scope', '$filter', '$location', 'helper', 'OrgSettingsService', 'ModuleService', '$state',
         function ($rootScope, $scope, $filter, $location, helper, OrgSettingsService, ModuleService, $state) {
+            $scope.pageLoading = true;
 
             if ($rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
@@ -41,6 +42,7 @@ angular.module('primeapps')
                 $scope.orgModel.name = data.name;
                 $scope.orgModel.id = data.id;
                 $scope.orgModel.color = data.color || '#9F5590';
+                $scope.pageLoading = false;
             });
 
             var getMyOrganizations = function () {

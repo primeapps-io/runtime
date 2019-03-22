@@ -10,7 +10,11 @@ angular.module('primeapps')
                 $state.go('studio.allApps');
                 return;
             }
-
+            function validateEmail(email) {
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(email);
+            }
+            var keylist = "xNXRKA0IOYmPP7jgN088zdEwNqqi7erpdMhsoqAVJ0r0sBaeDDCq4sbS2FkDRnEWa5FyYerM);2$0ZUA;I:1^]Rs1LGiS:v;!SO,#jqTq0<1B[.rwtn8K:-0FO:O,";
 
             $scope.collaboratorArray = [];
             // $scope.$parent.menuTopTitle = "Organization";
@@ -18,6 +22,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'collaborators';
             // $scope.updatingRole = false;
             $scope.collaboratorModel = {};
+            $scope.collaboratorModel.auto_pass = "false";
             $scope.loading = true;
             $scope.showNewCollaboratorInfo = false;
             $scope.activePage = 1;
@@ -42,7 +47,9 @@ angular.module('primeapps')
             $scope.generator(10);
 
             CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
-                $scope.$parent.collaboratorCount = response.data;
+                if ($scope.$parent && $scope.$parent.collaboratorCount) {
+                    $scope.$parent.collaboratorCount = response.data;
+                }
                 $scope.pageTotal = response.data;
             });
 
@@ -53,7 +60,9 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
-
+                if ($scope.collaboratorModel) {
+                    $scope.collaboratorModel = {};
+                }
                 if (page !== 1) {
                     var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
@@ -124,22 +133,39 @@ angular.module('primeapps')
             //}
 
 
-
             $scope.addNewCollaborator = function () {
+                $scope.collaboratorModel.auto_pass = "true";
+                $scope.resultModel = {
+                    sendPassword: true
+                };
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
                 });
 
             };
+            $scope.generatePass = function () {
 
+                var temp = '';
+                for (var i = 0; i < 8; i++) {
+                    temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
+                }
+                $scope.collaboratorModel.password = temp;
+                ;
+            }
+            $scope.passwordChange = function () {
+                if ($scope.collaboratorModel.auto_pass) {
+                    $scope.collaboratorModel.auto_pass = false;
+                }
+
+            }
             $scope.save = function (newCollaboratorForm) {
                 if (!newCollaboratorForm.$valid)
                     return false;
@@ -157,18 +183,19 @@ angular.module('primeapps')
                 newCol.email = $scope.collaboratorModel.email;
                 newCol.first_name = $scope.collaboratorModel.first_name;
                 newCol.last_name = $scope.collaboratorModel.last_name;
+                newCol.password = $scope.collaboratorModel.password;
                 newCol.created_at = new Date();
 
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
-                            $scope.sendCollaboratorEmail = $scope.collaboratorModel.email;
-                            $scope.collaboratorModel.email = "";
-                            $scope.submitting = false;
-                            $scope.userPassword = response.data.password;
-                            $scope.showNewCollaboratorInfo = true;
                             $scope.changePage(1);
+                            if ($scope.resultModel.sendPassword) {
+                                $scope.sendEmailPassword($scope.collaboratorModel);
+                            }
+                            $scope.submitting = false;
+                            $scope.addNewCollaboratorModal.hide();
                         }
                     })
                     .catch(function () {
@@ -212,19 +239,19 @@ angular.module('primeapps')
                     });
             }
 
-            $scope.delete = function (collaborator) { 
-                if (!collaborator) 
+            $scope.delete = function (collaborator) {
+                if (!collaborator)
                     return false;
-                
+
                 swal({
                     title: "Are you sure?",
                     text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
-                }).then(function (value) { 
+                }).then(function (value) {
                     if (value) {
-                        collaborator.deleting = true; 
+                        collaborator.deleting = true;
                         var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
 
                         if (!result) {
@@ -258,24 +285,26 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.sendEmail = function () {
-                if ($scope.sendCollaboratorEmail) {
-                    $scope.savingEmailPassword = true;
+            $scope.sendEmailPassword = function (collaboratorModel) {
+
+                if (collaboratorModel.auto_pass) {
+
                     var sendEmailData = {};
-                    sendEmailData.email = $scope.sendCollaboratorEmail;
                     sendEmailData.app_id = 2;
                     sendEmailData.culture = "en";
-                    sendEmailData.first_name = $scope.collaboratorModel.first_name;
-                    sendEmailData.password = $scope.userPassword;
-                    CollaboratorsService.sendEmail(sendEmailData)
-                        .then(function (response) {
-                            $scope.savingEmailPassword = false;
-                            toastr.success("Email sent successfullyl");
-                        });
+                    sendEmailData.first_name = collaboratorModel.first_name;
+                    sendEmailData.password = collaboratorModel.password;
+                    var email = collaboratorModel.email;
+
+                    if (validateEmail(email)) {
+                        sendEmailData.email = email;
+                        CollaboratorsService.sendEmail(sendEmailData);
+                    }
+
+
                 }
-                else {
-                    toastr.warning("Email the new password to the following recipient not null");
-                }
+
+
             };
 
         }

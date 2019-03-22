@@ -172,6 +172,9 @@ namespace PrimeApps.Auth.Controllers
 
             var randomPassword = Utils.GenerateRandomUnique(8);
 
+            if (!string.IsNullOrEmpty(addUserBindingModel.Password))
+                randomPassword = addUserBindingModel.Password;
+
             if (platformUser == null)
             {
                 platformUser = new PlatformUser
