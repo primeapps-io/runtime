@@ -73,8 +73,10 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
                 TeamsService.count().then(function (response) {
-                    $scope.$parent.teamCount = response.data;
-                    $scope.pageTotal = response.data;
+                    if (response.data > 0) {
+                        $scope.$parent.teamCount = response.data;
+                        $scope.pageTotal = response.data;
+                    }
                 });
 
                 TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
@@ -83,10 +85,11 @@ angular.module('primeapps')
                         var team = $scope.teamArray[i];
                         team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
                     }
-                    $scope.$parent.teamArray = response.data;
+                    if ($scope.$parent)
+                        $scope.$parent.teamArray = response.data;
+
                     $scope.loading = false;
                 });
-
             };
 
             $scope.changeOffset = function () {
@@ -334,12 +337,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -365,7 +368,7 @@ angular.module('primeapps')
             $scope.cancel = function () {
                 if ($scope.addNewTeamFormModal) {
                     $scope.addNewTeamFormModal.hide();
-                    $scope.teamModel = {}; 
+                    $scope.teamModel = {};
                     $scope.teamId = null;
                     $scope.stepNo = 0;
                 }

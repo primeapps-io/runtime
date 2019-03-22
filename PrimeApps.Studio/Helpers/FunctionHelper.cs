@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
@@ -22,7 +23,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IFunctionHelper
     {
-        void CreateSample(string giteaToken, string email, int appId, FunctionBindingModel function);
+        void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
         string GetTypeWithRuntime(FunctionRuntime runtime);
         JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null);
         Task<JObject> Get(string functionName);
@@ -56,7 +57,7 @@ namespace PrimeApps.Studio.Helpers
             _kubernetesClusterAccessToken = _configuration["AppSettings:KubernetesClusterAccessToken"];
         }
 
-        public async void CreateSample(string giteaToken, string email, int appId, FunctionBindingModel function)
+        public async void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
@@ -68,7 +69,7 @@ namespace PrimeApps.Studio.Helpers
                     using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
                         var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, email, app.Name);
+                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
 
                         if (repository != null)
                         {

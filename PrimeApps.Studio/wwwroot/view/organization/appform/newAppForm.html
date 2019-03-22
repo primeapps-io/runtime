@@ -53,7 +53,7 @@
                                            ng-blur="checkNameBlur();"
                                            ng-change="checkNameUnique(appModel.name)"
                                            ng-model="appModel.name"
-                                           id="subdomain" />
+                                           id="subdomain"/>
                                     <span style="right: 10px;" id="subdomaintwo">
                                         .app.primeapps.io
                                     </span>
@@ -107,7 +107,7 @@
                                     <div ng-show="uploader.queue.length > 0 && uploadLogo">
                                         <div class="row">
                                             <div class="col-md-6 col-lg-6">
-                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg" />
+                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg"/>
                                                 <div class="action-buttons-block">
                                                     <button type="button" class="action-buttons-delete"
                                                             ng-click="logoRemove();">
@@ -128,5 +128,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
     </form>
 </div>
