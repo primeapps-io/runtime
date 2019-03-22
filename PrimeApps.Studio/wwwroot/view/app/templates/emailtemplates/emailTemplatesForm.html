@@ -47,14 +47,14 @@
                                     <label>{{'Template.TemplateName' | translate}} <span style="color: #999"
                                                                                          class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true"
-                                           ng-model="newtemplate.template_name"/>
+                                           maxlength="50" ng-model="newtemplate.template_name"/>
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateSubject.$invalid}">
                                     <label>{{'Template.Subject' | translate}} <span style="color: #999"
                                                                                     class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateSubject" class="form-control" ng-required="true"
-                                           ng-model="newtemplate.template_subject"/>
+                                           maxlength="200"  ng-model="newtemplate.template_subject"/>
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
