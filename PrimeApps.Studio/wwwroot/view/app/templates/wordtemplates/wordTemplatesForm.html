@@ -33,7 +33,7 @@
 
                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                     <label class="col-sm-12 ">{{'Setup.Templates.TemplateName' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
-                    <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.templateName" />
+                    <input type="text" name="templateName" class="form-control" ng-required="true" maxlength="50" ng-model="template.templateName" />
                 </div>
 
                 <div class="form-group">

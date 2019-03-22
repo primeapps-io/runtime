@@ -13,6 +13,7 @@ angular.module('primeapps')
 
             RolesService.getAll().then(function (response) {
                 $scope.roles = response.data;
+                $scope.rolesState = angular.copy(response.data);
                 $scope.tree = $scope.rolesToTree(response.data);
 
                 $scope.loading = false;
@@ -71,6 +72,8 @@ angular.module('primeapps')
             $scope.showDeleteForm = function (roleId) {
 
                 $scope.selectedRoleId = roleId;
+                //Delete butonuna basmadan önce adam edit butonuna basma filtreden dolayı roller tam gelmiyor.Bu yüzden tekrardan roles = rolesState yapıyoruz
+                $scope.roles = angular.copy($scope.rolesState);
                 $scope.transferRoles = $filter('filter')($scope.roles, {id: '!' + roleId});
                 $scope.transferRoles = $filter('filter')($scope.transferRoles, {reports_to: '!' + roleId});
 
@@ -154,7 +157,7 @@ angular.module('primeapps')
                                     $scope.role.reports_to = $filter('filter')($scope.allRoles, {id: $scope.role.reports_to}, true)[0].id;
                                 }
 
-                                if ($scope.role.share_data == undefined || $scope.role.share_data == null) {
+                                if ($scope.role.share_data === undefined || $scope.role.share_data === null) {
                                     $scope.role.share_data = false;
                                 }
 

@@ -44,7 +44,7 @@
                     <label class="col-sm-12 required-field">
                         {{'Picklist.Name' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                     </label>
-                    <input name="labelEn" class="form-control" maxlength="50" required
+                    <input name="labelEn" class="form-control" maxlength="100" required
                            ng-model="picklistModel.label_en" />
                 </div>
                 <div class="form-group"
@@ -163,6 +163,7 @@
                             <td ng-if="picklistItem.edit">
                                 <input name="name_{{picklistItem.id}}" class="form-control"
                                        placeholder="{{picklistItem['label_'+language]}}"
+                                       maxlength="100"
                                        ng-model="picklistItem['label_'+language]" />
                             </td>
 
@@ -171,6 +172,7 @@
                             </td>
                             <td ng-if="picklistItem.edit">
                                 <input name="systemCode_{{picklistItem.id}}" class="form-control"
+                                       maxlength="50"
                                        placeholder="{{picklistItem.system_code}}" ng-model="picklistItem.system_code" />
                             </td>
 
@@ -179,7 +181,7 @@
                             </td>
                             <td ng-if="picklistItem.edit">
                                 <input name="value_{{picklistItem.id}}" class="form-control"
-                                       placeholder="{{picklistItem.value}}" ng-model="picklistItem.value" />
+                                       placeholder="{{picklistItem.value}}" maxlength="100" ng-model="picklistItem.value" />
                             </td>
 
                             <td ng-show="!picklistItem.edit">
@@ -187,7 +189,7 @@
                             </td>
                             <td ng-if="picklistItem.edit">
                                 <input name="value2_{{picklistItem.id}}" class="form-control"
-                                       placeholder="{{picklistItem.value2}}" ng-model="picklistItem.value2" />
+                                       placeholder="{{picklistItem.value2}}" maxlength="100" ng-model="picklistItem.value2" />
                             </td>
 
                             <td ng-show="!picklistItem.edit">
@@ -195,7 +197,7 @@
                             </td>
                             <td ng-if="picklistItem.edit">
                                 <input name="value3_{{picklistItem.id}}" class="form-control"
-                                       placeholder="{{picklistItem.value3}}" ng-model="picklistItem.value3" />
+                                       placeholder="{{picklistItem.value3}}" maxlength="100" ng-model="picklistItem.value3" />
                             </td>
                             <td class="text-right">
                                 <div class="new-actions" ng-show="!picklistItem.edit">
