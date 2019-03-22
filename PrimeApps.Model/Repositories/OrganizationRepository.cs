@@ -33,6 +33,14 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.Name == name)
                 .FirstOrDefaultAsync() == null;
         }
+        
+        public async Task<Organization> Get(int organizationId)
+        {
+            return await DbContext.OrganizationUsers
+                .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .Select(x => x.Organization)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<Organization> Get(int userId, int organizationId)
         {

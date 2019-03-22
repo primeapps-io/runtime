@@ -171,7 +171,7 @@ angular.module('primeapps')
                     $scope.picklist = {};
                     $scope.picklistModel = {};
                     $scope.itemModel = {};
-
+                    $scope.addItem = false;
                     $scope.id = null;
                 }, 300);
             };
@@ -325,8 +325,9 @@ angular.module('primeapps')
             $scope.saveItem = function () {
                 $scope.itemModel.saving = true;
 
-                if (!$scope.itemModel && !$scope.id) {
+                if ((!$scope.itemModel.system_code && !$scope.itemModel.label_tr) || !$scope.id) {
                     $scope.itemModel.saving = false;
+                    toastr.warning('Name and System Code cannot be empty!');
                     return false;
                 }
 
@@ -393,6 +394,10 @@ angular.module('primeapps')
 
             //Save Order Button Action Function when changed of item order state
             $scope.orderSave = function () {
+                if ($scope.editItem) {
+                    toastr.warning('Please save changes.');
+                    return;
+                }
                 $scope.saving = true;
 
                 if (!$scope.picklist && !$scope.picklist.items) {
@@ -419,6 +424,21 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.editModeOpen = function (item) {
+                if (!item)
+                    return;
+
+                item.edit = true;
+                $scope.editItem = true;
+            };
+
+            $scope.editModeClose = function (item) {
+                if (!item)
+                    return;
+
+                item.edit = false;
+                $scope.editItem = false;
+            };
 
             //Picklist item system code auto generator
             $scope.systemCodeGenerate = function () {
@@ -455,7 +475,10 @@ angular.module('primeapps')
                         },
                         lockY: true,
                         moves: function (el, container, handle) {
-                            $scope.orderChanged = true;
+                            var result = handle.classList.value.includes('fa-arrows');
+                            if (result)
+                                $scope.orderChanged = true;
+
                             return handle.classList.contains('option-handle');
                         }
 

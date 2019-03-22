@@ -141,7 +141,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an script");
 
-            _componentHelper.CreateSampleScript(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, model);
+            _componentHelper.CreateSampleScript(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
 
             return Ok(script.Id);
         }
@@ -240,7 +240,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occured while creating an deployment");
 
-            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartScriptDeployment(script, Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, deployment.Id));
+            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartScriptDeployment(script, Request.Cookies["gitea_token"], (int)AppId, deployment.Id, OrganizationId));
 
             return Ok();
         }

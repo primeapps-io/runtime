@@ -545,15 +545,22 @@ angular.module('primeapps')
                         }];
 
                     MenusService.create(menu).then(function () {
-                        MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
-
+                        if ($scope.menuLists.length > 0) {
+                            MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
+                                toastr.success($filter('translate')('Menu.MenuSaving'));
+                                $scope.addNewMenuFormModal.hide();
+                                $scope.changePage($scope.activePage);
+                                $scope.pageTotal += 1;
+                            }).finally(function () {
+                                $scope.saving = false;
+                            });
+                        } else {
                             toastr.success($filter('translate')('Menu.MenuSaving'));
                             $scope.addNewMenuFormModal.hide();
                             $scope.changePage($scope.activePage);
                             $scope.pageTotal += 1;
-                        }).finally(function () {
                             $scope.saving = false;
-                        });
+                        }
                     });
                 }
             };
@@ -749,30 +756,33 @@ angular.module('primeapps')
                 var subIndex = undefined;
 
                 var copyMenuList = angular.copy($scope.menuLists);
-                angular.forEach(copyMenuList, function (menuItem) {
-                    if (menuItem.items.length > 0)
+                //  angular.forEach(copyMenuList, function (menuItem) {
+                for (var o = 0; o < copyMenuList.length; o++) {
 
-                        for (var i = 0; i < menuItem.items.length; i++) {
-                            if (menuItem.items[i].id === 0) {
-                                subIndex = menuItem.items.findIndex(function (el) {
+                    if (copyMenuList[o].items.length > 0 && copyMenuList[o].id !== 0) {
+                        for (var i = 0; i < copyMenuList[o].items.length; i++) {
+                            if (copyMenuList[o].items[i].id === 0) {
+                                subIndex = copyMenuList[o].items.findIndex(function (el) {
                                     return el.id === 0;
                                 });
                                 index = copyMenuList.findIndex(function (el) {
-                                    return el.no === menuItem.no;
+                                    return el.no === copyMenuList[o].no;
                                 });
                                 i = subIndex - 1;
                                 copyMenuList[index].items.splice(subIndex, 1);
                             }
                         }
+                    }
 
-                    if (menuItem.id === 0) {
+                    if (copyMenuList[o].id === 0) {
                         index = copyMenuList.findIndex(function (el) {
-                            return el.no === menuItem.no;
+                            return el.no === copyMenuList[o].no;
                         });
-                        i = index - 1;
+                        o = index - 1;
                         copyMenuList.splice(index, 1); //we deleted this item, because this item will create
                     }
-                });
+                }
+                //});
 
                 // var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
                 // var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label

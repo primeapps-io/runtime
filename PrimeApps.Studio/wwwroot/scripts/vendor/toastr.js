@@ -176,7 +176,7 @@
                         warning: 'toast-warning'
                     },
                     iconClass: 'toast-info',
-                    positionClass: 'toast-top-right',
+                    positionClass: 'toast-bottom-right',
 
                     titleClass: 'toast-title',
                     messageClass: 'toast-message',

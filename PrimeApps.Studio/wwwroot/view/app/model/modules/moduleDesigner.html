@@ -11,14 +11,14 @@
                             translate}}</a>
                     </li>
                     <li>
-                        <button ng-click="showEditModal(false)" ng-disabled="saving" class="btn btn-radius btn-blue">
+                        <button ng-click="showEditModal(false)" ng-disabled="saving || loading" class="btn btn-radius btn-blue">
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
                         </button>
                     </li>
                     <li>
                         <button type="button" class="btn   btn-radius btn-blue"
-                                ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving">
+                                ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving || loading">
                             <i class="fas fa-save"></i>
 
                             {{!redirect ? ('Common.Save' | translate) :

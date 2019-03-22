@@ -202,7 +202,7 @@ namespace PrimeApps.Studio.Controllers
             }
             
             function.Name = functionObj.Name;
-            _functionHelper.CreateSample(Request.Cookies["gitea_token"], AppUser.Email, (int)AppId, function);
+            _functionHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, function, OrganizationId);
 
             return Ok(functionObj.Id);
         }

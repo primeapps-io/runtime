@@ -10,27 +10,6 @@
     </div>
 </div>
 
-<div class="tab-content table-responsive" ng-if="!loading && functions.length === 0">
-    <table class="table">
-        <div class="col-sm-12" style="margin-top: 100px; margin-bottom: 100px; display: flex;justify-content: center;">
-            <div class="row">
-                <div class="col-sm-12" style="padding-bottom: 30px">
-                    <img class="padding-10" src="images/primeapps/overview.png"
-                         srcset="images/primeapps/overview@2x.png 2x,
-                              images/primeapps/overview@3x.png 3x"
-                         class="logo">
-
-                    <div class="padding-10" ng-click="createModal()">
-                        <button class="btn btn-radius btn-blue col-sm-12">
-                            <i class="fas fa-plus"></i> Create your first Function
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </table>
-</div>
-
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
@@ -71,7 +50,7 @@
         </tr>
         </tbody>
     </table>
-    <table class="table" ng-if="!loading && functions.length !== 0">
+    <table class="table" ng-if="!loading">
         <thead>
         <tr>
             <th>Name</th>
@@ -109,7 +88,7 @@
         </tr>
         </tbody>
     </table>
-    <div class="table-pagination" ng-if="!loading && functions.length !== 0">
+    <div class="table-pagination" ng-if="!loading">
         <div>
             <nav aria-label="Page navigation">
                 <div paging

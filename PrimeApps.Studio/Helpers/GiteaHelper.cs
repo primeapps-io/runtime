@@ -30,7 +30,7 @@ namespace PrimeApps.Studio.Helpers
         JArray GetFileNames(string location, string path, bool getControllerName = false);
         Task<string> GetFile(string fileName, string organizationName, string appName, CustomCodeType type);
         void Push(Repository repo, string token);
-        Task<JObject> GetRepositoryInfo(string token, string email, string repositoryName);
+        Task<JObject> GetRepositoryInfo(string token, string repositoryName, int organizationId);
         string CloneRepository(string token, string cloneUrl, string folderName, bool deleteIfExist = true);
         Task CreateUser(string email, string password, string firstName, string lastName, string orgName);
         Task CreateOrganization(string uniqueName, string fullName, string email, string token, string type = "token");
@@ -127,29 +127,43 @@ namespace PrimeApps.Studio.Helpers
             repo.Network.Push(repo.Branches["master"], options);
         }
 
-        public async Task<JObject> GetRepositoryInfo(string token, string email, string repositoryName)
+        public async Task<JObject> GetRepositoryInfo(string token, string repositoryName, int organizationId)
         {
-            using (var httpClient = new HttpClient())
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                SetHeaders(client: httpClient, type: "token", token: token);
-                var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
-                var url = "";
-                if (!string.IsNullOrEmpty(giteaUrl))
+                var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
                 {
-                    url = string.Format(giteaUrl + "/api/v1/repos/{0}/{1}", GetUserName(email), repositoryName);
-                }
+                    var organization = await organizationRepository.Get(organizationId);
 
-                var response = await httpClient.GetAsync(url);
+                    if (organization != null)
+                    {
+                        using (var httpClient = new HttpClient())
+                        {
+                            SetHeaders(client: httpClient, type: "token", token: token);
+                            var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
+                            var url = "";
+                            if (!string.IsNullOrEmpty(giteaUrl))
+                            {
+                                url = string.Format(giteaUrl + "/api/v1/repos/{0}/{1}", organization.Name, repositoryName);
+                            }
 
-                var resp = await response.Content.ReadAsStringAsync();
+                            var response = await httpClient.GetAsync(url);
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ",GetRepositoryInfo, token: " + token);
+                            var resp = await response.Content.ReadAsStringAsync();
+
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ",GetRepositoryInfo, token: " + token);
+                                return null;
+                            }
+
+                            return JObject.Parse(resp);
+                        }
+                    }
+
                     return null;
                 }
-
-                return JObject.Parse(resp);
             }
         }
 
