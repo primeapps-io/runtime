@@ -35,8 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-dialog scroll-style-4">
-        <div ng-if="modalLoading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+    <div class="modal-dialog scroll-style-4"> 
         <div ng-show="!picklist.id" class="form-group">
             <form name="picklistForm" class="form-horizontal form-custom">
 
@@ -78,7 +77,33 @@
             <!--<label class="required-field">{{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>-->
             <div id="rightTopBar" class="scrollBar"></div>
             <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
-                <table class="table table-striped" ng-show="picklist.items">
+                
+                <table class="table table-striped" ng-show="modalLoading">
+                    <thead>
+                        <tr>
+                            <th width="40"></th>
+                            <th>{{'Picklist.Items.Name' | translate}}</th>
+                            <th>{{'Picklist.Items.SystemCode' | translate}}</th>
+                            <th>{{'Picklist.Items.Value' | translate}}</th>
+                            <th>{{'Picklist.Items.Value2' | translate}}</</th>
+                            <th>{{'Picklist.Items.Value3' | translate}}</th>
+                            <th width="120"></th>
+                        </tr>
+                    </thead>
+                    <tbody  class="picklist-options">
+                        <tr ng-repeat="item in placeholderArray">
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                            <td><div class="animated-background"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-striped" ng-show="picklist.items && !modalLoading">
                     <thead>
                         <tr>
                             <th width="40"></th>
@@ -128,7 +153,7 @@
                             </td>
                         </tr>
                         <tr ng-repeat="picklistItem in picklist.items track by picklistItem.order"
-                            ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
+                            ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}" >
                             <td ng-class="picklistItem.edit ? 'text-center':'option-dragging option-handle text-center'">
                                 <i ng-show="!picklistItem.edit" class="fa fa-arrows option-dragging option-handle"></i>
                             </td>

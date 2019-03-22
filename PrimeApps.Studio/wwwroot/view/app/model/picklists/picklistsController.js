@@ -115,9 +115,10 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             $scope.picklist = response.data;
-                            $scope.modalLoading = false;
-                            $scope.bindPicklistDragDrop();
                         }
+                        $scope.modalLoading = false;
+                        $scope.bindPicklistDragDrop();
+
                     }).catch(function (reason) {
                         $scope.modalLoading = false;
                         $scope.cancel();
@@ -130,6 +131,7 @@ angular.module('primeapps')
 
                 if (editMode) {
                     $scope.picklistModel = picklist;
+                    $scope.modalLoading = false;
                 }
                 else {
                     if (picklist) {
@@ -140,11 +142,12 @@ angular.module('primeapps')
                     else {
                         $scope.picklist = {};
                         $scope.id = null;
+                        $scope.modalLoading = false;
                     }
 
                 }
 
-                $scope.modalLoading = false;
+
 
                 $scope.picklistFormModal = $scope.picklistForm || $modal({
                     scope: $scope,
@@ -344,7 +347,7 @@ angular.module('primeapps')
                     }).catch(function (reason) {
                         if (reason.status === 409)
                             toastr.warning('System code value must be unique!')
-                            $scope.itemModel.saving = false;
+                        $scope.itemModel.saving = false;
                     });
             };
 
