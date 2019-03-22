@@ -102,7 +102,7 @@ angular.module('primeapps')
                     });
             };
 
-            $scope.getFileList();
+            //$scope.getFileList();
 
             ComponentsService.get($scope.id)
                 .then(function (response) {
