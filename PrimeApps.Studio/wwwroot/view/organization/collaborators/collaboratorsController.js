@@ -42,7 +42,9 @@ angular.module('primeapps')
             $scope.generator(10);
 
             CollaboratorsService.count($rootScope.currentOrgId).then(function (response) {
-                $scope.$parent.collaboratorCount = response.data;
+                if ($scope.$parent && $scope.$parent.collaboratorCount) {
+                    $scope.$parent.collaboratorCount = response.data;
+                }
                 $scope.pageTotal = response.data;
             });
 
@@ -124,15 +126,14 @@ angular.module('primeapps')
             //}
 
 
-
             $scope.addNewCollaborator = function () {
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.addNewCollaboratorModal.$promise.then(function () {
                     $scope.addNewCollaboratorModal.show();
 
@@ -212,19 +213,19 @@ angular.module('primeapps')
                     });
             }
 
-            $scope.delete = function (collaborator) { 
-                if (!collaborator) 
+            $scope.delete = function (collaborator) {
+                if (!collaborator)
                     return false;
-                
+
                 swal({
                     title: "Are you sure?",
                     text: " ",
                     icon: "warning",
                     buttons: ['Cancel', 'Yes'],
                     dangerMode: true
-                }).then(function (value) { 
+                }).then(function (value) {
                     if (value) {
-                        collaborator.deleting = true; 
+                        collaborator.deleting = true;
                         var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
 
                         if (!result) {
