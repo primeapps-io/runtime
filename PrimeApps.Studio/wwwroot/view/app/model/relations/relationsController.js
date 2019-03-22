@@ -202,11 +202,11 @@ angular.module('primeapps')
                         if ($scope.currentRelation.related_module && ($scope.currentRelation.related_module.name === 'activities' || $scope.currentRelation.related_module.name === 'mails') && ($scope.module.name !== 'activities' || $scope.module.name !== 'mails') && $scope.currentRelation.relation_type === 'one_to_many')
                             $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, {name: 'related_to'}, true)[0];
 
-                        /*else if ($scope.currentRelation.hasRelationField)
+                        else if ($scope.currentRelation.hasRelationField && !$scope.currentRelation.isNew)
                             $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, {
                                 name: $scope.currentRelation.relation_field,
                                 deleted: false
-                            }, true)[0];*/
+                            }, true)[0];
 
                         $scope.currentRelation.display_fields = null;
                         RelationsService.getFields($scope.currentRelation, $rootScope.appModules).then(function (fields) {
