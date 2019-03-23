@@ -95,8 +95,6 @@ auth:
       PreviewMode: "tenant"
     Sentry:
       Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
-      IncludeRequestPayload: "true"
-      IncludeActivityData: "true"
 studio:
   serviceType: NodePort
   servicePort: 80
@@ -151,7 +149,7 @@ studio:
       GiteaPassword: "123456"
       GiteaDirectory: "/data/git"
     Sentry:
-      Dsn: https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3
+      Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
 kubeless:
   enabled: true
   rbac:
