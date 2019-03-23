@@ -15,7 +15,7 @@ app:
   memory: 256Mi
   ingress:
     enabled: true
-    hostname: test.primeapps.io
+    hostname: app-dev.primeapps.io
     annotations:
       kubernetes.io/ingress.class: ngi98nx
       certmanager.k8s.io/cluster-issuer: letsencrypt-prod
@@ -71,7 +71,7 @@ auth:
   ## Ingress settings
   ingress:
     enabled: true
-    hostname: auth-test.primeapps.io
+    hostname: auth-dev.primeapps.io
     annotations:
       kubernetes.io/ingress.class: nginx
       certmanager.k8s.io/cluster-issuer: letsencrypt-prod
@@ -111,7 +111,7 @@ studio:
   ## Ingress settings
   ingress:
     enabled: true
-    hostname: auth-test.primeapps.io
+    hostname: studio-dev.primeapps.io
     annotations:
       kubernetes.io/ingress.class: nginx
       certmanager.k8s.io/cluster-issuer: letsencrypt-prod
@@ -121,9 +121,9 @@ studio:
     enabled: false
   configs:
     ConnectionStrings:
-      TenantDBConnection: ""
-      PlatformDBConnection: ""
-      StudioDBConnection: ""
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+      StudioDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=studio;command timeout=0;keepalive=30;"
     AppSettings:
       StorageUrl: "http://storage.okd.primeapps.io"
       StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
