@@ -1,0 +1,8 @@
+auth:
+  enabled: true
+  user: primeapps
+  password: 'pr!meApps!0'
+networkPolicy:
+  ## Enable creation of NetworkPolicy resources.
+  enabled: true
+replicaCount: 1
