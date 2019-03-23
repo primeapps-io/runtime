@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "primeapps.name" $ }}-app
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.app.component}}"
+spec:
+  ports:
+    - port: {{.Values.app.servicePort}}
+      targetPort: {{.Values.app.containerPort}}
+      protocol: TCP
+      name: http
+  selector:
+    component: "{{.Release.Name}}-{{.Values.app.component}}"
+  type: {{ default "ClusterIP" .Values.app.serviceType | quote }}
