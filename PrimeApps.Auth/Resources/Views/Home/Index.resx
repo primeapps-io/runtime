@@ -150,4 +150,10 @@
   <data name="EmailConfirmAlreadyConfirmedTitle" xml:space="preserve">
     <value>Already Confirmed</value>
   </data>
+  <data name="NotFoundContent" xml:space="preserve">
+    <value>There is no active user with this email.</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>User not found</value>
+  </data>
 </root>

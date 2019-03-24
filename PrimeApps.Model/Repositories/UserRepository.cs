@@ -174,7 +174,7 @@ namespace PrimeApps.Model.Repositories
         /// <returns></returns>
         public async Task<TenantUser> GetByEmail(string email)
         {
-            return await DbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+            return await DbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.IsActive);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Count()
         {
             return await DbContext.Users
-                .Where(x => !x.Deleted & x.Id != 1)
+                .Where(x => !x.Deleted & x.Id != 1 && x.IsActive)
                 .CountAsync();
         }
 
@@ -256,7 +256,7 @@ namespace PrimeApps.Model.Repositories
             var users = DbContext.Users
                 .Include(x => x.Profile)
                 .Include(x => x.Role)
-                .Where(x => !x.Deleted && x.Id != 1)
+                .Where(x => !x.Deleted && x.Id != 1 && x.IsActive)
                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
