@@ -68,7 +68,8 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var scripts = await _scriptRepository.Find(paginationModel); ;
+            var scripts = await _scriptRepository.Find(paginationModel);
+            ;
 
             return Ok(scripts);
         }
@@ -105,7 +106,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] ComponentModel model)
+        public async Task<IActionResult> Create([FromBody]ComponentModel model)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.Create))
                 return StatusCode(403);
@@ -136,12 +137,15 @@ namespace PrimeApps.Studio.Controllers
                 Label = model.Label
             };
 
+            var sampleCreated = await _componentHelper.CreateSampleScript(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
+
+            if (!sampleCreated)
+                return BadRequest("Script not created.");
+
             var result = await _scriptRepository.Create(script);
 
             if (result < 0)
                 return BadRequest("An error occurred while creating an script");
-
-            _componentHelper.CreateSampleScript(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
 
             return Ok(script.Id);
         }
@@ -223,6 +227,10 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return NotFound("Script is not found");
 
+            var availableForDeployment = _deploymentComponentRepository.AvailableForDeployment(script.Id);
+
+            if (!availableForDeployment)
+                return Conflict("Already have a running deployment");
 
             var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber(script.Id) + 1;
 

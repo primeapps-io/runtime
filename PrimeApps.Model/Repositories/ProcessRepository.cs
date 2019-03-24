@@ -15,7 +15,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class ProcessRepository : RepositoryBaseTenant, IProcessRepository
     {
-        public ProcessRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ProcessRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<Process> GetById(int id)
         {
@@ -83,7 +85,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Process>> Find(PaginationModel paginationModel)
         {
-            var processes = await DbContext.Processes.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+            var processes = await DbContext.Processes
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit).ToListAsync();
 
@@ -150,9 +154,9 @@ namespace PrimeApps.Model.Repositories
         {
             var hasLog = await DbContext.ProcessLogs
                 .AnyAsync(x => !x.Deleted &&
-                x.ProcessId == processId &&
-                x.ModuleId == moduleId &&
-                x.RecordId == recordId);
+                               x.ProcessId == processId &&
+                               x.ModuleId == moduleId &&
+                               x.RecordId == recordId);
 
             return hasLog;
         }
@@ -185,7 +189,6 @@ namespace PrimeApps.Model.Repositories
                         Order = approver.Order,
                         CreatedById = approver.CreatedById,
                         CreatedAt = approver.CreatedAt
-
                     };
 
                     approverList.Add(processApprover);

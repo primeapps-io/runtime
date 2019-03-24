@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<int> Count(int componentId);
         Task<DeploymentComponent> Get(int id);
+        bool AvailableForDeployment(int componentId);
         Task<int> CurrentBuildNumber(int componentId);
         Task<ICollection<DeploymentComponent>> Find(int componentId, PaginationModel paginationModel);
         Task<int> Create(DeploymentComponent deployment);

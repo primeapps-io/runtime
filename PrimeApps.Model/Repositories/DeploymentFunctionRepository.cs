@@ -22,7 +22,12 @@ namespace PrimeApps.Model.Repositories
                .Where(x => !x.Deleted & x.FunctionId == functionId)
                .CountAsync();
         }
-
+        public bool AvailableForDeployment(int functionId)
+        {
+            return DbContext.DeploymentsFunction
+                       .Count(x => x.FunctionId == functionId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+        }
+       
         public async Task<DeploymentFunction> Get(int id)
         {
             return await DbContext.DeploymentsFunction

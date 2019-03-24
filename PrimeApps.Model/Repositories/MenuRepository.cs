@@ -12,7 +12,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class MenuRepository : RepositoryBaseTenant, IMenuRepository
     {
-        public MenuRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public MenuRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<Menu> GetByProfileId(int id)
         {
@@ -42,10 +44,10 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<MenuItem>> GetItems(int id)
         {
             var menuItems = await DbContext.MenuItems
-                  .Include(x => x.MenuItems).ThenInclude(z => z.CreatedBy)
-                  .Include(x => x.CreatedBy)
-                  .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null)
-                  .OrderBy(x => x.Order).ToListAsync();
+                .Include(x => x.MenuItems).ThenInclude(z => z.CreatedBy)
+                .Include(x => x.CreatedBy)
+                .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null)
+                .OrderBy(x => x.Order).ToListAsync();
 
 
             foreach (var menu in menuItems)
@@ -154,6 +156,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.MenuItems
                 .Where(x => !x.Deleted).ToListAsync();
         }
+
         public async Task<Menu> GetById(int id)
         {
             var menu = await DbContext.Menus
@@ -161,11 +164,12 @@ namespace PrimeApps.Model.Repositories
 
             return menu;
         }
+
         public async Task<ICollection<MenuItem>> GetMenuItemsByMenuId(int menuId)
         {
             var menuItems = await DbContext.MenuItems
-                    .Where(x => !x.Deleted && x.MenuId == menuId)
-                    .ToListAsync();
+                .Where(x => !x.Deleted && x.MenuId == menuId)
+                .ToListAsync();
 
             return menuItems;
         }
@@ -183,17 +187,19 @@ namespace PrimeApps.Model.Repositories
             var result = DbContext.MenuItems.FirstOrDefaultAsync(x => !x.Deleted && x.ParentId == null && x.LabelTr == labelName && x.Route == null);
             return await result;
         }
+
         public async Task<int> Count()
         {
             var count = await DbContext.Menus
-               .Where(x => !x.Deleted).CountAsync();
+                .Where(x => !x.Deleted).CountAsync();
             return count;
         }
 
         public async Task<ICollection<Menu>> Find(PaginationModel paginationModel)
         {
             var menus = DbContext.Menus
-                .Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 
@@ -209,11 +215,9 @@ namespace PrimeApps.Model.Repositories
                 {
                     menus = menus.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
+            }
 
-            } 
-
-            return await menus.ToListAsync(); 
+            return await menus.ToListAsync();
         }
-
     }
 }

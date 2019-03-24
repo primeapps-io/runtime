@@ -72,8 +72,11 @@ angular.module('primeapps')
                         $scope.deployments = response.data;
                         $scope.loadingDeployments = false;
                         //$scope.loading = false;
+                    })
+                    .catch(function (response) {
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.loadingDeployments = false;
                     });
-
             };
 
             $scope.changeOffset = function () {
@@ -180,13 +183,23 @@ angular.module('primeapps')
             };
 
             $scope.runDeployment = function () {
-                toastr.success("Deployment Started");
+                $scope.loadingDeployments = true;
                 ComponentsService.deploy($scope.id)
                     .then(function (response) {
-                        //setAceOption($scope.record.runtime);
+                        toastr.success("Deployment Started");
+                        $scope.pageTotal = $scope.pageTotal + 1;
+                        $scope.activePage = 1;
                         $scope.changePage(1);
                     })
                     .catch(function (response) {
+                        $scope.loadingDeployments = false;
+
+                        if (response.status === 409) {
+                            toastr.warning(response.data);
+                        }
+                        else {
+                            toastr.error($filter('translate')('Common.Error'));
+                        }
                     });
             };
 
