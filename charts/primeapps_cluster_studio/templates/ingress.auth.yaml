@@ -1,0 +1,24 @@
+{{- if .Values.auth.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+{{ toYaml .Values.auth.ingress.annotations | indent 4 }}
+  name: {{ template "primeapps.name" $ }}-auth
+spec:
+  rules:
+  - host: {{ .Values.auth.ingress.hostname | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "primeapps.name" . }}-auth
+          servicePort: {{ .Values.auth.servicePort }}
+{{- if .Values.auth.ingress.tls }}
+  tls:
+  - secretName: {{ .Values.auth.ingress.hostname | quote }}
+    hosts:
+      - {{ .Values.auth.ingress.hostname | quote }}
+{{- end -}}
+{{- end -}}
+          

@@ -1,0 +1,12 @@
+{{- $root := . }}
+{{- range $name, $values := .Values.auth.configs }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "primeapps.name" $ }}-auth-{{ $name | lower }}
+data:
+  {{- range $key, $value := $values }}
+  {{ $key }}: {{ $value | b64enc }}
+  {{- end }}
+---
+{{- end }}

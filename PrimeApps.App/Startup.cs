@@ -151,7 +151,7 @@ namespace PrimeApps.App
                 app.UseHsts().UseHttpsRedirection();
             }
 
-            var loggingEnabled = Configuration.GetValue("AppSettings:EnableLogging", string.Empty);
+            var loggingEnabled = Configuration.GetValue("AppSettings:EnableRequestLogging", string.Empty);
 
             if (!string.IsNullOrEmpty(loggingEnabled) && bool.Parse(loggingEnabled))
             {

@@ -1,0 +1,306 @@
+# Default values for PrimeApps
+environment: "kubernetes"
+app:
+  serviceType: NodePort
+  servicePort: 80
+  servicePortSecure: 443
+  containerPort: 80
+  containerPortSecure: 443
+  component: app
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-app
+  imageTag: master
+  imagePullPolicy: Always
+  cpu: 10m
+  memory: 256Mi
+  ingress:
+    enabled: true
+    hostname: app-dev.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: ngi98nx
+      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
+    tls: true
+  probes:
+    enabled: false
+  configs:
+    ConnectionStrings:
+      TenantDBConnection: "server=db-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=db-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+      RedisConnection: "cache-dev.primeapps.io:6379,password=pr!m€Apps!0D€v,defaultDatabase=1"
+    AppSettings:
+      StorageUrl: "http://storage-dev.primeapps.io"
+      StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
+      StorageSecretKey: "47551d03d5524a4405c517aac418ef55"
+      EnableJobs: "true"
+      EnableRequestLogging: "false"
+      EmailSMTPEnableSsl: "true"
+      EmailSMTPHost: "smtp.mailtrap.io"
+      EmailSMTPPort: "465"
+      EmailSMTPUser: "b12c70f7f50ca9"
+      EmailSMTPPassword: "2cfb87c728981a"
+      UseCdn: "false"
+      AuthenticationServerURL: "https://auth-dev.primeapps.io"
+      ClientId: "primeapps"
+      ClientSecret: "secret"
+      ForwardHeaders: "true"
+      HttpsRedirection: "true"
+      TestMode: "true"
+      PreviewMode: "tenant"
+      GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
+      PreviewClient: "primeapps_preview"
+    Sentry:
+      Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+auth:
+  serviceType: NodePort
+  servicePort: 80
+  servicePortSecure: 443
+  containerPort: 80
+  containerPortSecure: 443
+  component: auth
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-auth
+  imageTag: master
+  imagePullPolicy: Always
+  cpu: 10m
+  memory: 256Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: auth-dev.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
+    tls: true
+  probes:
+    enabled: false
+  configs:
+    ConnectionStrings:
+      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+    AppSettings:
+      Authority: "https://auth-dev.primeapps.io"
+      ForwardHeaders: "true"
+      HttpsRedirection: "true"
+      ValidationSkipDomains: "localhost;primeapps.io;"
+      StudioUrl: "https://studio-dev.primeapps.io"
+      GiteaEnabled: "true"
+      GiteaUrl: "https://git-dev.primeapps.io"
+      PreviewMode: "tenant"
+    Sentry:
+      Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
+studio:
+  serviceType: NodePort
+  servicePort: 80
+  servicePortSecure: 443
+  containerPort: 80
+  containerPortSecure: 443
+  component: auth
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-studio
+  imageTag: master
+  imagePullPolicy: Always
+  cpu: 10m
+  memory: 256Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: studio-dev.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
+    tls: true
+  probes:
+    enabled: false
+  configs:
+    ConnectionStrings:
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+      StudioDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=studio;command timeout=0;keepalive=30;"
+    AppSettings:
+      StorageUrl: "http://storage.okd.primeapps.io"
+      StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
+      StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
+      EnableJobs: "true"
+      EmailSMTPEnableSsl: "true"
+      EmailSMTPHost: "smtp.mailtrap.io"
+      EmailSMTPPort: "465"
+      EmailSMTPUser: "b12c70f7f50ca9"
+      EmailSMTPPassword: "2cfb87c728981a"
+      TestMode: "true"
+      AuthenticationServerURL: "https://auth-dev.primeapps.io"
+      ClientId: "primeapps_studio"
+      ClientSecret: "secret"
+      ForwardHeaders: "false"
+      HttpsRedirection: "false"
+      PreviewUrl: "https://preview-dev.primeapps.io"
+      KubernetesClusterRootUrl: "https://30411da58524a8b8892dbdcc485de17f.yl4.eu-west-1.eks.amazonaws.com"
+      KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4taHRtN24iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYzMyZWM4NWItMzZkNy0xMWU5LWE1OGMtMDY0NmE0OTYwYmE4Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.VawsjvcvRMBMep-XkNyxhPT48j7yg9-an7QL7Hs-Q4oJ1Mejbor9H1m3G7rSukZx-bD9Tu5Qn46TPdLtm0Xy6edbMKMxpqV5IKWyDA1saAjZZZQRnyGKdIjZWapLSYqveZelgL361QYlllEFh5M9ObNAhbK6cIoZ_-dlUAVeLUFhNJe1lPs87QAvYiEXL8FQ1OuNPErCGnidET00INRGPzsCGAjFSfTDfTUdbjRVx6vZEc__Gw4lLdTb6WD_FSOoK2IozGJbK_m9tiFYqQFNPCqJoOBXXPreikoKWnuJAFudTC4zbJAw3Zw7JZdAknlOq7DOyNwGO58xl22HkD4mTw"
+      GiteaEnabled: "true"
+      GiteaUrl: "https://git-dev.primeapps.io"
+      GiteaEmail: "primeapps"
+      GiteaPassword: "123456"
+      GiteaDirectory: "/data/git"
+    Sentry:
+      Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
+kubeless:
+  enabled: true
+  rbac:
+    create: true
+nats:
+  enabled: true
+  auth:
+    enabled: true
+    user: primeapps
+    password: 'pr!meApps!0'
+  networkPolicy:
+    ## Enable creation of NetworkPolicy resources.
+    enabled: true
+  replicaCount: 1
+redis:
+  enabled: true
+  rbac:
+    create: true
+  cluster:
+    enabled: false
+    slaveCount: 0
+  usePassword: true
+  password: 'pr!meApps!0'
+  master:
+    port: 6379
+    service:
+      type: LoadBalancer
+      port: 6379
+    persistence:
+      enabled: true
+      path: /bitnami/redis/data
+      subPath: ""
+      storageClass: "gp2"
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+  slave:
+    service:
+      ## Redis Slave Service type
+      type: ClusterIP
+rabbitmq:
+  enabled: true
+  rbacEnabled: true
+  rabbitmq:
+    username: primeapps
+    password: 'pr!meApps!0'
+    diskFreeLimit: '"6GiB"'
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    storageClass: "gp2"
+    accessMode: ReadWriteOnce
+    # If you change this value, you might have to adjust `rabbitmq.diskFreeLimit` as well.
+    size: 8Gi
+  ingress:
+    enabled: true
+    hostName: rabbitmq-test.primeapps.io
+    tls: true
+    tlsSecret: rabbitmq-test-tls
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: true
+sentry:
+  enabled: true
+  web:
+    replicacount: 1
+  cron:
+    replicacount: 1
+  worker:
+    replicacount: 1
+  user:
+    create: true
+    email: teknik@ofisim.com
+    password: 'pr!meApps!0'
+  email:
+    from_address: teknik@ofisim.com
+    host: smtp.office365.com
+    port: 587
+    use_tls: true
+    user: teknik@ofisim.com
+    password: '0f!s!mCRM'
+    enable_replies: false
+  persistence:
+    enabled: true
+    storageClass: "gp2"
+    accessMode: ReadWriteOnce
+    size: 8Gi
+  ingress:
+    enabled: true
+    hostname: sentry-test.primeapps.io
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+  tls:
+    - secretName: sentry-test.primeapps.io
+      hosts:
+        - sentry-test.primeapps.io
+  postgresql:
+    host: primeapps.database.svc.cluster.local
+    user: postgres
+    password: 'pr!meApps!0'
+    database: sentry
+  redis:
+    host: primeapps-redis-master.primeapps.svc.cluster.local
+    password: 'pr!meApps!0'
+minio:
+  enabled: true
+  fullnameOverride: "primeapps-storage"
+  mode: standalone
+  existingSecret: ""
+  accessKey: "AKIAIOSFODNN7EXAMPLE"
+  secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  configPath: "/root/.minio/"
+  mountPath: "/export"
+  replicas: 2
+  tls:
+    enabled: false
+    ## Create a secret with private.key and public.crt files and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
+    certSecret: ""
+    publicCrt: public.crt
+    privateKey: private.key
+  persistence:
+    enabled: true
+    storageClass: gp2
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - storage-test.primeapps.io
+    tls:
+      - secretName: storage-test-tls
+        hosts:
+          - storage-test.primeapps.io
+  minioConfig:
+    region: "eu-west-1"
+    browser: "on"
+    domain: "storage-test.primeapps.io"
+    redis:
+      enable: true
+      format: "namespace"
+      address: "primeapps-redis-master.primeapps.svc.cluster.local:6379"
+      password: "pr!meApps!0"
+      key: "minio"
+  networkPolicy:
+    enabled: true
+    allowExternal: true
