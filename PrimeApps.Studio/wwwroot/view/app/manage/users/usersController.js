@@ -235,7 +235,7 @@ angular.module('primeapps')
                     for (var i = 0; i < emails.length; i++) {
                         if (validateEmail(emails[i])) {
                             sendEmailData.email = emails[i];
-                            UsersService.sendEmail(sendEmailData);
+                            UsersService.sendEmail(angular.copy(sendEmailData), i)
                         }
                     }
 

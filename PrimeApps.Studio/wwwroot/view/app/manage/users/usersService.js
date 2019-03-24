@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .factory('UsersService', ['$rootScope', '$http', 'config',
+    .factory('UsersService', ['$rootScope', '$http', 'config', '$q',
         function ($rootScope, $http, config) {
 
             return {
@@ -37,8 +37,8 @@ angular.module('primeapps')
                 getAllRoles: function () {
                     return $http.post(config.apiUrl + 'role/get_all');
                 },
-                sendEmail: function (data) {
-                    return $http.post(config.apiUrl + 'app_draft_user/send_email_password/' , data);
+                sendEmail: function (data, i) {
+                    $http.post(config.apiUrl + 'app_draft_user/send_email_password?id=' + i, data);
                 }
             };
         }
