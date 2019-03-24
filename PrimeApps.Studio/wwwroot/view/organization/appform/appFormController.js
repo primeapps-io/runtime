@@ -211,10 +211,9 @@ angular.module('primeapps')
             };
 
             $scope.save = function (newAppForm) {
-                // if (!newAppForm.$valid || !$scope.logoUpload) {
-                //     $scope.requiredColor = 'background-color:#f8dada';
-                //     return false;
-                // }
+                if (!newAppForm.$valid) {                   
+                    return false;
+                }
 
                 $scope.appSaving = true;
                 $scope.checkNameValid($scope.appModel.name);
@@ -274,7 +273,7 @@ angular.module('primeapps')
                                                 .then(function (response) {
                                                     $scope.appSaving = false;
                                                     $scope.appFormModal.hide();
-                                                    $scope.appModel = {};
+                                                   // $scope.appModel = {};
                                                     $scope.logoRemove();
                                                     toastr.success($filter('translate')('App successfully created.'));
                                                     $scope.nameValid = null;
