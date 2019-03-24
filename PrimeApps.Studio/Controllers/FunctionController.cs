@@ -177,11 +177,6 @@ namespace PrimeApps.Studio.Controllers
                 Status = PublishStatus.Draft
             };
 
-            var createResult = await _functionRepository.Create(functionObj);
-
-            if (createResult < 0)
-                return BadRequest("An error occurred while creating an function");
-
             function.Name = functionName;
             var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
@@ -200,9 +195,17 @@ namespace PrimeApps.Studio.Controllers
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
             }
-            
+
             function.Name = functionObj.Name;
-            _functionHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, function, OrganizationId);
+            var sampleCreated = await _functionHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, function, OrganizationId);
+
+            if (!sampleCreated)
+                return BadRequest("Function not created.");
+
+            var createResult = await _functionRepository.Create(functionObj);
+
+            if (createResult < 0)
+                return BadRequest("An error occurred while creating an function");
 
             return Ok(functionObj.Id);
         }
@@ -390,6 +393,11 @@ namespace PrimeApps.Studio.Controllers
 
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
+
+            var availableForDeployment = _deploymentFunctionRepository.AvailableForDeployment(function.Id);
+
+            if (!availableForDeployment)
+                return Conflict("Already have a running deployment");
 
             var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber(function.Id) + 1;
 

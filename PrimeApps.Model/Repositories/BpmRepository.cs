@@ -13,7 +13,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class BpmRepository : RepositoryBaseTenant, IBpmRepository
     {
-        public BpmRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public BpmRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<BpmWorkflow> GetById(int id)
         {
@@ -21,6 +23,7 @@ namespace PrimeApps.Model.Repositories
 
             return bpmWorkFlow;
         }
+
         public async Task<BpmWorkflow> GetByCode(string code)
         {
             var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => q.Code == code && !q.Deleted).FirstOrDefaultAsync();
@@ -67,16 +70,17 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<BpmWorkflow>> FindForStudio(PaginationModel paginationModel)
         {
             var bpm = DbContext.BpmWorkflows.Select(x => new BpmWorkflow
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Module = x.Module,
-                RecordOperations = x.RecordOperations,
-                Active = x.Active,
-                Deleted = x.Deleted
-            }).Where(x => !x.Deleted).OrderByDescending(x => x.Id)
-               .Skip(paginationModel.Offset * paginationModel.Limit)
-               .Take(paginationModel.Limit);
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Module = x.Module,
+                    RecordOperations = x.RecordOperations,
+                    Active = x.Active,
+                    Deleted = x.Deleted
+                }).Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -93,7 +97,6 @@ namespace PrimeApps.Model.Repositories
             }
 
             return await bpm.ToListAsync();
-
         }
 
         public async Task<int> Count()
@@ -118,6 +121,7 @@ namespace PrimeApps.Model.Repositories
                 bpmWorkflow.Filters.Remove(currenFilter);
                 DbContext.BpmRecordFilters.Remove(currenFilter);
             }
+
             return await DbContext.SaveChangesAsync();
         }
 
@@ -139,9 +143,9 @@ namespace PrimeApps.Model.Repositories
         {
             var hasLog = await DbContext.BpmWorkflowLogs
                 .AnyAsync(x => !x.Deleted &&
-                x.WorkflowId == workflowId &&
-                x.ModuleId == moduleId &&
-                x.RecordId == recordId);
+                               x.WorkflowId == workflowId &&
+                               x.ModuleId == moduleId &&
+                               x.RecordId == recordId);
 
             return hasLog;
         }

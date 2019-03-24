@@ -12,7 +12,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class PicklistRepository : RepositoryBaseTenant, IPicklistRepository
     {
-        public PicklistRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public PicklistRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<Picklist> GetById(int id)
         {
@@ -53,7 +55,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Picklist>> Find(PaginationModel paginationModel)
         {
-            var picklist = DbContext.Picklists.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+            var picklist = DbContext.Picklists
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 
@@ -79,7 +83,8 @@ namespace PrimeApps.Model.Repositories
             var picklist = await DbContext.Picklists.Where(x => !x.Deleted && x.Id == id)
                 .Include(x => x.Items).FirstOrDefaultAsync();
 
-            picklist.Items = picklist.Items.Where(x => !x.Deleted)
+            picklist.Items = picklist.Items
+                .Where(x => !x.Deleted)
                 .OrderByDescending(q => q.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit).ToList();
@@ -116,6 +121,7 @@ namespace PrimeApps.Model.Repositories
 
             return count;
         }
+
         public async Task<int> CountItems(int id)
         {
             var count = await DbContext.PicklistItems.CountAsync(x => !x.Deleted && x.PicklistId == id);
@@ -229,6 +235,7 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
+
         public Task<Picklist> GetPicklistByLabelEn(string labelEn)
         {
             var picklist = DbContext.Picklists

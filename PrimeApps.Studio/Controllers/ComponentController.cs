@@ -110,12 +110,15 @@ namespace PrimeApps.Studio.Controllers
                 Label = model.Label
             };
 
+            var sampleCreated = await _componentHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
+
+            if (!sampleCreated)
+                return BadRequest("Component not created.");
+
             var result = await _componentRepository.Create(component);
 
             if (result < 0)
                 return BadRequest("An error occurred while creating an component");
-
-            _componentHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, model, OrganizationId);
 
             return Ok(component.Id);
         }
@@ -190,6 +193,11 @@ namespace PrimeApps.Studio.Controllers
 
             if (component == null)
                 return NotFound("Component is not found.");
+
+            var availableForDeployment = _deploymentComponentRepository.AvailableForDeployment(component.Id);
+
+            if (!availableForDeployment)
+                return Conflict("Already have a running deployment");
 
             var currentBuildNumber = await _deploymentComponentRepository.CurrentBuildNumber(component.Id) + 1;
 

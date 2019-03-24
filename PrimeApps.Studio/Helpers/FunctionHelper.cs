@@ -23,7 +23,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IFunctionHelper
     {
-        void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
+        Task<bool> CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
         string GetTypeWithRuntime(FunctionRuntime runtime);
         JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null);
         Task<JObject> Get(string functionName);
@@ -57,64 +57,75 @@ namespace PrimeApps.Studio.Helpers
             _kubernetesClusterAccessToken = _configuration["AppSettings:KubernetesClusterAccessToken"];
         }
 
-        public async void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId)
+        public async Task<bool> CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                using (var _scope = _serviceScopeFactory.CreateScope())
+                try
                 {
-                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
-                        var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
-
-                        if (repository != null)
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                        using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
-                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var app = await _appDraftRepository.Get(appId);
+                            var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
 
-                            var fileName = $"functions/{function.Name}.cs";
-
-                            if (!System.IO.File.Exists(fileName))
+                            if (repository != null)
                             {
-                                using (var repo = new Repository(localPath))
+                                var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+
+                                var fileName = $"functions/{function.Name}.cs";
+
+                                if (!System.IO.File.Exists(fileName))
                                 {
-                                    var sample = GetSampleFunction(function.Runtime, function.Handler);
-                                    using (var fs = System.IO.File.Create(localPath + "/" + fileName))
+                                    using (var repo = new Repository(localPath))
                                     {
-                                        var info = new UTF8Encoding(true).GetBytes(sample);
-                                        // Add some information to the file.
-                                        fs.Write(info, 0, info.Length);
-                                    }
+                                        var sample = GetSampleFunction(function.Runtime, function.Handler);
+                                        using (var fs = System.IO.File.Create(localPath + "/" + fileName))
+                                        {
+                                            var info = new UTF8Encoding(true).GetBytes(sample);
+                                            // Add some information to the file.
+                                            fs.Write(info, 0, info.Length);
+                                        }
 
-                                    //System.IO.File.WriteAllText(localPath, sample);
-                                    Commands.Stage(repo, "*");
+                                        //System.IO.File.WriteAllText(localPath, sample);
+                                        Commands.Stage(repo, "*");
 
-                                    var signature = new Signature(
-                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+                                        var signature = new Signature(
+                                            new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
 
-                                    var status = repo.RetrieveStatus();
+                                        var status = repo.RetrieveStatus();
 
-                                    if (!status.IsDirty)
-                                    {
+                                        if (!status.IsDirty)
+                                        {
+                                            _giteaHelper.DeleteDirectory(localPath);
+                                            return false;
+                                        }
+
+                                        // Commit to the repository
+                                        var commit = repo.Commit("Created function " + function.Name, signature, signature);
+                                        _giteaHelper.Push(repo, giteaToken);
+
+                                        repo.Dispose();
                                         _giteaHelper.DeleteDirectory(localPath);
-                                        return;
+                                        return true;
                                     }
-
-                                    // Commit to the repository
-                                    var commit = repo.Commit("Created function " + function.Name, signature, signature);
-                                    _giteaHelper.Push(repo, giteaToken);
-
-                                    repo.Dispose();
-                                    _giteaHelper.DeleteDirectory(localPath);
                                 }
                             }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    ErrorHandler.LogError(ex, "Sample function not created." + "Component Name: " + function.Name + ", Organization Id: " + organizationId + "App Id: " + appId);
+                    return false;
+                }
             }
+
+            return false;
         }
 
         public JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null)

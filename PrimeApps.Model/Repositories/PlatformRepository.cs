@@ -106,7 +106,8 @@ namespace PrimeApps.Model.Repositories
 		public async Task<ICollection<AppTemplate>> Find(PaginationModel paginationModel, int? appId)
 		{
 			var templates = DbContext.AppTemplates
-				 .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId).OrderByDescending(x => x.Id) //&& x.Active
+				.Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId)
+				.OrderByDescending(x => x.Id) //&& x.Active
 				.Skip(paginationModel.Offset * paginationModel.Limit)
 				.Take(paginationModel.Limit);
 

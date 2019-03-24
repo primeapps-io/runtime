@@ -146,9 +146,9 @@ git push</code>
                                              text-first="&laquo;"
                                              ul-class="pagination"
                                              active-class="active"
-                                             page="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.offset"
-                                             page-size="$parent.$parent.$parent.$parent.$parent.$parent.requestModel.limit"
-                                             total="$parent.$parent.$parent.$parent.$parent.$parent.pageTotal"
+                                             page="$parent.$parent.$parent.$parent.activePage"
+                                             page-size="$parent.$parent.$parent.$parent.requestModel.limit"
+                                             total="$parent.$parent.$parent.$parent.pageTotal"
                                              scroll-top="true"
                                              hide-if-empty="true"
                                              show-prev-next="true"
@@ -157,16 +157,16 @@ git push</code>
                                              text-prev-class="fas fa-chevron-left"
                                              text-first-class="fas fa-step-backward"
                                              text-last-class="fas fa-step-forward"
-                                             paging-action="$parent.$parent.$parent.$parent.$parent.$parent.changePage(page)">
+                                             paging-action="$parent.$parent.$parent.$parent.changePage(page)">
                                         </div>
                                     </nav>
                                 </div>
                                 <div>
-                                    Total Deployment {{$parent.$parent.$parent.$parent.$parent.$parent.pageTotal}}
+                                    Total Deployment {{$parent.$parent.$parent.$parent.pageTotal}}
                                 </div>
                                 <div>
                                     <span class="pagination-span">Items per page  </span>
-                                    <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.$parent.$parent.changeOffset()">
+                                    <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.changeOffset()">
                                         <option ng-selected="true" value="10">10</option>
                                         <option value="25">25</option>
                                         <option value="50">50</option>
@@ -181,7 +181,7 @@ git push</code>
                         <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
                             <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="changePage(1)"></i>
 
-                            <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
+                            <button ng-disabled="loadingDeployments" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
                                 <i class="fas fa-plus"></i> Create Deployment
                             </button>
                         </div>
