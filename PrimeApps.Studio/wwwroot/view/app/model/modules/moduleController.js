@@ -104,13 +104,13 @@ angular.module('primeapps')
                     show: false
                 });
                 $scope.icons = ModuleService.getIcons();
-               // $scope.module = $filter('filter')($scope.modules, {id: moduleId}, true)[0];
-               // $scope.module.is_component = angular.equals($scope.module.system_type, "component");
-                 ModuleService.getModuleById(moduleId).then(function (result) {
-                     $scope.module = result.data;
-                     $scope.module.is_component = angular.equals($scope.module.system_type, "component");
-                     $scope.modalLoading = false;
-                 });
+                // $scope.module = $filter('filter')($scope.modules, {id: moduleId}, true)[0];
+                // $scope.module.is_component = angular.equals($scope.module.system_type, "component");
+                ModuleService.getModuleById(moduleId).then(function (result) {
+                    $scope.module = result.data;
+                    $scope.module.is_component = angular.equals($scope.module.system_type, "component");
+                    $scope.modalLoading = false;
+                });
                 $scope.editModal.$promise.then($scope.editModal.show);
             };
 
@@ -123,13 +123,16 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
+                if (angular.isObject($scope.module.menu_icon))
+                    $scope.module.menu_icon = $scope.module.menu_icon.value;
+
                 ModuleService.moduleUpdate($scope.module, $scope.module.id).then(function () {
                     toastr.success($filter('translate')('Setup.Modules.SaveSuccess'));
                     $scope.editModal.hide();
                     $scope.changePage($scope.activePage);
                 }).finally(function () {
                     $scope.saving = false;
-                       
+
                 });
             }
         }
