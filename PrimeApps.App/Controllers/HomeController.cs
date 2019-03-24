@@ -66,7 +66,7 @@ namespace PrimeApps.App.Controllers
                         {
                             Response.Cookies.Delete("app_id");
                             await HttpContext.SignOutAsync();
-                            return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview);
+                            return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "?preview=" + preview + "&error=NotFound");
                         }
 
                         /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
@@ -122,7 +122,7 @@ namespace PrimeApps.App.Controllers
                 {
                     Response.Cookies.Delete("tenant_id");
                     await HttpContext.SignOutAsync();
-                    return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
+                    return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain + "&error=NotFound");
                 }
 
                 var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
@@ -130,6 +130,7 @@ namespace PrimeApps.App.Controllers
                 await SetValues(userId, app, tenant.Id, null, false);
 
                 Response.Cookies.Append("tenant_id", tenant.Id.ToString());
+                
             }
 
             return View();
