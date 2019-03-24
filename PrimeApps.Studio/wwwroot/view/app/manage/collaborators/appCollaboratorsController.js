@@ -190,7 +190,7 @@ angular.module('primeapps')
                         AppCollaboratorsService.delete(appCol.id)
                             .then(function (response) {
                                 if (response.data) {
-                                    toastr.success("Team is deleted successfully.", "Deleted!");
+                                    toastr.success("Collaborator is removed successfully.", "Deleted!");
                                     $scope.getTeamsAndCollaborators();
                                     appCol.deleting = false;
                                 }

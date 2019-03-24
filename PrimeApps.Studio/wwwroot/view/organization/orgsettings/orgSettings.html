@@ -16,7 +16,7 @@
                         </button>
                     </li>
                     <li>
-                        <button type="submit" ng-click="save();" class="btn btn-radius btn-blue btn-logout" ladda="saving">
+                        <button type="submit" ng-click="save(appDetails);" class="btn btn-radius btn-blue btn-logout" ladda="saving">
                             <i class="fas fa-save margin-right-10"></i>Save
                         </button>
                     </li>
@@ -86,10 +86,10 @@
 
                         </ui-select>
                     </div>
-                    <div class="form-group">
-                        <label class="required-field">Organization Name</label>
+                    <div class="form-group" ng-class="{'has-error': appDetails.$submitted && appDetails.label.$invalid}">
+                        <label class="required-field">Organization Name <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                         <div>
-                            <input type="text" name="description" class="form-control ng-animate-disabled" required maxlength="50" ng-model="orgModel.label">
+                            <input type="text" name="label" class="form-control ng-animate-disabled" style="{{requiredLabel}}" ng-change="requiredField()" ng-required="true" maxlength="50" ng-model="orgModel.label">
                         </div>
                     </div>
                 </form>

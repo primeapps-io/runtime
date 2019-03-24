@@ -153,7 +153,7 @@
     "NameMinimum": "Please enter at least 2 (two) characters to name fields",
     "ForgotPassword": "Forgot my password",
     "Logout": "Logout",
-    "PasswordMail": "Enter your email address below and we'll send you a link to reset your password.",
+    "PasswordMail": "Enter your email address above and we'll send you a link to reset your password.",
     "Send": "Send",
     "PasswordError": "No user is found with this e-mail address.",
     "PasswordActivationError": "Your account is not activated.",
@@ -941,7 +941,7 @@
     "Referral": {
       "Title": "Would you like to recommend Ofisim.com to your friends?",
       "ReferenceEmail": "Reference e-mail address:",
-      "NewReference": "Add New Referral",
+      "NewReference": " New Referral",
       "AlreadyInvited": "This user was previously invited.",
       "InviteSuccess": "Invitation e-mail is successfully sent.",
       "Email": "E-mail address",
@@ -955,7 +955,7 @@
       "Title": "Roles",
       "Title2": "Role Information",
       "Title3": "Role Users",
-      "NewRole": "Add New Role",
+      "NewRole": " New Role",
       "RoleName": "Name",
       "RoleDescription": "Description",
       "ReportsTo": "Reports To",
@@ -995,7 +995,7 @@
       "NewProfileSetting": "New Profile Setting",
       "NewDependency": "New Field Dependency",
       "Name": "Module",
-      "NewFilter": "Add New View",
+      "NewFilter": " New View",
       "Type": "Type",
       "DisplayOnMenu": "Display on Menu",
       "Sharing": "Sharing",
@@ -1249,7 +1249,7 @@
         "Senders": "Senders",
         "Alias": "Sender Alias",
         "Address": "E-Mail Address",
-        "NewSenderAdd": "Add New Sender",
+        "NewSenderAdd": " New Sender",
         "NoCustomSender": "There is no sender. You can add a new one by clicking 'Add' button.",
         "ProviderTitle": "Configured E-Mail Provider details:",
         "NoProvider": "There is no configured E-Mail Provider. You can start to configure one by choosing a service provider.",
@@ -1320,7 +1320,7 @@
       "ProviderTitle": "Configured SIP Provider:",
       "NoProvider": "There is no configured SIP Provider. You can start to configure one by choosing a service provider.",
       "NoUser": "There is no configured SIP User Account.",
-      "CreateUserAccount": "Add New Account",
+      "CreateUserAccount": " New Account",
       "DeleteUserAccount": "Delete Account",
       "EditUserAccount": "Edit Account",
       "Extension": "Extension",
@@ -1426,13 +1426,13 @@
       "TemplateGuide13": "Copy the fields you want to include in the list from the newly opened box on the left and stick them on the corresponding column on the table.",
       "TemplateGuide14": "Copy the fields you want to",
       "TemplateGuide15": " include in the list from the newly opened box on the left and stick them on the corresponding column on the table.)",
-      "AddNewEmailTemplate": "Add New Email Template",
-      "AddNewExcelTemplate": "Add New Excel Template",
-      "AddNewWordTemplate": "Add New Word Template"
+      "AddNewEmailTemplate": " New Email Template",
+      "AddNewExcelTemplate": " New Excel Template",
+      "AddNewWordTemplate": " New Word Template"
     },
     "Workflow": {
       "Title": "Business Rules",
-      "NewRule": "Add New Simple Workflow",
+      "NewRule": " New Simple Workflow",
       "EditRule": "Simple Workflow",
       "RuleInformation": "Information",
       "FilterCriteria": "Filter Criteria",
@@ -2183,6 +2183,6 @@
     "Name": "Name",
     "TeamMember": "Team Member",
     "Organization": "Organization",
-    "AddNew": "Add New Team"
+    "AddNew": " New Team"
   }
 }
