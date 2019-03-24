@@ -12,14 +12,16 @@ do
         echo -e "${GREEN}Functions:${NC}"
         helm install --name functions --namespace functions  -f kubeless-values.yaml incubator/kubeless
         kubectl apply -f nats-trigger.yaml
-        echo -e "${GREEN}Message Queue:${NC}"
-        helm install --name mq --namespace mq -f rabbitmq-values.yaml stable/rabbitmq
+        # echo -e "${GREEN}Message Queue:${NC}"
+        # helm install --name mq --namespace mq -f rabbitmq-values.yaml stable/rabbitmq
         echo -e "${GREEN}Cache:${NC}"
         helm install --name cache --namespace cache -f redis-values.yaml stable/redis
         echo -e "${GREEN}Storage:${NC}"
         helm install --name storage --namespace storage -f minio-values.yaml stable/minio
         echo -e "${GREEN}Logging:${NC}"
-        helm install --name logging --namespace logging -f ./sentry/values.yaml -f sentry-values.yaml ./sentry
+        helm install --name logging --namespace logging -f sentry-values.yaml --wait stable/sentry
+        echo -e "${GREEN}Git:${NC}"
+        helm install --name logging --namespace logging -f sentry-values.yaml --wait stable/sentry
         # echo -e "${GREEN}Primeapps:${NC}"
         # helm install --name primeapps --namespace=primeapps \
         # --set app.image=eu.gcr.io/primeapps-gke/primeapps-app \

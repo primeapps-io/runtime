@@ -18,7 +18,7 @@ spec:
       containers:
       - env:
         - name: NATS_URL
-          value: 'nats://primeapps:pr!meApps!0@nats-client.stream.svc:4222'
+          value: "nats://primeapps:pr!meApps!0@stream-nats-client.stream:4222"
         - name: KUBELESS_NAMESPACE
           valueFrom:
             fieldRef:

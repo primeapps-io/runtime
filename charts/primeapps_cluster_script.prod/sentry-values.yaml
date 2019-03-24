@@ -7,7 +7,7 @@ worker:
 user:
   create: true
   email: teknik@ofisim.com
-  password: 'pr!meApps!0'
+  password: 'pr!meApp$!0'
 email:
   from_address: teknik@ofisim.com
   host: smtp.office365.com
@@ -16,26 +16,47 @@ email:
   user: teknik@ofisim.com
   password: '0f!s!mCRM'
   enable_replies: false
+service:
+  name: sentry
+  type: ClusterIP
+  externalPort: 9000
+  internalPort: 9000
+
 persistence:
   enabled: true
   storageClass: "gp2"
   accessMode: ReadWriteOnce
   size: 8Gi
+  filestore_dir: /var/lib/sentry/files
 ingress:
   enabled: true
-  hostname: sentry-prod.primeapps.io
-annotations:
-  kubernetes.io/ingress.class: nginx
-  # kubernetes.io/tls-acme: 'true'
-tls:
-   - secretName: sentry-prod.primeapps.io
-     hosts:
-       - sentry-prod.primeapps.io
+  hostname: sentry.primeapps.io
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  tls:
+     - secretName: sentry.primeapps.io
+       hosts:
+         - sentry.primeapps.io
 postgresql:
-  host: pre.database.svc.cluster.local
-  user: postgres
-  password: 'pr!meApp$!0'
-  database: sentry
+  enabled: false
+  postgresDatabase: sentry
+  postgresUser: postgres
+  # Only used when internal PG is disabled
+  postgresHost: pre.database.svc.cluster.local
+  postgresPassword: 'pr!meApp$!0'
+  postgresPort: 5432
+  imageTag: "9.6"
+  persistence:
+    enabled: true
+
 redis:
-  host: cache-redis-master.cache.svc.cluster.local
+  enabled: false
+  # Only used when internal redis is disabled
+  host: cache-redis-master.cache
   password: 'pr!meApps!0'
+  port: 6379
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi

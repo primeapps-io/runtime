@@ -1,0 +1,146 @@
+## Gitea image
+## ref: https://hub.docker.com/r/gitea/gitea/tags/
+##
+
+images:
+  gitea: "gitea/gitea:1.7.4"
+  postgres: "postgres:9.6"
+  memcached: "memcached:1.5.6-alpine"
+  imagePullPolicy: Always
+  ## Specify imagePullSecrets
+  ## ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+  ##
+  # imagePullSecrets: myregistrykey
+
+## cache settings
+memcached:
+  maxItemMemory: 64
+  verbosity: v
+  extendedOptions: modern
+
+## ingress settings - Optional
+ingress:
+  enabled: true
+  ## annotations used by the ingress - ex for k8s nginx ingress controller:
+  ingress_annotations:
+     kubernetes.io/ingress.class: nginx
+     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    #  nginx.ingress.kubernetes.io/auth-type: basic
+    #  nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    #  nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - lab2"
+
+  ##tls support for the ingress
+  tls:
+   - secretName: git-tls-secret
+     hosts:
+       - 'git.primeapps.io'
+
+## chart defaults to using an ingress for http, but change to LoadBalancer if using you cluster supports it
+service:
+  http:
+    serviceType: ClusterIP
+    port: 3000
+    externalPort: 8280
+    externalHost: git.primeapps.io
+  ssh:
+    serviceType: NodePort
+    port: 22
+    nodePort: 30222
+    externalPort: 8022
+    externalHost: git.primeapps.io
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  gitea:
+    requests:
+      memory: 500Mi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1
+  postgres:
+    requests:
+      memory: 200Mi
+      cpu: 200m
+    limits:
+      memory: 2Gi
+      cpu: 1
+  memcached:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+## ref:
+##
+persistence:
+  enabled: true
+  giteaSize: 10Gi
+  postgresSize: 5Gi
+  storageClass: gp2
+  accessMode: ReadWriteOnce
+  annotations:
+    "helm.sh/resource-policy": keep
+
+#Connect to an external database
+externalDB:
+  dbUser: "postgres"
+  dbPassword: "pr!meApp$!0"
+  dbHost: "pde.database.svc.cluster.local" # or some external host
+  dbPort: "5432"
+  dbDatabase: "gitea"
+
+# valid types: postgres, mysql, mssql, sqllite
+dbType: "postgres"
+useInPodPostgres: false
+
+# inPodPostgres:
+#     secret: postgresecrets
+#     subPath: "postgresql-db"
+#     dataMountPath: /var/lib/postgresql/data/pgdata
+
+
+#     ## Inject postgresPassword via a volume mount instead of environment variable
+#     usePasswordFile: false
+
+#     ## Use Existing secret instead of creating one
+#     ## It must have a postgres-password key containing the desired password
+#     # existingSecret: 'secret'
+
+#     ## Create a database
+#     ## Default: the postgres user
+#     postgresDatabase: gitea
+
+    ## Specify initdb arguments, e.g. --data-checksums
+    ## ref: https://github.com/docker-library/docs/blob/master/postgres/content.md#postgres_initdb_args
+    ## ref: https://www.postgresql.org/docs/current/static/app-initdb.html
+    # postgresInitdbArgs:
+
+    ## Specify runtime config parameters as a dict, using camelCase, e.g.
+    ## {"sharedBuffers": "500MB"}
+    ## ref: https://www.postgresql.org/docs/current/static/runtime-config.html
+    # postgresConfig:
+
+
+## Node labels and tolerations for pod assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+## Annotations for the deployment and nodes.
+deploymentAnnotations: {}
+podAnnotations: {}
+
+## In order to disable initial install screen you must have secretKey and disableInstaller=true
+config:
+#  secretKey: define_your_secret
+  disableInstaller: false
+  offlineMode: false

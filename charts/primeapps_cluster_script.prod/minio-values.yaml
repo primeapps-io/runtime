@@ -22,7 +22,7 @@ minioConfig:
   redis:
     enable: true
     format: "namespace"
-    address: "redis-master.cache.svc:6379"
+    address: "cache-redis-master.cache:6379"
     password: "pr!meApps!0"
     key: "minio"
 networkPolicy:
