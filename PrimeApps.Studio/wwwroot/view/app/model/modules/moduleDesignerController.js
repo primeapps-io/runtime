@@ -15,7 +15,7 @@ angular.module('primeapps')
 
                 }
             });
-           
+
             $scope.tabClick = function () {
                 $("#fieldModalScroll").scrollTop(0);
             }
@@ -1003,7 +1003,7 @@ angular.module('primeapps')
                     $scope.currentField['label_' + otherLanguage] = $scope.currentField['label_' + $rootScope.language]
                     delete $scope.currentField.isNew;
 
-                   //var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
+                    //var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
                     // var field = angular.copy($scope.currentField);
                     //field.data_type = field.dataType.name;
                     //field.section = $scope.currentRow.section.name;
@@ -1419,14 +1419,33 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules, $scope.pureModule);
-
+              
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
+
+                if ($scope.currentDeletedFields.length) {
+                    var deletedFieldsIds = [];
+                    $scope.currentDeletedFields.forEach(function (deletedField) {
+
+                        var fieldDeleted = $filter('filter')($scope.module.fields, {name: deletedField.name}, true);
+                        if (fieldDeleted) {
+                            fieldDeleted[0].deleted = true;
+                        }
+
+                        deletedFieldsIds.push(deletedField.id);
+                    });
+                }
+
 
                 if (!$scope.id || $scope.clone) {
                     ModuleService.moduleCreate(moduleModel).then(function (result) {
                         $scope.saving = false;
                         $rootScope.appModules.push(result.data);
+                        
+                        if ($scope.currentDeletedFields.length > 0) {
+                            ModuleService.deleteFieldsMappings(deletedFieldsIds);
+                        }
+                        
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId
@@ -1436,6 +1455,10 @@ angular.module('primeapps')
                 } else {
                     ModuleService.moduleUpdate(moduleModel, moduleModel.id).then(function () {
                         $scope.saving = false;
+                        if ($scope.currentDeletedFields.length > 0) {
+                            ModuleService.deleteFieldsMappings(deletedFieldsIds);
+                        }
+
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId
@@ -1444,6 +1467,7 @@ angular.module('primeapps')
                     if ($scope.editModal)
                         $scope.editModal.hide();
                 }
+
 
             }
         }
