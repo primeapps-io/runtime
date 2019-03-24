@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $location, helper, OrgSettingsService, ModuleService, $state) {
             $scope.pageLoading = true;
 
-            if ($rootScope.currentOrganization.role != 'administrator') {
+            if ($rootScope.currentOrganization && $rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
                 $state.go('studio.allApps');
                 return;
