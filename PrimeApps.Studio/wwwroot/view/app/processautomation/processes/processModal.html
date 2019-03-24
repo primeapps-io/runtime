@@ -8,7 +8,7 @@
                     <li>
                         <button type="button" ng-click="cancel();" ng-disabled="saving" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                     </li>
-                    <li ng-if="$parent.$parent.wizardStep > 0">
+                    <li ng-if="$parent.$parent.isNew && $parent.$parent.wizardStep > 0">
                         <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate($parent.workflowForm, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                     </li>
                     <li ng-if=" $parent.$parent.isNew && $parent.$parent.wizardStep < 3">
@@ -137,17 +137,16 @@
                                                 <span></span>
                                             </label>
                                         </div>
-                                     <!--   <div class="form-group" ng-show="$parent.workflowForm.$submitted && ($parent.workflowForm.workflowName.$error.required || $parent.workflowForm.module.$error.required || $parent.workflowForm.user.$error.required)">
-                                            <div class="callout callout-danger">
-                                                <p ng-if="$parent.workflowForm.workflowName.$error.required || $parent.workflowForm.module.$error.required || $parent.workflowForm.user.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                            </div>
-                                        </div>-->
-                                        <div class="callout callout-info">
+                                        <!--   <div class="form-group" ng-show="$parent.workflowForm.$submitted && ($parent.workflowForm.workflowName.$error.required || $parent.workflowForm.module.$error.required || $parent.workflowForm.user.$error.required)">
+                                               <div class="callout callout-danger">
+                                                   <p ng-if="$parent.workflowForm.workflowName.$error.required || $parent.workflowForm.module.$error.required || $parent.workflowForm.user.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                               </div>
+                                           </div>-->
+                                        <!--<div class="callout callout-info">
                                             <p style="font-weight: 500;">{{'Common.Tips' | translate}}</p>
                                             <p> - {{'Setup.Workflow.ApprovelProcess.Tip1' | translate}}</p>
                                             <p> - {{'Setup.Workflow.ApprovelProcess.Tip2' | translate}}</p>
-                                        </div>
-
+                                        </div>-->
                                         <!--<div class="wizard-buttons text-right">-->
                                         <!--<button type="button" class="btn btn-custom">{{'Common.Cancel' | translate}}</button>-->
                                         <!--<button type="button" class="btn btn-primary btn-w-sm"-->
@@ -515,12 +514,12 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <!--<div ng-if="workflowModel.approver_type == 'staticApprover'" class="row">
+                                        <div ng-if="workflowModel.approver_type == 'staticApprover'" class="row">
                                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.hookModule.$invalid}">
                                                 <table class="filter-table">
                                                     <tbody>
                                                         <tr ng-repeat="parameter in hookParameters">
-                                                            <td>{{$index + 1}}-</td>
+                                                            <td></td>
                                                             <td>
                                                                 <select ng-disabled="isEdit" class="form-control"
                                                                         name="hookModule"
@@ -539,7 +538,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        </div>-->
+                                        </div>
                                     </div>
                                     <!--<div class="wizard-buttons text-right">-->
                                     <!--<button type="button" class="btn btn-primary btn-w-sm" ng-click="$parent.wizardStep = 1">-->
@@ -553,25 +552,24 @@
                                 </div>
 
                                 <div class="section" ng-show="wizardStep == 3">
-                                    <h4>{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</h4>
+                                    <h4>{{'Setup.Workflow.ApprovelProcess.SummaryAndConfirmation' | translate}}</h4>
                                     <div class="panel">
                                         <div class="table-responsive">
-                                            <h5 class="text-center summary-header">{{'Setup.Workflow.ApprovelProcess.SummaryFor' | translate:{name: workflowModel.name} }}</h5>
-                                            <span class="summary-label">{{'Setup.Workflow.Module' | translate}}</span>
-                                            <p class="summary-content">{{workflowModel.module['label_' + language + '_singular']}}</p>
-                                            <span class="summary-label">{{'Setup.Workflow.RuleTrigger' | translate}}</span>
-                                            <p class="summary-content" ng-bind-html="ruleTriggerText"></p>
-                                            <span class="summary-label" ng-show="ruleFilterText">{{'Setup.Workflow.FilterCriteria' | translate}}</span>
-                                            <p class="summary-content" ng-show="ruleFilterText" ng-bind-html="ruleFilterText"></p>
-                                            <span class="summary-label">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</span>
+                                            <!--<h5 class="text-center summary-header">{{'Setup.Workflow.ApprovelProcess.SummaryFor' | translate:{name: workflowModel.name} }}</h5>-->
+                                            <span class="summary-label"><b style="font-weight:700 !important">{{'Setup.Workflow.Module' | translate}}: </b> {{workflowModel.module['label_' + language + '_singular']}}</span><br />
+
+                                            <span class="summary-label"><b style="font-weight:700 !important">{{'Setup.Workflow.RuleTrigger' | translate}}: </b> <span ng-bind-html="ruleTriggerText"></span></span><br />
+                                            <span class="summary-label" ng-show="ruleFilterText"><b style="font-weight:700 !important">{{'Setup.Workflow.FilterCriteria' | translate}}</b> <br /><span  ng-bind-html="ruleFilterText"></span><br /></span>
+                                            
+                                            <span class="summary-label"><b style="font-weight:700 !important">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</b></span>
                                             <span ng-show="hookParameters.length > 0 && workflowModel.approver_type == 'dynamicApprover'" class="summary-content">{{'Setup.Workflow.ApprovelProcess.DynamicApprover' | translate}} ({{workflowModel.module['label_' + language + '_singular']}} - {{workflowModel.approver_field.name}})</span>
                                             <p class="summary-content" ng-bind-html="ruleActionsText"></p>
                                             <table class="filter-table" ng-show="hookParameters.length > 0 && workflowModel.approver_type == 'staticApprover'">
                                                 <thead>
                                                     <tr>
                                                         <th></th>
-                                                        <th>{{'Setup.Workflow.ApprovelProcess.User' | translate}}</th>
-                                                        <th>E-mail</th>
+                                                        <th><b style="font-weight:700 !important">{{'Setup.Workflow.ApprovelProcess.User' | translate}}</b></th>
+                                                        <th><b style="font-weight:700 !important">E-mail</b></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -580,7 +578,7 @@
                                                             <span ng-bind="$index+1 + '-'"></span>
                                                         </td>
                                                         <td>
-                                                            <span ng-bind="parameter.approver.userName"></span>
+                                                            <span ng-bind="parameter.approver.full_name"></span>
                                                         </td>
                                                         <td>
                                                             <span ng-bind="parameter.approver.email"></span>

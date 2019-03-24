@@ -731,7 +731,7 @@ namespace PrimeApps.Studio.Helpers
 
 						var approverField = new Field
 						{
-							Name = "approver",
+                            Name = "approver",
 							DataType = DataType.Lookup,
 							Deleted = false,
 							DisplayDetail = false,
@@ -758,8 +758,8 @@ namespace PrimeApps.Studio.Helpers
 						moduleChanges.FieldsAdded.Add(approverField);
 
 						var processDate = new Field
-						{
-							Name = "process_date",
+                        {
+                            Name = "process_date",
 							DataType = DataType.Date,
 							Deleted = false,
 							DisplayDetail = false,
@@ -783,8 +783,8 @@ namespace PrimeApps.Studio.Helpers
 						moduleChanges.FieldsAdded.Add(processDate);
 
 						var approverOrder = new Field
-						{
-							Name = "approver_order",
+                        {
+                            Name = "approver_order",
 							DataType = DataType.Number,
 							Deleted = false,
 							DisplayDetail = false,
@@ -809,8 +809,9 @@ namespace PrimeApps.Studio.Helpers
 
 						warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-						await moduleRepository.AlterTable(module, moduleChanges, tenantLanguage);
-						await moduleRepository.Update(module);
+                        _moduleRepository.CurrentUser.UserId = 1;
+                        await _moduleRepository.AlterTable(module, moduleChanges, tenantLanguage);
+						await _moduleRepository.Update(module);
 					}
 
 					return process;

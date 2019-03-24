@@ -40,7 +40,9 @@ angular.module('primeapps')
                 getAllProcessRequests: function (id) {
                     return $http.get(config.apiUrl + 'process_request/get_requests/' + id);
                 },
-
+                findUsers: function (model) {
+                    return $http.post(config.apiUrl + 'app_draft_user/find', model);
+                },
                 process: function (workflows, modules) {
                     angular.forEach(workflows, function (workflow) {
                         var module = $filter('filter')(modules, { id: workflow.module_id }, true)[0];
