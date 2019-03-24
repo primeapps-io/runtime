@@ -183,7 +183,7 @@ namespace PrimeApps.Studio.Controllers
 
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions";
 
                 var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
@@ -250,7 +250,7 @@ namespace PrimeApps.Studio.Controllers
 
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
@@ -290,7 +290,7 @@ namespace PrimeApps.Studio.Controllers
             var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.DeleteAsync(url);
                 var content = await response.Content.ReadAsStringAsync();

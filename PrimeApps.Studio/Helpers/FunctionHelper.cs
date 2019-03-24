@@ -137,7 +137,7 @@ namespace PrimeApps.Studio.Helpers
                 ["metadata"] = new JObject()
             };
             function["metadata"]["name"] = model.Name;
-            function["metadata"]["namespace"] = "functions";
+            function["metadata"]["namespace"] = "fn";
             function["spec"] = new JObject
             {
                 ["function"] = "",
@@ -168,7 +168,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -191,7 +191,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/" + functionName;
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/services/" + functionName;
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -208,7 +208,7 @@ namespace PrimeApps.Studio.Helpers
                 if (!function["spec"].IsNullOrEmpty() && !function["spec"]["ports"].IsNullOrEmpty())
                     port = (int)((JArray)function["spec"]["ports"])[0]["port"];
 
-                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/{functionName}:{port}/proxy/";
+                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/services/{functionName}:{port}/proxy/";
             }
 
             return functionUrl;
@@ -266,7 +266,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/pods/{podName}/log";
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/pods/{podName}/log";
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -303,7 +303,7 @@ namespace PrimeApps.Studio.Helpers
                 case FunctionRuntime.Python36:
                     return string.Format(@"def {0}(event, context):" + Environment.NewLine +
                                          "print event['data']" + Environment.NewLine +
-                                         "return event['data']" + Environment.NewLine, handler[1]);
+                                         "return event['data']" + Environment.NewLine, handler[0]);
 
                 case FunctionRuntime.Nodejs6:
                 case FunctionRuntime.Nodejs8:
@@ -314,7 +314,7 @@ namespace PrimeApps.Studio.Helpers
                                          "\t\t_.assign(event.data, {{date: new Date().toTimeString()}})" + Environment.NewLine +
                                          "\t\treturn JSON.stringify(event.data);" + Environment.NewLine +
                                          "\t}}," + Environment.NewLine +
-                                         "}};", handler[1]);
+                                         "}};", handler[0]);
 
                 case FunctionRuntime.Go110:
                     return string.Format(@"package kubeless" + Environment.NewLine + Environment.NewLine +
@@ -322,7 +322,7 @@ namespace PrimeApps.Studio.Helpers
                                          "//Hello sample function with dependencies" + Environment.NewLine +
                                          "func {0}(event functions.Event, context functions.Context) (string, error) {{" + Environment.NewLine +
                                          "\treturn \"Hello world!\", nil" + Environment.NewLine +
-                                         "}}", handler[1]);
+                                         "}}", handler[0]);
                 case FunctionRuntime.Java18:
                     return string.Format(@"package io.kubeless;" + Environment.NewLine + Environment.NewLine +
                                          "import io.kubeless.Event;" + Environment.NewLine +
@@ -337,14 +337,14 @@ namespace PrimeApps.Studio.Helpers
                     return string.Format(@"<?php" + Environment.NewLine + Environment.NewLine +
                                          "function {0}($event, $context) {{" + Environment.NewLine +
                                          "\treturn \"Hello World\";" + Environment.NewLine +
-                                         "}}", handler[1]);
+                                         "}}", handler[0]);
                 case FunctionRuntime.Ruby24:
                     return string.Format(@"require 'logging'" + Environment.NewLine + Environment.NewLine +
                                          "def {0}(event, context)" + Environment.NewLine +
                                          "logging = Logging.logger(STDOUT)" + Environment.NewLine +
                                          "logging.info \"it works!\"" + Environment.NewLine +
                                          "\"hello world\"" + Environment.NewLine +
-                                         "end", handler[1]);
+                                         "end", handler[0]);
                 case FunctionRuntime.NotSet:
                     return "";
                 default:

@@ -49,6 +49,7 @@ namespace PrimeApps.Model.Repositories
             var deployments = await DbContext.DeploymentsFunction
                 .Include(x => x.Function)
                 .Where(x => !x.Deleted & x.FunctionId == functionId)
+                .OrderByDescending(x => x.BuildNumber)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit)
                 .ToListAsync();
