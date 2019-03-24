@@ -141,7 +141,7 @@ git push</code>
                                                  text-first="&laquo;"
                                                  ul-class="pagination"
                                                  active-class="active"
-                                                 page="page"
+                                                 page="$parent.$parent.$parent.$parent.$parent.activePage"
                                                  page-size="requestModel.limit"
                                                  total="pageTotal"
                                                  scroll-top="true"
@@ -174,9 +174,9 @@ git push</code>
                             </div>
 
                             <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
-                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="reload()"></i>
+                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="changePage(1)"></i>
 
-                                <button class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
+                                <button ng-disabled="loadingDeployments" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
                                     <i class="fas fa-plus"></i> Create Deployment
                                 </button>
                             </div>
@@ -225,13 +225,13 @@ git push</code>
                                         </div>
                                         <div class="form-group"
                                              ng-class="{'has-error': scriptForm.$submitted && scriptForm.place.$invalid}">
-                                            <label class="col-sm-12 required-field">Place <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                            <label class="col-sm-12 required-field">Event  <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <select name="place"
                                                     class="form-control ng-animate-disabled col-sm-8"
                                                     required
                                                     ng-model="script.place"
                                                     ng-options="o.value as o.name for o in componentPlaces">
-                                                <option value="">Select Place</option>
+                                                <option value="">Select Event</option>
                                             </select>
                                         </div>
                                     </div>

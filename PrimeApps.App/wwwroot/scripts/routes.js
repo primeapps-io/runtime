@@ -569,12 +569,6 @@ angular.module('primeapps')
                             function ($rootScope, $q, $state, AppService) {
                                 var deferred = $q.defer();
 
-                                if ($rootScope.preview) {
-                                    $state.go('app.dashboard');
-                                    deferred.resolve();
-                                    return deferred.promise;
-                                }
-
                                 if (!$rootScope.user) {
                                     AppService.getMyAccount()
                                         .then(function () {

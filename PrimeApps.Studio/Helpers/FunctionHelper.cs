@@ -23,7 +23,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IFunctionHelper
     {
-        void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
+        Task<bool> CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
         string GetTypeWithRuntime(FunctionRuntime runtime);
         JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null);
         Task<JObject> Get(string functionName);
@@ -57,64 +57,75 @@ namespace PrimeApps.Studio.Helpers
             _kubernetesClusterAccessToken = _configuration["AppSettings:KubernetesClusterAccessToken"];
         }
 
-        public async void CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId)
+        public async Task<bool> CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                using (var _scope = _serviceScopeFactory.CreateScope())
+                try
                 {
-                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
-                        var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
-
-                        if (repository != null)
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                        using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
-                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var app = await _appDraftRepository.Get(appId);
+                            var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
 
-                            var fileName = $"functions/{function.Name}.cs";
-
-                            if (!System.IO.File.Exists(fileName))
+                            if (repository != null)
                             {
-                                using (var repo = new Repository(localPath))
+                                var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+
+                                var fileName = $"functions/{function.Name}.cs";
+
+                                if (!System.IO.File.Exists(fileName))
                                 {
-                                    var sample = GetSampleFunction(function.Runtime, function.Handler);
-                                    using (var fs = System.IO.File.Create(localPath + "/" + fileName))
+                                    using (var repo = new Repository(localPath))
                                     {
-                                        var info = new UTF8Encoding(true).GetBytes(sample);
-                                        // Add some information to the file.
-                                        fs.Write(info, 0, info.Length);
-                                    }
+                                        var sample = GetSampleFunction(function.Runtime, function.Handler);
+                                        using (var fs = System.IO.File.Create(localPath + "/" + fileName))
+                                        {
+                                            var info = new UTF8Encoding(true).GetBytes(sample);
+                                            // Add some information to the file.
+                                            fs.Write(info, 0, info.Length);
+                                        }
 
-                                    //System.IO.File.WriteAllText(localPath, sample);
-                                    Commands.Stage(repo, "*");
+                                        //System.IO.File.WriteAllText(localPath, sample);
+                                        Commands.Stage(repo, "*");
 
-                                    var signature = new Signature(
-                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+                                        var signature = new Signature(
+                                            new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
 
-                                    var status = repo.RetrieveStatus();
+                                        var status = repo.RetrieveStatus();
 
-                                    if (!status.IsDirty)
-                                    {
+                                        if (!status.IsDirty)
+                                        {
+                                            _giteaHelper.DeleteDirectory(localPath);
+                                            return false;
+                                        }
+
+                                        // Commit to the repository
+                                        var commit = repo.Commit("Created function " + function.Name, signature, signature);
+                                        _giteaHelper.Push(repo, giteaToken);
+
+                                        repo.Dispose();
                                         _giteaHelper.DeleteDirectory(localPath);
-                                        return;
+                                        return true;
                                     }
-
-                                    // Commit to the repository
-                                    var commit = repo.Commit("Created function " + function.Name, signature, signature);
-                                    _giteaHelper.Push(repo, giteaToken);
-
-                                    repo.Dispose();
-                                    _giteaHelper.DeleteDirectory(localPath);
                                 }
                             }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    ErrorHandler.LogError(ex, "Sample function not created." + "Component Name: " + function.Name + ", Organization Id: " + organizationId + "App Id: " + appId);
+                    return false;
+                }
             }
+
+            return false;
         }
 
         public JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null)
@@ -126,7 +137,7 @@ namespace PrimeApps.Studio.Helpers
                 ["metadata"] = new JObject()
             };
             function["metadata"]["name"] = model.Name;
-            function["metadata"]["namespace"] = "functions";
+            function["metadata"]["namespace"] = "fn";
             function["spec"] = new JObject
             {
                 ["function"] = "",
@@ -157,7 +168,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -180,7 +191,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/" + functionName;
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/services/" + functionName;
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -197,7 +208,7 @@ namespace PrimeApps.Studio.Helpers
                 if (!function["spec"].IsNullOrEmpty() && !function["spec"]["ports"].IsNullOrEmpty())
                     port = (int)((JArray)function["spec"]["ports"])[0]["port"];
 
-                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/services/{functionName}:{port}/proxy/";
+                functionUrl = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/services/{functionName}:{port}/proxy/";
             }
 
             return functionUrl;
@@ -255,7 +266,7 @@ namespace PrimeApps.Studio.Helpers
 
             using (var httpClient = SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/functions/pods/{podName}/log";
+                var url = $"{_kubernetesClusterRootUrl}/api/v1/namespaces/fn/pods/{podName}/log";
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -292,7 +303,7 @@ namespace PrimeApps.Studio.Helpers
                 case FunctionRuntime.Python36:
                     return string.Format(@"def {0}(event, context):" + Environment.NewLine +
                                          "print event['data']" + Environment.NewLine +
-                                         "return event['data']" + Environment.NewLine, handler[1]);
+                                         "return event['data']" + Environment.NewLine, handler[0]);
 
                 case FunctionRuntime.Nodejs6:
                 case FunctionRuntime.Nodejs8:
@@ -303,7 +314,7 @@ namespace PrimeApps.Studio.Helpers
                                          "\t\t_.assign(event.data, {{date: new Date().toTimeString()}})" + Environment.NewLine +
                                          "\t\treturn JSON.stringify(event.data);" + Environment.NewLine +
                                          "\t}}," + Environment.NewLine +
-                                         "}};", handler[1]);
+                                         "}};", handler[0]);
 
                 case FunctionRuntime.Go110:
                     return string.Format(@"package kubeless" + Environment.NewLine + Environment.NewLine +
@@ -311,7 +322,7 @@ namespace PrimeApps.Studio.Helpers
                                          "//Hello sample function with dependencies" + Environment.NewLine +
                                          "func {0}(event functions.Event, context functions.Context) (string, error) {{" + Environment.NewLine +
                                          "\treturn \"Hello world!\", nil" + Environment.NewLine +
-                                         "}}", handler[1]);
+                                         "}}", handler[0]);
                 case FunctionRuntime.Java18:
                     return string.Format(@"package io.kubeless;" + Environment.NewLine + Environment.NewLine +
                                          "import io.kubeless.Event;" + Environment.NewLine +
@@ -326,14 +337,14 @@ namespace PrimeApps.Studio.Helpers
                     return string.Format(@"<?php" + Environment.NewLine + Environment.NewLine +
                                          "function {0}($event, $context) {{" + Environment.NewLine +
                                          "\treturn \"Hello World\";" + Environment.NewLine +
-                                         "}}", handler[1]);
+                                         "}}", handler[0]);
                 case FunctionRuntime.Ruby24:
                     return string.Format(@"require 'logging'" + Environment.NewLine + Environment.NewLine +
                                          "def {0}(event, context)" + Environment.NewLine +
                                          "logging = Logging.logger(STDOUT)" + Environment.NewLine +
                                          "logging.info \"it works!\"" + Environment.NewLine +
                                          "\"hello world\"" + Environment.NewLine +
-                                         "end", handler[1]);
+                                         "end", handler[0]);
                 case FunctionRuntime.NotSet:
                     return "";
                 default:

@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +26,8 @@ namespace PrimeApps.Studio.Helpers
     public interface IComponentHelper
     {
         Task<JArray> GetAllFileNames(string giteaToken, int appId, string path, int organizationId);
-        void CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId);
-        void CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId);
+        Task<bool> CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId);
+        Task<bool> CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId);
     }
 
     public class ComponentHelper : IComponentHelper
@@ -65,7 +66,7 @@ namespace PrimeApps.Studio.Helpers
 
                             var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
                             var localFolder = giteaDirectory + repository["name"];
-                            
+
                             var nameList = _giteaHelper.GetFileNames(localFolder, "components/" + componentName);
 
                             if (!string.IsNullOrEmpty(status))
@@ -80,93 +81,107 @@ namespace PrimeApps.Studio.Helpers
             return null;
         }
 
-        public async void CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId)
+        public async Task<bool> CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {
-                using (var _scope = _serviceScopeFactory.CreateScope())
+                try
                 {
-                    var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                    using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
-                        var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
-                        if (repository != null)
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                        using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
-                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
-                            if (!Directory.Exists(localPath + $"/components/{component.Name}"))
+                            var app = await _appDraftRepository.Get(appId);
+                            var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                            if (repository != null)
                             {
-                                Directory.CreateDirectory(localPath + $"/components/{component.Name}");
-
-                                var files = new JArray()
+                                var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                                if (!Directory.Exists(localPath + $"/components/{component.Name}"))
                                 {
-                                    new JObject
-                                    {
-                                        ["filePath"] = $"components/{component.Name}/sample.html",
-                                        ["type"] = "html"
-                                    },
-                                    new JObject
-                                    {
-                                        ["filePath"] = $"components/{component.Name}/sampleController.js",
-                                        ["type"] = "controller"
-                                    },
-                                    new JObject
-                                    {
-                                        ["filePath"] = $"components/{component.Name}/sampleService.js",
-                                        ["type"] = "service"
-                                    }
-                                };
+                                    Directory.CreateDirectory(localPath + $"/components/{component.Name}");
 
-                                using (var repo = new Repository(localPath))
-                                {
-                                    foreach (var file in files)
+                                    var files = new JArray()
                                     {
-                                        var sample = GetSampleComponent(file["type"].ToString());
-
-                                        using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                        new JObject
                                         {
-                                            var info = new UTF8Encoding(true).GetBytes(sample);
-                                            // Add some information to the file.
-                                            fs.Write(info, 0, info.Length);
+                                            ["filePath"] = $"components/{component.Name}/sample.html",
+                                            ["type"] = "html"
+                                        },
+                                        new JObject
+                                        {
+                                            ["filePath"] = $"components/{component.Name}/sampleController.js",
+                                            ["type"] = "controller"
+                                        },
+                                        new JObject
+                                        {
+                                            ["filePath"] = $"components/{component.Name}/sampleService.js",
+                                            ["type"] = "service"
                                         }
-                                    }
+                                    };
 
-                                    var status = repo.RetrieveStatus();
-
-                                    if (!status.IsDirty)
+                                    using (var repo = new Repository(localPath))
                                     {
-                                        _giteaHelper.DeleteDirectory(localPath);
-                                        return;
+                                        foreach (var file in files)
+                                        {
+                                            var sample = GetSampleComponent(file["type"].ToString());
+
+                                            using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                            {
+                                                var info = new UTF8Encoding(true).GetBytes(sample);
+                                                // Add some information to the file.
+                                                fs.Write(info, 0, info.Length);
+                                            }
+                                        }
+
+                                        var status = repo.RetrieveStatus();
+
+                                        if (!status.IsDirty)
+                                        {
+                                            _giteaHelper.DeleteDirectory(localPath);
+                                            return false;
+                                        }
+
+                                        //System.IO.File.WriteAllText(localPath, sample);
+                                        Commands.Stage(repo, "*");
+
+                                        var signature = new Signature(
+                                            new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
+
+                                        // Commit to the repository
+                                        var commit = repo.Commit("Created component " + component.Name, signature, signature);
+                                        _giteaHelper.Push(repo, giteaToken);
+
+                                        repo.Dispose();
                                     }
-
-                                    //System.IO.File.WriteAllText(localPath, sample);
-                                    Commands.Stage(repo, "*");
-
-                                    var signature = new Signature(
-                                        new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                                    // Commit to the repository
-                                    var commit = repo.Commit("Created component " + component.Name, signature, signature);
-                                    _giteaHelper.Push(repo, giteaToken);
-
-                                    repo.Dispose();
                                 }
-                            }
 
-                            _giteaHelper.DeleteDirectory(localPath);
+                                _giteaHelper.DeleteDirectory(localPath);
+                                return true;
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    ErrorHandler.LogError(ex, "Sample component not created." + "Component Name: " + component.Name + ", Organization Id: " + organizationId + "App Id: " + appId);
+                    return false;
+                }
             }
+
+            return false;
         }
 
-        public async void CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId)
+        public async Task<bool> CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
-            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+            if (string.IsNullOrEmpty(enableGiteaIntegration) || !bool.Parse(enableGiteaIntegration))
+                return false;
+
+            try
             {
                 using (var _scope = _serviceScopeFactory.CreateScope())
                 {
@@ -196,7 +211,7 @@ namespace PrimeApps.Studio.Helpers
                                 if (!status.IsDirty)
                                 {
                                     _giteaHelper.DeleteDirectory(localPath);
-                                    return;
+                                    return false;
                                 }
 
                                 //System.IO.File.WriteAllText(localPath, sample);
@@ -211,13 +226,20 @@ namespace PrimeApps.Studio.Helpers
 
                                 repo.Dispose();
                                 _giteaHelper.DeleteDirectory(localPath);
+                                return true;
                             }
                         }
                     }
                 }
             }
-        }
+            catch (Exception ex)
+            {
+                ErrorHandler.LogError(ex, "Sample script not created." + "Script Name: " + script.Name + ", Organization Id: " + organizationId + "App Id: " + appId);
+                return false;
+            }
 
+            return false;
+        }
 
         public string GetSampleComponent(string type)
         {

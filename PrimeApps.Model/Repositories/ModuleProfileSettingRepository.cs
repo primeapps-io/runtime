@@ -16,7 +16,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class ModuleProfileSettingRepository : RepositoryBaseTenant, IModuleProfileSettingRepository
     {
-        public ModuleProfileSettingRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ModuleProfileSettingRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<ICollection<ModuleProfileSetting>> GetAllBasic()
         {
@@ -57,7 +59,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Count(int id)
         {
             var count = await DbContext.ModuleProfileSettings
-               .Where(x => !x.Deleted && x.ModuleId == id).CountAsync();
+                .Where(x => !x.Deleted && x.ModuleId == id).CountAsync();
 
             return count;
         }
@@ -65,7 +67,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel)
         {
             var moduleProfilesSettings = DbContext.ModuleProfileSettings
-                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 
@@ -81,7 +84,6 @@ namespace PrimeApps.Model.Repositories
                 {
                     moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await moduleProfilesSettings.ToListAsync();

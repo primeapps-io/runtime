@@ -90,7 +90,7 @@ namespace PrimeApps.Studio.Helpers
 
                     using (var httpClient = _functionHelper.SetClientOptions())
                     {
-                        var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{name}";
+                        var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{name}";
                         
                         var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                         var content = await response.Content.ReadAsStringAsync();
