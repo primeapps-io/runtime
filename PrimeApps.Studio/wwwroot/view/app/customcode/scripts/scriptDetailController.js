@@ -28,9 +28,8 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
-            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
             $scope.giteaUrl = giteaUrl;
-
 
             if (!$scope.name) {
                 $state.go('studio.app.scripts');
@@ -56,27 +55,8 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            $scope.reload = function () {
-                $scope.loadingDeployments = true;
-                ScriptsDeploymentService.count($scope.script.id)
-                    .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        ScriptsDeploymentService.find($scope.script.id, $scope.requestModel)
-                            .then(function (response) {
-                                $scope.deployments = response.data;
-                                $scope.loadingDeployments = false;
-                            });
-                    });
-            };
-
             $scope.changePage = function (page) {
-                $scope.loading = true;
-
+                $scope.loadingDeployments = true;
                 if (page !== 1) {
                     var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
@@ -90,10 +70,14 @@ angular.module('primeapps')
 
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-                ScriptsDeploymentService.find(requestModel)
+                ScriptsDeploymentService.find($scope.script.id, requestModel)
                     .then(function (response) {
                         $scope.deployments = response.data;
-                        $scope.loading = false;
+                        $scope.loadingDeployments = false;
+                    })
+                    .catch(function (response) {
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.loadingDeployments = false;
                     });
 
             };
@@ -126,11 +110,16 @@ angular.module('primeapps')
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
 
+                    ScriptsDeploymentService.count($scope.script.id)
+                        .then(function (response) {
+                            $scope.pageTotal = response.data;
+                        });
+
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;
 
                     $scope.script.place = $scope.componentPlaceEnums[$scope.script.place_value];
-                    $scope.reload();
+                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -164,7 +153,6 @@ angular.module('primeapps')
                 $scope.script.name = helper.getSlug($scope.script.label, '-');
                 $scope.scriptNameBlur($scope.script);
             };
-
 
             $scope.scriptNameBlur = function (script) {
                 if ($scope.isScriptNameBlur && $scope.scriptNameValid)
@@ -209,7 +197,6 @@ angular.module('primeapps')
                     });
             };
 
-
             $scope.save = function (FormValidation) {
                 if (!FormValidation.$valid)
                     return;
@@ -218,9 +205,7 @@ angular.module('primeapps')
 
                 ScriptsService.update($scope.script)
                     .then(function (response) {
-                        if (response.data)
-                            toastr.success("Script saved successfully.");
-
+                        toastr.success("Script saved successfully.");
                         $scope.scriptCopy = angular.copy($scope.script);
                         $scope.saving = false;
                     })
@@ -231,14 +216,22 @@ angular.module('primeapps')
             };
 
             $scope.runDeployment = function () {
-                toastr.success("Deployment Started");
+                $scope.loadingDeployments = true;
                 ScriptsService.deploy($scope.script.name)
                     .then(function (response) {
-                        //setAceOption($scope.record.runtime);
-                        $scope.reload();
+                        toastr.success("Deployment Started");
+                        $scope.pageTotal = $scope.pageTotal + 1;
+                        $scope.activePage = 1;
+                        $scope.changePage(1);
                     })
                     .catch(function (response) {
-                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.loadingDeployments = false;
+                        if (response.status === 409) {
+                            toastr.warning(response.data);
+                        }
+                        else {
+                            toastr.error($filter('translate')('Common.Error'));
+                        }
                     });
             };
         }

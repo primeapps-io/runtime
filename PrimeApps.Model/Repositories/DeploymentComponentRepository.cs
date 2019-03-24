@@ -14,20 +14,22 @@ namespace PrimeApps.Model.Repositories
 {
     public class DeploymentComponentRepository : RepositoryBaseTenant, IDeploymentComponentRepository
     {
-        public DeploymentComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public DeploymentComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<int> Count(int componentId)
         {
             return await DbContext.DeploymentsComponent
-               .Where(x => !x.Deleted & x.ComponentId == componentId)
-               .CountAsync();
+                .Where(x => !x.Deleted & x.ComponentId == componentId)
+                .CountAsync();
         }
 
         public async Task<DeploymentComponent> Get(int id)
         {
             return await DbContext.DeploymentsComponent
-               .Where(x => !x.Deleted && x.Id == id)
-               .FirstOrDefaultAsync();
+                .Where(x => !x.Deleted && x.Id == id)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<int> CurrentBuildNumber(int componentId)
@@ -39,14 +41,20 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public bool AvailableForDeployment(int componentId)
+        {
+            return DbContext.DeploymentsComponent
+                .Count(x => x.ComponentId == componentId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+        }
+
         public async Task<ICollection<DeploymentComponent>> Find(int componentId, PaginationModel paginationModel)
         {
             var deployments = DbContext.DeploymentsComponent
                 .Include(x => x.Component)
                 .Where(x => !x.Deleted & x.ComponentId == componentId)
+                .OrderByDescending(x => x.BuildNumber)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit)
-                .OrderByDescending(x => x.BuildNumber);
+                .Take(paginationModel.Limit);
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
@@ -60,7 +68,6 @@ namespace PrimeApps.Model.Repositories
                 {
                     deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await deployments.ToListAsync();
@@ -76,6 +83,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.SaveChangesAsync();
         }
+
         public async Task<int> Delete(DeploymentComponent deployment)
         {
             DbContext.DeploymentsComponent.Remove(deployment);

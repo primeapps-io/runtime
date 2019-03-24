@@ -10,6 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IDeploymentFunctionRepository : IRepositoryBaseTenant
     {
         Task<int> Count(int functionId);
+        bool AvailableForDeployment(int functionId);
         Task<DeploymentFunction> Get(int id);
         Task<int> CurrentBuildNumber(int functionId);
         Task<ICollection<DeploymentFunction>> Find(int functionId, PaginationModel paginationModel);

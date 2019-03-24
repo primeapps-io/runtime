@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -36,8 +37,9 @@ namespace PrimeApps.Studio.Controllers
         private IApplicationRepository _applicationRepository;
         private IPlatformRepository _platformRepository;
         private IPermissionHelper _permissionHelper;
+        private IPlatformUserRepository _platformUserRepository;
 
-        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper)
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository)
         {
             _relationRepository = relationRepository;
             _profileRepository = profileRepository;
@@ -49,6 +51,7 @@ namespace PrimeApps.Studio.Controllers
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
             _permissionHelper = permissionHelper;
+            _platformUserRepository = platformUserRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -171,8 +174,14 @@ namespace PrimeApps.Studio.Controllers
             if (user == null)
                 return BadRequest();
 
-            user.Deleted = true;
+            user.IsActive = false;
             await _userRepository.UpdateAsync(user);
+            var platformUser = await _platformUserRepository.Get(user.Id);
+            var tenantUser = platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1 & x.UserId == user.Id);
+            platformUser.TenantsAsUser.Remove(tenantUser);
+
+            await _platformUserRepository.UpdateAsync(platformUser);
+
 
             return Ok();
         }

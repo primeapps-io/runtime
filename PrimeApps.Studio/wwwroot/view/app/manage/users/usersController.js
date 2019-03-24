@@ -140,12 +140,13 @@ angular.module('primeapps')
                 $scope.saving = true;
 
                 if (!$scope.editing) {
-                    
+
                     $scope.userModel.created_at = new Date();
                     $scope.userModel.is_active = true;
 
                     UsersService.create($scope.userModel)
                         .then(function (response) {
+                            $scope.pageTotal++;
                             if (response.data) {
                                 toastr.success('User is saved successfully');
                                 $scope.changePage(1);
@@ -235,7 +236,7 @@ angular.module('primeapps')
                     for (var i = 0; i < emails.length; i++) {
                         if (validateEmail(emails[i])) {
                             sendEmailData.email = emails[i];
-                            UsersService.sendEmail(sendEmailData);
+                            UsersService.sendEmail(angular.copy(sendEmailData), i)
                         }
                     }
 

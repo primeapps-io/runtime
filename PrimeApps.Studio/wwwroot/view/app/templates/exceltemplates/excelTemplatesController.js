@@ -202,6 +202,11 @@ angular.module('primeapps')
                 }
             };
 
+            fileUpload.onAfterAddingFile = function (fileItem) {
+                $scope.template.content = fileItem._file.name;
+                $scope.requiredColor = undefined;
+            };
+
             fileUpload.filters.push({
                 name: 'excelFilter',
                 fn: function (item, options) {
@@ -220,29 +225,25 @@ angular.module('primeapps')
             $scope.remove = function () {
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
-                    $scope.templateFileCleared = true;
-                } else {
+                } 
                     $scope.template.content = undefined;
                     $scope.templateFileCleared = true;
-                }
+                
             };
 
             $scope.save = function (uploadForm) {
 
-                if (uploadForm.$error.required) {
-                    toastr.error($filter('translate')('Module.RequiredError'));
+
+                if (uploadForm.$invalid || !$scope.template.content) {
+                    if (!$scope.template.content)
+                        $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
+                    else
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
                     return;
                 }
 
-
-                if ((uploadForm.$invalid || $scope.fileUpload.queue.length < 1) && $scope.template.id) {
-                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
-                    return;
-                } else if ((uploadForm.$invalid || $scope.fileUpload.queue.length < 1) && !$scope.template.id) {
-                    $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
-                    return;
-                }
-                else if ($scope.fileUpload.queue[0].file.size <= 0) {
+                if ($scope.fileUpload.queue.length > 0 && $scope.fileUpload.queue[0].file.size <= 0) {
                     toastr.error("File cannot be empty!");
                     $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     return;
@@ -403,6 +404,5 @@ angular.module('primeapps')
 
                 }
             };
-
         }
     ]);

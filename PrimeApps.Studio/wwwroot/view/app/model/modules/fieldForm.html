@@ -6,7 +6,7 @@
                 <h4 class="modal-title">{{'Setup.Modules.EditField' | translate}} </h4>
                 <div>
                     <ul class="list-unstyled list-inline">
-                        <li>
+                        <li ng-if="!currentField.firstDrag">
                             <button type="button" class="btn add-button btn-radius btn-gray"
                                     ng-click="cancelField(); $parent.showAdvancedOptions = false;">
                                 <i class="fas fa-times"></i>
@@ -23,21 +23,21 @@
                 </div>
             </div>
         </div>
-        <div class="modal-dialog scroll-style-4">
+        <div class="modal-dialog scroll-style-4" id="fieldModalScroll">
             <div class="modal-content view-form">
                 <div class="modal-body">
                     <div class="megalist">
                         <div class="modal-menu">
                             <ul class="list-unstyled">
-                                <li ng-click="fieldActiveSection = 'properties'">
+                                <li ng-click="fieldActiveSection = 'properties';tabClick()">
                                     <a ng-class="fieldActiveSection ==='properties' ? 'active':''"
                                        href="javascript:void(0);">Properties </a>
                                 </li>
-                                <li ng-click="fieldActiveSection = 'validation'">
+                                <li ng-click="fieldActiveSection = 'validation';tabClick()">
                                     <a ng-class="fieldActiveSection ==='validation' ? 'active':''"
                                        href="javascript:void(0);">Validation </a>
                                 </li>
-                                <li ng-click="fieldActiveSection = 'permissions'">
+                                <li ng-click="fieldActiveSection = 'permissions';tabClick()">
                                     <a ng-class="fieldActiveSection ==='permissions' ? 'active':''"
                                        href="javascript:void(0)">Permissions </a>
                                 </li>

@@ -168,7 +168,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<View>> Find(int id, PaginationModel paginationModel)
         {
-            var views = DbContext.Views.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+            var views = DbContext.Views
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 

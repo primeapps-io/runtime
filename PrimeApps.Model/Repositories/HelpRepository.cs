@@ -13,7 +13,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class HelpRepository : RepositoryBaseTenant, IHelpRepository
     {
-        public HelpRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public HelpRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<Help> GetById(int id)
         {
@@ -27,7 +29,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Count()
         {
             var count = await DbContext.Helps
-               .Where(x => !x.Deleted).CountAsync();
+                .Where(x => !x.Deleted).CountAsync();
 
             return count;
         }
@@ -35,7 +37,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<Help>> Find(PaginationModel paginationModel)
         {
             var helps = DbContext.Helps
-                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Where(x => !x.Deleted)
+                .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
 
@@ -51,7 +54,6 @@ namespace PrimeApps.Model.Repositories
                 {
                     helps = helps.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await helps.ToListAsync();
@@ -170,4 +172,3 @@ namespace PrimeApps.Model.Repositories
         }
     }
 }
-

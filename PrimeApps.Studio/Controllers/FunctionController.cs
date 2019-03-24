@@ -177,18 +177,13 @@ namespace PrimeApps.Studio.Controllers
                 Status = PublishStatus.Draft
             };
 
-            var createResult = await _functionRepository.Create(functionObj);
-
-            if (createResult < 0)
-                return BadRequest("An error occurred while creating an function");
-
             function.Name = functionName;
             var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
 
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions";
 
                 var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
@@ -200,9 +195,17 @@ namespace PrimeApps.Studio.Controllers
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
             }
-            
+
             function.Name = functionObj.Name;
-            _functionHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, function, OrganizationId);
+            var sampleCreated = await _functionHelper.CreateSample(Request.Cookies["gitea_token"], (int)AppId, function, OrganizationId);
+
+            if (!sampleCreated)
+                return BadRequest("Function not created.");
+
+            var createResult = await _functionRepository.Create(functionObj);
+
+            if (createResult < 0)
+                return BadRequest("An error occurred while creating an function");
 
             return Ok(functionObj.Id);
         }
@@ -247,7 +250,7 @@ namespace PrimeApps.Studio.Controllers
 
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
@@ -287,7 +290,7 @@ namespace PrimeApps.Studio.Controllers
             var functionName = _functionHelper.GetFunctionName(PreviewMode, name, TenantId, AppId);
             using (var httpClient = _functionHelper.SetClientOptions())
             {
-                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/functions/functions/{functionName}";
+                var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{functionName}";
 
                 var response = await httpClient.DeleteAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
@@ -390,6 +393,11 @@ namespace PrimeApps.Studio.Controllers
 
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
+
+            var availableForDeployment = _deploymentFunctionRepository.AvailableForDeployment(function.Id);
+
+            if (!availableForDeployment)
+                return Conflict("Already have a running deployment");
 
             var currentBuildNumber = await _deploymentFunctionRepository.CurrentBuildNumber(function.Id) + 1;
 

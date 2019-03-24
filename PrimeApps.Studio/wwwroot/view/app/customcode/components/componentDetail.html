@@ -114,9 +114,9 @@ git push</code>
                                                  text-first="&laquo;"
                                                  ul-class="pagination"
                                                  active-class="active"
-                                                 page="$parent.$parent.$parent.$parent.$parent.requestModel.offset"
-                                                 page-size="$parent.$parent.$parent.$parent.$parent.requestModel.limit"
-                                                 total="$parent.$parent.$parent.$parent.$parent.pageTotal"
+                                                 page="$parent.$parent.$parent.$parent.activePage"
+                                                 page-size="$parent.$parent.$parent.$parent.requestModel.limit"
+                                                 total="$parent.$parent.$parent.$parent.pageTotal"
                                                  scroll-top="true"
                                                  hide-if-empty="true"
                                                  show-prev-next="true"
@@ -125,12 +125,12 @@ git push</code>
                                                  text-prev-class="fas fa-chevron-left"
                                                  text-first-class="fas fa-step-backward"
                                                  text-last-class="fas fa-step-forward"
-                                                 paging-action="$parent.$parent.$parent.$parent.$parent.changePage(page)">
+                                                 paging-action="$parent.$parent.$parent.$parent.changePage(page)">
                                             </div>
                                         </nav>
                                     </div>
                                     <div>
-                                        Total Deployment {{$parent.$parent.$parent.$parent.$parent.pageTotal}}
+                                        Total Deployment {{$parent.$parent.$parent.$parent.pageTotal}}
                                     </div>
                                     <div>
                                         <span class="pagination-span">Items per page  </span>

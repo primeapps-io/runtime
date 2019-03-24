@@ -150,4 +150,10 @@
   <data name="EmailConfirmAlreadyConfirmedTitle" xml:space="preserve">
     <value>Daha önce onaylanmış</value>
   </data>
+  <data name="NotFoundContent" xml:space="preserve">
+    <value>Bu e-posta ile kayıtlı bir kullanıcı bulunmuyor.</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Kullanıcı bulunamadı</value>
+  </data>
 </root>

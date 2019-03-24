@@ -7,7 +7,7 @@
                     <li><button type="button" ng-click="cancel();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
                     <li ng-if="$parent.$parent.$parent.wizardStep>0 && !id"><button type="button" ng-click="previousStep(workflowForm, wizardStep)" class="btn btn-radius btn-blue"><i class="fa fa-angle-left"></i>{{'Common.Previous' | translate}}</button></li>
                     <li ng-if="!lastStepClicked && !id"><button type="button" ng-click="nextStep(workflowForm, wizardStep)" class="btn btn-radius btn-blue ng-binding">{{'Common.Next' | translate}}<i class="fa fa-angle-right"></i></button></li>
-                    <li ng-if="lastStepClicked && $parent.$parent.$parent.wizardStep>2"><button type="button" ladda="saving" ng-click="save();" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li ng-if="(lastStepClicked && $parent.$parent.$parent.wizardStep>2) || id"><button type="button" ladda="saving" ng-click="save(workflowForm);" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>
@@ -24,14 +24,14 @@
                             <li>
                                 <a ng-class="{'active':$parent.$parent.$parent.wizardStep==2}" ng-click="validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
                                 <ul>
-                                    <li><a ng-class="{'active':tab==0 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 0 : false; workflowForm.$submitted = false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==0 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="tabControl(workflowForm,$parent.$parent.$parent.tab) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 0 : false;">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
                                     <!--<li><a ng-class="{'active':tab==1 && wizardStep==2}" ng-disabled="wizardStep!=2" ng-click="validate(workflowForm) && wizardStep==2 ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>-->
-                                    <li><a ng-class="{'active':tab==1 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 1 : false;workflowForm.$submitted = false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
-                                    <li><a ng-class="{'active':tab==2 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="!validate(workflowForm) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 2 : false;workflowForm.$submitted = false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==1 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="tabControl(workflowForm,$parent.$parent.$parent.tab) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 1 : false;">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
+                                    <li><a ng-class="{'active':tab==2 && $parent.$parent.$parent.wizardStep==2}" ng-disabled="$parent.$parent.$parent.wizardStep!=2" ng-click="tabControl(workflowForm,$parent.$parent.$parent.tab) && $parent.$parent.$parent.wizardStep==2 ? $parent.$parent.$parent.tab = 2 : false;">{{'Setup.Workflow.WebHook' | translate}}</a></li>
 
                                 </ul>
                             </li>
-                            <li><a ng-class="{'active':$parent.$parent.$parent.wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.$parent.wizardStep==3 && lastStepClicked}" ng-click=" validate(workflowForm) ? $parent.$parent.$parent.wizardStep = 3 : false; getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
 
                         </ul>
                     </div>
@@ -127,17 +127,17 @@
                                             <span></span>
                                         </label>
                                     </div>
-                                    
-                                    <!--<div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
-                                        <div class="callout callout-danger">
-                                            <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                            <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
-                                        </div>
-                                    </div>
--->
-                                   <!-- <div ng-if="showPermissionWarning" class="callout callout-warning">
 
-                                    </div>-->
+                                    <!--<div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                                                            <div class="callout callout-danger">
+                                                                                <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                                                                <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
+                                                                            </div>
+                                                                        </div>
+                                    -->
+                                    <!-- <div ng-if="showPermissionWarning" class="callout callout-warning">
+
+                                     </div>-->
                                 </div>
                             </div>
                             <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 1">
@@ -366,13 +366,13 @@
                                                 <label class="radio-inline newinput"><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}<span></span></label>
                                             </div>
                                         </div>
-                                       <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
-                                            <div class="callout callout-danger">
-                                                <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                                <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
-                                            </div>
-                                        </div>
--->
+                                        <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                                                                    <div class="callout callout-danger">
+                                                                                        <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                                                                        <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
+                                                                                    </div>
+                                                                                </div>
+                                        -->
                                     </div>
                                 </div>
                             </div>
@@ -431,7 +431,6 @@
                                                 <select class="form-control"
                                                         name="sendNotificationCCModule"
                                                         tabindex="1"
-                                                        required
                                                         ng-model="workflowModel.send_notification_ccmodule"
                                                         ng-change="SendNotificationCCModuleChanged(); setFormValid(workflowForm);"
                                                         ng-options="o as o.name for o in fieldUpdateModulesForNotification  track by o.id">
@@ -516,11 +515,9 @@
                                         <div>
                                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.subjectNotification.$invalid}">
                                                 <label class="col-sm-12">{{'Setup.Workflow.Subject' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                                <input name="subjectNotification"
-                                                       mentio
+                                                <input name="subjectNotification" 
                                                        tabindex="2"
-                                                       ng-model="workflowModel.send_notification.subject"
-                                                       mentio-id="'11'"
+                                                       ng-model="workflowModel.send_notification.subject" 
                                                        type="text"
                                                        class="form-control"
                                                        required
@@ -528,62 +525,24 @@
                                                        maxlength="200"
                                                        ng-change="setFormValid(workflowForm)" />
 
-                                                <!--<mentio-menu mentio-for="'11'"
-                                                mentio-trigger-char="'#'"
-                                                mentio-items="tags"
-                                                mentio-template-url="tag-mentions.tpl"
-                                                mentio-search="searchTags(term)"
-                                                mentio-select="getTagTextRaw(item,'input')"></mentio-menu>-->
-
                                             </div>
                                         </div>
-                                        <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
+                                        <!--<div class="form-group" style="padding-top: 20px" ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
                                             <label class="col-sm-12 ">{{'Setup.Workflow.Message' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-
-                                            <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
-                                                      mentio-require-leading-space="true" ui-tinymce="tinymceOptions"
-                                                      ng-required="true" ng-model="workflowModel.send_notification.message" name="message"
-                                                      mentio-iframe-element="iframeElement"></textarea>
-
-                                            <script type="text/ng-template" id="tag-mentions.tpl">
-                                                <ul class="ment-tags">
-                                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                        class="list-group-item clearfix"
-                                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                        {{tag.name}}
-                                                    </li>
-                                                </ul>
-                                            </script>
-                                            <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
-                                                         mentio-trigger-char="'#'" mentio-items="tags"
-                                                         mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
-                                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
-
-
-
-                                            <!--  <script type="text/ng-template" id="tag-mentions.tpl">
-                                                <ul class="ment-tags">
-                                                    <li mentio-menu-item="tag" ng-repeat="tag in items"
-                                                        class="list-group-item clearfix"
-                                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                        {{tag.label}}
-                                                    </li>
-                                                </ul>
-
-                                            </script>
-
-                                            <mentio-menu class="mention-scrollbar" id="hastmenu1"
-                                                         mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
-                                                         mentio-items="tags" mentio-template-url="tag-mentions.tpl"
-                                                         mentio-search="searchTags(term)"
-                                                         mentio-select="getTagTextRaw(item)"></mentio-menu>
+                                            <textarea name="message" ui-tinymce="tinymceOptions" ng-required="true" ng-model="workflowModel.send_notification.message"></textarea>
                                             <div class="hidden" plupload="imgUpload">
                                                 <input id="uploadImage" type="file" add-file="add-file" />
                                             </div>
-                                            <div class="hidden" plupload="fileUpload">
-                                                <input id="uploadFile" type="file" add-file="add-file" />
-                                            </div>-->
-
+                                        </div>-->
+                                        <div class="form-group">
+                                            <label class="col-sm-12 ">{{'Setup.Workflow.Message' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                            <div class="form-group" style="margin-top: 35px;"
+                                                 ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
+                                                <textarea ui-tinymce="tinymceTemplateEdit"
+                                                          name="message"
+                                                          required
+                                                          ng-model="workflowModel.send_notification.message" ng-required="true"></textarea>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-sm-12">{{'Setup.Workflow.Schedule' | translate}}</label>
@@ -596,15 +555,15 @@
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
-                                       <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.send_notification && (workflowForm.recipients.$error.required || workflowForm.subjectNotification.$error.required || workflowForm.message.$error.required  || workflowForm.recipients.$error.minTags || workflowForm.recipients.$error.maxTags))">
+                                        <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.send_notification && (workflowForm.recipients.$error.required || workflowForm.subjectNotification.$error.required || workflowForm.message.$error.required  || workflowForm.recipients.$error.minTags || workflowForm.recipients.$error.maxTags))">
 
-                                            <div class="callout callout-danger">
-                                                <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
-                                                <p ng-if="workflowForm.$error.maxTags">{{'Setup.Workflow.RecipientsMaxError' | translate}}</p>
-                                            </div>
+                                                                                    <div class="callout callout-danger">
+                                                                                        <p ng-if="workflowForm.$error.required || workflowForm.$error.minTags">{{'Module.RequiredError' | translate}}</p>
+                                                                                        <p ng-if="workflowForm.$error.maxTags">{{'Setup.Workflow.RecipientsMaxError' | translate}}</p>
+                                                                                    </div>
 
-                                        </div>
--->
+                                                                                </div>
+                                        -->
 
                                     </div>
                                     <!--<div ng-show="$parent.tab == 1 && $parent.wizardStep == 2">
@@ -1141,6 +1100,102 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                                 <!--<tags-input name="updateValue"-->
                                                 <!--ng-model="workflowModel.field_update.value"-->
                                                 <!--display-property="full_name"-->
@@ -1182,12 +1237,12 @@
                                                 <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
 
                                             </div>
-                                           <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.field_update && (workflowForm.updateModule.$error.required || workflowForm.updateField.$error.required || workflowForm.updateValue.$error.required))">
-                                                <div class="callout callout-danger">
-                                                    <p ng-if="workflowForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                                </div>
-                                            </div>
--->
+                                            <!-- <div class="form-group" ng-show="workflowForm.$submitted && (workflowModel.field_update && (workflowForm.updateModule.$error.required || workflowForm.updateField.$error.required || workflowForm.updateValue.$error.required))">
+                                                                                            <div class="callout callout-danger">
+                                                                                                <p ng-if="workflowForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                                                                            </div>
+                                                                                        </div>
+                                            -->
                                         </div>
                                     </div>
                                     <div ng-show="$parent.$parent.$parent.$parent.tab == 2 && $parent.$parent.$parent.$parent.wizardStep == 2">
@@ -1259,9 +1314,9 @@
                                         </div>
                                         <div class="form-group" ng-show="workflowForm.actions.$error.actionRequired">
                                             <input name="actions" type="hidden" ng-model="taskFields.subject.name">
-                                           <!-- <div class="callout callout-danger">
-                                                <p ng-if="workflowForm.$error.actionRequired">{{'Setup.Workflow.ActionsRequiredError' | translate}}</p>
-                                            </div>-->
+                                            <!-- <div class="callout callout-danger">
+                                                 <p ng-if="workflowForm.$error.actionRequired">{{'Setup.Workflow.ActionsRequiredError' | translate}}</p>
+                                             </div>-->
                                         </div>
                                     </div>
 

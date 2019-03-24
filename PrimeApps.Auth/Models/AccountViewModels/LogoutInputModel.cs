@@ -9,5 +9,7 @@ namespace PrimeApps.Auth.UI
         public string LogoutId { get; set; }
 
         public string ReturnUrl { get; set; }
+
+        public string Error { get; set; }
     }
 }

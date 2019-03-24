@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $location, helper, OrgSettingsService, ModuleService, $state) {
             $scope.pageLoading = true;
 
-            if ($rootScope.currentOrganization.role != 'administrator') {
+            if ($rootScope.currentOrganization && $rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
                 $state.go('studio.allApps');
                 return;
@@ -20,9 +20,9 @@ angular.module('primeapps')
                 { value: '#229C51' },
                 { value: '#FFAD1C' },
                 { value: '#1C3E7D' },
-                { value: '#C35E21' }, 
-                { value: '#F3C937' }, 
-                { value: '#6B2F5D' }, 
+                { value: '#C35E21' },
+                { value: '#F3C937' },
+                { value: '#6B2F5D' },
             ];
 
             $scope.orgModel = {};
@@ -61,14 +61,28 @@ angular.module('primeapps')
             };
 
             $scope.deleteButtonControl = function () {
-                var currentOrg = $filter('filter')($rootScope.organizations, {id: $scope.$parent.$parent.$parent.currentOrgId}, true)[0];
+                var currentOrg = $filter('filter')($rootScope.organizations, { id: $scope.$parent.$parent.$parent.currentOrgId }, true)[0];
                 if (currentOrg.role != 'administrator' || currentOrg.default === true)
                     $scope.orgDeleteDisabled = true;
             };
             $scope.deleteButtonControl();
 
+            $scope.requiredField = function () {
+                if ($scope.orgModel.label)
+                    $scope.requiredLabel = null;
+                else
+                    $scope.requiredLabel = "background-color: rgba(206, 4, 4, 0.15) !important";
+            };
 
-            $scope.save = function () {
+            $scope.save = function (appDetails) {
+                if (!appDetails.$valid) {
+                    $scope.requiredLabel = "background-color: rgba(206, 4, 4, 0.15) !important";
+                    return;
+                }
+                else {
+                    $scope.requiredLabel = null;
+                }
+
                 $scope.saving = true;
                 if (angular.isObject($scope.orgModel.icon))
                     $scope.orgModel.icon = $scope.orgModel.icon.value;

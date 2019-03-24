@@ -54,6 +54,7 @@ angular.module('primeapps')
                     field.label_en = dataType.label.en;
                     field.data_type = dataType.name;
                     field.label_tr = dataType.label.tr;
+                    field.label_en = dataType.label.en;
                     field.validation = {};
                     field.validation.required = false;
                     field.primary = false;
@@ -67,7 +68,7 @@ angular.module('primeapps')
                     field.name = "custom_field" + dataType.name;
                     field.isNew = true;
                     field.permissions = [];
-
+                    field.firstDrag = true;
                     angular.forEach($rootScope.appProfiles, function (profile) {
                         if (profile.is_persistent && profile.has_admin_rights)
                             profile.name = $filter('translate')('Setup.Profiles.Administrator');
@@ -967,7 +968,7 @@ angular.module('primeapps')
 
                 prepareDefaults: function (module) {
                     module.system_type = 'custom';
-                    module.label_en_plural = defaultLabels.DefaultModuleNameEn+"s";
+                    module.label_en_plural = defaultLabels.DefaultModuleNameEn + "s";
                     module.label_en_singular = defaultLabels.DefaultModuleNameEn;
                     module.label_tr_plural = defaultLabels.DefaultModuleNameTr;
                     module.label_tr_singular = defaultLabels.DefaultModuleNameTr;
@@ -1237,6 +1238,13 @@ angular.module('primeapps')
                     var fields = [];
                     var lastFieldOrder = 0;
 
+                    var showField = {
+                        currentField: null,
+                        currentColumn: null,
+                        currentRow: null
+                    };
+
+
                     for (var i = 0; i < rows.length; i++) {
                         var row = rows[i];
                         var section = row.section;
@@ -1256,6 +1264,15 @@ angular.module('primeapps')
                                 field.section = section.name;
                                 field.section_column = column.column.no;
                                 field.order = lastFieldOrder + 1;
+                                if (field.firstDrag === true) {
+
+                                    showField.currentField = field;
+                                    showField.currentRow = row;
+                                    showField.currentColumn = column;
+                                  //  field.firstDrag = false;
+                                    field.label_tr = "";
+                                    field.label_en = "";
+                                }
 
                                 lastFieldOrder = field.order;
                                 fields.push(field);
@@ -1271,6 +1288,8 @@ angular.module('primeapps')
 
                     module.sections = sections;
                     module.fields = fields;
+
+                    return showField;
                 },
 
                 prepareModule: function (module, picklistsModule, deletedModules, pureModule) {
