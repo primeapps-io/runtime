@@ -109,15 +109,7 @@ angular.module('primeapps')
                     $scope.function.dependencies = "";
                 } else {
                     var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
-                    // c# || java
-                    if (runtime.id === 1 || runtime.id === 10) {
-                        $scope.function.handler = "module.handler";
-                    }
-                    //others
-                    else {
-                        $scope.function.handler = "handler";
-                    }
-
+                    $scope.function.handler = "module.handler";
                     $scope.function.dependencies = runtime.editorDependencySample;
                 }
             };

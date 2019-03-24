@@ -77,7 +77,7 @@ namespace PrimeApps.Studio.Helpers
                             {
                                 var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
 
-                                var fileName = $"functions/{function.Name}.cs";
+                                var fileName = $"functions/{function.Name}.{GetTypeWithRuntime(function.Runtime)}" ;
 
                                 if (!System.IO.File.Exists(fileName))
                                 {
@@ -303,7 +303,7 @@ namespace PrimeApps.Studio.Helpers
                 case FunctionRuntime.Python36:
                     return string.Format(@"def {0}(event, context):" + Environment.NewLine +
                                          "print event['data']" + Environment.NewLine +
-                                         "return event['data']" + Environment.NewLine, handler[0]);
+                                         "return event['data']" + Environment.NewLine, handler[1]);
 
                 case FunctionRuntime.Nodejs6:
                 case FunctionRuntime.Nodejs8:
@@ -314,7 +314,7 @@ namespace PrimeApps.Studio.Helpers
                                          "\t\t_.assign(event.data, {{date: new Date().toTimeString()}})" + Environment.NewLine +
                                          "\t\treturn JSON.stringify(event.data);" + Environment.NewLine +
                                          "\t}}," + Environment.NewLine +
-                                         "}};", handler[0]);
+                                         "}};", handler[1]);
 
                 case FunctionRuntime.Go110:
                     return string.Format(@"package kubeless" + Environment.NewLine + Environment.NewLine +
@@ -322,7 +322,7 @@ namespace PrimeApps.Studio.Helpers
                                          "//Hello sample function with dependencies" + Environment.NewLine +
                                          "func {0}(event functions.Event, context functions.Context) (string, error) {{" + Environment.NewLine +
                                          "\treturn \"Hello world!\", nil" + Environment.NewLine +
-                                         "}}", handler[0]);
+                                         "}}", handler[1]);
                 case FunctionRuntime.Java18:
                     return string.Format(@"package io.kubeless;" + Environment.NewLine + Environment.NewLine +
                                          "import io.kubeless.Event;" + Environment.NewLine +
@@ -337,14 +337,14 @@ namespace PrimeApps.Studio.Helpers
                     return string.Format(@"<?php" + Environment.NewLine + Environment.NewLine +
                                          "function {0}($event, $context) {{" + Environment.NewLine +
                                          "\treturn \"Hello World\";" + Environment.NewLine +
-                                         "}}", handler[0]);
+                                         "}}", handler[1]);
                 case FunctionRuntime.Ruby24:
                     return string.Format(@"require 'logging'" + Environment.NewLine + Environment.NewLine +
                                          "def {0}(event, context)" + Environment.NewLine +
                                          "logging = Logging.logger(STDOUT)" + Environment.NewLine +
                                          "logging.info \"it works!\"" + Environment.NewLine +
                                          "\"hello world\"" + Environment.NewLine +
-                                         "end", handler[0]);
+                                         "end", handler[1]);
                 case FunctionRuntime.NotSet:
                     return "";
                 default:
