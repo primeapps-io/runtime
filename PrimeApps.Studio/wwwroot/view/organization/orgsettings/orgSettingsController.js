@@ -77,6 +77,9 @@ angular.module('primeapps')
             $scope.save = function (appDetails) {
                 if (!appDetails.$valid) {
                     $scope.requiredLabel = "background-color: rgba(206, 4, 4, 0.15) !important";
+                    if (appDetails.$error.required)
+                        toastr.error($filter('translate')('Module.RequiredError'));
+
                     return;
                 }
                 else {
