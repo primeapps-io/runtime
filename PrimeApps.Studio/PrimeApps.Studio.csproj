@@ -30,8 +30,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\view\app\deployments\app\" />
-    <Folder Include="wwwroot\view\app\deployments\scripts\" />
-  </ItemGroup>
 </Project>
