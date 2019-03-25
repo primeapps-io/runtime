@@ -88,7 +88,6 @@ namespace PrimeApps.Studio.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody] JObject user)
         {
-
             if (string.IsNullOrEmpty(user["id"].ToString()))
                 return BadRequest("User id is required");
 

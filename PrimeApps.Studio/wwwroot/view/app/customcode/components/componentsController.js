@@ -7,7 +7,7 @@ angular.module('primeapps')
             $scope.appId = $state.params.appId;
             $scope.orgId = $state.params.orgId;
 
-            $scope.$parent.menuTopTitle = $scope.currentApp.label
+            $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
 
@@ -17,7 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.modules =$filter('filter')( $rootScope.appModules, {system_type: 'component'}, true);
+            $scope.modules = $filter('filter')($rootScope.appModules, {system_type: 'component'}, true);
 
             $scope.component = {};
             $scope.components = [];
@@ -25,7 +25,7 @@ angular.module('primeapps')
             $scope.componentPlaces = componentPlaces;
             $scope.componentTypes = componentTypes;
             $rootScope.breadcrumblist[2].title = 'Components';
-
+            $scope.page = 1;
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -68,6 +68,7 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+                $scope.page = requestModel.offset + 1;
                 ComponentsService.find(requestModel)
                     .then(function (response) {
                         $scope.components = response.data;

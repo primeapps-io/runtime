@@ -13,7 +13,7 @@ angular.module('primeapps')
 
             $scope.functionNameValid = null;
             $scope.isFunctionNameBlur = false;
-
+            $scope.page = 1;
             $scope.runtimes = [
                 {
                     id: 1,
@@ -28,24 +28,24 @@ angular.module('primeapps')
                     name: "python (2.7)",
                     value: "python2.7",
                     editor: "python",
-                    editorDependencySample: "from hellowithdepshelper import foo",
-                    editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "
+                    editorDependencySample: "bs4",
+                    editorCodeSample: "def {{handler.method}}(event, context):\r\n return \"hello world\"\n"
                 },
                 {
                     id: 3,
                     name: "python (3.4)",
                     value: "python3.4",
                     editor: "python",
-                    editorDependencySample: "from hellowithdepshelper import foo",
-                    editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "
+                    editorDependencySample: "bs4",
+                    editorCodeSample: "def {{handler.method}}(event, context):\r\n return \"hello world\"\n"
                 },
                 {
                     id: 4,
                     name: "python (3.6)",
                     value: "python3.6",
                     editor: "python",
-                    editorDependencySample: "from hellowithdepshelper import foo",
-                    editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "
+                    editorDependencySample: "bs4",
+                    editorCodeSample: "def {{handler.method}}(event, context):\r\n return \"hello world\"\n"
                 },
                 {
                     id: 5,
@@ -107,7 +107,8 @@ angular.module('primeapps')
             $scope.changeRuntime = function () {
                 if (!$scope.function.runtime) {
                     $scope.function.dependencies = "";
-                } else {
+                }
+                else {
                     var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
                     $scope.function.handler = "module.handler";
                     $scope.function.dependencies = runtime.editorDependencySample;
@@ -162,6 +163,8 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+
+                $scope.page = requestModel.offset + 1;
                 FunctionsService.find(requestModel)
                     .then(function (response) {
                         $scope.functions = response.data;
@@ -285,7 +288,8 @@ angular.module('primeapps')
                         $scope.functionNameChecking = false;
                         if (response.data) {
                             $scope.functionNameValid = true;
-                        } else {
+                        }
+                        else {
                             $scope.functionNameValid = false;
                         }
                     }).catch(angular.noop);
@@ -303,7 +307,8 @@ angular.module('primeapps')
                     if (dotIndex > -1) {
                         if (dotIndex === 0) {
                             func.handler = func.handler.split('.').join('');
-                        } else {
+                        }
+                        else {
                             func.handler = func.handler.split('.').join('');
                             func.handler = func.handler.slice(0, dotIndex) + "." + func.handler.slice(dotIndex);
                         }

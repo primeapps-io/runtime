@@ -55,6 +55,7 @@ angular.module('primeapps')
 
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
+                $scope.activePage = requestModel.offset + 1;
                 ScriptsService.find(requestModel)
                     .then(function (response) {
                         if (response.data) {
