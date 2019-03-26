@@ -164,8 +164,7 @@ angular.module('primeapps')
                         accepts: function () {
                             return false;
                         },
-                        revertOnSpill: true,               
-                        removeOnSpill: true 
+                     
                     });
 
 
