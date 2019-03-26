@@ -321,9 +321,16 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 var isModuleDetail;
                 var isModuleList;
 
-                if (hash.indexOf('/app/modules/') > -1)
-                    isModuleList = true;
-                moduleName = hash.split('/')[3];
+                if(!$rootScope.preview){
+                    if (hash.indexOf('/app/modules/') > -1)
+                        isModuleList = true;
+                    moduleName = hash.split('/')[3];
+                }
+                else{
+                    if (hash.indexOf('/app/modules/') > -1)
+                        isModuleList = true;
+                    moduleName = hash.split('/')[2];
+                }
 
                 if (hash.indexOf('/app/module/') > -1) {
                     isModuleDetail = true;
