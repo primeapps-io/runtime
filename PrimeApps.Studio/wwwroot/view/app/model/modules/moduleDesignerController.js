@@ -135,7 +135,6 @@ angular.module('primeapps')
                         nameSpace: 'cells',
                         containersModel: (function () {
                             var containersModel = [];
-
                             angular.forEach(moduleLayout.rows, function (row) {
                                 angular.forEach(row.columns, function (column) {
                                     containersModel.push(column.cells);
@@ -165,6 +164,8 @@ angular.module('primeapps')
                         accepts: function () {
                             return false;
                         },
+                        revertOnSpill: true,               
+                        removeOnSpill: true 
                     });
 
 
