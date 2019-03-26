@@ -123,14 +123,15 @@ angular.module('primeapps')
             // };
 
             $scope.openModal = function () {
+                $scope.appModel = {};
                 $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/appform/newAppForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/appform/newAppForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -138,7 +139,7 @@ angular.module('primeapps')
 
             $scope.closeModal = function () {
                 $scope.appFormModal.hide();
-                $scope.appModel = {};
+                //  $scope.appModel = {};
                 $scope.logoRemove();
                 $scope.nameValid = null;
                 $scope.nameBlur = false;
@@ -211,7 +212,7 @@ angular.module('primeapps')
             };
 
             $scope.save = function (newAppForm) {
-                if (!newAppForm.$valid) {                   
+                if (!newAppForm.$valid) {
                     return false;
                 }
 
@@ -273,7 +274,7 @@ angular.module('primeapps')
                                                 .then(function (response) {
                                                     $scope.appSaving = false;
                                                     $scope.appFormModal.hide();
-                                                   // $scope.appModel = {};
+                                                    // $scope.appModel = {};
                                                     $scope.logoRemove();
                                                     toastr.success($filter('translate')('App successfully created.'));
                                                     $scope.nameValid = null;

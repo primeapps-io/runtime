@@ -213,17 +213,19 @@ angular.module('primeapps')
 
                                         $scope.filters.push(filter);
                                     }
-                                    $scope.filteredModules = $scope.processModules;
+                                   // $scope.filteredModules = $scope.processModules;
+                                    $scope.filteredModules = $rootScope.appModules;
                                     $scope.picklistsModule = picklists;
                                     $scope.getDynamicProcessModules($scope.module, workflow, true);
+                                    $scope.module = ModuleService.getFieldsOperator($scope.module);
                                     $scope.workflowModel = ProcessesService.processWorkflow(workflow, $scope.module, $rootScope.appModules, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, null, picklists, $scope.dynamicprocessModules);
                                     $scope.getUpdatableModules();
                                     $scope.generateHookModules(workflow);
                                     $scope.firstApproverLookupChange(true, workflow);
                                     $scope.secondApproverLookupChange(true, workflow);
                                     $scope.prepareFilters();
-                                    $scope.isEdit = true;
-                                    $scope.lastStepClicked = true;
+                                    //$scope.isEdit = true;
+                                    //$scope.lastStepClicked = true;
                                     $scope.loading = false;
                                     $scope.modalLoading = false;
                                 })
@@ -236,85 +238,86 @@ angular.module('primeapps')
             };
 
             $scope.selectModule = function (module) {
+                if (module) {
                 $scope.modalLoading = true;
                 $scope.isChosenModule = false;
+                    ModuleService.getModuleFields(module.name)
+                        .then(function (response) {
+                            if (response) {
+                                $scope.workflowModel.module.fields = response.data;
+                                var moduleNameList = [];
 
-                ModuleService.getModuleFields(module.name)
-                    .then(function (response) {
-                        if (response) {
-                            $scope.workflowModel.module.fields = response.data;
-                            var moduleNameList = [];
+                                angular.forEach($rootScope.appModules, function (module) {
+                                    var item = {
+                                        name: module.name
+                                    };
 
-                            angular.forEach($rootScope.appModules, function (module) {
-                                var item = {
-                                    name: module.name
-                                };
+                                    moduleNameList.push(item);
+                                });
 
-                                moduleNameList.push(item);
-                            });
+                                var moduleWithField = ModuleService.getFieldsOperator( $scope.workflowModel.module, $rootScope.appModules, 0);
 
-                            var moduleWithField = ModuleService.getFieldsOperator(module, $rootScope.appModules, 0);
-
-                            $scope.module = angular.copy(moduleWithField);
-                            $scope.workflowModel.module = angular.copy(moduleWithField);
-                        }
-
-
-                        $scope.users = [];//angular.copy($rootScope.workgroup.users);
-
-
-                        if (!$filter('filter')($scope.users, { id: 0 }, true)[0])
-                            $scope.users.unshift({
-                                id: 0,
-                                email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')
-                            });
-
-                        $scope.fakeUsers = angular.copy($scope.users);
-
-                        //for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
-                        //    var process = $rootScope.approvalProcesses[i];
-                        //    var user = $filter('filter')($scope.fakeUsers, { id: process.user_id }, true)[0].email;
-                        //    if (process && module.id === process.module_id) {
-                        //        $scope.users = $filter('filter')($scope.users, { email: '!' + user }, true);
-                        //    }
-                        //}
-
-                        if ($scope.users.length !== $scope.fakeUsers.length)
-                            $scope.users.shift();
-
-                        angular.forEach($scope.module.fields, function (field) {
-                            if (field.data_type === 'lookup') {
-                                field.operators = [];
-                                field.operators.push(operators.equals);
-                                field.operators.push(operators.not_equal);
-                                field.operators.push(operators.empty);
-                                field.operators.push(operators.not_empty);
+                                $scope.module = angular.copy(moduleWithField);
+                                $scope.workflowModel.module = angular.copy(moduleWithField);
                             }
-                        });
 
-                        ModuleService.getPickItemsLists($scope.module)
-                            .then(function (picklists) {
-                                $scope.modulePicklists = picklists;
-                                $scope.filters = [];
 
-                                for (var i = 0; i < 5; i++) {
-                                    var filter = {};
-                                    filter.id = i;
-                                    filter.field = null;
-                                    filter.operator = null;
-                                    filter.value = null;
-                                    filter.no = i + 1;
+                            $scope.users = [];//angular.copy($rootScope.workgroup.users);
 
-                                    $scope.filters.push(filter);
+
+                            if (!$filter('filter')($scope.users, { id: 0 }, true)[0])
+                                $scope.users.unshift({
+                                    id: 0,
+                                    email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')
+                                });
+
+                            $scope.fakeUsers = angular.copy($scope.users);
+
+                            //for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
+                            //    var process = $rootScope.approvalProcesses[i];
+                            //    var user = $filter('filter')($scope.fakeUsers, { id: process.user_id }, true)[0].email;
+                            //    if (process && module.id === process.module_id) {
+                            //        $scope.users = $filter('filter')($scope.users, { email: '!' + user }, true);
+                            //    }
+                            //}
+
+                            if ($scope.users.length !== $scope.fakeUsers.length)
+                                $scope.users.shift();
+
+                            angular.forEach($scope.module.fields, function (field) {
+                                if (field.data_type === 'lookup') {
+                                    field.operators = [];
+                                    field.operators.push(operators.equals);
+                                    field.operators.push(operators.not_equal);
+                                    field.operators.push(operators.empty);
+                                    field.operators.push(operators.not_empty);
                                 }
-
-                                $scope.modalLoading = false;
                             });
 
-                        $scope.getUpdatableModules();
-                        $scope.getDynamicProcessModules();
-                        setWebHookModules();
-                    });
+                            ModuleService.getPickItemsLists($scope.module)
+                                .then(function (picklists) {
+                                    $scope.modulePicklists = picklists;
+                                    $scope.filters = [];
+
+                                    for (var i = 0; i < 5; i++) {
+                                        var filter = {};
+                                        filter.id = i;
+                                        filter.field = null;
+                                        filter.operator = null;
+                                        filter.value = null;
+                                        filter.no = i + 1;
+
+                                        $scope.filters.push(filter);
+                                    }
+
+                                    $scope.modalLoading = false;
+                                });
+
+                            $scope.getUpdatableModules();
+                            $scope.getDynamicProcessModules();
+                            setWebHookModules();
+                        });
+                }
             };
 
 
@@ -345,9 +348,9 @@ angular.module('primeapps')
                 return filterValue;
             };
 
-            $scope.validate = function (tabClick, next) {
-                if (!$scope.workflowForm)
-                    $scope.workflowForm = tabClick;
+            $scope.validate = function (tabClick) {
+              //  if (!$scope.workflowForm)
+                    $scope.workflowForm =  tabClick ;
 
                 $scope.workflowForm.$submitted = true;
                 $scope.validateOperations();
@@ -357,15 +360,15 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.wizardStep === 2 && !tabClick.approverType.$valid && next)
+                if ($scope.wizardStep === 2 && !tabClick.approverType.$valid )
                     return false;
 
-                if ($scope.wizardStep === 2 && tabClick.approverType.$valid && next) {
+                if ($scope.wizardStep === 2 && tabClick.approverType.$valid ) {
                     if (!$scope.hookParameters[0].approver)
                         return false;
                 }
 
-                return $scope.validateActions(tabClick, next);
+                return $scope.validateActions(tabClick);
             };
 
             $scope.validateOperations = function (tabClick) {
@@ -482,10 +485,10 @@ angular.module('primeapps')
                 $scope.currentLookupField = field;
             };
 
-            $scope.validateActions = function (tabClick, next) {
+            $scope.validateActions = function (tabClick) {
                 if (!$scope.lastStepClicked) {
                     $scope.workflowForm.$submitted = false;
-                    $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                   // $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                     if ($scope.wizardStep === 3) {
                         $scope.getSummary();
                     }
@@ -902,8 +905,14 @@ angular.module('primeapps')
                                 dangerMode: true
                             }).then(function (value) {
                                 if (value) {
+                                    
+                                    var elem = angular.element(event.srcElement);
+                                    angular.element(elem.closest('tr')).addClass('animated-background');
+                                    
                                     ProcessesService.delete(id)
                                         .then(function () {
+                                            $scope.pageTotal--;
+                                            angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                             toastr.success("Approval process is deleted successfully.", "Deleted!");
                                             $scope.cancel();
                                             $scope.id = null;
@@ -920,12 +929,15 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
                 $scope.wizardStep = 0;
                 $scope.modalLoading = true;
+                $scope.lastStepClicked = false;
                 if (id) {
                     $scope.isNew = false;
+                    $scope.isEdit = true;
                     $scope.id = id;
                     $scope.selectProcess(id);
                 } else {
                     $scope.isNew = true;
+                    $scope.isEdit = false;
                     $scope.modalLoading = false;
                 }
 
@@ -949,15 +961,28 @@ angular.module('primeapps')
                 });
 
                 //$scope.processes = [];
+                $scope.prosessFormModal.hide();
                 $scope.id = null;
                 $scope.workflowModel = {};
                 $scope.workflowModel.active = true;
                 $scope.workflowModel.frequency = 'continuous';
                 $scope.workflowModel.trigger_time = 'instant';
                 $scope.filteredModules = $scope.processModules;
-                $scope.prosessFormModal.hide();
-            }
+            };
             //Modal End
 
+            $scope.operatorChanged = function (field, index) {
+                var filterListItem = $scope.filters[index];
+
+                if (!filterListItem || !filterListItem.operator)
+                    return;
+
+                if (filterListItem.operator.name === 'empty' || filterListItem.operator.name === 'not_empty') {
+                    filterListItem.value = null;
+                    filterListItem.disabled = true;
+                } else {
+                    filterListItem.disabled = false;
+                }
+            };
         }
     ]);
