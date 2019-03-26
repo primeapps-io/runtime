@@ -337,12 +337,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/teams/addNewTeamForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/organization/teams/addNewTeamForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewTeamFormModal.$promise.then(function () {
                     $scope.addNewTeamFormModal.show();
@@ -371,6 +371,7 @@ angular.module('primeapps')
                     $scope.teamModel = {};
                     $scope.teamId = null;
                     $scope.stepNo = 0;
+                    $scope.changeOffset();
                 }
             };
 
