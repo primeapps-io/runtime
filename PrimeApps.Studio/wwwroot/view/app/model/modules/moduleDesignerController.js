@@ -161,8 +161,12 @@ angular.module('primeapps')
                         classes: {
                             mirror: 'gu-mirror-field',
                             transit: 'gu-transit-field'
-                        }
+                        },
+                        accepts: function () {
+                            return false;
+                        },
                     });
+
 
                     templateContainer.on('dragularenter', function (e) {
                         //console.log(e);
@@ -629,7 +633,8 @@ angular.module('primeapps')
                     templateUrl: 'view/app/model/modules/fieldForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
-                    show: false
+                    show: false,
+                    keyboard: false
                 });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
@@ -1419,7 +1424,7 @@ angular.module('primeapps')
                     $scope.module.fields = $scope.module.fields.concat(deletedFields);
 
                 var moduleModel = ModuleService.prepareModule(angular.copy($scope.module), $scope.picklistsModule, $scope.deletedModules, $scope.pureModule);
-              
+
                 if (angular.isObject(moduleModel.menu_icon))
                     moduleModel.menu_icon = moduleModel.menu_icon.value;
 
@@ -1441,11 +1446,11 @@ angular.module('primeapps')
                     ModuleService.moduleCreate(moduleModel).then(function (result) {
                         $scope.saving = false;
                         $rootScope.appModules.push(result.data);
-                        
+
                         if ($scope.currentDeletedFields.length > 0) {
                             ModuleService.deleteFieldsMappings(deletedFieldsIds);
                         }
-                        
+
                         $state.go('studio.app.modules', {
                             orgId: $rootScope.currentOrgId,
                             appId: $rootScope.currentAppId

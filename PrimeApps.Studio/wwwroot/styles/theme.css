@@ -3,204 +3,170 @@
   position: absolute;
   bottom: 2px;
   right: -5px;
-  border: none;
-}
+  border: none; }
 
 .flexy {
-  display: flex;
-}
+  display: flex; }
 
 .scroll-style-4::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background-color: #F5F5F5;
-}
+  background-color: #F5F5F5; }
 .scroll-style-4::-webkit-scrollbar {
   width: 5px;
-  background-color: #F5F5F5;
-}
+  background-color: #F5F5F5; }
 .scroll-style-4::-webkit-scrollbar-thumb {
   background-color: #0D6FAA;
   border: 0px solid #555555;
-  border-radius: 5px;
-}
+  border-radius: 5px; }
 
 .scroll-style-5::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background-color: #25282B;
-}
+  background-color: #25282B; }
 .scroll-style-5::-webkit-scrollbar {
   width: 5px;
-  background-color: #25282B;
-}
+  background-color: #25282B; }
 .scroll-style-5::-webkit-scrollbar-thumb {
   background-color: #0D6FAA;
   border: 0px solid #555555;
-  border-radius: 5px;
-}
+  border-radius: 5px; }
 
 .scroll-style-6::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background-color: #F5F5F5;
-}
+  background-color: #F5F5F5; }
 .scroll-style-6::-webkit-scrollbar {
   width: 5px;
-  background-color: #F5F5F5;
-}
+  background-color: #F5F5F5; }
 .scroll-style-6::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.25);
   border: 0px solid #555555;
-  border-radius: 5px;
-}
+  border-radius: 5px; }
 
 .wrt:before,
 .wrt:after {
-  content: " ";
+  content: ' ';
   display: table;
   margin-left: -15px;
   margin-right: -15px;
   float: none;
-  clear: both;
-}
+  clear: both; }
 
 .list-yanla::after, .list-yanla:before {
-  content: " ";
+  content: ' ';
   display: table;
-  width: 100%;
-}
+  width: 100%; }
 .list-yanla > li {
   float: left;
-  margin-left: 10px;
-}
+  margin-left: 10px; }
 
 .newupload .uploadlink {
   position: relative;
   width: 100%;
-  cursor: pointer;
-}
-.newupload .uploadlink input {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-  cursor: pointer;
-}
-.newupload .uploadlink input ~ span {
-  display: block;
-  position: relative;
-  padding: 25px 25px 20px 25px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-  text-align: center;
-  color: rgba(0, 0, 0, 0.25);
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.newupload .uploadlink input ~ span i {
-  font-size: 50px;
-  display: block;
-}
-.newupload .uploadlink input ~ span small {
-  display: block;
-}
-.newupload .uploadlink input ~ span:before {
-  content: "";
-  padding: 5px;
-  left: 10px;
-  top: 10px;
-  position: absolute;
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
-  border: 1px dashed rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.newupload .uploadlink input:hover ~ span, .newupload .uploadlink input:focus ~ span, .newupload .uploadlink input.nv-file-over ~ span {
-  color: rgba(0, 0, 0, 0.5);
-  background: rgba(0, 0, 0, 0.15);
-}
-.newupload .uploadlink input:hover ~ span:before, .newupload .uploadlink input:focus ~ span:before, .newupload .uploadlink input.nv-file-over ~ span:before {
-  border-color: rgba(0, 0, 0, 0.25);
-  left: 15px;
-  top: 15px;
-  width: calc(100% - 30px);
-  height: calc(100% - 30px);
-}
+  cursor: pointer; }
+  .newupload .uploadlink input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    cursor: pointer; }
+    .newupload .uploadlink input ~ span {
+      display: block;
+      position: relative;
+      padding: 25px 25px 20px 25px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.25);
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease; }
+      .newupload .uploadlink input ~ span i {
+        font-size: 50px;
+        display: block; }
+      .newupload .uploadlink input ~ span small {
+        display: block; }
+      .newupload .uploadlink input ~ span:before {
+        content: "";
+        padding: 5px;
+        left: 10px;
+        top: 10px;
+        position: absolute;
+        width: calc(100% - 20px);
+        height: calc(100% - 20px);
+        border: 1px dashed rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        -ms-transition: all 0.5s ease; }
+    .newupload .uploadlink input:hover ~ span, .newupload .uploadlink input:focus ~ span, .newupload .uploadlink input.nv-file-over ~ span {
+      color: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.15); }
+      .newupload .uploadlink input:hover ~ span:before, .newupload .uploadlink input:focus ~ span:before, .newupload .uploadlink input.nv-file-over ~ span:before {
+        border-color: rgba(0, 0, 0, 0.25);
+        left: 15px;
+        top: 15px;
+        width: calc(100% - 30px);
+        height: calc(100% - 30px); }
 
 .resultimg {
-  max-width: 100% !important;
-}
-.resultimg ~ .action-buttons-block {
-  display: inline-block;
-  position: absolute;
-  right: -40px;
-  top: 50%;
-  transform: translate(0%, -50%);
-}
-.resultimg ~ .action-buttons-block button {
-  background: transparent;
-  width: 30px;
-  font-size: 12px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  border: none;
-  color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  padding: 0px;
-}
-.resultimg ~ .action-buttons-block button.action-buttons-edit {
-  background: rgba(0, 0, 0, 0.05);
-}
-.resultimg ~ .action-buttons-block button.action-buttons-delete {
-  background: #E78D8F;
-  color: #FFF;
-  font-size: 10px;
-}
-.resultimg ~ .action-buttons-block button.action-buttons-delete:hover {
-  background: #ce0404;
-  color: #FFF;
-}
-.resultimg ~ .action-buttons-block button:hover {
-  background: rgba(0, 0, 0, 0.15);
-  color: rgba(0, 0, 0, 0.75);
-}
+  max-width: 100% !important; }
+  .resultimg ~ .action-buttons-block {
+    display: inline-block;
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translate(0%, -50%); }
+    .resultimg ~ .action-buttons-block button {
+      background: transparent;
+      width: 30px;
+      font-size: 12px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border: none;
+      color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      padding: 0px; }
+      .resultimg ~ .action-buttons-block button.action-buttons-edit {
+        background: rgba(0, 0, 0, 0.05); }
+      .resultimg ~ .action-buttons-block button.action-buttons-delete {
+        background: #E78D8F;
+        color: #FFF;
+        font-size: 10px; }
+        .resultimg ~ .action-buttons-block button.action-buttons-delete:hover {
+          background: #ce0404;
+          color: #FFF; }
+      .resultimg ~ .action-buttons-block button:hover {
+        background: rgba(0, 0, 0, 0.15);
+        color: rgba(0, 0, 0, 0.75); }
 
 .cropArea2 {
-  margin-top: 30px;
-}
-.cropArea2 label {
-  color: rgba(0, 0, 0, 0.75);
-  font-size: 12px;
-  padding: 0px;
-  margin: 0px;
-  font-weight: bold !important;
-}
-.cropArea2 img-crop {
-  height: 300px !important;
-}
-.cropArea2 canvas {
-  margin-left: 0px !important;
-  margin-top: 0px !important;
-  position: relative !important;
-  width: 100% !important;
-  height: auto !important;
-  left: 0px !important;
-  top: 0px !important;
-}
+  margin-top: 30px; }
+  .cropArea2 label {
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 12px;
+    padding: 0px;
+    margin: 0px;
+    font-weight: bold !important; }
+  .cropArea2 img-crop {
+    height: 300px !important; }
+  .cropArea2 canvas {
+    margin-left: 0px !important;
+    margin-top: 0px !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    left: 0px !important;
+    top: 0px !important; }
 
 .disabled {
-  opacity: 0.5;
-  cursor: not-allowed !important;
-}
+  opacity: .5;
+  cursor: not-allowed !important; }
 
 .newinput {
   padding-left: 23px !important;
@@ -211,133 +177,107 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
-}
-.newinput input[type=radio] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-.newinput input[type=radio] ~ span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 20px;
-  width: 20px;
-  background-color: #eee;
-  border-radius: 50%;
-}
-.newinput input[type=radio] ~ span:after {
-  content: "";
-  position: absolute;
-  display: none;
-  top: 7px !important;
-  left: 7px !important;
-  width: 6px !important;
-  height: 6px !important;
-  border-radius: 50%;
-  background: white;
-}
-.newinput input[type=radio]:checked ~ span {
-  background-color: #0D6FAA;
-}
-.newinput input[type=radio]:checked ~ span:after {
-  display: block;
-}
-.newinput input[type=radio]:disabled ~ span {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.newinput input[type=checkbox] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-.newinput input[type=checkbox] ~ span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 20px;
-  width: 20px;
-  background-color: #eee;
-  border-radius: 2px;
-}
-.newinput input[type=checkbox] ~ span:after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 7px !important;
-  top: 3px !important;
-  width: 6px !important;
-  height: 12px !important;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  -webkit-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.newinput input[type=checkbox]:checked ~ span {
-  background-color: #0D6FAA;
-}
-.newinput input[type=checkbox]:checked ~ span:after {
-  display: block;
-}
-.newinput input[type=checkbox]:disabled {
-  cursor: not-allowed;
-}
-.newinput input[type=checkbox]:disabled ~ span {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.newinput input[type=file] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-.newinput input[type=file] ~ span {
-  position: relative;
-}
-.newinput input[disabled=disabled] {
-  cursor: not-allowed;
-}
-.newinput input[disabled=disabled] ~ span {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.newinput:hover input[type=radio] ~ span {
-  background-color: rgba(13, 111, 170, 0.5);
-}
-.newinput:hover input[type=radio] ~ span:after {
-  display: block;
-}
-.newinput:hover input[type=radio]:checked ~ span {
-  background-color: #0D6FAA;
-}
-.newinput:hover input[type=checkbox] ~ span {
-  background-color: rgba(13, 111, 170, 0.5);
-}
-.newinput:hover input[type=checkbox] ~ span:after {
-  display: block;
-}
-.newinput:hover input[type=checkbox]:checked ~ span {
-  background-color: #0D6FAA;
-}
+  user-select: none; }
+  .newinput input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0; }
+    .newinput input[type="radio"] ~ span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #eee;
+      border-radius: 50%; }
+      .newinput input[type="radio"] ~ span:after {
+        content: "";
+        position: absolute;
+        display: none;
+        top: 7px !important;
+        left: 7px !important;
+        width: 6px !important;
+        height: 6px !important;
+        border-radius: 50%;
+        background: white; }
+    .newinput input[type="radio"]:checked ~ span {
+      background-color: #0D6FAA; }
+      .newinput input[type="radio"]:checked ~ span:after {
+        display: block; }
+    .newinput input[type="radio"]:disabled ~ span {
+      opacity: .5;
+      cursor: not-allowed; }
+  .newinput input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0; }
+    .newinput input[type="checkbox"] ~ span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #eee;
+      border-radius: 2px; }
+      .newinput input[type="checkbox"] ~ span:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 7px !important;
+        top: 3px !important;
+        width: 6px !important;
+        height: 12px !important;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg); }
+    .newinput input[type="checkbox"]:checked ~ span {
+      background-color: #0D6FAA; }
+      .newinput input[type="checkbox"]:checked ~ span:after {
+        display: block; }
+    .newinput input[type="checkbox"]:disabled {
+      cursor: not-allowed; }
+      .newinput input[type="checkbox"]:disabled ~ span {
+        opacity: .5;
+        cursor: not-allowed; }
+  .newinput input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0; }
+    .newinput input[type="file"] ~ span {
+      position: relative; }
+  .newinput input[disabled="disabled"] {
+    cursor: not-allowed; }
+    .newinput input[disabled="disabled"] ~ span {
+      opacity: .5;
+      cursor: not-allowed; }
+  .newinput:hover input[type="radio"] ~ span {
+    background-color: rgba(13, 111, 170, 0.5); }
+    .newinput:hover input[type="radio"] ~ span:after {
+      display: block; }
+  .newinput:hover input[type="radio"]:checked ~ span {
+    background-color: #0D6FAA; }
+  .newinput:hover input[type="checkbox"] ~ span {
+    background-color: rgba(13, 111, 170, 0.5); }
+    .newinput:hover input[type="checkbox"] ~ span:after {
+      display: block; }
+  .newinput:hover input[type="checkbox"]:checked ~ span {
+    background-color: #0D6FAA; }
 
 button, select {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-button:focus, select:focus {
-  outline: none !important;
-}
+  -ms-transition: all 0.5s ease; }
+  button:focus, select:focus {
+    outline: none !important; }
 
 .primeapps .add-new-section {
   padding: 15px;
@@ -347,283 +287,221 @@ button:focus, select:focus {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.primeapps .add-new-section:hover {
-  border: 1px dashed rgba(0, 0, 0, 0.5);
-}
-.primeapps .add-new-section span {
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 14px;
-}
+  -ms-transition: all 0.5s ease; }
+  .primeapps .add-new-section:hover {
+    border: 1px dashed rgba(0, 0, 0, 0.5); }
+  .primeapps .add-new-section span {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px; }
 .primeapps .subpanel-draggable {
-  box-shadow: none !important;
-}
+  box-shadow: none !important; }
 .primeapps .module-section {
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   background: #fff;
   border: none !important;
   border-radius: 5px;
   margin-bottom: 30px;
-  min-height: 180px;
-}
-.primeapps .module-section .cell-container .form-group {
-  display: flex;
-  align-items: center;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border: 1px dashed transparent;
-}
-.primeapps .module-section .cell-container .form-group .required-field {
-  color: #ce0404 !important;
-  position: relative;
-}
-.primeapps .module-section .cell-container .form-group .field-area {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .module-section .cell-container .form-group .action-buttons {
-  padding: 0;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translate(0%, -50%);
-}
-.primeapps .module-section .cell-container .form-group .action-buttons .action-icon {
-  color: rgba(6, 6, 6, 0.75) !important;
-  font-size: 14px !important;
-}
-.primeapps .module-section .cell-container .form-group .action-buttons .action-icon-disabled {
-  font-size: 14px !important;
-  color: rgba(0, 0, 0, 0.25) !important;
-}
-.primeapps .module-section .cell-container .form-group .control-label {
-  text-align: left;
-  padding-bottom: 0;
-}
-.primeapps .module-section .cell-container .form-group:hover {
-  box-shadow: none;
-  background-color: rgba(13, 111, 170, 0.25);
-  border-color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .module-section .action-buttons {
-  display: none;
-  width: auto !important;
-}
-.primeapps .module-section .section-header {
-  border: none !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 15px 10px !important;
-}
-.primeapps .module-section .section-header span:first-child {
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.75);
-}
-.primeapps .module-section .section-header span:first-child i {
-  color: rgba(0, 0, 0, 0.5) !important;
-  margin-right: 5px;
-}
-.primeapps .module-section .section-header:hover {
-  background: rgba(13, 111, 170, 0.1);
-  border: none !important;
-}
-.primeapps .module-section .section-header:hover .action-buttons {
-  display: block;
-}
-.primeapps .module-section .section-container {
-  min-height: 180px;
-}
-.primeapps .module-section .section-header {
-  padding: 10px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-  cursor: move;
-}
-.primeapps .module-section .section-header h4 {
-  font-size: 16px;
-  font-weight: bold;
-  padding: 0;
-  margin: 0;
-}
-.primeapps .module-section .section-header h4 i {
-  margin-right: 15px;
-  color: rgba(0, 0, 0, 0.5);
-}
+  min-height: 180px; }
+  .primeapps .module-section .cell-container .form-group {
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px dashed transparent; }
+    .primeapps .module-section .cell-container .form-group .required-field {
+      color: #ce0404 !important;
+      position: relative; }
+    .primeapps .module-section .cell-container .form-group .field-area {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.05);
+      color: rgba(0, 0, 0, 0.25); }
+    .primeapps .module-section .cell-container .form-group .action-buttons {
+      padding: 0;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translate(0%, -50%); }
+      .primeapps .module-section .cell-container .form-group .action-buttons .action-icon {
+        color: rgba(6, 6, 6, 0.75) !important;
+        font-size: 14px !important; }
+      .primeapps .module-section .cell-container .form-group .action-buttons .action-icon-disabled {
+        font-size: 14px !important;
+        color: rgba(0, 0, 0, 0.25) !important; }
+    .primeapps .module-section .cell-container .form-group .control-label {
+      text-align: left;
+      padding-bottom: 0; }
+    .primeapps .module-section .cell-container .form-group:hover {
+      box-shadow: none;
+      background-color: rgba(13, 111, 170, 0.25);
+      border-color: rgba(0, 0, 0, 0.25); }
+  .primeapps .module-section .action-buttons {
+    display: none;
+    width: auto !important; }
+  .primeapps .module-section .section-header {
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 15px 10px !important; }
+    .primeapps .module-section .section-header span:first-child {
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.75); }
+      .primeapps .module-section .section-header span:first-child i {
+        color: rgba(0, 0, 0, 0.5) !important;
+        margin-right: 5px; }
+    .primeapps .module-section .section-header:hover {
+      background: rgba(13, 111, 170, 0.1);
+      border: none !important; }
+      .primeapps .module-section .section-header:hover .action-buttons {
+        display: block; }
+  .primeapps .module-section .section-container {
+    min-height: 180px; }
+  .primeapps .module-section .section-header {
+    padding: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05); }
+    .primeapps .module-section .section-header h4 {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 0;
+      margin: 0; }
+      .primeapps .module-section .section-header h4 i {
+        margin-right: 15px;
+        color: rgba(0, 0, 0, 0.5); }
 .primeapps .template-field {
   background-color: #fff;
   padding-top: 15px;
   padding-bottom: 15px;
   position: sticky;
-  top: 5%;
-}
-.primeapps .template-field .template-field-box {
-  border: 1px dotted #fff;
-  cursor: move;
-  width: calc(50% - 10px);
-  float: left;
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.05);
-  padding: 10px;
-  margin: 5px;
-}
-.primeapps .template-field .template-field-box:hover {
-  border: 1px dotted #0d6faa;
-  background: #fff !important;
-}
-.primeapps .template-field .template-field-box .template-field-icon span {
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.5);
-}
-.primeapps .template-field .template-field-box .template-field-text h4 {
-  font-size: 14px !important;
-  margin: 0px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  top: 5%; }
+  .primeapps .template-field .template-field-box {
+    border: 1px dotted #fff;
+    cursor: move;
+    width: calc(50% - 10px);
+    float: left;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    margin: 5px; }
+    .primeapps .template-field .template-field-box:hover {
+      border: 1px dotted #0d6faa;
+      background: #fff !important; }
+    .primeapps .template-field .template-field-box .template-field-icon span {
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.5); }
+    .primeapps .template-field .template-field-box .template-field-text h4 {
+      font-size: 14px !important;
+      margin: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
 .primeapps .module-designer .new-field {
   border: 1px dashed rgba(0, 0, 0, 0.28);
   cursor: pointer;
   padding: 15px !important;
-  background: none;
-}
-.primeapps .module-designer .new-field:hover {
-  border: 1px dashed rgba(0, 0, 0, 0.5);
-}
-.primeapps .module-designer .new-field span {
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 14px;
-}
-.primeapps .module-designer .new-field span i {
-  margin-right: 5px;
-}
+  background: none; }
+  .primeapps .module-designer .new-field:hover {
+    border: 1px dashed rgba(0, 0, 0, 0.5); }
+  .primeapps .module-designer .new-field span {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px; }
+    .primeapps .module-designer .new-field span i {
+      margin-right: 5px; }
 .primeapps .module-designer .panel-body {
-  padding-top: 0;
-}
+  padding-top: 0; }
 .primeapps .margin-0 {
-  margin: 0px;
-}
+  margin: 0px; }
 .primeapps .margin-5 {
-  margin: 5px;
-}
+  margin: 5px; }
 .primeapps .margin-10 {
-  margin: 10px;
-}
+  margin: 10px; }
 .primeapps .margin-15 {
-  margin: 15px;
-}
+  margin: 15px; }
 .primeapps .padding-5 {
-  padding: 5px;
-}
+  padding: 5px; }
 .primeapps .padding-0 {
-  padding: 0px !important;
-}
+  padding: 0px !important; }
 .primeapps .padding-10 {
-  padding: 10px;
-}
+  padding: 10px; }
 .primeapps .padding-20 {
-  padding: 20px;
-}
+  padding: 20px; }
 .primeapps .dropdown .dropdown-input {
   cursor: pointer;
   border: solid 1px #cecece;
   padding-left: 10px;
-  padding-right: 10px;
-}
-.primeapps .dropdown .dropdown-input .dropdown-text {
-  display: flex;
-  align-items: center;
-}
-.primeapps .dropdown .dropdown-input .dropdown-text h4 {
-  width: 95%;
-}
+  padding-right: 10px; }
+  .primeapps .dropdown .dropdown-input .dropdown-text {
+    display: flex;
+    align-items: center; }
+    .primeapps .dropdown .dropdown-input .dropdown-text h4 {
+      width: 95%; }
 .primeapps .dropdown .dropdown-menu {
   width: 95%;
-  margin: 0 !important;
-}
-.primeapps .dropdown .dropdown-menu li {
-  cursor: pointer;
-}
+  margin: 0 !important; }
+  .primeapps .dropdown .dropdown-menu li {
+    cursor: pointer; }
 .primeapps .collaborators-left-menu ul .active .user-image {
-  background: #0d6faa !important;
-}
+  background: #0d6faa !important; }
 .primeapps .collaborators-left-menu ul .active h2 {
-  color: #0d6faa !important;
-}
+  color: #0d6faa !important; }
 .primeapps .collaborators-left-menu ul .active h3 {
-  color: #0d6faa !important;
-}
+  color: #0d6faa !important; }
 .primeapps .collaborators-left-menu ul li {
-  cursor: pointer;
-}
+  cursor: pointer; }
 .primeapps .collaborator-info .user-info {
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-}
-.primeapps .collaborator-info .user-info h2 {
-  font-size: 16px;
-}
-.primeapps .collaborator-info .user-info h3 {
-  font-size: 12px;
-}
+  color: rgba(0, 0, 0, 0.5); }
+  .primeapps .collaborator-info .user-info h2 {
+    font-size: 16px; }
+  .primeapps .collaborator-info .user-info h3 {
+    font-size: 12px; }
 .primeapps .collaborator-detail {
   position: relative;
   padding: 30px;
-  text-align: center;
-}
-.primeapps .collaborator-detail > div {
-  margin-bottom: 20px;
-}
-.primeapps .collaborator-detail h2 {
-  font-size: 18px;
-  margin: 0px;
-  display: block;
-}
+  text-align: center; }
+  .primeapps .collaborator-detail > div {
+    margin-bottom: 20px; }
+  .primeapps .collaborator-detail h2 {
+    font-size: 18px;
+    margin: 0px;
+    display: block; }
 .primeapps .user-info {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding-top: 10px;
   padding-bottom: 10px;
-  border-bottom: none;
-}
-.primeapps .user-info .user-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps .user-info .user-text h2 {
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.75);
-  font-weight: bold;
-  line-height: 18px;
-  margin: 0;
-  padding: 0;
-  font-weight: 400;
-}
-.primeapps .user-info .user-text h3 {
-  font-size: 12px;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-  margin: 0;
-  font-weight: 400;
-}
-.primeapps .user-info .user-image {
-  background-color: rgba(0, 0, 0, 0.25);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  font-size: 14px;
-  margin: 0px 5px;
-}
+  border-bottom: none; }
+  .primeapps .user-info .user-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .primeapps .user-info .user-text h2 {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.75);
+      font-weight: bold;
+      line-height: 18px;
+      margin: 0;
+      padding: 0;
+      font-weight: 400; }
+    .primeapps .user-info .user-text h3 {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      margin: 0;
+      font-weight: 400; }
+  .primeapps .user-info .user-image {
+    background-color: rgba(0, 0, 0, 0.25);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 14px;
+    margin: 0px 5px; }
 .primeapps .page-loading {
   position: fixed;
   left: 0px;
@@ -636,11 +514,9 @@ button:focus, select:focus {
   width: 100vw;
   color: #FFF;
   height: 100vh;
-  background: #F6F5F2;
-}
-.primeapps .page-loading i {
-  font-size: 50px;
-}
+  background: #F6F5F2; }
+  .primeapps .page-loading i {
+    font-size: 50px; }
 .primeapps .page-loading2 {
   position: absolute;
   width: 100%;
@@ -652,104 +528,80 @@ button:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 25px;
-}
+  font-size: 25px; }
 .primeapps body {
-  background-color: #f6f5f2 !important;
-}
+  background-color: #f6f5f2 !important; }
 .primeapps .sidebar-nav a.active i {
-  color: #FFF;
-}
+  color: #FFF; }
 .primeapps .sidebar-nav a:hover:not(.sidebar-brand-logo) {
   background-color: #121212;
-  border-radius: 0;
-}
+  border-radius: 0; }
 .primeapps .ring div {
-  border-color: #0D6FAA transparent;
-}
+  border-color: #0D6FAA transparent; }
 .primeapps .help-link:hover, .primeapps .help-link:focus, .primeapps .launcher-link:hover, .primeapps .launcher-link:focus {
-  color: #0D6FAA !important;
-}
+  color: #0D6FAA !important; }
 .primeapps .btn-auth {
   background-color: #0D6FAA !important;
-  border-bottom-color: #0D6FAA !important;
-}
+  border-bottom-color: #0D6FAA !important; }
 .primeapps .input-group-focus {
-  border-bottom-color: #0D6FAA;
-}
-.primeapps .input-group-focus .input-group-addon {
-  color: #0D6FAA;
-}
+  border-bottom-color: #0D6FAA; }
+  .primeapps .input-group-focus .input-group-addon {
+    color: #0D6FAA; }
 .primeapps .input-group .input-group-addon {
   background: rgba(0, 0, 0, 0.05);
   border: none;
-  border-left: 1px solid rgba(0, 0, 0, 0.05);
-}
+  border-left: 1px solid rgba(0, 0, 0, 0.05); }
 .primeapps .inner-addon i {
-  color: #0D6FAA;
-}
+  color: #0D6FAA; }
 .primeapps .modal-header {
   background-color: #0D6FAA;
-  color: white;
-}
+  color: white; }
 .primeapps .sidebar-nav {
   margin-left: 0;
-  width: 100%;
-}
+  width: 100%; }
 .primeapps #sidebar-wrapper .panel-body a {
   background: none;
   font-weight: 400;
   font-size: 10px !important;
-  height: 36px;
-}
+  height: 36px; }
 .primeapps #sidebar-wrapper .panel-body .fa-sidebar-icon-background {
-  background: none !important;
-}
+  background: none !important; }
 .primeapps #sidebar-wrapper ul {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
+  -ms-transition: all 0.5s ease; }
 .primeapps #sidebar-wrapper .tooltip {
-  position: fixed;
-}
-.primeapps #sidebar-wrapper .tooltip.tooltip-info .tooltip-inner {
-  background: #0f1015 !important;
-  color: #FFF;
-  padding: 5px 10px !important;
-  font-size: 14px !important;
-  font-weight: bold !important;
-  white-space: nowrap;
-}
-.primeapps #sidebar-wrapper .tooltip.tooltip-info.right .tooltip-arrow {
-  border-color: transparent !important;
-  border-right-color: #0f1015 !important;
-}
-.primeapps #sidebar-wrapper .tooltip.tooltip-info.top .tooltip-arrow {
-  border-color: transparent !important;
-  border-top-color: #0f1015 !important;
-}
+  position: fixed; }
+  .primeapps #sidebar-wrapper .tooltip.tooltip-info .tooltip-inner {
+    background: #0f1015 !important;
+    color: #FFF;
+    padding: 5px 10px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    white-space: nowrap; }
+  .primeapps #sidebar-wrapper .tooltip.tooltip-info.right .tooltip-arrow {
+    border-color: transparent !important;
+    border-right-color: #0f1015 !important; }
+  .primeapps #sidebar-wrapper .tooltip.tooltip-info.top .tooltip-arrow {
+    border-color: transparent !important;
+    border-top-color: #0f1015 !important; }
 .primeapps .sidebar-nav a.active {
   background-color: #121212 !important;
-  border-radius: inherit;
-}
+  border-radius: inherit; }
 .primeapps .collapse-menu .collapse.am-collapse {
-  background-color: #121212;
-}
+  background-color: #121212; }
 .primeapps .collapse-menu a {
   line-height: 55px !important;
   font-family: Nunito;
   font-size: 15px;
   font-weight: bold;
   font-style: normal;
-  font-stretch: normal;
-}
-.primeapps .collapse-menu a .fa-sidebar-icon {
-  color: #fff;
-  font-size: 16px;
-  position: absolute;
-}
+  font-stretch: normal; }
+  .primeapps .collapse-menu a .fa-sidebar-icon {
+    color: #fff;
+    font-size: 16px;
+    position: absolute; }
 .primeapps .fa-sidebar-icon-background {
   height: 30px;
   width: 30px;
@@ -759,8 +611,7 @@ button:focus, select:focus {
   border-radius: 50%;
   margin-top: 15px;
   padding-top: 6px;
-  padding-left: 5px;
-}
+  padding-left: 5px; }
 .primeapps .rigth-oval-toolbar-item {
   width: 40px;
   height: 40px;
@@ -771,15 +622,12 @@ button:focus, select:focus {
   justify-content: center;
   align-items: center;
   margin-left: 10px;
-  cursor: pointer;
-}
-.primeapps .rigth-oval-toolbar-item i {
-  font-size: 12px;
-  color: #fff;
-}
-.primeapps .rigth-oval-toolbar-item:hover {
-  background-color: #0d6faa;
-}
+  cursor: pointer; }
+  .primeapps .rigth-oval-toolbar-item i {
+    font-size: 12px;
+    color: #fff; }
+  .primeapps .rigth-oval-toolbar-item:hover {
+    background-color: #0d6faa; }
 .primeapps .navbar-right {
   display: flex;
   flex-direction: row;
@@ -788,13 +636,11 @@ button:focus, select:focus {
   margin: 0px;
   padding-right: 20px;
   height: 80px;
-  list-style-type: none;
-}
+  list-style-type: none; }
 .primeapps .navbar {
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
   background-color: #ffffff !important;
-  height: 80px !important;
-}
+  height: 80px !important; }
 .primeapps .apps-first-screen-h1 {
   font-family: Nunito;
   font-size: 20px;
@@ -804,11 +650,9 @@ button:focus, select:focus {
   line-height: 1.5;
   letter-spacing: normal;
   text-align: center;
-  color: rgba(0, 0, 0, 0.5);
-}
+  color: rgba(0, 0, 0, 0.5); }
 .primeapps .dashboard {
-  padding-top: 150px;
-}
+  padding-top: 150px; }
 .primeapps .apps-first-screen-span {
   font-family: Nunito;
   font-size: 16px;
@@ -818,8 +662,7 @@ button:focus, select:focus {
   line-height: 1.56;
   letter-spacing: normal;
   text-align: center;
-  color: rgba(0, 0, 0, 0.5);
-}
+  color: rgba(0, 0, 0, 0.5); }
 .primeapps .create-app-btn {
   font-family: Nunito;
   font-size: 16px;
@@ -836,110 +679,89 @@ button:focus, select:focus {
   background-color: rgba(13, 111, 170, 0.75);
   border: none;
   margin-top: 30px;
-  margin-bottom: 30px;
-}
+  margin-bottom: 30px; }
 .primeapps .new-app-content {
   display: flex;
   flex-direction: row;
   flex-flow: column;
   justify-content: center;
-  align-items: center;
-}
+  align-items: center; }
 .primeapps .need-help-text {
   color: rgba(0, 0, 0, 0.5);
   font-family: Nunito;
-  font-size: 15px;
-}
+  font-size: 15px; }
 .primeapps .tab-content {
   border-radius: 5px;
   background: #FFF;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-}
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05); }
 .primeapps .function .tab-content {
-  box-shadow: none;
-}
+  box-shadow: none; }
 .primeapps .function .nav-tabs li a {
   font-weight: 700;
-  color: #0d6faa;
-}
+  color: #0d6faa; }
 .primeapps .function .nav-tabs li.active a {
   background-color: #f7f7f7;
-  border: 1px solid #f7f7f7;
-}
+  border: 1px solid #f7f7f7; }
 .primeapps .table-responsive {
-  border-color: transparent !important;
-}
+  border-color: transparent !important; }
 .primeapps .table {
   border-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background: transparent;
-}
-.primeapps .table thead:first-child > tr:first-child > th {
-  line-height: 15px !important;
-  font-size: 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  font-weight: 400 !important;
-  color: rgba(0, 0, 0, 0.5) !important;
-  padding: 20px !important;
-  text-align: inherit;
-  background: transparent;
-}
-.primeapps .table tbody tr td {
-  line-height: 15px;
-  vertical-align: middle;
-  padding: 10px 20px !important;
-  color: rgba(0, 0, 0, 0.75) !important;
-  font-weight: 400 !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  background: transparent;
-}
-.primeapps .table tbody tr:hover {
-  background: rgba(0, 0, 0, 0.03);
-  cursor: pointer;
-}
-.primeapps .table tbody tr .action-buttons-block {
-  display: inline-block;
-}
-.primeapps .table tbody tr .action-buttons-block button {
-  background: transparent;
-  width: 30px;
-  font-size: 12px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  border: none;
-  color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  padding: 0px;
-}
-.primeapps .table tbody tr .action-buttons-block button.action-buttons-edit {
-  background: rgba(0, 0, 0, 0.05);
-}
-.primeapps .table tbody tr .action-buttons-block button.action-buttons-delete {
-  background: rgba(206, 4, 4, 0.5);
-  color: #FFF;
-  font-size: 10px;
-}
-.primeapps .table tbody tr .action-buttons-block button.action-buttons-delete:hover {
-  background: #ce0404;
-  color: #FFF;
-}
-.primeapps .table tbody tr .action-buttons-block button:hover {
-  background: rgba(0, 0, 0, 0.15);
-  color: rgba(0, 0, 0, 0.75);
-}
+  background: transparent; }
+  .primeapps .table thead:first-child > tr:first-child > th {
+    line-height: 15px !important;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    font-weight: 400 !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    padding: 20px !important;
+    text-align: inherit;
+    background: transparent; }
+  .primeapps .table tbody tr td {
+    line-height: 15px;
+    vertical-align: middle;
+    padding: 10px 20px !important;
+    color: rgba(0, 0, 0, 0.75) !important;
+    font-weight: 400 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent; }
+  .primeapps .table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.03);
+    cursor: pointer; }
+  .primeapps .table tbody tr .action-buttons-block {
+    display: inline-block; }
+    .primeapps .table tbody tr .action-buttons-block button {
+      background: transparent;
+      width: 30px;
+      font-size: 12px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border: none;
+      color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      padding: 0px; }
+      .primeapps .table tbody tr .action-buttons-block button.action-buttons-edit {
+        background: rgba(0, 0, 0, 0.05); }
+      .primeapps .table tbody tr .action-buttons-block button.action-buttons-delete {
+        background: rgba(206, 4, 4, 0.5);
+        color: #FFF;
+        font-size: 10px; }
+        .primeapps .table tbody tr .action-buttons-block button.action-buttons-delete:hover {
+          background: #ce0404;
+          color: #FFF; }
+      .primeapps .table tbody tr .action-buttons-block button:hover {
+        background: rgba(0, 0, 0, 0.15);
+        color: rgba(0, 0, 0, 0.75); }
 .primeapps .tab-content2 {
   box-shadow: 0px 0px 5px 0 rgba(0, 0, 0, 0.05);
-  margin-left: 2px;
-}
-.primeapps .tab-content2 .table tbody tr td {
-  padding: 5px !important;
-  line-height: 30px;
-}
-.primeapps .tab-content2 .table thead:first-child > tr:first-child > th {
-  padding: 5px !important;
-}
+  margin-left: 2px; }
+  .primeapps .tab-content2 .table tbody tr td {
+    padding: 5px !important;
+    line-height: 30px; }
+  .primeapps .tab-content2 .table thead:first-child > tr:first-child > th {
+    padding: 5px !important; }
 .primeapps .table-pagination {
   height: 60px;
   padding: 0px 20px;
@@ -948,833 +770,667 @@ button:focus, select:focus {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-}
-.primeapps .table-pagination .pagination-span {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
-}
-.primeapps .table-pagination .items-per-page-select {
-  width: 55px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border: none;
-  text-align: center;
-  border-radius: 5px;
-  height: 30px;
-  font-size: 14px;
-  font-weight: bold;
-  text-align-last: center;
-}
+  justify-content: space-between; }
+  .primeapps .table-pagination .pagination-span {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px; }
+  .primeapps .table-pagination .items-per-page-select {
+    width: 55px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: none;
+    text-align: center;
+    border-radius: 5px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align-last: center; }
 .primeapps .modal-header {
   background-color: #fff;
-  color: #000;
-}
+  color: #000; }
 .primeapps .modal {
   left: auto;
-  padding: 20px 10px 20px 30px;
-}
-.primeapps .modal .section {
-  padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-.primeapps .modal .panel {
-  -webkit-box-shadow: none;
-  margin-bottom: 0px;
-}
-.primeapps .modal .megalist {
-  display: flex;
-}
-.primeapps .modal .megalist > div {
-  width: 100%;
-}
-.primeapps .modal .megalist > div.modal-menu {
-  width: auto;
-  padding-right: 20px;
-  position: -webkit-sticky;
-  position: sticky;
-  align-self: flex-start;
-  top: 0px;
-}
-.primeapps .modal .megalist > div.modal-menu:before {
-  content: "";
-  position: absolute;
-  right: 22px;
-  top: 0px;
-  width: 2px;
-  border-radius: 3px;
-  background: rgba(0, 0, 0, 0.05);
-  height: calc(100vh - 135px);
-}
-.primeapps .modal .megalist > div.modal-menu ul li {
-  white-space: nowrap;
-  min-width: 200px;
-}
-.primeapps .modal .megalist > div.modal-menu ul li a {
-  text-decoration: none;
-  color: rgba(0, 0, 0, 0.5);
-  padding: 5px 0px;
-  cursor: pointer;
-  display: block;
-  line-height: 20px;
-}
-.primeapps .modal .megalist > div.modal-menu ul li a.active {
-  font-weight: bold;
-  position: relative;
-  color: #0D6FAA;
-}
-.primeapps .modal .megalist > div.modal-menu ul li a.active:before {
-  content: "";
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  width: 6px;
-  height: 100%;
-  border-radius: 3px;
-  background: #0D6FAA;
-}
-.primeapps .modal .megalist > div.modal-menu ul li a:hover {
-  color: rgba(0, 0, 0, 0.75);
-}
-.primeapps .modal .megalist > div.modal-menu ul li ul {
-  list-style-type: none;
-  padding-left: 10px;
-}
-.primeapps .modal .megalist .section {
-  padding: 0px;
-  border: none;
-  border-radius: 0px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-}
-.primeapps .modal .megalist .section:last-child {
-  border: none;
-  margin-bottom: 0px;
-  min-height: calc(100vh - 135px);
-}
+  padding: 20px 10px 20px 30px; }
+  .primeapps .modal .section {
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin-bottom: 20px; }
+  .primeapps .modal .panel {
+    -webkit-box-shadow: none;
+    margin-bottom: 0px; }
+  .primeapps .modal .megalist {
+    display: flex; }
+    .primeapps .modal .megalist > div {
+      width: 100%; }
+      .primeapps .modal .megalist > div.modal-menu {
+        width: auto;
+        padding-right: 20px;
+        position: -webkit-sticky;
+        position: sticky;
+        align-self: flex-start;
+        top: 0px; }
+        .primeapps .modal .megalist > div.modal-menu:before {
+          content: '';
+          position: absolute;
+          right: 22px;
+          top: 0px;
+          width: 2px;
+          border-radius: 3px;
+          background: rgba(0, 0, 0, 0.05);
+          height: calc(100vh - 135px); }
+        .primeapps .modal .megalist > div.modal-menu ul li {
+          white-space: nowrap;
+          min-width: 200px; }
+          .primeapps .modal .megalist > div.modal-menu ul li a {
+            text-decoration: none;
+            color: rgba(0, 0, 0, 0.5);
+            padding: 5px 0px;
+            cursor: pointer;
+            display: block;
+            line-height: 20px; }
+            .primeapps .modal .megalist > div.modal-menu ul li a.active {
+              font-weight: bold;
+              position: relative;
+              color: #0D6FAA; }
+              .primeapps .modal .megalist > div.modal-menu ul li a.active:before {
+                content: '';
+                position: absolute;
+                right: 0px;
+                top: 0px;
+                width: 6px;
+                height: 100%;
+                border-radius: 3px;
+                background: #0D6FAA; }
+            .primeapps .modal .megalist > div.modal-menu ul li a:hover {
+              color: rgba(0, 0, 0, 0.75); }
+          .primeapps .modal .megalist > div.modal-menu ul li ul {
+            list-style-type: none;
+            padding-left: 10px; }
+    .primeapps .modal .megalist .section {
+      padding: 0px;
+      border: none;
+      border-radius: 0px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05); }
+      .primeapps .modal .megalist .section:last-child {
+        border: none;
+        margin-bottom: 0px;
+        min-height: calc(100vh - 135px); }
 .primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
   margin: 10px;
   border-radius: 5px;
   box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-.primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-}
-.primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
-  position: relative;
-  width: 100%;
-  top: 0px;
-  left: 0px;
-  background: #FFF;
-  z-index: 1;
-}
-.primeapps .setup-modal .modal-dialog, .primeapps .module-modal .modal-dialog {
-  height: calc(100% - 75px);
-  overflow-y: auto;
-  margin: 0;
-  line-height: 33px !important;
-  width: 100% !important;
-  padding-right: 20px;
-  overflow-x: hidden;
-}
-.primeapps .setup-modal .modal-dialog::-webkit-scrollbar-track, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  background-color: #F5F5F5;
-}
-.primeapps .setup-modal .modal-dialog::-webkit-scrollbar, .primeapps .module-modal .modal-dialog::-webkit-scrollbar {
-  width: 5px;
-  background-color: #F5F5F5;
-}
-.primeapps .setup-modal .modal-dialog::-webkit-scrollbar-thumb, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-thumb {
-  background-color: #0D6FAA;
-  border: 0px solid #555555;
-  border-radius: 5px;
-}
-.primeapps .setup-modal .modal-dialog input[type=radio]:checked + span:after, .primeapps .module-modal .modal-dialog input[type=radio]:checked + span:after {
-  width: 10px;
-  height: 10px;
-  top: 12px;
-  left: -16px;
-}
-.primeapps .setup-modal .modal-dialog .form-group label, .primeapps .module-modal .modal-dialog .form-group label {
-  text-align: left !important;
-  padding-left: 1px;
-}
-.primeapps .setup-modal .modal-dialog .fa.pull-left, .primeapps .module-modal .modal-dialog .fa.pull-left {
-  margin-top: 0.15em;
-  margin-right: 5px;
-}
-.primeapps .setup-modal .modal-dialog .view-form .form-control, .primeapps .setup-modal .modal-dialog .view-form .filter-table, .primeapps .module-modal .modal-dialog .view-form .form-control, .primeapps .module-modal .modal-dialog .view-form .filter-table {
-  width: 100%;
-}
-.primeapps .setup-modal .modal-dialog .view-form .form-control th, .primeapps .setup-modal .modal-dialog .view-form .filter-table th, .primeapps .module-modal .modal-dialog .view-form .form-control th, .primeapps .module-modal .modal-dialog .view-form .filter-table th {
-  padding-left: 0px;
-}
-.primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick {
-  float: inherit;
-  display: flex;
-}
-.primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick {
-  min-width: 70px !important;
-  width: auto !important;
-}
-.primeapps .setup-modal .modal-body, .primeapps .module-modal .modal-body {
-  max-height: 100% !important;
-  margin: 0 auto !important;
-  overflow-y: unset !important;
-  padding: 0px;
-}
-.primeapps .setup-modal .modal-body .dragable, .primeapps .module-modal .modal-body .dragable {
-  padding: 0px 6px !important;
-}
-.primeapps .setup-modal .modal-body .dragable i, .primeapps .module-modal .modal-body .dragable i {
-  line-height: 30px;
-}
-.primeapps .setup-modal .modal-body .value-map-container, .primeapps .module-modal .modal-body .value-map-container {
-  max-height: inherit;
-  margin: 0px;
-  padding: 20px;
-  overflow-x: inherit;
-  overflow-y: inherit;
-}
-.primeapps .setup-modal .modal-body .fields .container-left, .primeapps .setup-modal .modal-body .fields .container-right, .primeapps .module-modal .modal-body .fields .container-left, .primeapps .module-modal .modal-body .fields .container-right {
-  overflow-y: auto;
-}
-.primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
-  border: none;
-  height: 100%;
-}
-.primeapps .setup-modal .modal-content .tab-content, .primeapps .module-modal .modal-content .tab-content {
-  box-shadow: none;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
-  width: 100%;
-}
-.primeapps .setup-modal .modal-content tags-input .host, .primeapps .module-modal .modal-content tags-input .host {
-  margin: 0px;
-}
-.primeapps .setup-modal .modal-content tags-input .host .tags, .primeapps .module-modal .modal-content tags-input .host .tags {
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0px;
-}
-.primeapps .setup-modal .modal-content tags-input .host .tags:focus, .primeapps .module-modal .modal-content tags-input .host .tags:focus {
-  outline: none;
-}
-.primeapps .setup-modal .modal-content tags-input .host .tags.focused, .primeapps .module-modal .modal-content tags-input .host .tags.focused {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-}
-.primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
-  background: transparent;
-  height: 20px;
-  outline: none;
-  padding: 0px;
-  margin: 0px;
-}
-.primeapps .setup-modal .modal-content tags-input .host .tags .tag-item, .primeapps .module-modal .modal-content tags-input .host .tags .tag-item {
-  margin: 0 2px 0 0;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 15px;
-}
-.primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
-  max-width: 100% !important;
-}
-.primeapps .setup-modal .modal-content .multiselect-container .multiselect, .primeapps .module-modal .modal-content .multiselect-container .multiselect {
-  position: relative;
-}
-.primeapps .setup-modal .modal-content .multiselect-container .multiselect .caret, .primeapps .module-modal .modal-content .multiselect-container .multiselect .caret {
-  top: 15px;
-  border-top: 5px solid;
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
-}
-.primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
-  padding-top: 7px;
-}
-.primeapps .setup-modal .modal-content .modal-left-menu ul, .primeapps .module-modal .modal-content .modal-left-menu ul {
-  border-right: 2px solid rgba(0, 0, 0, 0.05);
-}
-.primeapps .setup-modal .modal-content .modal-left-menu ul li a, .primeapps .module-modal .modal-content .modal-left-menu ul li a {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.75);
-  font-weight: 400;
-}
-.primeapps .setup-modal .modal-content .modal-left-menu ul li a:hover, .primeapps .module-modal .modal-content .modal-left-menu ul li a:hover {
-  background: none;
-  color: #0d6faa !important;
-  font-weight: bold !important;
-}
-.primeapps .setup-modal .modal-content .modal-left-menu ul li .active, .primeapps .module-modal .modal-content .modal-left-menu ul li .active {
-  background: none;
-  color: #0d6faa !important;
-  font-weight: bold !important;
-}
-.primeapps .setup-modal .modal-content .section h4, .primeapps .module-modal .modal-content .section h4 {
-  color: #0d6faa;
-  padding-bottom: 10px;
-  font-weight: bold;
-}
-.primeapps .setup-modal .required-label, .primeapps .module-modal .required-label {
-  color: #999;
-}
-.primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
-  padding: 0px;
-  padding-right: 20px;
-  border-bottom: none;
-}
-.primeapps .setup-modal .modal-header .flex-between, .primeapps .module-modal .modal-header .flex-between {
-  padding-bottom: 10px;
-  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
-}
-.primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
-  font-size: 16px;
-  font-weight: bold;
-  color: #0d6faa;
-}
-.primeapps .setup-modal .modal-header .list-inline li, .primeapps .module-modal .modal-header .list-inline li {
-  padding-left: 0;
-  padding-right: 0;
-}
-.primeapps .setup-modal.modal-400, .primeapps .module-modal.modal-400 {
-  width: 400px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-500, .primeapps .module-modal.modal-500 {
-  width: 500px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-600, .primeapps .module-modal.modal-600 {
-  width: 600px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-700, .primeapps .module-modal.modal-700 {
-  width: 700px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-800, .primeapps .module-modal.modal-800 {
-  width: 800px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-900, .primeapps .module-modal.modal-900 {
-  width: 900px !important;
-  max-width: calc(100% - 20px) !important;
-}
-.primeapps .setup-modal.modal-1100, .primeapps .module-modal.modal-1100 {
-  width: 1100px !important;
-  max-width: calc(100% - 20px) !important;
-}
+  overflow: hidden; }
+  .primeapps .setup-modal .form-custom, .primeapps .module-modal .form-custom {
+    position: relative;
+    height: 100%;
+    overflow: hidden; }
+  .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+    position: relative;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    background: #FFF;
+    z-index: 1; }
+  .primeapps .setup-modal .modal-dialog, .primeapps .module-modal .modal-dialog {
+    height: calc(100% - 75px);
+    overflow-y: auto;
+    margin: 0;
+    line-height: 33px !important;
+    width: 100% !important;
+    padding-right: 20px;
+    overflow-x: hidden; }
+    .primeapps .setup-modal .modal-dialog::-webkit-scrollbar-track, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      background-color: #F5F5F5; }
+    .primeapps .setup-modal .modal-dialog::-webkit-scrollbar, .primeapps .module-modal .modal-dialog::-webkit-scrollbar {
+      width: 5px;
+      background-color: #F5F5F5; }
+    .primeapps .setup-modal .modal-dialog::-webkit-scrollbar-thumb, .primeapps .module-modal .modal-dialog::-webkit-scrollbar-thumb {
+      background-color: #0D6FAA;
+      border: 0px solid #555555;
+      border-radius: 5px; }
+    .primeapps .setup-modal .modal-dialog input[type="radio"]:checked + span:after, .primeapps .module-modal .modal-dialog input[type="radio"]:checked + span:after {
+      width: 10px;
+      height: 10px;
+      top: 12px;
+      left: -16px; }
+    .primeapps .setup-modal .modal-dialog .form-group label, .primeapps .module-modal .modal-dialog .form-group label {
+      text-align: left !important;
+      padding-left: 1px; }
+    .primeapps .setup-modal .modal-dialog .fa.pull-left, .primeapps .module-modal .modal-dialog .fa.pull-left {
+      margin-top: .15em;
+      margin-right: 5px; }
+    .primeapps .setup-modal .modal-dialog .view-form .form-control, .primeapps .setup-modal .modal-dialog .view-form .filter-table, .primeapps .module-modal .modal-dialog .view-form .form-control, .primeapps .module-modal .modal-dialog .view-form .filter-table {
+      width: 100%; }
+      .primeapps .setup-modal .modal-dialog .view-form .form-control th, .primeapps .setup-modal .modal-dialog .view-form .filter-table th, .primeapps .module-modal .modal-dialog .view-form .form-control th, .primeapps .module-modal .modal-dialog .view-form .filter-table th {
+        padding-left: 0px; }
+      .primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick {
+        float: inherit;
+        display: flex; }
+        .primeapps .setup-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .setup-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .form-control .datetime-pick .time-pick, .primeapps .module-modal .modal-dialog .view-form .filter-table .datetime-pick .time-pick {
+          min-width: 70px !important;
+          width: auto !important; }
+  .primeapps .setup-modal .modal-body, .primeapps .module-modal .modal-body {
+    max-height: 100% !important;
+    margin: 0 auto !important;
+    overflow-y: unset !important;
+    padding: 0px; }
+    .primeapps .setup-modal .modal-body .dragable, .primeapps .module-modal .modal-body .dragable {
+      padding: 0px 6px !important; }
+      .primeapps .setup-modal .modal-body .dragable i, .primeapps .module-modal .modal-body .dragable i {
+        line-height: 30px; }
+    .primeapps .setup-modal .modal-body .value-map-container, .primeapps .module-modal .modal-body .value-map-container {
+      max-height: inherit;
+      margin: 0px;
+      padding: 20px;
+      overflow-x: inherit;
+      overflow-y: inherit; }
+    .primeapps .setup-modal .modal-body .fields .container-left, .primeapps .setup-modal .modal-body .fields .container-right, .primeapps .module-modal .modal-body .fields .container-left, .primeapps .module-modal .modal-body .fields .container-right {
+      overflow-y: auto; }
+  .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
+    border: none;
+    height: 100%; }
+    .primeapps .setup-modal .modal-content .tab-content, .primeapps .module-modal .modal-content .tab-content {
+      box-shadow: none;
+      border: 1px solid rgba(0, 0, 0, 0.05); }
+    .primeapps .setup-modal .modal-content .autocomplete, .primeapps .module-modal .modal-content .autocomplete {
+      width: 100%; }
+    .primeapps .setup-modal .modal-content tags-input .host, .primeapps .module-modal .modal-content tags-input .host {
+      margin: 0px; }
+      .primeapps .setup-modal .modal-content tags-input .host .tags, .primeapps .module-modal .modal-content tags-input .host .tags {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 0px; }
+        .primeapps .setup-modal .modal-content tags-input .host .tags:focus, .primeapps .module-modal .modal-content tags-input .host .tags:focus {
+          outline: none; }
+        .primeapps .setup-modal .modal-content tags-input .host .tags.focused, .primeapps .module-modal .modal-content tags-input .host .tags.focused {
+          -webkit-box-shadow: none;
+          -moz-box-shadow: none;
+          box-shadow: none; }
+        .primeapps .setup-modal .modal-content tags-input .host .tags input, .primeapps .module-modal .modal-content tags-input .host .tags input {
+          background: transparent;
+          height: 20px;
+          outline: none;
+          padding: 0px;
+          margin: 0px; }
+        .primeapps .setup-modal .modal-content tags-input .host .tags .tag-item, .primeapps .module-modal .modal-content tags-input .host .tags .tag-item {
+          margin: 0 2px 0 0;
+          font-size: 12px;
+          font-weight: bold;
+          line-height: 15px; }
+    .primeapps .setup-modal .modal-content .multiselect-container, .primeapps .module-modal .modal-content .multiselect-container {
+      max-width: 100% !important; }
+      .primeapps .setup-modal .modal-content .multiselect-container .multiselect, .primeapps .module-modal .modal-content .multiselect-container .multiselect {
+        position: relative; }
+        .primeapps .setup-modal .modal-content .multiselect-container .multiselect .caret, .primeapps .module-modal .modal-content .multiselect-container .multiselect .caret {
+          top: 15px;
+          border-top: 5px solid;
+          border-right: 5px solid transparent;
+          border-left: 5px solid transparent; }
+    .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
+      padding-top: 7px; }
+    .primeapps .setup-modal .modal-content .modal-left-menu ul, .primeapps .module-modal .modal-content .modal-left-menu ul {
+      border-right: 2px solid rgba(0, 0, 0, 0.05); }
+      .primeapps .setup-modal .modal-content .modal-left-menu ul li a, .primeapps .module-modal .modal-content .modal-left-menu ul li a {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.75);
+        font-weight: 400; }
+        .primeapps .setup-modal .modal-content .modal-left-menu ul li a:hover, .primeapps .module-modal .modal-content .modal-left-menu ul li a:hover {
+          background: none;
+          color: #0d6faa !important;
+          font-weight: bold !important; }
+      .primeapps .setup-modal .modal-content .modal-left-menu ul li .active, .primeapps .module-modal .modal-content .modal-left-menu ul li .active {
+        background: none;
+        color: #0d6faa !important;
+        font-weight: bold !important; }
+    .primeapps .setup-modal .modal-content .section h4, .primeapps .module-modal .modal-content .section h4 {
+      color: #0d6faa;
+      padding-bottom: 10px;
+      font-weight: bold; }
+  .primeapps .setup-modal .required-label, .primeapps .module-modal .required-label {
+    color: #999; }
+  .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+    padding: 0px;
+    padding-right: 20px;
+    border-bottom: none; }
+    .primeapps .setup-modal .modal-header .flex-between, .primeapps .module-modal .modal-header .flex-between {
+      padding-bottom: 10px;
+      border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px; }
+    .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
+      font-size: 16px;
+      font-weight: bold;
+      color: #0d6faa; }
+    .primeapps .setup-modal .modal-header .list-inline li, .primeapps .module-modal .modal-header .list-inline li {
+      padding-left: 0;
+      padding-right: 0; }
+  .primeapps .setup-modal.modal-400, .primeapps .module-modal.modal-400 {
+    width: 400px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-500, .primeapps .module-modal.modal-500 {
+    width: 500px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-600, .primeapps .module-modal.modal-600 {
+    width: 600px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-700, .primeapps .module-modal.modal-700 {
+    width: 700px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-800, .primeapps .module-modal.modal-800 {
+    width: 800px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-900, .primeapps .module-modal.modal-900 {
+    width: 900px !important;
+    max-width: calc(100% - 20px) !important; }
+  .primeapps .setup-modal.modal-1100, .primeapps .module-modal.modal-1100 {
+    width: 1100px !important;
+    max-width: calc(100% - 20px) !important; }
 .primeapps .user-dropdown {
-  padding: 20px;
-}
-.primeapps .user-dropdown a {
-  padding: 0px 10px;
-  line-height: 15px;
-}
-.primeapps .user-dropdown a i {
-  width: 20px;
-  text-align: center;
-  display: inline-block;
-}
-.primeapps .user-dropdown .user_divider {
-  height: 1px;
-  display: block;
-  background: rgba(0, 0, 0, 0.1);
-  margin: 10px 0px;
-}
-.primeapps .user-dropdown .user-info {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.primeapps .user-dropdown .user-info .user-text h2 {
-  font-size: 16px;
-  color: #0d6faa;
-  font-weight: bold;
-  line-height: 15px;
-  margin: 0;
-  padding-bottom: 7px;
-}
-.primeapps .user-dropdown .user-info .user-text h3 {
-  font-size: 12px;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-  margin: 0;
-}
-.primeapps .user-dropdown .user-info .user-image {
-  background-color: rgba(0, 0, 0, 0.25);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  font-size: 23px;
-  margin: 0px 5px;
-}
-.primeapps .user-dropdown .btn-logout {
-  width: 100%;
-  height: 30px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
+  padding: 20px; }
+  .primeapps .user-dropdown a {
+    padding: 0px 10px;
+    line-height: 15px; }
+    .primeapps .user-dropdown a i {
+      width: 20px;
+      text-align: center;
+      display: inline-block; }
+  .primeapps .user-dropdown .user_divider {
+    height: 1px;
+    display: block;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 10px 0px; }
+  .primeapps .user-dropdown .user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+    .primeapps .user-dropdown .user-info .user-text h2 {
+      font-size: 16px;
+      color: #0d6faa;
+      font-weight: bold;
+      line-height: 15px;
+      margin: 0;
+      padding-bottom: 7px; }
+    .primeapps .user-dropdown .user-info .user-text h3 {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      margin: 0; }
+    .primeapps .user-dropdown .user-info .user-image {
+      background-color: rgba(0, 0, 0, 0.25);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 23px;
+      margin: 0px 5px; }
+  .primeapps .user-dropdown .btn-logout {
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px; }
 .primeapps .avatarx {
   width: 40px;
   border-radius: 50px;
   overflow: hidden;
   display: inline-block;
-  background: rgba(0, 0, 0, 0.25);
-}
+  background: rgba(0, 0, 0, 0.25); }
 .primeapps .avatar2x {
   width: 100px;
   border-radius: 50px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.25);
-}
+  background: rgba(0, 0, 0, 0.25); }
 .primeapps .top-header {
   display: flex;
   align-items: center;
   flex-direction: row;
-  height: 100%;
-}
+  height: 100%; }
 .primeapps .breadcrumb {
   padding: 0;
   margin-bottom: 0;
   border-radius: inherit;
   background-color: inherit;
   padding-left: 30px;
-  color: rgba(0, 0, 0, 0.5);
-}
-.primeapps .breadcrumb > li + li:before {
-  content: "/";
-  padding: 0px 0px 0px 5px;
-}
-.primeapps .breadcrumb li {
-  font-size: 14px !important;
-  color: rgba(0, 0, 0, 0.5) !important;
-  font-weight: bold !important;
-}
-.primeapps .breadcrumb li span {
-  padding: 5px 10px;
-  line-height: 15px;
-}
-.primeapps .breadcrumb li a {
-  color: rgba(0, 0, 0, 0.5) !important;
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  padding: 5px 10px;
-  line-height: 15px;
-  border-radius: 2px;
-  text-decoration: none;
-}
-.primeapps .breadcrumb li a:hover {
-  color: #0d6faa;
-  background: rgba(0, 0, 0, 0.1);
-}
+  color: rgba(0, 0, 0, 0.5); }
+  .primeapps .breadcrumb > li + li:before {
+    content: "/";
+    padding: 0px 0px 0px 5px; }
+  .primeapps .breadcrumb li {
+    font-size: 14px !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    font-weight: bold !important; }
+    .primeapps .breadcrumb li span {
+      padding: 5px 10px;
+      line-height: 15px; }
+    .primeapps .breadcrumb li a {
+      color: rgba(0, 0, 0, 0.5) !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      padding: 5px 10px;
+      line-height: 15px;
+      border-radius: 2px;
+      text-decoration: none; }
+      .primeapps .breadcrumb li a:hover {
+        color: #0d6faa;
+        background: rgba(0, 0, 0, 0.1); }
 .primeapps .scratch-page {
   display: flex;
   justify-content: center;
   height: 100vh;
-  align-items: center;
-}
-.primeapps .scratch-page .scratch-page-text h1 {
-  color: rgba(0, 0, 0, 0.75);
-  font-size: 30px;
-  font-weight: 400;
-}
-.primeapps .scratch-page .scratch-page-text span {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 16px;
-  font-weight: 400;
-}
-.primeapps .scratch-page .scratch-box {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  padding: 50px 10px;
-  border-radius: 5px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  background-color: #ffffff;
-  margin-bottom: 20px;
-  font-size: 70px;
-  line-height: 70px;
-  color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .scratch-page .scratch-box:hover {
-  cursor: pointer;
-  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
-}
+  align-items: center; }
+  .primeapps .scratch-page .scratch-page-text h1 {
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 30px;
+    font-weight: 400; }
+  .primeapps .scratch-page .scratch-page-text span {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+    font-weight: 400; }
+  .primeapps .scratch-page .scratch-box {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    padding: 50px 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    font-size: 70px;
+    line-height: 70px;
+    color: rgba(0, 0, 0, 0.25); }
+    .primeapps .scratch-page .scratch-box:hover {
+      cursor: pointer;
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
 .primeapps .btn-bold {
-  font-weight: bold;
-}
+  font-weight: bold; }
 .primeapps .btn-radius {
-  border-radius: 30px;
-}
+  border-radius: 30px; }
 .primeapps .btn-red {
   background-color: rgba(206, 4, 4, 0.5);
-  color: #fff;
-}
-.primeapps .btn-red:hover {
-  background-color: #ce0404;
-}
+  color: #fff; }
+  .primeapps .btn-red:hover {
+    background-color: #ce0404; }
 .primeapps .btn-blue {
   background-color: rgba(13, 111, 170, 0.75);
-  color: #fff;
-}
-.primeapps .btn-blue:hover {
-  background-color: #0d6faa;
-}
+  color: #fff; }
+  .primeapps .btn-blue:hover {
+    background-color: #0d6faa; }
 .primeapps .btn-yellow {
   background-color: rgba(224, 131, 64, 0.75);
-  color: #fff;
-}
-.primeapps .btn-yellow:hover {
-  background-color: #e08340;
-}
+  color: #fff; }
+  .primeapps .btn-yellow:hover {
+    background-color: #e08340; }
 .primeapps .btn-gray {
   background-color: rgba(0, 0, 0, 0.25);
-  color: #fff;
-}
-.primeapps .btn-gray:hover {
-  background-color: rgba(0, 0, 0, 0.5);
-}
+  color: #fff; }
+  .primeapps .btn-gray:hover {
+    background-color: rgba(0, 0, 0, 0.5); }
 .primeapps .form-group {
   margin-left: 0;
   margin-right: 0;
-  margin-bottom: 20px !important;
-}
-.primeapps .form-group.has-error select {
-  background-color: rgba(206, 4, 4, 0.15) !important;
-}
-.primeapps .form-group.has-error .newinput span {
-  background-color: rgba(206, 4, 4, 0.15) !important;
-}
-.primeapps .form-group.bottom0 {
-  margin-bottom: 0px !important;
-}
-.primeapps .form-group label {
-  padding: 0;
-  color: rgba(0, 0, 0, 0.75);
-  font-size: 12px;
-  padding: 0px;
-  margin: 0px;
-  font-weight: bold !important;
-}
-.primeapps .form-group .form-control {
-  border-radius: 2px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border: none;
-  padding: 10px;
-  line-height: 20px;
-  font-weight: 400;
-  height: 40px;
-  max-width: 100% !important;
-}
-.primeapps .form-group .form-control[disabled] {
-  opacity: 0.5;
-}
-.primeapps .form-group textarea.form-control {
-  line-height: 25px;
-  max-height: 180px;
-  min-height: 60px;
-}
-.primeapps .form-group.form-group-filtre {
-  margin-bottom: 0px !important;
-  padding: 0px 5px;
-  background: #FFF;
-  border-radius: 5px;
-}
-.primeapps .form-group.form-group-filtre .form-control {
-  height: 30px !important;
-  background: #FFF;
-}
-.primeapps .checkbox-inline input[type=checkbox] {
+  margin-bottom: 20px !important; }
+  .primeapps .form-group.has-error select {
+    background-color: rgba(206, 4, 4, 0.15) !important; }
+  .primeapps .form-group.has-error .newinput span {
+    background-color: rgba(206, 4, 4, 0.15) !important; }
+  .primeapps .form-group.bottom0 {
+    margin-bottom: 0px !important; }
+  .primeapps .form-group label {
+    padding: 0;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 12px;
+    padding: 0px;
+    margin: 0px;
+    font-weight: bold !important; }
+  .primeapps .form-group .form-control {
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: none;
+    padding: 10px;
+    line-height: 20px;
+    font-weight: 400;
+    height: 40px;
+    max-width: 100% !important; }
+    .primeapps .form-group .form-control[disabled] {
+      opacity: 0.5; }
+  .primeapps .form-group textarea.form-control {
+    line-height: 25px;
+    max-height: 180px;
+    min-height: 60px; }
+  .primeapps .form-group.form-group-filtre {
+    margin-bottom: 0px !important;
+    padding: 0px 5px;
+    background: #FFF;
+    border-radius: 5px; }
+    .primeapps .form-group.form-group-filtre .form-control {
+      height: 30px !important;
+      background: #FFF; }
+.primeapps .checkbox-inline input[type="checkbox"] {
   position: relative !important;
-  margin-left: 0px !important;
-}
-.primeapps .radio-inline input[type=radio] {
+  margin-left: 0px !important; }
+.primeapps .radio-inline input[type="radio"] {
   position: relative !important;
-  margin-left: 0px !important;
-}
+  margin-left: 0px !important; }
 .primeapps .callout {
   font-size: 12px;
-  padding: 10px;
-}
+  padding: 10px; }
 .primeapps .page-container {
   margin-top: 100px !important;
   margin-left: 20px !important;
-  margin-right: 20px;
-}
-.primeapps .page-container .search-select {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-.primeapps .page-container .search-select i {
-  position: absolute;
-  display: flex;
-  font-size: 23px;
-  justify-content: flex-start;
-  padding-right: 20px;
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 14px;
-}
-.primeapps .page-container .search-select .select-status {
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-  background: #FFF;
-  height: 60px;
-  width: 100%;
-  border: none !important;
-  padding-left: 20px;
-  color: rgba(0, 0, 0, 0.5);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -o-appearance: none;
-}
-.primeapps .page-container .app-layout-box {
-  cursor: pointer;
-  margin-top: 5px;
-  margin-bottom: 30px;
-}
-.primeapps .page-container .app-layout-box .tooltip.tooltip-success .tooltip-inner {
-  background-color: rgba(0, 0, 0, 0.75);
-  border-color: rgba(0, 0, 0, 0.75);
-  color: #fff;
-}
-.primeapps .page-container .app-layout-box .tooltip.tooltip-success.top .tooltip-arrow {
-  border-top-color: rgba(0, 0, 0, 0.75);
-}
-.primeapps .page-container .app-layout-box .app-box {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  position: relative;
-  display: flex;
-  height: 200px;
-  width: 100%;
-  border-radius: 5px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  background-color: #ffffff;
-  align-items: center;
-  padding: 10px 30px;
-  justify-content: center;
-}
-.primeapps .page-container .app-layout-box .app-box .applogo {
-  max-width: 100%;
-  max-height: 100%;
-  position: relative;
-  z-index: 1;
-}
-.primeapps .page-container .app-layout-box .app-box .applogo i {
-  font-size: 60px;
-  color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .page-container .app-layout-box .app-box .oval {
-  z-index: 2;
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 20px;
-  height: 20px;
-}
-.primeapps .page-container .app-layout-box .app-box .oval span {
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  display: block;
-}
-.primeapps .page-container .app-layout-box .app-box .oval span.oval-green {
-  background-color: #92c549;
-}
-.primeapps .page-container .app-layout-box .app-box .oval span.oval-orange {
-  background-color: #e08340;
-}
-.primeapps .page-container .app-layout-box .app-box .oval span.oval-gray {
-  background-color: #bfbfbf;
-}
-.primeapps .page-container .app-layout-box .app-info {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 10px;
-  height: 50px;
-  justify-content: center;
-}
-.primeapps .page-container .app-layout-box .app-info h3 {
-  line-height: 20px;
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.5);
-  font-weight: bold;
-  margin: 0px;
-  padding: 0px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: center;
-}
-.primeapps .page-container .app-layout-box .app-info h4 {
-  margin: 0px;
-  padding: 3px;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(0, 0, 0, 0.5);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: center;
-}
-.primeapps .page-container .app-layout-box:hover .app-box {
-  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
-}
-.primeapps .page-container .app-layout-box:hover .app-info h4, .primeapps .page-container .app-layout-box:hover .app-info h3 {
-  color: #0d6faa;
-}
+  margin-right: 20px; }
+  .primeapps .page-container .search-select {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; }
+    .primeapps .page-container .search-select i {
+      position: absolute;
+      display: flex;
+      font-size: 23px;
+      justify-content: flex-start;
+      padding-right: 20px;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 14px; }
+    .primeapps .page-container .search-select .select-status {
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      background: #FFF;
+      height: 60px;
+      width: 100%;
+      border: none !important;
+      padding-left: 20px;
+      color: rgba(0, 0, 0, 0.5);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -o-appearance: none; }
+  .primeapps .page-container .app-layout-box {
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 30px; }
+    .primeapps .page-container .app-layout-box .tooltip.tooltip-success .tooltip-inner {
+      background-color: rgba(0, 0, 0, 0.75);
+      border-color: rgba(0, 0, 0, 0.75);
+      color: #fff; }
+    .primeapps .page-container .app-layout-box .tooltip.tooltip-success.top .tooltip-arrow {
+      border-top-color: rgba(0, 0, 0, 0.75); }
+    .primeapps .page-container .app-layout-box .app-box {
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+      position: relative;
+      display: flex;
+      height: 200px;
+      width: 100%;
+      border-radius: 5px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      background-color: #ffffff;
+      align-items: center;
+      padding: 10px 30px;
+      justify-content: center; }
+      .primeapps .page-container .app-layout-box .app-box .applogo {
+        max-width: 100%;
+        max-height: 100%;
+        position: relative;
+        z-index: 1; }
+        .primeapps .page-container .app-layout-box .app-box .applogo i {
+          font-size: 60px;
+          color: rgba(0, 0, 0, 0.25); }
+      .primeapps .page-container .app-layout-box .app-box .oval {
+        z-index: 2;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 20px;
+        height: 20px; }
+        .primeapps .page-container .app-layout-box .app-box .oval span {
+          width: 20px;
+          height: 20px;
+          border-radius: 10px;
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+          display: block; }
+          .primeapps .page-container .app-layout-box .app-box .oval span.oval-green {
+            background-color: #92c549; }
+          .primeapps .page-container .app-layout-box .app-box .oval span.oval-orange {
+            background-color: #e08340; }
+          .primeapps .page-container .app-layout-box .app-box .oval span.oval-gray {
+            background-color: #bfbfbf; }
+    .primeapps .page-container .app-layout-box .app-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 10px;
+      height: 50px;
+      justify-content: center; }
+      .primeapps .page-container .app-layout-box .app-info h3 {
+        line-height: 20px;
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        font-weight: bold;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center; }
+      .primeapps .page-container .app-layout-box .app-info h4 {
+        margin: 0px;
+        padding: 3px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center; }
+    .primeapps .page-container .app-layout-box:hover .app-box {
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
+    .primeapps .page-container .app-layout-box:hover .app-info h4, .primeapps .page-container .app-layout-box:hover .app-info h3 {
+      color: #0d6faa; }
 .primeapps .page-container.padding0 {
-  margin-top: 0px !important;
-}
+  margin-top: 0px !important; }
 .primeapps .search-input {
   display: flex;
-  align-items: center;
-}
-.primeapps .search-input .search-input-icon {
-  position: absolute;
-  padding-left: 20px;
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.1);
-}
-.primeapps .search-input input {
-  padding-left: 50px !important;
-  color: rgba(0, 0, 0, 0.75);
-}
-.primeapps .search-input input ::placeholder {
-  color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .search-input input :-ms-input-placeholder, .primeapps .search-input input ::-ms-input-placeholder {
-  color: rgba(0, 0, 0, 0.25);
-}
-.primeapps .search-input .app-search-input {
-  height: 60px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-  border: none;
-  font-size: 16px;
-}
+  align-items: center; }
+  .primeapps .search-input .search-input-icon {
+    position: absolute;
+    padding-left: 20px;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.1); }
+  .primeapps .search-input input {
+    padding-left: 50px !important;
+    color: rgba(0, 0, 0, 0.75); }
+    .primeapps .search-input input ::placeholder {
+      color: rgba(0, 0, 0, 0.25); }
+    .primeapps .search-input input :-ms-input-placeholder, .primeapps .search-input input ::-ms-input-placeholder {
+      color: rgba(0, 0, 0, 0.25); }
+  .primeapps .search-input .app-search-input {
+    height: 60px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    border: none;
+    font-size: 16px; }
 .primeapps .h4-title {
-  font-size: 20px;
-}
+  font-size: 20px; }
 .primeapps .blue-color {
-  color: #0d6faa;
-}
+  color: #0d6faa; }
 .primeapps .font-bold {
-  font-weight: bold;
-}
+  font-weight: bold; }
 .primeapps #sidebar-wrapper .sidebar-brand a:hover {
-  background: none;
-}
+  background: none; }
 .primeapps #sidebar-wrapper > ul {
-  width: 250px;
-}
-.primeapps #sidebar-wrapper > ul .open {
-  background-color: #121212;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.primeapps #sidebar-wrapper > ul .open ul {
-  display: block;
-}
-.primeapps #sidebar-wrapper > ul li {
-  cursor: pointer;
-}
-.primeapps #sidebar-wrapper > ul li ul {
-  display: none;
-  list-style: none;
-}
-.primeapps #sidebar-wrapper > ul li ul .active {
-  color: #fff;
-}
-.primeapps #sidebar-wrapper > ul li ul li {
-  line-height: 20px;
-}
-.primeapps #sidebar-wrapper > ul li ul li a {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
-}
-.primeapps #sidebar-wrapper > ul li ul li a i {
-  font-size: 14px;
-  background: none;
-}
-.primeapps #sidebar-wrapper > ul li ul li a:hover {
-  background: none;
-  color: #fff;
-}
-.primeapps #sidebar-wrapper > ul li a {
-  font-weight: bold;
-  font-size: 14px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  display: flex;
-  align-items: center;
-}
-.primeapps #sidebar-wrapper > ul li a i {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-  font-size: 14px;
-  padding: 10px;
-  background: #9e005d;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+1) > a > i {
-  background: #CE0404;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+2) > a > i {
-  background: #1157A3;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+3) > a > i {
-  background: #9F5590;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+4) > a > i {
-  background: #5359DF;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+5) > a > i {
-  background: #92C549;
-}
-.primeapps #sidebar-wrapper > ul > li:nth-child(6n+6) > a > i {
-  background: #F1638B;
-}
-.primeapps #sidebar-wrapper > ul > li:last-child > a > i {
-  background: #FFF;
-  color: #1157A3;
-}
+  width: 250px; }
+  .primeapps #sidebar-wrapper > ul .open {
+    background-color: #121212;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease; }
+    .primeapps #sidebar-wrapper > ul .open ul {
+      display: block; }
+  .primeapps #sidebar-wrapper > ul li {
+    cursor: pointer; }
+    .primeapps #sidebar-wrapper > ul li ul {
+      display: none;
+      list-style: none; }
+      .primeapps #sidebar-wrapper > ul li ul .active {
+        color: #fff; }
+      .primeapps #sidebar-wrapper > ul li ul li {
+        line-height: 20px; }
+        .primeapps #sidebar-wrapper > ul li ul li a {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 12px; }
+          .primeapps #sidebar-wrapper > ul li ul li a i {
+            font-size: 14px;
+            background: none; }
+          .primeapps #sidebar-wrapper > ul li ul li a:hover {
+            background: none;
+            color: #fff; }
+    .primeapps #sidebar-wrapper > ul li a {
+      font-weight: bold;
+      font-size: 14px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      display: flex;
+      align-items: center; }
+      .primeapps #sidebar-wrapper > ul li a i {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        padding: 10px;
+        background: #9e005d;
+        border-radius: 50%;
+        margin-right: 10px; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+1) > a > i {
+    background: #CE0404; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+2) > a > i {
+    background: #1157A3; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+3) > a > i {
+    background: #9F5590; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+4) > a > i {
+    background: #5359DF; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+5) > a > i {
+    background: #92C549; }
+  .primeapps #sidebar-wrapper > ul > li:nth-child(6n+6) > a > i {
+    background: #F1638B; }
+  .primeapps #sidebar-wrapper > ul > li:last-child > a > i {
+    background: #FFF;
+    color: #1157A3; }
 .primeapps #sidebar-wrapper .color-blue {
-  color: #0d6faa;
-}
+  color: #0d6faa; }
 .primeapps #sidebar-wrapper .background-white {
-  background: #ffffff;
-}
+  background: #ffffff; }
 .primeapps .dropdown-menu {
   border: none;
   min-width: 50px;
@@ -1782,550 +1438,429 @@ button:focus, select:focus {
   margin-top: 20px !important;
   box-shadow: 0px 0px 50px 0 rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  width: auto !important;
-}
-.primeapps .dropdown-menu:before {
-  bottom: 100%;
-  left: 10px;
-  content: " ";
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 10px 10px 10px;
-  border-color: transparent transparent #FFF transparent;
-  pointer-events: none;
-}
-.primeapps .dropdown-menu.bottom-right:before {
-  left: auto;
-  right: 10px;
-}
-.primeapps .dropdown-menu li a {
-  line-height: 40px;
-}
-.primeapps .dropdown-menu li a:hover, .primeapps .dropdown-menu li a:focus {
-  background-color: rgba(17, 87, 163, 0.1);
-  color: #000;
-}
-.primeapps .dropdown-menu.select-multiple {
-  width: 100% !important;
-}
-.primeapps .dropdown-menu.select-multiple li a {
-  line-height: 30px;
-}
-.primeapps .dropdown-menu.select-multiple li a i {
-  line-height: 20px;
-  padding: 5px;
-}
+  width: auto !important; }
+  .primeapps .dropdown-menu:before {
+    bottom: 100%;
+    left: 10px;
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent #FFF transparent;
+    pointer-events: none; }
+  .primeapps .dropdown-menu.bottom-right:before {
+    left: auto;
+    right: 10px; }
+  .primeapps .dropdown-menu li a {
+    line-height: 40px; }
+    .primeapps .dropdown-menu li a:hover, .primeapps .dropdown-menu li a:focus {
+      background-color: rgba(17, 87, 163, 0.1);
+      color: #000; }
+  .primeapps .dropdown-menu.select-multiple {
+    width: 100% !important; }
+    .primeapps .dropdown-menu.select-multiple li a {
+      line-height: 30px; }
+      .primeapps .dropdown-menu.select-multiple li a i {
+        line-height: 20px;
+        padding: 5px; }
 .primeapps .file-uploader {
   margin: 0px;
   background-color: rgba(0, 0, 0, 0.05);
   padding: 20px;
   display: flex;
   justify-content: center;
-  align-items: center;
-}
-.primeapps .file-uploader .uploader-area {
-  width: 100%;
-  border: 2px dashed #c2c2c2;
-  padding: 20px;
-  border-radius: 5px;
-}
-.primeapps .file-uploader .uploader-over {
-  border: 2px dashed #000 !important;
-}
-.primeapps .file-uploader .drop-zone div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.primeapps .file-uploader .drop-zone div i {
-  font-size: 50px;
-  color: rgba(0, 0, 0, 0.2);
-}
-.primeapps .file-uploader .drop-zone div span {
-  color: rgba(0, 0, 0, 0.5);
-}
+  align-items: center; }
+  .primeapps .file-uploader .uploader-area {
+    width: 100%;
+    border: 2px dashed #c2c2c2;
+    padding: 20px;
+    border-radius: 5px; }
+  .primeapps .file-uploader .uploader-over {
+    border: 2px dashed #000 !important; }
+  .primeapps .file-uploader .drop-zone div {
+    display: flex;
+    flex-direction: column;
+    align-items: center; }
+    .primeapps .file-uploader .drop-zone div i {
+      font-size: 50px;
+      color: rgba(0, 0, 0, 0.2); }
+    .primeapps .file-uploader .drop-zone div span {
+      color: rgba(0, 0, 0, 0.5); }
 .primeapps .has-error input, .primeapps .has-error .form-control {
-  background-color: rgba(206, 4, 4, 0.15) !important;
-}
+  background-color: rgba(206, 4, 4, 0.15) !important; }
 .primeapps .has-error .ui-select-bootstrap .form-control {
-  background-color: rgba(206, 4, 4, 0.15) !important;
-}
+  background-color: rgba(206, 4, 4, 0.15) !important; }
 .primeapps .pagination li {
-  font-size: 14px;
-}
-.primeapps .pagination li a {
-  margin: 0px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  font-size: 12px;
-  line-height: 20px;
-}
-.primeapps .pagination li a:hover {
-  color: #000;
-}
+  font-size: 14px; }
+  .primeapps .pagination li a {
+    margin: 0px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    line-height: 20px; }
+    .primeapps .pagination li a:hover {
+      color: #000; }
 .primeapps .pagination .active a {
   color: #fff;
-  background-color: rgba(17, 87, 163, 0.75);
-}
-.primeapps .pagination .active a:hover {
-  color: #fff;
-}
+  background-color: rgba(17, 87, 163, 0.75); }
+  .primeapps .pagination .active a:hover {
+    color: #fff; }
 .primeapps .pagination .active .disabled a:hover {
   background-color: #fff !important;
-  color: #eaeaea;
-}
+  color: #eaeaea; }
 .primeapps #wrapper {
   padding-left: 270px;
-  padding-right: 20px;
-}
-.primeapps #wrapper #navbar-wrapper {
-  left: 250px;
-  z-index: 1001;
-}
-.primeapps #wrapper #page-content-wrapper {
-  position: relative;
-}
-.primeapps #wrapper #sidebar-wrapper {
-  width: 250px;
-  min-height: 100vh;
-  left: 0px;
-  margin-left: 0px;
-  z-index: 1000;
-  background-image: url("../images/primeapps/menu_background.png");
-  background-repeat: repeat !important;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-nav {
-  position: relative;
-  margin-bottom: 60px;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-nav .sidebar-brand {
-  padding: 20px 10px !important;
-  height: 80px !important;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip {
-  display: none !important;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip .tooltip-inner {
-  white-space: nowrap;
-}
-.primeapps #wrapper #sidebar-wrapper ul {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.primeapps #wrapper #sidebar-wrapper .logo {
-  height: 40px;
-  padding: 0px;
-  position: relative;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg {
-  height: 100%;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st0 {
-  fill: #FFF;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st1 {
-  fill: rgba(255, 255, 255, 0.75);
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st2 {
-  fill: #FCAD2D;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st3 {
-  fill: #F06933;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st4 {
-  fill: #E89728;
-}
-.primeapps #wrapper #sidebar-wrapper .logo svg .st5 {
-  fill: #0D6FAA;
-}
-.primeapps #wrapper #sidebar-wrapper .logo .logo-icon {
-  position: absolute;
-  height: 100%;
-  left: 11%;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li {
-  line-height: 30px;
-  position: relative;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li ul {
-  padding-left: 10px;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a {
-  padding: 5px 10px 5px 30px;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a i {
-  margin-right: 0px;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li ul li:last-child {
-  margin-bottom: 10px;
-}
-.primeapps #wrapper #sidebar-wrapper .sidebar-li a {
-  padding: 10px;
-}
-.primeapps #wrapper #sidebar-wrapper .footer {
-  margin: 0px;
-  bottom: 0px;
-  position: fixed;
-}
-.primeapps #wrapper #sidebar-wrapper .footer .menu-togle {
-  display: flex;
-  align-items: center;
-}
-.primeapps #wrapper #sidebar-wrapper .footer .menu-togle i {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 50%;
-  background: #000;
-  text-align: center;
-  margin-left: 0px;
-}
-.primeapps #wrapper #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-right {
-  display: none;
-}
-.primeapps #wrapper.toggled {
-  padding-left: 70px;
-  padding-right: 20px;
-}
-.primeapps #wrapper.toggled .sidebar-brand a {
-  justify-content: center;
-}
-.primeapps #wrapper.toggled #navbar-wrapper {
-  left: 50px;
-  padding-left: 0px;
-}
-.primeapps #wrapper.toggled #page-content-wrapper {
-  margin-right: 0px;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper {
-  width: 50px !important;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .logo .full-logo {
-  display: none;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-nav .sidebar-brand {
-  padding: 20px 0px !important;
-  height: 80px !important;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .tooltip {
-  display: block !important;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper ul {
-  padding-left: 0px;
-  width: 50px;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li ul li a {
-  padding: 5px 10px;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li:hover {
-  position: relative;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li a span {
-  display: none;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-right {
-  display: block;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-left {
-  display: none;
-}
-.primeapps #wrapper .setup-layout {
-  padding-top: 80px;
-}
-.primeapps #wrapper .setup-layout .app-menu2 {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  float: left;
-  width: 250px;
-  padding-left: 15px;
-  padding-right: 15px;
-  position: sticky;
-  top: 5%;
-  z-index: 2;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
-  background: #fff;
-  padding: 20px 10px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-  list-style-type: none;
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
-  display: none !important;
-  position: fixed;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip .tooltip-inner {
-  white-space: nowrap;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
-  position: relative;
-  margin: 0;
-  border-radius: 3px;
-  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a {
-  font-family: Nunito;
-  font-size: 14px !important;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
-  line-height: 20px;
-  padding: 10px 0px;
-  display: block;
-  align-items: center;
-  width: 100%;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a:hover {
-  color: #0D6FAA;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a i {
-  font-size: 18px;
-  width: 40px;
-  text-align: center;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul {
-  display: none;
-  font-size: 70%;
-  list-style-type: none;
-  padding: 0px;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li {
-  margin: 0;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a {
-  font-size: 12px !important;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a i {
-  font-size: 14px;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li .costume-bage {
-  height: 25px;
-  width: 25px;
-  line-height: 15px;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.25);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  display: block;
-  text-align: center;
-  transform: translate(0%, -50%);
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li:last-child {
-  border-color: transparent;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active {
-  position: relative;
-  background: rgba(0, 0, 0, 0.03);
-  border-color: transparent;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active .costume-bage {
-  background: #0D6FAA;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active > a {
-  color: #0D6FAA;
-  background: rgba(0, 0, 0, 0.03);
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul {
-  display: block;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li {
-  background: transparent;
-  border-color: rgba(0, 0, 0, 0.05);
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li:last-child {
-  border-color: transparent;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li a {
-  background: transparent;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active:before {
-  margin-top: 0px;
-  right: -20px;
-  top: 50%;
-  content: " ";
-  position: absolute;
-  pointer-events: none;
-  transform: translate(0%, -50%);
-  left: auto;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 10px 0 10px 10px;
-  border-color: transparent transparent transparent #ffffff;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.sub-open:before {
-  display: none;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .submenu-togle {
-  width: 60px;
-  padding: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.primeapps #wrapper .setup-layout .app-menu2 .submenu-togle .fa-long-arrow-alt-right {
-  display: none;
-}
-.primeapps #wrapper .setup-layout .content-in2 {
-  float: left;
-  width: calc(100% - 250px);
-  padding-left: 15px;
-  padding-right: 15px;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  z-index: 1;
-}
-.primeapps #wrapper .setup-layout .content-in2 .setup-title {
-  overflow: visible;
-}
-.primeapps #wrapper .setup-layout .setup-title {
-  font-weight: bold;
-  color: #0d6faa;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps #wrapper .setup-layout .setup-title ul:before, .primeapps #wrapper .setup-layout .setup-title ul:after {
-  content: " ";
-  display: table;
-}
-.primeapps #wrapper .setup-layout .setup-title ul:after {
-  clear: both;
-}
-.primeapps #wrapper .setup-layout .setup-title ul.list-inline li {
-  float: left;
-}
-.primeapps #wrapper .setup-layout .setup-title ul.list-inline li:last-child {
-  padding-right: 0px;
-}
-.primeapps #wrapper .setup-layout .setup-title h2 {
-  font-size: 16px;
-  margin: 0px;
-  font-weight: bold;
-}
-.primeapps #wrapper .setup-layout .setup-title .app-menu2 span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps #wrapper .setup-layout .setup-title .backclose {
-  display: block;
-}
-.primeapps #wrapper .setup-layout .setup-title .backopen {
-  display: none;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
-  width: calc(100% - 100px);
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 {
-  width: 100px;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 .tooltip {
-  display: block !important;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-text, .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .costume-bage {
-  display: none;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-info {
-  justify-content: center;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
-  justify-content: center;
-  text-align: center;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a span {
-  display: none;
-  margin-left: 0px;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .submenu-togle .fa-long-arrow-alt-right {
-  display: block;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .submenu-togle .fa-long-arrow-alt-left {
-  display: none;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .sidemenu button {
-  width: 100%;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .sidemenu span, .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu h2 {
-  display: none;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .backclose {
-  display: none;
-}
-.primeapps #wrapper .setup-layout.full-toggled2 .backopen {
-  display: block;
-}
-.primeapps #wrapper .nav-pills > li.active > a, .primeapps #wrapper .nav-pills > li.active > a:hover, .primeapps #wrapper .nav-pills > li.active > a:focus {
-  background: initial !important;
-  color: #0d6faa !important;
-}
-.primeapps #wrapper .nav > li > a:hover, .primeapps #wrapper .nav > li > a:focus {
-  background: initial !important;
-  color: #0d6faa !important;
-}
-.primeapps #wrapper .add-button {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  border-radius: 30px;
-  background-color: rgba(13, 111, 170, 0.75);
-  font-weight: bold;
-  color: #fff !important;
-  padding: 5px 10px;
-  font-size: 12px;
-}
-.primeapps #wrapper .add-button:hover {
-  background-color: #0d6faa;
-}
-.primeapps #wrapper .list-right-menu {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  height: 42px;
-}
+  padding-right: 20px; }
+  .primeapps #wrapper #navbar-wrapper {
+    left: 250px;
+    z-index: 1001; }
+  .primeapps #wrapper #page-content-wrapper {
+    position: relative; }
+  .primeapps #wrapper #sidebar-wrapper {
+    width: 250px;
+    min-height: 100vh;
+    left: 0px;
+    margin-left: 0px;
+    z-index: 1000;
+    background-image: url("../images/primeapps/menu_background.png");
+    background-repeat: repeat !important; }
+    .primeapps #wrapper #sidebar-wrapper .sidebar-nav {
+      position: relative;
+      margin-bottom: 60px; }
+      .primeapps #wrapper #sidebar-wrapper .sidebar-nav .sidebar-brand {
+        padding: 20px 10px !important;
+        height: 80px !important; }
+      .primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip {
+        display: none !important; }
+        .primeapps #wrapper #sidebar-wrapper .sidebar-nav .tooltip .tooltip-inner {
+          white-space: nowrap; }
+    .primeapps #wrapper #sidebar-wrapper ul {
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease; }
+    .primeapps #wrapper #sidebar-wrapper .logo {
+      height: 40px;
+      padding: 0px;
+      position: relative; }
+      .primeapps #wrapper #sidebar-wrapper .logo svg {
+        height: 100%; }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st0 {
+          fill: #FFF; }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st1 {
+          fill: rgba(255, 255, 255, 0.75); }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st2 {
+          fill: #FCAD2D; }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st3 {
+          fill: #F06933; }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st4 {
+          fill: #E89728; }
+        .primeapps #wrapper #sidebar-wrapper .logo svg .st5 {
+          fill: #0D6FAA; }
+      .primeapps #wrapper #sidebar-wrapper .logo .logo-icon {
+        position: absolute;
+        height: 100%;
+        left: 11%; }
+    .primeapps #wrapper #sidebar-wrapper .sidebar-li {
+      line-height: 30px;
+      position: relative; }
+      .primeapps #wrapper #sidebar-wrapper .sidebar-li span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+      .primeapps #wrapper #sidebar-wrapper .sidebar-li ul {
+        padding-left: 10px; }
+        .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a {
+          padding: 5px 10px 5px 30px; }
+          .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a i {
+            margin-right: 0px; }
+        .primeapps #wrapper #sidebar-wrapper .sidebar-li ul li:last-child {
+          margin-bottom: 10px; }
+      .primeapps #wrapper #sidebar-wrapper .sidebar-li a {
+        padding: 10px; }
+    .primeapps #wrapper #sidebar-wrapper .footer {
+      margin: 0px;
+      bottom: 0px;
+      position: fixed; }
+      .primeapps #wrapper #sidebar-wrapper .footer .menu-togle {
+        display: flex;
+        align-items: center; }
+        .primeapps #wrapper #sidebar-wrapper .footer .menu-togle i {
+          font-size: 20px;
+          color: rgba(255, 255, 255, 0.5);
+          cursor: pointer;
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          border-radius: 50%;
+          background: #000;
+          text-align: center;
+          margin-left: 0px; }
+        .primeapps #wrapper #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-right {
+          display: none; }
+  .primeapps #wrapper.toggled {
+    padding-left: 70px;
+    padding-right: 20px; }
+    .primeapps #wrapper.toggled .sidebar-brand a {
+      justify-content: center; }
+    .primeapps #wrapper.toggled #navbar-wrapper {
+      left: 50px;
+      padding-left: 0px; }
+    .primeapps #wrapper.toggled #page-content-wrapper {
+      margin-right: 0px; }
+    .primeapps #wrapper.toggled #sidebar-wrapper {
+      width: 50px !important; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .logo .full-logo {
+        display: none; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .sidebar-nav .sidebar-brand {
+        padding: 20px 0px !important;
+        height: 80px !important; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .tooltip {
+        display: block !important; }
+      .primeapps #wrapper.toggled #sidebar-wrapper ul {
+        padding-left: 0px;
+        width: 50px; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li ul li a {
+        padding: 5px 10px; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li:hover {
+        position: relative; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li a span {
+        display: none; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-right {
+        display: block; }
+      .primeapps #wrapper.toggled #sidebar-wrapper .footer .menu-togle .fa-long-arrow-alt-left {
+        display: none; }
+  .primeapps #wrapper .setup-layout {
+    padding-top: 80px; }
+    .primeapps #wrapper .setup-layout .app-menu2 {
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+      float: left;
+      width: 250px;
+      padding-left: 15px;
+      padding-right: 15px;
+      position: sticky;
+      top: 5%;
+      z-index: 2; }
+      .primeapps #wrapper .setup-layout .app-menu2 .setup-nav {
+        background: #fff;
+        padding: 20px 10px;
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        border-radius: 5px;
+        list-style-type: none;
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        overflow-x: hidden; }
+        .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip {
+          display: none !important;
+          position: fixed; }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav .tooltip .tooltip-inner {
+            white-space: nowrap; }
+        .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li {
+          position: relative;
+          margin: 0;
+          border-radius: 3px;
+          border-bottom: solid 1px rgba(0, 0, 0, 0.05); }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a {
+            font-family: Nunito;
+            font-size: 14px !important;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.5);
+            line-height: 20px;
+            padding: 10px 0px;
+            display: block;
+            align-items: center;
+            width: 100%;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a:hover {
+              color: #0D6FAA; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li a i {
+              font-size: 18px;
+              width: 40px;
+              text-align: center; }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul {
+            display: none;
+            font-size: 70%;
+            list-style-type: none;
+            padding: 0px; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li {
+              margin: 0; }
+              .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a {
+                font-size: 12px !important; }
+                .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li ul li a i {
+                  font-size: 14px; }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li .costume-bage {
+            height: 25px;
+            width: 25px;
+            line-height: 15px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.25);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            display: block;
+            text-align: center;
+            transform: translate(0%, -50%); }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li:last-child {
+            border-color: transparent; }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active {
+            position: relative;
+            background: rgba(0, 0, 0, 0.03);
+            border-color: transparent; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active .costume-bage {
+              background: #0D6FAA; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active > a {
+              color: #0D6FAA;
+              background: rgba(0, 0, 0, 0.03);
+              border-top-left-radius: 3px;
+              border-top-right-radius: 3px; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul {
+              display: block; }
+              .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li {
+                background: transparent;
+                border-color: rgba(0, 0, 0, 0.05); }
+                .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li:last-child {
+                  border-color: transparent; }
+                .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active ul li a {
+                  background: transparent; }
+            .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.active:before {
+              margin-top: 0px;
+              right: -20px;
+              top: 50%;
+              content: " ";
+              position: absolute;
+              pointer-events: none;
+              transform: translate(0%, -50%);
+              left: auto;
+              width: 0;
+              height: 0;
+              border-style: solid;
+              border-width: 10px 0 10px 10px;
+              border-color: transparent transparent transparent #ffffff; }
+          .primeapps #wrapper .setup-layout .app-menu2 .setup-nav li.sub-open:before {
+            display: none; }
+      .primeapps #wrapper .setup-layout .app-menu2 .submenu-togle {
+        width: 60px;
+        padding: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center; }
+        .primeapps #wrapper .setup-layout .app-menu2 .submenu-togle .fa-long-arrow-alt-right {
+          display: none; }
+    .primeapps #wrapper .setup-layout .content-in2 {
+      float: left;
+      width: calc(100% - 250px);
+      padding-left: 15px;
+      padding-right: 15px;
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+      z-index: 1; }
+      .primeapps #wrapper .setup-layout .content-in2 .setup-title {
+        overflow: visible; }
+    .primeapps #wrapper .setup-layout .setup-title {
+      font-weight: bold;
+      color: #0d6faa;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+      .primeapps #wrapper .setup-layout .setup-title ul:before, .primeapps #wrapper .setup-layout .setup-title ul:after {
+        content: ' ';
+        display: table; }
+      .primeapps #wrapper .setup-layout .setup-title ul:after {
+        clear: both; }
+      .primeapps #wrapper .setup-layout .setup-title ul.list-inline li {
+        float: left; }
+        .primeapps #wrapper .setup-layout .setup-title ul.list-inline li:last-child {
+          padding-right: 0px; }
+      .primeapps #wrapper .setup-layout .setup-title h2 {
+        font-size: 16px;
+        margin: 0px;
+        font-weight: bold; }
+      .primeapps #wrapper .setup-layout .setup-title .app-menu2 span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+      .primeapps #wrapper .setup-layout .setup-title .backclose {
+        display: block; }
+      .primeapps #wrapper .setup-layout .setup-title .backopen {
+        display: none; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .content-in2 {
+      width: calc(100% - 100px); }
+    .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 {
+      width: 100px; }
+      .primeapps #wrapper .setup-layout.full-toggled2 .app-menu2 .tooltip {
+        display: block !important; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-text, .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .costume-bage {
+      display: none; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li .user-info {
+      justify-content: center; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a {
+      justify-content: center;
+      text-align: center; }
+      .primeapps #wrapper .setup-layout.full-toggled2 .setup-nav li a span {
+        display: none;
+        margin-left: 0px; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .submenu-togle .fa-long-arrow-alt-right {
+      display: block; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .submenu-togle .fa-long-arrow-alt-left {
+      display: none; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu button {
+      width: 100%; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu span, .primeapps #wrapper .setup-layout.full-toggled2 .sidemenu h2 {
+      display: none; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .backclose {
+      display: none; }
+    .primeapps #wrapper .setup-layout.full-toggled2 .backopen {
+      display: block; }
+  .primeapps #wrapper .nav-pills > li.active > a, .primeapps #wrapper .nav-pills > li.active > a:hover, .primeapps #wrapper .nav-pills > li.active > a:focus {
+    background: initial !important;
+    color: #0d6faa !important; }
+  .primeapps #wrapper .nav > li > a:hover, .primeapps #wrapper .nav > li > a:focus {
+    background: initial !important;
+    color: #0d6faa !important; }
+  .primeapps #wrapper .add-button {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    border-radius: 30px;
+    background-color: rgba(13, 111, 170, 0.75);
+    font-weight: bold;
+    color: #fff !important;
+    padding: 5px 10px;
+    font-size: 12px; }
+    .primeapps #wrapper .add-button:hover {
+      background-color: #0d6faa; }
+  .primeapps #wrapper .list-right-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    height: 42px; }
 .primeapps .flex-between {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-}
+  width: 100%; }
 .primeapps .btn {
   padding: 5px 10px;
   font-weight: bold;
@@ -2334,77 +1869,59 @@ button:focus, select:focus {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.primeapps .btn i {
-  padding: 0px 5px;
-}
-.primeapps .btn.btn-primary {
-  border-bottom: none;
-}
+  -ms-transition: all 0.5s ease; }
+  .primeapps .btn i {
+    padding: 0px 5px; }
+  .primeapps .btn.btn-primary {
+    border-bottom: none; }
 .primeapps .list-inline {
-  margin-bottom: 0px;
-}
+  margin-bottom: 0px; }
 .primeapps .tooltip.tooltip-info .tooltip-inner {
   background: #0f1015 !important;
   color: #FFF;
   padding: 5px 10px !important;
   font-size: 12px !important;
   font-weight: bold !important;
-  max-width: inherit !important;
-}
+  max-width: inherit !important; }
 .primeapps .tooltip.tooltip-info.right .tooltip-inner {
-  text-align: left;
-}
+  text-align: left; }
 .primeapps .tooltip.tooltip-info.right .tooltip-arrow {
   border-color: transparent !important;
-  border-right-color: #0f1015 !important;
-}
+  border-right-color: #0f1015 !important; }
 .primeapps .tooltip.tooltip-info.left .tooltip-inner {
-  text-align: right;
-}
+  text-align: right; }
 .primeapps .tooltip.tooltip-info.left .tooltip-arrow {
   border-color: transparent !important;
-  border-left-color: #0f1015 !important;
-}
+  border-left-color: #0f1015 !important; }
 .primeapps .tooltip.tooltip-info.top .tooltip-arrow {
   border-color: transparent !important;
-  border-top-color: #0f1015 !important;
-}
+  border-top-color: #0f1015 !important; }
 .primeapps .tooltip.tooltip-info.bottom .tooltip-arrow {
   border-color: transparent !important;
-  border-bottom-color: #0f1015 !important;
-}
+  border-bottom-color: #0f1015 !important; }
 .primeapps #toast-container > div {
   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-.primeapps #toast-container > div:hover {
-  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  opacity: 1;
-}
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); }
+  .primeapps #toast-container > div:hover {
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    opacity: 1; }
 .primeapps #toast-container .toast-success {
   background-color: #4DAB3E;
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAdxJREFUSA2tlr1KA0EUhV0LtRJUMAbRgBjBV9A3CGgE7S1sBVMoFtYWIijY5Qls1PS+h5gIioJK7Ix/iYiJ31kyyxjG7G7MhcO9M3PuubMzszvr9bSxRqMxyHAWrIAZMAHq4AEUwRkoeJ73ho9uCCfBAaiCMHuHIG4iUgWIGfAK4ppyMm2LQMiBelxli6/cnLMIA8sW8b/hsiniKUBtEncF+tXugtXQmGXzb3ubYjv4TsXL5OabOsYNEOz5DWY/Cj47XJMyeVMSwm87NNJ6gkXQJ1JMe4I/xzLcNPOOHfkLqlxwVA7rCmYuUcgJcO1IOtfgpWOgSN8YOHSM3dPnL0uIuFJLKvCsqMV0qnyjf98ak3jKGhun7Zq5SamowItpWX7LiMjTryIu8TsrxxX6BbQcLltvKTJs2pA18zBxaV5odu02edOIGg8/qrgKnKjAmqI2FhSBkwJRZm7kVlVAL9qX6fnD6yVKAe1DVKtBHPGfnCAfNSsGb1fi5mOno1cCnX6PpGXbI400b/lH0MnMuvW5/kZrPhC2AwY2YiyBi6oL59fxtvX9GEIW6J6Na7oy9YMQbhB11o+ATkKYVSGIm3Qp+5vsGlAfSUO4JaDflmlg/7boBiyAUzazgnfaD7C3aQs3Xe6tAAAAAElFTkSuQmCC) !important;
-}
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAdxJREFUSA2tlr1KA0EUhV0LtRJUMAbRgBjBV9A3CGgE7S1sBVMoFtYWIijY5Qls1PS+h5gIioJK7Ix/iYiJ31kyyxjG7G7MhcO9M3PuubMzszvr9bSxRqMxyHAWrIAZMAHq4AEUwRkoeJ73ho9uCCfBAaiCMHuHIG4iUgWIGfAK4ppyMm2LQMiBelxli6/cnLMIA8sW8b/hsiniKUBtEncF+tXugtXQmGXzb3ubYjv4TsXL5OabOsYNEOz5DWY/Cj47XJMyeVMSwm87NNJ6gkXQJ1JMe4I/xzLcNPOOHfkLqlxwVA7rCmYuUcgJcO1IOtfgpWOgSN8YOHSM3dPnL0uIuFJLKvCsqMV0qnyjf98ak3jKGhun7Zq5SamowItpWX7LiMjTryIu8TsrxxX6BbQcLltvKTJs2pA18zBxaV5odu02edOIGg8/qrgKnKjAmqI2FhSBkwJRZm7kVlVAL9qX6fnD6yVKAe1DVKtBHPGfnCAfNSsGb1fi5mOno1cCnX6PpGXbI400b/lH0MnMuvW5/kZrPhC2AwY2YiyBi6oL59fxtvX9GEIW6J6Na7oy9YMQbhB11o+ATkKYVSGIm3Qp+5vsGlAfSUO4JaDflmlg/7boBiyAUzazgnfaD7C3aQs3Xe6tAAAAAElFTkSuQmCC) !important; }
 .primeapps #toast-container .toast-info {
   background-color: #4887B6;
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAapJREFUSA21lr1KA0EQx++iqJVgo0ZRLFSwtvQFNKIRYu8DKJjeWkH8KHwAESsLNUXyLJ6msTBaCIKfxIDm/M1xGzZks5uAN/DLzO38dyb3uet7FgvDcJB0FtZhFiagDo9wC9dQ8H3/E9+5UTgNx1AFl30hEO1IRx0QZuADujWZk7E2QZCHereVNb3MzRubkMhpQlN4w+AGHMAv2CzX1ATlJHzbZpCbV5OILxxauXdTok/Fk3bw/XH8H26AIvtRIToNQ83xjyStLtEhsesSqXIzvXRZhb6om/1njvSZXdKSXZFLtNwybB6Ql2sJzs1p4+iix7kE6nwcflOVQPfg0Kr0nZxBWk10+KqWf9ViWzgqDYTETIo/JVbd8yrSIEiwQSANSgk2KEqDIvwk0KRGzVKKxeKZ4DSBBkfUfpEzENsD6WgzX0vqsTbcCOXB2W0cScCb4fpcX6LpgTF4h3Ym36mFpuLqgMR2u1nx+D2+YtHIgrOl6hk9gizIOtutyZIpGwS3IRyHE3AtQkiijYFojZ8c681i0hB/Zw1k2zIN+ralzHEBrnha3vBG+wPasjQcGWM1lwAAAABJRU5ErkJggg==) !important;
-}
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAapJREFUSA21lr1KA0EQx++iqJVgo0ZRLFSwtvQFNKIRYu8DKJjeWkH8KHwAESsLNUXyLJ6msTBaCIKfxIDm/M1xGzZks5uAN/DLzO38dyb3uet7FgvDcJB0FtZhFiagDo9wC9dQ8H3/E9+5UTgNx1AFl30hEO1IRx0QZuADujWZk7E2QZCHereVNb3MzRubkMhpQlN4w+AGHMAv2CzX1ATlJHzbZpCbV5OILxxauXdTok/Fk3bw/XH8H26AIvtRIToNQ83xjyStLtEhsesSqXIzvXRZhb6om/1njvSZXdKSXZFLtNwybB6Ql2sJzs1p4+iix7kE6nwcflOVQPfg0Kr0nZxBWk10+KqWf9ViWzgqDYTETIo/JVbd8yrSIEiwQSANSgk2KEqDIvwk0KRGzVKKxeKZ4DSBBkfUfpEzENsD6WgzX0vqsTbcCOXB2W0cScCb4fpcX6LpgTF4h3Ym36mFpuLqgMR2u1nx+D2+YtHIgrOl6hk9gizIOtutyZIpGwS3IRyHE3AtQkiijYFojZ8c681i0hB/Zw1k2zIN+ralzHEBrnha3vBG+wPasjQcGWM1lwAAAABJRU5ErkJggg==) !important; }
 .primeapps #toast-container .toast-warning {
   background-color: #D66B3B;
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAa9JREFUSA3Fks0rhFEUxucd0vgoO4tJScnGQjaUoiFWLCzExoKFv4CFsLHytTFrO/4AC1ulbCizlljYKRulrGgav1NzpvPemTvvHaOcejofz3Oee9+PVKqBKJVKo2CygZVwKca7QOM0fDNAieswKKp7Oc8HrIZJMLx2zKV9Am1hDnVUmCyKmyc26qwmU5hmwIvHXMYfoCfZyaNgeUdcEuJ3HxzTLPg05u/Uj2W8mbl8/BHPHf1jls6MiZRzqqYecrgb5dycdgfSszxGWnG4jOltLeMJdpYMXymrDkAYweaBZBvdprG1jo/YbddGc9UBEHJzeQI3rKmtVddHsamN5tgB3KAT4kBJJ1tTW1vZFh69dhA7AGIbZK3A1NbU1kaS6qA5tIPKe+bkfogH4H5A1b9SXJabKfKgEjXyeBRFtzK3T3BM7zMXbRHcgSvwDepFngtXLi+/ZQ4kxbo6IpxNEsOvij5N0UI+kSYhvgxvazOOlft4d8nt10BIPCNaADPgPmQBzV4rZ+Zi5/qbAagLP12TyclHLtSk/mZYiHgMeYplMA3sX9XsEfLHnTdr8v/7P4tb5tRIREyLAAAAAElFTkSuQmCC) !important;
-}
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAa9JREFUSA3Fks0rhFEUxucd0vgoO4tJScnGQjaUoiFWLCzExoKFv4CFsLHytTFrO/4AC1ulbCizlljYKRulrGgav1NzpvPemTvvHaOcejofz3Oee9+PVKqBKJVKo2CygZVwKca7QOM0fDNAieswKKp7Oc8HrIZJMLx2zKV9Am1hDnVUmCyKmyc26qwmU5hmwIvHXMYfoCfZyaNgeUdcEuJ3HxzTLPg05u/Uj2W8mbl8/BHPHf1jls6MiZRzqqYecrgb5dycdgfSszxGWnG4jOltLeMJdpYMXymrDkAYweaBZBvdprG1jo/YbddGc9UBEHJzeQI3rKmtVddHsamN5tgB3KAT4kBJJ1tTW1vZFh69dhA7AGIbZK3A1NbU1kaS6qA5tIPKe+bkfogH4H5A1b9SXJabKfKgEjXyeBRFtzK3T3BM7zMXbRHcgSvwDepFngtXLi+/ZQ4kxbo6IpxNEsOvij5N0UI+kSYhvgxvazOOlft4d8nt10BIPCNaADPgPmQBzV4rZ+Zi5/qbAagLP12TyclHLtSk/mZYiHgMeYplMA3sX9XsEfLHnTdr8v/7P4tb5tRIREyLAAAAAElFTkSuQmCC) !important; }
 .primeapps #toast-container .toast-error {
   background-color: #BC2416;
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAhZJREFUSA2tlrsvREEUxl0iRETiTQQNQiGhk1BJFDQrQaWQoJQQrZZCo9Dp+APYXkJLh0LWo1FYEhHxfsRj/b61I4PZey17ki/nzHl8Z+6duTPXy/CRWCxWQDgE+kEDqAZvIAr2wAoIe553i/69QFwJ5sADCJI7EpRb/qsOJPaAG5CqqKbHtwkJE+AtVWYrX7UTziYE+qzE/5p9poknA7Ya1AHI0TgN8ghHE4t/lJkgm0Kni1yUuWBWhmZfBp6SvJMI/i6w7oif4QuBRUfMuOrVYNSMHLouMYk8YptW/AK7MRHLwt6xYrY5qQZh2/PNHhCJBH8+UJNL0PzhjfsrGEeBS1ZVqNeQTB4JdFpkatJijUsZHyYrxr+vBpqRn6hJhyE1Gl8R8JucOK/U4FpWgGhBv+wyxksBNQrHG+wFJJ4TbzUzNxpfAdgIqN3VdxAxRQ59iq+ND2ZLMcgawbBsfNcorc+axkkkoqIRn1noiI4LOXVAr0rnzaDlz2Z8AFwypAb60J5dUXzdIkKL/NTKURPdEYqVgGMrZkxtjmLlKGnBeL9pbYBp4CJ4wa97YBu4ZEbc5rCrxd4HX3aKEv4oJ9TVs073n/VMIV3H9Stc7Z/EtkFg3PWsKfi0NmM25w+bBJ2QumdTFV2Z+kEIFhKrwDzQTggS/Rgot9LFHF9kV0A+igpRvUBbUke3/duiGzAMllnMK7RT3gFGKWESz3e9JQAAAABJRU5ErkJggg==) !important;
-}
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAhZJREFUSA2tlrsvREEUxl0iRETiTQQNQiGhk1BJFDQrQaWQoJQQrZZCo9Dp+APYXkJLh0LWo1FYEhHxfsRj/b61I4PZey17ki/nzHl8Z+6duTPXy/CRWCxWQDgE+kEDqAZvIAr2wAoIe553i/69QFwJ5sADCJI7EpRb/qsOJPaAG5CqqKbHtwkJE+AtVWYrX7UTziYE+qzE/5p9poknA7Ya1AHI0TgN8ghHE4t/lJkgm0Kni1yUuWBWhmZfBp6SvJMI/i6w7oif4QuBRUfMuOrVYNSMHLouMYk8YptW/AK7MRHLwt6xYrY5qQZh2/PNHhCJBH8+UJNL0PzhjfsrGEeBS1ZVqNeQTB4JdFpkatJijUsZHyYrxr+vBpqRn6hJhyE1Gl8R8JucOK/U4FpWgGhBv+wyxksBNQrHG+wFJJ4TbzUzNxpfAdgIqN3VdxAxRQ59iq+ND2ZLMcgawbBsfNcorc+axkkkoqIRn1noiI4LOXVAr0rnzaDlz2Z8AFwypAb60J5dUXzdIkKL/NTKURPdEYqVgGMrZkxtjmLlKGnBeL9pbYBp4CJ4wa97YBu4ZEbc5rCrxd4HX3aKEv4oJ9TVs073n/VMIV3H9Stc7Z/EtkFg3PWsKfi0NmM25w+bBJ2QumdTFV2Z+kEIFhKrwDzQTggS/Rgot9LFHF9kV0A+igpRvUBbUke3/duiGzAMllnMK7RT3gFGKWESz3e9JQAAAABJRU5ErkJggg==) !important; }
 .primeapps #toast-container button.toast-close-button {
-  font-size: 16px;
-}
+  font-size: 16px; }
 @media (max-width: 1366px) {
   .primeapps .template-field .template-field-box {
     width: calc(100% - 10px);
@@ -2412,269 +1929,214 @@ button:focus, select:focus {
     clear: both;
     display: flex;
     align-items: center;
-    text-align: left !important;
-  }
-  .primeapps .template-field .template-field-box .template-field-icon {
-    display: inline-block;
-    padding-left: 5px;
-  }
-  .primeapps .template-field .template-field-box .template-field-text {
-    display: inline-block;
-    padding-left: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .primeapps .template-field .template-field-box .template-field-text h4 {
-    margin: 0px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
+    text-align: left !important; }
+    .primeapps .template-field .template-field-box .template-field-icon {
+      display: inline-block;
+      padding-left: 5px; }
+    .primeapps .template-field .template-field-box .template-field-text {
+      display: inline-block;
+      padding-left: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+      .primeapps .template-field .template-field-box .template-field-text h4 {
+        margin: 0px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; } }
 .primeapps .module-form-setup .draggable-form .form-group {
-  padding: 5px 40px 4px 5px;
-}
-.primeapps .module-form-setup .draggable-form .form-group .fa-arrows {
-  margin-top: 0px;
-  color: #FFF;
-  position: absolute;
-  left: 5px;
-  width: 20px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 20px;
-  margin-top: -10px;
-  top: 50%;
-  line-height: 20px;
-  text-align: center;
-}
+  padding: 5px 40px 4px 5px; }
+  .primeapps .module-form-setup .draggable-form .form-group .fa-arrows {
+    margin-top: 0px;
+    color: #FFF;
+    position: absolute;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    margin-top: -10px;
+    top: 50%;
+    line-height: 20px;
+    text-align: center; }
 .primeapps .module-form-setup .draggable-form .subpanel-heading .action-buttons .action-icon {
   font-size: 14px;
-  margin-right: 5px;
-}
+  margin-right: 5px; }
 .primeapps .ui-select-bootstrap {
   height: 40px;
   line-height: 40px;
   border-radius: 5px;
   border: none;
   font-size: 14px;
-  background: rgba(0, 0, 0, 0.05);
-}
-.primeapps .ui-select-bootstrap .btn-default-focus {
-  border: none;
-  background: transparent;
-  box-shadow: none;
-  outline: none;
-}
-.primeapps .ui-select-bootstrap .glyphicon-remove {
-  display: none;
-}
-.primeapps .ui-select-bootstrap .form-control {
-  height: 40px;
-  line-height: 20px;
-  border: none;
-  background: transparent !important;
-}
-.primeapps .ui-select-bootstrap .form-control:hover {
-  background: transparent !important;
-}
-.primeapps .ui-select-bootstrap .ui-select-choices-row-inner {
-  padding: 10px !important;
-}
-.primeapps .ui-select-bootstrap .ui-select-choices {
-  width: 100% !important;
-}
-.primeapps .ui-select-bootstrap .ui-select-toggle {
-  border: none;
-  background: transparent;
-}
-.primeapps .ui-select-bootstrap .ui-select-toggle:hover {
-  background: transparent !important;
-}
-.primeapps .ui-select-bootstrap .ui-select-toggle > .caret {
-  padding: 0px;
-  right: 10px;
-}
-.primeapps .ui-select-bootstrap.bigwhiteselect {
-  height: 60px;
-  line-height: 60px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  background: #FFF;
-}
-.primeapps .ui-select-bootstrap.bigwhiteselect .form-control {
-  height: 60px;
-  line-height: 50px;
-  padding: 5px 10px;
-}
-.primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-placeholder, .primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-match-text {
-  font-size: 14px;
-  line-height: 50px;
-  font-weight: normal;
-}
-.primeapps .ui-select-bootstrap .ui-select-match-text {
-  padding-right: 20px;
-  line-height: 20px;
-  display: inline-block;
-  float: none !important;
-}
-.primeapps .ui-select-bootstrap .ui-select-match-text > div {
-  height: 20px;
-  overflow: hidden;
-}
-.primeapps .ui-select-bootstrap .ui-select-match-text span {
-  font-family: "Nunito", sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: normal;
-}
-.primeapps .ui-select-bootstrap .ui-select-match-text span:before {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-}
-.primeapps .ui-select-bootstrap .ui-select-match-text span.fas:before {
-  display: inline-block;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-}
+  background: rgba(0, 0, 0, 0.05); }
+  .primeapps .ui-select-bootstrap .btn-default-focus {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    outline: none; }
+  .primeapps .ui-select-bootstrap .glyphicon-remove {
+    display: none; }
+  .primeapps .ui-select-bootstrap .form-control {
+    height: 40px;
+    line-height: 20px;
+    border: none;
+    background: transparent !important; }
+    .primeapps .ui-select-bootstrap .form-control:hover {
+      background: transparent !important; }
+  .primeapps .ui-select-bootstrap .ui-select-choices-row-inner {
+    padding: 10px !important; }
+  .primeapps .ui-select-bootstrap .ui-select-choices {
+    width: 100% !important; }
+  .primeapps .ui-select-bootstrap .ui-select-toggle {
+    border: none;
+    background: transparent; }
+    .primeapps .ui-select-bootstrap .ui-select-toggle:hover {
+      background: transparent !important; }
+    .primeapps .ui-select-bootstrap .ui-select-toggle > .caret {
+      padding: 0px;
+      right: 10px; }
+  .primeapps .ui-select-bootstrap.bigwhiteselect {
+    height: 60px;
+    line-height: 60px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background: #FFF; }
+    .primeapps .ui-select-bootstrap.bigwhiteselect .form-control {
+      height: 60px;
+      line-height: 50px;
+      padding: 5px 10px; }
+    .primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-placeholder, .primeapps .ui-select-bootstrap.bigwhiteselect .ui-select-match-text {
+      font-size: 14px;
+      line-height: 50px;
+      font-weight: normal; }
+  .primeapps .ui-select-bootstrap .ui-select-match-text {
+    padding-right: 20px;
+    line-height: 20px;
+    display: inline-block;
+    float: none !important; }
+    .primeapps .ui-select-bootstrap .ui-select-match-text > div {
+      height: 20px;
+      overflow: hidden; }
+    .primeapps .ui-select-bootstrap .ui-select-match-text span {
+      font-family: "Nunito", sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: normal; }
+      .primeapps .ui-select-bootstrap .ui-select-match-text span:before {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome; }
+      .primeapps .ui-select-bootstrap .ui-select-match-text span.fas:before {
+        display: inline-block;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900; }
 .primeapps .menu-setup .custom-menu {
   font-size: 16px;
-  font-weight: bold;
-}
-.primeapps .menu-setup .custom-menu li {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-}
-.primeapps .menu-setup .custom-menu .form-group {
-  margin-bottom: 5px !important;
-}
-.primeapps .menu-setup .custom-menu .form-group .form-control, .primeapps .menu-setup .custom-menu .form-group .ui-select-bootstrap {
-  width: auto;
-  background: #FFF;
-}
-.primeapps .menu-setup .custom-menu .menu-list {
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding: 5px 110px 5px 10px;
-  margin-bottom: 0px !important;
-  margin-top: 5px !important;
-}
-.primeapps .menu-setup .custom-menu .editable-buttons {
-  display: inline-block;
-  margin: 3px;
-}
-.primeapps .menu-setup .custom-menu .editable-buttons button {
-  background: rgba(13, 111, 170, 0.75);
-  width: 30px;
-  font-size: 12px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  border: none;
-  color: white;
-  border-radius: 50%;
-  padding: 0px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-.primeapps .menu-setup .custom-menu .editable-buttons button:hover {
-  background: #0d6faa;
-  color: white;
-}
-.primeapps .menu-setup .custom-menu .menu-label {
-  padding-right: 10px;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block {
-  display: inline-block;
-  position: absolute;
-  right: 10px;
-  top: 5px;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a, .primeapps .menu-setup .custom-menu .action-buttons-block button {
-  background: rgba(13, 111, 170, 0.75);
-  width: 25px;
-  font-size: 10px;
-  height: 25px;
-  line-height: 25px;
-  text-align: center;
-  border: none;
-  color: white;
-  border-radius: 50%;
-  padding: 0px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit {
-  background: rgba(0, 0, 0, 0.25);
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit:hover {
-  background: rgba(0, 0, 0, 0.5);
-  color: #FFF;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete {
-  background: rgba(206, 4, 4, 0.5);
-  color: #FFF;
-  font-size: 10px;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete:hover {
-  background: #ce0404;
-  color: #FFF;
-}
-.primeapps .menu-setup .custom-menu .action-buttons-block a:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button:hover {
-  background: #0d6faa;
-  color: white;
-}
-.primeapps .menu-setup .custom-menu .custom-menu {
-  padding-left: 30px;
-  font-size: 14px;
-}
-.primeapps .menu-setup .custom-menu .custom-menu li {
-  background: transparent;
-  border-radius: 0px;
-}
-.primeapps .menu-setup .custom-menu .custom-menu .menu-list {
-  margin-top: 0px !important;
-  padding: 0px 110px 0px 0px;
-}
-.primeapps .menu-setup .custom-menu .custom-menu .menu-list .action-buttons-block {
-  top: -2px;
-}
+  font-weight: bold; }
+  .primeapps .menu-setup .custom-menu li {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px; }
+  .primeapps .menu-setup .custom-menu .form-group {
+    margin-bottom: 5px !important; }
+    .primeapps .menu-setup .custom-menu .form-group .form-control, .primeapps .menu-setup .custom-menu .form-group .ui-select-bootstrap {
+      width: auto;
+      background: #FFF; }
+  .primeapps .menu-setup .custom-menu .menu-list {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 5px 110px 5px 10px;
+    margin-bottom: 0px !important;
+    margin-top: 5px !important; }
+  .primeapps .menu-setup .custom-menu .editable-buttons {
+    display: inline-block;
+    margin: 3px; }
+    .primeapps .menu-setup .custom-menu .editable-buttons button {
+      background: rgba(13, 111, 170, 0.75);
+      width: 30px;
+      font-size: 12px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      padding: 0px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block; }
+      .primeapps .menu-setup .custom-menu .editable-buttons button:hover {
+        background: #0d6faa;
+        color: white; }
+  .primeapps .menu-setup .custom-menu .menu-label {
+    padding-right: 10px; }
+  .primeapps .menu-setup .custom-menu .action-buttons-block {
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 5px; }
+    .primeapps .menu-setup .custom-menu .action-buttons-block a, .primeapps .menu-setup .custom-menu .action-buttons-block button {
+      background: rgba(13, 111, 170, 0.75);
+      width: 25px;
+      font-size: 10px;
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      padding: 0px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block; }
+      .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit {
+        background: rgba(0, 0, 0, 0.25); }
+        .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-edit:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-edit:hover {
+          background: rgba(0, 0, 0, 0.5);
+          color: #FFF; }
+      .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete {
+        background: rgba(206, 4, 4, 0.5);
+        color: #FFF;
+        font-size: 10px; }
+        .primeapps .menu-setup .custom-menu .action-buttons-block a.action-buttons-delete:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button.action-buttons-delete:hover {
+          background: #ce0404;
+          color: #FFF; }
+      .primeapps .menu-setup .custom-menu .action-buttons-block a:hover, .primeapps .menu-setup .custom-menu .action-buttons-block button:hover {
+        background: #0d6faa;
+        color: white; }
+  .primeapps .menu-setup .custom-menu .custom-menu {
+    padding-left: 30px;
+    font-size: 14px; }
+    .primeapps .menu-setup .custom-menu .custom-menu li {
+      background: transparent;
+      border-radius: 0px; }
+    .primeapps .menu-setup .custom-menu .custom-menu .menu-list {
+      margin-top: 0px !important;
+      padding: 0px 110px 0px 0px; }
+      .primeapps .menu-setup .custom-menu .custom-menu .menu-list .action-buttons-block {
+        top: -2px; }
 .primeapps .menu-setup .arrow {
   display: inline-block;
-  margin-right: 10px;
-}
-.primeapps .menu-setup .arrow span {
-  display: block;
-  line-height: 10px;
-  font-size: 14px;
-}
-.primeapps .menu-setup .arrow span i {
-  cursor: pointer;
-  color: #CCC;
-}
-.primeapps .menu-setup .arrow span i:hover {
-  color: #000;
-}
+  margin-right: 10px; }
+  .primeapps .menu-setup .arrow span {
+    display: block;
+    line-height: 10px;
+    font-size: 14px; }
+    .primeapps .menu-setup .arrow span i {
+      cursor: pointer;
+      color: #CCC; }
+      .primeapps .menu-setup .arrow span i:hover {
+        color: #000; }
 .primeapps .swal-modal .swal-title {
   margin: 0;
-  padding: 0;
-}
+  padding: 0; }
 .primeapps .swal-modal .swal-footer {
   margin-top: 0;
-  text-align: center;
-}
+  text-align: center; }
 .primeapps .swal-modal .swal-button {
-  padding: 5px 15px;
-}
-.primeapps .swal-modal .swal-button:hover {
-  padding: 5px 20px;
-}
-.primeapps .swal-modal .swal-button:focus {
-  box-shadow: none;
-}
+  padding: 5px 15px; }
+  .primeapps .swal-modal .swal-button:hover {
+    padding: 5px 20px; }
+  .primeapps .swal-modal .swal-button:focus {
+    box-shadow: none; }
 .primeapps .templatebox {
   position: relative;
   overflow: hidden;
@@ -2688,338 +2150,279 @@ button:focus, select:focus {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-}
-.primeapps .templatebox:hover {
-  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
-}
-.primeapps .templatebox h3 {
-  font-weight: bold;
-}
-.primeapps .templatebox p {
-  margin-bottom: 0px;
-}
-.primeapps .templatebox span.centerx {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: white;
-  z-index: 2;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  opacity: 1;
-}
-.primeapps .templatebox span.centerx i {
-  font-size: 40px;
-}
-.primeapps .templatebox span.centerx.hover-buttons {
-  opacity: 0;
-  flex-direction: column;
-  z-index: 3;
-}
-.primeapps .templatebox span.centerx.hover-buttons a {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  display: inline-block;
-  background: #FFF;
-  padding: 5px 15px;
-  line-height: 20px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 100px;
-  text-decoration: none;
-  margin: 5px;
-}
-.primeapps .templatebox span.centerx.hover-buttons a:hover {
-  padding: 5px 20px;
-}
-.primeapps .templatebox span.centerx:before {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0px;
-  top: 0px;
-  z-index: -1;
-  opacity: 0.75;
-  background: #0D6FAA;
-}
-.primeapps .templatebox span.centerx h3 {
-  font-size: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps .templatebox span.bottomx {
-  position: relative;
-  display: block;
-  padding: 10px;
-  font-size: 12px;
-}
-.primeapps .templatebox span.bottomx h3 {
-  margin: 0;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.primeapps .templatebox .template-icon-top-right {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  color: #FFF;
-  background: #0D6FAA;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  font-size: 14px;
-  border-radius: 100px;
-  z-index: 1;
-}
-.primeapps .templatebox:hover span.centerx {
-  opacity: 0;
-}
-.primeapps .templatebox:hover span.centerx.hover-buttons {
-  opacity: 1;
-}
-.primeapps .templatebox:hover span.centerx:before {
-  opacity: 0.95;
-}
+  -ms-transition: all 0.5s ease; }
+  .primeapps .templatebox:hover {
+    box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
+  .primeapps .templatebox h3 {
+    font-weight: bold; }
+  .primeapps .templatebox p {
+    margin-bottom: 0px; }
+  .primeapps .templatebox span.centerx {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: 1; }
+    .primeapps .templatebox span.centerx i {
+      font-size: 40px; }
+    .primeapps .templatebox span.centerx.hover-buttons {
+      opacity: 0;
+      flex-direction: column;
+      z-index: 3; }
+      .primeapps .templatebox span.centerx.hover-buttons a {
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        -ms-transition: all 0.5s ease;
+        display: inline-block;
+        background: #FFF;
+        padding: 5px 15px;
+        line-height: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 100px;
+        text-decoration: none;
+        margin: 5px; }
+        .primeapps .templatebox span.centerx.hover-buttons a:hover {
+          padding: 5px 20px; }
+    .primeapps .templatebox span.centerx:before {
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0px;
+      top: 0px;
+      z-index: -1;
+      opacity: 0.75;
+      background: #0D6FAA; }
+    .primeapps .templatebox span.centerx h3 {
+      font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+  .primeapps .templatebox span.bottomx {
+    position: relative;
+    display: block;
+    padding: 10px;
+    font-size: 12px; }
+    .primeapps .templatebox span.bottomx h3 {
+      margin: 0;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+  .primeapps .templatebox .template-icon-top-right {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #FFF;
+    background: #0D6FAA;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 100px;
+    z-index: 1; }
+  .primeapps .templatebox:hover span.centerx {
+    opacity: 0; }
+    .primeapps .templatebox:hover span.centerx.hover-buttons {
+      opacity: 1; }
+    .primeapps .templatebox:hover span.centerx:before {
+      opacity: 0.95; }
 .primeapps .roundedx {
-  border-radius: 1000px;
-}
+  border-radius: 1000px; }
 .primeapps .imgfix {
   position: relative;
   overflow: hidden;
   display: block;
-  width: 100%;
-}
-.primeapps .imgfix .imgin {
-  position: absolute;
-  -ms-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  text-align: center;
-}
-.primeapps .imgfix.imgy .imgin, .primeapps .imgfix.imgk .imgin {
-  width: 100%;
-}
-.primeapps .imgfix .blank {
-  width: 100%;
-}
-.primeapps .imgfix.imgd .imgin {
-  height: 100%;
-}
+  width: 100%; }
+  .primeapps .imgfix .imgin {
+    position: absolute;
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    text-align: center; }
+  .primeapps .imgfix.imgy .imgin, .primeapps .imgfix.imgk .imgin {
+    width: 100%; }
+  .primeapps .imgfix .blank {
+    width: 100%; }
+  .primeapps .imgfix.imgd .imgin {
+    height: 100%; }
 .primeapps .colourfullx > div:nth-child(4n+1) .templatebox span:before {
-  background: #9F5590;
-}
+  background: #9F5590; }
 .primeapps .colourfullx > div:nth-child(4n+2) .templatebox span:before {
-  background: #5359DF;
-}
+  background: #5359DF; }
 .primeapps .colourfullx > div:nth-child(4n+3) .templatebox span:before {
-  background: #CE0404;
-}
+  background: #CE0404; }
 .primeapps .colourfullx > div:nth-child(4n+4) .templatebox span:before {
-  background: #E08340;
-}
+  background: #E08340; }
 .primeapps .flex-betweenx {
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
   background-color: #ffffff !important;
-  padding: 10px 20px;
-}
-.primeapps .flex-betweenx > ul {
-  margin: 0px;
-  padding: 5px;
-  list-style-type: none;
-}
-.primeapps .flex-betweenx > ul > li {
-  display: inline-block;
-}
-.primeapps .flex-betweenx > ul > li .rigth-oval-toolbar-item {
-  margin-left: 0px;
-}
+  padding: 10px 20px; }
+  .primeapps .flex-betweenx > ul {
+    margin: 0px;
+    padding: 5px;
+    list-style-type: none; }
+    .primeapps .flex-betweenx > ul > li {
+      display: inline-block; }
+      .primeapps .flex-betweenx > ul > li .rigth-oval-toolbar-item {
+        margin-left: 0px; }
 @media (max-width: 767.98px) {
   .primeapps .flex-betweenx {
-    display: block;
-  }
-}
+    display: block; } }
 .primeapps .shadowh {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-}
-.primeapps .shadowh:hover {
-  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
-}
+  cursor: pointer; }
+  .primeapps .shadowh:hover {
+    box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
 .primeapps .icon-search-list .ui-select-choices .ui-select-choices-group:before, .primeapps .icon-search-list .ui-select-choices .ui-select-choices-group:after {
-  content: "";
-  display: table;
-}
+  content: '';
+  display: table; }
 .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row {
   min-width: 45px;
   min-height: 45px;
   width: 10%;
   overflow: hidden;
-  float: left;
-}
-.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner {
-  min-height: 45px;
-  padding: 0px !important;
-}
-.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner > div {
-  min-height: 45px;
-}
-.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i {
-  width: 100%;
-  min-height: 45px;
-  position: relative;
-  text-indent: -9999px;
-  font-size: 20px;
-}
-.primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i:before {
-  transform: translate(-50%, -50%);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  line-height: 100%;
-  text-align: center;
-  z-index: 1;
-  text-indent: 0px;
-}
+  float: left; }
+  .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner {
+    min-height: 45px;
+    padding: 0px !important; }
+    .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner > div {
+      min-height: 45px; }
+    .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i {
+      width: 100%;
+      min-height: 45px;
+      position: relative;
+      text-indent: -9999px;
+      font-size: 20px; }
+      .primeapps .icon-search-list .ui-select-choices .ui-select-choices-row .ui-select-choices-row-inner i:before {
+        transform: translate(-50%, -50%);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        line-height: 100%;
+        text-align: center;
+        z-index: 1;
+        text-indent: 0px; }
 .primeapps .width100 {
-  width: 100%;
-}
+  width: 100%; }
 .primeapps .filter {
   position: relative;
   padding-right: 30px;
-  z-index: 1;
-}
-.primeapps .filter span {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 100px;
-  text-align: center;
-  background: #0D6FAA;
-  color: #FFF;
-  line-height: 20px;
-  right: 25px;
-  top: -5px;
-  font-size: 10px;
-  z-index: 2;
-}
-.primeapps .filter a {
-  position: absolute;
-  right: 10px;
-  line-height: 30px;
-  color: rgba(0, 0, 0, 0.5);
-  z-index: 3;
-}
-.primeapps .filter a:hover {
-  color: rgba(0, 0, 0, 0.75);
-}
+  z-index: 1; }
+  .primeapps .filter span {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    text-align: center;
+    background: #0D6FAA;
+    color: #FFF;
+    line-height: 20px;
+    right: 25px;
+    top: -5px;
+    font-size: 10px;
+    z-index: 2; }
+  .primeapps .filter a {
+    position: absolute;
+    right: 10px;
+    line-height: 30px;
+    color: rgba(0, 0, 0, 0.5);
+    z-index: 3; }
+    .primeapps .filter a:hover {
+      color: rgba(0, 0, 0, 0.75); }
 .primeapps .roleslist a {
   text-decoration: none;
-  cursor: pointer;
-}
+  cursor: pointer; }
 .primeapps .roleslist ol li {
-  position: relative;
-}
-.primeapps .roleslist ol li > span {
-  width: 100%;
-  display: block;
-  line-height: 25px;
-  background: rgba(0, 0, 0, 0.03);
-  margin-bottom: 5px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-}
-.primeapps .roleslist ol li:before {
-  content: "";
-  position: absolute;
-  left: -15px;
-  top: 0px;
-  width: 1px;
-  height: 15px;
-  background: rgba(0, 0, 0, 0.15);
-}
-.primeapps .roleslist ol li:after {
-  content: "";
-  position: absolute;
-  left: -15px;
-  top: 15px;
-  width: 10px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.15);
-}
+  position: relative; }
+  .primeapps .roleslist ol li > span {
+    width: 100%;
+    display: block;
+    line-height: 25px;
+    background: rgba(0, 0, 0, 0.03);
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold; }
+  .primeapps .roleslist ol li:before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 0px;
+    width: 1px;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.15); }
+  .primeapps .roleslist ol li:after {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 15px;
+    width: 10px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.15); }
 .primeapps .roleslist > ol > li:before, .primeapps .roleslist > ol > li:after {
-  display: none;
-}
+  display: none; }
 .primeapps .roleslist .action-buttons-block {
   display: inline-block;
   position: absolute;
   right: 10px;
   top: 5px;
   width: auto;
-  line-height: 25px;
-}
-.primeapps .roleslist .action-buttons-block a, .primeapps .roleslist .action-buttons-block button {
-  background: rgba(13, 111, 170, 0.75);
-  width: 25px;
-  font-size: 10px;
-  height: 25px;
-  line-height: 25px;
-  text-align: center;
-  border: none;
-  color: white;
-  border-radius: 50%;
-  padding: 0px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  float: left;
-  margin-left: 2px;
-}
-.primeapps .roleslist .action-buttons-block a.action-buttons-edit, .primeapps .roleslist .action-buttons-block button.action-buttons-edit {
-  background: rgba(0, 0, 0, 0.25);
-}
-.primeapps .roleslist .action-buttons-block a.action-buttons-edit:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-edit:hover {
-  background: rgba(0, 0, 0, 0.5);
-  color: #FFF;
-}
-.primeapps .roleslist .action-buttons-block a.action-buttons-delete, .primeapps .roleslist .action-buttons-block button.action-buttons-delete {
-  background: rgba(206, 4, 4, 0.5);
-  color: #FFF;
-}
-.primeapps .roleslist .action-buttons-block a.action-buttons-delete:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-delete:hover {
-  background: #ce0404;
-  color: #FFF;
-}
-.primeapps .roleslist .action-buttons-block a:hover, .primeapps .roleslist .action-buttons-block button:hover {
-  background: #0d6faa;
-  color: white;
-}
+  line-height: 25px; }
+  .primeapps .roleslist .action-buttons-block a, .primeapps .roleslist .action-buttons-block button {
+    background: rgba(13, 111, 170, 0.75);
+    width: 25px;
+    font-size: 10px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    padding: 0px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    float: left;
+    margin-left: 2px; }
+    .primeapps .roleslist .action-buttons-block a.action-buttons-edit, .primeapps .roleslist .action-buttons-block button.action-buttons-edit {
+      background: rgba(0, 0, 0, 0.25); }
+      .primeapps .roleslist .action-buttons-block a.action-buttons-edit:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-edit:hover {
+        background: rgba(0, 0, 0, 0.5);
+        color: #FFF; }
+    .primeapps .roleslist .action-buttons-block a.action-buttons-delete, .primeapps .roleslist .action-buttons-block button.action-buttons-delete {
+      background: rgba(206, 4, 4, 0.5);
+      color: #FFF; }
+      .primeapps .roleslist .action-buttons-block a.action-buttons-delete:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-delete:hover {
+        background: #ce0404;
+        color: #FFF; }
+    .primeapps .roleslist .action-buttons-block a:hover, .primeapps .roleslist .action-buttons-block button:hover {
+      background: #0d6faa;
+      color: white; }
 .primeapps .uploadedfilename {
   padding: 5px 10px;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -3028,48 +2431,38 @@ button:focus, select:focus {
   align-items: center;
   line-height: 25px;
   text-align: left;
-  border-radius: 2px;
-}
-.primeapps .uploadedfilename a {
-  cursor: pointer;
-}
-.primeapps .uploadedfilename .uploadedfilename {
-  font-weight: bold;
-}
-.primeapps .uploadedfilename .clear-button {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  padding: 5px;
-  line-height: 15px;
-  font-size: 12px;
-  background: #0D6FAA;
-  color: #FFF;
-  border-radius: 100px;
-}
+  border-radius: 2px; }
+  .primeapps .uploadedfilename a {
+    cursor: pointer; }
+  .primeapps .uploadedfilename .uploadedfilename {
+    font-weight: bold; }
+  .primeapps .uploadedfilename .clear-button {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    padding: 5px;
+    line-height: 15px;
+    font-size: 12px;
+    background: #0D6FAA;
+    color: #FFF;
+    border-radius: 100px; }
 .primeapps .primetabs li {
-  text-align: center;
-}
-.primeapps .primetabs li a {
-  color: rgba(0, 0, 0, 0.5);
-}
-.primeapps .primetabs li.active a {
-  background: #FFF;
-  font-weight: bold;
-  color: #0D6FAA;
-}
+  text-align: center; }
+  .primeapps .primetabs li a {
+    color: rgba(0, 0, 0, 0.5); }
+  .primeapps .primetabs li.active a {
+    background: #FFF;
+    font-weight: bold;
+    color: #0D6FAA; }
 .primeapps .primetabs-content {
   border-top: none;
   padding-top: 20px;
   border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-.primeapps .primetabs-content .tab-pane {
-  display: none;
-}
-.primeapps .primetabs-content .tab-pane.active {
-  display: block;
-}
+  border-bottom-right-radius: 5px; }
+  .primeapps .primetabs-content .tab-pane {
+    display: none; }
+    .primeapps .primetabs-content .tab-pane.active {
+      display: block; }
 .primeapps .organization-icon {
   width: 100px;
   height: 100px;
@@ -3079,132 +2472,101 @@ button:focus, select:focus {
   padding: 20px;
   line-height: 60px;
   text-align: center;
-  font-size: 50px;
-}
+  font-size: 50px; }
 .primeapps .extra-info {
   color: rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-}
-.primeapps .extra-info:hover {
-  color: rgba(0, 0, 0, 0.5);
-}
+  cursor: pointer; }
+  .primeapps .extra-info:hover {
+    color: rgba(0, 0, 0, 0.5); }
 .primeapps .categorylist > li {
   position: relative;
   padding: 5px 10px;
   background: rgba(0, 0, 0, 0.03);
   border-radius: 5px;
   line-height: 30px;
-  margin-bottom: 5px;
-}
-.primeapps .categorylist > li > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.75);
-}
-.primeapps .categorylist > li .form-control {
-  height: 30px !important;
-  background: transparent;
-  padding: 10px 0px;
-}
-.primeapps .categorylist > li:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
+  margin-bottom: 5px; }
+  .primeapps .categorylist > li > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.75); }
+  .primeapps .categorylist > li .form-control {
+    height: 30px !important;
+    background: transparent;
+    padding: 10px 0px; }
+  .primeapps .categorylist > li:hover {
+    background: rgba(0, 0, 0, 0.05); }
 .primeapps .new-actions {
   display: inline-block;
-  padding-left: 10px;
-}
-.primeapps .new-actions button, .primeapps .new-actions a {
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  background: rgba(13, 111, 170, 0.5);
-  color: white;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  font-size: 10px;
-  text-align: center;
-  border: none;
-  border-radius: 50%;
-  display: inline-block;
-}
-.primeapps .new-actions button.delete-btn, .primeapps .new-actions a.delete-btn {
-  background: #E78D8F;
-  color: #FFF;
-}
-.primeapps .new-actions button.delete-btn:hover, .primeapps .new-actions a.delete-btn:hover {
-  background: #ce0404;
-  color: #FFF;
-}
-.primeapps .new-actions button.edit-btn, .primeapps .new-actions a.edit-btn {
-  background: rgba(0, 0, 0, 0.25);
-}
-.primeapps .new-actions button.edit-btn:hover, .primeapps .new-actions a.edit-btn:hover {
-  background: rgba(0, 0, 0, 0.5);
-}
-.primeapps .new-actions button:hover, .primeapps .new-actions a:hover {
-  background: #0d6faa;
-  color: #FFF;
-}
+  padding-left: 10px; }
+  .primeapps .new-actions button, .primeapps .new-actions a {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    background: rgba(13, 111, 170, 0.5);
+    color: white;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 10px;
+    text-align: center;
+    border: none;
+    border-radius: 50%;
+    display: inline-block; }
+    .primeapps .new-actions button.delete-btn, .primeapps .new-actions a.delete-btn {
+      background: #E78D8F;
+      color: #FFF; }
+      .primeapps .new-actions button.delete-btn:hover, .primeapps .new-actions a.delete-btn:hover {
+        background: #ce0404;
+        color: #FFF; }
+    .primeapps .new-actions button.edit-btn, .primeapps .new-actions a.edit-btn {
+      background: rgba(0, 0, 0, 0.25); }
+      .primeapps .new-actions button.edit-btn:hover, .primeapps .new-actions a.edit-btn:hover {
+        background: rgba(0, 0, 0, 0.5); }
+    .primeapps .new-actions button:hover, .primeapps .new-actions a:hover {
+      background: #0d6faa;
+      color: #FFF; }
 .primeapps .picklistx {
-  flex-grow: 1;
-}
-.primeapps .picklistx > span {
-  display: inline-block;
-}
-.primeapps .picklistx > span:nth-child(1) {
-  width: 20px;
-  text-align: center;
-}
-.primeapps .picklistx > span:nth-child(2) {
-  width: calc(20% - 10px);
-}
-.primeapps .picklistx > span:nth-child(3) {
-  width: calc(20% - 10px);
-}
-.primeapps .picklistx > span:nth-child(4) {
-  width: calc(20% - 10px);
-}
-.primeapps .picklistx > span:nth-child(5) {
-  width: calc(20% - 10px);
-}
-.primeapps .picklistx > span:nth-child(6) {
-  width: calc(20% - 10px);
-}
+  flex-grow: 1; }
+  .primeapps .picklistx > span {
+    display: inline-block; }
+    .primeapps .picklistx > span:nth-child(1) {
+      width: 20px;
+      text-align: center; }
+    .primeapps .picklistx > span:nth-child(2) {
+      width: calc(20% - 10px); }
+    .primeapps .picklistx > span:nth-child(3) {
+      width: calc(20% - 10px); }
+    .primeapps .picklistx > span:nth-child(4) {
+      width: calc(20% - 10px); }
+    .primeapps .picklistx > span:nth-child(5) {
+      width: calc(20% - 10px); }
+    .primeapps .picklistx > span:nth-child(6) {
+      width: calc(20% - 10px); }
 .primeapps .picklist-options .form-control {
   height: 30px;
-  line-height: 30px;
-}
+  line-height: 30px; }
 .primeapps .pickitemcopy {
   display: table;
-  padding: 10px 0px;
-}
-.primeapps .pickitemcopy.gu-mirror-option i {
-  display: inherit;
-}
-.primeapps .pickitemcopy > div {
-  padding: 0px 10px;
-}
-.primeapps .pickitemcopy > div > span {
-  display: none;
-}
-.primeapps .pickitemcopy > div > span:first-child {
-  display: inline-block;
-}
-.primeapps .pickitemcopy td {
-  display: none;
-}
-.primeapps .pickitemcopy td:nth-child(1) {
-  display: inline-block;
-  width: 40px;
-}
-.primeapps .pickitemcopy td:nth-child(2) {
-  display: inline-block;
-  width: calc(100% - 40px);
-}
+  padding: 10px 0px; }
+  .primeapps .pickitemcopy.gu-mirror-option i {
+    display: inherit; }
+  .primeapps .pickitemcopy > div {
+    padding: 0px 10px; }
+    .primeapps .pickitemcopy > div > span {
+      display: none; }
+      .primeapps .pickitemcopy > div > span:first-child {
+        display: inline-block; }
+  .primeapps .pickitemcopy td {
+    display: none; }
+    .primeapps .pickitemcopy td:nth-child(1) {
+      display: inline-block;
+      width: 40px; }
+    .primeapps .pickitemcopy td:nth-child(2) {
+      display: inline-block;
+      width: calc(100% - 40px); }
 .primeapps .action-button2-plus, .primeapps .action-button2-delete {
   width: 26px;
   height: 26px;
@@ -3218,43 +2580,31 @@ button:focus, select:focus {
   color: #FFF;
   text-align: center;
   border-radius: 50%;
-  margin: 7px 0px;
-}
-.primeapps .action-button2-plus:hover, .primeapps .action-button2-delete:hover {
-  background: #0d6faa;
-}
+  margin: 7px 0px; }
+  .primeapps .action-button2-plus:hover, .primeapps .action-button2-delete:hover {
+    background: #0d6faa; }
 .primeapps .action-button2-delete {
-  background: #E78D8F;
-}
-.primeapps .action-button2-delete:hover {
-  background: #ce0404;
-}
+  background: #E78D8F; }
+  .primeapps .action-button2-delete:hover {
+    background: #ce0404; }
 .primeapps .swal-icon {
   width: 60px;
-  height: 60px;
-}
+  height: 60px; }
 .primeapps .swal-icon--warning__body {
-  height: 30px;
-}
+  height: 30px; }
 .primeapps .shared-users .shared-users-input {
-  max-width: inherit;
-}
+  max-width: inherit; }
 .primeapps .flexitemx {
-  display: flex;
-}
-.primeapps .flexitemx > div > .cell-container {
-  min-height: 100%;
-}
+  display: flex; }
+  .primeapps .flexitemx > div > .cell-container {
+    min-height: 100%; }
 .primeapps .instructions-list {
-  list-style: decimal;
-}
+  list-style: decimal; }
 .primeapps .functionx .tab-content {
   box-shadow: none;
-  border-radius: 0px;
-}
+  border-radius: 0px; }
 .primeapps #log-screen {
-  width: 100% !important;
-}
+  width: 100% !important; }
 .primeapps .comingsoontext {
   position: absolute;
   width: 100px;
@@ -3272,82 +2622,70 @@ button:focus, select:focus {
   border-radius: 100px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   font-size: 16px;
-  font-weight: bold;
-}
+  font-weight: bold; }
 .primeapps .colorpickx {
   padding: 5px;
   background: rgba(0, 0, 0, 0.05);
   display: block;
-  margin-bottom: 20px;
-}
-.primeapps .colorpickx:after {
-  content: "";
-  width: 100%;
-  display: table;
-}
-.primeapps .colorpickx span {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  border-radius: 10px;
-  background: #FFF;
-  position: relative;
-  margin: 7px;
-  cursor: pointer;
-  float: left;
-}
-.primeapps .colorpickx span:after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  display: inline-block;
-  left: 50%;
-  top: 50%;
-  border: 1px solid #0D6FAA;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  visibility: hidden;
-  opacity: 0;
-}
-.primeapps .colorpickx span:hover:after {
-  width: calc(100% + 10px);
-  height: calc(100% + 10px);
-  visibility: visible;
-  opacity: 0.5;
-}
-.primeapps .colorpickx span.active:after {
-  width: calc(100% + 10px);
-  height: calc(100% + 10px);
-  visibility: visible;
-  opacity: 1;
-}
+  margin-bottom: 20px; }
+  .primeapps .colorpickx:after {
+    content: '';
+    width: 100%;
+    display: table; }
+  .primeapps .colorpickx span {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: 10px;
+    background: #FFF;
+    position: relative;
+    margin: 7px;
+    cursor: pointer;
+    float: left; }
+    .primeapps .colorpickx span:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      display: inline-block;
+      left: 50%;
+      top: 50%;
+      border: 1px solid #0D6FAA;
+      -webkit-transition: all 0.5s ease;
+      -moz-transition: all 0.5s ease;
+      -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+      visibility: hidden;
+      opacity: 0; }
+    .primeapps .colorpickx span:hover:after {
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      visibility: visible;
+      opacity: .5; }
+    .primeapps .colorpickx span.active:after {
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      visibility: visible;
+      opacity: 1; }
 
 .placeholder {
   margin: 0 auto;
   min-height: 50px;
-  background-color: #eee;
-}
+  background-color: #eee; }
 
 @keyframes placeHolderShimmer {
   0% {
-    background-position: -468px 0;
-  }
+    background-position: -468px 0; }
   100% {
-    background-position: 468px 0;
-  }
-}
+    background-position: 468px 0; } }
 .total {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.5);
-}
+  color: rgba(0, 0, 0, 0.5); }
 
 .animated-background {
-  animation-duration: 0.7s;
+  animation-duration: 0.70s;
   animation-fill-mode: forwards;
   animation-iteration-count: infinite;
   animation-name: placeHolderShimmer;
@@ -3357,5 +2695,4 @@ button:focus, select:focus {
   background-size: 800px 104px;
   padding: 10px;
   margin-bottom: 5px;
-  position: relative;
-}
+  position: relative; }
