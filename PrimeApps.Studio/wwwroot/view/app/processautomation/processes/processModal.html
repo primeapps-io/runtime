@@ -9,10 +9,10 @@
                         <button type="button" ng-click="cancel();" ng-disabled="saving" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                     </li>
                     <li ng-if="$parent.$parent.isNew && $parent.$parent.wizardStep > 0">
-                        <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate($parent.workflowForm, false); "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
+                        <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click=" $parent.$parent.$parent.wizardStep = $parent.$parent.$parent.wizardStep-1  "><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
                     </li>
                     <li ng-if=" $parent.$parent.isNew && $parent.$parent.wizardStep < 3">
-                        <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate($parent.workflowForm, true); lastStepClicked = $parent.$parent.wizardStep ===2 ? true : false;">
+                        <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate($parent.workflowForm) ? $parent.$parent.$parent.wizardStep = $parent.$parent.$parent.wizardStep+1 : false; $parent.$parent.lastStepClicked = $parent.$parent.wizardStep ===2 ? true : false;">
                             {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
                         </button>
                     </li>
@@ -30,10 +30,10 @@
                 <div class="megalist">
                     <div class="modal-menu">
                         <ul class="list-unstyled">
-                            <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 0 : false">{{'Setup.Workflow.ApprovelProcess.RuleInformation' | translate}}</a></li>
-                            <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
-                            <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 2 : false">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</a></li>
-                            <li><a ng-class="{'active':wizardStep==3}" ng-click="( validate(workflowForm) ? $parent.$parent.wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.ApprovelProcess.SummaryAndConfirmation' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.wizardStep==0}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 0 : false">{{'Setup.Workflow.ApprovelProcess.RuleInformation' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.wizardStep==1}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.wizardStep==2}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 2 : false">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</a></li>
+                            <li><a ng-class="{'active':$parent.$parent.wizardStep==3}" ng-click="validate(workflowForm) ? $parent.$parent.wizardStep = 3 : false; getSummary();">{{'Setup.Workflow.ApprovelProcess.SummaryAndConfirmation' | translate}}</a></li>
                             <!--lastStepClicked && workflowForm.$valid &&-->
                         </ul>
                     </div>
@@ -331,7 +331,8 @@
                                                                 <option value="">{{'Common.Select' | translate}}</option>
                                                             </select>
 
-                                                            <tags-input ng-model="filter.value"
+                                                            <tags-input class="ng-animate-disabled form-control"
+                                                                        ng-model="filter.value"
                                                                         display-property="full_name"
                                                                         key-property="id"
                                                                         min-tags="1"
