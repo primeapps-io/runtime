@@ -1958,6 +1958,12 @@ button, select {
             color: rgba(0, 0, 0, 0.25);
           }
         }
+        h3{
+          font-size: 80px;
+          font-weight: bold;
+          margin: 0;
+          color: rgba(0, 0, 0, 0.25);
+        }
 
         .oval {
           z-index: 2;
@@ -3803,7 +3809,7 @@ button, select {
     background: rgba(0, 0, 0, 0.25);
     color: #fff;
     padding: 20px;
-    line-height: 60px;
+    line-height: 65px;
     text-align: center;
     font-size: 50px;
   }
