@@ -3,7 +3,7 @@
 angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
     function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
         $rootScope.checkUserProfile = helper.checkUserProfile;
-       
+
         angular.element($window).on('load resize', function () {
             if ($window.innerWidth < 1200) {
                 $scope.$apply(function () {
@@ -164,16 +164,16 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.colors = [
-            { value: '#D72A20' },
-            { value: '#833CA3' },
-            { value: '#17ACFE' },
-            { value: '#33ffff' },
-            { value: '#229C51' },
-            { value: '#FFAD1C' },
-            { value: '#1C3E7D' },
-            { value: '#C35E21' },
-            { value: '#F3C937' },
-            { value: '#6B2F5D' },
+            {value: '#D72A20'},
+            {value: '#833CA3'},
+            {value: '#17ACFE'},
+            {value: '#33ffff'},
+            {value: '#229C51'},
+            {value: '#FFAD1C'},
+            {value: '#1C3E7D'},
+            {value: '#C35E21'},
+            {value: '#F3C937'},
+            {value: '#6B2F5D'},
         ];
 
         $scope.newOrganization = function () {
@@ -207,19 +207,17 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.closeNewOrganizationModal = function () {
             $scope.organizationFormModal.hide();
-            $scope.organization = {};
+            //$scope.organization = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
+
+
         };
 
         $scope.saveOrganization = function (organizationForm) {
             if (!organizationForm.$valid)
                 return;
 
-            if (!$scope.nameValid) {
-                toastr.warning("Organization Identifier value must be unique! ");
-                return;
-            }
             $scope.organizationSaving = true;
 
             if (angular.isObject($scope.organization.icon))
@@ -247,21 +245,25 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $scope.organization = {};
                                 $scope.nameValid = null;
                                 $scope.nameBlur = false;
-                                $state.go('studio.apps', { orgId: response.data });
+                                $state.go('studio.apps', {orgId: response.data});
                             }).catch(function () {
-                                toastr.error('Organization ' + $scope.organization.label + ' not created.');
-                                $scope.organizationSaving = false;
-                                $scope.nameValid = null;
-                                $scope.nameBlur = false;
-                            });
+                            toastr.error('Organization ' + $scope.organization.label + ' not created.');
+                            $scope.organizationSaving = false;
+                            $scope.nameValid = null;
+                            $scope.nameBlur = false;
+                        });
                     } else {
                         $scope.nameValid = false;
                         $scope.organizationSaving = false;
                     }
                 }).catch(function () {
-                    $scope.nameValid = false;
-                    $scope.nameChecking = false;
-                });
+                $scope.nameValid = false;
+                if (!$scope.nameValid) {
+                    toastr.warning("Organization Identifier value must be unique! ");
+                    return;
+                }
+                $scope.nameChecking = false;
+            });
 
         };
 
