@@ -1132,6 +1132,7 @@ angular.module('primeapps')
                     return;
 
                 var getSummary = function () {
+                    $scope.lastStepClicked = true;
                     $scope.ruleTriggerText = '';
                     $scope.ruleFilterText = '';
                     $scope.ruleActionsText = '';
