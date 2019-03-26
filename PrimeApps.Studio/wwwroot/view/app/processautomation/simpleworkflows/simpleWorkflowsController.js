@@ -249,7 +249,7 @@ angular.module('primeapps')
                             $scope.workflowModel.module.fields = response.data;
                         }
 
-                        $scope.module = ModuleService.getFieldsOperator($scope.workflowModel.module, $rootScope.appModules, 0)
+                        $scope.module = ModuleService.getFieldsOperator($scope.workflowModel.module, $rootScope.appModules, 0);
 
                         if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
                             $scope.showProcessFilter = true;
