@@ -164,7 +164,7 @@ angular.module('primeapps')
                         accepts: function () {
                             return false;
                         },
-                     
+
                     });
 
 
@@ -449,6 +449,7 @@ angular.module('primeapps')
 
             }
 
+
             $scope.lookup = function (searchTerm) {
                 if (!$scope.currentLookupField.lookupType) {
                     var deferred = $q.defer();
@@ -525,6 +526,34 @@ angular.module('primeapps')
                 field.isNew = true;
                 field.permissions = [];
                 return field;
+            };
+           
+            $scope.fieldClone = function (row, column, field) {
+                var cloneField = angular.copy(field);
+                cloneField.name = cloneField.name + "copy";
+                cloneField.label_tr = cloneField.label_tr + "kopya";
+                cloneField.label_en = cloneField.label_en + "copy";
+                cloneField.order++;
+                column.cells.push({
+                    field: cloneField,
+                    order: cloneField.order
+                });
+                $scope.refreshModule();
+
+                $scope.showFieldModal(row, column, cloneField);
+            };
+           
+            $scope.sectionClone = function (row) {
+
+                var rowClone = angular.copy(row);
+                rowClone.order++;
+                rowClone.section.label_tr = rowClone.section.label_tr + "Kopya";
+                rowClone.section.label_en = rowClone.section.label_en + "Copy";
+                rowClone.section.name = rowClone.section.name + "copy";
+                $scope.moduleLayout.rows.push(rowClone);
+                $scope.refreshModule();
+                $scope.showSectionModal(rowClone.section)
+                // $scope.showFieldModal(row, column, cloneField);
             };
 
             $scope.showFieldModal = function (row, column, field) {

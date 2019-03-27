@@ -11,14 +11,16 @@
                             translate}}</a>
                     </li>
                     <li>
-                        <button ng-click="showEditModal(false)" ng-disabled="saving || loading" class="btn btn-radius btn-blue">
+                        <button ng-click="showEditModal(false)" ng-disabled="saving || loading"
+                                class="btn btn-radius btn-blue">
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
                         </button>
                     </li>
                     <li>
                         <button type="button" class="btn   btn-radius btn-blue"
-                                ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving || loading">
+                                ladda="saving" ng-click="isModuleSaving = true; saveModule()"
+                                ng-disabled="saving || loading">
                             <i class="fas fa-save"></i>
 
                             {{!redirect ? ('Common.Save' | translate) :
@@ -109,8 +111,12 @@
                                 <span class="row-handle" ng-mouseenter="handleHover = true"
                                       ng-mouseleave="handleHover = false"><i class="fas fa-arrows-alt row-handle"></i> {{ !row.section.custom_label ?  row.section['label_' + language] : row.section.custom_label }}</span>
                                         <span class="action-buttons pull-right">
-                                <a href ng-click="showSectionModal(row.section)" class="action-icon"
-                                   title="{{'Common.Edit' | translate}}"><i class="fas fa-pen-alt"></i></a>
+                                <a style="display: none" href ng-click="sectionClone(row)" class="action-icon"
+                                   title="{{'Common.Clone' | translate}}"><i class="fas fa-clone"></i>
+                                </a>
+                                            
+                                 <a href ng-click="showSectionModal(row.section)" class="action-icon"
+                                    title="{{'Common.Edit' | translate}}"><i class="fas fa-pen-alt"></i></a>
                                 <i class="fas fa-trash disabled"
                                    ng-if="!row.hasPrimaryField && !row.hasSystemRequiredField" confirm-click
                                    action="deleteSection(row.section.name)" placement="left"
@@ -271,11 +277,17 @@
 
                                                     </div>
                                                     <span class="action-buttons">
+                                                        <a style="display: none" href ng-click="fieldClone(row, column, cell.field)"
+                                                           class="action-icon"
+                                                           title="{{'Common.Clone' | translate}}">
+                                                                 <i class="fas fa-clone"></i>
+                                                        </a>
                                         <a href ng-click="showFieldModal(row, column, cell.field)"
                                            class="action-icon"
                                            title="{{'Common.Edit' | translate}}">
                                             <i class="fas fa-pen-alt"></i>
                                         </a>
+                                
 
                                         <i class="fas fa-trash action-icon"
                                            ng-if="!cell.field.primary && !cell.field.systemRequired" confirm-click
