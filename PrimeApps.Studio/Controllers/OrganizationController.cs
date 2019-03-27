@@ -411,45 +411,6 @@ namespace PrimeApps.Studio.Controllers
                     if (!response.IsSuccessStatusCode)
                         return BadRequest(response);
 
-                    using (var content = response.Content)
-                    {
-                        var stringResult = content.ReadAsStringAsync().Result;
-
-                        var jsonResult = JObject.Parse(stringResult);
-                        password = jsonResult["password"].ToString();
-                        var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
-
-                        foreach (var template in templates)
-                        {
-                            template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
-                            template.Content = template.Content.Replace("{:LastName}", model.LastName);
-                            template.Content = template.Content.Replace("{:Organization}", organization.Label);
-                            template.Content = template.Content.Replace("{:InvitationFrom}", AppUser.FullName);
-                            template.Content = template.Content.Replace("{:Email}", model.Email);
-                            template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + model.Email + "&code=" + WebUtility.UrlEncode(jsonResult["token"].ToString()));
-
-                            if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
-                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "initial");
-                            else
-                                template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
-
-                            var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-
-                            var myMessage = new MailMessage()
-                            {
-                                From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
-                                Subject = template.Subject,
-                                Body = template.Content,
-                                IsBodyHtml = true
-                            };
-
-                            myMessage.To.Add(model.Email);
-
-                            var email = new Email(_configuration, _serviceScopeFactory);
-                            email.TransmitMail(myMessage);
-                        }
-                    }
-
                     var platformUser = await _platformUserRepository.Get(model.Email);
                     var studioUser = await _studioUserRepository.Get(platformUser.Id);
 
