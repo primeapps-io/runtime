@@ -8,7 +8,7 @@
 						<li>
 							<button type="button" ng-disabled="saving" ng-click="addNewFiltersModal.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
 						</li>
-						<li ng-if="$parent.$parent.wizardStep > 0">
+						<li ng-if="isNew &&  $parent.$parent.wizardStep > 0">
 							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding" ng-click="validate(viewForm) ?  $parent.$parent.$parent.wizardStep = $parent.$parent.$parent.wizardStep-1 : false"><i class="fas fa-angle-left"></i>{{'Common.Previous' | translate}}</button>
 						</li>
 						<li ng-if=" isNew && $parent.$parent.wizardStep < 3">
