@@ -1,0 +1,157 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-auth-config
+  namespace: primeapps
+data:
+  AuthDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=auth;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=platform;command timeout=0;keepalive=30;"
+  Authority: "https://auth.primeapps.io"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  ValidationSkipDomains: "localhost;primeapps.io;"
+  StudioUrl: "https://studio.primeapps.io"
+  GiteaEnabled: "true"
+  GiteaUrl: "https://git.primeapps.io"
+  PreviewMode: "tenant"
+  SentryDsn: "http://56d42792c49c46beaa2929a652cfc19b@error.primeapps.io/13"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-auth
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps-auth"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: primeapps-auth
+  template:
+    metadata:
+      labels:
+        k8s-app: primeapps-auth
+    spec:
+      containers:
+        - name: primeapps-auth
+          image: gcr.io/primeapps/primeapps-auth/debian:5.19.084.4
+          env:
+            - name: ConnectionStrings__AuthDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: AuthDBConnection
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: PlatformDBConnection
+            - name: AppSettings__Authority
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: Authority
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: HttpsRedirection
+            - name: AppSettings__ValidationSkipDomains
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: ValidationSkipDomains
+            - name: AppSettings__StudioUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: StudioUrl
+            - name: AppSettings__GiteaEnabled
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: GiteaEnabled
+            - name: AppSettings__GiteaUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: GiteaUrl
+            - name: AppSettings__PreviewMode
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: PreviewMode
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: SentryDsn
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: primeapps-auth-service
+spec:
+  type: "ClusterIP"
+  selector:
+    k8s-app: primeapps-auth
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: primeapps-auth-ingress
+  namespace: primeapps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - auth.primeapps.io
+      secretName: primeapps-wildcard
+  rules:
+    - host: auth.primeapps.io
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: primeapps-auth-service
+              servicePort: 80
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: primeapps-auth-service
+#   annotations:
+#     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:557655860736:certificate/5be35ad7-a512-4028-9fac-c4ca1e268080"
+#     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+#     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+# spec:
+#   type: "LoadBalancer"
+#   selector:
+#     k8s-app: primeapps-auth
+#   ports:
+#     - name: "http"
+#       protocol: TCP
+#       port: 80
+#       targetPort: 80
+#     - name: "https"
+#       protocol: TCP
+#       port: 443
+#       targetPort: 80
