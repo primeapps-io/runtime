@@ -60,9 +60,6 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
-                if ($scope.collaboratorModel) {
-                    $scope.collaboratorModel = {};
-                }
                 if (page !== 1) {
                     var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
@@ -190,12 +187,14 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
-                            $scope.changePage(1);
                             if ($scope.resultModel.sendPassword) {
                                 $scope.sendEmailPassword($scope.collaboratorModel);
+                            } else {
+                                $scope.changePage(1);
+                                $scope.submitting = false;
+                                $scope.addNewCollaboratorModal.hide();
+                                $scope.collaboratorModel = {};
                             }
-                            $scope.submitting = false;
-                            $scope.addNewCollaboratorModal.hide();
                         }
                     })
                     .catch(function () {
@@ -298,10 +297,20 @@ angular.module('primeapps')
 
                     if (validateEmail(email)) {
                         sendEmailData.email = email;
-                        CollaboratorsService.sendEmail(sendEmailData);
+                        CollaboratorsService.sendEmail(sendEmailData).then(function (response) {
+                            $scope.changePage(1);
+                            $scope.submitting = false;
+                            $scope.addNewCollaboratorModal.hide();
+                            $scope.collaboratorModel = {};
+                        })
                     }
 
 
+                } else {
+                    $scope.changePage(1);
+                    $scope.submitting = false;
+                    $scope.addNewCollaboratorModal.hide();
+                    $scope.collaboratorModel = {};
                 }
 
 
