@@ -173,8 +173,7 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[1].link = '#/org/' + $rootScope.currentOrganization.id + '/collaborators';
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
 
-                                if (!$rootScope.currentOrganization) {
-                                    var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                                if (!$rootScope.currentOrganization) {                                 
                                     window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                                 }
                             }],
