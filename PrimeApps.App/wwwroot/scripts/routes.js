@@ -517,6 +517,25 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('app.expense', {
+                    url: '/expense?user?year?month?week',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'views/app/expensesheet/expense.html',
+                            controller: 'ExpenseController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'views/app/expensesheet/expenseController.js',
+                                cdnUrl + 'views/app/module/moduleFormModalController.js'
+                            ]);
+                        }]
+                    }
+                })
+
+
                 .state('app.report', {
                     url: '/report',
                     views: {
