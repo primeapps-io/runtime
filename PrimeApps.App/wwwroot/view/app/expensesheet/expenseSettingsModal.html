@@ -6,31 +6,31 @@
                     <h4 class="modal-title">{{'Expenses.ExpenseSheetSettings' | translate}}</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="row form-group">
-                        <label class="col-sm-6 control-label">{{'Expenses.ExpensePeriodYear' | translate}}</label>
-                        <div class="col-sm-3">
-                            <ui-select ng-model="settings.expenseYear" ng-disabled="true">
-                                <ui-select-match placeholder="{{'Expenses.Years' | translate}}">{{$select.selected.label_tr}}</ui-select-match>
-                                <ui-select-choices repeat="item in yearList | filter:{label_tr: $select.search}">
-                                    <div ng-bind-html="item.label_tr | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-sm-6 control-label">{{'Expenses.ExpensePeriodMonth' | translate}}</label>
-                        <div class="col-sm-3">
-                            <ui-select ng-model="settings.expenseMonth" ng-disabled="true">
-                                <ui-select-match placeholder="{{'Expenses.Months' | translate}}">{{$select.selected.label_tr}}</ui-select-match>
-                                <ui-select-choices repeat="item in monthList | filter:{label_tr: $select.search}">
-                                    <div ng-bind-html="item.label_tr | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
+                    <!--<div class="row form-group">-->
+                    <!--<label class="col-sm-6 control-label">{{'Expenses.ExpensePeriodYear' | translate}}</label>-->
+                    <!--<div class="col-sm-3">-->
+                    <!--<ui-select ng-model="settings.expenseYear" ng-disabled="true">-->
+                    <!--<ui-select-match placeholder="{{'Expenses.Years' | translate}}">{{$select.selected.label_tr}}</ui-select-match>-->
+                    <!--<ui-select-choices repeat="item in yearList | filter:{label_tr: $select.search}">-->
+                    <!--<div ng-bind-html="item.label_tr | highlight: $select.search"></div>-->
+                    <!--</ui-select-choices>-->
+                    <!--</ui-select>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="row form-group">-->
+                    <!--<label class="col-sm-6 control-label">{{'Expenses.ExpensePeriodMonth' | translate}}</label>-->
+                    <!--<div class="col-sm-3">-->
+                    <!--<ui-select ng-model="settings.expenseMonth" ng-disabled="true">-->
+                    <!--<ui-select-match placeholder="{{'Expenses.Months' | translate}}">{{$select.selected.label_tr}}</ui-select-match>-->
+                    <!--<ui-select-choices repeat="item in monthList | filter:{label_tr: $select.search}">-->
+                    <!--<div ng-bind-html="item.label_tr | highlight: $select.search"></div>-->
+                    <!--</ui-select-choices>-->
+                    <!--</ui-select>-->
+                    <!--</div>-->
+                    <!--</div>-->
                     <div class="row form-group" ng-class="{'has-error': settingsForm.$submitted && settingsForm.expenseEntryEndDate.$invalid}">
                         <label class="col-sm-6 control-label">{{'Expenses.ExpenseEntryEndDate' | translate}}</label>
-                        <div class="col-sm-3">
+                        <div class="col-sm-5">
                             <input type="text"
                                    style="width: 100% !important;"
                                    name="expenseEntryEndDate"
@@ -47,7 +47,7 @@
                     </div>
                     <div class="row form-group" ng-class="{'has-error': settingsForm.$submitted && settingsForm.processDate.$invalid}">
                         <label class="col-sm-6 control-label">{{'Expenses.ProcessApprovalDate' | translate}}</label>
-                        <div class="col-sm-3">
+                        <div class="col-sm-5">
                             <input type="text"
                                    style="width: 100% !important;"
                                    name="processDate"
@@ -64,8 +64,20 @@
                     </div>
                     <div class="row form-group">
                         <label class="col-sm-6 control-label">{{'Expenses.ExpensePeriodDescription' | translate}}</label>
-                        <div class="col-sm-3">
+                        <div class="col-sm-5">
                             <textarea name="expenseDescription" class="form-control" rows="3" maxlength="4000" ng-model="settings.expenseDescription"></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-sm-6 control-label">{{'Expenses.AllowLastYear' | translate}}</label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" name="includeWeekend" class="form-control" ng-model="settingsCheck.expenseLastYearLastMonth"/>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-sm-6 control-label">{{'Expenses.AutomaticApproval' | translate}}</label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" name="includeWeekend" class="form-control" ng-model="settingsCheck.automaticApprovel"/>
                         </div>
                     </div>
                 </div>

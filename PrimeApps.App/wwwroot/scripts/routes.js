@@ -521,15 +521,15 @@ angular.module('primeapps')
                     url: '/expense?user?year?month?week',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'views/app/expensesheet/expense.html',
+                            templateUrl: cdnUrl + 'view/app/expensesheet/expense.html',
                             controller: 'ExpenseController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'views/app/expensesheet/expenseController.js',
-                                cdnUrl + 'views/app/module/moduleFormModalController.js'
+                                cdnUrl + 'view/app/expensesheet/expenseController.js',
+                                cdnUrl + 'view/app/module/moduleFormModalController.js'
                             ]);
                         }]
                     }
