@@ -160,7 +160,8 @@ angular.module('primeapps')
                                 $rootScope.currentOrgId = parseInt($stateParams.organizationId);
 
                                 if (!$rootScope.currentOrgId) {
-                                    $state.go('studio.allApps');
+                                    var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                                    window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                                 }
 
                                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
@@ -173,7 +174,8 @@ angular.module('primeapps')
                                 $rootScope.breadcrumblist[2].title = "Collaborators";
 
                                 if (!$rootScope.currentOrganization) {
-                                    $state.go('studio.allApps');
+                                    var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                                    window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                                 }
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {

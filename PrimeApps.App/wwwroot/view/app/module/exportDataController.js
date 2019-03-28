@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.getDownloadViewUrlExcel = function () {
                 var module = $scope.module.name;
                 var viewId = $scope.view.id;
-                var profileId = $rootScope.user.profile.ID;
+                var profileId = $rootScope.user.profile.id;
                 var isViewFields = $scope.export.moduleAllColumn;
                 if (isViewFields)
                     $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");

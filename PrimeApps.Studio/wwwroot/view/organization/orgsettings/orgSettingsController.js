@@ -8,7 +8,8 @@ angular.module('primeapps')
 
             if ($rootScope.currentOrganization && $rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
-                $state.go('studio.allApps');
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
 
@@ -50,7 +51,8 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data) {
                             $rootScope.organizations = response.data;
-                            $state.go('studio.allApps');
+                            var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                            window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                             //$scope.menuOpen[$scope.organizations[0].id] = true;
                         }
                     });

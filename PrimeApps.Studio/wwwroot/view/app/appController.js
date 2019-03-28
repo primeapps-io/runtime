@@ -13,7 +13,8 @@ angular.module('primeapps')
 
             if (!$rootScope.currentAppId) {
                 toastr.warning($filter('translate')('Common.NotFound'));
-                $state.go('studio.allApps');
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
 

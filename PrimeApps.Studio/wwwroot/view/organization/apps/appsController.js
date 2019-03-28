@@ -16,7 +16,8 @@ angular.module('primeapps')
             $rootScope.currentOrgId = parseInt(orgId);
             $rootScope.menuOpen[orgId] = 'open';
             if (!$rootScope.currentOrgId && $rootScope.organizations) {
-                $state.go('studio.allApps');
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                window.location.href = '/#/apps?orgId=' + defaultOrg.id;
             }
 
             if ($rootScope.organizations)
@@ -29,7 +30,8 @@ angular.module('primeapps')
 
             if (!$rootScope.currentOrgId) {
                 toastr.warning($filter('translate')('Common.NotFound'));
-                $state.go('studio.allApps');
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
 
