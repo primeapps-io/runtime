@@ -18,6 +18,7 @@ angular.module('primeapps')
             $scope.scheduleItems = AdvancedWorkflowsService.getScheduleItems();
             $scope.dueDateItems = AdvancedWorkflowsService.getDueDateItems();
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
+            $scope.modules = $rootScope.appModules;
             var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
             //BPM element menu loading start
@@ -288,6 +289,9 @@ angular.module('primeapps')
 
             var setTaskFields = function () {
                 $scope.taskFields = {};
+
+                if (!activityModule)
+                    return;
 
                 ModuleService.getModuleFields(activityModule.name)
                     .then(function (response) {
@@ -1483,11 +1487,20 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.saveNodeData = function () {
+            $scope.saveNodeData = function (workflowForm) {
+                workflowForm.$submitted = true;
+                var currentNode = $scope.currentObj.subject.part.data;
+                var nodeName = currentNode.ngModelName;
+               
+                if (!workflowForm.$valid)
+                {
+                    toastr.warning($filter('translate')('Setup.Modules.RequiredError')); 
+                    return false;
+                }
                 $scope.saving = true;
                 $scope.modalLoading = true;
                 var diagram = window.myDiagram.model;
-                var currentNode = $scope.currentObj.subject.part.data;
+
                 var bpmModel = $scope.workflowModel;
                 var startModel = $scope.workflowStartModel;
                 var data = {};
