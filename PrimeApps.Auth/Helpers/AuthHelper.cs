@@ -133,5 +133,34 @@ namespace PrimeApps.Auth.UI
 
             return true;
         }
-    }
+		public static async Task<bool> StudioOperationWebhook(ApplicationInfoViewModel app, PlatformUser platformUser)
+		{
+			if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
+				return true;
+
+			using (var httpClient = new HttpClient())
+			{
+				if (platformUser.Id > 0)
+				{
+					var request = new JObject();
+					request["user_id"] = platformUser.Id;
+					request["first_name"] = platformUser.FirstName;
+					request["last_name"] = platformUser.LastName;
+					request["email"] = platformUser.Email;
+
+					httpClient.DefaultRequestHeaders.Accept.Clear();
+					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+					var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+
+					if (!response.IsSuccessStatusCode)
+					{
+						var resp = await response.Content.ReadAsStringAsync();
+						ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " user_id: " + platformUser.Id + " first_name: " + platformUser.FirstName + " last_name: " + platformUser.LastName + " email: " + platformUser.Email);
+					}
+				}
+			}
+
+			return true;
+		}
+	}
 }
