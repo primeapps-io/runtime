@@ -206,24 +206,3 @@ spec:
             backend:
               serviceName: primeapps-app-service
               servicePort: 80
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: primeapps-app-service
-#   annotations:
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:557655860736:certificate/5be35ad7-a512-4028-9fac-c4ca1e268080"
-#     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
-# spec:
-#   type: "LoadBalancer"
-#   selector:
-#     k8s-app: primeapps-app
-#   ports:
-#     - name: "http"
-#       protocol: TCP
-#       port: 80
-#       targetPort: 80
-#     - name: "https"
-#       protocol: TCP
-#       port: 443
-#       targetPort: 80
