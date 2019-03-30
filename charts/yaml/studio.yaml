@@ -53,9 +53,11 @@ spec:
       volumes:
         - name: git-storage
           emptyDir: {}
+      imagePullSecrets:
+        - name: gcr-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:1.19.084.3
+          image: gcr.io/primeapps/primeapps-studio/debian:1.19.089.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:

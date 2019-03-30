@@ -47,9 +47,11 @@ spec:
       labels:
         k8s-app: primeapps-app
     spec:
+      imagePullSecrets:
+        - name: gcr-pull-secret
       containers:
         - name: primeapps-app
-          image: gcr.io/primeapps/primeapps-app/debian:5.19.084.4
+          image: gcr.io/primeapps/primeapps-app/debian:5.19.088.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
