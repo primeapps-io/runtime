@@ -18,7 +18,7 @@ service:
 minioConfig:
   region: ""
   browser: "on"
-  domain: "storage.prod.primeapps.io"
+  domain: "storage.primeapps.io"
   redis:
     enable: true
     format: "namespace"
