@@ -77,7 +77,7 @@ namespace PrimeApps.Studio.Helpers
                             }
                         }*/
 
-                        names.Add(new JObject() {["path"] = e.Path});
+                        names.Add(new JObject() { ["path"] = e.Path });
                     }
                 }
 
@@ -491,7 +491,7 @@ namespace PrimeApps.Studio.Helpers
 
         protected dynamic GetOptions(string type, string token)
         {
-            var credential = new UsernamePasswordCredentials() {Username = token, Password = String.Empty};
+            var credential = new UsernamePasswordCredentials() { Username = token, Password = String.Empty };
             switch (type)
             {
                 case "fetch":
@@ -527,10 +527,15 @@ namespace PrimeApps.Studio.Helpers
                     email = giteaEmail;
                     password = giteaPassword;
                 }
+                else
+                {
+                    throw new Exception("AppSettings:GiteaEmail and AppSettings:GiteaPassword cannot be null!");
+                }
             }
 
-            byte[] bytes = Encoding.GetEncoding(28591).GetBytes(email + ":" + password);
-            return Convert.ToBase64String(bytes);
+            var basicAuthToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{email}:{password}"));
+
+            return basicAuthToken;
         }
 
         /*private async Task<string> GetAccessToken(string userName)
