@@ -1313,7 +1313,8 @@
       "HelpScreenRelation": "Yardım Ekranı Bağlantısı",
       "HelpScreenInsert": "Yardım Ekranı Ekle",
       "Status": "Durum",
-      "ShowHelpModal": "Yardım Penceresini Görüntüle"
+      "ShowHelpModal": "Yardım Penceresini Görüntüle",
+      "NoDataFound": "Henüz bir yardım içeriği eklemediniz."
     },
     "Phone": {
       "Settings": "Bulut Santral Ayarları",

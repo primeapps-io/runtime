@@ -1313,7 +1313,8 @@
 			"HelpScreenRelation": "Relation Of Help Screen",
 			"HelpScreenInsert": "Add Help Screen",
 			"Status": "Status",
-			"ShowHelpModal": "Show Help Modal"
+			"ShowHelpModal": "Show Help Modal",
+			"NoDataFound": "There is no data found."
 		},
 		"Phone": {
 			"Settings": "SIP Settings",
