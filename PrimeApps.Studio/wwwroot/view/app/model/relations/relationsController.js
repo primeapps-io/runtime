@@ -71,6 +71,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (relation) {
                 $scope.moduleLists = [];
+                $scope.background_color = "background-color: #fbfbfb";
                 if (!relation) {
                     relation = {};
                     var sortOrders = [];
@@ -227,9 +228,14 @@ angular.module('primeapps')
             };
 
             $scope.save = function (relationForm) {
-                if (!relationForm.$valid) {
+                if (!relationForm.$valid || $scope.fields.selectedFields.length < 1) {
+                    
                     if (relationForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+                    
+                    if ($scope.fields.selectedFields.length < 1)
+                        toastr.error($filter('translate')('View.FieldError'));
+                    
                     return;
                 }
 
@@ -394,5 +400,13 @@ angular.module('primeapps')
                     $scope.bindDragDrop();
             };
 
+            $scope.$on('dragulardrop', function (e, el) {
+                if ($scope.fields.selectedFields.length < 1) {
+                    $scope.background_color = "background-color: #eed3d7";
+                    toastr.error($filter('translate')('View.FieldError'));
+                } else
+                    $scope.background_color = "background-color: #fbfbfb";
+            });
+            
         }
     ]);
