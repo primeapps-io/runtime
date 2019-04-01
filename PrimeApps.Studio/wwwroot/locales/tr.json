@@ -1394,6 +1394,7 @@
       "EMailNotFoundContact": "Kişi e-posta adresi bulunamadı, lütfen kişi kaydını güncelleyiniz.",
       "EMailNotFoundAccount": "Firma e-posta adresi bulunamadı, lütfen firma kaydını güncelleyiniz.",
       "TemplateNotFound": "Şablon bulunamadı. Ayarlar > Özelleştirme > Şablonlar menüsünden yeni bir şablon eklebilirsiniz.",
+      "TemplateDefined": "Excel şablonu tanımlı değil.",
       "RevisionMasters": "Revize Edilmiş Kayıt",
       "Subject": "Konu",
       "Account": "Firma",
