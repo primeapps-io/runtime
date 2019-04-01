@@ -130,7 +130,7 @@
 								<i class="fa fa-envelope-o pull-left"></i> {{'Module.SendEMail' | translate }}
 							</a>
 						</li>
-						<li ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)">
+						<li ng-if="user.profile.send_sms && !preview" ng-show="hasPermission(type, operations.read)">
 							<a href ng-click="showSMSModal()">
 								<i class="fa fa-mobile pull-left"></i> {{'Module.SendSMS' | translate }}
 							</a>
