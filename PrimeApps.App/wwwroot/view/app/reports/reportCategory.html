@@ -104,8 +104,42 @@
         </div>
         <div class="col-sm-9 report-list" id="reportlist">
             <div class="container" block-ui="myBlockUI">
-                <h3 class="warning-box" ng-if="Reports.length<1">
-                    {{ 'Report.EmptyReport' | translate }}</h3>
+                <style>
+                    .width100 {
+                        width: 100%;
+                    }
+
+                    .roundbutton {
+                        -webkit-transition: all 0.5s ease;
+                        -moz-transition: all 0.5s ease;
+                        -o-transition: all 0.5s ease;
+                        -ms-transition: all 0.5s ease;
+                        border-radius: 30px;
+                        background-color: rgba(13, 111, 170, 0.75);
+                        font-weight: bold;
+                        color: #fff !important;
+                        padding: 9px 20px;
+                        font-size: 14px;
+                        text-decoration: none;
+                    }
+
+                    .roundbutton:hover {
+                        background-color: rgba(13, 111, 170, 1);
+                        text-decoration: none;
+                    }
+
+                </style>
+                <div class="col-sm-offset-3 col-sm-6" ng-if="Reports.length<1">
+                    <img class="width100" style="padding-top:100px;padding-bottom: 30px" src="images/reports.svg">
+                    <div style="text-align: center;"><label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;">Welcome {{user.full_name}}</label></div>
+                    <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;">There is no report to display here.
+                    </label></div>
+                    <!--<div style="text-align: center;margin: 15px;">-->
+                    <!--<a href="https://www.primeapps.io/platform/tutorials" style="border:none; padding: 9px 20px; font-size: 14px;" class="roundbutton">-->
+                    <!--Add New Report-->
+                    <!--</a>-->
+                    <!--</div>-->
+                </div>
                 <div class="row report-list-header">
                     <div class="col-sm-12 report-list-header-title">
                         <h3>{{ currentReport.name }}</h3>
