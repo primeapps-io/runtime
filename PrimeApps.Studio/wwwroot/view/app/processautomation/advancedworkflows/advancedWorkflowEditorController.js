@@ -232,6 +232,8 @@ angular.module('primeapps')
                                 $scope.workflowModel["condition"] = node.data.condition;
                             else
                                 $scope.workflowModel["condition"] = null;
+
+                            $scope.showFormModal();
                             $scope.modalLoading = false;
                         }
                         else {
@@ -1491,10 +1493,13 @@ angular.module('primeapps')
                 workflowForm.$submitted = true;
                 var currentNode = $scope.currentObj.subject.part.data;
                 var nodeName = currentNode.ngModelName;
-               
-                if (!workflowForm.$valid)
-                {
-                    toastr.warning($filter('translate')('Setup.Modules.RequiredError')); 
+
+                if (!workflowForm.$valid) {
+                    if (workflowForm.$error.required)
+                        toastr.warning($filter('translate')('Setup.Modules.RequiredError'));
+                    else if (workflowForm.$error.maxlength)
+                        toastr.warning($filter('translate')('Setup.Modules.RequiredError'));
+
                     return false;
                 }
                 $scope.saving = true;

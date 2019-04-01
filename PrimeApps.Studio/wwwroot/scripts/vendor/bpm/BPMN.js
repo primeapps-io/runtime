@@ -1349,7 +1349,7 @@ function init() {
             });
 
     //Object Single Mouse Click
-    window.myDiagram.addDiagramListener("ObjectSingleClicked", function (e) {
+    window.myDiagram.addDiagramListener("ObjectDoubleClicked", function (e) {
         if (e.Pw.Sb === "Delete") {
             return;
         }
@@ -1358,7 +1358,7 @@ function init() {
         scope.toogleSideMenu(true);
     });
 
-    window.myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
+    window.myDiagram.addDiagramListener("BackgroundDoubleClicked", function (e) {
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(false);
