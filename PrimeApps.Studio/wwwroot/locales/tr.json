@@ -435,10 +435,14 @@
     "LimitWarn": "Mesajınız 4000 karakterden fazla olamaz"
   },
   "Expenses": {
-    "Expenses": "MASRAFLAR",
+    "Expenses": "MASRAFLARIM",
+    "Expense": "Masraflarım",
     "AddExpenseItem": "Masraf Kalemi Ekle",
     "ExpenseItems": "Masraf Kalemleri",
+    "AutomaticApproval": "Otomatik Onaya Gönder",
+    "AllowLastYear": "Geçen Yılın Son Ayına İzin Ver",
     "TotalAmount": "Toplam Tutar",
+    "PayableTotalAmount": "Ödenecek Toplam Tutar",
     "ExpenseSheetSettings": "Masraf Çizelgesi Ayarları",
     "ExpensePeriodYear": "Masraf Dönemi (Yıl)",
     "ExpensePeriodMonth": "Masraf Dönemi (Ay)",
@@ -446,7 +450,11 @@
     "ProcessApprovalDate": "Yönetici Onay Tarihi",
     "ExpensePeriodDescription": "Masraf Dönemi Açıklama",
     "Years": "Yıllar",
-    "Months": "Aylar"
+    "Months": "Aylar",
+    "ExpenseApprovalExpired": "Masraf Onay tarihiniz geçmiştir.",
+    "AnyExpenseItem": "Bu aya ait masraf kaleminiz bulunmamaktadır.",
+    "SettingsUpdate": "Masraf dönemi ayarları başarılı bir şekilde güncellenmiştir.",
+    "DeleteExpenseItem": "Masraf kaleminiz başarılı bir şekilde silindi."
   },
   "Tasks": {
     "Tasks": "Görevler",

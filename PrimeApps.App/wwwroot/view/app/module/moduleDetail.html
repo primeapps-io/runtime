@@ -1,133 +1,143 @@
-<trial></trial>
-<div class="page" ng-style="trial ? {'margin-top':'17px'}: ''">
-    <div class="panel panel-default" style="margin-bottom: 0;">
-        <div class="panel-heading clearfix">
-            <h4 class="pull-left">{{title}}</h4>
-            <div class="pull-right" ng-if="isAvailableForSmallDevice()  ">
-                <div class="dropdown action-dropdown-menu">
-                    <button type="button" class="btn btn-custom dropdown-toggle" bs-dropdown="dropdown" aria-haspopup="false" data-toggle="dropdown" aria-expanded="false" data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span class="caret"></span></button>
-                    <ul class="dropdown-menu  dropdown-menu-right" role="menu">
-                        <li><a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a></li>
-                        <li ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
-                            <a href="#/app/leadconvert{{'?id=' + record.id }}" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li ng-if="user.profile.word_pdf_download">
-                            <a href ng-click="openExportDialog();dropdownHide();" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)">
-                            <a href="#/app/quoteconvert{{'?id=' + record.id }}" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton">
-                            <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'mails' && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
-                            <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
-                        </li>
-                        <li ng-if="hasPermission(type, operations.modify, record) && !customHide">
-                            <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading  || (record.freeze && !isAdmin) || (record.process_id && record.process_status == 3)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.remove, record) && tab ==='general'">
-                            <a href id="DeleteConfirmButton" confirm-click action="delete()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" ng-disabled="loading || (record.freeze && !isAdmin)"><i class="fa fa-minus-circle"></i> {{'Common.Delete' | translate}}</a>
-                        </li>
-                        <li ng-if="module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write) && !customHide">
-                            <a href="#/app/moduleForm/{{type}}" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'">
-                            <a href id="activityButtons" ng-click="showActivityButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'">
-                            <a href id="transactionButtons" ng-click="showTransactionButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <a ng-click="sendToProcessApproval()"
-                               ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'"
-                               class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">
-                                {{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <a ng-click="approveProcess()"
-                               ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'"
-                               ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled"
-                               ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</a>
-                        </li>
-                        <li>
-                            <a ng-click="openRejectApprovalModal()"
-                               ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'"
-                               ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled"
-                               ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</a>
-                        </li>
-                        <li>
-                            <a ng-click="reApproveProcess()"
-                               ng-show="record.process_status == 3 && record.owner.id === currentUser.id && module.name != 'timetrackers'"
-                               ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled"
-                               ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</a>
-                        </li>
-                        <li>
-                            <a ng-if="module.name =='timetrackers' && record.custom_approver == currentUser.email && record.process_status == 2"
-                               href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"
-                               class="btn btn-sm btn-custom">
-                                {{'Setup.Workflow.ApprovelProcess.GoToRecordDetail' | translate}}
-                            </a>
-                        </li>
-                        <li>
-                            <h4 style="display: inline-block;">
+<trial ng-if="!formType"></trial>
+<div ng-class="formType ? 'modal message-modal' :''" tabindex="-1" role="dialog" style="outline: none !important;">
+    <div ng-class="formType ? 'modal-dialog' :''">
+        <div ng-class="formType ? 'modal-content' :''">
+            <div ng-if="formType" ng-class="formType ? 'modal-header clearfix':''">
+                <h4 class="modal-title pull-left">{{ module['label_'+language + '_singular'] }}</h4>
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true"
+                        ng-click="$hide()"><i class="fa fa-close"></i></button>
+            </div>
+            <div>
+                <div>
+                    <div class="page" ng-style="trial ? {'margin-top':'17px'}: ''">
+                        <div class="panel panel-default" style="margin-bottom: 0;">
+                            <div class="panel-heading clearfix">
+                                <h4 class="pull-left">{{title}}</h4>
+                                <div class="pull-right" ng-if="isAvailableForSmallDevice()  ">
+                                    <div class="dropdown action-dropdown-menu">
+                                        <button type="button" class="btn btn-custom dropdown-toggle" bs-dropdown="dropdown" aria-haspopup="false" data-toggle="dropdown" aria-expanded="false" data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span class="caret"></span></button>
+                                        <ul class="dropdown-menu  dropdown-menu-right" role="menu">
+                                            <li><a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a></li>
+                                            <li ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
+                                                <a href="#/app/leadconvert{{'?id=' + record.id }}" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li ng-if="user.profile.word_pdf_download">
+                                                <a href ng-click="openExportDialog();dropdownHide();" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)">
+                                                <a href="#/app/quoteconvert{{'?id=' + record.id }}" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                            </li>
+                                            <li ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton">
+                                                <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
+                                            </li>
+                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'mails' && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                                                <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
+                                            </li>
+                                            <li ng-if="hasPermission(type, operations.modify, record) && !customHide">
+                                                <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading  || (record.freeze && !isAdmin) || (record.process_id && record.process_status == 3)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
+                                            </li>
+                                            <li ng-show="hasPermission(type, operations.remove, record) && tab ==='general'">
+                                                <a href id="DeleteConfirmButton" confirm-click action="delete()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" ng-disabled="loading || (record.freeze && !isAdmin)"><i class="fa fa-minus-circle"></i> {{'Common.Delete' | translate}}</a>
+                                            </li>
+                                            <li ng-if="module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write) && !customHide">
+                                                <a href="#/app/moduleForm/{{type}}" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
+                                            </li>
+                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'">
+                                                <a href id="activityButtons" ng-click="showActivityButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
+                                            </li>
+                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'">
+                                                <a href id="transactionButtons" ng-click="showTransactionButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li>
+                                                <a ng-click="sendToProcessApproval()"
+                                                   ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'"
+                                                   class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">
+                                                    {{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a ng-click="approveProcess()"
+                                                   ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'"
+                                                   ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled"
+                                                   ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</a>
+                                            </li>
+                                            <li>
+                                                <a ng-click="openRejectApprovalModal()"
+                                                   ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'"
+                                                   ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled"
+                                                   ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</a>
+                                            </li>
+                                            <li>
+                                                <a ng-click="reApproveProcess()"
+                                                   ng-show="record.process_status == 3 && record.owner.id === currentUser.id && module.name != 'timetrackers'"
+                                                   ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled"
+                                                   ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</a>
+                                            </li>
+                                            <li>
+                                                <a ng-if="module.name =='timetrackers' && record.custom_approver == currentUser.email && record.process_status == 2"
+                                                   href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"
+                                                   class="btn btn-sm btn-custom">
+                                                    {{'Setup.Workflow.ApprovelProcess.GoToRecordDetail' | translate}}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <h4 style="display: inline-block;">
                                 <span class="label label-info"
                                       ng-if="waitingForApproval && !isApproved && record.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}({{record.process_status_order}}.{{'Setup.Workflow.ApprovelProcess.Level' | translate}})</span>
-                                <span class="label label-danger" ng-if="record.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
-                                <span class="label label-success" ng-if="isApproved">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
-                            </h4>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="pull-right" ng-show="!isAvailableForSmallDevice()">
-                <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}" class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
-                <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)" href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                <a ng-show="module.name === 'sales_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('sales_invoices', operations.write)" ng-disabled="salesOrderStageSystemCode != 'confirmed_order_stage' " confirm-click action="convertSalesOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="SalesOrderConvertButton"><i class="fa fa-retweet"></i> {{'Module.ConvertToSalesInvoice' | translate}}</a>
-                <a ng-show="module.name === 'purchase_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('purchase_invoices', operations.write)" ng-disabled="purchaseOrderStageSystemCode != 'confirmed_purchase_order_stage' " confirm-click action="convertPurchaseOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="PurchaseOrderConvertButton"><i class="fa fa-retweet"></i>{{'Module.ConvertToBuyingInvoice' | translate}}</a>
-                <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
-                <!--<a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendSMS && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>-->
-                <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
-                <a href ng-click="showQuoteEMailModal()" ng-if="user.profile.send_email" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" data-spinner-color="#666" ladda="emailOpening" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{ module['label_' + language + '_singular']}} {{'Module.ModuleEmail' | translate}} </a>
-                <a ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)" href="#/app/quoteconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
-                <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'current_accounts' && module.name != 'masraflar'" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
-                <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) + '&rtab=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : '') : '')}}" class="btn btn-sm btn-custom" ng-if="hasPermission(type, operations.modify, record) && !customHide" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
-                <a href class="btn btn-sm btn-custom" id="DeleteConfirmButton" confirm-click action="delete()"
-                   confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}"
-                   confirm-no="{{'Common.No' | translate}}"
-                   ng-show="hasPermission(type, operations.remove, record) && tab ==='general'"
-                   ng-disabled="loading || (record.freeze && !isAdmin)|| (module.name == 'current_accounts' && salesInvoiceModule && (record.transaction_type.system_code == 'sales_invoice' || record.transaction_type.system_code == 'purchase_invoice')) || (module.name == 'banka_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'kasa_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'stock_transactions' && record.sales_order) || (module.name == 'stock_transactions' && record.purchase_order)">
-                    <i class="fa fa-minus-circle"></i>
-                    {{'Common.Delete' | translate}}
-                </a>
-                <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom" ng-if="(module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write)) && !customHide" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                <a href id="activityButtons" class="btn btn-sm btn-custom" ng-click="showActivityButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                <a href id="transactionButtons" class="btn btn-sm btn-custom" ng-click="showTransactionButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
-                <button ng-click="sendToProcessApproval()" ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
-                <button ng-click="approveProcess()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
-                <button ng-click="openRejectApprovalModal()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
-                <button ng-click="reApproveProcess()" ng-show="record.process_status == 3 && record.owner.id === currentUser.id && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</button>
-                <a ng-if="module.name =='timetrackers' && record.custom_approver == currentUser.email && record.process_status == 2" href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}" class="btn btn-sm btn-custom">{{'Setup.Workflow.ApprovelProcess.GoToRecordDetail' | translate}}</a>
-                <h4 style="display: inline-block;">
-                    <span class="label label-info" ng-if="waitingForApproval && !isApproved && record.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}} ({{record.process_status_order}}. {{'Setup.Workflow.ApprovelProcess.Level' | translate}})</span>
-                    <span class="label label-danger" ng-if="record.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
-                    <span class="label label-success" ng-if="isApproved">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
-                </h4>
-            </div>
-        </div>
-        <div class="panel-body" ng-class="{'tabconfig-body':!tabconfig}" ng-style="scrollHeight">
-            <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-            <div ng-show="!loading" style="{{!tabconfig ? 'margin-right: 10px;' : ''}}">
-                <span style="margin-right: 15px" class="pull-right" ng-if="module.name =='timetrackers' && !isAvailableForSmallDevice() && record.custom_approver == currentUser.email && record.process_status == 1"><a href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"><b>{{'Setup.Workflow.ApprovelProcess.GoToRecordApprove' | translate}} <i class="fa fa-external-link"></i></b></a></span>
-                <div class="dropdown action-dropdown-menu" ng-show="isAvailableForSmallDevice() && tabconfig">
-                    <button type="button" class="btn btn-custom" bs-dropdown="dropdown" aria-haspopup="false"
-                            data-toggle="dropdown-menu" aria-expanded="false" data-placement="bottom-right">
+                                                    <span class="label label-danger" ng-if="record.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
+                                                    <span class="label label-success" ng-if="isApproved">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
+                                                </h4>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="pull-right" ng-show="!isAvailableForSmallDevice()">
+                                    <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}" class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
+                                    <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)" href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                    <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                    <a ng-show="module.name === 'sales_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('sales_invoices', operations.write)" ng-disabled="salesOrderStageSystemCode != 'confirmed_order_stage' " confirm-click action="convertSalesOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="SalesOrderConvertButton"><i class="fa fa-retweet"></i> {{'Module.ConvertToSalesInvoice' | translate}}</a>
+                                    <a ng-show="module.name === 'purchase_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('purchase_invoices', operations.write)" ng-disabled="purchaseOrderStageSystemCode != 'confirmed_purchase_order_stage' " confirm-click action="convertPurchaseOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="PurchaseOrderConvertButton"><i class="fa fa-retweet"></i>{{'Module.ConvertToBuyingInvoice' | translate}}</a>
+                                    <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
+                                    <!--<a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendSMS && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>-->
+                                    <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
+                                    <a href ng-click="showQuoteEMailModal()" ng-if="user.profile.send_email" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" data-spinner-color="#666" ladda="emailOpening" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{ module['label_' + language + '_singular']}} {{'Module.ModuleEmail' | translate}} </a>
+                                    <a ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)" href="#/app/quoteconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                    <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
+                                    <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'current_accounts' && module.name != 'masraflar'" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
+                                    <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) + '&rtab=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : '') : '')}}" class="btn btn-sm btn-custom" ng-if="hasPermission(type, operations.modify, record) && !customHide" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
+                                    <a href class="btn btn-sm btn-custom" id="DeleteConfirmButton" confirm-click action="delete()"
+                                       confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}"
+                                       confirm-no="{{'Common.No' | translate}}"
+                                       ng-show="hasPermission(type, operations.remove, record) && tab ==='general'"
+                                       ng-disabled="loading || (record.freeze && !isAdmin)|| (module.name == 'current_accounts' && salesInvoiceModule && (record.transaction_type.system_code == 'sales_invoice' || record.transaction_type.system_code == 'purchase_invoice')) || (module.name == 'banka_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'kasa_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'stock_transactions' && record.sales_order) || (module.name == 'stock_transactions' && record.purchase_order)">
+                                        <i class="fa fa-minus-circle"></i>
+                                        {{'Common.Delete' | translate}}
+                                    </a>
+                                    <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom" ng-if="(module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write)) && !customHide" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
+                                    <a href id="activityButtons" class="btn btn-sm btn-custom" ng-click="showActivityButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
+                                    <a href id="transactionButtons" class="btn btn-sm btn-custom" ng-click="showTransactionButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
+                                    <button ng-click="sendToProcessApproval()" ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
+                                    <button ng-click="approveProcess()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
+                                    <button ng-click="openRejectApprovalModal()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
+                                    <button ng-click="reApproveProcess()" ng-show="record.process_status == 3 && record.owner.id === currentUser.id && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</button>
+                                    <a ng-if="module.name =='timetrackers' && record.custom_approver == currentUser.email && record.process_status == 2" href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}" class="btn btn-sm btn-custom">{{'Setup.Workflow.ApprovelProcess.GoToRecordDetail' | translate}}</a>
+                                    <h4 style="display: inline-block;">
+                                        <span class="label label-info" ng-if="waitingForApproval && !isApproved && record.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}} ({{record.process_status_order}}. {{'Setup.Workflow.ApprovelProcess.Level' | translate}})</span>
+                                        <span class="label label-danger" ng-if="record.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
+                                        <span class="label label-success" ng-if="isApproved">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="panel-body" ng-class="{'tabconfig-body':!tabconfig}" ng-style="scrollHeight">
+                                <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                <div ng-show="!loading" style="{{!tabconfig ? 'margin-right: 10px;' : ''}}">
+                                    <span style="margin-right: 15px" class="pull-right" ng-if="module.name =='timetrackers' && !isAvailableForSmallDevice() && record.custom_approver == currentUser.email && record.process_status == 1"><a href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"><b>{{'Setup.Workflow.ApprovelProcess.GoToRecordApprove' | translate}} <i class="fa fa-external-link"></i></b></a></span>
+                                    <div class="dropdown action-dropdown-menu" ng-show="isAvailableForSmallDevice() && tabconfig">
+                                        <button type="button" class="btn btn-custom" bs-dropdown="dropdown" aria-haspopup="false"
+                                                data-toggle="dropdown-menu" aria-expanded="false" data-placement="bottom-right">
 
                         <span ng-switch on="tab">
                             <span ng-switch-when="general">
@@ -154,719 +164,724 @@
                             </span>
                             <span class="caret"></span>
                         </span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li ng-class="{'active':tab === 'general'}">
-                            <a href ng-click="tab = 'general';dropdownHide();">{{'Common.General' | translate}}</a>
-                        </li>
-                        <li ng-class="{'active':tab === relatedModule.id.toString()}"
-                            ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
-                            ng-show="hasPermission(relatedModule.related_module, operations.read)">
-                            <a href
-                               ng-click="$parent.tab = relatedModule.id.toString();dropdownHide(); changeTab(relatedModule)">
-                                {{
-relatedModule['label_'
-                                + language + '_plural']
-                                }} <span class="badge"
-                                         ng-if="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
-                            </a>
-                        </li>
-                        <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
-                            <a href ng-click="tab = 'note';dropdownHide();">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
-                        </li>
-                        <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
-                            <a href ng-click="tab = 'document';dropdownHide();">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
-                        </li>
-                        <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
-                            <a href ng-click="$parent.tab = 'location';dropdownHide();">{{'Common.Location' | translate}}</a>
-                        </li>
-                    </ul>
-                </div>
-                <ul class="nav nav-tabs" ng-show="!isAvailableForSmallDevice() && tabconfig">
-                    <li ng-class="{'active':tab === 'general'}">
-                        <a class="module-tab-link" href ng-click="tab = 'general'">{{'Common.General' | translate}}</a>
-                    </li>
-                    <li ng-class="{'active':tab === relatedModule.id.toString()}"
-                        ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
-                        ng-show="hasPermission(relatedModule.related_module, operations.read)">
-                        <a class="module-tab-link" href
-                           ng-click="changeTab(relatedModule)">
-                            {{
-relatedModule['label_'
-                            + language + '_plural']
-                            }} <span class="badge" ng-if="relatedModule.total">{{relatedModule.total}}</span>
-                        </a>
-                    </li>
-                    <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
-                        <a class="module-tab-link" href ng-click="tab = 'note'">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
-                    </li>
-                    <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
-                        <a class="module-tab-link" href ng-click="tab = 'document'">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
-                    </li>
-                    <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
-                        <a class="module-tab-link" href ng-click="$parent.tab = 'location'">{{'Common.Location' | translate}}</a>
-                    </li>
-                    <li class="pull-right">
-                        <button class="{{custombutton.css_class}}" type="button"
-                                custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
-                                ng-repeat="custombutton in actionButtons"
-                                ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
-                                style="margin-left: 10px">
-                            <i ng-class="custombutton.icon"></i> {{custombutton.name}}
-                        </button>
-                        <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
-                                ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
-                                ng-repeat="custombutton in actionButtons"
-                                ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
-                                style="margin-left: 10px">
-                            <i ng-class="custombutton.icon"></i> {{custombutton.name}}
-                        </button>
-                        <button class="{{custombutton.css_class}}" type="button"
-                                ng-click="showModuleFrameModal(custombutton.url)"
-                                ng-repeat="custombutton in actionButtons"
-                                ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
-                                style="margin-left: 10px">
-                            <i ng-class="custombutton.icon"></i> {{custombutton.name}}
-                        </button>
-                    </li>
-                </ul>
-                <div ng-class="{'subpanel-first':tabconfig}" ng-show="tab === 'general' || !tabconfig"
-                     ng-style="scrollHeightTab">
-                    <div class="subpanel"
-                         ng-repeat="section in module.sections | filter:{display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasSectionDisplayPermission(section)">
-                        <h5 class="subpanel-heading">{{ !section.custom_label ? section['label_' + language] : section.custom_label }}</h5>
-                        <div class="subpanel-body">
-                            <div class="row">
-                                <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
-                                    <table class="table table-detail-custom" ng-style="{ 'min-height': !tabconfig ? '0px' : '0px'}">
-                                        <tr ng-repeat="field in $parent.$parent.module.fields | filter:{section: section.name, section_column: column.no, display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!field.hidden && hasFieldDisplayPermission(field)">
-                                            <th class="control-label" ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-3': (section.column_count === 1 && !field.custom_label), 'col-sm-1': field.custom_label }">
-                                                <span ng-if="!field.custom_label" ng-show="field.show_label">{{field['label_' + language]}}</span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li ng-class="{'active':tab === 'general'}">
+                                                <a href ng-click="tab = 'general';dropdownHide();">{{'Common.General' | translate}}</a>
+                                            </li>
+                                            <li ng-class="{'active':tab === relatedModule.id.toString()}"
+                                                ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
+                                                ng-show="hasPermission(relatedModule.related_module, operations.read)">
                                                 <a href
-                                                   style="max-width: 50px;float:right;"
-                                                   editable-checkbox="record[field.name]"
-                                                   ng-model="record[field.name]"
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'checkbox' && field.custom_label && field.inline_edit && !record.freeze && field.editable">
-                                                    <i ng-if="record[field.name] === undefined || record[field.name] === false" class="fa fa-square-o custom-checkbox"></i>
-                                                    <i ng-if="record[field.name] != undefined && record[field.name] === true" class="fa fa-check-square-o custom-checkbox"></i>
+                                                   ng-click="$parent.tab = relatedModule.id.toString();dropdownHide(); changeTab(relatedModule)">
+                                                    {{
+                                                    relatedModule['label_'
+                                                    + language + '_plural']
+                                                    }} <span class="badge"
+                                                             ng-if="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
                                                 </a>
-                                                <span ng-if="field.data_type === 'checkbox' && field.custom_label && (!hasPermission(type, operations.modify, record) || field.validation.readonly || !field.inline_edit || record.freeze || !field.editable || !hasFieldFullPermission(field))">
+                                            </li>
+                                            <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
+                                                <a href ng-click="tab = 'note';dropdownHide();">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
+                                            </li>
+                                            <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
+                                                <a href ng-click="tab = 'document';dropdownHide();">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
+                                            </li>
+                                            <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
+                                                <a href ng-click="$parent.tab = 'location';dropdownHide();">{{'Common.Location' | translate}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <ul class="nav nav-tabs" ng-show="!isAvailableForSmallDevice() && tabconfig">
+                                        <li ng-class="{'active':tab === 'general'}">
+                                            <a class="module-tab-link" href ng-click="tab = 'general'">{{'Common.General' | translate}}</a>
+                                        </li>
+                                        <li ng-class="{'active':tab === relatedModule.id.toString()}"
+                                            ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
+                                            ng-show="hasPermission(relatedModule.related_module, operations.read)">
+                                            <a class="module-tab-link" href
+                                               ng-click="changeTab(relatedModule)">
+                                                {{
+                                                relatedModule['label_'
+                                                + language + '_plural']
+                                                }} <span class="badge" ng-if="relatedModule.total">{{relatedModule.total}}</span>
+                                            </a>
+                                        </li>
+                                        <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
+                                            <a class="module-tab-link" href ng-click="tab = 'note'">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
+                                        </li>
+                                        <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
+                                            <a class="module-tab-link" href ng-click="tab = 'document'">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
+                                        </li>
+                                        <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
+                                            <a class="module-tab-link" href ng-click="$parent.tab = 'location'">{{'Common.Location' | translate}}</a>
+                                        </li>
+                                        <li class="pull-right">
+                                            <button class="{{custombutton.css_class}}" type="button"
+                                                    custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
+                                                    ng-repeat="custombutton in actionButtons"
+                                                    ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
+                                                    style="margin-left: 10px">
+                                                <i ng-class="custombutton.icon"></i> {{custombutton.name}}
+                                            </button>
+                                            <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
+                                                    ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
+                                                    ng-repeat="custombutton in actionButtons"
+                                                    ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
+                                                    style="margin-left: 10px">
+                                                <i ng-class="custombutton.icon"></i> {{custombutton.name}}
+                                            </button>
+                                            <button class="{{custombutton.css_class}}" type="button"
+                                                    ng-click="showModuleFrameModal(custombutton.url)"
+                                                    ng-repeat="custombutton in actionButtons"
+                                                    ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
+                                                    style="margin-left: 10px">
+                                                <i ng-class="custombutton.icon"></i> {{custombutton.name}}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                    <div ng-class="{'subpanel-first':tabconfig}" ng-show="tab === 'general' || !tabconfig"
+                                         ng-style="scrollHeightTab">
+                                        <div class="subpanel"
+                                             ng-repeat="section in module.sections | filter:{display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasSectionDisplayPermission(section)">
+                                            <h5 class="subpanel-heading">{{ !section.custom_label ? section['label_' + language] : section.custom_label }}</h5>
+                                            <div class="subpanel-body">
+                                                <div class="row">
+                                                    <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
+                                                        <table class="table table-detail-custom" ng-style="{ 'min-height': !tabconfig ? '0px' : '0px'}">
+                                                            <tr ng-repeat="field in $parent.$parent.module.fields | filter:{section: section.name, section_column: column.no, display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!field.hidden && hasFieldDisplayPermission(field)">
+                                                                <th class="control-label" ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-3': (section.column_count === 1 && !field.custom_label), 'col-sm-1': field.custom_label }">
+                                                                    <span ng-if="!field.custom_label" ng-show="field.show_label">{{field['label_' + language]}}</span>
+                                                                    <a href
+                                                                       style="max-width: 50px;float:right;"
+                                                                       editable-checkbox="record[field.name]"
+                                                                       ng-model="record[field.name]"
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'checkbox' && field.custom_label && field.inline_edit && !record.freeze && field.editable">
+                                                                        <i ng-if="record[field.name] === undefined || record[field.name] === false" class="fa fa-square-o custom-checkbox"></i>
+                                                                        <i ng-if="record[field.name] != undefined && record[field.name] === true" class="fa fa-check-square-o custom-checkbox"></i>
+                                                                    </a>
+                                                                    <span ng-if="field.data_type === 'checkbox' && field.custom_label && (!hasPermission(type, operations.modify, record) || field.validation.readonly || !field.inline_edit || record.freeze || !field.editable || !hasFieldFullPermission(field))">
                                                     <i ng-if="field.custom_label && record[field.name] === undefined || record[field.name] === false" class="fa fa-square-o custom-checkbox"></i>
                                                     <i ng-if="field.custom_label && record[field.name] != undefined && record[field.name] === true" class="fa fa-check-square-o custom-checkbox"></i>
                                                 </span>
-                                            </th>
-                                            <td ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label, 'link-container': (((field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') || field.data_type === 'email' || field.data_type === 'url' || (field.data_type === 'text_single' && (field.name ==='phone' || field.name ==='mobile'))) && record[field.name])}"
-                                                ng-if="hasPermission(type, operations.modify, record) && !field.validation.readonly && field.inline_edit && !record.freeze && field.editable && hasFieldFullPermission(field)"
-                                                ng-init="editLookup[field.name] = false">
+                                                                </th>
+                                                                <td ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label, 'link-container': (((field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') || field.data_type === 'email' || field.data_type === 'url' || (field.data_type === 'text_single' && (field.name ==='phone' || field.name ==='mobile'))) && record[field.name])}"
+                                                                    ng-if="hasPermission(type, operations.modify, record) && !field.validation.readonly && field.inline_edit && !record.freeze && field.editable && hasFieldFullPermission(field)"
+                                                                    ng-init="editLookup[field.name] = false">
 
-                                                <div ng-if="field.show_lock" class="clearfix">
-                                                    <i style="margin-left: 5px; margin-top: 5px;" class="fa fa-lock fa-lg"></i>
-                                                </div>
+                                                                    <div ng-if="field.show_lock" class="clearfix">
+                                                                        <i style="margin-left: 5px; margin-top: 5px;" class="fa fa-lock fa-lg"></i>
+                                                                    </div>
 
-                                                <div ng-if="field.data_type === 'text_single' && !field.show_lock" class="clearfix">
-                                                    <a href
-                                                       editable-text="record[field.name]"
-                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                       e-maxlength="{{field.validation.max_length || 50}}"
-                                                       e-ui-mask="{{field.mask}}"
-                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                       onbeforesave="validate($data, field.data_type, field.validation)"
-                                                       onaftersave="update()">
-                                                        {{record[field.name] ? (field.mask ? (record[field.name] | mask:field.mask) : record[field.name]) : 'Common.Empty' | translate}}
-                                                        <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                </div>
-                                                <a href ng-click="showHideSipPhone(record[field.name])" class="link"
-                                                   ng-if="(field.name ==='phone' || field.name ==='mobile') && field.data_type === 'text_single' && !field.show_lock && sipUser.userAgent.isRegistered() && sipUser.lineInfo.State == 'Ready' && record[field.name]">
-                                                    <i class="fa fa-phone"></i>
-                                                </a>
-                                                <div ng-if="field.data_type === 'email' && !field.show_lock" class="clearfix">
-                                                    <a href
-                                                       editable-text="record[field.name]"
-                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                       e-maxlength="{{field.validation.max_length || 50}}"
-                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                       onbeforesave="validate($data, field.data_type, field.validation)"
-                                                       onaftersave="update()"
-                                                       ng-if="field.data_type === 'email'">
-                                                        {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                </div>
-                                                <a href ng-click="showEMailModal(false,record[field.name])" class="link" ng-if="field.data_type === 'email' && !field.show_lock && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-envelope-o"></i></a>
-                                                <a href
-                                                   editable-textarea="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-maxlength="{{field.validation.max_length || 500}}"
-                                                   e-auto-grow
-                                                   e-rows="2"
-                                                   e-style="width:100%;"
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html === false">
-                                                    <pre>{{record[field.name] || 'Common.Empty' | translate}}</pre>
-                                                    <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <a href
-                                                   editable-text="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   e-ng-trim="false"
-                                                   e-maxlength="{{field.validation.max_length || 18}}"
-                                                   e-min-value="field.validation.min || Number.MIN_VALUE"
-                                                   e-max-value="field.validation.max || Number.MAX_VALUE"
-                                                   e-numeric
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'number' && !field.show_lock">
-                                                    {{record[field.name] != undefined ? record[field.name].toString() : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <a href
-                                                   editable-text="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   e-maxlength="{{field.validation.max_length || 19}}"
-                                                   e-min-value="field.validation.min || Number.MIN_VALUE"
-                                                   e-max-value="field.validation.max || Number.MAX_VALUE"
-                                                   e-places="field.decimal_places || 2"
-                                                   e-number-decimal
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'number_decimal' && !field.show_lock">
-                                                    {{record[field.name] != undefined ? (record[field.name] | number:(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <a href
-                                                   editable-text="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   e-maxlength="{{field.validation.max_length || 21}}"
-                                                   e-min-value="field.validation.min || 0"
-                                                   e-max-value="field.validation.max || Number.MAX_VALUE"
-                                                   e-places="field.decimal_places || 2"
-                                                   e-rounding="field.rounding"
-                                                   e-currency-symbol="field.currency_symbol || currencySymbol"
-                                                   e-number-currency
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'currency' && !field.show_lock">
-                                                    {{record[field.name] != undefined ? (record[field.name] | currency:(field.currency_symbol || currencySymbol):(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <a href
-                                                   editable-bsdate="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-data-date-type="iso"
-                                                   e-data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                                                   e-data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                                                   e-data-icon-left="fa fa-chevron-left"
-                                                   e-data-icon-right="fa fa-chevron-right"
-                                                   e-data-autoclose="1"
-                                                   e-class="form-control"
-                                                   e-bs-datepicker
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'date'">
-                                                    {{record[field.name] ? (record[field.name] | date:'shortDate') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <div ng-if="field.data_type === 'date_time'">
-                                                    <a href
-                                                       editable-bsdate="record[field.name]"
-                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                       e-data-date-type="iso"
-                                                       e-data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                                                       e-data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                                                       e-data-icon-left="fa fa-chevron-left"
-                                                       e-data-icon-right="fa fa-chevron-right"
-                                                       e-data-autoclose="1"
-                                                       e-class="form-control"
-                                                       e-bs-datepicker
-                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                       onbeforesave="validate($data, field.data_type, field.validation)"
-                                                       onaftersave="update()">
-                                                        {{record[field.name] ? (record[field.name] | date:'shortDate') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                    <a href
-                                                       editable-bsdate="record[field.name]"
-                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                       e-data-time-type="iso"
-                                                       e-data-icon-up="fa fa-chevron-up"
-                                                       e-data-icon-down="fa fa-chevron-down"
-                                                       e-data-length="1"
-                                                       e-data-minute-step="10"
-                                                       e-data-arrow-behavior="picker"
-                                                       e-data-autoclose="1"
-                                                       e-class="form-control"
-                                                       e-bs-timepicker
-                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                       onbeforesave="validate($data, field.data_type, field.validation)"
-                                                       onaftersave="update()">
-                                                        {{record[field.name] ? (record[field.name] | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                </div>
-                                                <a href
-                                                   editable-bsdate="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-data-time-type="iso"
-                                                   e-data-icon-up="fa fa-chevron-up"
-                                                   e-data-icon-down="fa fa-chevron-down"
-                                                   e-data-length="1"
-                                                   e-data-minute-step="10"
-                                                   e-data-arrow-behavior="picker"
-                                                   e-data-autoclose="1"
-                                                   e-class="form-control"
-                                                   e-bs-timepicker
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'time'">
-                                                    {{record[field.name] ? (record[field.name] | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <span ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label"
-                                                      19171917 1917 style="line-height: 24px;">
+                                                                    <div ng-if="field.data_type === 'text_single' && !field.show_lock" class="clearfix">
+                                                                        <a href
+                                                                           editable-text="record[field.name]"
+                                                                           e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                           e-maxlength="{{field.validation.max_length || 50}}"
+                                                                           e-ui-mask="{{field.mask}}"
+                                                                           oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                           onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                           onaftersave="update()">
+                                                                            {{record[field.name] ? (field.mask ? (record[field.name] | mask:field.mask) : record[field.name]) : 'Common.Empty' | translate}}
+                                                                            <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <a href ng-click="showHideSipPhone(record[field.name])" class="link"
+                                                                       ng-if="(field.name ==='phone' || field.name ==='mobile') && field.data_type === 'text_single' && !field.show_lock && sipUser.userAgent.isRegistered() && sipUser.lineInfo.State == 'Ready' && record[field.name]">
+                                                                        <i class="fa fa-phone"></i>
+                                                                    </a>
+                                                                    <div ng-if="field.data_type === 'email' && !field.show_lock" class="clearfix">
+                                                                        <a href
+                                                                           editable-text="record[field.name]"
+                                                                           e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                           e-maxlength="{{field.validation.max_length || 50}}"
+                                                                           oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                           onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                           onaftersave="update()"
+                                                                           ng-if="field.data_type === 'email'">
+                                                                            {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <a href ng-click="showEMailModal(false,record[field.name])" class="link" ng-if="field.data_type === 'email' && !field.show_lock && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-envelope-o"></i></a>
+                                                                    <a href
+                                                                       editable-textarea="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                       e-maxlength="{{field.validation.max_length || 500}}"
+                                                                       e-auto-grow
+                                                                       e-rows="2"
+                                                                       e-style="width:100%;"
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html === false">
+                                                                        <pre>{{record[field.name] || 'Common.Empty' | translate}}</pre>
+                                                                        <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <a href
+                                                                       editable-text="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       e-ng-trim="false"
+                                                                       e-maxlength="{{field.validation.max_length || 18}}"
+                                                                       e-min-value="field.validation.min || Number.MIN_VALUE"
+                                                                       e-max-value="field.validation.max || Number.MAX_VALUE"
+                                                                       e-numeric
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'number' && !field.show_lock">
+                                                                        {{record[field.name] != undefined ? record[field.name].toString() : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <a href
+                                                                       editable-text="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       e-maxlength="{{field.validation.max_length || 19}}"
+                                                                       e-min-value="field.validation.min || Number.MIN_VALUE"
+                                                                       e-max-value="field.validation.max || Number.MAX_VALUE"
+                                                                       e-places="field.decimal_places || 2"
+                                                                       e-number-decimal
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'number_decimal' && !field.show_lock">
+                                                                        {{record[field.name] != undefined ? (record[field.name] | number:(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <a href
+                                                                       editable-text="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       e-maxlength="{{field.validation.max_length || 21}}"
+                                                                       e-min-value="field.validation.min || 0"
+                                                                       e-max-value="field.validation.max || Number.MAX_VALUE"
+                                                                       e-places="field.decimal_places || 2"
+                                                                       e-rounding="field.rounding"
+                                                                       e-currency-symbol="field.currency_symbol || currencySymbol"
+                                                                       e-number-currency
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'currency' && !field.show_lock">
+                                                                        {{record[field.name] != undefined ? (record[field.name] | currency:(field.currency_symbol || currencySymbol):(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <a href
+                                                                       editable-bsdate="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                       e-data-date-type="iso"
+                                                                       e-data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+                                                                       e-data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+                                                                       e-data-icon-left="fa fa-chevron-left"
+                                                                       e-data-icon-right="fa fa-chevron-right"
+                                                                       e-data-autoclose="1"
+                                                                       e-class="form-control"
+                                                                       e-bs-datepicker
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'date'">
+                                                                        {{record[field.name] ? (record[field.name] | date:'shortDate') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <div ng-if="field.data_type === 'date_time'">
+                                                                        <a href
+                                                                           editable-bsdate="record[field.name]"
+                                                                           e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                           e-data-date-type="iso"
+                                                                           e-data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+                                                                           e-data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+                                                                           e-data-icon-left="fa fa-chevron-left"
+                                                                           e-data-icon-right="fa fa-chevron-right"
+                                                                           e-data-autoclose="1"
+                                                                           e-class="form-control"
+                                                                           e-bs-datepicker
+                                                                           oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                           onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                           onaftersave="update()">
+                                                                            {{record[field.name] ? (record[field.name] | date:'shortDate') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                        <a href
+                                                                           editable-bsdate="record[field.name]"
+                                                                           e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                           e-data-time-type="iso"
+                                                                           e-data-icon-up="fa fa-chevron-up"
+                                                                           e-data-icon-down="fa fa-chevron-down"
+                                                                           e-data-length="1"
+                                                                           e-data-minute-step="10"
+                                                                           e-data-arrow-behavior="picker"
+                                                                           e-data-autoclose="1"
+                                                                           e-class="form-control"
+                                                                           e-bs-timepicker
+                                                                           oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                           onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                           onaftersave="update()">
+                                                                            {{record[field.name] ? (record[field.name] | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <a href
+                                                                       editable-bsdate="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                       e-data-time-type="iso"
+                                                                       e-data-icon-up="fa fa-chevron-up"
+                                                                       e-data-icon-down="fa fa-chevron-down"
+                                                                       e-data-length="1"
+                                                                       e-data-minute-step="10"
+                                                                       e-data-arrow-behavior="picker"
+                                                                       e-data-autoclose="1"
+                                                                       e-class="form-control"
+                                                                       e-bs-timepicker
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'time'">
+                                                                        {{record[field.name] ? (record[field.name] | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <span ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label"
+                                                                          19171917 1917 style="line-height: 24px;">
                                                     {{field.custom_label}}<br>
                                                 </span>
-                                                <a href
-                                                   editable-custom--select="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'picklist'">
-                                                    {{record[field.name] ? record[field.name].label[language] : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <div ng-if="field.data_type === 'multiselect'" class="clearfix">
-                                                    <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}" ng-click="editMultiselect[field.name] = true" ng-show="!editMultiselect[field.name]">
-                                                        <em ng-repeat="item in record[field.name]">{{item.labelStr}}</em>
-                                                        <h6 ng-if="!record[field.name] || !record[field.name].length">{{'Common.Empty' | translate}}</h6>
-                                                        <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                    <div class="row">
-                                                        <div class="col-sm-9" style="padding-right: 0;">
-                                                            <tags-input name="{{field.name}}"
-                                                                        ng-model="record[field.name]"
-                                                                        display-property="labelStr"
-                                                                        key-property="id"
-                                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                                        replace-spaces-with-dashes="false"
-                                                                        add-from-autocomplete-only="true"
-                                                                        min-length="1"
-                                                                        ng-show="editMultiselect[field.name]">
-                                                                <auto-complete source="multiselect($query, field)"
-                                                                               min-length="0"
-                                                                               load-on-focus="true"
-                                                                               load-on-empty="true"
-                                                                               max-results-to-show="1000"></auto-complete>
-                                                            </tags-input>
-                                                        </div>
-                                                        <div class="editable-buttons col-sm-3" style="padding: 0; text-align: right;" ng-show="editMultiselect[field.name]">
-                                                            <button type="button" class="btn btn-primary" ng-click="update(); editMultiselect[field.name] = false;"><i class="fa fa-check"></i></button>
-                                                            <button type="button" class="btn btn-default" style="margin-left: 0" ng-click="editMultiselect[field.name] = false; record[field.name] = recordState[field.name]"><i class="fa fa-times"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div ng-if="field.data_type === 'tag' " class="clearfix">
-                                                    <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}" ng-show="true">
-                                                        <em ng-repeat="item in record[field.name]">{{item.text}}</em>
-                                                        <h6 ng-if="!record[field.name] || !record[field.name].length">{{'Common.Empty' | translate}}</h6>
+                                                                    <a href
+                                                                       editable-custom--select="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                       e-ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'picklist'">
+                                                                        {{record[field.name] ? record[field.name].label[language] : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <div ng-if="field.data_type === 'multiselect'" class="clearfix">
+                                                                        <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}" ng-click="editMultiselect[field.name] = true" ng-show="!editMultiselect[field.name]">
+                                                                            <em ng-repeat="item in record[field.name]">{{item.labelStr}}</em>
+                                                                            <h6 ng-if="!record[field.name] || !record[field.name].length">{{'Common.Empty' | translate}}</h6>
+                                                                            <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                        <div class="row">
+                                                                            <div class="col-sm-9" style="padding-right: 0;">
+                                                                                <tags-input name="{{field.name}}"
+                                                                                            ng-model="record[field.name]"
+                                                                                            display-property="labelStr"
+                                                                                            key-property="id"
+                                                                                            placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                                            replace-spaces-with-dashes="false"
+                                                                                            add-from-autocomplete-only="true"
+                                                                                            min-length="1"
+                                                                                            ng-show="editMultiselect[field.name]">
+                                                                                    <auto-complete source="multiselect($query, field)"
+                                                                                                   min-length="0"
+                                                                                                   load-on-focus="true"
+                                                                                                   load-on-empty="true"
+                                                                                                   max-results-to-show="1000"></auto-complete>
+                                                                                </tags-input>
+                                                                            </div>
+                                                                            <div class="editable-buttons col-sm-3" style="padding: 0; text-align: right;" ng-show="editMultiselect[field.name]">
+                                                                                <button type="button" class="btn btn-primary" ng-click="update(); editMultiselect[field.name] = false;"><i class="fa fa-check"></i></button>
+                                                                                <button type="button" class="btn btn-default" style="margin-left: 0" ng-click="editMultiselect[field.name] = false; record[field.name] = recordState[field.name]"><i class="fa fa-times"></i></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div ng-if="field.data_type === 'tag' " class="clearfix">
+                                                                        <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}" ng-show="true">
+                                                                            <em ng-repeat="item in record[field.name]">{{item.text}}</em>
+                                                                            <h6 ng-if="!record[field.name] || !record[field.name].length">{{'Common.Empty' | translate}}</h6>
 
-                                                    </a>
-                                                    <div class="row">
-                                                        <div class="col-sm-9" style="padding-right: 0;">
-                                                            <tags-input name="{{field.name}}"
-                                                                        ng-model="record[field.name]"
-                                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                                        replace-spaces-with-dashes="false"
-                                                                        add-from-autocomplete-only="true"
-                                                                        min-length="1"
-                                                                        ng-show="false">
-                                                            </tags-input>
-                                                        </div>
+                                                                        </a>
+                                                                        <div class="row">
+                                                                            <div class="col-sm-9" style="padding-right: 0;">
+                                                                                <tags-input name="{{field.name}}"
+                                                                                            ng-model="record[field.name]"
+                                                                                            placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                                            replace-spaces-with-dashes="false"
+                                                                                            add-from-autocomplete-only="true"
+                                                                                            min-length="1"
+                                                                                            ng-show="false">
+                                                                                </tags-input>
+                                                                            </div>
 
-                                                    </div>
-                                                </div>
+                                                                        </div>
+                                                                    </div>
 
-                                                <div ng-if="field.data_type === 'lookup'">
-                                                    <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined)}" ng-click="editLookup[field.name] = true;" ng-show="!editLookup[field.name]">
-                                                        {{record[field.name] ? record[field.name].primary_value.toString() : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                    <ui-select name="{{field.name}}" ng-required="{{field.validation.required}}" ng-change="fieldValueChange(field);" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.show_as_dropdown" ng-show="editLookup[field.name]">
-                                                        <ui-select-match placeholder="{{'Common.Search' | translate}}">{{$select.selected.primary_value}}</ui-select-match>
-                                                        <ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
-                                                            <div ng-bind-html="user.primary_value | highlight: $select.search"></div>
-                                                        </ui-select-choices>
-                                                    </ui-select>
+                                                                    <div ng-if="field.data_type === 'lookup'">
+                                                                        <a href class="editable-click" ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined)}" ng-click="editLookup[field.name] = true;" ng-show="!editLookup[field.name]">
+                                                                            {{record[field.name] ? record[field.name].primary_value.toString() : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                        <ui-select name="{{field.name}}" ng-required="{{field.validation.required}}" ng-change="fieldValueChange(field);" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.show_as_dropdown" ng-show="editLookup[field.name]">
+                                                                            <ui-select-match placeholder="{{'Common.Search' | translate}}">{{$select.selected.primary_value}}</ui-select-match>
+                                                                            <ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
+                                                                                <div ng-bind-html="user.primary_value | highlight: $select.search"></div>
+                                                                            </ui-select-choices>
+                                                                        </ui-select>
 
-                                                    <angucomplete-alt ng-if="!field.show_as_dropdown"
-                                                                      input-name="{{field.name}}"
-                                                                      id="{{field.name}}"
-                                                                      match-class="highlight-angucomplete"
-                                                                      field-tabindex="{{field.order}}"
-                                                                      pause="200"
-                                                                      selected-object="record[field.name]"
-                                                                      initial-value="record[field.name] ? record[field.name].primary_value.toString() : undefined"
-                                                                      remote-api-handler="lookup"
-                                                                      search-fields="name"
-                                                                      title-field="primary_value"
-                                                                      minlength="1"
-                                                                      template-url="view/common/angucomplete-xeditable.html"
-                                                                      focus-in="setCurrentLookupField(field)"
-                                                                      focus-out="lookupFocusOut()"
-                                                                      text-searching="{{'Common.Searching' | translate}}"
-                                                                      text-no-results="{{'Common.NoResults' | translate}}"
-                                                                      use-original-object="true"
-                                                                      value-changed="fieldValueChange(field);"
-                                                                      oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                                      onaftersave="update()"
-                                                                      xeditable="editLookup[field.name]"
-                                                                      create-new="openFormModal"
-                                                                      hide-create-new="hideCreateNew(field)"
-                                                                      ng-show="editLookup[field.name]" />
-                                                </div>
-                                                <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
-                                                   class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
-                                                   ng-show="!editLookup[field.name]">
-                                                    <i class="fa fa-external-link"></i>
-                                                </a>
-                                                <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
-                                                   class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
-                                                   ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
-                                                <a href
-                                                   editable-checkbox="record[field.name]"
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'checkbox' && !field.custom_label">
-                                                    {{record[field.name] != undefined ? (record[field.name] === true ? yesNo.yes : yesNo.no) : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <span ng-if="field.data_type === 'checkbox' && field.custom_label">
+                                                                        <angucomplete-alt ng-if="!field.show_as_dropdown"
+                                                                                          input-name="{{field.name}}"
+                                                                                          id="{{field.name}}"
+                                                                                          match-class="highlight-angucomplete"
+                                                                                          field-tabindex="{{field.order}}"
+                                                                                          pause="200"
+                                                                                          selected-object="record[field.name]"
+                                                                                          initial-value="record[field.name] ? record[field.name].primary_value.toString() : undefined"
+                                                                                          remote-api-handler="lookup"
+                                                                                          search-fields="name"
+                                                                                          title-field="primary_value"
+                                                                                          minlength="1"
+                                                                                          template-url="view/common/angucomplete-xeditable.html"
+                                                                                          focus-in="setCurrentLookupField(field)"
+                                                                                          focus-out="lookupFocusOut()"
+                                                                                          text-searching="{{'Common.Searching' | translate}}"
+                                                                                          text-no-results="{{'Common.NoResults' | translate}}"
+                                                                                          use-original-object="true"
+                                                                                          value-changed="fieldValueChange(field);"
+                                                                                          oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                                          onaftersave="update()"
+                                                                                          xeditable="editLookup[field.name]"
+                                                                                          create-new="openFormModal"
+                                                                                          hide-create-new="hideCreateNew(field)"
+                                                                                          ng-show="editLookup[field.name]" />
+                                                                    </div>
+                                                                    <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                                       class="link"
+                                                                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
+                                                                       ng-show="!editLookup[field.name]">
+                                                                        <i class="fa fa-external-link"></i>
+                                                                    </a>
+                                                                    <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                                       class="link"
+                                                                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
+                                                                       ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
+                                                                    <a href
+                                                                       editable-checkbox="record[field.name]"
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'checkbox' && !field.custom_label">
+                                                                        {{record[field.name] != undefined ? (record[field.name] === true ? yesNo.yes : yesNo.no) : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <span ng-if="field.data_type === 'checkbox' && field.custom_label">
                                                     {{field.custom_label}}
                                                 </span>
-                                                <a target="_blank" href
-                                                   ng-click="documentDownload(record[field.name])"
-                                                   ng-if="field.data_type ==='document'">
-                                                    {{record[field.name]}}
-                                                </a>
-                                                <div ng-if="field.data_type === 'image' && record[field.name] !=null">
-                                                    <a ng-click="showLightBox(config.imageUrl+record[field.name])"
-                                                       target="_blank">
-                                                        <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : {'max-width':'100%'}  "
-                                                             class="img-responsive image-type"
-                                                             ng-src="{{config.imageUrl + record[field.name] }}" />
-                                                    </a>
-                                                </div>
-                                                <input-stars ng-if="field.data_type === 'rating'"
-                                                             max="{{field.validation.min_length}}"
-                                                             readonly="true"
-                                                             allow-half
-                                                             icon-base="fa fa-fw"
-                                                             icon-empty="fa-star-o"
-                                                             icon-half="fa-star-half-o"
-                                                             icon-full="fa-star"
-                                                             icon-hover-full="fa-star"
-                                                             ng-model="record[field.name]"></input-stars>
-                                                <a href
-                                                   editable-text="record[field.name]"
-                                                   e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-maxlength="{{field.validation.max_length || 400}}"
-                                                   oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
-                                                   onbeforesave="validate($data, field.data_type, field.validation)"
-                                                   onaftersave="update()"
-                                                   ng-if="field.data_type === 'url' && !field.show_lock">
-                                                    {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
-                                                </a>
-                                                <a href="{{record[field.name]}}" target="_blank" class="link" ng-if="field.data_type === 'url' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-chain"></i></a>
+                                                                    <a target="_blank" href
+                                                                       ng-click="documentDownload(record[field.name])"
+                                                                       ng-if="field.data_type ==='document'">
+                                                                        {{record[field.name]}}
+                                                                    </a>
+                                                                    <div ng-if="field.data_type === 'image' && record[field.name] !=null">
+                                                                        <a ng-click="showLightBox(config.imageUrl+record[field.name])"
+                                                                           target="_blank">
+                                                                            <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : {'max-width':'100%'}  "
+                                                                                 class="img-responsive image-type"
+                                                                                 ng-src="{{config.imageUrl + record[field.name] }}" />
+                                                                        </a>
+                                                                    </div>
+                                                                    <input-stars ng-if="field.data_type === 'rating'"
+                                                                                 max="{{field.validation.min_length}}"
+                                                                                 readonly="true"
+                                                                                 allow-half
+                                                                                 icon-base="fa fa-fw"
+                                                                                 icon-empty="fa-star-o"
+                                                                                 icon-half="fa-star-half-o"
+                                                                                 icon-full="fa-star"
+                                                                                 icon-hover-full="fa-star"
+                                                                                 ng-model="record[field.name]"></input-stars>
+                                                                    <a href
+                                                                       editable-text="record[field.name]"
+                                                                       e-ng-change="record[field.name] = $data; fieldValueChange(field);"
+                                                                       e-maxlength="{{field.validation.max_length || 400}}"
+                                                                       oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
+                                                                       onbeforesave="validate($data, field.data_type, field.validation)"
+                                                                       onaftersave="update()"
+                                                                       ng-if="field.data_type === 'url' && !field.show_lock">
+                                                                        {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
+                                                                    </a>
+                                                                    <a href="{{record[field.name]}}" target="_blank" class="link" ng-if="field.data_type === 'url' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-chain"></i></a>
 
-                                                <div ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html === true" class="clearfix html-editor-value">
-                                                    <a href class="editable-click"
-                                                       ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}"
-                                                       ng-click="editHtmlEditor[field.name] = true"
-                                                       ng-show="!editHtmlEditor[field.name]">
-                                                        <div class="editable-html-container" ng-bind-html="trustAsHtml(record[field.name] ? record[field.name] : 'Common.Empty' | translate)"></div>
-                                                        <span><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                    <div ng-class="{'col-sm-9': section.column_count === 2, 'col-sm-11':section.column_count === 1}" style="padding-right: 0;" ng-show="editHtmlEditor[field.name]">
+                                                                    <div ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html === true" class="clearfix html-editor-value">
+                                                                        <a href class="editable-click"
+                                                                           ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}"
+                                                                           ng-click="editHtmlEditor[field.name] = true"
+                                                                           ng-show="!editHtmlEditor[field.name]">
+                                                                            <div class="editable-html-container" ng-bind-html="trustAsHtml(record[field.name] ? record[field.name] : 'Common.Empty' | translate)"></div>
+                                                                            <span><i class="fa fa-pencil"></i></span>
+                                                                        </a>
+                                                                        <div ng-class="{'col-sm-9': section.column_count === 2, 'col-sm-11':section.column_count === 1}" style="padding-right: 0;" ng-show="editHtmlEditor[field.name]">
                                                         <textarea style="width: 100%"
                                                                   ng-model="record[field.name]"
                                                                   ui-tinymce-multi="tinymceOptions"
                                                                   ng-required="{{field.validation.required}}"></textarea>
-                                                    </div>
-                                                    <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;" ng-show="editHtmlEditor[field.name]">
-                                                        <button type="button" class="btn btn-primary" ng-click="update(); editHtmlEditor[field.name] = false;"><i class="fa fa-check"></i></button>
-                                                        <button type="button" class="btn btn-default" style="margin-left: 0" ng-click="editHtmlEditor[field.name] = false; record[field.name] = recordState[field.name]"><i class="fa fa-times"></i></button>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="readonly-cell"
-                                                ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label}"
-                                                ng-if="!hasPermission(type, operations.modify, record) || field.validation.readonly || !field.inline_edit || record.freeze || !field.editable || !hasFieldFullPermission(field)"
-                                                ng-switch="field.data_type">
-                                                <span ng-switch-when="lookup">{{record[field.name].primary_value.toString()}}</span>
-                                                <span ng-switch-when="picklist">
+                                                                        </div>
+                                                                        <div class="editable-buttons" ng-class="{'col-sm-3': section.column_count === 2, 'col-sm-1':section.column_count === 1}" style="padding: 0; text-align: right;" ng-show="editHtmlEditor[field.name]">
+                                                                            <button type="button" class="btn btn-primary" ng-click="update(); editHtmlEditor[field.name] = false;"><i class="fa fa-check"></i></button>
+                                                                            <button type="button" class="btn btn-default" style="margin-left: 0" ng-click="editHtmlEditor[field.name] = false; record[field.name] = recordState[field.name]"><i class="fa fa-times"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="readonly-cell"
+                                                                    ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label}"
+                                                                    ng-if="!hasPermission(type, operations.modify, record) || field.validation.readonly || !field.inline_edit || record.freeze || !field.editable || !hasFieldFullPermission(field)"
+                                                                    ng-switch="field.data_type">
+                                                                    <span ng-switch-when="lookup">{{record[field.name].primary_value.toString()}}</span>
+                                                                    <span ng-switch-when="picklist">
                                                     <span ng-if="field.custom_label" style="line-height: 24px;">
                                                         {{field.custom_label}}
                                                     </span>
                                                     {{record[field.name].label[language] }}
                                                 </span>
-                                                <span ng-switch-when="text_multi">
+                                                                    <span ng-switch-when="text_multi">
                                                     <span ng-if="field.multiline_type_use_html === true" ng-bind-html="trustAsHtml(record[field.name])"></span>
                                                     <span ng-if="field.multiline_type_use_html !== true">{{field.valueFormatted}}</span>
                                                 </span>
-                                                <span ng-switch-when="checkbox">
+                                                                    <span ng-switch-when="checkbox">
                                                     <span ng-if="field.custom_label">{{field.custom_label}}</span>
                                                     <span ng-if="!field.custom_label">{{ field.valueFormatted }}</span>
                                                 </span>
-                                                <span ng-switch-when="document">
+                                                                    <span ng-switch-when="document">
                                                     <a target="_blank" href
                                                        ng-click="documentDownload(record[field.name])"
                                                        ng-if="field.data_type ==='document'">
                                                         {{record[field.name]}}
                                                     </a>
                                                 </span>
-                                                <span ng-switch-default ng-if="module.name !== 'izinler' || (module.name === 'izinler' && field.name !== 'baslangic_tarihi' && field.name !== 'bitis_tarihi')">{{field.valueFormatted}}</span>
-                                                <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id !== 1">{{field.valueFormatted}}</span>
-                                                <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id === 1">{{field.valueFormatted.split(" ")[0] + " " + record[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']['label_'+ language]}}</span>
-                                                <div ng-switch-when="image" ng-if="record[field.name]">
-                                                    <a ng-click="showLightBox(config.imageUrl+record[field.name])" target="_blank">
-                                                        <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : 'max-width: 100%' "
-                                                             class="img-responsive image-type"
-                                                             ng-src="{{config.imageUrl + record[field.name] }}" />
-                                                    </a>
+                                                                    <span ng-switch-default ng-if="module.name !== 'izinler' || (module.name === 'izinler' && field.name !== 'baslangic_tarihi' && field.name !== 'bitis_tarihi')">{{field.valueFormatted}}</span>
+                                                                    <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id !== 1">{{field.valueFormatted}}</span>
+                                                                    <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id === 1">{{field.valueFormatted.split(" ")[0] + " " + record[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']['label_'+ language]}}</span>
+                                                                    <div ng-switch-when="image" ng-if="record[field.name]">
+                                                                        <a ng-click="showLightBox(config.imageUrl+record[field.name])" target="_blank">
+                                                                            <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : 'max-width: 100%' "
+                                                                                 class="img-responsive image-type"
+                                                                                 ng-src="{{config.imageUrl + record[field.name] }}" />
+                                                                        </a>
+                                                                    </div>
+                                                                    <input-stars ng-switch-when="rating"
+                                                                                 max="{{field.validation.min_length}}"
+                                                                                 readonly="true"
+                                                                                 allow-half
+                                                                                 icon-base="fa fa-fw"
+                                                                                 icon-empty="fa-star-o"
+                                                                                 icon-half="fa-star-half-o"
+                                                                                 icon-full="fa-star"
+                                                                                 icon-hover-full="fa-star"
+                                                                                 ng-model="record[field.name]"></input-stars>
+                                                                    <div class="location" ng-switch-when="location" ng-if="record[field.name]">
+                                                                        <a href="http://www.google.com/maps/place/{{ record[field.name] }}" target="_blank">
+                                                                            <img ng-src="https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|{{record[field.name] }}&key={{googleMapsApiKey}}" />
+                                                                        </a>
+                                                                    </div>
+
+                                                                    <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                                       class="link"
+                                                                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
+                                                                       ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
+
+                                                                    <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                                       class="link"
+                                                                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
+                                                                       ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
+
+                                                                    <pre name="{{field.name}}"
+                                                                         class="form-control ng-animate-disabled"
+                                                                         style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
+                                                                         tabindex="{{field.order}}"
+                                                                         ng-bind-html="field.placeholder"
+                                                                         ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label"></pre>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
                                                 </div>
-                                                <input-stars ng-switch-when="rating"
-                                                             max="{{field.validation.min_length}}"
-                                                             readonly="true"
-                                                             allow-half
-                                                             icon-base="fa fa-fw"
-                                                             icon-empty="fa-star-o"
-                                                             icon-half="fa-star-half-o"
-                                                             icon-full="fa-star"
-                                                             icon-hover-full="fa-star"
-                                                             ng-model="record[field.name]"></input-stars>
-                                                <div class="location" ng-switch-when="location" ng-if="record[field.name]">
-                                                    <a href="http://www.google.com/maps/place/{{ record[field.name] }}" target="_blank">
-                                                        <img ng-src="https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|{{record[field.name] }}&key={{googleMapsApiKey}}" />
-                                                    </a>
-                                                </div>
-
-                                                <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
-                                                   class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
-                                                   ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
-
-                                                <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
-                                                   class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
-                                                   ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
-
-                                                <pre name="{{field.name}}"
-                                                     class="form-control ng-animate-disabled"
-                                                     style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
-                                                     tabindex="{{field.order}}"
-                                                     ng-bind-html="field.placeholder"
-                                                     ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label"></pre>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="subpanel" ng-if="record.exchange_rate_try_usd">
-                        <h5 class="subpanel-heading">{{ 'Product.ExchangeRates' | translate }}</h5>
-                        <div class="subpanel-body">
-                            <div class="row">
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
+                                            </div>
+                                        </div>
+                                        <div class="subpanel" ng-if="record.exchange_rate_try_usd">
+                                            <h5 class="subpanel-heading">{{ 'Product.ExchangeRates' | translate }}</h5>
+                                            <div class="subpanel-body">
+                                                <div class="row">
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Dollar' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_try_usd + ' ₺'}}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_try_usd + ' ₺'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Euro' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_try_eur + ' ₺'}}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_try_eur + ' ₺'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.TurkishLira' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_usd_try + ' $'}}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_usd_try + ' $'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Euro' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_usd_eur + ' $'}}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_usd_eur + ' $'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.TurkishLira' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_eur_try + ' €'}}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_eur_try + ' €'}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Dollar' | translate)}} =</span>
                                     </span>
-                                    <div class="col-sm-6">
-                                        <span>{{record.exchange_rate_eur_usd + ' €'}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <ng-include ng-show="module.name === 'quotes'" src="'view/app/product/quoteProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'sales_orders'" src="'view/app/product/orderProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'purchase_orders'" src="'view/app/product/purchaseProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'sales_invoices'" src="'view/app/product/salesInvoiceProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'purchase_invoices'" src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>
-                    <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
-                        <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
-                        <div class="subpanel-body">
-                            <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '400px'}">
-                                <div class="col-sm-12">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{'Module.Subject' | translate}}</th>
-                                                <th>{{'Module.Account' | translate}}</th>
-                                                <th>{{'Module.Stage' | translate}}</th>
-                                                <th>{{'Module.ValidTill' | translate}}</th>
-                                                <th>{{'Module.Date' | translate}}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
-                                                <td>{{masterRecord.account.primary_value}}</td>
-                                                <td>{{masterRecord.quote_stage.labelStr}}</td>
-                                                <td>{{masterRecord.valid_till | date:'short'}}</td>
-                                                <td>{{masterRecord.created_at | date:'short'}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="subpanel"
-                         ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
-                         ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">
+                                                        <div class="col-sm-6">
+                                                            <span>{{record.exchange_rate_eur_usd + ' €'}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ng-include ng-show="module.name === 'quotes'" src="'view/app/product/quoteProducts.html'"></ng-include>
+                                        <ng-include ng-show="module.name === 'sales_orders'" src="'view/app/product/orderProducts.html'"></ng-include>
+                                        <ng-include ng-show="module.name === 'purchase_orders'" src="'view/app/product/purchaseProducts.html'"></ng-include>
+                                        <ng-include ng-show="module.name === 'sales_invoices'" src="'view/app/product/salesInvoiceProducts.html'"></ng-include>
+                                        <ng-include ng-show="module.name === 'purchase_invoices'" src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>
+                                        <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
+                                            <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
+                                            <div class="subpanel-body">
+                                                <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '400px'}">
+                                                    <div class="col-sm-12">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>{{'Module.Subject' | translate}}</th>
+                                                                    <th>{{'Module.Account' | translate}}</th>
+                                                                    <th>{{'Module.Stage' | translate}}</th>
+                                                                    <th>{{'Module.ValidTill' | translate}}</th>
+                                                                    <th>{{'Module.Date' | translate}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
+                                                                    <td>{{masterRecord.account.primary_value}}</td>
+                                                                    <td>{{masterRecord.quote_stage.labelStr}}</td>
+                                                                    <td>{{masterRecord.valid_till | date:'short'}}</td>
+                                                                    <td>{{masterRecord.created_at | date:'short'}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="subpanel"
+                                             ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
+                                             ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">
                         <span id="relation{{relatedModule.id}}" class="panel-anchor"
                               ng-if="!tabconfig || relatedModule.detail_view_type==='flat'"></span>
-                        <h5 class="subpanel-heading" ng-show="!tabconfig || relatedModule.detail_view_type==='flat'">
-                            {{
-                            relatedModule['label_' + language + '_plural']
-                            }}
-                        </h5>
-                        <div class="subpanel-body">
-                            <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                                <div class="col-sm-12">
-                                    <div related-module="relatedModule"
-                                         parent-module="type"
-                                         reload="refreshSubModules[type][relatedModule.related_module]"
-                                         show-filter="showFilterSubModules[type][relatedModule.related_module]"
-                                         sub-table></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="subpanel"
-                     ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
-                     ng-show="hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() ||!tabconfig">
+                                            <h5 class="subpanel-heading" ng-show="!tabconfig || relatedModule.detail_view_type==='flat'">
+                                                {{
+                                                relatedModule['label_' + language + '_plural']
+                                                }}
+                                            </h5>
+                                            <div class="subpanel-body">
+                                                <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                                                    <div class="col-sm-12">
+                                                        <div related-module="relatedModule"
+                                                             parent-module="type"
+                                                             reload="refreshSubModules[type][relatedModule.related_module]"
+                                                             show-filter="showFilterSubModules[type][relatedModule.related_module]"
+                                                             sub-table></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subpanel"
+                                         ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
+                                         ng-show="hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() ||!tabconfig">
                     <span id="relation{{relatedModule.id}}" class="panel-anchor"
                           ng-if="!tabconfig"></span>
-                    <h5 class="subpanel-heading" ng-show="!tabconfig">
-                        {{
-                        relatedModule['label_' + language + '_plural']
-                        }}
-                    </h5>
-                    <div class="subpanel-body">
-                        <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                            <div class="col-sm-12">
-                                <div ng-if="isActive[relatedModule.id] || !tabconfig" related-module="relatedModule" parent-module="type" reload="refreshSubModules[type][relatedModule.related_module]" show-filter="showFilterSubModules[type][relatedModule.related_module]" sub-table></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="subpanel" ng-show="tab === 'note' || !tabconfig" ng-if="showNotes !='false'">
-                    <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Note.Notes' | translate }}</h5>
-                    <div class="subpanel-body">
-                        <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                            <div class="col-sm-10">
-                                <div note-form record-id="id" show="showNoteForm"></div>
-                                <div note-list record-id="id"></div>
-                                <div ng-if="loadingNotes" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                <div class="empty-message" style="margin-top: 10px;" ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
-                                    {{'Note.Message'|translate}}
+                                        <h5 class="subpanel-heading" ng-show="!tabconfig">
+                                            {{
+                                            relatedModule['label_' + language + '_plural']
+                                            }}
+                                        </h5>
+                                        <div class="subpanel-body">
+                                            <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                                                <div class="col-sm-12">
+                                                    <div ng-if="isActive[relatedModule.id] || !tabconfig" related-module="relatedModule" parent-module="type" reload="refreshSubModules[type][relatedModule.related_module]" show-filter="showFilterSubModules[type][relatedModule.related_module]" sub-table></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subpanel" ng-show="tab === 'note' || !tabconfig" ng-if="showNotes !='false'">
+                                        <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Note.Notes' | translate }}</h5>
+                                        <div class="subpanel-body">
+                                            <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                                                <div class="col-sm-10">
+                                                    <div note-form record-id="id" show="showNoteForm"></div>
+                                                    <div note-list record-id="id"></div>
+                                                    <div ng-if="loadingNotes" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                                    <div class="empty-message" style="margin-top: 10px;" ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
+                                                        {{'Note.Message'|translate}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2" ng-show="!record.freeze">
+                                                    <a href class="btn btn-sm btn-custom" ng-click="showNoteForm = !showNoteForm"><i class="fa fa-plus"></i> {{'Note.NewNote' | translate}}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subpanel"
+                                         ng-show="hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig">
+                                        <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Common.Attachments' | translate }}</h5>
+                                        <div class="subpanel-body">
+                                            <div class="row row-custom" ng-style="{ height: !tabconfig ? '' : '100%' }">
+                                                <div class="col-sm-10">
+                                                    <div document-form entity-id="id" entity-type="guidEmpty" show="showDocumentForm"></div>
+                                                    <div document-list entity-id="id" entity-type="guidEmpty" documents="documents"></div>
+                                                    <div ng-if="loadingDocuments" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                                    <div class="empty-message" ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
+                                                        {{'Common.AttachmentMessage'|translate}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2" ng-show="!record.freeze">
+                                                    <a href class="btn btn-sm btn-custom" ng-click="showDocumentForm = !showDocumentForm" ng-show="hasDocumentsPermission(operations.write)">
+                                                        <i class="fa fa-plus"></i> {{'Common.AttachmentNew' | translate}}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="subpanel" ng-show="tab === 'location' || !tabconfig" ng-if="record.latitude && record.longitude">
+                                        <div class="subpanel-body">
+                                            <a href="http://maps.google.com/maps?q=loc:{{record.latitude}},{{record.longitude}}&z=17" target="_blank">
+                                                <img ng-src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&markers={{record.latitude}},{{record.longitude}}&key={{googleMapsApiKey}}" alt="">
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-2" ng-show="!record.freeze">
-                                <a href class="btn btn-sm btn-custom" ng-click="showNoteForm = !showNoteForm"><i class="fa fa-plus"></i> {{'Note.NewNote' | translate}}</a>
-                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="subpanel"
-                     ng-show="hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig">
-                    <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Common.Attachments' | translate }}</h5>
-                    <div class="subpanel-body">
-                        <div class="row row-custom" ng-style="{ height: !tabconfig ? '' : '100%' }">
-                            <div class="col-sm-10">
-                                <div document-form entity-id="id" entity-type="guidEmpty" show="showDocumentForm"></div>
-                                <div document-list entity-id="id" entity-type="guidEmpty" documents="documents"></div>
-                                <div ng-if="loadingDocuments" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                <div class="empty-message" ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
-                                    {{'Common.AttachmentMessage'|translate}}
-                                </div>
-                            </div>
-                            <div class="col-sm-2" ng-show="!record.freeze">
-                                <a href class="btn btn-sm btn-custom" ng-click="showDocumentForm = !showDocumentForm" ng-show="hasDocumentsPermission(operations.write)">
-                                    <i class="fa fa-plus"></i> {{'Common.AttachmentNew' | translate}}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="subpanel" ng-show="tab === 'location' || !tabconfig" ng-if="record.latitude && record.longitude">
-                    <div class="subpanel-body">
-                        <a href="http://maps.google.com/maps?q=loc:{{record.latitude}},{{record.longitude}}&z=17" target="_blank">
-                            <img ng-src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&markers={{record.latitude}},{{record.longitude}}&key={{googleMapsApiKey}}" alt="">
-                        </a>
-                    </div>
+                    <lightbox-directive class="angular-lightbox" ng-class="{ hidden : !lightBox }">
+
+                        <article>
+                            <header>
+                                <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
+                            </header>
+                            <content ng-click="closeLightBox()">
+                                <img ng-src="{{ ImageUrl }}" />
+                            </content>
+                            <footer>
+                                <a class="download-btn" href="{{ ImageUrl }}" target="_blank"><i class="fa fa-download"></i></a>
+                            </footer>
+                        </article>
+                    </lightbox-directive>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<lightbox-directive class="angular-lightbox" ng-class="{ hidden : !lightBox }">
-
-    <article>
-        <header>
-            <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
-        </header>
-        <content ng-click="closeLightBox()">
-            <img ng-src="{{ ImageUrl }}" />
-        </content>
-        <footer>
-            <a class="download-btn" href="{{ ImageUrl }}" target="_blank"><i class="fa fa-download"></i></a>
-        </footer>
-    </article>
-</lightbox-directive>
