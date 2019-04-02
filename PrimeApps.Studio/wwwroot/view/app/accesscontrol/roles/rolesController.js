@@ -14,8 +14,8 @@ angular.module('primeapps')
             RolesService.getAll().then(function (response) {
                 $scope.roles = response.data;
                 $scope.rolesState = angular.copy(response.data);
+                $scope.allRoles = angular.copy(response.data);
                 $scope.tree = $scope.rolesToTree(response.data);
-
                 $scope.loading = false;
             });
 
@@ -111,6 +111,8 @@ angular.module('primeapps')
                     .then(function () {
                         RolesService.getAll().then(function (response) {
                             $scope.roles = response.data;
+                            $scope.rolesState = angular.copy(response.data);
+                            $scope.allRoles = angular.copy(response.data);
                             $scope.tree = $scope.rolesToTree(response.data);
 
                             $scope.roleDeleting = false;
@@ -143,9 +145,9 @@ angular.module('primeapps')
                     if (!$scope.id)
                         $scope.reportsTo_disabled = false;
 
-                    RolesService.getAll()
-                        .then(function (response) {
-                            $scope.allRoles = response.data;
+                   // RolesService.getAll()
+                       // .then(function (response) {
+                          //  $scope.allRoles = response.data;
                             $scope.roles = $filter('filter')($scope.allRoles, {id: '!' + $scope.id});
                             
                             if ($scope.id) {
@@ -172,8 +174,10 @@ angular.module('primeapps')
                                 $scope.role.reports_to = reportsTo;
                             }
                             $scope.loading = false;
-                        });
+                       // });
                 } else {
+                    //Editte roller filtrelendiği için rolleri tekrardan eski değerine eşitliyoruz
+                    $scope.roles = angular.copy($scope.rolesState);
                     $scope.role = {};
                     $scope.role.share_data = false;
                 }
@@ -223,6 +227,8 @@ angular.module('primeapps')
                         RolesService.getAll().then(function (response) {
                             $scope.roles = response.data;
                             $scope.tree = $scope.rolesToTree(response.data);
+                            $scope.rolesState = angular.copy(response.data);
+                            $scope.allRoles = angular.copy(response.data);
                             $scope.loading = false;
                         });
                     }).finally(function () {
