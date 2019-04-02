@@ -1,15 +1,15 @@
 rbac:
    create: true
 ingress:
-  enabled: true
+  enabled: false
   annotations:
      kubernetes.io/ingress.class: nginx
     #  certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     #  kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - functions-prod.primeapps.io
+    - functions.primeapps.io
   tls:
-   - secretName: functions-prod-tls
+   - secretName: primeapps-wildcard-ssl
      hosts:
-       - functions-prod.primeapps.io
+       - functions.primeapps.io

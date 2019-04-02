@@ -1,9 +1,9 @@
 image:
-  tag: RELEASE.2019-01-10T00-21-20Z
+  tag: RELEASE.2019-03-13T21-59-47Z
 mode: standalone
 existingSecret: ""
-accessKey: "47551d03d5524a4405c517aac418ef55"
-secretKey: "9983289d439f83dfe364b4e9884e9870"
+accessKey: "47059d03d1224a4505c517aaca18ef55"
+secretKey: "998321ed439a32dfc364b4e9884e9879"
 configPath: ".minio/"
 mountPath: "/storage"
 replicas: 2
@@ -23,7 +23,7 @@ minioConfig:
     enable: true
     format: "namespace"
     address: "cache-redis-master.cache:6379"
-    password: "pr!meApps!0"
+    password: "pr!m€Appsi0r"
     key: "minio"
 networkPolicy:
   enabled: true

@@ -27,16 +27,16 @@ ingress:
      nginx.ingress.kubernetes.io/proxy-body-size: "0"
      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    #  certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     #  nginx.ingress.kubernetes.io/auth-type: basic
     #  nginx.ingress.kubernetes.io/auth-secret: basic-auth
     #  nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - lab2"
 
   ##tls support for the ingress
   tls:
-   - secretName: git-tls-secret
-     hosts:
-       - 'git.primeapps.io'
+    - hosts:
+        - git.primeapps.io
+      secretName: primeapps-wildcard-ssl
 
 ## chart defaults to using an ingress for http, but change to LoadBalancer if using you cluster supports it
 service:
@@ -91,7 +91,7 @@ persistence:
 #Connect to an external database
 externalDB:
   dbUser: "postgres"
-  dbPassword: "pr!meApp$!0"
+  dbPassword: "pr!m€Appsi0d"
   dbHost: "pde.database.svc.cluster.local" # or some external host
   dbPort: "5432"
   dbDatabase: "gitea"
