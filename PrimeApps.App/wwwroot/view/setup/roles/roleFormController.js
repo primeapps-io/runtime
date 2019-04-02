@@ -99,7 +99,7 @@ angular.module('primeapps')
                 $scope.roles = $filter('filter')($scope.roles, { reports_to: '!' + id });
 
                 angular.forEach(children, function (child) {
-                    checkaChildRole(child.id);
+                    checkChildRole(child.id);
                 });
             }
         }
