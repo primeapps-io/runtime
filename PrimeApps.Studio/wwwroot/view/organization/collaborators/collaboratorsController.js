@@ -167,9 +167,11 @@ angular.module('primeapps')
 
             }
             $scope.save = function (newCollaboratorForm) {
-                if (!newCollaboratorForm.$valid)
+                if (!newCollaboratorForm.$valid){
+                    toastr.error($filter('translate')('Module.RequiredError'));
                     return false;
-
+                }
+                
                 var result = $filter('filter')($scope.collaboratorArray, { email: $scope.collaboratorModel.email }, true)[0];
 
                 if (result)

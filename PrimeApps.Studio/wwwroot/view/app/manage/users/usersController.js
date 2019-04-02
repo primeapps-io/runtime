@@ -134,6 +134,7 @@ angular.module('primeapps')
 
             $scope.save = function (userForm) {
                 if (!userForm.$valid) {
+                    toastr.error($filter('translate')('Module.RequiredError'));
                     return;
                 }
 

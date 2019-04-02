@@ -5,7 +5,6 @@ angular.module('primeapps')
     .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', '$stateParams',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, $stateParams) {
             $scope.appModel = {};
-            $scope.nameValid = null;
             $scope.nameBlur = false;
 
             $rootScope.currentOrgId = parseInt($stateParams.orgId);
@@ -127,6 +126,7 @@ angular.module('primeapps')
 
             $scope.openModal = function () {
                 $scope.appModel = {};
+                $scope.nameValid = null;
                 $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
                     scope: $scope,
@@ -216,6 +216,7 @@ angular.module('primeapps')
 
             $scope.save = function (newAppForm) {
                 if (!newAppForm.$valid) {
+                    toastr.error($filter('translate')('Module.RequiredError'));
                     return false;
                 }
 
