@@ -163,7 +163,7 @@ git push</code>
                                     <div class="col-sm-6">
                                         <div class="form-group"
                                              style="position: relative;"
-                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.label.$invalid}">
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.label.$invalid}">
                                             <label class="col-sm-4 required-field">Label <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <input type="text"
                                                    name="label"
@@ -174,7 +174,7 @@ git push</code>
                                                    ng-model="component.label"/>
                                         </div>
                                         <div class="form-group"
-                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.module_id.$invalid}">
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.module_id.$invalid}">
                                             <label class="col-sm-4 required-field">Module <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <select
                                                     name="module_id"
@@ -187,7 +187,7 @@ git push</code>
                                             </select>
                                         </div>
                                         <div class="form-group"
-                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.url.$invalid}">
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.url.$invalid}">
                                             <label class="col-sm-12 required-field">Url </label>
                                             <div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
                                                 <input type="text"
@@ -208,7 +208,7 @@ git push</code>
                                             </div>
                                         </div>
                                         <div class="form-group"
-                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.template.$invalid}">
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.template.$invalid}">
                                             <label class="col-sm-12 required-field">Template</label>
                                             <div class="col-sm-11" style="padding-left: 0px !important;">
                                                 <i ng-if="!$parent.$parent.$parent.$parent.$parent.content.templateUrl" class="fas fa-refresh ng-scope pull-right" ng-class="filesLoading ? 'fa-spin' : ''" style="z-index:999;position: absolute;right: 30px;top: 5px;font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="getFileList()"></i>
@@ -235,7 +235,7 @@ git push</code>
                                             </label>
                                         </div>
                                         <div class="form-group"
-                                             ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.controller.$invalid}">
+                                             ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.controller.$invalid}">
                                             <label class="col-sm-12 required-field">Controller Name<span class="required-label">({{'Common.Required' | translate }})</span></label>
                                             <input type="text"
                                                    name="controller"
