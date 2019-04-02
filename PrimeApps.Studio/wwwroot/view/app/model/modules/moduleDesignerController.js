@@ -527,7 +527,7 @@ angular.module('primeapps')
                 field.permissions = [];
                 return field;
             };
-           
+
             $scope.fieldClone = function (row, column, field) {
                 var cloneField = angular.copy(field);
                 cloneField.name = cloneField.name + "copy";
@@ -542,7 +542,7 @@ angular.module('primeapps')
 
                 $scope.showFieldModal(row, column, cloneField);
             };
-           
+
             $scope.sectionClone = function (row) {
 
                 var rowClone = angular.copy(row);
@@ -1150,6 +1150,14 @@ angular.module('primeapps')
             };
 
             $scope.cancelField = function () {
+
+                if ($scope.currentField.firstDrag) {
+                    $scope.deleteField($scope.currentField.name);
+                    $scope.currentField = null;
+                    $scope.fieldModal.hide();
+                    return;
+                }
+
                 if ($scope.currentField.isNew) {
                     if ($scope.picklistsModule)
                         delete $scope.picklistsModule[$scope.currentField.name];
