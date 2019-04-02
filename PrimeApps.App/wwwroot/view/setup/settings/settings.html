@@ -179,18 +179,18 @@
             <h5 class="subpanel-heading">{{'Setup.Settings.Title4' | translate}}</h5>
             <div class="subpanel-body">
                 <form class="form-horizontal">
-                    <div class="form-group" ng-show="multiLanguage">
+                    <div class="form-group">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Language' | translate}}</label>
                         <div class="col-sm-9">
-                            <label class="radio-inline"><input type="radio" name="language" value="tr" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.Turkish' | translate}}</label>
-                            <label class="radio-inline"><input type="radio" name="language" value="en" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.English' | translate}}</label>
+                            <label ng-if="(!multiLanguage && language === 'tr') || multiLanguage" class="radio-inline"><input type="radio"  name="language" value="tr" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.Turkish' | translate}}</label>
+                            <label ng-if="(!multiLanguage && language === 'en') || multiLanguage" class="radio-inline"><input type="radio" name="language" value="en" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.English' | translate}}</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Format' | translate}}</label>
                         <div class="col-sm-9">
-                            <label class="radio-inline"><input type="radio" name="locale" value="tr" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.Turkey' | translate}}</label>
-                            <label class="radio-inline"><input type="radio" name="locale" value="en" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.UnitedStates' | translate}}</label>
+                            <label ng-if="(!multiLanguage && selectedLocale === 'tr') || multiLanguage" class="radio-inline"><input type="radio" name="locale" value="tr" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.Turkey' | translate}}</label>
+                            <label ng-if="(!multiLanguage && selectedLocale === 'en') || multiLanguage" class="radio-inline"><input type="radio" name="locale" value="en" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.UnitedStates' | translate}}</label>
                         </div>
                     </div>
                 </form>
