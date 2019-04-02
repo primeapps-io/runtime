@@ -149,7 +149,7 @@ angular.module('primeapps')
                             $scope.roles = $filter('filter')($scope.allRoles, {id: '!' + $scope.id});
                             
                             if ($scope.id) {
-                                checkaChildRole($scope.id);
+                                checkChildRole($scope.id);
                                 $scope.role = $filter('filter')($scope.allRoles, {id: $scope.id}, true)[0];
                                 $scope.role.label = $scope.role['label_' + $scope.language];
                                 $scope.role.description = $scope.role['description_' + $scope.language];
@@ -241,14 +241,14 @@ angular.module('primeapps')
                 $scope.role_change = true;
             };
             
-            function checkaChildRole(id) {
+            function checkChildRole(id) {
                 //Gelen roleId'ye ait alt rollerin olup olmadığını kontrol ediyoruz
                var children  = $filter('filter')($scope.roles, {reports_to:  id});
                //Mevcut roller arasında resports_to idleri gelen rolün idsine eşit olanları filtreliyoruz.
                $scope.roles = $filter('filter')($scope.roles, {reports_to: '!' + id});
                
                 angular.forEach(children,function (child) {
-                    checkaChildRole(child.id);
+                    checkChildRole(child.id);
                 });
             }
         }
