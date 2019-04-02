@@ -127,7 +127,7 @@ spec:
   tls:
     - hosts:
         - auth.primeapps.io
-      secretName: primeapps-wildcard
+      secretName: primeapps-wildcard-ssl
   rules:
     - host: auth.primeapps.io
       http:

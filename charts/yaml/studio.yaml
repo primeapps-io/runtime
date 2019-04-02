@@ -24,12 +24,12 @@ data:
   ForwardHeaders: "true"
   HttpsRedirection: "true"
   PreviewUrl: "https://preview.primeapps.io"
-  KubernetesClusterRootUrl: "https://30411da58524a8b8892dbdcc485de17f.yl4.eu-west-1.eks.amazonaws.com"
-  KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4taHRtN24iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYzMyZWM4NWItMzZkNy0xMWU5LWE1OGMtMDY0NmE0OTYwYmE4Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.VawsjvcvRMBMep-XkNyxhPT48j7yg9-an7QL7Hs-Q4oJ1Mejbor9H1m3G7rSukZx-bD9Tu5Qn46TPdLtm0Xy6edbMKMxpqV5IKWyDA1saAjZZZQRnyGKdIjZWapLSYqveZelgL361QYlllEFh5M9ObNAhbK6cIoZ_-dlUAVeLUFhNJe1lPs87QAvYiEXL8FQ1OuNPErCGnidET00INRGPzsCGAjFSfTDfTUdbjRVx6vZEc__Gw4lLdTb6WD_FSOoK2IozGJbK_m9tiFYqQFNPCqJoOBXXPreikoKWnuJAFudTC4zbJAw3Zw7JZdAknlOq7DOyNwGO58xl22HkD4mTw"
+  KubernetesClusterRootUrl: "https://d5de4cad6841d39174e78377e1551f98.sk1.eu-west-1.eks.amazonaws.com"
+  KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4ta2ZxcGciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYWNjODkyYjctNTRmZC0xMWU5LWFkZDMtMDYxMmIxOTc5YjIwIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.j3rAlfrkjPiJxcleefpCF1P2E8oQNwvLe8ymW8sR_9N7QkTRRkyHLYVkvbGIL2gj-gzZ3itBeKoQ417VFn5LcybeE216ixxfHRIErnXZrTuatspSrIPM6D27VaBmUZLbYLkLZBW0SBKx0SBy8bJVmSu1LmiI-46d9cit4zmBZRYfrX0-WWq4uU0HUgo8D36dA5LC6_nnJ3xzbMs5VeyLPc3Z3UhQoDExcmxWUBDsbf3rvFQ85mj5rxXW0Y0JiHAHVKxKFrp3qidjlnikvFIZ905mpAyqmZksVZm4IOj5axX1gZ4eGLJRxPxrskNBZRM8PeAKxM6Gj1G8qgzkgj6b_Q"
   GiteaEnabled: "true"
   GiteaUrl: "http://git.primeapps.io"
   GiteaEmail: "primeapps"
-  GiteaPassword: "123456"
+  GiteaPassword: "pr!m€Appsi0g"
   GiteaDirectory: "/data/git"
   SentryDsn: "http://c3137bf4d2f54d1dab0ba16a32349ffa@error.primeapps.io/14"
 ---
@@ -220,7 +220,7 @@ spec:
   tls:
     - hosts:
         - studio.primeapps.io
-      secretName: primeapps-wildcard
+      secretName: primeapps-wildcard-ssl
   rules:
     - host: studio.primeapps.io
       http:
