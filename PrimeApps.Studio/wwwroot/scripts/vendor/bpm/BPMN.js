@@ -390,6 +390,13 @@ function init() {
         var cmdhnd = window.myDiagram.commandHandler;
         var node = window.myDiagram.findNodeForKey(myKey);
         window.myDiagram.remove(node);
+
+        var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
+        var ngModelName = scope.currentObj.subject.part.data.ngModelName;
+        if (ngModelName === 'start')
+            scope.workflowStartModel = {};
+        else
+            delete scope.workflowModel[ngModelName];
     };
 
     function mouseEnter(e, obj) {
@@ -625,7 +632,7 @@ function init() {
     var eventNodeTemplate =
         $(go.Node, "Auto",
             {
-                locationObjectName: "SHAPEMAIN", 
+                locationObjectName: "SHAPEMAIN",
                 name: "SHAPEMAIN",
                 locationSpot: go.Spot.Center,
                 toolTip: tooltiptemplate,

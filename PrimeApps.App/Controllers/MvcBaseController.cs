@@ -51,6 +51,7 @@ namespace PrimeApps.App.Controllers
 
             TenantId = tenantId;
             PreviewMode = "tenant";
+            AppId = 249;
             context.HttpContext.Items.Add("user", platformUser);
         }
     }

@@ -2,14 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('WorkflowEditorController', ['$rootScope', '$scope', '$location', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AdvancedWorkflowsService', 'LayoutService', 'ModuleService', '$http', 'config', 'operators',
-        function ($rootScope, $scope, $location, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AdvancedWorkflowsService, LayoutService, ModuleService, $http, config, operators) {
+    .controller('WorkflowEditorController', ['$rootScope', '$scope', '$location', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'AdvancedWorkflowsService', 'LayoutService', 'ModuleService', '$http', 'config', 'operators', '$localStorage', '$cookies',
+        function ($rootScope, $scope, $location, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AdvancedWorkflowsService, LayoutService, ModuleService, $http, config, operators, $localStorage, $cookies) {
             $scope.loading = true;
             $scope.saving = false;
             $scope.modalLoading = false;
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
             $scope.workflowStartModel = {};
+            $scope.operationValue = true;
             // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'advancedWorkflows';
@@ -19,6 +20,7 @@ angular.module('primeapps')
             $scope.dueDateItems = AdvancedWorkflowsService.getDueDateItems();
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
             $scope.modules = $rootScope.appModules;
+
             var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
             //BPM element menu loading start
@@ -103,9 +105,11 @@ angular.module('primeapps')
                                     $scope.workflowStartModel.operation = {};
                                     var filters = node.data.filters;
 
-                                    angular.forEach(node.data.record_operations.split(','), function (item) {
-                                        $scope.workflowStartModel.operation[item] = true;
-                                    });
+                                    if (node.data.record_operations.split(',') > 0 || node.data.record_operations.split(',') !== '') {
+                                        angular.forEach(node.data.record_operations.split(','), function (item) {
+                                            $scope.workflowStartModel.operation[item] = true;
+                                        });
+                                    }
 
                                     ModuleService.getModuleById(node.data.module_id)
                                         .then(function (response) {
@@ -240,11 +244,13 @@ angular.module('primeapps')
                             $scope.workflowModel = {};
 
                             if (node.ngModelName === 'webHook') {
+                                $scope.workflowModel.webHook = { methodType: 'post' };
                                 setWebHookModules();
                             }
                             $scope.modalLoading = false;
                         }
                     }
+
 
                     if (node.sidebar)
                         $scope.showFormModal();
@@ -275,11 +281,19 @@ angular.module('primeapps')
             };
 
             $scope.cancel = function () {
-                angular.forEach($scope.currentRelation, function (value, key) {
-                    $scope.currentRelation[key] = $scope.currentRelationState[key];
-                });
-
+                //angular.forEach($scope.currentRelation, function (value, key) {
+                //    $scope.currentRelation[key] = $scope.currentRelationState[key];
+                //});
                 $scope.formModal.hide();
+
+                //var modelName = $scope.SelectedNodeItem.ngModelName;
+
+                //if (modelName === 'start')
+                //    $scope.workflowStartModel = {};
+                //else
+                //    $scope.workflowModel[modelName] = {};
+
+
             };
 
             $scope.deleteSelectedItem = function () {
@@ -409,9 +423,11 @@ angular.module('primeapps')
                 workflowModel.operation = {};
                 window.diagramData = angular.fromJson(data.diagram_json);
 
-                angular.forEach(data.record_operations.split(','), function (operation) {
-                    workflowModel.operation[operation] = true;
-                });
+                if (data.record_operations.split(',').length > 0 || data.record_operations.split(',') !== '') {
+                    angular.forEach(data.record_operations.split(','), function (operation) {
+                        workflowModel.operation[operation] = true;
+                    });
+                }
 
                 if ($scope.workflowStartModel.filters) {
                     filterReload();
@@ -581,17 +597,24 @@ angular.module('primeapps')
                 if (!$scope.workflowForm)
                     $scope.workflowForm = tabClick;
 
-                $scope.workflowForm.operation.$setValidity('operations', false);
+                $scope.operationValue = true;
+                $scope.workflowForm.operation.$setValidity('invalid', true);
 
-                if (!$scope.workflowStartModel.operation)
+                if (!$scope.workflowStartModel.operation || !Object.keys($scope.workflowStartModel.operation).length) {
+                    $scope.operationValue = true;
                     return false;
+                }
+                else if ($scope.workflowStartModel.operation.insert || $scope.workflowStartModel.operation.delete || $scope.workflowStartModel.operation.update) {
+                    $scope.operationValue = false;
+                    return true;
+                }
 
-                angular.forEach($scope.workflowStartModel.operation, function (value, key) {
-                    if (value) {
-                        $scope.workflowForm.operation.$setValidity('operations', true);
-                        return true;
-                    }
-                });
+                //angular.forEach($scope.workflowStartModel.operation, function (value, key) {
+                //    if (value) {
+                //        $scope.workflowForm.operation.$setValidity('operations', true);
+                //        return true;
+                //    }
+                //});
 
                 return false;
             };
@@ -742,15 +765,12 @@ angular.module('primeapps')
 
                 var fieldUpdateModulesForNotification = angular.copy(updatableModulesForNotification);
 
-                notificationObj.module = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-                var filterResult = $filter('filter')($rootScope.appModules, { name: 'users' }, true)[0];
-
-                if (filterResult)
-                    notificationObj.name = filterResult['label_' + $rootScope.language + '_singular'];
-
+                notificationObj.module = getFakeUserModule();
+                notificationObj.name = "User";
                 notificationObj.isSameModule = false;
                 notificationObj.systemName = null;
                 notificationObj.id = id;
+
                 fieldUpdateModulesForNotification.unshift(notificationObj);
 
                 $scope.fieldUpdateModulesForNotification = fieldUpdateModulesForNotification;
@@ -1203,28 +1223,28 @@ angular.module('primeapps')
             };
 
             $scope.setFormValid = function (form) {
-                if (!$scope.workflowForm)
-                    $scope.workflowForm = form;
+                //if (!$scope.workflowForm)
+                //    $scope.workflowForm = form;
 
-                $scope.workflowForm.$submitted = false;
+                //$scope.workflowForm.$submitted = false;
 
-                if ($scope.workflowForm.recipients)
-                    $scope.workflowForm.recipients.$setValidity('minTags', true);
+                //if ($scope.workflowForm.recipients)
+                //    $scope.workflowForm.recipients.$setValidity('minTags', true);
 
-                $scope.workflowForm.subjectNotification.$setValidity('required', true);
-                $scope.workflowForm.message.$setValidity('required', true);
-                $scope.workflowForm.owner.$setValidity('minTags', true);
-                $scope.workflowForm.subjectTask.$setValidity('required', true);
-                $scope.workflowForm.dueDate.$setValidity('required', true);
-                $scope.workflowForm.actions.$setValidity('actionRequired', true);
-                //$scope.workflowForm.updateOption.$setValidity('required', true);
-                $scope.workflowForm.callbackUrl.$setValidity('required', true);
+                //$scope.workflowForm.subjectNotification.$setValidity('required', true);
+                //$scope.workflowForm.message.$setValidity('required', true);
+                //$scope.workflowForm.owner.$setValidity('minTags', true);
+                //$scope.workflowForm.subjectTask.$setValidity('required', true);
+                //$scope.workflowForm.dueDate.$setValidity('required', true);
+                //$scope.workflowForm.actions.$setValidity('actionRequired', true);
+                ////$scope.workflowForm.updateOption.$setValidity('required', true);
+                //$scope.workflowForm.callbackUrl.$setValidity('required', true);
 
-                if ($scope.workflowForm.updateField && $scope.workflowModel.field_update.updateOption === '1')
-                    $scope.workflowForm.updateField.$setValidity('required', true);
+                //if ($scope.workflowForm.updateField && $scope.workflowModel.field_update.updateOption === '1')
+                //    $scope.workflowForm.updateField.$setValidity('required', true);
 
-                if ($scope.workflowForm.updateValue && $scope.workflowModel.field_update.updateOption === '1')
-                    $scope.workflowForm.updateValue.$setValidity('required', true);
+                //if ($scope.workflowForm.updateValue && $scope.workflowModel.field_update.updateOption === '1')
+                //    $scope.workflowForm.updateValue.$setValidity('required', true);
             };
 
             var setWebHookModules = function () {
@@ -1245,7 +1265,8 @@ angular.module('primeapps')
                 $scope.hookParameters.push(parameter);
             };
 
-            $scope.workflowModuleParameterAdd = function (addItem) {
+            $scope.workflowModuleParameterAdd = function (addItem, workflowForm) {
+                workflowForm.$submitted = true;
 
                 var parameter = {};
                 parameter.parameterName = addItem.parameterName;
@@ -1264,6 +1285,7 @@ angular.module('primeapps')
                 lastHookParameter.parameterName = null;
                 lastHookParameter.selectedField = null;
                 lastHookParameter.selectedModule = $scope.workflowStartModel.module;
+
 
             };
 
@@ -1489,6 +1511,22 @@ angular.module('primeapps')
                 }
             };
 
+            //var stepValidateControl = function (nodeName, workflowForm) {
+            //    switch (nodeName) {
+            //        case 'start':
+            //            if (!workflowForm)
+            //                return false;
+
+            //            if (!workflowForm.$valid)
+            //                return false;
+
+            //        case 'field_update':
+
+            //        default:
+            //            break;
+            //    }
+            //};
+
             $scope.saveNodeData = function (workflowForm) {
                 workflowForm.$submitted = true;
                 var currentNode = $scope.currentObj.subject.part.data;
@@ -1496,12 +1534,15 @@ angular.module('primeapps')
 
                 if (!workflowForm.$valid) {
                     if (workflowForm.$error.required)
-                        toastr.warning($filter('translate')('Setup.Modules.RequiredError'));
+                        toastr.warning($filter('translate')('Module.RequiredError'));
                     else if (workflowForm.$error.maxlength)
-                        toastr.warning($filter('translate')('Setup.Modules.RequiredError'));
+                        toastr.warning($filter('translate')('Module.MaxError'));
+                    else
+                        toastr.warning($filter('translate')('Module.RequiredError'));
 
                     return false;
                 }
+
                 $scope.saving = true;
                 $scope.modalLoading = true;
                 var diagram = window.myDiagram.model;
@@ -1516,7 +1557,6 @@ angular.module('primeapps')
                 switch (currentNode.ngModelName) {
                     case 'start':
                         data = startModel;
-
                         data.module_id = startModel.module.id;
                         data.id = $scope.id;
                         data.filters = [];
@@ -1861,5 +1901,389 @@ angular.module('primeapps')
 
             };
 
+
+            //For Editor
+            $scope.searchTags = function (term) {
+
+                if (!$scope.moduleFields)
+                    $scope.moduleFields = AdvancedWorkflowsService.getFields($scope.module);
+
+                var tagsList = [];
+                angular.forEach($scope.moduleFields, function (item) {
+                    if (item.name === "seperator")
+                        return;
+
+                    if (item.name.match('seperator'))
+                        item.name = item.label;
+
+                    if (item.name && item.name.indexOf(term) >= 0) {
+                        tagsList.push(item);
+                    }
+                });
+
+                $scope.tags = tagsList;
+                return tagsList;
+            };
+
+            var dialog_uid = plupload.guid();
+
+            // uploader configuration for image files.
+            $scope.imgUpload = {
+                settings: {
+                    multi_selection: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Image files", extensions: "jpg,gif,png" },
+                        ],
+                        max_file_size: "2mb"
+                    },
+                    resize: { quality: 90 }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        tinymce.activeEditor.windowManager.close();
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
+
+            $scope.fileUpload = {
+                settings: {
+                    multi_selection: false,
+                    unique_names: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                        ],
+                        max_file_size: "50mb"
+                    }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                        tinymce.activeEditor.windowManager.close();
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
+
+            $scope.iframeElement = {};
+            /// tinymce editor configuration.
+            $scope.tinymceOptions = function (scope) {
+                $scope[scope] = {
+                    setup: function (editor) {
+                        editor.addButton('addParameter', {
+                            type: 'button',
+                            text: $filter('translate')('EMail.AddParameter'),
+                            onclick: function () {
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
+                            }
+                        });
+                        editor.on("init", function () {
+                            $scope.loadingModal = false;
+                        });
+                    },
+                    onChange: function (e) {
+                        debugger;
+                        // put logic here for keypress and cut/paste changes
+                    },
+                    inline: false,
+                    height: 300,
+                    language: $rootScope.language,
+                    plugins: [
+                        "advlist autolink lists link image charmap print preview anchor table",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                    ],
+                    imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
+                    toolbar: "addParameter | styleselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | table bullist numlist | link image imagetools |  cut copy paste | undo redo searchreplace | outdent indent | blockquote hr insertdatetime charmap | visualblocks code preview fullscreen",
+                    menubar: 'false',
+                    templates: [
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
+                    ],
+                    skin: 'lightgray',
+                    theme: 'modern',
+
+                    file_picker_callback: function (callback, value, meta) {
+                        // Provide file and text for the link dialog
+                        uploadSuccessCallback = callback;
+
+                        if (meta.filetype == 'file') {
+                            var uploadButton = document.getElementById('uploadFile');
+                            uploadButton.click();
+                        }
+
+                        // Provide image and alt text for the image dialog
+                        if (meta.filetype == 'image') {
+                            var uploadButton = document.getElementById('uploadImage');
+                            uploadButton.click();
+                        }
+                    },
+                    image_advtab: true,
+                    file_browser_callback_types: 'image file',
+                    paste_data_images: true,
+                    paste_as_text: true,
+                    spellchecker_language: $rootScope.language,
+                    images_upload_handler: function (blobInfo, success, failure) {
+                        var blob = blobInfo.blob();
+                        uploadSuccessCallback = success;
+                        uploadFailedCallback = failure;
+                        $scope.imgUpload.uploader.addFile(blob);
+                        ///TODO: in future will be implemented to upload pasted data images into server.
+                    },
+                    init_instance_callback: function (editor) {
+                        $scope.iframeElement[scope] = editor.iframeElement;
+                    },
+                    resize: false,
+                    width: '99,9%',
+                    toolbar_items_size: 'small',
+                    statusbar: false,
+                    convert_urls: false,
+                    remove_script_host: false
+                };
+            };
+
+            $scope.tinymceOptions('tinymceTemplate');
+            $scope.tinymceOptions('tinymceTemplateEdit');
+            //For Editor
+
+            var getFakeUserModule = function () {
+                var userModule = {};
+                userModule.id = 999;
+                userModule.name = 'users';
+                userModule.system_type = 'system';
+                userModule.order = 999;
+                userModule.display = false;
+                userModule.label_en_singular = 'User';
+                userModule.label_en_plural = 'Users';
+                userModule.label_tr_singular = 'Kullanıcı';
+                userModule.label_tr_plural = 'Kullanıcılar';
+                userModule.menu_icon = 'fa fa-users';
+                userModule.sections = [];
+                userModule.fields = [];
+
+                var section = {};
+                section.name = 'user_information';
+                section.system_type = 'system';
+                section.order = 1;
+                section.column_count = 1;
+                section.label_en = 'User Information';
+                section.label_tr = 'Kullanıcı Bilgisi';
+                section.display_form = true;
+                section.display_detail = true;
+
+                var fieldEmail = {};
+                fieldEmail.name = 'email';
+                fieldEmail.system_type = 'system';
+                fieldEmail.data_type = 'email';
+                fieldEmail.order = 2;
+                fieldEmail.section = 1;
+                fieldEmail.section_column = 1;
+                fieldEmail.primary = false;
+                fieldEmail.inline_edit = true;
+                fieldEmail.label_en = 'Email';
+                fieldEmail.label_tr = 'Eposta';
+                fieldEmail.display_list = true;
+                fieldEmail.display_form = true;
+                fieldEmail.display_detail = true;
+                userModule.fields.push(fieldEmail);
+
+                var fieldFirstName = {};
+                fieldFirstName.name = 'first_name';
+                fieldFirstName.system_type = 'system';
+                fieldFirstName.data_type = 'text_single';
+                fieldFirstName.order = 3;
+                fieldFirstName.section = 1;
+                fieldFirstName.section_column = 1;
+                fieldFirstName.primary = false;
+                fieldFirstName.inline_edit = true;
+                fieldFirstName.editable = true;
+                fieldFirstName.show_label = true;
+                fieldFirstName.label_en = 'First Name';
+                fieldFirstName.label_tr = 'Adı';
+                fieldFirstName.display_list = true;
+                fieldFirstName.display_form = true;
+                fieldFirstName.display_detail = true;
+                userModule.fields.push(fieldFirstName);
+
+                var fieldLastName = {};
+                fieldLastName.name = 'last_name';
+                fieldLastName.system_type = 'system';
+                fieldLastName.data_type = 'text_single';
+                fieldLastName.order = 4;
+                fieldLastName.section = 1;
+                fieldLastName.section_column = 1;
+                fieldLastName.primary = false;
+                fieldLastName.inline_edit = true;
+                fieldLastName.editable = true;
+                fieldLastName.show_label = true;
+                fieldLastName.label_en = 'Last Name';
+                fieldLastName.label_tr = 'Soyadı';
+                fieldLastName.display_list = true;
+                fieldLastName.display_form = true;
+                fieldLastName.display_detail = true;
+                userModule.fields.push(fieldLastName);
+
+                var fieldFullName = {};
+                fieldFullName.name = 'full_name';
+                fieldFullName.system_type = 'system';
+                fieldFullName.data_type = 'text_single';
+                fieldFullName.order = 5;
+                fieldFullName.section = 1;
+                fieldFullName.section_column = 1;
+                fieldFullName.primary = true;
+                fieldFullName.inline_edit = true;
+                fieldFullName.editable = true;
+                fieldFullName.show_label = true;
+                fieldFullName.label_en = 'Name';
+                fieldFullName.label_tr = 'Adı Soyadı';
+                fieldFullName.display_list = true;
+                fieldFullName.display_form = true;
+                fieldFullName.display_detail = true;
+                fieldFullName.combination = {};
+                fieldFullName.combination.field_1 = 'first_name';
+                fieldFullName.combination.field_2 = 'last_name';
+                userModule.fields.push(fieldFullName);
+
+                var fieldPhone = {};
+                fieldPhone.name = 'phone';
+                fieldPhone.system_type = 'system';
+                fieldPhone.data_type = 'text_single';
+                fieldPhone.order = 6;
+                fieldPhone.section = 1;
+                fieldPhone.section_column = 1;
+                fieldPhone.primary = false;
+                fieldPhone.inline_edit = true;
+                fieldPhone.label_en = 'Phone';
+                fieldPhone.label_tr = 'Telefon';
+                fieldPhone.display_list = true;
+                fieldPhone.display_form = true;
+                fieldPhone.display_detail = true;
+                userModule.fields.push(fieldPhone);
+
+                var fieldProfileId = {};
+                fieldProfileId.name = 'profile_id';
+                fieldProfileId.system_type = 'system';
+                fieldProfileId.data_type = 'number';
+                fieldProfileId.order = 6;
+                fieldProfileId.section = 1;
+                fieldProfileId.section_column = 1;
+                fieldProfileId.primary = false;
+                fieldProfileId.inline_edit = true;
+                fieldProfileId.editable = true;
+                fieldProfileId.show_label = true;
+                fieldProfileId.label_en = 'Profile Id';
+                fieldProfileId.label_tr = 'Profile Id';
+                fieldProfileId.display_list = true;
+                fieldProfileId.display_form = true;
+                fieldProfileId.display_detail = true;
+                userModule.fields.push(fieldProfileId);
+
+                var fieldRoleId = {};
+                fieldRoleId.name = 'role_id';
+                fieldRoleId.system_type = 'system';
+                fieldRoleId.data_type = 'number';
+                fieldRoleId.order = 7;
+                fieldRoleId.section = 1;
+                fieldRoleId.section_column = 1;
+                fieldRoleId.primary = false;
+                fieldRoleId.inline_edit = true;
+                fieldRoleId.editable = true;
+                fieldRoleId.show_label = true;
+                fieldRoleId.label_en = 'Role Id';
+                fieldRoleId.label_tr = 'Role Id';
+                fieldRoleId.display_list = true;
+                fieldRoleId.display_form = true;
+                fieldRoleId.display_detail = true;
+                userModule.fields.push(fieldRoleId);
+
+                return userModule;
+            };
         }
     ]);
