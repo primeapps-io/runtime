@@ -6,15 +6,15 @@ worker:
   replicacount: 1
 user:
   create: true
-  email: teknik@ofisim.com
+  email: admin@primeapps.io
   password: 'pr!m€Appsi0s'
 email:
-  from_address: teknik@ofisim.com
-  host: smtp.office365.com
+  from_address: admin@primeapps.io
+  host: smtp.sendgrid.net
   port: 587
   use_tls: true
-  user: teknik@ofisim.com
-  password: '0f!s!mCRM'
+  user: apikey
+  password: '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'
   enable_replies: false
 service:
   name: sentry
@@ -30,7 +30,7 @@ persistence:
   filestore_dir: /var/lib/sentry/files
 ingress:
   enabled: true
-  hostname: sentry.primeapps.io
+  hostname: log.primeapps.io
   annotations: 
     kubernetes.io/ingress.class: nginx
     # certmanager.k8s.io/cluster-issuer: letsencrypt-prod

@@ -5,19 +5,19 @@ metadata:
   name: primeapps-app-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=platform;command timeout=0;keepalive=30;"
-  RedisConnection: "cache.primeapps.io:6379,password=pr!m€Apps!0,defaultDatabase=1"
+  TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
   StorageUrl: "https://storage.primeapps.io"
-  StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
-  StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
   EnableRequestLogging: "false"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
-  EmailSMTPPassword: "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"
+  EmailSMTPPassword: "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"
   UseCdn: "false"
   AuthenticationServerURL: "https://app.primeapps.io"
   ClientId: "primeapps_app"
@@ -28,7 +28,7 @@ data:
   PreviewMode: "tenant"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   PreviewClient: "primeapps_preview"
-  SentryDsn: "http://4b2c809eb6f1458185c703833699c4fe@error.primeapps.io/6"
+  SentryDsn: "https://73b84b2ef20e41c98a675608caa9d104:d4e70924ec284e38a4b6be717ed1b28e@log.primeapps.io/3"
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -51,7 +51,7 @@ spec:
         - name: gcr-pull-secret
       containers:
         - name: primeapps-app
-          image: gcr.io/primeapps/primeapps-app/debian:5.19.088.1
+          image: gcr.io/primeapps/primeapps-app/debian:5.19.093.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:

@@ -5,18 +5,18 @@ metadata:
   name: primeapps-studio-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=db-pde.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=platform;command timeout=0;keepalive=30;"
-  StudioDBConnection: "server=db-pde.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=studio;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
   StorageUrl: "https://storage.primeapps.io"
-  StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
-  StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
-  EmailSMTPPassword: "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"
+  EmailSMTPPassword: "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"
   TestMode: "true"
   AuthenticationServerURL: "https://studio.primeapps.io"
   ClientId: "primeapps_studio"
@@ -30,8 +30,8 @@ data:
   GiteaUrl: "http://git.primeapps.io"
   GiteaEmail: "primeapps"
   GiteaPassword: "pr!m€Appsi0g"
-  GiteaDirectory: "/data/git"
-  SentryDsn: "http://c3137bf4d2f54d1dab0ba16a32349ffa@error.primeapps.io/14"
+  GiteaDirectory: "/data/git/"
+  SentryDsn: "https://a6d7a462d9184c5698ab07aa38b8a896:a915b64d63574d29b98998a69cbdc848@log.primeapps.io/2"
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -57,7 +57,7 @@ spec:
         - name: gcr-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:1.19.089.1
+          image: gcr.io/primeapps/primeapps-studio/debian:5.19.093.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:

@@ -5,9 +5,9 @@ metadata:
   name: primeapps-auth-preview-config
   namespace: primeapps
 data:
-  AuthDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
-  TenantDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+  AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
   Authority: "https://auth-preview.primeapps.io"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
@@ -16,7 +16,7 @@ data:
   GiteaEnabled: "true"
   GiteaUrl: "https://git.primeapps.io"
   PreviewMode: "app"
-  SentryDsn: "http://f8643e1700544789aa45aeb95f4ec625@error.primeapps.io/17"
+  SentryDsn: "https://32c686fef4c04dfaa277ebdd2181b908:0b11aad57b8847f0b213be197bb85c2b@log.primeapps.io/6"
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -39,7 +39,7 @@ spec:
         - name: gcr-pull-secret
       containers:
         - name: primeapps-auth-preview
-          image: gcr.io/primeapps/primeapps-auth/debian:5.19.088.1
+          image: gcr.io/primeapps/primeapps-auth/debian:5.19.093.1
           env:
             - name: ConnectionStrings__AuthDBConnection
               valueFrom:
