@@ -144,11 +144,8 @@ angular.module('primeapps')
                     
                     return;
                 }
-
-
+                
                 $scope.saving = true;
-                $scope.currentActionButton.name = $scope.currentActionButton.action_button_name;
-                $scope.currentActionButton.url = $scope.currentActionButton.action_button_url;
                 var actionButton = angular.copy($scope.currentActionButton);
 
                 if (actionButton.isNew)

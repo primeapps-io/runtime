@@ -7,7 +7,7 @@ namespace PrimeApps.Studio.Models
     public class ActionButtonBindingModel
     {
         [Required, StringLength(500)]
-        public string Name { get; set; }
+        public string ActionButtonName { get; set; }
 
         public ActionButtonEnum.ActionType Type { get; set; }
 
@@ -19,7 +19,7 @@ namespace PrimeApps.Studio.Models
 
         public string Parameters { get; set; }
 
-        public string Url { get; set; }
+        public string ActionButtonUrl { get; set; }
 
         public string CssClass { get; set; }
 
