@@ -214,7 +214,7 @@ angular.module('primeapps')
 
             var moduleChanged = function (module, setView) {
                 $scope.lookupUser = helper.lookupUser;
-
+                $scope.loadingFilter = true;
                 if (!$scope.view) {
                     $scope.view = {};
                 }
@@ -237,7 +237,7 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-
+                   
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;
@@ -258,6 +258,7 @@ angular.module('primeapps')
                                 $scope.view.filters = $filter('orderBy')($scope.view.filters, 'no');
                                 $scope.view.filterList = setFilter($scope.view.filters, $scope.module.fields, $scope.modulePicklists, $scope.view.filterList);
                             }
+                            $scope.loadingFilter = false;
                             dragular();
                         })
                         .finally(function () {
@@ -526,7 +527,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if (!viewForm.filterLogic.$valid) {
+                if (viewForm.filterLogic && !viewForm.filterLogic.$valid) {
                     return false;
                 }
 
