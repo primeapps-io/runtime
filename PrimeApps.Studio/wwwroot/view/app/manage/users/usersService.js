@@ -39,6 +39,12 @@ angular.module('primeapps')
                 },
                 sendEmail: function (data, i) {
                     $http.post(config.apiUrl + 'app_draft_user/send_email_password?id=' + i, data);
+                },
+                updatePassword: function (data) {
+                    return $http.put(config.apiUrl + 'app_draft_user/update_password', data);
+                },
+                resetPassword: function (data) {
+                    return $http.post(config.apiUrl + 'app_draft_user/reset_password', data);
                 }
             };
         }

@@ -17,7 +17,7 @@ angular.module('primeapps')
             if ($rootScope.organizations)
                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
-            if ($rootScope.currentOrganization.role !== 'administrator') {
+            if (!$rootScope.currentOrganization || $rootScope.currentOrganization.role !== 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
                 var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
                 window.location.href = '/#/apps?orgId=' + defaultOrg.id;
