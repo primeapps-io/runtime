@@ -57,7 +57,7 @@ spec:
         - name: gcr-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:5.19.093.1
+          image: gcr.io/primeapps/primeapps-studio/debian:1.19.093.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
