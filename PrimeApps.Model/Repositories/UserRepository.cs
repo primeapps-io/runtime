@@ -253,10 +253,13 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<TenantUser>> Find(PaginationModel paginationModel)
         {
+            /* Studio user can manage user active status in panel.
+             * Because of this we also need to get inactive users.
+             */
             var users = DbContext.Users
                 .Include(x => x.Profile)
                 .Include(x => x.Role)
-                .Where(x => !x.Deleted && x.Id != 1 && x.IsActive)
+                .Where(x => !x.Deleted && x.Id != 1 /*&& x.IsActive*/)
                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);

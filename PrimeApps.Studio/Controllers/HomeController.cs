@@ -40,6 +40,16 @@ namespace PrimeApps.Studio.Controllers
             return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
         }
         
+        [Authorize, Route("set_gitea_token")]
+        public async Task<IActionResult> SetGiteaToken()
+        {
+            var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
+
+            var appInfo = await applicationRepository.Get(Request.Host.Value);
+
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
+        }
+        
         private async Task SetValues(int userId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");

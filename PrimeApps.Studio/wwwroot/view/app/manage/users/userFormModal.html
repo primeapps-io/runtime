@@ -117,6 +117,14 @@
                                         <option value="">Select Role</option>
                                     </select>
                                 </div>
+                                
+                                <div class="form-group" style="position: relative;" ng-if="editing">
+                                    <label class="col-sm-12 required-field checkbox-inline newinput">
+                                        <input type="checkbox" ng-model="userModel.is_active"/>
+                                        Active
+                                        <span></span>
+                                    </label>
+                                </div>
 
                                 <div class="form-group" style="position: relative;" ng-if="!editing">
                                     <label class="col-sm-12 required-field checkbox-inline newinput">
@@ -131,6 +139,101 @@
                                            class="form-control ng-animate-disabled col-sm-12"
                                            required
                                            ng-model="resultModel.recipient"/>
+                                </div>
+
+
+                                <div class="form-group" ng-if="editing">
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <label class="radio-inline newinput">
+                                                <input type="radio" ng-click="unCheckControl($event)" ng-model="$parent.$parent.$parent.passwordEvent" value="change">
+                                                Change Password
+                                                <span></span>
+                                            </label>
+                                            <label class="radio-inline newinput">
+                                                <input type="radio" ng-click="unCheckControl($event)" ng-model="$parent.$parent.$parent.passwordEvent" value="reset">
+                                                Reset Password
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div ng-if="$parent.$parent.passwordEvent == 'change'">
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.password.$invalid}">
+                                        <label class="col-sm-12 required-field"> Old Password <span class="required-label">(required)</span>
+                                        </label>
+
+                                        <input type="text"
+                                               name="password"
+                                               class="form-control ng-animate-disabled col-sm-12"
+                                               maxlength="100"
+                                               minlength="6"
+                                               required
+                                               ng-model="$parent.$parent.$parent.changePasswordModel.password"/>
+                                    </div>
+
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.new_password.$invalid}">
+                                        <label class="col-sm-12 required-field"> New Password <span class="required-label">(required)</span>
+                                        </label>
+
+                                        <input type="text"
+                                               name="new_password"
+                                               class="form-control ng-animate-disabled col-sm-12"
+                                               maxlength="100"
+                                               minlength="6"
+                                               required
+                                               ng-model="$parent.$parent.$parent.changePasswordModel.new_password"/>
+                                    </div>
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.confirm_password.$invalid}">
+                                        <label class="col-sm-12 required-field"> Confirm Password<span class="required-label">(required)</span>
+                                        </label>
+
+                                        <input type="text"
+                                               name="confirm_password"
+                                               class="form-control ng-animate-disabled col-sm-12"
+                                               maxlength="100"
+                                               minlength="6"
+                                               required
+                                               ng-model="$parent.$parent.$parent.changePasswordModel.confirm_password"/>
+                                    </div>
+                                </div>
+
+                                <div ng-if="$parent.$parent.passwordEvent == 'reset'">
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.new_password.$invalid}">
+                                        <label class="col-sm-12 required-field"> New Password <span class="required-label">(required)</span>
+                                        </label>
+
+                                        <input type="text"
+                                               name="new_password"
+                                               class="form-control ng-animate-disabled col-sm-12"
+                                               maxlength="100"
+                                               minlength="6"
+                                               required
+                                               ng-model="$parent.$parent.$parent.changePasswordModel.new_password"/>
+                                    </div>
+                                    <div class="form-group"
+                                         style="position: relative;"
+                                         ng-class="{'has-error': userForm.$submitted && userForm.confirm_password.$invalid}">
+                                        <label class="col-sm-12 required-field"> Confirm Password<span class="required-label">(required)</span>
+                                        </label>
+
+                                        <input type="text"
+                                               name="confirm_password"
+                                               class="form-control ng-animate-disabled col-sm-12"
+                                               maxlength="100"
+                                               minlength="6"
+                                               required
+                                               ng-model="$parent.$parent.$parent.changePasswordModel.confirm_password"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

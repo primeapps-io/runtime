@@ -47,7 +47,8 @@ namespace PrimeApps.App.Controllers
 
             if (preview != null)
             {
-                var previewDB = CryptoHelper.Decrypt(preview);
+                var previewToken = HttpUtility.UrlDecode(preview);
+                var previewDB = CryptoHelper.Decrypt(previewToken.Replace(" ", "+"));
                 if (!string.IsNullOrEmpty(previewDB))
                 {
                     if (previewDB.Contains("app"))
@@ -130,12 +131,11 @@ namespace PrimeApps.App.Controllers
                 await SetValues(userId, app, tenant.Id, null, false);
 
                 Response.Cookies.Append("tenant_id", tenant.Id.ToString());
-                
             }
 
             return View();
         }
-    
+
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -149,8 +149,8 @@ namespace PrimeApps.App.Controllers
 
             return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain + preview);
         }
-        
-        
+
+
         [Route("register")]
         public async Task<IActionResult> Register()
         {

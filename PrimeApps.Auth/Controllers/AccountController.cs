@@ -41,6 +41,7 @@ using PrimeApps.Auth.Helpers;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common.App;
 using IdentityServer.LdapExtension.UserStore;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace PrimeApps.Auth.UI
 {
@@ -205,14 +206,14 @@ namespace PrimeApps.Auth.UI
 				}
 			}
 
-			if (ModelState.IsValid)
-			{
-				//ldap control
-				var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
-				if (useLdap != null)
-				{
-					var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
-					var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
+            if (ModelState.IsValid)
+            {
+                //ldap control
+                var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
+                if (useLdap != null)
+                {
+                    var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
+                    var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
 
 					if (ldapUser == null)
 					{
@@ -401,10 +402,10 @@ namespace PrimeApps.Auth.UI
 				? JObject.Parse(vm.ApplicationInfo.ApplicationSetting.ExternalLogin)
 				: null;
 
-			if (externalLogin != null)
-			{
-				actions = (JArray)externalLogin["actions"];
-				action = actions.Where(x => x["type"] != null && x["type"].ToString() == "login").FirstOrDefault();
+            if (externalLogin != null)
+            {
+                actions = (JArray)externalLogin["actions"];
+                action = actions.Where(x => x["type"] != null && x["type"].ToString() == "login").FirstOrDefault();
 
 				obj = new JObject
 				{
@@ -694,11 +695,11 @@ namespace PrimeApps.Auth.UI
 					? JObject.Parse(application.Setting.ExternalAuth)
 					: null;
 
-				if (externalLogin != null)
-				{
-					var actions = (JArray)externalLogin["actions"];
-					var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password")
-						.FirstOrDefault();
+                if (externalLogin != null)
+                {
+                    var actions = (JArray)externalLogin["actions"];
+                    var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password")
+                        .FirstOrDefault();
 
 					var obj = new JObject
 					{
@@ -748,19 +749,19 @@ namespace PrimeApps.Auth.UI
 			return View(vm);
 		}
 
-		[HttpPost, AllowAnonymous]
-		public async Task<bool> ExternalLoginForgotPassword([FromBody]ExternalLoginBindingModel model)
-		{
-			var application = await _applicationRepository.GetByNameAsync(model.client);
-			var externalLogin = application.Setting.ExternalAuth != null
-				? JObject.Parse(application.Setting.ExternalAuth)
-				: null;
+        [HttpPost, AllowAnonymous]
+        public async Task<bool> ExternalLoginForgotPassword([FromBody]ExternalLoginBindingModel model)
+        {
+            var application = await _applicationRepository.GetByNameAsync(model.client);
+            var externalLogin = application.Setting.ExternalAuth != null
+                ? JObject.Parse(application.Setting.ExternalAuth)
+                : null;
 
-			if (externalLogin != null)
-			{
-				var actions = (JArray)externalLogin["actions"];
-				var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password")
-					.FirstOrDefault();
+            if (externalLogin != null)
+            {
+                var actions = (JArray)externalLogin["actions"];
+                var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password")
+                    .FirstOrDefault();
 
 				var obj = new JObject
 				{
@@ -988,20 +989,34 @@ namespace PrimeApps.Auth.UI
 				return Redirect(Request.Scheme + "://" + Request.Host.Value + "?error=" + model.Error);
 
 			if (!string.IsNullOrEmpty(model.ReturnUrl))
+            {
+                var url = new Uri(model.ReturnUrl);
+                var queryString = HttpUtility.ParseQueryString(url.Query);
+                var preview = queryString.Get("preview");
+
+                if (!string.IsNullOrEmpty(preview))
+                {
+                    var previewToken = HttpUtility.UrlEncode(preview.Replace(" ","+"));
+                    queryString.Set("preview", previewToken);
+                    
+                    return Redirect(string.Format("{0}://{1}?{2}",Request.Scheme, url.Authority, queryString.ToString()));
+                }
+
 				return Redirect(model.ReturnUrl);
+            }
 
 			Response.Cookies.Delete("gitea_token");
 			return Redirect(Request.Scheme + "://" + Request.Host.Value);
 			//return View("LoggedOut", vm);
 		}
 
-		/// <summary>
-		/// Create identity user. Only identity user, not platform or tenant user.
-		/// </summary>
-		[HttpPost]
-		public async Task<IActionResult> CreateIdentityUser([FromBody]CreateAccountBindingModel model)
-		{
-			var identityUser = await _userManager.FindByNameAsync(model.Email);
+        /// <summary>
+        /// Create identity user. Only identity user, not platform or tenant user.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> CreateIdentityUser([FromBody]CreateAccountBindingModel model)
+        {
+            var identityUser = await _userManager.FindByNameAsync(model.Email);
 
 			if (identityUser != null)
 				return BadRequest("User exist");

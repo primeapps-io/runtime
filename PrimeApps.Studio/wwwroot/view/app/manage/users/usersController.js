@@ -17,7 +17,6 @@ angular.module('primeapps')
             $scope.userModel = {};
             $scope.loading = true;
             $scope.userModel.auto_pass = "false";
-
             var keylist = "xNXRKA0IOYmPP7jgN088zdEwNqqi7erpdMhsoqAVJ0r0sBaeDDCq4sbS2FkDRnEWa5FyYerM);2$0ZUA;I:1^]Rs1LGiS:v;!SO,#jqTq0<1B[.rwtn8K:-0FO:O,";
 
             $scope.generatePass = function () {
@@ -28,15 +27,13 @@ angular.module('primeapps')
                 }
                 $scope.userModel.password = temp;
                 ;
-            }
+            };
 
             $scope.passwordChange = function () {
                 if ($scope.userModel.auto_pass) {
                     $scope.userModel.auto_pass = false;
                 }
-
-            }
-
+            };
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -156,42 +153,85 @@ angular.module('primeapps')
                                 }
 
                                 $scope.saving = false;
-                                $scope.userFormModal.hide();
+                                $scope.closeModal();
                             }
                         })
                         .catch(function (response) {
                             if (response.data && response.data.message) {
                                 toastr.error(response.data.message);
-                            } else {
+                            }
+                            else {
                                 toastr.error($filter('translate')('Common.Error'));
                             }
                             $scope.saving = false;
                             $scope.closeModal();
                         });
-                } else {
-                    UsersService.update($scope.userModel.id, $scope.userModel)
-                        .then(function (response) {
-                            toastr.success('User is saved successfully');
-                            $scope.userFormModal.hide();
-                            $scope.changePage($scope.activePage);
-                            $scope.saving = false;
+                }
+                else {
+                    if ($scope.passwordEvent === 'change') {
+                        if ($scope.changePasswordModel.new_password != $scope.changePasswordModel.confirm_password) {
+                            toastr.warning("New password is not matching !");
+                            return;
+                        }
 
-                        })
-                        .catch(function () {
-                            toastr.error($filter('translate')('Common.Error'));
-                            $scope.saving = false;
-                        });
+                        $scope.changePasswordModel.email = $scope.userModel.email;
+
+                        UsersService.updatePassword($scope.changePasswordModel)
+                            .then(function (response) {
+                                updateUser();
+                            })
+                            .catch(function (error) {
+                                toastr.error("Your password has not been successfully updated !");
+                                $scope.saving = false;
+                            });
+                    }
+                    else if ($scope.passwordEvent === 'reset') {
+                        if ($scope.changePasswordModel.new_password != $scope.changePasswordModel.confirm_password) {
+                            toastr.warning("New password is not matching !");
+                            return;
+                        }
+
+                        $scope.changePasswordModel.email = $scope.userModel.email;
+
+                        UsersService.resetPassword($scope.changePasswordModel)
+                            .then(function (response) {
+                                updateUser();
+                            })
+                            .catch(function (error) {
+                                toastr.error("Your password has not been successfully updated !");
+                                $scope.saving = false;
+                            });
+                    }
+                    else {
+                        updateUser();
+                    }
+
                 }
 
             };
 
+            var updateUser = function () {
+                UsersService.update($scope.userModel.id, $scope.userModel)
+                    .then(function (response) {
+                        toastr.success('User is saved successfully');
+                        $scope.closeModal();
+                        $scope.changePage($scope.activePage);
+                        $scope.saving = false;
+
+                    })
+                    .catch(function () {
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.saving = false;
+                    });
+            };
 
             $scope.showFormModal = function (id) {
 
                 if (id) {
-                    $scope.userModel = $filter('filter')($scope.users, {id: id}, true)[0];
+                    $scope.userModel = angular.copy($filter('filter')($scope.users, {id: id}, true)[0]);
                     $scope.editing = true;
-                } else {
+                }
+                else {
                     $scope.userModel = {
                         profile_id: 1,
                         role_id: 1
@@ -203,7 +243,6 @@ angular.module('primeapps')
                         recipient: $rootScope.me.email + ';'
                     };
                 }
-
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
                     scope: $scope,
@@ -220,7 +259,8 @@ angular.module('primeapps')
 
             $scope.closeModal = function () {
                 $scope.userFormModal.hide();
-
+                $scope.changePasswordModel = null;
+                delete $scope.passwordEvent;
             };
 
             $scope.sendEmailPassword = function (userModel, resultModel) {
@@ -241,10 +281,23 @@ angular.module('primeapps')
                         }
                     }
 
-
                 }
 
+            };
 
+            $scope.unCheckControl = function (event) {
+                var element = angular.element(event.target);
+                var value = event.target.value;
+                var group = angular.element(event.target.closest('div')).find('input');
+
+                if (element.attr('marked') && $scope.passwordEvent === value) {
+                    delete $scope.passwordEvent;
+                    group.removeAttr('marked');
+                }
+                else {
+                    group.removeAttr('marked');
+                    element.attr('marked', true)
+                }
             };
         }
     ]);
