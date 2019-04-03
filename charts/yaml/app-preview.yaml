@@ -19,7 +19,7 @@ data:
   EmailSMTPUser: "apikey"
   EmailSMTPPassword: "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"
   UseCdn: "false"
-  AuthenticationServerURL: "https://preview.primeapps.io"
+  AuthenticationServerURL: "https://auth-preview.primeapps.io"
   ClientId: "primeapps_preview"
   ClientSecret: "secret"
   ForwardHeaders: "true"
