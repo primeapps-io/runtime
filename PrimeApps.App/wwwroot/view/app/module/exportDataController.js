@@ -10,10 +10,19 @@ angular.module('primeapps')
                 var viewId = $scope.view.id;
                 var profileId = $rootScope.user.profile.id;
                 var isViewFields = $scope.export.moduleAllColumn;
-                if (isViewFields)
-                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
-                else
-                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
+                if (!$rootScope.preview) {
+                    if (isViewFields)
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
+                    else
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
+                }
+                else {
+                    if (isViewFields)
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale + '&appId=' + $rootScope.user.app_id, "_blank");
+                    else
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale + '&appId=' + $rootScope.user.app_id, "_blank");
+                }
+
                 ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
 

@@ -91,7 +91,7 @@ namespace PrimeApps.App.Controllers
 
             if (!string.IsNullOrWhiteSpace(container))
             {
-                bucketName = GetPath(type, AppUser.TenantId, container);
+                bucketName = GetPath(type, AppUser.TenantId, 0, 0, container);
             }
             else
             {
@@ -343,7 +343,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadProfilePicture()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId, AppUser.AppId, AppUser.Id);
 
             if (parser.Success)
             {
