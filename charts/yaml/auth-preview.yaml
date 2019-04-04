@@ -106,6 +106,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: primeapps-auth-preview-service
+  namespace: primeapps
 spec:
   type: "ClusterIP"
   selector:

@@ -199,6 +199,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: primeapps-studio-service
+  namespace: primeapps
 spec:
   type: "ClusterIP"
   selector:
