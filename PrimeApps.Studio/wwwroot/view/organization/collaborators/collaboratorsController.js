@@ -291,8 +291,6 @@ angular.module('primeapps')
 
             $scope.sendEmailPassword = function (collaboratorModel) {
 
-                if (collaboratorModel.auto_pass) {
-
                     var sendEmailData = {};
                     sendEmailData.app_id = 2;
                     sendEmailData.culture = "en";
@@ -306,17 +304,8 @@ angular.module('primeapps')
                             $scope.changePage(1);
                             $scope.submitting = false;
                             $scope.addNewCollaboratorModal.hide();
-                        })
+                        });
                     }
-
-
-                } else {
-                    $scope.changePage(1);
-                    $scope.submitting = false;
-                    $scope.addNewCollaboratorModal.hide();
-                }
-
-
             };
 
         }

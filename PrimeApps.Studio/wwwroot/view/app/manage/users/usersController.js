@@ -228,7 +228,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
 
                 if (id) {
-                    $scope.userModel = angular.copy($filter('filter')($scope.users, {id: id}, true)[0]);
+                    $scope.userModel = angular.copy($filter('filter')($scope.users, { id: id }, true)[0]);
                     $scope.editing = true;
                 }
                 else {
@@ -245,12 +245,12 @@ angular.module('primeapps')
                 }
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/manage/users/userFormModal.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/manage/users/userFormModal.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.userFormModal.$promise.then(function () {
                     $scope.userFormModal.show();
@@ -264,25 +264,19 @@ angular.module('primeapps')
             };
 
             $scope.sendEmailPassword = function (userModel, resultModel) {
+                var sendEmailData = {};
+                sendEmailData.app_id = 2;
+                sendEmailData.culture = "en";
+                sendEmailData.display_name = userModel.first_name + ' ' + userModel.last_name;
+                sendEmailData.password = userModel.password;
+                var emails = resultModel.recipient.split(";");
 
-                if (userModel.auto_pass) {
-
-                    var sendEmailData = {};
-                    sendEmailData.app_id = 2;
-                    sendEmailData.culture = "en";
-                    sendEmailData.display_name = userModel.first_name + ' ' + userModel.last_name;
-                    sendEmailData.password = userModel.password;
-                    var emails = resultModel.recipient.split(";");
-
-                    for (var i = 0; i < emails.length; i++) {
-                        if (validateEmail(emails[i])) {
-                            sendEmailData.email = emails[i];
-                            UsersService.sendEmail(angular.copy(sendEmailData), i)
-                        }
+                for (var i = 0; i < emails.length; i++) {
+                    if (validateEmail(emails[i])) {
+                        sendEmailData.email = emails[i];
+                        UsersService.sendEmail(angular.copy(sendEmailData), i)
                     }
-
                 }
-
             };
 
             $scope.unCheckControl = function (event) {
