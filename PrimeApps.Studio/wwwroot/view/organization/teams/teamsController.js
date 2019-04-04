@@ -190,9 +190,11 @@ angular.module('primeapps')
             };
 
             $scope.save = function (addNewTeamForm) {
-                if (!addNewTeamForm.$valid)
+                if (!addNewTeamForm.$valid){
+                    toastr.error($filter('translate')('Module.RequiredError'));
                     return false;
-
+                }
+                
                 $scope.submitting = true;
 
                 var request = {

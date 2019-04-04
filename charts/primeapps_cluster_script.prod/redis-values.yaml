@@ -4,11 +4,11 @@ cluster:
  enabled: false
  slaveCount: 0
 usePassword: true
-password: 'pr!meApps!0'
+password: "pr!m€Appsi0r"
 master:
   port: 6379
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 6379
   persistence:
     enabled: true

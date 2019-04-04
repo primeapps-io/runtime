@@ -23,7 +23,7 @@
                         <div id="field-form-body" class="modal-body">
                             <div class="section" id="section1">
                                 <div class="panel">
-                                    <div class="form-group">
+                                   <!-- <div class="form-group">
                                         <label class="control-label col-sm-8" style="margin-bottom: 10px; font-weight: 600;">{{'Setup.Roles.RoleDeleteLabel' | translate}}</label>
                                         <select
                                                 class="form-control ng-animate-disabled col-sm-8"
@@ -34,6 +34,19 @@
                                                 ng-init="transferRoleId = transferRoles[0].id">
                                             <option value="" ng-if="false"></option>
                                         </select>
+                                    </div>-->
+                                    
+                                    <div class="form-group">
+                                        <label class="col-sm-12 control-label">{{'Setup.Roles.RoleDeleteLabel' | translate}}</label>
+                                        <ui-select name="transferRoleId" class="ng-animate-disabled"
+                                                   ng-model="transferRoleId"
+                                                   ng-init="transferRoleId = transferRoles[0].id"
+                                                   required>
+                                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                                            <ui-select-choices repeat="item.id as item in transferRoles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </div>
                                 </div>
                             </div>

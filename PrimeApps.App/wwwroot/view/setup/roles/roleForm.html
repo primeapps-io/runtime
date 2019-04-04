@@ -27,7 +27,7 @@
                                 <textarea rows="2" name="description" class="form-control" maxlength="200" auto-grow ng-model="role.description"></textarea>
                             </div>
                         </div>
-                        <div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
+                        <div ng-if="!role.master" class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
                             <label class="col-sm-3 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
                             <div class="col-sm-9">
                                <ui-select name="reportsTo" style="width:300px;" 

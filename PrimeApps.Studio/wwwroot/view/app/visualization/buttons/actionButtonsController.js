@@ -91,6 +91,8 @@ angular.module('primeapps')
 
                 } else {
                     $scope.currentActionButton = actionButton;
+                    $scope.currentActionButton.action_button_name = actionButton.name;
+                    $scope.currentActionButton.action_button_url = actionButton.url;
                     $scope.currentActionButton.module = actionButton.parent_module;
                     $scope.moduleChanged(false, actionButton);
                 }
@@ -142,8 +144,7 @@ angular.module('primeapps')
                     
                     return;
                 }
-
-
+                
                 $scope.saving = true;
                 var actionButton = angular.copy($scope.currentActionButton);
 

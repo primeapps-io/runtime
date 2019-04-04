@@ -58,7 +58,7 @@
                            class="form-control ng-animate-disabled col-sm-8"
                            required
                            maxlength="50"
-                           ng-model="currentActionButton.name">
+                           ng-model="currentActionButton.action_button_name">
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.url.$invalid}">
@@ -68,7 +68,7 @@
                            class="form-control ng-animate-disabled col-sm-8"
                            required
                            maxlength="100"
-                           ng-model="currentActionButton.url">
+                           ng-model="currentActionButton.action_button_url">
                 </div>
                 <div ng-if="currentActionButton.type == 2" class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.methodType.$invalid}">

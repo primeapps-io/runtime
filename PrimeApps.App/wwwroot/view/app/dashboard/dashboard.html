@@ -1,6 +1,42 @@
 <trial></trial>
 <help-page ng-if="!loading" route="currentPath"></help-page>
 <div class="dashboard-wrapper" ng-style="trial ? {'margin-top':'0'}: ''">
+    <style>
+        .width100 {
+            width: 100%;
+        }
+
+        .roundbutton {
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            border-radius: 30px;
+            background-color: rgba(13, 111, 170, 0.75);
+            font-weight: bold;
+            color: #fff !important;
+            padding: 9px 20px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .roundbutton:hover {
+            background-color: rgba(13, 111, 170, 1);
+            text-decoration: none;
+        }
+
+    </style>
+    <div class="col-sm-offset-3 col-sm-6" ng-if="!dashletMode && dashlets.length < 1 ">
+        <img class="width100" style="padding-top:50px;padding-bottom: 30px" src="images/dashboard.svg">
+        <div style="text-align: center;"><label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;">Welcome {{user.full_name}}</label></div>
+        <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;">There is no dashlet to display here.
+        </label></div>
+        <!--<div style="text-align: center;margin: 15px;">-->
+        <!--<a href="https://www.primeapps.io/platform/tutorials" style="border:none; padding: 9px 20px; font-size: 14px;" class="roundbutton">-->
+        <!--Add New Dashlet-->
+        <!--</a>-->
+        <!--</div>-->
+    </div>
     <button ng-if="user.profile.has_admin_rights" type="button" ng-click="changeDashletMode()" class="dashlet-edit-btn">
         <i ng-show="!dashletMode" ng-class="{'animation-2':!dashletMode}" class="fa fa-pencil" style="font-size: 20px;"
            aria-hidden="true"></i>

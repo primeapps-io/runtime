@@ -11,12 +11,12 @@ namespace PrimeApps.Studio.Helpers
         {
             var actionbutton = new ActionButton
             {
-                Name = actionButtonModel.Name,
+                Name = actionButtonModel.ActionButtonName,
                 Type = actionButtonModel.Type,
                 Trigger = actionButtonModel.Trigger,
                 CssClass = actionButtonModel.CssClass,
                 Template = actionButtonModel.Template,
-                Url = actionButtonModel.Url,
+                Url = actionButtonModel.ActionButtonUrl,
                 ModuleId = actionButtonModel.ModuleId,
                 MethodType = actionButtonModel.MethodType,
                 Parameters = actionButtonModel.Parameters
@@ -43,12 +43,12 @@ namespace PrimeApps.Studio.Helpers
 
         public static void UpdateEntity(ActionButtonBindingModel actionButtonModel, ActionButton actionButton)
         {
-            actionButton.Name = actionButtonModel.Name;
+            actionButton.Name = actionButtonModel.ActionButtonName;
             actionButton.Type = actionButtonModel.Type;
             actionButton.Trigger = actionButtonModel.Trigger;
             actionButton.CssClass = actionButtonModel.CssClass;
             actionButton.Template = actionButtonModel.Template;
-            actionButton.Url = actionButtonModel.Url;
+            actionButton.Url = actionButtonModel.ActionButtonUrl;
             actionButton.ModuleId = actionButtonModel.ModuleId;
             actionButton.MethodType = actionButtonModel.MethodType;
             actionButton.Parameters = actionButtonModel.Parameters;

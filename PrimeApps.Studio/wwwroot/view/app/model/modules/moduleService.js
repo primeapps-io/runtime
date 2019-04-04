@@ -1027,7 +1027,7 @@ angular.module('primeapps')
                     field1.system_type = 'system';
                     field1.data_type = 'lookup';
                     field1.dataType = $rootScope.dataTypesExtended.lookup;
-                    field1.section = 'custom_section1';
+                    field1.section = 'custom_section2';
                     field1.section_column = 1;
                     field1.name = 'owner';
                     field1.label_en = 'Owner';
@@ -1055,7 +1055,7 @@ angular.module('primeapps')
                     field2.data_type = 'text_single';
                     field2.dataType = $rootScope.dataTypesExtended.text_single;
                     field2.section = 'custom_section1';
-                    field2.section_column = 2;
+                    field2.section_column = 1;
                     field2.name = 'custom_field2';
                     field2.label_en = defaultLabels.DefaultFieldNameEn;
                     field2.label_tr = defaultLabels.DefaultFieldNameTr;
@@ -2184,10 +2184,10 @@ angular.module('primeapps')
     .constant('defaultLabels', {
         DefaultModuleNameEn: 'Module',
         DefaultModuleNameTr: 'Modül',
-        DefaultSectionNameEn: 'Section',
-        DefaultSectionNameTr: 'Bölüm',
-        SystemInfoSectionNameEn: 'System Information',
-        SystemInfoSectionNameTr: 'Sistem Bilgisi',
+        DefaultSectionNameEn: 'General',
+        DefaultSectionNameTr: 'Genel',
+        SystemInfoSectionNameEn: 'System',
+        SystemInfoSectionNameTr: 'Sistem',
         DefaultFieldNameEn: 'Name',
         DefaultFieldNameTr: 'İsim',
         UserLookupFieldEn: 'User',

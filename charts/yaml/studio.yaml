@@ -5,33 +5,33 @@ metadata:
   name: primeapps-studio-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=db-pde.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=platform;command timeout=0;keepalive=30;"
-  StudioDBConnection: "server=db-pde.primeapps.io;port=5432;username=postgres;password=pr!meApp$!0;database=studio;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
   StorageUrl: "https://storage.primeapps.io"
-  StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
-  StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
-  EmailSMTPPassword: "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"
-  TestMode: "true"
-  AuthenticationServerURL: "https://studio.primeapps.io"
+  EmailSMTPPassword: "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"
+  TestMode: "false"
+  AuthenticationServerURL: "https://auth.primeapps.io"
   ClientId: "primeapps_studio"
   ClientSecret: "secret"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
   PreviewUrl: "https://preview.primeapps.io"
-  KubernetesClusterRootUrl: "https://30411da58524a8b8892dbdcc485de17f.yl4.eu-west-1.eks.amazonaws.com"
-  KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4taHRtN24iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYzMyZWM4NWItMzZkNy0xMWU5LWE1OGMtMDY0NmE0OTYwYmE4Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.VawsjvcvRMBMep-XkNyxhPT48j7yg9-an7QL7Hs-Q4oJ1Mejbor9H1m3G7rSukZx-bD9Tu5Qn46TPdLtm0Xy6edbMKMxpqV5IKWyDA1saAjZZZQRnyGKdIjZWapLSYqveZelgL361QYlllEFh5M9ObNAhbK6cIoZ_-dlUAVeLUFhNJe1lPs87QAvYiEXL8FQ1OuNPErCGnidET00INRGPzsCGAjFSfTDfTUdbjRVx6vZEc__Gw4lLdTb6WD_FSOoK2IozGJbK_m9tiFYqQFNPCqJoOBXXPreikoKWnuJAFudTC4zbJAw3Zw7JZdAknlOq7DOyNwGO58xl22HkD4mTw"
+  KubernetesClusterRootUrl: "https://d5de4cad6841d39174e78377e1551f98.sk1.eu-west-1.eks.amazonaws.com"
+  KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4ta2ZxcGciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYWNjODkyYjctNTRmZC0xMWU5LWFkZDMtMDYxMmIxOTc5YjIwIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.j3rAlfrkjPiJxcleefpCF1P2E8oQNwvLe8ymW8sR_9N7QkTRRkyHLYVkvbGIL2gj-gzZ3itBeKoQ417VFn5LcybeE216ixxfHRIErnXZrTuatspSrIPM6D27VaBmUZLbYLkLZBW0SBKx0SBy8bJVmSu1LmiI-46d9cit4zmBZRYfrX0-WWq4uU0HUgo8D36dA5LC6_nnJ3xzbMs5VeyLPc3Z3UhQoDExcmxWUBDsbf3rvFQ85mj5rxXW0Y0JiHAHVKxKFrp3qidjlnikvFIZ905mpAyqmZksVZm4IOj5axX1gZ4eGLJRxPxrskNBZRM8PeAKxM6Gj1G8qgzkgj6b_Q"
   GiteaEnabled: "true"
-  GiteaUrl: "http://git.primeapps.io"
+  GiteaUrl: "https://git.primeapps.io"
   GiteaEmail: "primeapps"
-  GiteaPassword: "123456"
-  GiteaDirectory: "/data/git"
-  SentryDsn: "http://c3137bf4d2f54d1dab0ba16a32349ffa@error.primeapps.io/14"
+  GiteaPassword: "pr!m€Appsi0g"
+  GiteaDirectory: "/data/git/"
+  SentryDsn: "https://a6d7a462d9184c5698ab07aa38b8a896:a915b64d63574d29b98998a69cbdc848@log.primeapps.io/2"
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -53,9 +53,11 @@ spec:
       volumes:
         - name: git-storage
           emptyDir: {}
+      imagePullSecrets:
+        - name: gcr-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:1.19.084.3
+          image: gcr.io/primeapps/primeapps-studio/debian:1.19.093.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
@@ -218,7 +220,7 @@ spec:
   tls:
     - hosts:
         - studio.primeapps.io
-      secretName: primeapps-wildcard
+      secretName: primeapps-wildcard-ssl
   rules:
     - host: studio.primeapps.io
       http:
@@ -227,24 +229,3 @@ spec:
             backend:
               serviceName: primeapps-studio-service
               servicePort: 80
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: primeapps-studio-service
-#   annotations:
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:557655860736:certificate/5be35ad7-a512-4028-9fac-c4ca1e268080"
-#     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
-# spec:
-#   type: "LoadBalancer"
-#   selector:
-#     k8s-app: primeapps-studio
-#   ports:
-#     - name: "http"
-#       protocol: TCP
-#       port: 80
-#       targetPort: 80
-#     - name: "https"
-#       protocol: TCP
-#       port: 443
-#       targetPort: 80

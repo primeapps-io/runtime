@@ -6,15 +6,15 @@ worker:
   replicacount: 1
 user:
   create: true
-  email: teknik@ofisim.com
-  password: 'pr!meApp$!0'
+  email: admin@primeapps.io
+  password: 'pr!m€Appsi0s'
 email:
-  from_address: teknik@ofisim.com
-  host: smtp.office365.com
+  from_address: admin@primeapps.io
+  host: smtp.sendgrid.net
   port: 587
   use_tls: true
-  user: teknik@ofisim.com
-  password: '0f!s!mCRM'
+  user: apikey
+  password: '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'
   enable_replies: false
 service:
   name: sentry
@@ -30,21 +30,21 @@ persistence:
   filestore_dir: /var/lib/sentry/files
 ingress:
   enabled: true
-  hostname: sentry.primeapps.io
+  hostname: log.primeapps.io
   annotations: 
     kubernetes.io/ingress.class: nginx
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    # certmanager.k8s.io/cluster-issuer: letsencrypt-prod
   tls:
-     - secretName: sentry.primeapps.io
-       hosts:
-         - sentry.primeapps.io
+    - hosts:
+        - sentry.primeapps.io
+      secretName: primeapps-wildcard-ssl
 postgresql:
   enabled: false
   postgresDatabase: sentry
   postgresUser: postgres
   # Only used when internal PG is disabled
   postgresHost: pre.database.svc.cluster.local
-  postgresPassword: 'pr!meApp$!0'
+  postgresPassword: 'pr!m€Appsi0d'
   postgresPort: 5432
   imageTag: "9.6"
   persistence:
@@ -54,7 +54,7 @@ redis:
   enabled: false
   # Only used when internal redis is disabled
   host: cache-redis-master.cache
-  password: 'pr!meApps!0'
+  password: 'pr!m€Appsi0r'
   port: 6379
   master:
     persistence:

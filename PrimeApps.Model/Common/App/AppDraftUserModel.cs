@@ -35,5 +35,11 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("created_at"), DataMember(Name = "created_at")]
         public DateTime CreatedAt { get; set; }
+        
+        [JsonProperty("new_password"), DataMember(Name = "new_password")]
+        public string NewPassword { get; set; }
+        
+        [JsonProperty("confirm_password"), DataMember(Name = "confirm_password")]
+        public string ConfirmPassword { get; set; }
     }
 }

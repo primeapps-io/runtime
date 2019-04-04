@@ -216,3 +216,4 @@ FakesAssemblies/
 /.vscode
 
 /PrimeApps.CLI/Properties/launchSettings.json
+/PrimeApps.App/wwwroot/bundles/

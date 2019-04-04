@@ -226,7 +226,7 @@ angular.module('primeapps')
                 if (uploadForm.$invalid || !$scope.template.content) {
                     if (!$scope.template.content)
                         $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
-                    else
+                   // else
                         toastr.error($filter('translate')('Module.RequiredError'));
 
                     return;

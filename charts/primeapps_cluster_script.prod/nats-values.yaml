@@ -1,7 +1,7 @@
 auth:
   enabled: true
   user: primeapps
-  password: 'pr!meApps!0'
+  password: 'pr!meApps!0n'
 networkPolicy:
   ## Enable creation of NetworkPolicy resources.
   enabled: true

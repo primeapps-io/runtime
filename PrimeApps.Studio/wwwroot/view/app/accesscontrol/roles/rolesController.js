@@ -14,8 +14,8 @@ angular.module('primeapps')
             RolesService.getAll().then(function (response) {
                 $scope.roles = response.data;
                 $scope.rolesState = angular.copy(response.data);
+                $scope.allRoles = angular.copy(response.data);
                 $scope.tree = $scope.rolesToTree(response.data);
-
                 $scope.loading = false;
             });
 
@@ -111,6 +111,8 @@ angular.module('primeapps')
                     .then(function () {
                         RolesService.getAll().then(function (response) {
                             $scope.roles = response.data;
+                            $scope.rolesState = angular.copy(response.data);
+                            $scope.allRoles = angular.copy(response.data);
                             $scope.tree = $scope.rolesToTree(response.data);
 
                             $scope.roleDeleting = false;
@@ -143,12 +145,13 @@ angular.module('primeapps')
                     if (!$scope.id)
                         $scope.reportsTo_disabled = false;
 
-                    RolesService.getAll()
-                        .then(function (response) {
-                            $scope.allRoles = response.data;
+                   // RolesService.getAll()
+                       // .then(function (response) {
+                          //  $scope.allRoles = response.data;
                             $scope.roles = $filter('filter')($scope.allRoles, {id: '!' + $scope.id});
-
+                            
                             if ($scope.id) {
+                                checkChildRole($scope.id);
                                 $scope.role = $filter('filter')($scope.allRoles, {id: $scope.id}, true)[0];
                                 $scope.role.label = $scope.role['label_' + $scope.language];
                                 $scope.role.description = $scope.role['description_' + $scope.language];
@@ -171,8 +174,10 @@ angular.module('primeapps')
                                 $scope.role.reports_to = reportsTo;
                             }
                             $scope.loading = false;
-                        });
+                       // });
                 } else {
+                    //Editte roller filtrelendiği için rolleri tekrardan eski değerine eşitliyoruz
+                    $scope.roles = angular.copy($scope.rolesState);
                     $scope.role = {};
                     $scope.role.share_data = false;
                 }
@@ -222,6 +227,8 @@ angular.module('primeapps')
                         RolesService.getAll().then(function (response) {
                             $scope.roles = response.data;
                             $scope.tree = $scope.rolesToTree(response.data);
+                            $scope.rolesState = angular.copy(response.data);
+                            $scope.allRoles = angular.copy(response.data);
                             $scope.loading = false;
                         });
                     }).finally(function () {
@@ -239,6 +246,16 @@ angular.module('primeapps')
             $scope.roleUpdateChange = function () {
                 $scope.role_change = true;
             };
-
+            
+            function checkChildRole(id) {
+                //Gelen roleId'ye ait alt rollerin olup olmadığını kontrol ediyoruz
+               var children  = $filter('filter')($scope.roles, {reports_to:  id});
+               //Mevcut roller arasında resports_to idleri gelen rolün idsine eşit olanları filtreliyoruz.
+               $scope.roles = $filter('filter')($scope.roles, {reports_to: '!' + id});
+               
+                angular.forEach(children,function (child) {
+                    checkChildRole(child.id);
+                });
+            }
         }
     ]);

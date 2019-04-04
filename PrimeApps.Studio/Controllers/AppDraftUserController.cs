@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -81,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _userRepository.GetByEmail(userModel.Email);
 
             if (user != null)
-                return BadRequest(new { message = "User already exist" });
+                return BadRequest(new {message = "User already exist"});
 
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
@@ -131,7 +132,7 @@ namespace PrimeApps.Studio.Controllers
                 }
             }
 
-            return StatusCode(201, new { password = password });
+            return StatusCode(201, new {password = password});
         }
 
         /// <summary>
@@ -154,6 +155,8 @@ namespace PrimeApps.Studio.Controllers
             user.FullName = userModel.FirstName + " " + userModel.LastName;
             user.ProfileId = userModel.ProfileId;
             user.RoleId = userModel.RoleId;
+            user.IsActive = userModel.IsActive;
+            
             await _userRepository.UpdateAsync(user);
 
             return Ok();
@@ -235,6 +238,92 @@ namespace PrimeApps.Studio.Controllers
                     var senderName = (string)req["MailSenderName"] ?? applicationInfo.Setting.MailSenderName;
                     notification.AddRecipient(data["email"].ToString());
                     notification.AddToQueue(senderEmail, senderName, null, null, content, template.Subject);
+                }
+            }
+
+            return Ok();
+        }
+
+        [Route("update_password"), HttpPut]
+        public async Task<IActionResult> UpdatePassword([FromBody]AppDraftUserModel userModel)
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Update))
+                return StatusCode(403);
+
+            var user = await _userRepository.GetByEmail(userModel.Email);
+
+            if (user == null)
+                return BadRequest();
+
+            var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                var appInfo = await _applicationRepository.GetByNameAsync(clientId);
+
+                using (var httpClient = new HttpClient())
+                {
+                    var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/change_password?client=" + clientId;
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+                    var changePasswordModel = new JObject
+                    {
+                        ["email"] = userModel.Email,
+                        ["old_password"] = userModel.Password,
+                        ["new_password"] = userModel.NewPassword,
+                        ["confirm_password"] = userModel.NewPassword
+                    };
+
+                    var json = JsonConvert.SerializeObject(changePasswordModel);
+                    var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(response.Content?.ReadAsStringAsync().Result);
+                }
+            }
+
+            return Ok();
+        }
+
+        [Route("reset_password"), HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody]AppDraftUserModel userModel)
+        {
+            var user = await _userRepository.GetByEmail(userModel.Email);
+
+            if (user == null)
+                return BadRequest("User not found.");
+
+            if (userModel.NewPassword != userModel.ConfirmPassword)
+                return BadRequest("Your password and confirmation password do not match.");
+
+            var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
+
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                var appInfo = await _applicationRepository.GetByNameAsync(clientId);
+
+                using (var httpClient = new HttpClient())
+                {
+                    var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/reset_password";
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+                    var userObj = new JObject
+                    {
+                        ["email"] = userModel.Email,
+                        ["password"] = userModel.NewPassword
+                    };
+
+                    var request = new JObject
+                    {
+                        ["token"] = CryptoHelper.Encrypt(userObj.ToString())
+                    };
+                    
+                    var json = JsonConvert.SerializeObject(request);
+                    var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(response.Content?.ReadAsStringAsync().Result);
                 }
             }
 

@@ -5,21 +5,21 @@ metadata:
   name: primeapps-app-preview-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=db-pde.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=db-pre.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
-  RedisConnection: "cache.primeapps.io:6379,password=pr!m€Apps!0,defaultDatabase=1"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
   StorageUrl: "https://storage.primeapps.io"
-  StorageAccessKey: "47551d03d5524a4405c517aac418ef55"
-  StorageSecretKey: "9983289d439f83dfe364b4e9884e9870"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
   EnableRequestLogging: "false"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
-  EmailSMTPPassword: "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"
+  EmailSMTPPassword: "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"
   UseCdn: "false"
-  AuthenticationServerURL: "https://preview.primeapps.io"
+  AuthenticationServerURL: "https://auth-preview.primeapps.io"
   ClientId: "primeapps_preview"
   ClientSecret: "secret"
   ForwardHeaders: "true"
@@ -28,7 +28,7 @@ data:
   PreviewMode: "app"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   PreviewClient: "primeapps_preview"
-  SentryDsn: "http://83071d88ebce45c290e44ee566d26d22@error.primeapps.io/16"
+  SentryDsn: "https://9f004ecf59ff428a8a980b8684ca8aa4:b2332eb76fca4866b48d421dad70ea5c@log.primeapps.io/5"
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -47,9 +47,11 @@ spec:
       labels:
         k8s-app: primeapps-app-preview
     spec:
+      imagePullSecrets:
+        - name: gcr-pull-secret
       containers:
         - name: primeapps-app-preview
-          image: gcr.io/primeapps/primeapps-app/debian:5.19.084.4
+          image: gcr.io/primeapps/primeapps-app/debian:5.19.093.1
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
@@ -197,7 +199,7 @@ spec:
   tls:
     - hosts:
         - preview.primeapps.io
-      secretName: primeapps-wildcard
+      secretName: primeapps-wildcard-ssl
   rules:
     - host: preview.primeapps.io
       http:
@@ -206,24 +208,3 @@ spec:
             backend:
               serviceName: primeapps-app-preview-service
               servicePort: 80
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: primeapps-app-preview-service
-#   annotations:
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:557655860736:certificate/5be35ad7-a512-4028-9fac-c4ca1e268080"
-#     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-#     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
-# spec:
-#   type: "LoadBalancer"
-#   selector:
-#     k8s-app: primeapps-app-preview
-#   ports:
-#     - name: "http"
-#       protocol: TCP
-#       port: 80
-#       targetPort: 80
-#     - name: "https"
-#       protocol: TCP
-#       port: 443
-#       targetPort: 80

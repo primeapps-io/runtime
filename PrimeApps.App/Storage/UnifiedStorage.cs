@@ -106,7 +106,8 @@ namespace PrimeApps.App.Storage
         /// <param name="uploadId"></param>
         /// <param name="stream"></param>
         /// <returns>ETag for the uploaded file part</returns>
-        public async Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream)
+        public async Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId,
+            Stream stream)
         {
             UploadPartResponse response;
 
@@ -145,10 +146,13 @@ namespace PrimeApps.App.Storage
             await _client.AbortMultipartUploadAsync(abortMPURequest);
         }
 
-        public async Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId)
+        public async Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key,
+            string eTags, string finalETag, string uploadId)
         {
             eTags += string.IsNullOrWhiteSpace(eTags) ? finalETag : $"|{finalETag}";
-            List<PartETag> eTagList = string.IsNullOrWhiteSpace(eTags.ToString()) ? new List<PartETag>() : eTags.ToString().Split("|").Select((x, i) => new PartETag(i + 1, x)).ToList();
+            List<PartETag> eTagList = string.IsNullOrWhiteSpace(eTags.ToString())
+                ? new List<PartETag>()
+                : eTags.ToString().Split("|").Select((x, i) => new PartETag(i + 1, x)).ToList();
 
             // Setup to complete the upload.
             CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest
@@ -266,7 +270,8 @@ namespace PrimeApps.App.Storage
         /// <param name="destinationBucket"></param>
         /// <param name="destinationKey"></param>
         /// <returns></returns>
-        public async Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket, string destinationKey)
+        public async Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket,
+            string destinationKey)
         {
             CopyObjectRequest request = new CopyObjectRequest
             {
@@ -402,11 +407,14 @@ namespace PrimeApps.App.Storage
         }
 
 
-        public static string GetPath(string type, int tenant, string extraPath = "")
+        public static string GetPath(string type, int tenant, int appId = 0, int userId = 0, string extraPath = "")
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
-            return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
+            if (appId == 0)
+                return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
+            else
+                return $"app{appId}{"/user" + userId}{pathMap[objectType]}{extraPath}";
         }
 
         public static ObjectType GetType(string type)

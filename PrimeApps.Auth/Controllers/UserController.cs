@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Common.App;
 using System.Collections.Generic;
+using Hangfire.Common;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -105,7 +106,7 @@ namespace PrimeApps.Auth.Controllers
                     TenantsAsUser = new List<UserTenant>()
                 };
 
-                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1 });
+                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1});
 
                 var createUserResult = await _platformUserRepository.CreateUser(platformUser);
 
@@ -149,7 +150,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id});
         }
 
         [Route("add_organization_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -233,7 +234,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
         }
 
         [Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -256,7 +257,7 @@ namespace PrimeApps.Auth.Controllers
             if (tenantCheck == null)
                 return Unauthorized();
 
-            _userRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+            _userRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
 
             var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
 
@@ -372,13 +373,13 @@ namespace PrimeApps.Auth.Controllers
                 await _userRepository.UpdateAsync(tenantUser);
             }
 
-            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
             await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
             await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
 
             var currentTenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
 
-            platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
+            platformUser.TenantsAsUser.Add(new UserTenant {Tenant = currentTenant, PlatformUser = platformUser});
 
             await _platformUserRepository.UpdateAsync(platformUser);
 
@@ -402,14 +403,14 @@ namespace PrimeApps.Auth.Controllers
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
         }
 
         [Route("change_password"), HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel, [FromQuery]string client)
         {
             if (!ModelState.IsValid)
-                return Unauthorized();
+                return BadRequest();
 
             var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
             var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
@@ -432,7 +433,11 @@ namespace PrimeApps.Auth.Controllers
                 ExternalAuthHelper.ChangePassword(externalLogin, action, obj);
             }
 
-            return result.Succeeded ? Ok() : StatusCode(400);
+            var response = new JObject
+            {
+                ["message"] = result.ToString()
+            };
+            return result.Succeeded ? StatusCode((int)HttpStatusCode.OK, response) : StatusCode((int)HttpStatusCode.NotFound, response);
         }
 
         [HttpPost("verify_user", Name = "verify_user")]
@@ -468,6 +473,42 @@ namespace PrimeApps.Auth.Controllers
             tokenRequest.Address = _configuration["AppSettings:Authority"] + "/connect/token";
 
             return await httpClient.RequestPasswordTokenAsync(tokenRequest);
+        }
+
+        [Route("reset_password"), HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody]JObject request)
+        {
+            var userToken = request["token"].ToString();
+
+            if (string.IsNullOrEmpty(userToken))
+                return BadRequest("Token can not be null!");
+
+            var userString = CryptoHelper.Decrypt(userToken);
+            if (string.IsNullOrEmpty(userString))
+                return BadRequest("Invalid token!");
+
+            var userObj = JObject.Parse(userString);
+            if (string.IsNullOrEmpty(userObj["email"].ToString()) || string.IsNullOrEmpty(userObj["password"].ToString()))
+                return BadRequest("Invalid token !");
+
+            if (userObj["password"].ToString().Length < 6)
+                return BadRequest("Password minimum lengh must be 6.");
+
+            var user = await _userManager.FindByEmailAsync(userObj["email"].ToString());
+
+            if (user == null)
+            {
+                return BadRequest("User not found !");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, userObj["password"].ToString());
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok();
         }
 
         //Helpers

@@ -5,8 +5,8 @@
                 <div class="modal-header">
                     <h4 class="modal-title">{{'Setup.Roles.RoleDelete' | translate}}</h4>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
+                <div class="modal-body" style="overflow:inherit; max-height:inherit;">
+                   <!-- <div class="form-group">
                         <div class="col-sm-12">
                             <label class="control-label" style="margin-bottom: 10px; font-weight: 600;">{{'Setup.Roles.RoleDeleteLabel' | translate}}:</label>
                             <select
@@ -19,6 +19,18 @@
                                 <option value="" ng-if="false"></option>
                             </select>
                         </div>
+                    </div>-->
+                    <div class="form-group">
+                        <label>{{'Setup.Roles.RoleDeleteLabel' | translate}}</label>
+                        <ui-select name="transferRoleId"
+                                   ng-model="transferRoleId"
+                                   ng-init="transferRoleId = transferRoles[0].id"
+                                   required>
+                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                            <ui-select-choices style="width:280px;" repeat="item.id as item in transferRoles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
                 <div class="modal-footer">

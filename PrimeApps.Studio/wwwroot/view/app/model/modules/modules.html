@@ -91,21 +91,24 @@
                             placement="bottom-right"
                             data-animation="am-flip-x"
                             bs-dropdown
+                            data-trigger="focus"
                             aria-haspopup="true"
                             aria-expanded="true">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a  ui-sref="studio.app.moduleDesigner({id:module.id , clone:module.name})" ng-click="$event.stopPropagation();">
+                            <a ui-sref="studio.app.moduleDesigner({id:module.id , clone:module.name})"
+                               ng-click="$event.stopPropagation();">
                                 {{'Common.Copy' | translate}}
                             </a>
-                        </li> 
+                        </li>
                         <li>
-                            <a   ng-click="$event.stopPropagation(); showEditModal(module.id);">
-                               Settings
+                            <a ng-click="$event.stopPropagation(); showEditModal(module.id);">
+                                Settings
                             </a>
-                        </li>                        <li>
+                        </li>
+                        <li>
                             <a ng-click="$event.stopPropagation(); delete(module,$event)">
                                 {{'Common.Remove' | translate}}
                             </a>

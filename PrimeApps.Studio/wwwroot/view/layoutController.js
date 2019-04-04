@@ -215,9 +215,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.saveOrganization = function (organizationForm) {
-            if (!organizationForm.$valid)
+            if (!organizationForm.$valid){
+                toastr.error($filter('translate')('Module.RequiredError'));
                 return;
-
+            }
+            
             $scope.organizationSaving = true;
 
             if (angular.isObject($scope.organization.icon))

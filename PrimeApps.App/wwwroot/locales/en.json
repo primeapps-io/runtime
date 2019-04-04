@@ -1313,7 +1313,8 @@
 			"HelpScreenRelation": "Relation Of Help Screen",
 			"HelpScreenInsert": "Add Help Screen",
 			"Status": "Status",
-			"ShowHelpModal": "Show Help Modal"
+			"ShowHelpModal": "Show Help Modal",
+			"NoDataFound": "There is no data found."
 		},
 		"Phone": {
 			"Settings": "SIP Settings",
@@ -1388,6 +1389,7 @@
 			"EMailNotFoundContact": "Contact e-mail not found, please update contact record.",
 			"EMailNotFoundAccount": "Account e-mail not found, please update account record.",
 			"TemplateNotFound": "Template not found. You can add a template from Settings > Customization > Templates",
+			"TemplateDefined": "No excel template defined",
 			"RevisionMasters": "Revised Record",
 			"Subject": "Subject",
 			"Account": "Account",

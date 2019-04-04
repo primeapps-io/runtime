@@ -11,6 +11,7 @@ var buildSW =  function(){
         cleanupOutdatedCaches:true,
         clientsClaim: false,
         skipWaiting: true,
+        cleanUrls:true
         
     }).then(({warnings}) => {
         // In case there are any warnings from workbox-build, log them.

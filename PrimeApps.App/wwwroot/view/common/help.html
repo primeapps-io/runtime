@@ -8,7 +8,12 @@
                 </div>
                 <div ng-bind-html="helpTemplateSideModal" ng-show="!noneHelpTemplate"></div>
                 <div ng-show="noneHelpTemplate">
-                    <img src="../../../images/helpcoming.png" height="400" width="390" /></div>
+                    <div style="padding: 30px" class="text-center">
+                        <img src="../../../images/no-data.svg" style="width: 100%" />
+                        <h3>{{'Setup.HelpGuide.NoDataFound' | translate}}</h3>
+                        <p ng-if="preview">Please go to User Guides and add New Side Help</p>
+                    </div>
+                </div>
                 <!--<iframe src="{{getHelpUrl() | trustUrl}}" frameborder="0"></iframe>-->
             </div>
         </div>

@@ -268,8 +268,17 @@ angular.module('primeapps')
                 });
             };
 
+            var appId = $cookies.get('app_id');
+            var tenantId = $cookies.get('tenant_id');
+
             var uploader = $scope.uploader = new FileUploader({
                 url: 'storage/upload_profile_picture',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),//$localStorage.get('access_token'),
+                    'Accept': 'application/json',
+                    'X-Tenant-Id': tenantId,
+                    'X-App-Id': appId
+                },
                 queueLimit: 1
             });
 
