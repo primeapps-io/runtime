@@ -8,8 +8,8 @@ angular.module('primeapps')
                 editUser: function (user) {
                     return $http.put(config.apiUrl + 'user/edit', {
                         //id: user.id,
-                        first_name: user.firstName,
-                        last_name: user.lastName,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
                         email: user.email,
                         profile_picture : user.picture
                         // password: user.password,

@@ -12,8 +12,8 @@ angular.module('primeapps')
 
             var user = $scope.$parent.$parent.me;
             $scope.userModel = {};
-            $scope.userModel.firstName = user.first_name; //$rootScope.user.firstName;
-            $scope.userModel.lastName = user.last_name;//$rootScope.user.lastName;
+            $scope.userModel.first_name = user.first_name; //$rootScope.user.firstName;
+            $scope.userModel.last_name = user.last_name;//$rootScope.user.lastName;
             $scope.userModel.email = user.email; //$rootScope.user.email;
             $scope.userModel.picture = user.picture;
             $scope.selectedLanguage = angular.copy($scope.language);
@@ -98,20 +98,20 @@ angular.module('primeapps')
                     if (user.email !== userModel.email)
                         emailChanged = true;
 
-                    // if (emailChanged) {
-                    //     AuthService.isUniqueEmail(userModel.email)
-                    //         .then(function (data) {
-                    //             if (!data.data) {
-                    //                 $scope.userForm.$setValidity('uniqueEmail', false);
-                    //                 $scope.userUpdating = false;
-                    //                 return;
-                    //             }
-                    //
-                    //             editUser();
-                    //         });
-                    // } else {
-                    //     editUser();
-                    // }
+                    if (emailChanged) {
+                        AuthService.isUniqueEmail(userModel.email)
+                            .then(function (data) {
+                                if (!data.data) {
+                                    $scope.userForm.$setValidity('uniqueEmail', false);
+                                    $scope.userUpdating = false;
+                                    return;
+                                }
+
+                                editUser();
+                            });
+                    } else {
+                        editUser();
+                    }
                 } else if ($scope.userForm.$invalid) {
 
                     if ($scope.userForm.$error.required)
@@ -132,15 +132,15 @@ angular.module('primeapps')
                                 $scope.userModel.picture = pictureUrl;
                                 SettingService.editUser(userModel)
                                     .then(function () {
-                                        $scope.userModel.firstName = userModel.firstName;
-                                        $scope.userModel.lastName = userModel.lastName;
+                                        $scope.userModel.first_name = userModel.first_name;
+                                        $scope.userModel.last_name = userModel.last_name;
                                         $scope.userModel.email = userModel.email;
                                         $scope.userModel.picture = userModel.picture;
-                                        $rootScope.me.firstName = userModel.firstName;
-                                        $rootScope.me.lastName = userModel.lastName;
+                                        $rootScope.me.first_name = userModel.first_name;
+                                        $rootScope.me.last_name = userModel.last_name;
                                         $rootScope.me.picture = userModel.picture;
                                         $scope.userUpdating = false;
-                                        $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
+                                        $scope.$parent.$parent.me.full_name = userModel.first_name + ' ' + userModel.last_name;
 
                                         if (!emailChanged) {
                                             toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
@@ -156,15 +156,15 @@ angular.module('primeapps')
                     } else {
                         SettingService.editUser(userModel)
                             .then(function () {
-                                $scope.userModel.firstName = userModel.firstName;
-                                $scope.userModel.lastName = userModel.lastName;
+                                $scope.userModel.first_name = userModel.first_name;
+                                $scope.userModel.last_name = userModel.last_name;
                                 $scope.userModel.email = userModel.email;
                                 $scope.userModel.picture = userModel.picture;
-                                $rootScope.me.firstName = userModel.firstName;
-                                $rootScope.me.lastName = userModel.lastName;
+                                $rootScope.me.first_name = userModel.first_name;
+                                $rootScope.me.last_name = userModel.last_name;
                                 $rootScope.me.picture = userModel.picture;
                                 $scope.userUpdating = false;
-                                $scope.$parent.$parent.me.full_name = userModel.firstName + ' ' + userModel.lastName;
+                                $scope.$parent.$parent.me.full_name = userModel.first_name + ' ' + userModel.last_name;
 
                                 if (!emailChanged) {
                                     toastr.success($filter('translate')('Setup.Settings.UpdateSuccess'));
