@@ -564,11 +564,9 @@ namespace PrimeApps.Studio.Helpers
             }
         }*/
 
-        private string GetUserName(string email)
+        public static string GetUserName(string email)
         {
-            var query = email.Replace("@", string.Empty).Split(".");
-            Array.Resize(ref query, query.Length - 1);
-            return string.Join("", query);
+            return string.Join("", (email.Replace("@", string.Empty)).Split("."));
         }
     }
 }
