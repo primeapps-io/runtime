@@ -12,7 +12,7 @@
 }
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
-    @if (false) //(!customDomain)
+    @if (!preview) //(!customDomain)
     {
         <span class="free-info-header">
             @Html.Raw(string.Format(Localizer["LoginRegisterInfo"].Value, "<a href=" + @Url.Action("Register", "Account", new {ReturnUrl = Model.ReturnUrl}) + ">" + Localizer["LoginRegisterInfoLink"].Value + "</a>"))

@@ -110,9 +110,10 @@ namespace PrimeApps.Studio.Controllers
             if (result >= 1)
             {
                 var userEmail = (string)user["email"];
-                var query = userEmail.Replace("@", "").Split(".");
+                var orgName = GiteaHelper.GetUserName(userEmail);
+                /*var query = userEmail.Replace("@", "").Split(".");
                 Array.Resize(ref query, query.Length - 1);
-                var orgName = string.Join("", query);
+                var orgName = string.Join("", query);*/
 
                 organization = new Organization
                 {
