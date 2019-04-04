@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.modalLoading = false;
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
-            $scope.workflowStartModel = {};
+            $scope.workflowStartModel = { active: true, frequency: "continuous" };
             $scope.operationValue = true;
             // $scope.$parent.menuTopTitle = "Automation";
             //$scope.$parent.activeMenu = 'automation';
@@ -50,6 +50,7 @@ angular.module('primeapps')
                                     var startNode = $filter('filter')(window.myDiagram.model.nodeDataArray, { ngModelName: 'start' }, true)[0];
                                     if (startNode) {
                                         $scope.workflowStartModel = angular.copy(startNode.data);
+                                        $scope.operationValue = $scope.workflowStartModel.operator ? true : false;
                                         //ModuleService.getPickItemsLists($scope.module)
                                         //    .then(function (picklists) {
                                         //        $scope.modulePicklists = picklists;
@@ -85,7 +86,7 @@ angular.module('primeapps')
                             $scope.workflowModel[node.ngModelName] = {}; //clear for new value
 
                             if (!$scope.workflowStartModel) {
-                                $scope.workflowStartModel = {};
+                                $scope.workflowStartModel = { active: true, frequency: "continuous" };
                                 if (node.ngModelName !== 'start') {
                                     var startNode = $filter('filter')(window.myDiagram.model.nodeDataArray, { ngModelName: 'start' }, true)[0];
                                     if (!startNode)
@@ -408,20 +409,20 @@ angular.module('primeapps')
 
             var processWorkflow = function (data) {
                 $scope.modalLoading = true;
-                var workflowModel = {};
-                workflowModel.id = data.id;
-                workflowModel.created_by = data.created_by;
-                workflowModel.updated_by = data.updated_by;
-                workflowModel.created_at = data.created_at;
-                workflowModel.updated_at = data.updated_at;
-                workflowModel.deleted = data.deleted;
-                workflowModel.name = data.name;
-                workflowModel.code = data.code;
-                workflowModel.module = $scope.module;
-                workflowModel.active = data.active;
-                workflowModel.frequency = data.frequency || 'one_time';
-                workflowModel.operation = {};
-                window.diagramData = angular.fromJson(data.diagram_json);
+                var workflowModel = angular.copy(data);
+                //workflowModel.id = data.id;
+                //workflowModel.created_by = data.created_by;
+                //workflowModel.updated_by = data.updated_by;
+                //workflowModel.created_at = data.created_at;
+                //workflowModel.updated_at = data.updated_at;
+                //workflowModel.deleted = data.deleted;
+                //workflowModel.name = data.name;
+                //workflowModel.code = data.code;
+                //workflowModel.module = $scope.module;
+                //workflowModel.active = data.active;
+                //workflowModel.frequency = data.frequency || 'one_time';
+                //workflowModel.operation = {};
+                //window.diagramData = angular.fromJson(data.diagram_json);
 
                 if (data.record_operations.split(',').length > 0 || data.record_operations.split(',') !== '') {
                     angular.forEach(data.record_operations.split(','), function (operation) {
@@ -1750,7 +1751,7 @@ angular.module('primeapps')
                 setTimeout(function () {
                     $scope.saving = false;
                     $scope.modalLoading = false;
-                    $scope.triggerBpm();
+                    //$scope.triggerBpm();
                     $scope.$digest();
                     $scope.cancel();
                 }, 2000);

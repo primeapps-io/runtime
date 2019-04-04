@@ -158,7 +158,7 @@ namespace PrimeApps.Studio.Controllers
             //if (bpmRecord != null)
             //{
             //To increase the last version number of the record we want to update
-            var searchResult = await _bpmRepository.GetAll(bpmWorkflowEntity.Code);
+            var searchResult = await _bpmRepository.GetAll(bpmWorkflowEntity.Code, active: bpmWorkflowEntity.Active);
             if (searchResult != null && searchResult.Count > 0)
             {
                 var lastVersion = searchResult.OrderByDescending(q => q.Version).First().Version;
@@ -201,14 +201,14 @@ namespace PrimeApps.Studio.Controllers
             if (bpmWorkflowEntity == null)
                 return NotFound();
 
-            await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
+            var result = await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
 
             //For Runtime
             //var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
 
             //TODO We should be delete from Definition List?
 
-            return Ok();
+            return Ok(result);
         }
     }
 }
