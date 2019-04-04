@@ -60,7 +60,7 @@ angular.module('primeapps')
                 .then(function (response) {
                     $scope.profiles = response.data;
                     $scope.profiles[0].name = 'Administrator';
-                    $scope.profiles[1].name = 'Standart';
+                    $scope.profiles[1].name = 'Standard';
                 });
 
             UsersService.count()
