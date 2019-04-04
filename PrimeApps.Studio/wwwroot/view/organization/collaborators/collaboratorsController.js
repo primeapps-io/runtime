@@ -193,6 +193,7 @@ angular.module('primeapps')
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
                             $scope.pageTotal++;
+                            $scope.$parent.collaboratorCount = $scope.pageTotal;
                             if ($scope.resultModel.sendPassword) {
                                 $scope.sendEmailPassword($scope.collaboratorModel);
                             } else {
