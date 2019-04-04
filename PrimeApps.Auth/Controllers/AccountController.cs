@@ -1761,7 +1761,7 @@ namespace PrimeApps.Auth.UI
 						await _platformUserRepository.UpdateAsync(platformUser);
 						await _tenantRepository.UpdateAsync(tenant);
 
-						await _recordRepository.UpdateSampleData(platformUser);
+						//await _recordRepository.UpdateSampleData(platformUser);
 						//await Cache.ApplicationUser.Add(user.Email, user.Id);
 						//await Cache.User.Get(user.Id);
 
