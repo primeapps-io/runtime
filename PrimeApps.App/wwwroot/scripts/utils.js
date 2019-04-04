@@ -1531,7 +1531,9 @@ angular.module('primeapps')
             return {
                 run: function (place, type, scope, record, field) {
                     var ModuleService = $injector.get('ModuleService');
-
+                    place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
+                    type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
+                    
                     var components = $filter('orderBy')($filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
                     }, true), 'order');
