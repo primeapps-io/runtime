@@ -361,7 +361,8 @@ namespace PrimeApps.App.Controllers
                         var jsonResult = JObject.Parse(stringResult);
                         if (!string.IsNullOrEmpty(jsonResult["token"].ToString()) && !addUserBindingModel.DontSendMail)
                         {
-                            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "email_confirm");
+                            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "email_confirm");
+                            
                             foreach (var template in templates)
                             {
                                 if (template != null)
