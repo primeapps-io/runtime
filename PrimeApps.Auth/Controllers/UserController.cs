@@ -106,7 +106,7 @@ namespace PrimeApps.Auth.Controllers
                     TenantsAsUser = new List<UserTenant>()
                 };
 
-                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1});
+                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1 });
 
                 var createUserResult = await _platformUserRepository.CreateUser(platformUser);
 
@@ -150,7 +150,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id });
         }
 
         [Route("add_organization_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -234,7 +234,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
         }
 
         [Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -257,7 +257,7 @@ namespace PrimeApps.Auth.Controllers
             if (tenantCheck == null)
                 return Unauthorized();
 
-            _userRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
+            _userRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
 
             var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
 
@@ -373,13 +373,13 @@ namespace PrimeApps.Auth.Controllers
                 await _userRepository.UpdateAsync(tenantUser);
             }
 
-            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
+            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
             await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
             await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
 
             var currentTenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
 
-            platformUser.TenantsAsUser.Add(new UserTenant {Tenant = currentTenant, PlatformUser = platformUser});
+            platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
 
             await _platformUserRepository.UpdateAsync(platformUser);
 
@@ -403,7 +403,7 @@ namespace PrimeApps.Auth.Controllers
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
         }
 
         [Route("change_password"), HttpPost]
@@ -468,6 +468,11 @@ namespace PrimeApps.Auth.Controllers
         [Route("token"), HttpPost, Consumes("application/x-www-form-urlencoded")]
         public async Task<TokenResponse> GetToken([FromForm]PasswordTokenRequest tokenRequest)
         {
+            var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
+
+            if (user == null || !user.IsIntegrationUser)
+                return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
+
             var httpClient = new HttpClient();
 
             tokenRequest.Address = _configuration["AppSettings:Authority"] + "/connect/token";

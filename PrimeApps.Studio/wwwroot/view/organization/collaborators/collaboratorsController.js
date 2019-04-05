@@ -193,6 +193,7 @@ angular.module('primeapps')
                         if (response.data) {
                             toastr.success('Collaborator is saved successfully');
                             $scope.pageTotal++;
+                            $scope.$parent.collaboratorCount = $scope.pageTotal;
                             if ($scope.resultModel.sendPassword) {
                                 $scope.sendEmailPassword($scope.collaboratorModel);
                             } else {
@@ -291,8 +292,6 @@ angular.module('primeapps')
 
             $scope.sendEmailPassword = function (collaboratorModel) {
 
-                if (collaboratorModel.auto_pass) {
-
                     var sendEmailData = {};
                     sendEmailData.app_id = 2;
                     sendEmailData.culture = "en";
@@ -306,17 +305,8 @@ angular.module('primeapps')
                             $scope.changePage(1);
                             $scope.submitting = false;
                             $scope.addNewCollaboratorModal.hide();
-                        })
+                        });
                     }
-
-
-                } else {
-                    $scope.changePage(1);
-                    $scope.submitting = false;
-                    $scope.addNewCollaboratorModal.hide();
-                }
-
-
             };
 
         }

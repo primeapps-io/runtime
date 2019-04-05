@@ -197,7 +197,7 @@ namespace PrimeApps.Studio.Helpers
 
                             using (var repo = new Repository(localPath))
                             {
-                                var sample = "Console.log('Hello World!');";
+                                var sample = "console.log('Hello World!');";
 
                                 using (var fs = System.IO.File.Create(localPath + fileName))
                                 {

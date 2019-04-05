@@ -131,12 +131,12 @@ angular.module('primeapps')
                     return $http.put(config.apiUrl + 'report/update_category/' + data.id, data);
                 },
                 categoryDelete: function (id) {
-                    return $http.delete(config.apiUrl + '/report/delete_category/' + id);
+                    return $http.delete(config.apiUrl + 'report/delete_category/' + id);
                 },
                 createReport: function (data) {
                     return $http.post(config.apiUrl + "report/create", data);
                 },
-                deleteReport:function (id) {
+                deleteReport: function (id) {
                     return $http.delete(config.apiUrl + '/report/delete/' + id);
                 },
                 getReport: function (id) {

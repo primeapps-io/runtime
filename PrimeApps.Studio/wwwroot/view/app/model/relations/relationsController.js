@@ -184,7 +184,7 @@ angular.module('primeapps')
             };
 
             $scope.relatedModuleChanged = function () {
-
+                $scope.fields = {};
                 $scope.currentRelation.relationField = null;
                 if ($scope.currentRelation.related_module) {
                     var relatedModuleName = $scope.currentRelation.related_module.name;
@@ -233,7 +233,7 @@ angular.module('primeapps')
                     if (relationForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     
-                    if ($scope.fields.selectedFields.length < 1)
+                    if ($scope.currentRelation.related_module && $scope.fields.selectedFields && $scope.fields.selectedFields.length < 1)
                         toastr.error($filter('translate')('View.FieldError'));
                     
                     return;

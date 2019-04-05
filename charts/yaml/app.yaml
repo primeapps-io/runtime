@@ -178,6 +178,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: primeapps-app-service
+  namespace: primeapps
 spec:
   type: "ClusterIP"
   selector:
