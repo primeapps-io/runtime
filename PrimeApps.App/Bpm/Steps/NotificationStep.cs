@@ -213,7 +213,7 @@ namespace PrimeApps.App.Bpm.Steps
 					}
 				}
 			}
-			ExecutionResult.Outcome(Response).OutcomeValue = Response;
+			//ExecutionResult.Outcome(Response).OutcomeValue = Response;
 			return ExecutionResult.Next();
 		}
 	}
