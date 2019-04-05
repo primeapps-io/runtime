@@ -86,42 +86,42 @@
                                            ng-model="appModel.description">
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-12 required-field">Logo</label>
-                                    <div class="newupload" ng-if="uploader.queue.length == 0 || !uploadLogo">
-                                        <label class="uploadlink">
-                                            <div ng-show="uploader.isHTML5">
-                                                <div nv-file-drop="" uploader="uploader">
-                                                    <div nv-file-over="" uploader="uploader"
-                                                         over-class="another-file-over-class" class="my-drop-zone">
-                                                        <input type="file" nv-file-select uploader="uploader" nv-file-over ng-disabled="croppedImage">
-                                                        <span>
-                                                            <i class="fas fa-cloud-upload-alt"></i>
-                                                            <small>Please choose a file or drag it here</small>
-                                                        </span>
-                                                    </div>
+                                    <label class="required-field">Logo</label>
+                                    <div class="iconandcolor">
+                                        <div class="flex-evenly">
+                                            <div>
+                                                <a style="background: #DC3023;" href="#" class="appicon" title="">
+                                                    <i class="fas fa-box-open"></i>
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <div class="appcolor">
+                                                    <span style="background: #D24D57;"></span>
+                                                    <span style="background: #BE90D4;"></span>
+                                                    <span style="background: #5AABE3;"></span>
+                                                    <span style="background: #87D37C;"></span>
+                                                    <span style="background: #F4D03E;"></span>
+                                                    <span style="background: #B8BEC2;"></span>
+                                                </div>
+                                                <div class="appcolor">
+                                                    <span class="active" style="background: #DC3023;"></span>
+                                                    <span style="background: #8E44AD;"></span>
+                                                    <span style="background: #19B5FE;"></span>
+                                                    <span style="background: #25A65B;"></span>
+                                                    <span style="background: #FFB61E;"></span>
+                                                    <span style="background: #959EA4;"></span>
+                                                </div>
+                                                <div class="appcolor">
+                                                    <span style="background: #C3272B;"></span>
+                                                    <span style="background: #763668;"></span>
+                                                    <span style="background: #1F4688;"></span>
+                                                    <span style="background: #006442;"></span>
+                                                    <span style="background: #CA6924;"></span>
+                                                    <span style="background: #4D5C66;"></span>
                                                 </div>
                                             </div>
-                                        </label>
-                                        <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>
-                                    </div>
-                                    <div ng-show="uploader.queue.length > 0 && uploadLogo">
-                                        <div class="row">
-                                            <div class="col-md-6 col-lg-6">
-                                                <img ng-src="{{uploader.queue[0].image}}" class="resultimg"/>
-                                                <div class="action-buttons-block">
-                                                    <button type="button" class="action-buttons-delete"
-                                                            ng-click="logoRemove();">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <!--<div class="col-xs-12" ng-repeat="item in uploader.queue" ng-show="false">-->
-                                            <!--<div class="cropArea cropArea2">-->
-                                            <!--<label class="">Please crop your image: </label>-->
-                                            <!--<img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>-->
-                                            <!--</div>-->
-                                            <!--</div>-->
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>

@@ -2238,6 +2238,101 @@ button, select {
     }
 
   }
+  .iconandcolor{
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+  }
+  .appicon{
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+    padding: 20px;
+    margin: 10px;
+    line-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    @include hoverEffect();
+    &:before{
+      content: "\f107";
+      font-weight: 900;
+      font-family: "Font Awesome 5 Free";
+      -webkit-font-smoothing: antialiased;
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      line-height: 1;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      margin-top: -10px;
+      line-height: 20px;
+      font-size: 18px;
+    }
+    &:hover{
+      background: rgba(0, 0, 0, 0.75) !important;
+      
+    }
+  }
+  
+  .appcolor{
+    &:after{
+      content:'';
+      width: 100%;
+      display: table;
+    }
+    span{
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      border-radius: 10px;
+      background: #FFF;
+      position: relative;
+      margin: 6px;
+      cursor: pointer;
+      float:left;
+      &:after{
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        display: inline-block;
+        left: 50%;
+        top: 50%;
+        border: 2px solid $primeapps-color;
+        @include hoverEffect();
+        visibility: hidden;
+        opacity: 0;
+      }
+      &:hover{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: .5;
+        }
+      }
+      &.active{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+  }
+  
 
   .dropdown-menu {
     border: none;
@@ -2951,6 +3046,19 @@ button, select {
     align-items: center;
     width: 100%;
   }
+  .flex-around {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+  }
+  .flex-evenly {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+  }
+  
 
   .btn {
     padding: 5px 10px;
