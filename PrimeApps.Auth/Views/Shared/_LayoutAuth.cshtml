@@ -1,5 +1,4 @@
-﻿@using System.Web
-@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
     var title = Model.ApplicationInfo.Theme["title"].ToString();
@@ -80,7 +79,7 @@
         }
 
         .banner-sec {
-            background: url(@HttpUtility.UrlDecode(banner[0]["image"].ToString())) no-repeat center center;
+            background: url(@banner[0]["image"].ToString()) no-repeat center center;
             background-size: cover;
             min-height: 500px;
             padding: 0;
