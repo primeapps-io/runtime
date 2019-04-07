@@ -7,6 +7,7 @@
     var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
     var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
     var banner = Model.ApplicationInfo?.Theme["banner"];
+    var bannerImage = HttpUtility.HtmlDecode(banner[0]["image"].ToString());
 }
 
 <!DOCTYPE html>
@@ -80,8 +81,6 @@
         }
 
         .banner-sec {
-            background: url('@HttpUtility.HtmlDecode(banner[0]["image"].ToString()))') no-repeat center center;
-            background-size: cover;
             min-height: 500px;
             padding: 0;
         }
@@ -264,7 +263,7 @@
     <div class="container">
         <div class="row">
             @RenderBody()
-            <div class="col-md-8 banner-sec">
+            <div class="col-md-8 banner-sec" style="background: url(@Url.Content(bannerImage)) no-repeat center center; background-size: cover;">
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner" role="listbox">
                         <div class="carousel-item active">
