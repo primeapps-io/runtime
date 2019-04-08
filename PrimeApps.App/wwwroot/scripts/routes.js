@@ -1386,7 +1386,7 @@ angular.module('primeapps')
 
                     componentContent.app.templateUrl = replaceDynamicValues(componentContent.app.templateUrl);
 
-                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
+                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' || preview ? 'app-' + applicationId : 'tenant-' + tenantId) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
                         componentContent.files[i] = replaceDynamicValues(componentContent.files[i]);

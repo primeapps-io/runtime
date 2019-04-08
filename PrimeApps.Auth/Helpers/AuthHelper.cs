@@ -76,7 +76,8 @@ namespace PrimeApps.Auth.UI
                     RegistrationType = app.Setting.RegistrationType,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 },
-                Preview = preview
+                Preview = preview,
+                Secret =  app.Secret
             };
 
             return application;

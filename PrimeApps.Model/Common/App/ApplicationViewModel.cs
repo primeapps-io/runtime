@@ -28,6 +28,7 @@ namespace PrimeApps.Model.Common.App
         public bool MultiLanguage { get; set; }
         public string CdnUrl { get; set; }
         public bool Preview { get; set; }
+        public string Secret { get; set; }
         public ApplicationSettingViewModel ApplicationSetting { get; set; }
     }
 

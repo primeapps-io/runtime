@@ -36,11 +36,11 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task CreateAsync(TenantUser user)
+        public async Task<int> CreateAsync(TenantUser user)
         {
             DbContext.Users.Add(user);
 
-            var result = await DbContext.SaveChangesAsync();
+           return await DbContext.SaveChangesAsync();
 
             //if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             //{

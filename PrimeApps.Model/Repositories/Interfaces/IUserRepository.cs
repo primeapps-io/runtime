@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IUserRepository : IRepositoryBaseTenant
     {
-        Task CreateAsync(TenantUser user);
+        Task<int> CreateAsync(TenantUser user);
         Task<ICollection<TenantUser>> GetAllAsync();
         Task<ICollection<TenantUser>> GetAllAsync(int take, int startFrom, int count);
         Task<UserInfo> GetUserInfoAsync(int userId, bool isActive = true);
