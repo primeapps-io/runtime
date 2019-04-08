@@ -151,6 +151,7 @@ namespace PrimeApps.Auth.Helpers
                     if (result != 0)
                         return user;
 
+
                     ErrorHandler.LogError(null, "Tenant user not created successfully. Model: " + user.ToJsonString());
                     return null;
                 }
@@ -178,6 +179,25 @@ namespace PrimeApps.Auth.Helpers
                 return false;
 
             var tenantUser = await CreateTenantUser(platformUser.Id, user, appId, tenantId);
+
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+
+                using (var _userRepository = new UserRepository(databaseContext, _configuration))
+                {
+                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUser.Id, PreviewMode = previewMode};
+                    _userRepository.CurrentUser = _currentUser;
+
+                    var result = await _userRepository.GetById(platformUser.Id);
+
+                    result.ProfileId = 1;
+                    result.RoleId = 1;
+
+                    await _userRepository.UpdateAsync(result);
+                }
+            }
+
             return tenantUser != null;
         }
     }

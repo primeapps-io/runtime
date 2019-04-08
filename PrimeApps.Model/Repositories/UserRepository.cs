@@ -138,9 +138,9 @@ namespace PrimeApps.Model.Repositories
             return userInfo;
         }
 
-        public async Task UpdateAsync(TenantUser user)
+        public async Task<int> UpdateAsync(TenantUser user)
         {
-            var result = await DbContext.SaveChangesAsync();
+            return await DbContext.SaveChangesAsync();
             //if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             //{
             //    if (_warehouse != null && _warehouse.DatabaseName != "0")
