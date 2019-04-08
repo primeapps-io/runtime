@@ -13,6 +13,9 @@ angular.module('primeapps')
             $scope.imageRun = {};
             $scope.$parent.activeMenuItem = 'branding';
             $rootScope.breadcrumblist[2].title = 'Branding';
+            $scope.tabManage = {
+                activeTab: "loginpage"
+            };
 
             $scope.uploaderImage = function (field) {
                 $scope.image[field] = {};
