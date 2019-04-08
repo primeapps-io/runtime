@@ -470,7 +470,7 @@ namespace PrimeApps.Auth.Controllers
         {
             var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
 
-            if (user == null || !user.IsIntegrationUser)
+            if (user == null || !user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId)
                 return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
 
             var httpClient = new HttpClient();

@@ -30,12 +30,18 @@ angular.module('primeapps')
                     if (trustedUrls.length > 0) {
                         var getValue = function (key) {
                             switch (key) {
+                                case 'X-User-Id':
                                 case 'user_id':
                                     return $rootScope.user.id;
+                                case 'X-Tenant-Id':
                                 case 'tenant_id':
                                     return $rootScope.user.tenant_id;
+                                case 'X-App-Id':
+                                case 'app_id':
+                                    return appId;
                                 case 'X-Auth-Key':
                                     return encryptedUserId;
+                                case 'X-Branch-Id':
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                             }
