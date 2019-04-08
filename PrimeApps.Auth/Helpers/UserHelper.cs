@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
@@ -170,15 +171,39 @@ namespace PrimeApps.Auth.Helpers
                 Password = password
             };
 
-            var identityUser = await CreateIdentityUser(user);
-            if (identityUser == null)
+            var resultIdentityUser = await CreateIdentityUser(user);
+            if (resultIdentityUser == null)
                 return false;
 
-            var platformUser = await CreatePlatformUser(user, appName, true);
-            if (platformUser == null)
+            var resultPlatformUser = await CreatePlatformUser(user, appName, true);
+            if (resultPlatformUser == null)
                 return false;
 
-            var tenantUser = await CreateTenantUser(platformUser.Id, user, appId, tenantId);
+
+            var resultTenantUser = await CreateTenantUser(resultPlatformUser.Id, user, appId, tenantId);
+            if (resultTenantUser == null)
+                return false;
+
+
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
+                using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+                {
+                    var tenant = await _tenantRepository.GetAsync(tenantId);
+                    var platformUser = await _platformUserRepository.GetWithTenants(user.Email);
+
+                    if (platformUser.TenantsAsUser == null)
+                        platformUser.TenantsAsUser = new List<UserTenant>();
+
+                    platformUser.TenantsAsUser.Add(new UserTenant {Tenant = tenant, PlatformUser = platformUser});
+
+                    await _platformUserRepository.UpdateAsync(platformUser);
+                }
+            }
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -186,10 +211,10 @@ namespace PrimeApps.Auth.Helpers
 
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUser.Id, PreviewMode = previewMode};
+                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode};
                     _userRepository.CurrentUser = _currentUser;
 
-                    var result = await _userRepository.GetById(platformUser.Id);
+                    var result = await _userRepository.GetById(resultTenantUser.Id);
 
                     result.ProfileId = 1;
                     result.RoleId = 1;
@@ -198,7 +223,7 @@ namespace PrimeApps.Auth.Helpers
                 }
             }
 
-            return tenantUser != null;
+            return true;
         }
     }
 }
