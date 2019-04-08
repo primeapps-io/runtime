@@ -906,11 +906,19 @@ button:focus, select:focus {
   animation: pagepointmove 1s linear infinite;
 }
 .primeapps .custom-tabx .tab-content {
-  border-radius: 0px;
   background: #FFF;
   box-shadow: none;
   border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 20px;
+  margin-top: -1px;
+  border-top-left-radius: 0px;
+}
+.primeapps .custom-tabx .nav-tabs > li.active > a, .primeapps .custom-tabx .nav-tabs > li > a:hover {
+  background: #FFF !important;
+}
+.primeapps .custom-tabx a {
+  cursor: pointer;
+  font-weight: bold;
 }
 .primeapps .table-responsive {
   border-color: transparent !important;

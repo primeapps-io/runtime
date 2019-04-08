@@ -1116,11 +1116,19 @@ button, select {
   }
   .custom-tabx{
     .tab-content{
-      border-radius: 0px;
       background: #FFF;
       box-shadow: none;
       border: 1px solid rgba(0, 0, 0, 0.05);
       padding: 20px;
+      margin-top: -1px;
+      border-top-left-radius: 0px;
+    }
+    .nav-tabs > li.active > a,.nav-tabs > li > a:hover{
+      background: #FFF !important;
+    }
+    a{
+      cursor: pointer;
+      font-weight: bold;
     }
     
   }
