@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Common.Instance;
+﻿using System;
+using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -62,6 +63,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task UpdateAsync(PlatformUser userToEdit)
         {
+            userToEdit.UpdatedAt = DateTime.Now;
             await DbContext.SaveChangesAsync();
         }
 
@@ -142,6 +144,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> CreateUser(PlatformUser user)
         {
+            user.CreatedAt = DateTime.Now;
             DbContext.Users.Add(user);
             return await DbContext.SaveChangesAsync();
         }

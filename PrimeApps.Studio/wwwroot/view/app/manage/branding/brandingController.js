@@ -226,7 +226,7 @@ angular.module('primeapps')
                 description.en = $scope.authTheme.descriptionEn;
                 description.tr = $scope.authTheme.descriptionTr;
                 var banner = [
-                    { description: description, image: $scope.authTheme.banner }
+                    { descriptions: description, image: $scope.authTheme.banner }
                 ];
                 authThemes.color = $scope.authTheme.color;
                 authThemes.title = $scope.authTheme.title;
