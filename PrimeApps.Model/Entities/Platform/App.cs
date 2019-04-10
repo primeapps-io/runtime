@@ -26,6 +26,9 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
 
+        [Column("secret"), MaxLength(4000)]
+        public string Secret { get; set; }
+
         public virtual AppSetting Setting { get; set; }
 
         [JsonIgnore]

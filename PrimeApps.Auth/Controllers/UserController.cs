@@ -23,6 +23,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Common.App;
 using System.Collections.Generic;
 using Hangfire.Common;
+using PrimeApps.Auth.Helpers;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -41,6 +42,8 @@ namespace PrimeApps.Auth.Controllers
         private readonly IEventService _events;
         private IConfiguration _configuration;
 
+        private IUserHelper _userHelper;
+
         public UserController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -52,7 +55,8 @@ namespace PrimeApps.Auth.Controllers
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IPlatformWarehouseRepository platformWarehouseRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUserHelper userHelper)
         {
             _applicationRepository = applicationRepository;
             _userManager = userManager;
@@ -64,6 +68,8 @@ namespace PrimeApps.Auth.Controllers
             _roleRepository = roleRepository;
             _configuration = configuration;
             _events = events;
+
+            _userHelper = userHelper;
         }
 
         [Route("add_app_draft_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -89,32 +95,34 @@ namespace PrimeApps.Auth.Controllers
             if (!string.IsNullOrEmpty(addUserBindingModel.Password))
                 password = addUserBindingModel.Password;
 
+            var userModel = new AddUserBindingModel
+            {
+                Email = addUserBindingModel.Email,
+                LastName = addUserBindingModel.LastName,
+                FirstName = addUserBindingModel.FirstName,
+                Password = password
+            };
+
             if (platformUser == null)
             {
-                platformUser = new PlatformUser
+                var setting = new PlatformUserSetting
                 {
-                    Email = addUserBindingModel.Email,
-                    FirstName = addUserBindingModel.FirstName,
-                    LastName = addUserBindingModel.LastName,
-                    Setting = new PlatformUserSetting
-                    {
-                        Culture = currentPlatformUser.Setting.Culture,
-                        Language = currentPlatformUser.Setting.Language,
-                        Currency = currentPlatformUser.Setting.Currency,
-                        TimeZone = currentPlatformUser.Setting.TimeZone
-                    },
-                    TenantsAsUser = new List<UserTenant>()
+                    Culture = currentPlatformUser.Setting.Culture,
+                    Language = currentPlatformUser.Setting.Language,
+                    Currency = currentPlatformUser.Setting.Currency,
+                    TimeZone = currentPlatformUser.Setting.TimeZone
                 };
 
-                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1 });
+                platformUser = await _userHelper.CreatePlatformUser(userModel, "", false, setting);
 
-                var createUserResult = await _platformUserRepository.CreateUser(platformUser);
-
-                if (createUserResult == 0)
+                if (platformUser == null)
                 {
-                    ModelState.AddModelError("", "user not created");
+                    ModelState.AddModelError("", "Platform user not created.");
                     return BadRequest(ModelState);
                 }
+
+                platformUser.TenantsAsUser = new List<UserTenant> {new UserTenant {TenantId = 1}};
+                await _platformUserRepository.UpdateAsync(platformUser);
             }
 
             var identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
@@ -125,32 +133,15 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else if (identityUser == null)
             {
-                var user = new ApplicationUser
-                {
-                    UserName = addUserBindingModel.Email,
-                    Email = addUserBindingModel.Email,
-                    NormalizedEmail = addUserBindingModel.Email,
-                    NormalizedUserName = !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""
-                };
-                var result = await _userManager.CreateAsync(user, password);
-                if (!result.Succeeded)
-                    return BadRequest(result);
+                identityUser = await _userHelper.CreateIdentityUser(userModel);
 
+                if (identityUser == null)
+                    return BadRequest();
 
-                result = _userManager.AddClaimsAsync(user, new Claim[]
-                {
-                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""),
-                    new Claim(JwtClaimTypes.GivenName, addUserBindingModel.FirstName),
-                    new Claim(JwtClaimTypes.FamilyName, addUserBindingModel.LastName),
-                    new Claim(JwtClaimTypes.Email, addUserBindingModel.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
-                }).Result;
-
-                identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id});
         }
 
         [Route("add_organization_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -171,32 +162,34 @@ namespace PrimeApps.Auth.Controllers
 
             var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
 
-            var randomPassword = Utils.GenerateRandomUnique(8);
+            var password = Utils.GenerateRandomUnique(8);
 
             if (!string.IsNullOrEmpty(addUserBindingModel.Password))
-                randomPassword = addUserBindingModel.Password;
+                password = addUserBindingModel.Password;
+
+            var userModel = new AddUserBindingModel
+            {
+                Email = addUserBindingModel.Email,
+                LastName = addUserBindingModel.LastName,
+                FirstName = addUserBindingModel.FirstName,
+                Password = password
+            };
 
             if (platformUser == null)
             {
-                platformUser = new PlatformUser
+                var setting = new PlatformUserSetting
                 {
-                    Email = addUserBindingModel.Email,
-                    FirstName = addUserBindingModel.FirstName,
-                    LastName = addUserBindingModel.LastName,
-                    Setting = new PlatformUserSetting
-                    {
-                        Culture = currentPlatformUser.Setting.Culture,
-                        Language = currentPlatformUser.Setting.Language,
-                        Currency = currentPlatformUser.Setting.Currency,
-                        TimeZone = currentPlatformUser.Setting.TimeZone
-                    }
+                    Culture = currentPlatformUser.Setting.Culture,
+                    Language = currentPlatformUser.Setting.Language,
+                    Currency = currentPlatformUser.Setting.Currency,
+                    TimeZone = currentPlatformUser.Setting.TimeZone
                 };
 
-                var createUserResult = await _platformUserRepository.CreateUser(platformUser);
+                platformUser = await _userHelper.CreatePlatformUser(userModel, "", false, setting);
 
-                if (createUserResult == 0)
+                if (platformUser == null)
                 {
-                    ModelState.AddModelError("", "user not created");
+                    ModelState.AddModelError("", "Platform user not created.");
                     return BadRequest(ModelState);
                 }
             }
@@ -209,32 +202,15 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else if (identityUser == null)
             {
-                var user = new ApplicationUser
-                {
-                    UserName = addUserBindingModel.Email,
-                    Email = addUserBindingModel.Email,
-                    NormalizedEmail = addUserBindingModel.Email,
-                    NormalizedUserName = !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""
-                };
-                var result = await _userManager.CreateAsync(user, randomPassword);
-                if (!result.Succeeded)
-                    return BadRequest(result);
+                identityUser = await _userHelper.CreateIdentityUser(userModel);
 
+                if (identityUser == null)
+                    return BadRequest();
 
-                result = _userManager.AddClaimsAsync(user, new Claim[]
-                {
-                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""),
-                    new Claim(JwtClaimTypes.GivenName, addUserBindingModel.FirstName),
-                    new Claim(JwtClaimTypes.FamilyName, addUserBindingModel.LastName),
-                    new Claim(JwtClaimTypes.Email, addUserBindingModel.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
-                }).Result;
-
-                identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password});
         }
 
         [Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -257,7 +233,7 @@ namespace PrimeApps.Auth.Controllers
             if (tenantCheck == null)
                 return Unauthorized();
 
-            _userRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+            _userRepository.CurrentUser = new CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
 
             var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
 
@@ -276,38 +252,40 @@ namespace PrimeApps.Auth.Controllers
 
             var randomPassword = Utils.GenerateRandomUnique(8);
 
-            PlatformUser applicationUser = null;
+            var userModel = new AddUserBindingModel
+            {
+                Email = addUserBindingModel.Email,
+                LastName = addUserBindingModel.LastName,
+                FirstName = addUserBindingModel.FirstName,
+                Password = randomPassword,
+                Phone = addUserBindingModel.Phone
+            };
+
+            PlatformUser platformUser = null;
             if (checkEmail != EmailAvailableType.AvailableForApp)
             {
-                applicationUser = new PlatformUser
+                var settings = new PlatformUserSetting
                 {
-                    Email = addUserBindingModel.Email,
-                    FirstName = addUserBindingModel.FirstName,
-                    LastName = addUserBindingModel.LastName,
-                    Setting = new PlatformUserSetting
-                    {
-                        Culture = tenant.Setting.Culture,
-                        Language = tenant.Setting.Language,
-                        Currency = tenant.Setting.Currency,
-                        TimeZone = tenant.Setting.TimeZone
-                    }
+                    Culture = tenant.Setting.Culture,
+                    Language = tenant.Setting.Language,
+                    Currency = tenant.Setting.Currency,
+                    TimeZone = tenant.Setting.TimeZone
                 };
 
-                var createUserResult = await _platformUserRepository.CreateUser(applicationUser);
+                platformUser = await _userHelper.CreatePlatformUser(userModel, "", false, settings);
 
-                if (createUserResult == 0)
+                if (platformUser == null)
                 {
-                    ModelState.AddModelError("", "user not created");
+                    ModelState.AddModelError("", "Platform user not created.");
                     return BadRequest(ModelState);
                 }
             }
             else
             {
-                applicationUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+                platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
             }
 
             var appInfo = await _applicationRepository.Get(addUserBindingModel.AppId);
-
 
             var identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
             string token = null;
@@ -317,54 +295,27 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else
             {
-                var user = new ApplicationUser
-                {
-                    UserName = addUserBindingModel.Email,
-                    Email = addUserBindingModel.Email,
-                    NormalizedEmail = addUserBindingModel.Email,
-                    NormalizedUserName = !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""
-                };
-                var result = await _userManager.CreateAsync(user, randomPassword);
-                if (!result.Succeeded)
-                    return BadRequest(result);
+                identityUser = await _userHelper.CreateIdentityUser(userModel);
 
+                if (identityUser == null)
+                    return BadRequest();
 
-                result = _userManager.AddClaimsAsync(user, new Claim[]
-                {
-                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""),
-                    new Claim(JwtClaimTypes.GivenName, addUserBindingModel.FirstName),
-                    new Claim(JwtClaimTypes.FamilyName, addUserBindingModel.LastName),
-                    new Claim(JwtClaimTypes.Email, addUserBindingModel.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
-                }).Result;
-
-                identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
                 token = await GetConfirmToken(identityUser);
             }
 
-            var platformUser = await _platformUserRepository.Get(applicationUser.Id);
+            platformUser = await _platformUserRepository.Get(platformUser.Id);
             var tenantUser = await _userRepository.GetById(platformUser.Id);
 
             if (tenantUser == null)
             {
-                tenantUser = new User
-                {
-                    Id = platformUser.Id,
-                    Email = addUserBindingModel.Email,
-                    FirstName = addUserBindingModel.FirstName,
-                    LastName = addUserBindingModel.LastName,
-                    FullName = $"{addUserBindingModel.FirstName} {addUserBindingModel.LastName}",
-                    Phone = addUserBindingModel.Phone,
-                    Picture = "",
-                    IsActive = true,
-                    IsSubscriber = false,
-                    Culture = currentPlatformUser.Setting.Culture,
-                    Currency = currentPlatformUser.Setting.Currency.Substring(0, 2),
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedByEmail = currentPlatformUser.Email
-                };
+                tenantUser = await _userHelper.CreateTenantUser(platformUser.Id, userModel, addUserBindingModel.AppId, addUserBindingModel.TenantId, currentPlatformUser.Setting.Culture, currentPlatformUser.Setting.Currency);
 
-                await _userRepository.CreateAsync(tenantUser);
+                if (tenantUser == null)
+                {
+                    ModelState.AddModelError("", "Tenant user not created.");
+                    return BadRequest(ModelState);
+                    return BadRequest();
+                }
             }
             else
             {
@@ -373,13 +324,13 @@ namespace PrimeApps.Auth.Controllers
                 await _userRepository.UpdateAsync(tenantUser);
             }
 
-            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
             await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
             await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
 
             var currentTenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
 
-            platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
+            platformUser.TenantsAsUser.Add(new UserTenant {Tenant = currentTenant, PlatformUser = platformUser});
 
             await _platformUserRepository.UpdateAsync(platformUser);
 
@@ -403,7 +354,7 @@ namespace PrimeApps.Auth.Controllers
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
             }
 
-            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
+            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
         }
 
         [Route("change_password"), HttpPost]
@@ -470,7 +421,7 @@ namespace PrimeApps.Auth.Controllers
         {
             var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
 
-            if (user == null || !user.IsIntegrationUser)
+            if (user == null || !user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId)
                 return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
 
             var httpClient = new HttpClient();
@@ -502,9 +453,7 @@ namespace PrimeApps.Auth.Controllers
             var user = await _userManager.FindByEmailAsync(userObj["email"].ToString());
 
             if (user == null)
-            {
                 return BadRequest("User not found !");
-            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 

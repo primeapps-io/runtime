@@ -31,6 +31,9 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("is_integration_user")]
         public bool IsIntegrationUser { get; set; }
+        
+        [Column("integration_user_client_id")]
+        public string IntegrationUserClientId { get; set; }
 
         public virtual ICollection<UserTenant> TenantsAsUser { get; set; }
 

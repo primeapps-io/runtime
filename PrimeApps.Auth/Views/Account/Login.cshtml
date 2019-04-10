@@ -73,21 +73,22 @@
             }
 
             <div class="language">
-                @if (multiLanguage)
-                {
-                    if (otherLang == "tr")
-                    {
-                        <a href="@Url.Action("ChangeLanguage", "Account", new {language = "tr", ReturnUrl = path})">@Localizer["TR"]</a>
-                        <span>|</span>
-                    }
-                    else if (otherLang == "en")
-                    {
-                        <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
-                        <span>|</span>
-                    }
-                }
                 @if (!preview)
                 {
+                    if (multiLanguage)
+                     {
+                         if (otherLang == "tr")
+                         {
+                             <a href="@Url.Action("ChangeLanguage", "Account", new {language = "tr", ReturnUrl = path})">@Localizer["TR"]</a>
+                             <span>|</span>
+                         }
+                         else if (otherLang == "en")
+                         {
+                             <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
+                             <span>|</span>
+                         }
+                     }
+
                     <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
                 }
             </div>
