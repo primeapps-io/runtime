@@ -1,0 +1,27 @@
+{{- if eq .Values.deployment "internal" }}
+{{- if .Values.studio.ingress.enabled }}
+{{- if eq .Values.environment "kubernetes" }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+{{ toYaml .Values.studio.ingress.annotations | indent 4 }}
+  name: {{ template "fullname" . }}-app
+spec:
+  rules:
+  - host: {{ .Values.studio.ingress.hostname | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "fullname" . }}-app
+          servicePort: {{ .Values.studio.servicePort }}
+{{- if .Values.studio.ingress.tls }}
+  tls:
+  - secretName: {{ .Values.studio.ingress.tlsSecretName | quote }}
+    hosts:
+      - {{ .Values.studio.ingress.hostname | quote }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

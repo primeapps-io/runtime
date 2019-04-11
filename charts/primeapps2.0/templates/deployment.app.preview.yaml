@@ -1,0 +1,60 @@
+{{- if eq .Values.deployment "internal" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}-app-pre
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.appPre.component}}"
+spec:
+  replicas: {{ default 1 .Values.appPre.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.appPre.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.appPre.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.appPre.pullsecret }}
+      containers:
+        - name: {{ template "fullname" . }}-app-pre
+          image: "{{.Values.appPre.image}}:{{.Values.appPre.imageTag}}"
+          imagePullPolicy: "{{.Values.appPre.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.appPre.containerPort}}
+          {{- if .Values.appPre.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.appPre.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "fullname" . }}-app-pre-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.appPre.cpu}}"
+              memory: "{{.Values.appPre.memory}}"
+{{- end -}}

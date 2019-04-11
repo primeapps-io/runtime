@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}-auth
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.auth.component}}"
+spec:
+  replicas: {{ default 1 .Values.auth.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.auth.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.auth.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.auth.pullsecret }}
+      containers:
+        - name: {{ template "fullname" . }}-auth
+          image: "{{.Values.auth.image}}:{{.Values.auth.imageTag}}"
+          imagePullPolicy: "{{.Values.auth.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.auth.containerPort}}
+          {{- if .Values.auth.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.auth.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "fullname" . }}-auth-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.auth.cpu}}"
+              memory: "{{.Values.auth.memory}}"

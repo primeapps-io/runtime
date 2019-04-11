@@ -1,0 +1,25 @@
+{{- if .Values.app.ingress.enabled }}
+{{- if eq .Values.environment "kubernetes" }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+{{ toYaml .Values.app.ingress.annotations | indent 4 }}
+  name: {{ template "fullname" . }}-app
+spec:
+  rules:
+  - host: {{ .Values.app.ingress.hostname | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "fullname" . }}-app
+          servicePort: {{ .Values.app.servicePort }}
+{{- if .Values.app.ingress.tls }}
+  tls:
+  - secretName: {{ .Values.app.ingress.tlsSecretName | quote }}
+    hosts:
+      - {{ .Values.app.ingress.hostname | quote }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
