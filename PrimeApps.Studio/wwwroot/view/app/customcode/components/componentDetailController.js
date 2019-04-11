@@ -160,7 +160,7 @@ angular.module('primeapps')
                     $scope.copyComponent.content = {};
                 }
 
-                if ($scope.component.content.files) {
+                if ($scope.component.content && $scope.component.content.files) {
                     $scope.copyComponent.content.files = $scope.component.content.files.split("\n");
                 }
 

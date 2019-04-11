@@ -28,7 +28,7 @@
                     <div class="form-group" show-errors>
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Phone' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="text" name="phone"  class="form-control" ui-mask="{{locale === 'tr' ? '0 (999) 999 99-99' : ''}}" ng-model="userModel.phone" />
+                            <input type="text" name="phone" maxlength="50"  class="form-control" ui-mask="{{locale === 'tr' ? '0 (999) 999 99-99' : ''}}" ng-model="userModel.phone" />
                         </div>
                     </div>
 
@@ -46,7 +46,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!userModel.phone"  ladda="userUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                            <button type="submit" class="btn btn-primary btn-w-lg"  ladda="userUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                         </div>
                     </div>
                 </form>
