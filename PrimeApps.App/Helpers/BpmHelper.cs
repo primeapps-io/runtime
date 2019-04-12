@@ -55,14 +55,14 @@ namespace PrimeApps.App.Helpers
 
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context, configuration);
-            _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public BpmHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
         {
-            _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
 
             _currentUser = currentUser;
         }
@@ -305,6 +305,18 @@ namespace PrimeApps.App.Helpers
 
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, JObject previousRecord = null)
         {
+            var enableBpmSetting = _configuration.GetValue("AppSettings:EnableBpm", string.Empty);
+
+            if (!string.IsNullOrEmpty(enableBpmSetting))
+            {
+                var enableBpm = bool.Parse(enableBpmSetting);
+
+                if (!enableBpm)
+                    return;
+            }
+            else
+                return;
+
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 //Set warehouse database name
@@ -631,7 +643,7 @@ namespace PrimeApps.App.Helpers
                         var referance = ReferenceCreateToForBpmHost(appUser);
                         WorkflowDefinition currentWorkflow = null;
 
-                        currentWorkflow = _workflowRegistry.GetDefinition(code);
+                        currentWorkflow = _workflowRegistry.GetDefinition(code, version);
 
                         if (currentWorkflow == null)
                         {
@@ -642,8 +654,6 @@ namespace PrimeApps.App.Helpers
                             if (workflowDefinition == null)
                                 throw new ApplicationException(System.Net.HttpStatusCode.BadRequest.ToString());
                         }
-
-
 
                         if (currentWorkflow == null)
                             new Exception("Workflow cannot be start! Workflow ID: " + runId);
@@ -660,7 +670,7 @@ namespace PrimeApps.App.Helpers
 
                         try
                         {
-                            runId = await _workflowHost.StartWorkflow<JObject>(code, data, referance);
+                            runId = await _workflowHost.StartWorkflow<JObject>(code, version, data, referance);
                             var resultCreateLog = await _BpmWorkflowRepository.CreateLog(workflowLog);
 
                             if (resultCreateLog < 1)
@@ -692,7 +702,7 @@ namespace PrimeApps.App.Helpers
                 Language = lang,
                 TenantId = appUser.TenantId,
                 AppId = appUser.AppId,
-                ProfileId=appUser.ProfileId,
+                ProfileId = appUser.ProfileId,
                 TimeZone = appUser.TimeZone
             };
             var reference = JObject.FromObject(tempReference);

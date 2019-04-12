@@ -97,6 +97,8 @@ namespace PrimeApps.App
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
 
+
+
             var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(storageUrl))

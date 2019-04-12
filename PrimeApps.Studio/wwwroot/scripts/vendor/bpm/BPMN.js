@@ -49,10 +49,10 @@ function init() {
     // constants for design choices
 
     var GradientYellow = "rgba(0, 0, 0, 0.05)"; //Gateway
-    var GradientLightGreen = "rgba(0, 0, 0, 0.05)";//Start and Stop
-    var GradientLightGray = "rgba(0, 0, 0, 0.05)";//Data nodes
+    var GradientLightGreen = "#F2F2F2";//"rgba(0, 0, 0, 0.05)";//Start and Stop
+    var GradientLightGray = "#F2F2F2";//"rgba(0, 0, 0, 0.05)";//Data nodes
 
-    var ActivityNodeFill = "rgba(0, 0, 0, 0.05)";//normal tasklar
+    var ActivityNodeFill = "#F2F2F2";//"rgba(0, 0, 0, 0.05)";//normal tasklar
     var ActivityNodeStroke = "rgba(0, 0, 0, 0)";
     var ActivityMarkerStrokeWidth = 1.5;
     var ActivityNodeWidth = 120;
@@ -392,6 +392,10 @@ function init() {
         window.myDiagram.remove(node);
 
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
+
+        if (!scope.currentObj)
+            return true;
+
         var ngModelName = scope.currentObj.subject.part.data.ngModelName;
         if (ngModelName === 'start')
             scope.workflowStartModel = {};
@@ -1803,18 +1807,39 @@ function rename(obj) {
 
 // shows/hides gridlines
 // to be implemented onclick of a button
-function updateGridOption() {
+function updateGridOption(value) {
     window.myDiagram.startTransaction("grid");
-    var grid = document.getElementById("grid");
-    window.myDiagram.grid.visible = grid.checked;
+
+
+    //$(go.Shape, "LineH", { stroke: "red" }),
+    //$(go.Shape, "LineV", { stroke: "yellow" }),
+    //$(go.Shape, "LineH", { stroke: "red", interval: 5 }),
+    //$(go.Shape, "LineV", { stroke: "yellow", interval: 5 })
+    //);
+    // window.myDiagram.grid.style.color = "red";
     window.myDiagram.commitTransaction("grid");
+
+    window.myDiagram.grid.visible = value;
+    window.myDiagram.grid.gridCellSize = new go.Size(10, 10);
+    //window.myDiagram.grid.
+    //var lineH = new go.Shape("LineH");
+    //var lineV = new go.Shape("LineV");
+    //lineH.stroke = "red";
+    //lineH.fill = "red";
+    //lineH.interval = 5;
+    //lineH.strokeWidth = 0.5;
+    //lineV.stroke = "blue";
+    //lineV.fill = "blue";
+    //lineV.interval = 5;
+    //lineV.strokeWidth = 0.5;
+    //window.myDiagram.grid.add(lineH);
+    //window.myDiagram.grid.add(lineV);
 }
 
 // enables/disables snapping tools, to be implemented by buttons
-function updateSnapOption() {
-    // no transaction needed, because we are modifying tools for future use
-    var snap = document.getElementById("snap");
-    if (snap.checked) {
+function updateSnapOption(value) {
+    // no transaction needed, because we are modifying tools for future use 
+    if (value) {
         window.myDiagram.toolManager.draggingTool.isGridSnapEnabled = true;
         window.myDiagram.toolManager.resizingTool.isGridSnapEnabled = true;
     } else {

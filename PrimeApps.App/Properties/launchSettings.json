@@ -19,6 +19,7 @@
         "ASPNETCORE_URLS": "http://localhost:5003",
         "AppSettings__ClientId": "primeapps_preview",
         "AppSettings__PreviewMode": "app",
+        "AppSettings__EnableBpm": "false",
         "AppSettings__AuthenticationServerURL": "http://localhost:5001"
       }
     },

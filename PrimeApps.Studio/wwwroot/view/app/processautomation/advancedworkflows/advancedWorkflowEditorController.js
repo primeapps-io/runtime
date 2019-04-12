@@ -1664,7 +1664,7 @@ angular.module('primeapps')
 
                         var cc = [];
                         if (workflowModel.cc) {
-                            angular.forEach(workflowModel.send_notification.cc, function (user) {
+                            angular.forEach(data[currentNode.ngModelName].cc, function (user) {
                                 cc.push(user.email);
                             });
                             data[currentNode.ngModelName].cc = cc;
@@ -1686,10 +1686,10 @@ angular.module('primeapps')
 
                         var bcc = [];
                         if (workflowModel.bcc) {
-                            // angular.forEach(workflowModel.send_notification.bcc, function (user) {
-                            //     bcc.push(user.email);
-                            // });
-                            // data[currentNode.ngModelName].bcc = bcc;
+                            angular.forEach(data[currentNode.ngModelName].bcc, function (user) {
+                                 bcc.push(user.email);
+                             });
+                             data[currentNode.ngModelName].bcc = bcc;
                         }
                         else if (workflowModel.send_notification_bccmodule && workflowModel.customBcc) {
                             workflowModel.bcc = [];

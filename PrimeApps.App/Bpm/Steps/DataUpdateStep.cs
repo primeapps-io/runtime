@@ -37,244 +37,253 @@ namespace PrimeApps.App.Bpm.Steps
 
         public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
-            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
-
-            if (context == null)
-                throw new NullReferenceException();
-
-            if (context.Workflow.Reference == null)
-                throw new NullReferenceException();
-
-            var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var currentUser = new CurrentUser { };
-
-            currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-
-            var request = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
-
-            if (request == null || request.IsNullOrEmpty())
-                throw new Exception("Request cannot be null.");
-
-            var dataUpdateRequest = request["field_update"];
-
-            using (var scope = _serviceScopeFactory.CreateScope())
+            try
             {
-                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+                var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+                previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-                using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
-                using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                if (context == null)
+                    throw new NullReferenceException();
+
+                if (context.Workflow.Reference == null)
+                    throw new NullReferenceException();
+
+                var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
+                var currentUser = new CurrentUser { };
+
+                currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+
+                var request = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
+
+                if (request == null || request.IsNullOrEmpty())
+                    throw new Exception("Request cannot be null.");
+
+                var dataUpdateRequest = request["field_update"];
+
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = currentUser;
+                    var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                    var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                    var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
-                    var warehouseEntity = await platformWarehouseRepository.GetByTenantId(currentUser.TenantId);
-
-                    if (warehouseEntity != null)
-                        warehouse.DatabaseName = warehouseEntity.DatabaseName;
-                    else
-                        warehouse.DatabaseName = "0";
-
-                    using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
-                    using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
-                    using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
-                    using (var profileRepository = new ProfileRepository(databaseContext, _configuration))
-                    using (var tagRepository = new TagRepository(databaseContext, _configuration))
-                    using (var settingRepository = new SettingRepository(databaseContext, _configuration))
-                    using (var recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, currentUser))
+                    using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+                    using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                     {
-                        picklistRepository.CurrentUser = moduleRepository.CurrentUser = recordRepository.CurrentUser = profileRepository.CurrentUser = tagRepository.CurrentUser = settingRepository.CurrentUser = currentUser;
+                        platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = currentUser;
 
-                        var data = JObject.FromObject(context.Workflow.Data);
+                        var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
+                        var warehouseEntity = await platformWarehouseRepository.GetByTenantId(currentUser.TenantId);
 
-                        if (dataUpdateRequest == null || dataUpdateRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
-                            throw new MissingFieldException("Cannot find child data");
-
-                        var fieldUpdate = new BpmDataUpdate();
-                        fieldUpdate.Module = await moduleRepository.GetById(dataUpdateRequest["module_id"].Value<int>());
-                        fieldUpdate.Field = await moduleRepository.GetField(dataUpdateRequest["field_id"].Value<int>());
-                        fieldUpdate.Value = dataUpdateRequest["currentValue"].IsNullOrEmpty() ? dataUpdateRequest["value"].Value<string>() : dataUpdateRequest["currentValue"].Value<string>();
-
-                        var moduleId = data["module_id"].ToObject<int>();
-                        var module = await moduleRepository.GetById(moduleId);
-
-                        var record = data["record"].ToObject<JObject>();
-
-
-                        var fieldUpdateRecords = new Dictionary<string, int>();
-                        var isDynamicUpdate = false;
-                        var type = 0;
-                        var firstModule = string.Empty;
-                        string secondModule;
-
-                        if (fieldUpdate.Module.Name.Contains(','))
-                        {
-                            isDynamicUpdate = true;
-                            var modules = fieldUpdate.Module.Name.Split(',');
-                            firstModule = modules[0];
-                            secondModule = modules[1];
-
-                            if (firstModule == module.Name && firstModule == secondModule)
-                            {
-                                type = 1;
-                                fieldUpdateRecords.Add(secondModule, (int)record["id"]);
-                            }
-                            else
-                            {
-                                if (firstModule == module.Name && firstModule != secondModule)
-                                {
-                                    type = 2;
-                                    var secondModuleName = module.Fields.Where(q => q.Name == secondModule).FirstOrDefault().LookupType;
-
-                                    foreach (var field in module.Fields)
-                                    {
-                                        if (field.LookupType != null && field.LookupType == secondModuleName && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[fieldUpdate.Value + ".id"].IsNullOrEmpty()))
-                                        {
-                                            if (fieldUpdateRecords.Count < 1)
-                                                fieldUpdateRecords.Add(secondModule, (int)record[field.Name + ".id"]);
-                                        }
-                                    }
-                                }
-                                else if (firstModule != module.Name && secondModule == module.Name)
-                                {
-                                    type = 3;
-                                    var firstModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
-
-                                    foreach (var field in module.Fields)
-                                    {
-                                        if (field.LookupType != null && field.LookupType == firstModule && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[firstModule + "." + fieldUpdate.Value].IsNullOrEmpty()))
-                                        {
-                                            if (fieldUpdateRecords.Count < 1)
-                                                fieldUpdateRecords.Add(secondModule, (int)record["id"]);
-                                        }
-                                    }
-                                }
-                                else if (firstModule != module.Name && secondModule != module.Name)
-                                {
-                                    type = 4;
-                                    var firstModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
-                                    var secondModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
-
-                                    fieldUpdateRecords.Add(secondModule, (int)record[secondModule + "id"]);
-                                }
-                            }
-                        }
+                        if (warehouseEntity != null)
+                            warehouse.DatabaseName = warehouseEntity.DatabaseName;
                         else
+                            warehouse.DatabaseName = "0";
+
+                        using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                        using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                        using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                        using (var profileRepository = new ProfileRepository(databaseContext, _configuration))
+                        using (var tagRepository = new TagRepository(databaseContext, _configuration))
+                        using (var settingRepository = new SettingRepository(databaseContext, _configuration))
+                        using (var recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, currentUser))
                         {
-                            if (fieldUpdate.Module.Name == module.Name)
+                            picklistRepository.CurrentUser = moduleRepository.CurrentUser = recordRepository.CurrentUser = profileRepository.CurrentUser = tagRepository.CurrentUser = settingRepository.CurrentUser = currentUser;
+
+                            var data = JObject.FromObject(context.Workflow.Data);
+
+                            if (dataUpdateRequest == null || dataUpdateRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
+                                throw new MissingFieldException("Cannot find child data");
+
+                            var fieldUpdate = new BpmDataUpdate();
+                            fieldUpdate.Module = await moduleRepository.GetById(dataUpdateRequest["module_id"].Value<int>());
+                            fieldUpdate.Field = await moduleRepository.GetField(dataUpdateRequest["field_id"].Value<int>());
+                            fieldUpdate.Value = dataUpdateRequest["currentValue"].IsNullOrEmpty() ? dataUpdateRequest["value"].Value<string>() : dataUpdateRequest["currentValue"].Value<string>();
+
+                            var moduleId = data["module_id"].ToObject<int>();
+                            var module = await moduleRepository.GetById(moduleId);
+
+                            var record = data["record"].ToObject<JObject>();
+
+
+                            var fieldUpdateRecords = new Dictionary<string, int>();
+                            var isDynamicUpdate = false;
+                            var type = 0;
+                            var firstModule = string.Empty;
+                            string secondModule;
+
+                            if (fieldUpdate.Module.Name.Contains(','))
                             {
-                                fieldUpdateRecords.Add(module.Name, (int)record["id"]);
-                            }
-                            else
-                            {
-                                foreach (var field in module.Fields)
+                                isDynamicUpdate = true;
+                                var modules = fieldUpdate.Module.Name.Split(',');
+                                firstModule = modules[0];
+                                secondModule = modules[1];
+
+                                if (firstModule == module.Name && firstModule == secondModule)
                                 {
-                                    if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module.Name && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
-                                    {
-                                        fieldUpdateRecords.Add(fieldUpdate.Module.Name, (int)record[field.Name + ".id"]);
-                                    }
+                                    type = 1;
+                                    fieldUpdateRecords.Add(secondModule, (int)record["id"]);
                                 }
-                            }
-                        }
-
-                        foreach (var fieldUpdateRecord in fieldUpdateRecords)
-                        {
-                            Module fieldUpdateModule;
-
-                            if (fieldUpdateRecord.Key == module.Name)
-                                fieldUpdateModule = module;
-                            else
-                                fieldUpdateModule = await moduleRepository.GetByName(fieldUpdateRecord.Key);
-
-                            if (fieldUpdateModule == null)
-                            {
-                                throw new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name);
-                            }
-
-                            var currentRecordFieldUpdate = recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
-
-                            if (currentRecordFieldUpdate == null)
-                            {
-                                throw new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value);
-                            }
-
-                            var recordFieldUpdate = new JObject();
-                            recordFieldUpdate["id"] = currentRecordFieldUpdate["id"];
-
-                            if (!isDynamicUpdate)
-                                recordFieldUpdate[fieldUpdate.Field.Name] = fieldUpdate.Value;
-                            else
-                            {
-                                if (type == 0 || type == 1 || type == 2)
+                                else
                                 {
-                                    bool isLookup = false;
-                                    foreach (var field in module.Fields)
+                                    if (firstModule == module.Name && firstModule != secondModule)
                                     {
-                                        if (field.Name == fieldUpdate.Value && field.LookupType != null)
-                                            isLookup = true;
-                                    }
+                                        type = 2;
+                                        var secondModuleName = module.Fields.Where(q => q.Name == secondModule).FirstOrDefault().LookupType;
 
-                                    if (isLookup)
-                                        recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value + ".id"];
-                                    else
-                                    {
-                                        bool isTag = false;
                                         foreach (var field in module.Fields)
                                         {
-                                            if (field.Name == fieldUpdate.Value && field.DataType == DataType.Tag)
-                                                isTag = true;
+                                            if (field.LookupType != null && field.LookupType == secondModuleName && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[fieldUpdate.Value + ".id"].IsNullOrEmpty()))
+                                            {
+                                                if (fieldUpdateRecords.Count < 1)
+                                                    fieldUpdateRecords.Add(secondModule, (int)record[field.Name + ".id"]);
+                                            }
                                         }
+                                    }
+                                    else if (firstModule != module.Name && secondModule == module.Name)
+                                    {
+                                        type = 3;
+                                        var firstModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
 
-                                        if (isTag)
-                                            recordFieldUpdate[fieldUpdate.Field.Name] = string.Join(",", record[fieldUpdate.Value]);
-                                        else
-                                            recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value];
+                                        foreach (var field in module.Fields)
+                                        {
+                                            if (field.LookupType != null && field.LookupType == firstModule && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[firstModule + "." + fieldUpdate.Value].IsNullOrEmpty()))
+                                            {
+                                                if (fieldUpdateRecords.Count < 1)
+                                                    fieldUpdateRecords.Add(secondModule, (int)record["id"]);
+                                            }
+                                        }
+                                    }
+                                    else if (firstModule != module.Name && secondModule != module.Name)
+                                    {
+                                        type = 4;
+                                        var firstModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
+                                        var secondModuleName = module.Fields.Where(q => q.Name == firstModule).FirstOrDefault().LookupType;
+
+                                        fieldUpdateRecords.Add(secondModule, (int)record[secondModule + "id"]);
                                     }
                                 }
-                                else if (type == 3 || type == 4)
-                                    recordFieldUpdate[fieldUpdate.Field.Name] = record[firstModule + "." + fieldUpdate.Value];
                             }
-
-
-                            var modelState = new ModelStateDictionary();
-                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
-
-                            if (resultBefore < 0 && !modelState.IsValid)
+                            else
                             {
-                                throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString());
-                            }
-
-                            if (isDynamicUpdate)
-                                recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
-
-                            try
-                            {
-                                var resultUpdate = await recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
-
-                                if (resultUpdate < 1)
+                                if (fieldUpdate.Module.Name == module.Name)
                                 {
-                                    throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate);
+                                    fieldUpdateRecords.Add(module.Name, (int)record["id"]);
+                                }
+                                else
+                                {
+                                    foreach (var field in module.Fields)
+                                    {
+                                        if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module.Name && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
+                                        {
+                                            fieldUpdateRecords.Add(fieldUpdate.Module.Name, (int)record[field.Name + ".id"]);
+                                        }
+                                    }
+                                }
+                            }
+
+                            foreach (var fieldUpdateRecord in fieldUpdateRecords)
+                            {
+                                Module fieldUpdateModule;
+
+                                if (fieldUpdateRecord.Key == module.Name)
+                                    fieldUpdateModule = module;
+                                else
+                                    fieldUpdateModule = await moduleRepository.GetByName(fieldUpdateRecord.Key);
+
+                                if (fieldUpdateModule == null)
+                                {
+                                    throw new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name);
                                 }
 
-                                // If module is opportunities create stage history
-                                if (fieldUpdateModule.Name == "opportunities")
-                                    await recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
-                            }
-                            catch (Exception ex)
-                            {
-                                ErrorHandler.LogError(ex, $"Record can't update" + " " + "tenant_id:" + currentUser.TenantId + "fieldUpdateModule:" + fieldUpdateModule + " recordFieldUpdate:" + recordFieldUpdate + " recordFieldUpdate:" + recordFieldUpdate + " currentRecordFieldUpdate:" + currentRecordFieldUpdate);
+                                var currentRecordFieldUpdate = recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
+
+                                if (currentRecordFieldUpdate == null)
+                                {
+                                    throw new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value);
+                                }
+
+                                var recordFieldUpdate = new JObject();
+                                recordFieldUpdate["id"] = currentRecordFieldUpdate["id"];
+
+                                if (!isDynamicUpdate)
+                                    recordFieldUpdate[fieldUpdate.Field.Name] = fieldUpdate.Value;
+                                else
+                                {
+                                    if (type == 0 || type == 1 || type == 2)
+                                    {
+                                        bool isLookup = false;
+                                        foreach (var field in module.Fields)
+                                        {
+                                            if (field.Name == fieldUpdate.Value && field.LookupType != null)
+                                                isLookup = true;
+                                        }
+
+                                        if (isLookup)
+                                            recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value + ".id"];
+                                        else
+                                        {
+                                            bool isTag = false;
+                                            foreach (var field in module.Fields)
+                                            {
+                                                if (field.Name == fieldUpdate.Value && field.DataType == DataType.Tag)
+                                                    isTag = true;
+                                            }
+
+                                            if (isTag)
+                                                recordFieldUpdate[fieldUpdate.Field.Name] = string.Join(",", record[fieldUpdate.Value]);
+                                            else
+                                                recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value];
+                                        }
+                                    }
+                                    else if (type == 3 || type == 4)
+                                        recordFieldUpdate[fieldUpdate.Field.Name] = record[firstModule + "." + fieldUpdate.Value];
+                                }
+
+
+                                var modelState = new ModelStateDictionary();
+                                var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
+
+                                if (resultBefore < 0 && !modelState.IsValid)
+                                {
+                                    throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString());
+                                }
+
+                                if (isDynamicUpdate)
+                                    recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
+
+                                try
+                                {
+                                    var resultUpdate = await recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
+
+                                    if (resultUpdate < 1)
+                                    {
+                                        throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate);
+                                    }
+
+                                    // If module is opportunities create stage history
+                                    if (fieldUpdateModule.Name == "opportunities")
+                                        await recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
+                                }
+                                catch (Exception ex)
+                                {
+                                    ErrorHandler.LogError(ex, $"Record can't update" + " " + "tenant_id:" + currentUser.TenantId + "fieldUpdateModule:" + fieldUpdateModule + " recordFieldUpdate:" + recordFieldUpdate + " recordFieldUpdate:" + recordFieldUpdate + " currentRecordFieldUpdate:" + currentRecordFieldUpdate);
+                                }
+
+                                //TODO RecordHelper
+                                recordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
                             }
 
-                            //TODO RecordHelper
-                            recordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+                            return ExecutionResult.Next();
                         }
-
-                        return ExecutionResult.Next();
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                ErrorHandler.LogError(ex, $"Data Update Step Error"); 
+                return ExecutionResult.Next();
+            }
+
         }
     }
 }

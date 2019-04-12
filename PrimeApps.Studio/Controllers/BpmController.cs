@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
@@ -14,7 +15,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Models;
+using PrimeApps.Studio.Models; 
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -31,11 +32,14 @@ namespace PrimeApps.Studio.Controllers
         private IPermissionHelper _permissionHelper;
         private IBpmHelper _bpmHelper;
 
-        public BpmController(IConfiguration configuration, IBpmRepository bpmRepository, IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper, IPermissionHelper permissionHelper)
+        public BpmController(IConfiguration configuration, IBpmRepository bpmRepository,
+            IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper, IPermissionHelper permissionHelper)
         {
             _configuration = configuration;
             _bpmRepository = bpmRepository;
             _workflowCoreRepository = workflowCoreRepository;
+            //_workflowHost = workflowHost;
+            //_definitionLoader = definitionLoader;
             _bpmHelper = bpmHelper;
             _permissionHelper = permissionHelper;
         }
@@ -121,7 +125,7 @@ namespace PrimeApps.Studio.Controllers
             bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
             //For Runtime
-            ////Load string JSON Data on WorkFlowEngine
+            //Load string JSON Data on WorkFlowEngine
             //var str = JsonConvert.SerializeObject(definitionJson);
             //var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
