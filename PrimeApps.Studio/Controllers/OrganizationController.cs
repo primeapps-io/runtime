@@ -405,6 +405,8 @@ namespace PrimeApps.Studio.Controllers
                     httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
 
+                    model.AppName = appInfo.Name;
+                    
                     var json = JsonConvert.SerializeObject(model);
                     var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
@@ -453,8 +455,8 @@ namespace PrimeApps.Studio.Controllers
                     }
                 }
             }
-
-            return StatusCode(201, new { password = password });
+            
+            return StatusCode(201, new {password = password});
         }
 
         [Route("delete_user"), HttpPost]

@@ -19,10 +19,10 @@ namespace PrimeApps.Auth.Helpers
 {
     public interface IUserHelper
     {
-        Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel);
+        Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel, string domain);
         Task<PlatformUser> CreatePlatformUser(AddUserBindingModel userModel, string appName, bool isIntegration = false, PlatformUserSetting settings = null);
         Task<TenantUser> CreateTenantUser(int platformUserId, AddUserBindingModel userModel, int appId, int tenantId, string culture = "en-US", string currency = "en");
-        Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret);
+        Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain);
     }
 
     public class UserHelper : IUserHelper
@@ -30,22 +30,25 @@ namespace PrimeApps.Auth.Helpers
         private string previewMode;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
+        private readonly IGiteaHelper _giteaHelper;
 
         public IConfiguration _configuration { get; }
 
         public UserHelper(IHttpContextAccessor context,
             IServiceScopeFactory serviceScopeFactory,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IGiteaHelper giteaHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
+            _giteaHelper = giteaHelper;
 
             previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
         }
 
-        public async Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel)
+        public async Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel, string domain)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -76,7 +79,20 @@ namespace PrimeApps.Auth.Helpers
                     new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
                 });
 
-                return await _userManager.FindByNameAsync(userModel.Email);
+                var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+
+                user = await _userManager.FindByNameAsync(userModel.Email);
+
+                if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(domain))
+                {
+                    await _giteaHelper.CreateUser(userModel.Email, userModel.Password, userModel.FirstName, userModel.LastName);
+
+                    var giteaToken = await _giteaHelper.GetToken(userModel.Email, userModel.Password);
+                    if (!string.IsNullOrEmpty(giteaToken))
+                        await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
+                }
+
+                return user;
             }
         }
 
@@ -112,7 +128,10 @@ namespace PrimeApps.Auth.Helpers
                 {
                     var result = await _platformUserRepository.CreateUser(user);
                     if (result != 0)
-                        return user;
+                    {
+                        var platformUser =  await _platformUserRepository.GetWithTenants(userModel.Email);
+                        return platformUser;
+                    }
 
                     ErrorHandler.LogError(null, "Platform user not created successfully. Model: " + user.ToJsonString());
                     return null;
@@ -152,14 +171,13 @@ namespace PrimeApps.Auth.Helpers
                     if (result != 0)
                         return user;
 
-
                     ErrorHandler.LogError(null, "Tenant user not created successfully. Model: " + user.ToJsonString());
                     return null;
                 }
             }
         }
 
-        public async Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret)
+        public async Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain)
         {
             var password = CryptoHelper.Decrypt(secret);
 
@@ -171,7 +189,7 @@ namespace PrimeApps.Auth.Helpers
                 Password = password
             };
 
-            var resultIdentityUser = await CreateIdentityUser(user);
+            var resultIdentityUser = await CreateIdentityUser(user, domain);
             if (resultIdentityUser == null)
                 return false;
 
@@ -183,7 +201,6 @@ namespace PrimeApps.Auth.Helpers
             var resultTenantUser = await CreateTenantUser(resultPlatformUser.Id, user, appId, tenantId);
             if (resultTenantUser == null)
                 return false;
-
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {

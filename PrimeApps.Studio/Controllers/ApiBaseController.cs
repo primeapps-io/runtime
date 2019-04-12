@@ -10,6 +10,8 @@ namespace PrimeApps.Studio.Controllers
     public class ApiBaseController : BaseController
     {
         public static int OrganizationId { get; set; }
+        
+        
         public void SetContext(ActionExecutingContext context)
         {
             OrganizationId = SetOrganization(context);

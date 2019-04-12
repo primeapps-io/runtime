@@ -31,7 +31,6 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformUserRepository _platformUserRepository;
 
 
-
         public AccountController(IApplicationRepository applicationRepository,
             IOrganizationRepository organizationRepository,
             IStudioUserRepository studioUserRepository,
@@ -44,7 +43,6 @@ namespace PrimeApps.Studio.Controllers
             _platformRepository = platformRepository;
             _configuration = configuration;
             _platformUserRepository = platformUserRepository;
-
         }
 
         [Route("logout")]
@@ -56,7 +54,7 @@ namespace PrimeApps.Studio.Controllers
             Response.Cookies.Delete("gitea_token");
             await HttpContext.SignOutAsync();
 
-            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
+            return StatusCode(200, new {redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain});
         }
 
         [Route("change_password")]
@@ -86,7 +84,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] JObject user)
+        public async Task<IActionResult> Create([FromBody]JObject user)
         {
             if (string.IsNullOrEmpty(user["id"].ToString()))
                 return BadRequest("User id is required");
@@ -134,8 +132,6 @@ namespace PrimeApps.Studio.Controllers
                 });
 
                 await _organizationRepository.Create(organization);
-
-                await _giteaHelper.CreateUser((string)user["email"], (string)user["password"], (string)user["first_name"], (string)user["last_name"], orgName);
             }
 
             var applicationInfo = await _applicationRepository.Get(int.Parse(user["app_id"].ToString()));
@@ -190,7 +186,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("send_password_reset")]
-        public async Task<IActionResult> SendPasswordReset([FromBody] JObject request)
+        public async Task<IActionResult> SendPasswordReset([FromBody]JObject request)
         {
             if (request["email"].IsNullOrEmpty() || request["code"].IsNullOrEmpty())
                 return BadRequest();
@@ -238,7 +234,6 @@ namespace PrimeApps.Studio.Controllers
 
                     notification.AddRecipient(request["email"].ToString());
                     notification.AddToQueue(senderEmail, senderName, null, null, content, template.Subject);
-
                 }
             }
 

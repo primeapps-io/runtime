@@ -10,6 +10,9 @@ namespace PrimeApps.Auth.UI
 {
     public class AddOrganizationUserBindingModel
     {
+        [DataMember(Name = "app_name"), Required]
+        public string AppName { get; set; }
+        
         [DataMember(Name = "email"), Required]
         public string Email { get; set; }
 
