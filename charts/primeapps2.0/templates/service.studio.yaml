@@ -1,0 +1,20 @@
+{{- if eq .Values.deployment "internal" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}-studio
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.studio.component}}"
+spec:
+  ports:
+    - port: {{.Values.studio.servicePort}}
+      targetPort: {{.Values.studio.containerPort}}
+      protocol: TCP
+      name: http
+  selector:
+    component: "{{.Release.Name}}-{{.Values.studio.component}}"
+  type: {{ default "ClusterIP" .Values.studio.serviceType | quote }}
+  {{- end -}}

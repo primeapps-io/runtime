@@ -1,0 +1,60 @@
+{{- if eq .Values.deployment "internal" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}-auth-pre
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.authPre.component}}"
+spec:
+  replicas: {{ default 1 .Values.authPre.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.authPre.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.authPre.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.authPre.pullsecret }}
+      containers:
+        - name: {{ template "fullname" . }}-auth-pre
+          image: "{{.Values.authPre.image}}:{{.Values.authPre.imageTag}}"
+          imagePullPolicy: "{{.Values.authPre.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.authPre.containerPort}}
+          {{- if .Values.authPre.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.authPre.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "fullname" . }}-auth-pre-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.authPre.cpu}}"
+              memory: "{{.Values.authPre.memory}}"
+  {{- end -}}

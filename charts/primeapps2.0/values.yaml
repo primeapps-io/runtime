@@ -1,0 +1,247 @@
+# Default values for PrimeApps
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+environment: "kubernetes"
+deployment: "internal"
+app:
+  serviceType: ClusterIP
+  servicePort: 80
+  containerPort: 80
+  component: app
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-app/debian
+  imageTag: 5.19.093.1
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: gcr-pull-secret
+  cpu: 100m
+  memory: 1Gi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: app-test.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    tls: true
+    tlsSecretName: primeapps-wildcard-ssl
+  probes:
+    enabled: false
+  config:
+    TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+    PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+    RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+    StorageUrl: "https://storage.primeapps.io"
+    StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+    StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+    EnableJobs: "true"
+    EnableRequestLogging: "false"
+    EmailSMTPEnableSsl: "true"
+    EmailSMTPHost: "smtp.sendgrid.net"
+    EmailSMTPPort: "587"
+    EmailSMTPUser: "apikey"
+    EmailSMTPPassword: "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"
+    UseCdn: "false"
+    AuthenticationServerURL: "https://auth.primeapps.io"
+    ClientId: "primeapps_app"
+    ClientSecret: "secret"
+    ForwardHeaders: "true"
+    HttpsRedirection: "true"
+    TestMode: "false"
+    PreviewMode: "tenant"
+    GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
+    PreviewClient: "primeapps_preview"
+    SentryDsn: "https://73b84b2ef20e41c98a675608caa9d104:d4e70924ec284e38a4b6be717ed1b28e@log.primeapps.io/3"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+studio:
+  serviceType: ClusterIP
+  servicePort: 80
+  containerPort: 80
+  component: studio
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-studio/debian
+  imageTag: 1.19.093.1
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: gcr-pull-secret
+  cpu: 100m
+  memory: 1Gi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: studio-test.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    tls: true
+    tlsSecretName: primeapps-wildcard-ssl
+  probes:
+    enabled: false
+  config:
+    TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+    PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+    StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
+    StorageUrl: "https://storage-test.primeapps.io"
+    StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+    StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+    EnableJobs: "true"
+    EmailSMTPEnableSsl: "true"
+    EmailSMTPHost: "smtp.sendgrid.net"
+    EmailSMTPPort: "587"
+    EmailSMTPUser: "apikey"
+    EmailSMTPPassword: "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"
+    TestMode: "false"
+    AuthenticationServerURL: "https://auth-test.primeapps.io"
+    ClientId: "primeapps_studio"
+    ClientSecret: "secret"
+    ForwardHeaders: "true"
+    HttpsRedirection: "true"
+    PreviewUrl: "https://app-test-pre.primeapps.io"
+    KubernetesClusterRootUrl: "https://d5de4cad6841d39174e78377e1551f98.sk1.eu-west-1.eks.amazonaws.com"
+    KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4ta2ZxcGciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYWNjODkyYjctNTRmZC0xMWU5LWFkZDMtMDYxMmIxOTc5YjIwIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.j3rAlfrkjPiJxcleefpCF1P2E8oQNwvLe8ymW8sR_9N7QkTRRkyHLYVkvbGIL2gj-gzZ3itBeKoQ417VFn5LcybeE216ixxfHRIErnXZrTuatspSrIPM6D27VaBmUZLbYLkLZBW0SBKx0SBy8bJVmSu1LmiI-46d9cit4zmBZRYfrX0-WWq4uU0HUgo8D36dA5LC6_nnJ3xzbMs5VeyLPc3Z3UhQoDExcmxWUBDsbf3rvFQ85mj5rxXW0Y0JiHAHVKxKFrp3qidjlnikvFIZ905mpAyqmZksVZm4IOj5axX1gZ4eGLJRxPxrskNBZRM8PeAKxM6Gj1G8qgzkgj6b_Q"
+    GiteaEnabled: "true"
+    GiteaUrl: "https://git-test.primeapps.io"
+    GiteaEmail: "primeapps"
+    GiteaPassword: "pr!m€Appsi0g"
+    GiteaDirectory: "/data/git/"
+    SentryDsn: "https://a6d7a462d9184c5698ab07aa38b8a896:a915b64d63574d29b98998a69cbdc848@log.primeapps.io/2"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+auth:
+  serviceType: ClusterIP
+  servicePort: 80
+  containerPort: 80
+  component: auth
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-auth/debian
+  imageTag: 5.19.093.1
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: gcr-pull-secret
+  cpu: 100m
+  memory: 512Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: auth-test.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    tls: true
+    tlsSecretName: primeapps-wildcard-ssl
+  probes:
+    enabled: false
+  config:
+    AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
+    TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+    PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+    Authority: "https://auth-test.primeapps.io"
+    ForwardHeaders: "true"
+    HttpsRedirection: "true"
+    ValidationSkipDomains: "localhost;primeapps.io;"
+    StudioUrl: "https://studio-test.primeapps.io"
+    GiteaEnabled: "true"
+    GiteaUrl: "https://git-test.primeapps.io"
+    PreviewMode: "tenant"
+    SentryDsn: "https://b45f6285747c46cbbf76e3cb6470e9c4:749dc9a121ab44f890fed7fbb1010e84@log.primeapps.io/4"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+appPre:
+  serviceType: ClusterIP
+  servicePort: 80
+  containerPort: 80
+  component: app-preview
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-app/debian
+  imageTag: 5.19.093.1
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: gcr-pull-secret
+  cpu: 100m
+  memory: 1Gi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: app-test-pre.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    tls: true
+    tlsSecretName: primeapps-wildcard-ssl
+  probes:
+    enabled: false
+  config:
+    TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+    PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+    RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+    StorageUrl: "https://storage-test.primeapps.io"
+    StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+    StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+    EnableJobs: "true"
+    EnableRequestLogging: "false"
+    EmailSMTPEnableSsl: "true"
+    EmailSMTPHost: "smtp.sendgrid.net"
+    EmailSMTPPort: "587"
+    EmailSMTPUser: "apikey"
+    EmailSMTPPassword: "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"
+    UseCdn: "false"
+    AuthenticationServerURL: "https://auth-test-pre.primeapps.io"
+    ClientId: "primeapps_app"
+    ClientSecret: "secret"
+    ForwardHeaders: "true"
+    HttpsRedirection: "true"
+    TestMode: "false"
+    PreviewMode: "tenant"
+    GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
+    PreviewClient: "primeapps_preview"
+    SentryDsn: "https://73b84b2ef20e41c98a675608caa9d104:d4e70924ec284e38a4b6be717ed1b28e@log.primeapps.io/3"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+authPre:
+  serviceType: ClusterIP
+  servicePort: 80
+  containerPort: 80
+  component: auth-preview
+  replicas: 1
+  image: gcr.io/primeapps/primeapps-auth/debian
+  imageTag: 5.19.093.1
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: gcr-pull-secret
+  cpu: 100m
+  memory: 512Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: auth-test-pre.primeapps.io
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    tls: true
+    tlsSecretName: primeapps-wildcard-ssl
+  probes:
+    enabled: false
+  config:
+    AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
+    TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+    PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+    Authority: "https://auth-test-pre.primeapps.io"
+    ForwardHeaders: "true"
+    HttpsRedirection: "true"
+    ValidationSkipDomains: "localhost;primeapps.io;"
+    StudioUrl: "https://studio-test.primeapps.io"
+    GiteaEnabled: "true"
+    GiteaUrl: "https://git-test.primeapps.io"
+    PreviewMode: "tenant"
+    SentryDsn: "https://b45f6285747c46cbbf76e3cb6470e9c4:749dc9a121ab44f890fed7fbb1010e84@log.primeapps.io/4"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

@@ -1,0 +1,67 @@
+{{- if eq .Values.deployment "internal" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}-studio
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.studio.component}}"
+spec:
+  replicas: {{ default 1 .Values.studio.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.studio.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.studio.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.studio.pullsecret }}
+      containers:
+        - name: {{ template "fullname" . }}-studio
+          image: "{{.Values.studio.image}}:{{.Values.studio.imageTag}}"
+          imagePullPolicy: "{{.Values.studio.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.studio.containerPort}}
+          {{- if .Values.studio.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.studio.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "fullname" . }}-studio-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.studio.cpu}}"
+              memory: "{{.Values.studio.memory}}"
+          volumeMounts:
+            - name: git-storage
+              mountPath: /git-storage
+              readOnly: false
+      volumes:
+        - name: git-storage
+          emptyDir: {}
+{{- end -}}
