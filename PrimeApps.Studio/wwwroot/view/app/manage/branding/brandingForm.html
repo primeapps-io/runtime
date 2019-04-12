@@ -1,0 +1,96 @@
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+    <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm)" autocomplete="off"
+          novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">Login Page</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-disabled="appSaving" class="btn add-button btn-radius btn-gray" ng-click="$hide();">
+                                <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn add-button btn-radius btn-blue" ladda="appSaving">
+                                <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>NA
+            </div>
+        </div>
+        <div class="modal-dialog ">
+            <div class="modal-content padding-0">
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <div class="form-group"
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+                                    <label class="col-sm-4 required-field">
+                                        Name <span class="required-label">(required)</span>
+                                    </label>
+                                    <input type="text"
+                                           name="label"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           focus="true"
+                                           required
+                                           maxlength="50"
+                                           ng-blur="checkNameBlur();"
+                                           ng-change="generateAppName()"
+                                           ng-model="appModel.label">
+                                </div>
+                                <div class="form-group" style="position: relative;"
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
+                                    <label class="col-sm-4 required-field">Identifier <span class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+                                           required
+                                           maxlength="50"
+                                           ng-trim="false"
+                                           ng-blur="checkNameBlur();"
+                                           ng-change="checkNameUnique(appModel.name)"
+                                           ng-model="appModel.name"
+                                           id="subdomain"/>
+                                    <span style="right: 10px;" id="subdomaintwo">
+                                        .app.primeapps.io
+                                    </span>
+                                    <!--<input type="text" id="subdomaintwo" value="" disabled />-->
+
+                                    <div ng-if="nameChecking">
+                                        <i class="fa fa-spinner fa-spin"
+                                           style="font-size:16px;position: absolute;bottom: 12px;right: 125px;"></i>
+                                    </div>
+                                    <div ng-if="nameValid && appModel.name">
+                                        <i style="font-size:16px;position: absolute;bottom: 12px;right: 125px;color:green;"
+                                           class="fa-sidebar-icon fas fa-check"></i>
+                                    </div>
+                                    <div ng-if="nameValid === false">
+                                        <i style="font-size:16px;position: absolute;bottom: 12px;right: 125px;color:red;"
+                                           class="fas fa-times"
+                                           data-trigger="hover" data-type="info" data-title="This app identifier already used by another user." bs-tooltip data-placement="bottom"></i>
+                                    </div>
+                                </div>
+                                <!--<div style="margin-top:-20px">-->
+                                <!--<span style="font-weight:200;font-size:small" ng-show="appModel.name">{{appModel.name}}.app.primeapps.io</span>-->
+                                <!--</div>-->
+                                <div class="form-group"
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+                                    <label class="col-sm-4 required-field">Description</label>
+                                    <input type="text"
+                                           name="description"
+                                           class="form-control ng-animate-disabled col-sm-8"
+                                           maxlength="50"
+                                           ng-model="appModel.description">
+                                </div>
+                           
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
