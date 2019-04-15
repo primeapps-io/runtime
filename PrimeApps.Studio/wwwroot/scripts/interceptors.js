@@ -95,7 +95,7 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         //$window.location.href = '#/app/dashboard';
-                        toastr.error($filter('translate')('Common.Forbidden'));
+                        toastr.warning($filter('translate')('Common.Forbidden'));
                         $rootScope.appLoading = false;
                         return $q.reject(rejection);
                     }

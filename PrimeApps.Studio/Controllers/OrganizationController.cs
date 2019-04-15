@@ -398,23 +398,29 @@ namespace PrimeApps.Studio.Controllers
 
                 using (var httpClient = new HttpClient())
                 {
-                    var token = await HttpContext.GetTokenAsync("access_token");
-                    var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_organization_user";
-                    httpClient.BaseAddress = new Uri(url);
-                    httpClient.DefaultRequestHeaders.Accept.Clear();
-                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
-
-                    model.AppName = appInfo.Name;
-                    
-                    var json = JsonConvert.SerializeObject(model);
-                    var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
-
-                    if (!response.IsSuccessStatusCode)
-                        return BadRequest(response);
-
                     var platformUser = await _platformUserRepository.Get(model.Email);
-                    var studioUser = await _studioUserRepository.Get(platformUser.Id);
+                    
+                    if (platformUser == null)
+                    {
+                        var token = await HttpContext.GetTokenAsync("access_token");
+                        var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_organization_user";
+                        httpClient.BaseAddress = new Uri(url);
+                        httpClient.DefaultRequestHeaders.Accept.Clear();
+                        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
+
+                        model.AppName = appInfo.Name;
+                    
+                        var json = JsonConvert.SerializeObject(model);
+                        var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+                        if (!response.IsSuccessStatusCode)
+                            return BadRequest(response);
+                        
+                        platformUser = await _platformUserRepository.Get(model.Email);
+                    }
+                    
+                    var studioUser = await _studioUserRepository.GetWithOrganizations(platformUser.Id);
 
                     if (studioUser == null)
                     {
@@ -437,11 +443,6 @@ namespace PrimeApps.Studio.Controllers
                     }
                     else
                     {
-                        studioUser = new StudioUser
-                        {
-                            UserOrganizations = new List<OrganizationUser>()
-                        };
-
                         studioUser.UserOrganizations.Add(new OrganizationUser
                         {
                             UserId = platformUser.Id,
@@ -565,6 +566,17 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest(ModelState);
 
             var result = await _organizationRepository.IsOrganizationNameAvailable(name);
+
+            return Ok(result);
+        }
+        
+        [Route("is_user_exist"), HttpGet]
+        public async Task<IActionResult> IsUserExist(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Email is required!");
+
+            var result = await _platformUserRepository.Get(email);
 
             return Ok(result);
         }

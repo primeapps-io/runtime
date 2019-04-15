@@ -7,10 +7,11 @@ angular.module('primeapps')
 
             if ($rootScope.currentOrganization.role != 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
-                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
+                var defaultOrg = $filter('filter')($rootScope.organizations, {default: true}, true)[0];
                 window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
+
             function validateEmail(email) {
                 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return re.test(email);
@@ -28,6 +29,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.showNewCollaboratorInfo = false;
             $scope.activePage = 1;
+            $scope.existingUser = false;
 
             $scope.requestModel = {
                 limit: "10",
@@ -35,8 +37,8 @@ angular.module('primeapps')
             };
 
             $scope.roles = [
-                { name: 'Admin', value: 'administrator' },
-                { name: 'Collaborator', value: 'collaborator' }
+                {name: 'Admin', value: 'administrator'},
+                {name: 'Collaborator', value: 'collaborator'}
             ];
 
             $scope.generator = function (limit) {
@@ -88,6 +90,7 @@ angular.module('primeapps')
             $scope.changeOffset = function () {
                 $scope.changePage($scope.activePage);
             };
+            
             $scope.getCollaborators = function () {
                 var filter = {};
                 filter.organization_id = $rootScope.currentOrgId;
@@ -105,19 +108,17 @@ angular.module('primeapps')
                     .catch(function (error) {
                         getToastMsg('Common.Error', 'danger');
                     });
-            }
-
-            //$scope.getCollaborators();
+            };
 
             $scope.selectCollaborators = function (id) {
                 if (!id)
                     return false;
 
-                var result = $filter('filter')($scope.collaboratorArray, { id: id }, true)[0];
-                $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
+                var result = $filter('filter')($scope.collaboratorArray, {id: id}, true)[0];
+                $scope.collaboratorModel.role = $filter('filter')($scope.roles, {value: $scope.selectedCollaborator.role}, true)[0];
                 //$scope.$parent.activeMenu = "collaborator";
                 //$scope.$parent.activeMenuItem = 'collaborator';
-            }
+            };
 
             //$scope.selectCollaborators = function (id) {
             //    if (!id)
@@ -131,24 +132,23 @@ angular.module('primeapps')
             //    $scope.collaboratorModel.role = $filter('filter')($scope.roles, { value: $scope.selectedCollaborator.role }, true)[0];
             //}
 
-
             $scope.addNewCollaborator = function () {
-                $scope.collaboratorModel = {};
                 $scope.collaboratorModel.auto_pass = "true";
                 $scope.resultModel = {
-                    sendPassword: true
+                    sendPassword: !$scope.existingUser
                 };
                 $scope.addNewCollaboratorModal = $scope.addNewCollaboratorModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
-                $scope.addNewCollaboratorModal.$promise.then(function () {
-                    $scope.addNewCollaboratorModal.show();
-
+                    scope: $scope,
+                    templateUrl: 'view/organization/collaborators/addNewCollaborator.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
                 });
+                $scope.addNewCollaboratorModal.$promise
+                    .then(function () {
+                        $scope.addNewCollaboratorModal.show();
+
+                    });
 
             };
             $scope.generatePass = function () {
@@ -158,35 +158,43 @@ angular.module('primeapps')
                     temp += keylist.charAt(Math.floor(Math.random() * keylist.length));
                 }
                 $scope.collaboratorModel.password = temp;
-                ;
-            }
+
+            };
+
             $scope.passwordChange = function () {
                 if ($scope.collaboratorModel.auto_pass) {
                     $scope.collaboratorModel.auto_pass = false;
                 }
 
-            }
+            };
+
+            $scope.closeModal = function () {
+                $scope.existingUser = false;
+                $scope.email = '';
+                $scope.addNewCollaboratorModal.hide();
+            };
+
             $scope.save = function (newCollaboratorForm) {
-                if (!newCollaboratorForm.$valid){
+                if (!newCollaboratorForm.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return false;
                 }
-                
-                var result = $filter('filter')($scope.collaboratorArray, { email: $scope.collaboratorModel.email }, true)[0];
-
-                if (result)
-                    return false;
-
                 $scope.submitting = true;
-
                 var newCol = {};
+
+                if (!$scope.existingUser) {
+                    newCol.email = $scope.collaboratorModel.email;
+                    newCol.first_name = $scope.collaboratorModel.first_name;
+                    newCol.last_name = $scope.collaboratorModel.last_name;
+                    newCol.password = $scope.collaboratorModel.password;
+                    newCol.created_at = new Date();
+                }
+                else {
+                    newCol.email = $scope.email;
+                }
+
                 newCol.organization_id = $rootScope.currentOrgId;
                 newCol.role = $scope.collaboratorModel.role.value;
-                newCol.email = $scope.collaboratorModel.email;
-                newCol.first_name = $scope.collaboratorModel.first_name;
-                newCol.last_name = $scope.collaboratorModel.last_name;
-                newCol.password = $scope.collaboratorModel.password;
-                newCol.created_at = new Date();
 
                 CollaboratorsService.save(newCol)
                     .then(function (response) {
@@ -196,10 +204,11 @@ angular.module('primeapps')
                             $scope.$parent.collaboratorCount = $scope.pageTotal;
                             if ($scope.resultModel.sendPassword) {
                                 $scope.sendEmailPassword($scope.collaboratorModel);
-                            } else {
+                            }
+                            else {
                                 $scope.changePage(1);
                                 $scope.submitting = false;
-                                $scope.addNewCollaboratorModal.hide();
+                                $scope.closeModal();
                             }
                         }
                     })
@@ -207,16 +216,15 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.submitting = false;
                     });
-
-            }
+            };
 
             $scope.close = function () {
                 $scope.getCollaborators();
                 $state.reload();
-                $scope.addNewCollaboratorModal.hide();
+                $scope.closeModal();
                 //Modal kapanırken inputun kırmızı olmasına sebep oluyordu.
                 // $scope.showNewCollaboratorInfo = false;
-            }
+            };
 
             $scope.update = function (collaborator) {
                 collaborator.updating = true;
@@ -242,7 +250,7 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                         collaborator.updating = false;
                     });
-            }
+            };
 
             $scope.delete = function (collaborator) {
                 if (!collaborator)
@@ -257,7 +265,7 @@ angular.module('primeapps')
                 }).then(function (value) {
                     if (value) {
                         collaborator.deleting = true;
-                        var result = $filter('filter')($scope.collaboratorArray, { id: collaborator.id }, true)[0];
+                        var result = $filter('filter')($scope.collaboratorArray, {id: collaborator.id}, true)[0];
 
                         if (!result) {
                             collaborator.deleting = false;
@@ -292,21 +300,50 @@ angular.module('primeapps')
 
             $scope.sendEmailPassword = function (collaboratorModel) {
 
-                    var sendEmailData = {};
-                    sendEmailData.app_id = 2;
-                    sendEmailData.culture = "en";
-                    sendEmailData.first_name = collaboratorModel.first_name;
-                    sendEmailData.password = collaboratorModel.password;
-                    var email = collaboratorModel.email;
+                var sendEmailData = {};
+                sendEmailData.app_id = 2;
+                sendEmailData.culture = "en";
+                sendEmailData.first_name = collaboratorModel.first_name;
+                sendEmailData.password = collaboratorModel.password;
+                var email = collaboratorModel.email;
 
-                    if (validateEmail(email)) {
-                        sendEmailData.email = email;
-                        CollaboratorsService.sendEmail(sendEmailData).then(function (response) {
-                            $scope.changePage(1);
-                            $scope.submitting = false;
-                            $scope.addNewCollaboratorModal.hide();
-                        });
+                if (validateEmail(email)) {
+                    sendEmailData.email = email;
+                    CollaboratorsService.sendEmail(sendEmailData).then(function (response) {
+                        $scope.changePage(1);
+                        $scope.submitting = false;
+                        $scope.closeModal();
+                    });
+                }
+            };
+
+            $scope.enterKeyPress = function (keyEvent) {
+                if (keyEvent.which === 13) {
+                    if (!validateEmail($scope.email)) {
+                        toastr.warning('Email is not valid!');
+                        return;
                     }
+
+                    var checkEmail = $filter('filter')($scope.collaboratorArray, {email: $scope.email}, true);
+                    if (checkEmail && checkEmail[0]) {
+                        toastr.warning('User is already added.');
+                        return;
+                    }
+
+                    CollaboratorsService.isUserExist($scope.email)
+                        .then(function (response) {
+                            $scope.collaboratorModel = {};
+
+                            if (response.data === '' || !response.data) {
+                                $scope.collaboratorModel.email = $scope.email;
+                            }
+                            else {
+                                $scope.existingUser = true;
+                            }
+
+                            $scope.addNewCollaborator();
+                        });
+                }
             };
 
         }

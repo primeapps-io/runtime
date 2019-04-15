@@ -39,5 +39,13 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
         }
+        
+        public async Task<StudioUser> GetWithOrganizations(int id)
+        {
+            return await DbContext.Users
+                .Include(x => x.UserOrganizations)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
     }
 }

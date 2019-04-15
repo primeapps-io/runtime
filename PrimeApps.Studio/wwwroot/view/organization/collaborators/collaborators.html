@@ -1,4 +1,4 @@
-<div class="setup-title">
+<!--<div class="setup-title">
     <h2> Collaborators </h2>
     <div>
         <ul class="list-unstyled list-inline">
@@ -8,21 +8,23 @@
                 </button>
             </li>
         </ul>
-
     </div>
+</div>-->
+<div class="setup-title ng-scope">
+    <h2>Collaborators</h2>
 </div>
-<!--<form ng-submit="save()" ng-show="!selectedCollaborator">
-    <div class="search-input">
-        <div class="search-input-icon">
-            <i class="fas fa-user-plus"></i>
-        </div>
-        <input ng-model="newUserEmail" placeholder="Invite collaborators by email"
-               class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched required-field"
-               type="email" style="" required>
-    </div>
-    <br />
-</form>-->
-<div class="tab-content table-responsive">
+
+<div class="form-group">
+    <input type="text"
+           name="label"
+           class="form-control ng-animate-disabled col-sm-8"
+           style="height: 60px;line-height: 60px;box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);background: #FFF;"
+           ng-keypress="enterKeyPress($event)"
+           placeholder="Write email and press enter to add collaborator"
+           ng-model="email">
+</div>
+
+<div class="tab-content table-responsive col-sm-12" style="margin-top: 30px;float: left;">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
