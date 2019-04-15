@@ -407,7 +407,9 @@ namespace PrimeApps.Auth.UI
             if (externalLogin != null)
             {
                 actions = (JArray)externalLogin["actions"];
-                action = actions.Where(x => x["type"] != null && x["type"].ToString() == "login").FirstOrDefault();
+                action = actions
+                    .Where(x => x["type"] != null && x["type"].ToString() == "login")
+                    .FirstOrDefault();
 
                 obj = new JObject
                 {
@@ -421,7 +423,8 @@ namespace PrimeApps.Auth.UI
                     externalLoginChecker = true;
                 else
                 {
-                    action = actions.Where(x => x["type"] != null && x["type"].ToString() == "check_user")
+                    action = actions
+                        .Where(x => x["type"] != null && x["type"].ToString() == "check_user")
                         .FirstOrDefault();
 
                     var externalLoginCheckUser = await ExternalAuthHelper.CheckUser(externalLogin, action, obj);
@@ -463,7 +466,9 @@ namespace PrimeApps.Auth.UI
                     ["phone"] = model.PhoneNumber
                 };
 
-                action = actions.Where(x => x["type"] != null && x["type"].ToString() == "register").FirstOrDefault();
+                action = actions
+                    .Where(x => x["type"] != null && x["type"].ToString() == "register")
+                    .FirstOrDefault();
 
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
             }
@@ -473,18 +478,6 @@ namespace PrimeApps.Auth.UI
                 // delete local authentication cookie
                 await _signInManager.SignOutAsync();
                 await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-            }
-
-            var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-            if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo?.Domain))
-            {
-                var giteaToken = await _giteaHelper.GetToken(model.Email, model.Password);
-                if (!string.IsNullOrEmpty(giteaToken))
-                {
-                    var user = await _userManager.FindByNameAsync(model.Email);
-                    await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
-                    Response.Cookies.Append("gitea_token", giteaToken);
-                }
             }
 
             var signInResult =
@@ -1579,7 +1572,7 @@ namespace PrimeApps.Auth.UI
             if (identityUser == null && !externalLogin)
             {
                 newIdentityUser = true;
-                identityUser = await _userHelper.CreateIdentityUser(userModel);
+                identityUser = await _userHelper.CreateIdentityUser(userModel, applicationInfo?.Domain);
 
                 if (identityUser == null)
                 {
@@ -1604,7 +1597,7 @@ namespace PrimeApps.Auth.UI
                     token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
 
                 var newPlatformUser = false;
-                PlatformUser platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+                var platformUser = await _platformUserRepository.GetWithTenants(model.Email);
 
                 if (platformUser != null)
                 {
@@ -1778,7 +1771,7 @@ namespace PrimeApps.Auth.UI
 
                         response["Success"] = true;
 
-                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret));
+                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain));
                     }
                     catch (Exception ex)
                     {

@@ -71,11 +71,11 @@ namespace PrimeApps.Studio.Helpers
                         using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
                             var app = await _appDraftRepository.Get(appId);
-                            var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                            var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
 
                             if (repository != null)
                             {
-                                var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                                var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
 
                                 var fileName = $"functions/{function.Name}.{GetTypeWithRuntime(function.Runtime)}" ;
 
@@ -107,7 +107,7 @@ namespace PrimeApps.Studio.Helpers
 
                                         // Commit to the repository
                                         var commit = repo.Commit("Created function " + function.Name, signature, signature);
-                                        _giteaHelper.Push(repo, giteaToken);
+                                        _giteaHelper.Push(repo);
 
                                         repo.Dispose();
                                         _giteaHelper.DeleteDirectory(localPath);

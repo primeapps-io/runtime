@@ -9,6 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ICollaboratorsRepository : IRepositoryBaseStudio
     {
+        Task<bool> CheckUserAddedMultipleTimes(int userId, int organizationId, int appId, bool withTeam = false);
         Task<List<AppCollaborator>> GetByAppId(int appId);
         List<AppCollaborator> GetByUserId(int userId, int organizationId, int? appId);
         Task<int> AppCollaboratorAdd(AppCollaborator appCollaborator);

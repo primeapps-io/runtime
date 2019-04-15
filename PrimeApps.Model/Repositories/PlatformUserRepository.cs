@@ -73,7 +73,7 @@ namespace PrimeApps.Model.Repositories
         }
 
         public async Task<int> GetIdByEmail(string email)
-        {
+        { 
             return await DbContext.Users.Where(x => x.Email == email).Select(x => x.Id).SingleOrDefaultAsync();
         }
 

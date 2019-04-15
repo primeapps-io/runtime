@@ -18,6 +18,21 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
+        public async Task<bool> CheckUserAddedMultipleTimes(int userId, int organizationId, int appId, bool withTeam = false)
+        {
+            var teamIds = new List<int>();
+            
+            if (withTeam)
+                teamIds = DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToList();
+
+            var collaboratos = await DbContext.AppCollaborators
+                .Include(x => x.Team)
+                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && x.AppId == appId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))))
+                .ToListAsync();
+
+            return collaboratos != null && collaboratos.Count > 0;
+        }
+
         public async Task<List<AppCollaborator>> GetByAppId(int appId)
         {
             return await DbContext.AppCollaborators
@@ -28,7 +43,7 @@ namespace PrimeApps.Model.Repositories
         {
             var teamIds = DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToList();
 
-            return  DbContext.AppCollaborators
+            return DbContext.AppCollaborators
                 .Include(x => x.Team)
                 .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && x.AppId == appId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))))
                 .ToList();

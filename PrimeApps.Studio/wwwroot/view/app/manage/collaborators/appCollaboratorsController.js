@@ -122,7 +122,7 @@ angular.module('primeapps')
                             $scope.loadingMembers = false;
                         });
                 });
-            }
+            };
 
             $scope.getTeamsAndCollaborators();
 
@@ -135,7 +135,7 @@ angular.module('primeapps')
                 appCollaboratorObj.app_id = $scope.$parent.appId;
                 appCollaboratorObj.profile = 'viewer';
 
-                if (item.type == 'user') {
+                if (item.type === 'user') {
                     appCollaboratorObj.user_id = item.id;
                 } else {
                     appCollaboratorObj.team_id = item.id;
@@ -144,14 +144,14 @@ angular.module('primeapps')
                 AppCollaboratorsService.addAppCollaborator(appCollaboratorObj)
                     .then(function (response) {
                         if (response.data) {
-                            if (item.type == 'user') {
+                            if (item.type === 'user') {
                                 toastr.success('Collaborator is added successfully');
                             } else {
                                 toastr.success('Team is added successfully');
                             }
 
                             $scope.getTeamsAndCollaborators();
-                            $scope.selectedUser = {};
+                            $scope.selectedUser = null;
 
                         }
                     })
@@ -159,7 +159,7 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                     });
 
-            }
+            };
 
             $scope.changeRole = function (appCol) {
                 appCol.updating = true;

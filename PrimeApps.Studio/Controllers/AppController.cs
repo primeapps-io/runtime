@@ -110,7 +110,7 @@ namespace PrimeApps.Studio.Controllers
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id,
                 model.TempletId);
             Queue.QueueBackgroundWorkItem(token =>
-                _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser, Request.Cookies["gitea_token"]));
+                _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
             return Ok(app);
         }

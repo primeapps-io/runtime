@@ -81,6 +81,9 @@ namespace PrimeApps.Auth.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (string.IsNullOrEmpty(addUserBindingModel.AppName))
+                return BadRequest("AppName is required!");
+
             if (User?.Identity.IsAuthenticated == false)
                 return Unauthorized();
 
@@ -113,7 +116,7 @@ namespace PrimeApps.Auth.Controllers
                     TimeZone = currentPlatformUser.Setting.TimeZone
                 };
 
-                platformUser = await _userHelper.CreatePlatformUser(userModel, "", false, setting);
+                platformUser = await _userHelper.CreatePlatformUser(userModel, addUserBindingModel.AppName, false, setting);
 
                 if (platformUser == null)
                 {
@@ -121,7 +124,12 @@ namespace PrimeApps.Auth.Controllers
                     return BadRequest(ModelState);
                 }
 
-                platformUser.TenantsAsUser = new List<UserTenant> {new UserTenant {TenantId = 1}};
+                /*
+                 * Need to get platformUser model again because not update tenantsAsUser information with returned platformUser model.
+                 */
+                platformUser = await _platformUserRepository.GetWithTenants(userModel.Email);
+
+                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1, UserId = platformUser.Id});
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
 
@@ -133,7 +141,8 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else if (identityUser == null)
             {
-                identityUser = await _userHelper.CreateIdentityUser(userModel);
+                var app = _applicationRepository.GetByName(addUserBindingModel.AppName);
+                identityUser = await _userHelper.CreateIdentityUser(userModel, app.Setting?.AppDomain);
 
                 if (identityUser == null)
                     return BadRequest();
@@ -202,7 +211,9 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else if (identityUser == null)
             {
-                identityUser = await _userHelper.CreateIdentityUser(userModel);
+                var app = _applicationRepository.GetByName(addUserBindingModel.AppName);
+
+                identityUser = await _userHelper.CreateIdentityUser(userModel, app.Setting.AppDomain);
 
                 if (identityUser == null)
                     return BadRequest();
@@ -295,7 +306,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             else
             {
-                identityUser = await _userHelper.CreateIdentityUser(userModel);
+                identityUser = await _userHelper.CreateIdentityUser(userModel, appInfo.Setting?.AppDomain);
 
                 if (identityUser == null)
                     return BadRequest();

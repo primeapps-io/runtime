@@ -15,6 +15,12 @@ namespace PrimeApps.Model.Common.Organization
 
         [JsonProperty("organization_id"), DataMember(Name = "organization_id"), Required]
         public int OrganizationId { get; set; }
+        
+        [JsonProperty("app_name"), DataMember(Name = "app_name")]
+        public string AppName { get; set; }
+        
+        [JsonProperty("organization_name"), DataMember(Name = "organization_name")]
+        public string OrganizationName { get; set; }
 
         [JsonProperty("role"), DataMember(Name = "role"), Required]
         public OrganizationRole Role { get; set; }
