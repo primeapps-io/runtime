@@ -89,7 +89,7 @@ angular.module('primeapps')
 
                 if (!scriptForm.$valid || !$scope.scriptNameValid) {
                     $scope.saving = false;
-                    toastr.error('Please enter a valid fields.');
+                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
                 }
 
