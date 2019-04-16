@@ -98,10 +98,9 @@ angular.module('primeapps')
             ];
 
             $scope.closeModal = function () {
-                $scope.function = {};
+                $scope.createFormModal.hide();
                 $scope.functionNameValid = null;
                 $scope.isFunctionNameBlur = false;
-                $scope.createFormModal.hide();
             };
 
             $scope.changeRuntime = function () {
@@ -244,6 +243,8 @@ angular.module('primeapps')
             $scope.identifierCreate = function () {
                 if (!$scope.function || !$scope.function.label) {
                     $scope.function.name = null;
+                    $scope.functionNameValid = null;
+                    $scope.isFunctionNameBlur = false;
                     return;
                 }
 
