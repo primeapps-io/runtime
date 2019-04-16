@@ -89,10 +89,23 @@
                                     <label class="required-field">Change App Icon and Color</label>
                                     <div class="iconandcolor">
                                         <div class="flex-evenly">
-                                            <div data-trigger="hover" data-type="info" data-title="Choose Your App Icon" bs-tooltip data-placement="top">
-                                                <a style="background: #DC3023;" href="#" class="appicon" title="">
+                                            <div  >
+                                                <div style="background: #DC3023;" class="appicon" title="">
                                                     <i class="fas fa-box-open"></i>
-                                                </a>
+                                                    <ui-select ng-model="$parent.$parent.organization.icon" ng-disabled="ctrl.disabled">
+                                                        <ui-select-match placeholder="Select an icon">
+                                                            <div>
+                                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                            </div>
+                                                        </ui-select-match>
+
+                                                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                            <div ng-bind-html="icon.label"></div>
+                                                        </ui-select-choices>
+
+                                                    </ui-select>
+                                                </div>
                                             </div>
                                             <div data-trigger="hover" data-type="info" data-title="Choose Your App Color" bs-tooltip data-placement="top">
                                                 <div class="appcolor">

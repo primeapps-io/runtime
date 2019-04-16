@@ -2,11 +2,11 @@
 
 angular.module('primeapps')
 
-    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader', '$stateParams',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader, $stateParams) {
+    .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'LayoutService', '$timeout', '$interval', 'FileUploader', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, LayoutService, $timeout, $interval, FileUploader, $stateParams) {
             $scope.appModel = {};
             $scope.nameBlur = false;
-
+            $scope.icons = LayoutService.getIcons();
             $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
             if (!$rootScope.currentOrgId && $rootScope.organizations) {

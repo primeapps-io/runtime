@@ -242,6 +242,7 @@ angular.module('primeapps')
 
 
             $scope.showEditModal = function (tab, field) {
+                $scope.acitveTab = tab;
                 $scope.formModal = $scope.formModal ||
                     $modal({
                         scope: $scope,
@@ -254,27 +255,5 @@ angular.module('primeapps')
             };
 
 
-            // $scope.addMasterUser = function () {
-            //     var newCol = {};
-            //     newCol.role_id = 1;
-            //     newCol.profile_id = 1;
-            //     newCol.first_name = "master";
-            //     newCol.last_name = "test";
-            //     newCol.email = "master.test@usertest3.com";
-            //     newCol.password = "1234567";
-            //     newCol.created_at = new Date();
-            //
-            //     BrandingService.addAppUser(newCol)
-            //         .then(function (response) {
-            //             if (response.data) {
-            //                 toastr.success('Collaborator is saved successfully');
-            //
-            //             }
-            //         })
-            //         .catch(function () {
-            //             toastr.error($filter('translate')('Common.Error'));
-            //
-            //         });
-            // };
         }
     ]);
