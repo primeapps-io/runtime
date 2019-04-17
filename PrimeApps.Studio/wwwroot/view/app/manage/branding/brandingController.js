@@ -209,15 +209,30 @@ angular.module('primeapps')
                 var authTheme = response.data;
                 if (authTheme && authTheme.banner) {
                     $scope.authTheme.banner = authTheme.banner[0].image;
-                    $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
-                    $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
+                    if (authTheme.banner[0].descriptions.en) {
+                        $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
+                     
+                    }
+                    if (authTheme.banner[0].descriptions.tr) {
+                        $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
+                    }
+
                 }
+                
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
                 $scope.authTheme.favicon = authTheme.favicon;
                 $scope.authTheme.logo = authTheme.logo;
             });
 
+
+            $scope.save = function () {
+                if ($scope.acitveTab == 'login')
+                    $scope.saveAuthTheme();
+                else
+                    $scope.saveAppTheme();
+
+            };
 
             $scope.saveAuthTheme = function () {
                 $scope.savingAuth = true;

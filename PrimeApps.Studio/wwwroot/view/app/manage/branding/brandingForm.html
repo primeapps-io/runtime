@@ -1,5 +1,5 @@
 <div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
-    <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm)" autocomplete="off"
+    <form name="brandingForm" class="form-horizontal form-custom" ng-submit="save(brandingForm);" autocomplete="off"
           novalidate>
         <div class="modal-header">
             <div class="flex-between">
@@ -30,7 +30,7 @@
 
                                 <div class="form-group">
                                     <label class="required-field">1-Favicon</label>
-                                    <div class="newupload" ng-if="!authFavicon.image">
+                                    <div class="newupload" ng-if="!authFavicon.image && !authTheme.favicon">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
@@ -49,12 +49,13 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="authFavicon.image">
+                                    <div ng-show="authFavicon.image || authTheme.favicon">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
                                                     <img ng-src="{{authFavicon.image}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
+                                                    <img ng-src="{{authTheme.favicon}}" style="height: 64px; max-width: 100%" ng-show="!authFavicon">
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
                                                                 ng-click="logoRemove();">
@@ -67,8 +68,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+                                <div class="form-group">
                                     <label class="col-sm-4 required-field">
                                         2- Title
                                     </label>
@@ -83,7 +83,7 @@
 
                                 <div class="form-group">
                                     <label class="required-field">3-Logo</label>
-                                    <div class="newupload" ng-if="!authLogo.image">
+                                    <div class="newupload" ng-if="!authLogo.image && !authTheme.logo">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
@@ -102,11 +102,11 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="authLogo.image">
+                                    <div ng-show="authLogo.image || authTheme.logo">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authLogo.image}}" class="resultimg"
+                                                    <img ng-src="{{authLogo.image || authTheme.logo }}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -116,13 +116,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <!--<div class="col-xs-12" ng-repeat="item in uploader.queue" ng-show="false">-->
-                                            <!--<div class="cropArea cropArea2">-->
-                                            <!--<label class="">Please crop your image: </label>-->
-                                            <!--<img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>-->
-                                            <!--</div>-->
-                                            <!--</div>-->
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -133,63 +127,63 @@
                                         <div>
                                             <div>
                                                 <div class="appcolor">
-                                                    <span ng-click="appTheme.color ='#D24D57'"
-                                                          ng-class="appTheme.color==='#D24D57' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#D24D57'"
+                                                          ng-class="authTheme.color==='#D24D57' ? 'active':''"
                                                           style="background: #D24D57;"></span>
-                                                    <span ng-click="appTheme.color ='#BE90D4'"
-                                                          ng-class="appTheme.color==='#BE90D4' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#BE90D4'"
+                                                          ng-class="authTheme.color==='#BE90D4' ? 'active':''"
                                                           style="background: #BE90D4;"></span>
-                                                    <span ng-click="appTheme.color ='#5AABE3'"
-                                                          ng-class="appTheme.color==='#5AABE3' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#5AABE3'"
+                                                          ng-class="authTheme.color==='#5AABE3' ? 'active':''"
                                                           style="background: #5AABE3;"></span>
-                                                    <span ng-click="appTheme.color ='#87D37C'"
-                                                          ng-class="appTheme.color==='#87D37C' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#87D37C'"
+                                                          ng-class="authTheme.color==='#87D37C' ? 'active':''"
                                                           style="background: #87D37C;"></span>
-                                                    <span ng-click="appTheme.color ='#F4D03E'"
-                                                          ng-class="appTheme.color==='#F4D03E' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#F4D03E'"
+                                                          ng-class="authTheme.color==='#F4D03E' ? 'active':''"
                                                           style="background: #F4D03E;"></span>
-                                                    <span ng-click="appTheme.color ='#B8BEC2'"
-                                                          ng-class="appTheme.color==='#B8BEC2' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#B8BEC2'"
+                                                          ng-class="authTheme.color==='#B8BEC2' ? 'active':''"
                                                           style="background: #B8BEC2;"></span>
                                                 </div>
                                                 <div class="appcolor">
-                                                    <span ng-click="appTheme.color ='#DC3023'"
-                                                          ng-class="appTheme.color==='#DC3023' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#DC3023'"
+                                                          ng-class="authTheme.color==='#DC3023' ? 'active':''"
                                                           style="background: #DC3023;"></span>
-                                                    <span ng-click="appTheme.color ='#8E44AD'"
-                                                          ng-class="appTheme.color==='#8E44AD' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#8E44AD'"
+                                                          ng-class="authTheme.color==='#8E44AD' ? 'active':''"
                                                           style="background: #8E44AD;"></span>
-                                                    <span ng-click="appTheme.color ='#19B5FE'"
-                                                          ng-class="appTheme.color==='#19B5FE' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#19B5FE'"
+                                                          ng-class="authTheme.color==='#19B5FE' ? 'active':''"
                                                           style="background: #19B5FE;"></span>
-                                                    <span ng-click="appTheme.color ='#25A65B'"
-                                                          ng-class="appTheme.color==='#25A65B' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#25A65B'"
+                                                          ng-class="authTheme.color==='#25A65B' ? 'active':''"
                                                           style="background: #25A65B;"></span>
-                                                    <span ng-click="appTheme.color ='#FFB61E'"
-                                                          ng-class="appTheme.color==='#FFB61E' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#FFB61E'"
+                                                          ng-class="authTheme.color==='#FFB61E' ? 'active':''"
                                                           style="background: #FFB61E;"></span>
-                                                    <span ng-click="appTheme.color ='#959EA4'"
-                                                          ng-class="appTheme.color==='#959EA4' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#959EA4'"
+                                                          ng-class="authTheme.color==='#959EA4' ? 'active':''"
                                                           style="background: #959EA4;"></span>
                                                 </div>
                                                 <div class="appcolor">
-                                                    <span ng-click="appTheme.color ='#C3272B'"
-                                                          ng-class="appTheme.color==='#C3272B' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#C3272B'"
+                                                          ng-class="authTheme.color==='#C3272B' ? 'active':''"
                                                           style="background: #C3272B;"></span>
-                                                    <span ng-click="appTheme.color ='#763668'"
-                                                          ng-class="appTheme.color==='#763668' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#763668'"
+                                                          ng-class="authTheme.color==='#763668' ? 'active':''"
                                                           style="background: #763668;"></span>
-                                                    <span ng-click="appTheme.color ='#1F4688'"
-                                                          ng-class="appTheme.color==='#1F4688' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#1F4688'"
+                                                          ng-class="authTheme.color==='#1F4688' ? 'active':''"
                                                           style="background: #1F4688;"></span>
-                                                    <span ng-click="appTheme.color ='#006442'"
-                                                          ng-class="appTheme.color==='#006442' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#006442'"
+                                                          ng-class="authTheme.color==='#006442' ? 'active':''"
                                                           style="background: #006442;"></span>
-                                                    <span ng-click="appTheme.color ='#CA6924'"
-                                                          ng-class="appTheme.color==='#CA6924' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#CA6924'"
+                                                          ng-class="authTheme.color==='#CA6924' ? 'active':''"
                                                           style="background: #CA6924;"></span>
-                                                    <span ng-click="appTheme.color ='#4D5C66'"
-                                                          ng-class="appTheme.color==='#4D5C66' ? 'active':''"
+                                                    <span ng-click="authTheme.color ='#4D5C66'"
+                                                          ng-class="authTheme.color==='#4D5C66' ? 'active':''"
                                                           style="background: #4D5C66;"></span>
                                                 </div>
                                             </div>
@@ -200,7 +194,7 @@
 
                                 <div class="form-group">
                                     <label class="  required-field">5-Main Image</label>
-                                    <div class="newupload" ng-if="!authBanner.image">
+                                    <div class="newupload" ng-if="!authBanner.image && !authTheme.banner">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
@@ -219,11 +213,11 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="authBanner.image">
+                                    <div ng-show="authBanner.image || authTheme.banner">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authBanner.image}}" class="resultimg"
+                                                    <img ng-src="{{authBanner.image || authTheme.banner}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -254,7 +248,7 @@
                                            focus="true"
                                            required
                                            maxlength="50"
-                                           ng-model="appModel.label">
+                                           ng-model="authTheme.descriptionEn">
                                 </div>
 
                             </div>
@@ -264,7 +258,7 @@
 
                                 <div class="form-group">
                                     <label class="required-field">1-Favicon</label>
-                                    <div class="newupload" ng-if="!appThemeFavicon.image">
+                                    <div class="newupload" ng-if="!appThemeFavicon.image && !appTheme.favicon">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
@@ -283,11 +277,11 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="appThemeFavicon.image">
+                                    <div ng-show="appThemeFavicon.image || appTheme.favicon">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appThemeFavicon.image}}" class="resultimg"
+                                                    <img ng-src="{{appThemeFavicon.image || appTheme.favicon}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -316,7 +310,7 @@
 
                                 <div class="form-group">
                                     <label class="required-field">3-Logo</label>
-                                    <div class="newupload" ng-if="!appLogo.image">
+                                    <div class="newupload" ng-if="!appLogo.image && !appTheme.logo">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
@@ -335,11 +329,11 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="appLogo.image">
+                                    <div ng-show="appLogo.image || appTheme.logo">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appLogo.image}}" class="resultimg"
+                                                    <img ng-src="{{appLogo.image || appTheme.logo}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
