@@ -9,6 +9,9 @@ namespace PrimeApps.Model.Common.App
 {
     public class AppDraftUserModel
     {
+        [JsonProperty("app_name"), DataMember(Name = "app_name")]
+        public string AppName { get; set; }
+        
         [JsonProperty("email"), DataMember(Name = "email"), Required]
         public string Email { get; set; }
 

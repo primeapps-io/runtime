@@ -163,7 +163,7 @@ angular.module('primeapps',
                     $rootScope.permission = helper.checkUserProfile(menuName, pageName);
 
                     if (!$rootScope.permission)
-                        toastr.error('You are not authorized for this operation.');
+                        toastr.warning('You are not authorized for this operation.');
                 }
 
                 var currentUrl = toState.url;

@@ -2,7 +2,7 @@
     <!--<h2>Overview</h2>-->
 </div>
 
-<ui-select ng-model="selectedUser" class="bigwhiteselect"
+<ui-select ng-model="$parent.selectedUser" class="bigwhiteselect"
            on-select="selectItemForApp($select.selected)">
     <ui-select-match allow-clear="true" placeholder="Add collaborators and teams">
         {{$select.selected.full_name}}

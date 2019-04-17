@@ -39,8 +39,9 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformRepository _platformRepository;
         private IPermissionHelper _permissionHelper;
         private IPlatformUserRepository _platformUserRepository;
+        private IOrganizationRepository _organizationRepository;
 
-        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository)
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository, IOrganizationRepository organizationRepository)
         {
             _relationRepository = relationRepository;
             _profileRepository = profileRepository;
@@ -53,6 +54,7 @@ namespace PrimeApps.Studio.Controllers
             _platformRepository = platformRepository;
             _permissionHelper = permissionHelper;
             _platformUserRepository = platformUserRepository;
+            _organizationRepository = organizationRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -84,7 +86,6 @@ namespace PrimeApps.Studio.Controllers
             if (user != null)
                 return BadRequest(new {message = "User already exist"});
 
-
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             var result = 0;
             string password = "";
@@ -92,13 +93,16 @@ namespace PrimeApps.Studio.Controllers
             if (!string.IsNullOrEmpty(clientId))
             {
                 var appInfo = await _applicationRepository.GetByNameAsync(clientId);
-
+                var organization = await _organizationRepository.Get(OrganizationId);
+                
                 using (var httpClient = new HttpClient())
                 {
                     var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_app_draft_user";
                     httpClient.DefaultRequestHeaders.Accept.Clear();
                     httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
+
+                    userModel.AppName = appInfo.Name;
 
                     var json = JsonConvert.SerializeObject(userModel);
                     var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
@@ -156,7 +160,7 @@ namespace PrimeApps.Studio.Controllers
             user.ProfileId = userModel.ProfileId;
             user.RoleId = userModel.RoleId;
             user.IsActive = userModel.IsActive;
-            
+
             await _userRepository.UpdateAsync(user);
 
             return Ok();
@@ -318,7 +322,7 @@ namespace PrimeApps.Studio.Controllers
                     {
                         ["token"] = CryptoHelper.Encrypt(userObj.ToString())
                     };
-                    
+
                     var json = JsonConvert.SerializeObject(request);
                     var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 

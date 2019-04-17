@@ -1,0 +1,14 @@
+{{- if eq .Values.deployment "internal" }}
+{{- $root := . }}
+{{- range $name, $values := .Values.appPre.secrets }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}-app-pre-{{ $name | lower }}
+data:
+  {{- range $key, $value := $values }}
+  {{ $key }}: {{ $value }}
+  {{- end }}
+---
+{{- end }}
+{{- end -}}

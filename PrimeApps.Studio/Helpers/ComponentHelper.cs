@@ -25,9 +25,9 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IComponentHelper
     {
-        Task<JArray> GetAllFileNames(string giteaToken, int appId, string path, int organizationId);
-        Task<bool> CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId);
-        Task<bool> CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId);
+        Task<JArray> GetAllFileNames(int appId, string path, int organizationId);
+        Task<bool> CreateSample(int appId, ComponentModel component, int organizationId);
+        Task<bool> CreateSampleScript(int appId, ComponentModel script, int organizationId);
     }
 
     public class ComponentHelper : IComponentHelper
@@ -47,7 +47,7 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
-        public async Task<JArray> GetAllFileNames(string giteaToken, int appId, string componentName, int organizationId)
+        public async Task<JArray> GetAllFileNames(int appId, string componentName, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
@@ -59,10 +59,10 @@ namespace PrimeApps.Studio.Helpers
                     using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
                         var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
                         if (repository != null)
                         {
-                            var status = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString(), false);
+                            var status = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString(), false);
 
                             var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
                             var localFolder = giteaDirectory + repository["name"];
@@ -81,7 +81,7 @@ namespace PrimeApps.Studio.Helpers
             return null;
         }
 
-        public async Task<bool> CreateSample(string giteaToken, int appId, ComponentModel component, int organizationId)
+        public async Task<bool> CreateSample(int appId, ComponentModel component, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
@@ -95,10 +95,10 @@ namespace PrimeApps.Studio.Helpers
                         using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
                             var app = await _appDraftRepository.Get(appId);
-                            var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                            var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
                             if (repository != null)
                             {
-                                var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                                var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
                                 if (!Directory.Exists(localPath + $"/components/{component.Name}"))
                                 {
                                     Directory.CreateDirectory(localPath + $"/components/{component.Name}");
@@ -152,7 +152,7 @@ namespace PrimeApps.Studio.Helpers
 
                                         // Commit to the repository
                                         var commit = repo.Commit("Created component " + component.Name, signature, signature);
-                                        _giteaHelper.Push(repo, giteaToken);
+                                        _giteaHelper.Push(repo);
 
                                         repo.Dispose();
                                     }
@@ -174,7 +174,7 @@ namespace PrimeApps.Studio.Helpers
             return false;
         }
 
-        public async Task<bool> CreateSampleScript(string giteaToken, int appId, ComponentModel script, int organizationId)
+        public async Task<bool> CreateSampleScript(int appId, ComponentModel script, int organizationId)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
@@ -189,10 +189,10 @@ namespace PrimeApps.Studio.Helpers
                     using (var _appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                     {
                         var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
                         if (repository != null)
                         {
-                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
                             var fileName = $"/scripts/{script.Name}.js";
 
                             using (var repo = new Repository(localPath))
@@ -222,7 +222,7 @@ namespace PrimeApps.Studio.Helpers
 
                                 // Commit to the repository
                                 var commit = repo.Commit("Created script " + script.Name, signature, signature);
-                                _giteaHelper.Push(repo, giteaToken);
+                                _giteaHelper.Push(repo);
 
                                 repo.Dispose();
                                 _giteaHelper.DeleteDirectory(localPath);

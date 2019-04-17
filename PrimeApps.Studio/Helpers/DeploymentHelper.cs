@@ -22,8 +22,8 @@ namespace PrimeApps.Studio.Helpers
     public interface IDeploymentHelper
     {
         Task StartFunctionDeployment(Model.Entities.Tenant.Function function, JObject functionObj, string name, int userId, int organizationId, int appId, int deploymentId);
-        Task StartComponentDeployment(Model.Entities.Tenant.Component component, string giteaToken, int appId, int deploymentId, int organizationId, int? tenantId = null);
-        Task StartScriptDeployment(Model.Entities.Tenant.Component script, string giteaToken, int appId, int deploymentId, int organizationId, int? tenantId = null);
+        Task StartComponentDeployment(Model.Entities.Tenant.Component component, int appId, int deploymentId, int organizationId, int? tenantId = null);
+        Task StartScriptDeployment(Model.Entities.Tenant.Component script, int appId, int deploymentId, int organizationId, int? tenantId = null);
     }
 
     public class DeploymentHelper : IDeploymentHelper
@@ -112,7 +112,7 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public async Task StartComponentDeployment(Model.Entities.Tenant.Component component, string giteaToken, int appId, int deploymentId, int organizationId, int? tenantId = null)
+        public async Task StartComponentDeployment(Model.Entities.Tenant.Component component, int appId, int deploymentId, int organizationId, int? tenantId = null)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -130,11 +130,11 @@ namespace PrimeApps.Studio.Helpers
                     if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
                     {
                         var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
                         var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
-                            var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                            var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
                             var files = _giteaHelper.GetFileNames(localPath, "components/" + component.Name);
 
                             try
@@ -192,7 +192,7 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public async Task StartScriptDeployment(Model.Entities.Tenant.Component script, string giteaToken, int appId, int deploymentId, int organizationId, int? tenantId = null)
+        public async Task StartScriptDeployment(Model.Entities.Tenant.Component script, int appId, int deploymentId, int organizationId, int? tenantId = null)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -210,13 +210,13 @@ namespace PrimeApps.Studio.Helpers
                     if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
                     {
                         var app = await _appDraftRepository.Get(appId);
-                        var repository = await _giteaHelper.GetRepositoryInfo(giteaToken, app.Name, organizationId);
+                        var repository = await _giteaHelper.GetRepositoryInfo(app.Name, organizationId);
                         var deployment = await _deploymentComponentRepository.Get(deploymentId);
                         if (repository != null)
                         {
                             var code = "";
 
-                             var localPath = _giteaHelper.CloneRepository(giteaToken, repository["clone_url"].ToString(), repository["name"].ToString());
+                             var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
                             // var files = _giteaHelper.GetFileNames(localPath, "components/" + script.Name);
                             var fileName = $"/scripts/{script.Name}.js";
 

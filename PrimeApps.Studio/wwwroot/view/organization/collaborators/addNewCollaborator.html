@@ -10,7 +10,7 @@
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
                         <li>
                             <button ng-disabled="submitting" type="button" class="btn add-button btn-radius btn-gray "
-                                    ng-click="addNewCollaboratorModal.hide();">
+                                    ng-click="$parent.$parent.closeModal()">
                                 <i class="fas fa-times margin-right-10"></i>{{'Common.Cancel' | translate}}
                             </button>
                         </li>
@@ -32,6 +32,7 @@
                         <div class="section" id="section1">
                             <div class="panel">
                                 <div class="form-group"
+                                     ng-if="!existingUser"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.name.$invalid}">
                                     <label class="col-sm-4 required-field">First Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
@@ -43,6 +44,7 @@
                                            ng-model="collaboratorModel.first_name">
                                 </div>
                                 <div class="form-group"
+                                     ng-if="!existingUser"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.surname.$invalid}">
                                     <label class="col-sm-4 required-field">Last Name <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
@@ -54,19 +56,20 @@
                                            ng-model="collaboratorModel.last_name">
                                 </div>
                                 <div class="form-group"
+                                     ng-if="!existingUser"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.email.$invalid}">
                                     <label class="col-sm-4 required-field">Email <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="email"
                                            name="email"
                                            class="form-control ng-animate-disabled col-sm-8"
-                                           required
+                                           readonly
                                            maxlength="250"
                                            focus="false"
                                            ng-model="collaboratorModel.email">
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
-                                     ng-if="!editing"
+                                     ng-if="!editing && !existingUser"
                                      ng-class="{'has-error': newCollaboratorForm.$submitted && newCollaboratorForm.password.$invalid}">
                                     <label class="col-sm-12 required-field">
                                         Password <span class="required-label">(required)</span>
@@ -95,7 +98,7 @@
                                         <option value="">Please select a role --></option>
                                     </select>
                                 </div>
-                                <div class="form-group" style="position: relative;" ng-if="!editing">
+                                <div class="form-group" style="position: relative;" ng-if="!editing && !existingUser">
                                     <label class="col-sm-12 required-field checkbox-inline newinput">
                                         <input type="checkbox" ng-model="resultModel.sendPassword" />
                                         Email the new password to the collaborator
@@ -108,8 +111,6 @@
 
                     </div>
                 </div>
-
-
             </div>
         </div>
     </form>

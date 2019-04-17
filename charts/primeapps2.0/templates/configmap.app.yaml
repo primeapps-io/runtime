@@ -1,0 +1,12 @@
+{{- $root := . }}
+{{- range $name, $values := .Values.app.secrets }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}-app-{{ $name | lower }}
+data:
+  {{- range $key, $value := $values }}
+  {{ $key }}: {{ $value }}
+  {{- end }}
+---
+{{- end }}
