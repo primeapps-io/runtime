@@ -336,7 +336,7 @@ namespace PrimeApps.Studio.Controllers
 				//creating Label
 				//If does not have items, its main Menu 
 				// step 1
-				if (((JArray)request["module"][i]["items"]).Count > 0)
+				if (((JArray)request["module"][i]["nodes"]).Count > 0)
 				{
 					//step 1.1 helper
 					menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, null, null);
@@ -345,12 +345,12 @@ namespace PrimeApps.Studio.Controllers
 					if (result < 1)
 						throw new HttpResponseException(HttpStatusCode.InternalServerError);
 
-					for (int j = 0; j < ((JArray)request["module"][i]["items"]).Count; j++)
+					for (int j = 0; j < ((JArray)request["module"][i]["nodes"]).Count; j++)
 					{
-						var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["items"][j]["route"].ToString()) ? await _moduleRepository.GetByName(request["module"][i]["items"][j]["menuName"].ToString()) : null;
+						var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["nodes"][j]["route"].ToString()) ? await _moduleRepository.GetByName(request["module"][i]["nodes"][j]["menuName"].ToString()) : null;
 						var parent = await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
 						// step 1.2 helper
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["items"][j], menu, moduleEntity, parent);
+						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["nodes"][j], menu, moduleEntity, parent);
 
 						result = await _menuRepository.CreateMenuItems(menuItem);
 
@@ -436,13 +436,13 @@ namespace PrimeApps.Studio.Controllers
 
 				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem);
 				await _menuRepository.UpdateMenuItem(menuItem);
-				for (int j = 0; j < ((JArray)request["menuLabel"][i]["items"]).Count; j++)
+				for (int j = 0; j < ((JArray)request["menuLabel"][i]["nodes"]).Count; j++)
 				{
-					menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["items"][j]["id"]);
+					menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["nodes"][j]["id"]);
 					if (menuItem == null)
 						return NotFound();
 
-					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["items"][j], menuItem);
+					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem);
 					await _menuRepository.UpdateMenuItem(menuItem);
 				}
 			}

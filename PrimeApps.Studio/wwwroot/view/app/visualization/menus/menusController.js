@@ -186,6 +186,14 @@ angular.module('primeapps')
              ];*/
 
             $scope.newModuleList = angular.copy($rootScope.appModules);
+            var parentItem = {
+                label_tr_plural: "Add Empty Menu Item",
+                label_en_plural: "Add Empty Menu Item",
+                menu_icon: "fa fa-square",
+                order: 0,
+                display: true
+            };
+            $scope.newModuleList.push(parentItem);
             //push customModules to modules
             /*  angular.forEach(customModules, function (customModule) {
                   $scope.newModuleList.push(customModule);
@@ -195,11 +203,13 @@ angular.module('primeapps')
                 $scope.loadingModal = true;
                 $scope.id = id;
                 $scope.wizardStep = 0;
-                $scope.menuLists = [];
+                $scope.data = [];
                 $scope.menu = {};
                 $scope.counter = 1;
                 $scope.clone = angular.copy(cloneSettings);
-
+                $scope.updateArray = [];
+                $scope.deleteArray = [];
+                $scope.createArray = [];
                 /**
                  * Profile picklist filter, If exist delete from picklist
                  * Yapılacaklar
@@ -228,10 +238,10 @@ angular.module('primeapps')
 
             var setMenuList = function (id) {
 
-                $scope.menuLists = [];
-                $scope.updateArray = [];
+                $scope.data = [];
+               /* $scope.updateArray = [];
                 $scope.deleteArray = [];
-                $scope.createArray = [];
+                $scope.createArray = [];*/
                 $scope.index = $scope.createArray.length;
 
                 if (id) {
@@ -256,7 +266,7 @@ angular.module('primeapps')
                             //We use firstprofileId because maybe user was changed
                             MenusService.getMenuItem($scope.menu.profile_id)
                                 .then(function onSuccess(response) {
-                                    $scope.menuLists = [];
+                                    $scope.data = [];
                                     for (var i = 0; i < response.data.length; i++) {
                                         var menuList = {};
                                         menuList.menuModuleType = response.data[i].route ? 'Mevcut Modül' : 'Tanım Giriş';
@@ -266,7 +276,8 @@ angular.module('primeapps')
                                         menuList.no = i + 1;//response.data[i].order;
                                         menuList.menuId = menuList.no;
                                         menuList.parentId = 0;
-                                        menuList.items = [];
+                                        menuList.isEdit = false;
+                                        menuList.nodes = [];
                                         menuList.route = response.data[i].route ? response.data[i].route.contains('modules/') ? '' : response.data[i].route : '';
                                         menuList.icon = response.data[i].menu_icon ? response.data[i].menu_icon : 'fa fa-square';
                                         menuList.menuName = response.data[i].route ? response.data[i].route.replace('modules/', '') : '';
@@ -279,18 +290,19 @@ angular.module('primeapps')
                                                 labelMenu.menuName = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.replace('modules/', '') : '';
                                                 labelMenu.no = j + 1;//response.data[i].menu_items[j].order;
                                                 labelMenu.menuId = menuList.no;
+                                                labelMenu.isEdit = false;
                                                 labelMenu.id = response.data[i].menu_items[j].id;
                                                 labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
                                                 labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
                                                 labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : 'fa fa-square';
                                                 labelMenu.route = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.contains('modules/') ? '' : response.data[i].menu_items[j].route : '';
-                                                menuList.items.push(labelMenu);
+                                                menuList.nodes.push(labelMenu);
                                             }
                                         }
-                                        $scope.menuLists.push(menuList);
+                                        $scope.data.push(menuList);
                                     }
                                     //Yeni eklenecek olan modülü +1'den başlatmamız gerekiyor
-                                    $scope.counter = $scope.menuLists.length + 1;
+                                    $scope.counter = $scope.data.length + 1;
 
                                 })
                                 .finally(function () {
@@ -331,24 +343,25 @@ angular.module('primeapps')
                  * moduleItem.menu_icon-> modülün iconu
                  * menu_icon -> Tanım giriş için seçilen icon
                  * */
-                menuList.menuModuleType = ($scope.menu.menuItem && $scope.menu.menuItem.length > 0) ? "Tanım Giriş" : "Mevcut Modül";
-                menuList.name = ($scope.menu.menuItem && $scope.menu.menuItem.length > 0) ? $scope.menu.menuItem : $scope.language === 'tr' ? $scope.menu.moduleItem.label_tr_plural : $scope.menu.moduleItem.label_en_plural;
-                menuList.menuName = ($scope.menu.menuItem && $scope.menu.menuItem.length > 0) ? '' : $scope.menu.moduleItem.name;
-                menuList.id = 0;//null;
+                menuList.menuModuleType = !$scope.menu.moduleItem.id ? "Tanım Giriş" : "Mevcut Modül";
+                menuList.name = $scope.language === 'tr' ? $scope.menu.moduleItem.label_tr_plural : $scope.menu.moduleItem.label_en_plural;
+                menuList.menuName = $scope.menu.moduleItem.name;
+                menuList.id = 0;
                 menuList.isDynamic = $scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
                 menuList.route = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
                 menuList.menuId = menuList.no;
                 menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.value : 'fa fa-square';
                 $scope.counter += 1;
                 menuList.parentId = 0;
-                menuList.items = [];
+                menuList.nodes = [];
+                menuList.isEdit = true;
                 menuList.index = $scope.index;
                 $scope.index += 1;
-                $scope.menuLists.push(menuList);
+                $scope.data.push(menuList);
 
-                if ($scope.id)
-                    $scope.createArray.push(menuList);
-
+                /* if ($scope.id)
+                     $scope.createArray.push(menuList);
+ */
                 $scope.menu.menuItem = null;
                 $scope.menu.moduleItem = null;
                 $scope.menu.menu_icon = null;
@@ -357,21 +370,23 @@ angular.module('primeapps')
 
             $scope.addModule = function (menuNo) {
 
-                var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
+                var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
                 var labelMenu = {};
-                labelMenu.no = menu.items.length > 0 ? menu.items.length + 1 : 1;
+                labelMenu.no = menu.nodes.length > 0 ? menu.nodes.length + 1 : 1;
                 labelMenu.name = $scope.menuModuleList != null ? $scope.language === 'tr' ? $scope.menuModuleList.label_tr_plural : $scope.menuModuleList.label_en_plural : '';
                 //labelMenu.route = $scope.moduleItem != null ? $scope.moduleItem.route : '';
                 labelMenu.id = 0;//null;
                 labelMenu.menuId = menu.no;
+                //labelMenu.isEdit = true;
                 labelMenu.parentId = menu.id;
-                menu.items.push(labelMenu);
+                labelMenu.showModuleList = true;
+                menu.nodes.push(labelMenu);
             };
 
             $scope.selectModule = function (menuNo, labelNo, module) {
 
-                var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
-                var menuItem = $filter('filter')(menu.items, {no: labelNo}, true)[0];
+                var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                var menuItem = $filter('filter')(menu.nodes, {no: labelNo}, true)[0];
                 menuItem.name = module != null ? $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural : '';
                 menuItem.menuName = module != null ? module.name : '';
                 menuItem.route = module != null ? module.route ? module.route : '' : '';
@@ -381,22 +396,63 @@ angular.module('primeapps')
                 menuItem.menuNo = menuNo;
                 menuItem.isDynamic = module.custom ? false : true;
                 menuItem.parentId = menu.id != null ? menu.id : 0;
-                menuItem.items = [];
+                menuItem.nodes = [];
                 menuItem.index = $scope.index;
+                menuItem.isEdit = true;
+                menuItem.showModuleList = false;
                 $scope.index += 1;
                 //menuItems.menuParent = [];
 
                 /**If Update, if have labelNo we pushed  in menu, else this is main menu
                  * menuItems.parentId >0, if chield have parentID
                  */
-                if ($scope.id && menuItem.parentId > 0)
-                    $scope.createArray.push(menuItem);
+                /* if ($scope.id && menuItem.parentId > 0)
+                     $scope.createArray.push(menuItem);*/
             };
 
             $scope.save = function (menu) {
 
+                var copyData = angular.copy($scope.data);
                 $scope.saving = true;
                 var resultPromise;
+
+                for (var i = 0; i < copyData.length; i++) {
+                    //Adam bir şekilde module altına module eklerse alert ver
+                    if (copyData[i].nodes.length > 0 && copyData[i].menuName) {
+                        toastr.error("Module module eklenemez..");//$filter('translate')('Menu.ProfileRequiredError'));
+                        $scope.saving = false;
+                        return;
+                    }
+                    //Her şey normalse
+                    else {
+                        /*Her türlü burada menuId ve no'ları yeniden düzenlemeliyiz*/
+                        copyData[i].no = i + 1;
+                        copyData[i].menuId = i + 1;
+                        /*eğer kategori ise alt kırılımında yeni eklenen child var mı ? varsa ekle*/
+                        for (var j = 0; j < copyData[i].nodes.length; j++) {
+
+                            copyData[i].nodes[j].no = j + 1;
+                            copyData[i].nodes[j].menuId = i + 1;
+                          var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
+                            if (createItem) {
+                                $scope.createArray.push(createItem);
+                                copyData[i].nodes.splice(j, 1);
+                                j--;
+                            }
+                        }
+
+                        // var createItem = $filter('filter')(copyData, {id: 0}, true)[0];
+                        /*eğer createItem varsa direk listeye ekle module ya da kategori*/
+                        // if (createItem) {
+                        if (copyData[i].id === 0) {
+                            $scope.createArray.push(copyData[i]);
+                            copyData.splice(i, 1);
+                            i--;
+
+                        }
+                    }
+
+                }
 
                 //If update
                 if (menu.id && !$scope.clone) {
@@ -439,37 +495,39 @@ angular.module('primeapps')
 
                     //Create MenuItem
                     if ($scope.createArray.length > 0) {
+
                         //we just check if createArray item isUpdate
-                        if (isUpdate)
-                            angular.forEach($scope.createArray, function (createItem) {
-                                var findItem = $filter('filter')($scope.menuLists, {
-                                    parentId: 0,
-                                    name: createItem.name,
-                                    menuModuleType: createItem.menuModuleType
-                                }, true)[0];
-                                if (findItem)
-                                    createItem.no = findItem.no;
-                                else
-                                    for (var i = 0; i < $scope.menuLists.length; i++) {
-                                        if ($scope.menuLists[i].items.length > 0) {
-                                            findItem = $filter('filter')($scope.menuLists[i].items, {
-                                                id: 0,
-                                                name: createItem.name,
-                                                menuModuleType: createItem.menuModuleType
-                                            }, true)[0];
-                                            if (findItem)
-                                                createItem.no = findItem.no;
-                                        }
-                                    }
-                            });
+                        /* if (isUpdate)
+                             angular.forEach($scope.createArray, function (createItem) {
+                                 var findItem = $filter('filter')($scope.data, {
+                                     parentId: 0,
+                                     name: createItem.name,
+                                     menuModuleType: createItem.menuModuleType
+                                 }, true)[0];
+                                 if (findItem)
+                                     createItem.no = findItem.no;
+                                 else
+                                     for (var i = 0; i < $scope.data.length; i++) {
+                                         if ($scope.data[i].nodes.length > 0) {
+                                             findItem = $filter('filter')($scope.data[i].nodes, {
+                                                 id: 0,
+                                                 name: createItem.name,
+                                                 menuModuleType: createItem.menuModuleType
+                                             }, true)[0];
+                                             if (findItem)
+                                                 createItem.no = findItem.no;
+                                         }
+                                     }
+                             });*/
+
                         MenusService.createMenuItems($scope.createArray, !$scope.menu.default ? $scope.menu.profile.id : 1)
                             .then(function onSuccess() {
                                 if (isUpdate) {
                                     //Update
-                                    MenusService.updateMenuItems(updateMenuItem()).then(function onSuccess() {
+                                    MenusService.updateMenuItems(copyData).then(function onSuccess() { //updateMenuItem()
                                         //Delete
                                         if ($scope.deleteArray.length > 0)
-                                            MenusService.deleteMenuItems(deleteMenuItem()).then(function onSuccess() {
+                                            MenusService.deleteMenuItems($scope.deleteArray).then(function onSuccess() {
                                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                                 $scope.addNewMenuFormModal.hide();
                                                 $scope.changePage($scope.activePage);
@@ -498,10 +556,10 @@ angular.module('primeapps')
                     //if !create -> Update menuList
                     else if (isUpdate)//$scope.updateMenuItemArray.length > 0)
                     {
-                        MenusService.updateMenuItems(updateMenuItem()).then(function onSuccess() {
+                        MenusService.updateMenuItems(copyData).then(function onSuccess() {
                             //Delete
                             if ($scope.deleteArray.length > 0)
-                                MenusService.deleteMenuItems(deleteMenuItem()).then(function onSuccess() {
+                                MenusService.deleteMenuItems($scope.deleteArray).then(function onSuccess() {
 
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.addNewMenuFormModal.hide();
@@ -545,8 +603,9 @@ angular.module('primeapps')
                         }];
 
                     MenusService.create(menu).then(function () {
-                        if ($scope.menuLists.length > 0) {
-                            MenusService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
+                        copyData = angular.copy($scope.data);
+                        if (copyData.length > 0) {
+                            MenusService.createMenuItems(copyData, menu[0].profile_id).then(function onSuccess() {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
@@ -565,106 +624,141 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.edit = function (menuNo, subMenuNo) {
-
-                if (!subMenuNo) {
-                    var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
-                    menu.isEdit = true;
-                } else {
-                    var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
-                    var menuItem = $filter('filter')(menu.items, {no: subMenuNo}, true)[0];
-                    menuItem.isEdit = true;
-                }
-
+            $scope.edit = function (node) {
+                node.isEdit = true;
             };
 
-            $scope.update = function (menuNo, sub_menu_icon, subMenuNo) {
-                if (!subMenuNo) {
-                    var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
-                    menu.icon = sub_menu_icon;
-                    menu.isEdit = false;
-                    //$scope.updateMenuItemArray.push(menu);
-                } else {
-                    var menu = $filter('filter')($scope.menuLists, {no: menuNo}, true)[0];
-                    var menuItem = $filter('filter')(menu.items, {no: subMenuNo}, true)[0];
-                    menuItem.icon = sub_menu_icon;
-                    menuItem.isEdit = false;
-                }
-
+            $scope.update = function (node) {
+                node.isEdit = false;
                 isUpdate = true;
             };
 
-            $scope.remove_ = function (menuId, moduleId, index, menuModuleType) {
-                //If main parent or child
-                if (index != null && menuModuleType) {
-                    var deleteItem = '';
-                    var menu = null;
-                    var menuItem = null;
-                    //id varsa updatetir
-                    if ($scope.id) {
-                        deleteItem = $scope.menuLists[menuId - 1];
-                        menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
-                        menuItem = menu ? $filter('filter')(menu.items, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.menuLists[menuId - 1].items, {name: deleteItem.name}, true)[0];
-
-                        /**(!menuItem && !menu) ise Daha önceden eklenmiş olan Label ve itemları vardır, direkt deleteItem'ı child'larıyla pushluyoruz
-                         * (menuItem && !menu ) ise Daha Önceden eklenmiş olan Label'ın Child'ı silinecekse menuItem'ı pusluyoruz
-                         */
-                        if (!menuItem && !menu)
-                            $scope.deleteArray.push(deleteItem);
-
-                        if (menuItem && !menu)
-                            $scope.deleteArray.push(menuItem);
-
-                        if (deleteItem) {
-                            $scope.createArray.splice(deleteItem.index, 1);
-                            $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
+            $scope.remove_ = function (node, parentList, parent) { //(node, index) {
+                var index = parentList.indexOf(node);
+                if (index > -1) {
+                    //Ana kırılım 
+                    if (node.id > 0 && !parent) {
+                        //ana kırılımın childları var mı ?
+                        for (var i = 0; i < node.nodes.length; i++) {
+                            if (node.nodes[i].id > 0) {
+                                $scope.deleteArray.push(node.nodes[i].id);
+                                $scope.data[node.no].nodes.splice(i, 1);
+                                i--;
+                            }
                         }
+                        $scope.deleteArray.push(node.id);
+                        $scope.data.splice(index, 1);
                     }
-
-                    //Delete from menuLists
-                    $scope.menuLists.splice(index, 1);
-
-                    angular.forEach($scope.menuLists, function (moduleList) {
-                        moduleList.no = moduleList.no > menuId ? (moduleList.no - 1) : moduleList.no;
-                        moduleList.menuId = moduleList.no;
-                        //If have childs we just update menuId
-                        if (moduleList.items.length > 0)
-                            angular.forEach(moduleList.items, function (menuItem) {
-                                menuItem.menuId = moduleList.menuId;
-                            })
-                    });
-
-                    $scope.counter = $scope.counter - 1;
-                    $scope.counterMenuItem = 1;
-                }
-
-                //If Chield
-                else {
-                    //id varsa updatetir
-                    if ($scope.id) {
-                        deleteItem = $scope.menuLists[menuId - 1].items[moduleId - 1];
-                        menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
-                        menuItem = menu ? $filter('filter')(menu.items, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.menuLists[menuId - 1].items, {name: deleteItem.name}, true)[0];
-                        if (!menuItem && !menu)
-                            $scope.deleteArray.push(menuItem);
-                        if (menuItem && !menu && deleteItem.name !== "")
-                            $scope.deleteArray.push(menuItem);
-
-                        if (deleteItem) {
-                            $scope.createArray.splice(deleteItem.index, 1);
-                            $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
-                        }
+                    //alt kırılım
+                    else if (node.id > 0 && parent) {
+                        $scope.deleteArray.push(node.id);
+                        //Daha öncesinden data arryinden herhangi bir veri silinmiş olabilir 
+                        var parentIndex = $scope.data.indexOf(parent);
+                        $scope.data[parentIndex].nodes.splice(index, 1);
                     }
-
-                    $scope.menuLists[menuId - 1].items.splice((moduleId === 1 ? 0 : (moduleId - 1)), 1);
-
-                    angular.forEach($scope.menuLists[menuId - 1].items, function (item) {
-                        item.no = item.no > moduleId ? (item.no - 1) : item.no;
-                    });
                 }
-
                 isUpdate = true;
             };
+            /*  $scope.edit = function (menuNo, subMenuNo) {
+  
+                  if (!subMenuNo) {
+                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                      menu.isEdit = true;
+                  } else {
+                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                      var menuItem = $filter('filter')(menu.nodes, {no: subMenuNo}, true)[0];
+                      menuItem.isEdit = true;
+                  }
+  
+              };
+  
+              $scope.update = function (menuNo, sub_menu_icon, subMenuNo) {
+                  if (!subMenuNo) {
+                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                      menu.icon = sub_menu_icon;
+                      menu.isEdit = false;
+                      //$scope.updateMenuItemArray.push(menu);
+                  } else {
+                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                      var menuItem = $filter('filter')(menu.nodes, {no: subMenuNo}, true)[0];
+                      menuItem.icon = sub_menu_icon;
+                      menuItem.isEdit = false;
+                  }
+  
+                  isUpdate = true;
+              };
+  
+              $scope.remove_ = function (menuId, moduleId, index, menuModuleType) {
+                  //If main parent or child
+                  if (index != null && menuModuleType) {
+                      var deleteItem = '';
+                      var menu = null;
+                      var menuItem = null;
+                      //id varsa updatetir
+                      if ($scope.id) {
+                          deleteItem = $scope.data[menuId - 1];
+                          menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
+                          menuItem = menu ? $filter('filter')(menu.nodes, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.data[menuId - 1].nodes, {name: deleteItem.name}, true)[0];
+  
+                          /!**(!menuItem && !menu) ise Daha önceden eklenmiş olan Label ve itemları vardır, direkt deleteItem'ı child'larıyla pushluyoruz
+                           * (menuItem && !menu ) ise Daha Önceden eklenmiş olan Label'ın Child'ı silinecekse menuItem'ı pusluyoruz
+                           *!/
+                          if (!menuItem && !menu)
+                              $scope.deleteArray.push(deleteItem);
+  
+                          if (menuItem && !menu)
+                              $scope.deleteArray.push(menuItem);
+  
+                          if (deleteItem) {
+                              $scope.createArray.splice(deleteItem.index, 1);
+                              $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
+                          }
+                      }
+  
+                      //Delete from menuLists
+                      $scope.data.splice(index, 1);
+  
+                      angular.forEach($scope.data, function (moduleList) {
+                          moduleList.no = moduleList.no > menuId ? (moduleList.no - 1) : moduleList.no;
+                          moduleList.menuId = moduleList.no;
+                          //If have childs we just update menuId
+                          if (moduleList.nodes.length > 0)
+                              angular.forEach(moduleList.nodes, function (menuItem) {
+                                  menuItem.menuId = moduleList.menuId;
+                              })
+                      });
+  
+                      $scope.counter = $scope.counter - 1;
+                      $scope.counterMenuItem = 1;
+                  }
+  
+                  //If Chield
+                  else {
+                      //id varsa updatetir
+                      if ($scope.id) {
+                          deleteItem = $scope.data[menuId - 1].nodes[moduleId - 1];
+                          menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
+                          menuItem = menu ? $filter('filter')(menu.nodes, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.data[menuId - 1].nodes, {name: deleteItem.name}, true)[0];
+                          if (!menuItem && !menu)
+                              $scope.deleteArray.push(menuItem);
+                          if (menuItem && !menu && deleteItem.name !== "")
+                              $scope.deleteArray.push(menuItem);
+  
+                          if (deleteItem) {
+                              $scope.createArray.splice(deleteItem.index, 1);
+                              $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
+                          }
+                      }
+  
+                      $scope.data[menuId - 1].nodes.splice((moduleId === 1 ? 0 : (moduleId - 1)), 1);
+  
+                      angular.forEach($scope.data[menuId - 1].nodes, function (item) {
+                          item.no = item.no > moduleId ? (item.no - 1) : item.no;
+                      });
+                  }
+  
+                  isUpdate = true;
+              };*/
 
             $scope.radioChange = function () {
                 /**moduleItem, Mevcut modül
@@ -682,94 +776,94 @@ angular.module('primeapps')
 
             $scope.up = function (index, no, menuItemNo) {
 
-                var menuList = $filter('orderBy')($scope.menuLists, 'no');
+                var menuList = $filter('orderBy')($scope.data, 'no');
 
                 if (!menuItemNo) {
                     var prev = angular.copy(menuList[index - 1]);
                     menuList[index - 1] = angular.copy(menuList[index]);
                     menuList[index - 1].no = prev.no;
                     menuList[index - 1].menuId = prev.no;
-                    if (menuList[index - 1].items.length > 0)
-                        angular.forEach(menuList[index - 1].items, function (menuItem) {
+                    if (menuList[index - 1].nodes.length > 0)
+                        angular.forEach(menuList[index - 1].nodes, function (menuItem) {
                             menuItem.menuId = prev.no;
                         });
                     menuList[index] = prev;
                     menuList[index].no = no;
                     menuList[index].menuId = no;
-                    if (menuList[index].items.length > 0)
-                        angular.forEach(menuList[index].items, function (menuItem) {
+                    if (menuList[index].nodes.length > 0)
+                        angular.forEach(menuList[index].nodes, function (menuItem) {
                             menuItem.menuId = no;
                         });
-                    $scope.menuLists = menuList;
+                    $scope.data = menuList;
                 } else {
 
-                    var menu = $filter('filter')($scope.menuLists, {no: no}, true)[0];
-                    var menuItem = $filter('filter')(menu.items, {no: menuItemNo}, true)[0];
-                    var prev = angular.copy(menu.items[index - 1]);
-                    menu.items[index - 1] = angular.copy(menu.items[index]);
-                    menu.items[index - 1].no = prev.no;
+                    var menu = $filter('filter')($scope.data, {no: no}, true)[0];
+                    var menuItem = $filter('filter')(menu.nodes, {no: menuItemNo}, true)[0];
+                    var prev = angular.copy(menu.nodes[index - 1]);
+                    menu.nodes[index - 1] = angular.copy(menu.nodes[index]);
+                    menu.nodes[index - 1].no = prev.no;
 
-                    menu.items[index] = prev;
-                    menu.items[index].no = menuItemNo;
+                    menu.nodes[index] = prev;
+                    menu.nodes[index].no = menuItemNo;
                 }
                 isUpdate = true;
-                $scope.menuLists = menuList;
+                $scope.data = menuList;
             };
 
             $scope.down = function (index, no, menuItemNo) {
 
-                var menuList = $filter('orderBy')($scope.menuLists, 'no');
+                var menuList = $filter('orderBy')($scope.data, 'no');
 
                 if (!menuItemNo) {
                     var prev = angular.copy(menuList[index + 1]);
                     menuList[index + 1] = angular.copy(menuList[index]);
                     menuList[index + 1].no = prev.no;
                     menuList[index + 1].menuId = prev.no;
-                    if (menuList[index + 1].items.length > 0)
-                        angular.forEach(menuList[index + 1].items, function (menuItem) {
+                    if (menuList[index + 1].nodes.length > 0)
+                        angular.forEach(menuList[index + 1].nodes, function (menuItem) {
                             menuItem.menuId = prev.no;
                         });
 
                     menuList[index] = prev;
                     menuList[index].no = no;
                     menuList[index].menuId = no;
-                    if (menuList[index].items.length > 0)
-                        angular.forEach(menuList[index].items, function (menuItem) {
+                    if (menuList[index].nodes.length > 0)
+                        angular.forEach(menuList[index].nodes, function (menuItem) {
                             menuItem.menuId = no;
                         });
                 } else {
-                    var menu = $filter('filter')($scope.menuLists, {no: no}, true)[0];
-                    var menuItem = $filter('filter')(menu.items, {no: menuItemNo}, true)[0];
-                    var prev = angular.copy(menu.items[index + 1]);
-                    menu.items[index + 1] = angular.copy(menu.items[index]);
-                    menu.items[index + 1].no = prev.no;
+                    var menu = $filter('filter')($scope.data, {no: no}, true)[0];
+                    var menuItem = $filter('filter')(menu.nodes, {no: menuItemNo}, true)[0];
+                    var prev = angular.copy(menu.nodes[index + 1]);
+                    menu.nodes[index + 1] = angular.copy(menu.nodes[index]);
+                    menu.nodes[index + 1].no = prev.no;
 
-                    menu.items[index] = prev;
-                    menu.items[index].no = menuItemNo;
+                    menu.nodes[index] = prev;
+                    menu.nodes[index].no = menuItemNo;
                 }
                 isUpdate = true;
-                $scope.menuLists = menuList;
+                $scope.data = menuList;
             };
 
             function updateMenuItem() {
                 var index = undefined;
                 var subIndex = undefined;
 
-                var copyMenuList = angular.copy($scope.menuLists);
+                var copyMenuList = angular.copy($scope.data);
                 //  angular.forEach(copyMenuList, function (menuItem) {
                 for (var o = 0; o < copyMenuList.length; o++) {
 
-                    if (copyMenuList[o].items.length > 0 && copyMenuList[o].id !== 0) {
-                        for (var i = 0; i < copyMenuList[o].items.length; i++) {
-                            if (copyMenuList[o].items[i].id === 0) {
-                                subIndex = copyMenuList[o].items.findIndex(function (el) {
+                    if (copyMenuList[o].nodes.length > 0 && copyMenuList[o].id !== 0) {
+                        for (var i = 0; i < copyMenuList[o].nodes.length; i++) {
+                            if (copyMenuList[o].nodes[i].id === 0) {
+                                subIndex = copyMenuList[o].nodes.findIndex(function (el) {
                                     return el.id === 0;
                                 });
                                 index = copyMenuList.findIndex(function (el) {
                                     return el.no === copyMenuList[o].no;
                                 });
                                 i = subIndex - 1;
-                                copyMenuList[index].items.splice(subIndex, 1);
+                                copyMenuList[index].nodes.splice(subIndex, 1);
                             }
                         }
                     }
@@ -785,7 +879,7 @@ angular.module('primeapps')
                 //});
 
                 // var filterItem = $filter('filter')(copyMenuList, { id: 0 }, true)[0];
-                // var filterSubItem = $filter('filter')(menuItem.items, { id: 0 }, true); // if we added new item under the old label
+                // var filterSubItem = $filter('filter')(menuItem.nodes, { id: 0 }, true); // if we added new item under the old label
                 // /** we sorted descending items, because when we splice the menuItem we need a index
                 //  */
                 // filterSubItem = $filter('orderBy')(filterSubItem, 'no', true);
@@ -846,18 +940,18 @@ angular.module('primeapps')
                 angular.forEach($scope.deleteArray, function (deleteLabel) {
                     if (isUpdate) {
                         ids.push(deleteLabel.id);
-                        if (deleteLabel.items && deleteLabel.items.length > 0) {
+                        if (deleteLabel.nodes && deleteLabel.nodes.length > 0) {
                             //Then, We was deleting Label's childs
-                            angular.forEach(deleteLabel.items, function (deleteItem) {
+                            angular.forEach(deleteLabel.nodes, function (deleteItem) {
                                 ids.push(deleteItem.id);
                             });
                         }
                     } else {
                         //First Level Label was deleting
-                        if (deleteLabel.items && deleteLabel.items.length > 0) {
+                        if (deleteLabel.nodes && deleteLabel.nodes.length > 0) {
                             ids.push(deleteLabel.id);
                             //Then, We was deleting Label's childs
-                            angular.forEach(deleteLabel.items, function (deleteItem) {
+                            angular.forEach(deleteLabel.nodes, function (deleteItem) {
                                 ids.push(deleteItem.id);
                             });
                         }
@@ -902,5 +996,4 @@ angular.module('primeapps')
                         });
             };
         }
-
     ]);

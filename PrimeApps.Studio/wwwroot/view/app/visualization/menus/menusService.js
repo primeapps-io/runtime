@@ -15,17 +15,17 @@ angular.module('primeapps')
                     return $http.delete(config.apiUrl + 'menu/delete/' + id);
                 },
                 createMenuItems: function (module, profileId) {
-                    return $http.post(config.apiUrl + 'menu/create/menu_items', { module: module, profileId: profileId });
+                    return $http.post(config.apiUrl + 'menu/create/menu_items', {module: module, profileId: profileId});
                 },
                 updateMenuItems: function (menuLabel) {
-                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel: menuLabel });
+                    return $http.put(config.apiUrl + 'menu/update/menu_items', {menuLabel: menuLabel});
                 },
                 deleteMenuItems: function (ids) {
                     return $http({
                         method: 'DELETE',
                         url: config.apiUrl + 'menu/delete/menu_items',
                         data: ids,
-                        headers: { 'Content-type': 'application/json;charset=utf-8' }
+                        headers: {'Content-type': 'application/json;charset=utf-8'}
                     });
                 },
                 getMenuById: function (id) {
@@ -48,8 +48,7 @@ angular.module('primeapps')
 
                 find: function (data) {
                     return $http.post(config.apiUrl + 'menu/find', data);
-                },
-
+                }
             };
         }]);
 
