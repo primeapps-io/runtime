@@ -174,9 +174,9 @@
 
 									<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
 
-									<div class="row">
-										<div class="col-sm-6">
-											<div ng-if="$parent.$parent.data.length > 0" ui-tree id="tree-root">
+									<div class="row" style="margin-top: 30px;">
+										<div class="col-sm-12">
+											<div ng-if="$parent.$parent.data.length > 0" ui-tree id="tree-root" class="roleslist angular-ui-tree">
 												<ol ui-tree-nodes ng-model="data">
 													<li ng-style="{test : node.nodes.length > 0 ? true: false}" ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/test.html'"></li>
 												</ol>

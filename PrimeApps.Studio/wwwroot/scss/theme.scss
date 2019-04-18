@@ -3659,19 +3659,19 @@ button, select {
       li {
         position: relative;
         > span {
-          width: 100%;
+          width: calc(100% - 15px);
           display: block;
           line-height: 25px;
           background: rgba(0, 0, 0, 0.03);
-          margin-bottom: 5px;
           padding: 5px 10px;
           border-radius: 5px;
           font-weight: bold;
+          margin: 10px 0px 10px 15px;
         }
         &:before {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 0px;
           width: 1px;
           height: 15px;
@@ -3680,7 +3680,7 @@ button, select {
         &:after {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 15px;
           width: 10px;
           height: 1px;
@@ -3693,6 +3693,30 @@ button, select {
       > li {
         &:before, &:after {
           display: none;
+        }
+      }
+    }
+    .menueditmode{
+      padding-right: 30px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .ui-select-bootstrap{
+        height: 28px;
+        line-height: 28px;
+        margin-left: 10px;
+        .form-control{
+          height: 28px;
+          line-height: 28px;
+        }
+        .ui-select-match-text{
+          span{
+            font-weight: bold;
+            line-height: 22px;
+            &:before{
+              padding-right: 5px;
+            }
+          }
         }
       }
     }
@@ -4068,6 +4092,21 @@ button, select {
           opacity: 1;
         }
       }
+    }
+  }
+  .angular-ui-tree-drag{
+    .tree-node{
+      width: 100%;
+      display: block;
+      line-height: 25px;
+      background: rgba(0, 0, 0, 0.03);
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .action-buttons-block{
+      display:none;
     }
   }
 }
