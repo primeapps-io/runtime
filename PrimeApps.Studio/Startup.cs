@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -10,11 +11,13 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using PrimeApps.Model.Context;
 
 namespace PrimeApps.Studio
 {
@@ -116,6 +119,16 @@ namespace PrimeApps.Studio
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                
+                var listener = databaseContext.GetService<DiagnosticSource>();
+                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(app));
+                scope.Dispose();
+            }
+            
 
             var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
             if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
