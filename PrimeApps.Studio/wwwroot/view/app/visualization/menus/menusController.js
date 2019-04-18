@@ -239,9 +239,9 @@ angular.module('primeapps')
             var setMenuList = function (id) {
 
                 $scope.data = [];
-               /* $scope.updateArray = [];
-                $scope.deleteArray = [];
-                $scope.createArray = [];*/
+                /* $scope.updateArray = [];
+                 $scope.deleteArray = [];
+                 $scope.createArray = [];*/
                 $scope.index = $scope.createArray.length;
 
                 if (id) {
@@ -310,7 +310,7 @@ angular.module('primeapps')
                                 });
                         });
                 }
-            }
+            };
 
             $scope.validate = function (menuForm, next) {
                 menuForm.$submitted = true;
@@ -413,10 +413,18 @@ angular.module('primeapps')
             $scope.save = function (menu) {
 
                 var copyData = angular.copy($scope.data);
+                var updateData = [];
                 $scope.saving = true;
                 var resultPromise;
-
+                var count = 0;
+                var countChield = 0;
                 for (var i = 0; i < copyData.length; i++) {
+
+                    /*Her türlü burada menuId ve no'ları yeniden düzenlemeliyiz*/
+                    copyData[i].no = count + 1;//copyData[i].id === 0 ? count + 1 : i + 1;
+                    copyData[i].menuId = count + 1;// copyData[i].id === 0 ? count + 1 : i + 1;
+                    copyData[i].menuNo = copyData[i].menuId;
+
                     //Adam bir şekilde module altına module eklerse alert ver
                     if (copyData[i].nodes.length > 0 && copyData[i].menuName) {
                         toastr.error("Module module eklenemez..");//$filter('translate')('Menu.ProfileRequiredError'));
@@ -425,38 +433,35 @@ angular.module('primeapps')
                     }
                     //Her şey normalse
                     else {
-                        /*Her türlü burada menuId ve no'ları yeniden düzenlemeliyiz*/
-                        copyData[i].no = i + 1;
-                        copyData[i].menuId = i + 1;
+
                         /*eğer kategori ise alt kırılımında yeni eklenen child var mı ? varsa ekle*/
                         for (var j = 0; j < copyData[i].nodes.length; j++) {
 
-                            copyData[i].nodes[j].no = j + 1;
-                            copyData[i].nodes[j].menuId = i + 1;
-                          var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
-                            if (createItem) {
+                            var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
+                            copyData[i].nodes[j].no = countChield + 1;//createItem ? countChield + 1 : j + 1;
+                            copyData[i].nodes[j].menuId = count + 1; //createItem ? count + 1 : i + 1;
+                            copyData[i].nodes[j].menuNo = copyData[i].nodes[j].menuId;
+
+                            if (createItem && copyData[i].id > 0) {
                                 $scope.createArray.push(createItem);
                                 copyData[i].nodes.splice(j, 1);
-                                j--;
+                                j--
                             }
+                            countChield++;
                         }
 
-                        // var createItem = $filter('filter')(copyData, {id: 0}, true)[0];
-                        /*eğer createItem varsa direk listeye ekle module ya da kategori*/
-                        // if (createItem) {
                         if (copyData[i].id === 0) {
                             $scope.createArray.push(copyData[i]);
                             copyData.splice(i, 1);
                             i--;
-
                         }
+                        count++;
                     }
-
                 }
+
 
                 //If update
                 if (menu.id && !$scope.clone) {
-
                     //Update Menu
                     var updateList = {
                         name: $scope.menu.name,
@@ -497,28 +502,6 @@ angular.module('primeapps')
                     if ($scope.createArray.length > 0) {
 
                         //we just check if createArray item isUpdate
-                        /* if (isUpdate)
-                             angular.forEach($scope.createArray, function (createItem) {
-                                 var findItem = $filter('filter')($scope.data, {
-                                     parentId: 0,
-                                     name: createItem.name,
-                                     menuModuleType: createItem.menuModuleType
-                                 }, true)[0];
-                                 if (findItem)
-                                     createItem.no = findItem.no;
-                                 else
-                                     for (var i = 0; i < $scope.data.length; i++) {
-                                         if ($scope.data[i].nodes.length > 0) {
-                                             findItem = $filter('filter')($scope.data[i].nodes, {
-                                                 id: 0,
-                                                 name: createItem.name,
-                                                 menuModuleType: createItem.menuModuleType
-                                             }, true)[0];
-                                             if (findItem)
-                                                 createItem.no = findItem.no;
-                                         }
-                                     }
-                             });*/
 
                         MenusService.createMenuItems($scope.createArray, !$scope.menu.default ? $scope.menu.profile.id : 1)
                             .then(function onSuccess() {
@@ -603,9 +586,8 @@ angular.module('primeapps')
                         }];
 
                     MenusService.create(menu).then(function () {
-                        copyData = angular.copy($scope.data);
-                        if (copyData.length > 0) {
-                            MenusService.createMenuItems(copyData, menu[0].profile_id).then(function onSuccess() {
+                        if ($scope.createArray.length > 0) {
+                            MenusService.createMenuItems($scope.createArray, menu[0].profile_id).then(function onSuccess() {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
@@ -622,7 +604,8 @@ angular.module('primeapps')
                         }
                     });
                 }
-            };
+            }
+            ;
 
             $scope.edit = function (node) {
                 node.isEdit = true;
@@ -640,6 +623,7 @@ angular.module('primeapps')
                     if (node.id > 0 && !parent) {
                         //ana kırılımın childları var mı ?
                         for (var i = 0; i < node.nodes.length; i++) {
+                            node.nodes[i].no = i + 1;
                             if (node.nodes[i].id > 0) {
                                 $scope.deleteArray.push(node.nodes[i].id);
                                 $scope.data[node.no].nodes.splice(i, 1);
@@ -653,9 +637,19 @@ angular.module('primeapps')
                     else if (node.id > 0 && parent) {
                         $scope.deleteArray.push(node.id);
                         //Daha öncesinden data arryinden herhangi bir veri silinmiş olabilir 
-                        var parentIndex = $scope.data.indexOf(parent);
-                        $scope.data[parentIndex].nodes.splice(index, 1);
+                        /* var parentIndex = $scope.data.indexOf(parent);
+                         $scope.data[parentIndex].nodes.splice(index, 1);*/
                     }
+                    var parentIndex = $scope.data.indexOf(parent);
+                    if (parentIndex > -1) {
+                        $scope.data[parentIndex].nodes.splice(index, 1);
+                        for (var k = 0; k < $scope.data[parentIndex].nodes.length; k++) {
+                            $scope.data[parentIndex].nodes[k].no = k + 1;
+                        }
+                    } else if (parentIndex < 0 && !parent) {
+                        $scope.data.splice(index, 1);
+                    }
+
                 }
                 isUpdate = true;
             };
