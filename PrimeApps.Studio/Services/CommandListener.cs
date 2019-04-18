@@ -7,10 +7,11 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DiagnosticAdapter;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 
-namespace PrimeApps.Model.Context
+namespace PrimeApps.Studio.Services
 {
     public class CommandListener
     {
