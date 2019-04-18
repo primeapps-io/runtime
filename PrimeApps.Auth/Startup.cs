@@ -97,7 +97,14 @@ namespace PrimeApps.Auth
 				SupportedUICultures = supportedCultures
 			});
 
-			app.Use(async (ctx, next) =>
+            app.UseCors(cors =>
+                cors
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
+            );
+
+            app.Use(async (ctx, next) =>
 			{
 				if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
 					ctx.Request.Scheme = "https";
