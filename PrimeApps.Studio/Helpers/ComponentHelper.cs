@@ -260,14 +260,14 @@ namespace PrimeApps.Studio.Helpers
                            "</div>" + Environment.NewLine;
                 case "controller":
                     return @"var app = angular.module('primeapps', [])" + Environment.NewLine + Environment.NewLine +
-                           "app.controller('SampleController', ['$rootScope', '$controller', '$scope', 'ngToast', '$location', '$state', 'ModuleService', '$filter', '$window', '$localStorage', 'config', '$timeout', '$modal', '$http', '$cookies', '$interval','SampleService'" + Environment.NewLine +
+                           "app.controller('SampleController', ['$rootScope', '$controller', '$scope', 'ngToast', '$location', '$state', 'ModuleService', '$filter', '$window', '$localStorage', 'config', '$timeout', '$modal', '$http', '$cookies', '$interval','SampleService'," + Environment.NewLine +
                            "\tfunction ($rootScope, $controller, $scope, ngToast, $location, $state, ModuleService, $filter, $window, $localStorage, config, $timeout, $modal, $http, $cookies, $interval, SampleService) {" + Environment.NewLine +
                            "\t\t$scope.title = 'Hello from Sample Component';" + Environment.NewLine +
                            "\t\tSampleService.get(2)" + Environment.NewLine +
                            "\t\t\t.then(function(response){" + Environment.NewLine +
                            "\t\t\t\t$scope.body = response.data;" + Environment.NewLine +
                            "\t\t\t})" + Environment.NewLine +
-                           "\t\t\t.catch(function(response(){" + Environment.NewLine + Environment.NewLine +
+                           "\t\t\t.catch(function(response){" + Environment.NewLine + Environment.NewLine +
                            "\t\t\t});" + Environment.NewLine +
                            "\t}" + Environment.NewLine +
                            "]);" + Environment.NewLine;

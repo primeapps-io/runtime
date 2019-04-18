@@ -227,7 +227,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;
-            ViewBag.AppId = app.Id;
+            ViewBag.AppId = appId;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
             ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
