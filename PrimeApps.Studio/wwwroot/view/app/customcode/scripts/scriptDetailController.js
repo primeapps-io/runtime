@@ -198,9 +198,11 @@ angular.module('primeapps')
             };
 
             $scope.save = function (FormValidation) {
-                if (!FormValidation.$valid)
+                if (!FormValidation.$valid){
+                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
-
+                }
+                
                 $scope.saving = true;
 
                 ScriptsService.update($scope.script)
