@@ -124,9 +124,10 @@ namespace PrimeApps.Studio
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
                 
                 var listener = databaseContext.GetService<DiagnosticSource>();
-                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(app));
+                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, app));
                 scope.Dispose();
             }
             

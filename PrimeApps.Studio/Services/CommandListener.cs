@@ -15,10 +15,12 @@ namespace PrimeApps.Studio.Services
 {
     public class CommandListener
     {
+        private IBackgroundTaskQueue _queue;
         private IApplicationBuilder _app;
 
-        public CommandListener(IApplicationBuilder app)
+        public CommandListener(IBackgroundTaskQueue queue, IApplicationBuilder app)
         {
+            _queue = queue;
             _app = app;
         }
 
@@ -27,16 +29,23 @@ namespace PrimeApps.Studio.Services
         {
             if (command.CommandText.ToUpper().StartsWith("INSERT") || command.CommandText.ToUpper().StartsWith("UPDATE") || command.CommandText.ToUpper().StartsWith("DELETE"))
             {
-                using (var scope = _app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                _queue.QueueBackgroundWorkItem(token =>
                 {
-                    var _configuration = _app.ApplicationServices.GetService<IConfiguration>();
-                    var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-
-                    using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
+                    using (var scope = _app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
                     {
-                        //var check = organizationRepository.IsOrganizationAvaliable(637, 276);
+                        var _configuration = _app.ApplicationServices.GetService<IConfiguration>();
+
+                        var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+    
+                        using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
+                        {
+                            var check = organizationRepository.IsOrganizationAvaliable(637, 276);
+                        }
                     }
-                }
+
+                    return null;
+                });
+
 
                 Console.WriteLine("OnCommandExecuting");
             }
