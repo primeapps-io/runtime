@@ -24,18 +24,21 @@ namespace PrimeApps.Model.Context
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuting")]
         public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId, Guid connectionId, bool async, DateTimeOffset startTime)
         {
-            using (var scope = _app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            if (command.CommandText.ToUpper().StartsWith("INSERT") || command.CommandText.ToUpper().StartsWith("UPDATE") || command.CommandText.ToUpper().StartsWith("DELETE"))
             {
-                var _configuration = _app.ApplicationServices.GetService<IConfiguration>();
-                var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-
-                using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
+                using (var scope = _app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
                 {
-                    var check = organizationRepository.IsOrganizationAvaliable(637, 276);
-                }
-            }
+                    var _configuration = _app.ApplicationServices.GetService<IConfiguration>();
+                    var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
-            Console.WriteLine("OnCommandExecuting");
+                    using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
+                    {
+                        //var check = organizationRepository.IsOrganizationAvaliable(637, 276);
+                    }
+                }
+
+                Console.WriteLine("OnCommandExecuting");
+            }
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted")]
