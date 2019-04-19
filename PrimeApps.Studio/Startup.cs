@@ -128,7 +128,6 @@ namespace PrimeApps.Studio
                 
                 var listener = databaseContext.GetService<DiagnosticSource>();
                 (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, app));
-                scope.Dispose();
             }
             
 

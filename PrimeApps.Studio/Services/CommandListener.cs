@@ -33,15 +33,17 @@ namespace PrimeApps.Studio.Services
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted")]
-        public void OnCommandExecuted(RelationalDataReader readerResult, bool async)
+        public void OnCommandExecuted(RelationalDataReader result, bool async)
         {
-            if (readerResult.DbCommand.CommandText.StartsWith("INSERT", true, null) ||
-             readerResult.DbCommand.CommandText.StartsWith("UPDATE", true, null) ||
-              readerResult.DbCommand.CommandText.StartsWith("DELETE", true, null))
+            if (result == null) return;
+            if (result.DbCommand.CommandText.StartsWith("INSERT", true, null) ||
+             result.DbCommand.CommandText.StartsWith("UPDATE", true, null) ||
+             result.DbCommand.CommandText.StartsWith("CREATE", true, null) ||
+             result.DbCommand.CommandText.StartsWith("DELETE", true, null))
             {
                 Console.WriteLine("OnCommandExecuted");
-                string rawQuery = GetGeneratedQuery(readerResult.DbCommand);
-                string result = GetTableName(rawQuery);
+                string rawQuery = GetGeneratedQuery(result.DbCommand);
+                string tableName = GetTableName(rawQuery);
 
                 // _queue.QueueBackgroundWorkItem(token =>
                 // {
