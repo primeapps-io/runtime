@@ -175,12 +175,17 @@ angular.module('primeapps')
 
             };
 
-            // $scope.logoRemove = function () {
-            //     if (uploader.queue[0]) {
-            //         //uploader.queue[0].image = null;
-            //         uploader.queue[0].remove();
-            //     }
-            // };
+            $scope.logoRemove = function (item) {
+                if(item=='$scope.authFavicon'){
+                    $scope.authFavicon ="";
+                    $scope.authTheme.favicon ="";
+                }
+                
+                // if (uploader.queue[0]) {
+                //     //uploader.queue[0].image = null;
+                //     uploader.queue[0].remove();
+                // }
+            };
 
             BrandingService.getAppTheme($scope.appId).then(function (response) {
                 var appTheme = response.data;
