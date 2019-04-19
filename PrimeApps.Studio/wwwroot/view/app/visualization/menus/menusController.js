@@ -250,9 +250,9 @@ angular.module('primeapps')
                             $scope.menu = response.data;
                             $scope.menu.name = $scope.clone ? $scope.menu.name + '(Copy)' : $scope.menu.name;
                             //We will use this first values when click the next button, and find is update or not
-                            $scope.firstMenuName = $scope.menu.name;
-                            $scope.firstDefaultMenu = $scope.menu.default;
-                            $scope.firstMenuDescription = $scope.menu.description;
+                            //$scope.firstMenuName = $scope.menu.name;
+                            //$scope.firstDefaultMenu = $scope.menu.default;
+                            //$scope.firstMenuDescription = $scope.menu.description;
 
                             //If update, we added again all profiles
                             //Then, get selected profile and menuitems
@@ -260,7 +260,7 @@ angular.module('primeapps')
                             //If clone deleted true
                             $scope.menu.profile.deleted = $scope.clone ? true : false;
 
-                            $scope.firstProfileId = $scope.menu.profile.id;
+                            // $scope.firstProfileId = $scope.menu.profile.id;
 
                             $scope.loadingModal = true;
                             //We use firstprofileId because maybe user was changed
@@ -303,10 +303,11 @@ angular.module('primeapps')
                                     }
                                     //Yeni eklenecek olan modülü +1'den başlatmamız gerekiyor
                                     $scope.counter = $scope.data.length + 1;
-
-                                })
-                                .finally(function () {
                                     $scope.loadingModal = false;
+                                })
+                                .catch(function () {
+                                    $scope.loadingModal = false;
+                                    $scope.addNewMenuFormModal.hide();
                                 });
                         });
                 }
@@ -374,10 +375,8 @@ angular.module('primeapps')
                 var labelMenu = {};
                 labelMenu.no = menu.nodes.length > 0 ? menu.nodes.length + 1 : 1;
                 labelMenu.name = $scope.menuModuleList != null ? $scope.language === 'tr' ? $scope.menuModuleList.label_tr_plural : $scope.menuModuleList.label_en_plural : '';
-                //labelMenu.route = $scope.moduleItem != null ? $scope.moduleItem.route : '';
-                labelMenu.id = 0;//null;
+                labelMenu.id = 0;
                 labelMenu.menuId = menu.no;
-                //labelMenu.isEdit = true;
                 labelMenu.parentId = menu.id;
                 labelMenu.showModuleList = true;
                 menu.nodes.push(labelMenu);
@@ -401,16 +400,9 @@ angular.module('primeapps')
                 menuItem.isEdit = true;
                 menuItem.showModuleList = false;
                 $scope.index += 1;
-                //menuItems.menuParent = [];
-
-                /**If Update, if have labelNo we pushed  in menu, else this is main menu
-                 * menuItems.parentId >0, if chield have parentID
-                 */
-                /* if ($scope.id && menuItem.parentId > 0)
-                     $scope.createArray.push(menuItem);*/
             };
 
-            $scope.save = function (menu) {
+            $scope.save = function (menu, menuForm) {
 
                 var copyData = angular.copy($scope.data);
                 var updateData = [];
@@ -425,73 +417,35 @@ angular.module('primeapps')
                     copyData[i].menuId = count + 1;// copyData[i].id === 0 ? count + 1 : i + 1;
                     copyData[i].menuNo = copyData[i].menuId;
 
-                    //Adam bir şekilde module altına module eklerse alert ver
-                    if (copyData[i].nodes.length > 0 && copyData[i].menuName) {
-                        toastr.error("Module module eklenemez..");//$filter('translate')('Menu.ProfileRequiredError'));
-                        $scope.saving = false;
-                        return;
-                    }
-                    //Her şey normalse
-                    else {
+                    /*eğer kategori ise alt kırılımında yeni eklenen child var mı ? varsa ekle*/
+                    for (var j = 0; j < copyData[i].nodes.length; j++) {
 
-                        /*eğer kategori ise alt kırılımında yeni eklenen child var mı ? varsa ekle*/
-                        for (var j = 0; j < copyData[i].nodes.length; j++) {
+                        var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
+                        copyData[i].nodes[j].no = countChield + 1;
+                        copyData[i].nodes[j].menuId = count + 1;
+                        copyData[i].nodes[j].menuNo = copyData[i].nodes[j].menuId;
 
-                            var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
-                            copyData[i].nodes[j].no = countChield + 1;//createItem ? countChield + 1 : j + 1;
-                            copyData[i].nodes[j].menuId = count + 1; //createItem ? count + 1 : i + 1;
-                            copyData[i].nodes[j].menuNo = copyData[i].nodes[j].menuId;
-
-                            if (createItem && copyData[i].id > 0) {
-                                $scope.createArray.push(createItem);
-                                copyData[i].nodes.splice(j, 1);
-                                j--
-                            }
-                            countChield++;
+                        if (createItem && copyData[i].id > 0) {
+                            $scope.createArray.push(createItem);
+                            copyData[i].nodes.splice(j, 1);
+                            j--
                         }
-
-                        if (copyData[i].id === 0) {
-                            $scope.createArray.push(copyData[i]);
-                            copyData.splice(i, 1);
-                            i--;
-                        }
-                        count++;
+                        countChield++;
                     }
+
+                    if (copyData[i].id === 0) {
+                        $scope.createArray.push(copyData[i]);
+                        copyData.splice(i, 1);
+                        i--;
+                    }
+                    count++;
                 }
-
 
                 //If update
                 if (menu.id && !$scope.clone) {
-                    //Update Menu
-                    var updateList = {
-                        name: $scope.menu.name,
-                        description: $scope.description ? $scope.menu.description : '',
-                        default: $scope.menu.default ? $scope.menu.default : false,
-                        profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id
-                    };
+
                     //we will check  first values for update
-                    var menuListIsUpdate = false;
-                    if (!angular.equals($scope.firstMenuName, $scope.menu.name)) {
-                        updateList.name = $scope.menu.name;
-                        menuListIsUpdate = true;
-                    }
-
-                    if ($scope.firstProfileId !== $scope.menu.profile_id && !$scope.menu.default) { //profile.id
-                        updateList.profile_id = $scope.menu.profile.id;
-                        menuListIsUpdate = true;
-                    }
-
-                    if ($scope.firstDefaultMenu !== $scope.menu.default) {
-                        updateList.default = $scope.menu.default;
-                        menuListIsUpdate = true;
-                    }
-
-                    if ($scope.firstMenuDescription !== $scope.menu.description) {
-                        updateList.description = $scope.menu.description;
-                        menuListIsUpdate = true;
-                    }
-
-                    $scope.updateArray.push(updateList);
+                    var menuListIsUpdate = isMenuDirty(menuForm);
 
                     if ($scope.updateArray.length > 0 && menuListIsUpdate) {
                         resultPromise = MenusService.update($scope.id, $scope.updateArray);
@@ -514,8 +468,10 @@ angular.module('primeapps')
                                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                                 $scope.addNewMenuFormModal.hide();
                                                 $scope.changePage($scope.activePage);
-                                            }).finally(function () {
                                                 $scope.saving = false;
+                                            }).catch(function () {
+                                                $scope.saving = false;
+                                                $scope.addNewMenuFormModal.hide();
                                             });
                                         else {
 
@@ -524,8 +480,9 @@ angular.module('primeapps')
                                             $scope.addNewMenuFormModal.hide();
                                             $scope.changePage($scope.activePage);
                                         }
-                                    }).finally(function () {
+                                    }).catch(function () {
                                         $scope.saving = false;
+                                        $scope.addNewMenuFormModal.hide();
                                     });
                                 } else {
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
@@ -547,8 +504,10 @@ angular.module('primeapps')
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.addNewMenuFormModal.hide();
                                     $scope.changePage($scope.activePage);
-                                }).finally(function () {
                                     $scope.saving = false;
+                                }).catch(function () {
+                                    $scope.saving = false;
+                                    $scope.addNewMenuFormModal.hide();
                                 });
                             else {
 
@@ -557,9 +516,9 @@ angular.module('primeapps')
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
                             }
-                        }).finally(function () {
-
+                        }).catch(function () {
                             $scope.saving = false;
+                            $scope.addNewMenuFormModal.hide();
                         });
                     } else if (menuUpdate) {
                         resultPromise.then(function onSuccess() {
@@ -592,8 +551,10 @@ angular.module('primeapps')
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
                                 $scope.pageTotal += 1;
-                            }).finally(function () {
                                 $scope.saving = false;
+                            }).catch(function () {
+                                $scope.saving = false;
+                                $scope.addNewMenuFormModal.hide();
                             });
                         } else {
                             toastr.success($filter('translate')('Menu.MenuSaving'));
@@ -616,7 +577,7 @@ angular.module('primeapps')
                 isUpdate = true;
             };
 
-            $scope.remove_ = function (node, parentList, parent) { //(node, index) {
+            $scope.remve = function (node, parentList, parent) { //(node, index) {
                 var index = parentList.indexOf(node);
                 if (index > -1) {
                     //Ana kırılım 
@@ -646,113 +607,13 @@ angular.module('primeapps')
                         for (var k = 0; k < $scope.data[parentIndex].nodes.length; k++) {
                             $scope.data[parentIndex].nodes[k].no = k + 1;
                         }
-                    } else if (parentIndex < 0 && !parent) {
+                    } else if (parentIndex < 0 && !parent && node.id < 0) {
                         $scope.data.splice(index, 1);
                     }
 
                 }
                 isUpdate = true;
             };
-            /*  $scope.edit = function (menuNo, subMenuNo) {
-  
-                  if (!subMenuNo) {
-                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
-                      menu.isEdit = true;
-                  } else {
-                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
-                      var menuItem = $filter('filter')(menu.nodes, {no: subMenuNo}, true)[0];
-                      menuItem.isEdit = true;
-                  }
-  
-              };
-  
-              $scope.update = function (menuNo, sub_menu_icon, subMenuNo) {
-                  if (!subMenuNo) {
-                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
-                      menu.icon = sub_menu_icon;
-                      menu.isEdit = false;
-                      //$scope.updateMenuItemArray.push(menu);
-                  } else {
-                      var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
-                      var menuItem = $filter('filter')(menu.nodes, {no: subMenuNo}, true)[0];
-                      menuItem.icon = sub_menu_icon;
-                      menuItem.isEdit = false;
-                  }
-  
-                  isUpdate = true;
-              };
-  
-              $scope.remove_ = function (menuId, moduleId, index, menuModuleType) {
-                  //If main parent or child
-                  if (index != null && menuModuleType) {
-                      var deleteItem = '';
-                      var menu = null;
-                      var menuItem = null;
-                      //id varsa updatetir
-                      if ($scope.id) {
-                          deleteItem = $scope.data[menuId - 1];
-                          menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
-                          menuItem = menu ? $filter('filter')(menu.nodes, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.data[menuId - 1].nodes, {name: deleteItem.name}, true)[0];
-  
-                          /!**(!menuItem && !menu) ise Daha önceden eklenmiş olan Label ve itemları vardır, direkt deleteItem'ı child'larıyla pushluyoruz
-                           * (menuItem && !menu ) ise Daha Önceden eklenmiş olan Label'ın Child'ı silinecekse menuItem'ı pusluyoruz
-                           *!/
-                          if (!menuItem && !menu)
-                              $scope.deleteArray.push(deleteItem);
-  
-                          if (menuItem && !menu)
-                              $scope.deleteArray.push(menuItem);
-  
-                          if (deleteItem) {
-                              $scope.createArray.splice(deleteItem.index, 1);
-                              $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
-                          }
-                      }
-  
-                      //Delete from menuLists
-                      $scope.data.splice(index, 1);
-  
-                      angular.forEach($scope.data, function (moduleList) {
-                          moduleList.no = moduleList.no > menuId ? (moduleList.no - 1) : moduleList.no;
-                          moduleList.menuId = moduleList.no;
-                          //If have childs we just update menuId
-                          if (moduleList.nodes.length > 0)
-                              angular.forEach(moduleList.nodes, function (menuItem) {
-                                  menuItem.menuId = moduleList.menuId;
-                              })
-                      });
-  
-                      $scope.counter = $scope.counter - 1;
-                      $scope.counterMenuItem = 1;
-                  }
-  
-                  //If Chield
-                  else {
-                      //id varsa updatetir
-                      if ($scope.id) {
-                          deleteItem = $scope.data[menuId - 1].nodes[moduleId - 1];
-                          menu = $filter('filter')($scope.createArray, {menuId: menuId}, true)[0];
-                          menuItem = menu ? $filter('filter')(menu.nodes, {name: deleteItem.name}, true)[0] : $filter('filter')($scope.data[menuId - 1].nodes, {name: deleteItem.name}, true)[0];
-                          if (!menuItem && !menu)
-                              $scope.deleteArray.push(menuItem);
-                          if (menuItem && !menu && deleteItem.name !== "")
-                              $scope.deleteArray.push(menuItem);
-  
-                          if (deleteItem) {
-                              $scope.createArray.splice(deleteItem.index, 1);
-                              $scope.index = deleteItem.index ? $scope.index - 1 : $scope.index;
-                          }
-                      }
-  
-                      $scope.data[menuId - 1].nodes.splice((moduleId === 1 ? 0 : (moduleId - 1)), 1);
-  
-                      angular.forEach($scope.data[menuId - 1].nodes, function (item) {
-                          item.no = item.no > moduleId ? (item.no - 1) : item.no;
-                      });
-                  }
-  
-                  isUpdate = true;
-              };*/
 
             $scope.radioChange = function () {
                 /**moduleItem, Mevcut modül
@@ -964,30 +825,84 @@ angular.module('primeapps')
                         icon: "warning",
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
-                    })
-                        .then(function (value) {
-                            if (value) {
-                                var elem = angular.element(event.srcElement);
-                                angular.element(elem.closest('tr')).addClass('animated-background');
+                    }).then(function (value) {
+                        if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
 
-                                MenusService.delete(id)
-                                    .then(function () {
-                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                        $scope.pageTotal--;
-                                        $scope.changePage($scope.activePage);
-                                        toastr.success($filter('translate')('Menu.DeleteSuccess'));
-                                    })
-                                    .catch(function () {
-                                        $scope.menuList = $scope.menuListState;
-                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
-                                        toastr.warning($filter('translate')('Common.Error'));
-                                        if ($scope.addNewMenuFormModal) {
-                                            $scope.addNewMenuFormModal.hide();
-                                            $scope.saving = false;
-                                        }
-                                    });
-                            }
-                        });
+                            MenusService.delete(id)
+                                .then(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.pageTotal--;
+                                    $scope.changePage($scope.activePage);
+                                    toastr.success($filter('translate')('Menu.DeleteSuccess'));
+                                    $scope.saving = false;
+                                })
+                                .catch(function () {
+                                    $scope.menuList = $scope.menuListState;
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                    toastr.warning($filter('translate')('Common.Error'));
+                                    if ($scope.addNewMenuFormModal) {
+                                        $scope.addNewMenuFormModal.hide();
+                                        $scope.saving = false;
+                                    }
+                                });
+                        }
+                    });
             };
+
+            function isMenuDirty(menuForm) {
+                var res = false;
+                //Update Menu
+                var updateList = {
+                    name: $scope.menu.name,
+                    description: $scope.description ? $scope.menu.description : '',
+                    default: $scope.menu.default ? $scope.menu.default : false,
+                    profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id
+                };
+
+                if (menuForm.name_menu.$dirty) {
+                    updateList.name = $scope.menu.name;
+                    res = true;
+                }
+
+                if (menuForm.profile_name.$dirty && !$scope.menu.default) {
+                    updateList.profile_id = $scope.menu.profile.id;
+                    res = true;
+                }
+
+                if (menuForm.default.$dirty) {
+                    updateList.default = $scope.menu.default;
+                    res = true;
+                }
+
+                if (menuForm.menu_description.$dirty) {
+                    updateList.description = $scope.menu.description;
+                    res = true;
+                }
+
+                $scope.updateArray.push(updateList);
+
+                return res;
+            }
+
+            $scope.treeOptions = {
+                accept: function (sourceNodeScope, destNodesScope, destIndex) {
+                    //modulü yer değiştirirken
+                    if (!destNodesScope.$parent.$modelValue && sourceNodeScope.$modelValue.menuName) {
+                        return true;
+                    }
+                    //kategoriyi yer değiştirirken
+                    else if (!destNodesScope.$parent.$modelValue && !sourceNodeScope.$modelValue.menuName) {
+                        return true;
+                    }
+                    //gideceği yer module değilse ve giden kategori değilse 
+                    else if (destNodesScope.$parent.$modelValue && !destNodesScope.$parent.$modelValue.menuName && sourceNodeScope.$modelValue.menuName) {
+                        return true;
+                    }
+                    return false;
+                }
+            };
+
         }
     ]);

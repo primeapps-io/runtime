@@ -1,6 +1,6 @@
 
 <div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
-	<form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu);" autocomplete="off" novalidate>
+	<form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu, menuForm);" autocomplete="off" novalidate>
 		<div class="modal-header">
 			<div class="flex-between">
 				<h4 class="modal-title">{{'Setup.Modules.TitleMenu' | translate}}</h4>
@@ -176,9 +176,9 @@
 
 									<div class="row" style="margin-top: 30px;">
 										<div class="col-sm-12">
-											<div ng-if="$parent.$parent.data.length > 0" ui-tree id="tree-root" class="roleslist angular-ui-tree">
+											<div ng-if="$parent.$parent.data.length > 0" ui-tree="treeOptions" id="tree-root" class="roleslist angular-ui-tree ">
 												<ol ui-tree-nodes ng-model="data">
-													<li  ng-class="{'moduleItemName': node.menuModuleType !== 'Tanım Giriş'}" ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"></li>
+													<li ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"></li>
 												</ol>
 											</div>
 										</div>
