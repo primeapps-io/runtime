@@ -2947,13 +2947,16 @@ button:focus, select:focus {
   text-decoration: none;
   cursor: pointer;
 }
+.primeapps .roleslist .form-control {
+  height: 35px;
+}
 .primeapps .roleslist ol li {
   position: relative;
 }
 .primeapps .roleslist ol li > span {
   width: calc(100% - 15px);
   display: block;
-  line-height: 25px;
+  line-height: 35px;
   background: rgba(0, 0, 0, 0.03);
   padding: 5px 10px;
   border-radius: 5px;
@@ -2981,6 +2984,9 @@ button:focus, select:focus {
 .primeapps .roleslist > ol > li:before, .primeapps .roleslist > ol > li:after {
   display: none;
 }
+.primeapps .roleslist .ui-select-choices-group:before, .primeapps .roleslist .ui-select-choices-group:after {
+  display: none;
+}
 .primeapps .roleslist .menueditmode {
   padding-right: 30px;
   display: flex;
@@ -2988,26 +2994,33 @@ button:focus, select:focus {
   width: 100%;
 }
 .primeapps .roleslist .menueditmode .ui-select-bootstrap {
-  height: 28px;
-  line-height: 28px;
+  height: 35px;
+  line-height: 35px;
   margin-left: 10px;
 }
 .primeapps .roleslist .menueditmode .ui-select-bootstrap .form-control {
+  height: 35px;
+  line-height: 35px;
+}
+.primeapps .roleslist .menueditmode .ui-select-bootstrap .ui-select-match-text > div {
   height: 28px;
-  line-height: 28px;
+  display: flex;
+  align-items: center;
 }
 .primeapps .roleslist .menueditmode .ui-select-bootstrap .ui-select-match-text span {
   font-weight: bold;
-  line-height: 22px;
+  height: 15px;
 }
 .primeapps .roleslist .menueditmode .ui-select-bootstrap .ui-select-match-text span:before {
   padding-right: 5px;
+  display: inline-block;
+  text-align: center;
 }
 .primeapps .roleslist .action-buttons-block {
   display: inline-block;
   position: absolute;
   right: 10px;
-  top: 5px;
+  top: 10px;
   width: auto;
   line-height: 25px;
 }
@@ -3073,6 +3086,18 @@ button:focus, select:focus {
   background: #0D6FAA;
   color: #FFF;
   border-radius: 100px;
+}
+.primeapps .oldiconset i {
+  font: normal normal normal 14px/1 Nunito;
+}
+.primeapps .oldiconset i:before {
+  width: 30px;
+  display: inline-block;
+  text-align: center;
+  font: normal normal normal 14px/1 FontAwesome;
+}
+.primeapps .setup-modal ul.dropdown-menu {
+  font-family: inherit !important;
 }
 .primeapps .primetabs li {
   text-align: center;

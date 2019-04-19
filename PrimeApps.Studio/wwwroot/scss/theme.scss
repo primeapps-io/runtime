@@ -3655,13 +3655,16 @@ button, select {
       text-decoration: none;
       cursor: pointer;
     }
+    .form-control{
+      height: 35px;
+    }
     ol {
       li {
         position: relative;
         > span {
           width: calc(100% - 15px);
           display: block;
-          line-height: 25px;
+          line-height: 35px;
           background: rgba(0, 0, 0, 0.03);
           padding: 5px 10px;
           border-radius: 5px;
@@ -3696,25 +3699,37 @@ button, select {
         }
       }
     }
+    .ui-select-choices-group{
+      &:before, &:after {
+        display: none;
+      }
+    }
     .menueditmode{
       padding-right: 30px;
       display: flex;
       justify-content: space-between;
       width: 100%;
       .ui-select-bootstrap{
-        height: 28px;
-        line-height: 28px;
+        height: 35px;
+        line-height: 35px;
         margin-left: 10px;
         .form-control{
-          height: 28px;
-          line-height: 28px;
+          height: 35px;
+          line-height: 35px;
         }
         .ui-select-match-text{
+          > div{
+            height: 28px;
+            display: flex;
+            align-items: center;
+          }
           span{
             font-weight: bold;
-            line-height: 22px;
+            height: 15px;
             &:before{
               padding-right: 5px;
+              display: inline-block;
+              text-align: center;
             }
           }
         }
@@ -3725,7 +3740,7 @@ button, select {
       display: inline-block;
       position: absolute;
       right: 10px;
-      top: 5px;
+      top: 10px;
       width: auto;
       line-height: 25px;
 
@@ -3796,6 +3811,22 @@ button, select {
       background: $primeapps-color;
       color: #FFF;
       border-radius: 100px;
+    }
+  }
+  .oldiconset{
+    i{
+      font: normal normal normal 14px/1 Nunito;
+      &:before{
+        width: 30px;
+        display: inline-block;
+        text-align: center;
+        font: normal normal normal 14px/1 FontAwesome;
+      }
+    }
+  }
+  .setup-modal{
+    ul.dropdown-menu{
+      font-family: inherit !important;
     }
   }
   .primetabs {
