@@ -504,7 +504,10 @@ function init() {
                 // contextMenu: activityNodeMenu,
                 itemTemplate: boundaryEventItemTemplate,
                 mouseEnter: mouseEnter,
-                mouseLeave: mouseLeave
+                mouseLeave: mouseLeave,
+                isShadowed: true,
+                shadowOffset:new go.Point(4,4),
+                shadowBlur :4
             },
             { resizable: false, resizeObjectName: "SHAPEMAIN" },
             new go.Binding("itemArray", "boundaryEventArray"),
@@ -707,6 +710,9 @@ function init() {
                 desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight + 30),
                 mouseEnter: mouseEnterForEvent,
                 mouseLeave: mouseLeave,
+                isShadowed: true,
+                shadowOffset: new go.Point(4, 4),
+                shadowBlur: 4
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
@@ -744,7 +750,7 @@ function init() {
 
             $(go.TextBlock,
                 {
-                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(0, 10, 0, 0), editable: true, font: "bold 12px Nunito",
+                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(8, 10, 0, 0), editable: true, font: "bold 12px Nunito",
                     wrap: go.TextBlock.WrapFit, overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 20, cursor: "move"
                 },
                 new go.Binding("text").makeTwoWay())
