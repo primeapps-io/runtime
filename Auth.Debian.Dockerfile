@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=publish /app .
 
 # Install Visual Studio Remote Debugger
-RUN apt-get update && apt-get install -y --no-install-recommends unzip
-RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg  
+# RUN apt-get update && apt-get install -y --no-install-recommends unzip
+# RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
