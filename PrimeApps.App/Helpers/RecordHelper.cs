@@ -538,7 +538,8 @@ namespace PrimeApps.App.Helpers
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.insert, record, module, appUser, warehouse));
+                //Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.insert, record, module, appUser, warehouse));
+                _bpmHelper.Run(OperationType.insert, record, module, appUser, warehouse);
             }
 
             if (runCalculations)
@@ -561,8 +562,8 @@ namespace PrimeApps.App.Helpers
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate, currentRecord));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse));
-
+                //Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse));
+                _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse);
                 //_workflowHost.PublishEvent("record_update", record["id"].ToString(), record["id"].ToString()).GetAwaiter();
             }
 
@@ -585,7 +586,8 @@ namespace PrimeApps.App.Helpers
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse));
+                //Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse));
+                _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse);
             }
 
             if (runCalculations)

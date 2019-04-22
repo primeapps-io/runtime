@@ -28,6 +28,17 @@ angular.module('primeapps')
                 window.initFunc();
             });
 
+            $scope.gridChange = function (value) {
+                angular.element(function () {
+                    window.updateGridOption(value);
+                });
+            };
+            $scope.snapeGridChange = function (value) {
+                angular.element(function () {
+                    window.updateSnapOption(value);
+                });
+            };
+
             $scope.triggerBpm = function () {
                 angular.element(function () {
                     jQuery("#accordion").accordion({
@@ -2133,6 +2144,9 @@ angular.module('primeapps')
             $scope.tinymceOptions('tinymceTemplate');
             $scope.tinymceOptions('tinymceTemplateEdit');
             //For Editor
+
+
+           
 
             var getFakeUserModule = function () {
                 var userModule = {};

@@ -868,7 +868,7 @@ namespace PrimeApps.Studio.Helpers
             stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
             var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
             stepData["StepType"] = fromStepType;
-
+            stepData["StepName"] = fromNode["item"].Value<string>();
             //TODO Special Steps
 
             //

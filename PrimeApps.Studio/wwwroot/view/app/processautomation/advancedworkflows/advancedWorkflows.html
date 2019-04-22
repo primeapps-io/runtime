@@ -59,7 +59,7 @@
                 <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); delete(workflow.id);" type="button"
+                        <button ng-click="$event.stopPropagation(); delete(workflow);" type="button" ladda="workflow.delete"
                                 class="action-buttons-delete">
                             <i class="fas fa-trash"></i>
                         </button>

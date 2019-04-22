@@ -879,7 +879,7 @@ namespace PrimeApps.App.Helpers
             stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
             var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
             stepData["StepType"] = fromStepType;
-
+            stepData["StepName"] = fromNode["item"].Value<string>();
             //TODO Special Steps
 
             //
@@ -891,8 +891,7 @@ namespace PrimeApps.App.Helpers
             {
                 var request = new JObject();
                 request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
-                stepData["Inputs"] = request;
-
+                stepData["Inputs"] = request;  
             }
 
             if (toNode["item"].Value<string>() == "End")

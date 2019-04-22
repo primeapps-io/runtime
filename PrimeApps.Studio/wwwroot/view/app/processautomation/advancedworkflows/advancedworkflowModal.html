@@ -1053,7 +1053,7 @@
                                                             tabindex="1"
                                                             required
                                                             ng-model="parameter.selectedModule"
-                                                            ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                            ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
                                                         <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
                                                     </select>
                                                 </div>
