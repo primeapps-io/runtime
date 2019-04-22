@@ -41,8 +41,16 @@ namespace PrimeApps.App
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
-            //Add Workflow service
-            services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
+
+            services.AddWorkflow(cfg =>
+                {
+                    cfg.UseRedisPersistence(redisConnection, "wfc");
+                    cfg.UseRedisLocking(redisConnection);
+                    cfg.UseRedisQueues(redisConnection, "wfc");
+                    cfg.UseRedisEventHub(redisConnection, "wfc");
+                }
+            );
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -54,19 +62,6 @@ namespace PrimeApps.App
                 options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
-            });
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll",
-                    builder =>
-                    {
-                        builder
-                            .AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials();
-                    });
             });
 
             services.AddMvc(opt =>
@@ -116,8 +111,6 @@ namespace PrimeApps.App
                 services.AddDefaultAWSOptions(awsOptions);
                 services.AddAWSService<IAmazonS3>();
             }
-
-            var redisConnection = Configuration.GetConnectionString("RedisConnection");
 
             if (!string.IsNullOrEmpty(redisConnection))
                 services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
