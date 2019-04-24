@@ -43,7 +43,7 @@ namespace PrimeApps.Studio.Services
 
             DbCommand dbCommand;
             RelationalDataReader command = null;
-            if (result is int && _currentCommand != null)
+            if (!(result is RelationalDataReader)  && _currentCommand != null)
                 dbCommand = _currentCommand;
             else
             {
