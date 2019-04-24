@@ -88,28 +88,25 @@
                                 <div class="form-group">
                                     <label class="required-field">Change App Icon and Color</label>
                                     <div class="iconandcolor">
-                                        <div class="form-group icon-search-list">
-                                            <label class="col-sm-4">{{'Common.Icon' | translate}}</label>
-                                            <ui-select ng-model="appModel.icon" ng-disabled="ctrl.disabled">
-                                                <ui-select-match placeholder="Select an icon">
-                                                    <div>
-                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                                        <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
-                                                    </div>
-                                                </ui-select-match>
-
-                                                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                                    <div ng-bind-html="icon.label"></div>
-                                                </ui-select-choices>
-
-                                            </ui-select>
-                                        </div>
-                                        
                                         <div class="flex-evenly">
-                                            <div  >
+                                            <div>
                                                 <div style="background: #DC3023;" class="appicon" title="">
                                                     <i class="fas fa-box-open"></i>
-                                                 
+                                                    <div class="icon-search-list">
+                                                        <ui-select ng-model="appModel.icon" ng-disabled="ctrl.disabled">
+                                                            <ui-select-match placeholder="Select an icon">
+                                                                <div>
+                                                                    <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                    <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                                </div>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                <div ng-bind-html="icon.label"></div>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+                                                        
+                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                             <div data-trigger="hover" data-type="info" data-title="Choose Your App Color" bs-tooltip data-placement="top">

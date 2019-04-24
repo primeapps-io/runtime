@@ -2314,6 +2314,7 @@ button, select {
     position: relative;
     text-align: center;
     text-decoration: none;
+    cursor: pointer;
     @include hoverEffect();
     &:before{
       content: "\f107";
@@ -2332,7 +2333,7 @@ button, select {
       line-height: 20px;
       font-size: 18px;
     }
-    .ui-select-container{
+    .icon-search-list{
       position: absolute;
       width: 100%;
       height: 100%;
@@ -2342,8 +2343,26 @@ button, select {
       line-height: inherit;
       border-radius: 50%;
       background: transparent;
+      
+    }
+    .ui-select-container{
+      width: 100%;
+      height: 100%;
+      background: transparent;
       .ui-select-match{
-        visibility: hidden;
+        width: 100%;
+        height: 100%;
+      }
+      .form-control,.ui-select-search{
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        opacity: 0;
+      }
+      .ui-select-choices{
+        top: 110px;
+        height: 140px;
+        width: 360px !important;
       }
     }
     &:hover{
