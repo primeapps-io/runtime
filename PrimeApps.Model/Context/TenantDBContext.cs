@@ -552,7 +552,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
         }
-
+        
+        public DbSet<CommandHistory> CommandHistories { get; set; }
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Profile> Profiles { get; set; }

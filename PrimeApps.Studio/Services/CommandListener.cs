@@ -1,63 +1,73 @@
 using System;
-using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DiagnosticAdapter;
-using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
+using PrimeApps.Studio.Helpers;
 
 namespace PrimeApps.Studio.Services
 {
     public class CommandListener
     {
+        private IConfiguration _configuration;
         private IBackgroundTaskQueue _queue;
-        private IApplicationBuilder _app;
-        public CommandListener(IBackgroundTaskQueue queue, IApplicationBuilder app)
+        private ICommandHistoryHelper _commandHistoryHelper;
+        private IHttpContextAccessor _context;
+        private static DbCommand _currentCommand;
+
+        public CommandListener(IBackgroundTaskQueue queue, ICommandHistoryHelper commandHistoryHelper, IHttpContextAccessor context, IConfiguration configuration)
         {
+            _configuration = configuration;
+            _context = context;
             _queue = queue;
-            _app = app;
+            _commandHistoryHelper = commandHistoryHelper;
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuting")]
         public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId, Guid connectionId, bool async, DateTimeOffset startTime)
         {
             Console.WriteLine("OnCommandExecuting");
+            _currentCommand = command;
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted")]
-        public void OnCommandExecuted(RelationalDataReader result, bool async)
+        public void OnCommandExecuted(object result, bool async)
         {
             if (result == null) return;
-            if (result.DbCommand.CommandText.StartsWith("INSERT", true, null) ||
-             result.DbCommand.CommandText.StartsWith("UPDATE", true, null) ||
-             result.DbCommand.CommandText.StartsWith("CREATE", true, null) ||
-             result.DbCommand.CommandText.StartsWith("DELETE", true, null))
+
+            DbCommand dbCommand;
+            RelationalDataReader command = null;
+            if (result is int && _currentCommand != null)
+                dbCommand = _currentCommand;
+            else
+            {
+                command = (RelationalDataReader)result;
+                dbCommand = command.DbCommand;
+            }
+
+            if (dbCommand.CommandText.StartsWith("INSERT", true, null) ||
+                dbCommand.CommandText.StartsWith("UPDATE", true, null) ||
+                dbCommand.CommandText.StartsWith("CREATE", true, null) ||
+                dbCommand.CommandText.StartsWith("DELETE", true, null) ||
+                dbCommand.CommandText.StartsWith("DROP", true, null) ||
+                dbCommand.CommandText.StartsWith("ALTER", true, null))
             {
                 Console.WriteLine("OnCommandExecuted");
-                string rawQuery = GetGeneratedQuery(result.DbCommand);
-                string tableName = GetTableName(rawQuery);
+                var rawQuery = GetGeneratedQuery(dbCommand);
+                
+                //Get id from reader
+                var recordId = 1;
 
-                // _queue.QueueBackgroundWorkItem(token =>
-                // {
-                //     using (var scope = _app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-                //     {
-                //         var _configuration = _app.ApplicationServices.GetService<IConfiguration>();
-                //         var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                //         using (var organizationRepository = new OrganizationRepository(databaseContext, _configuration))
-                //         {
-                //             var check = organizationRepository.IsOrganizationAvaliable(637, 276);
-                //         }
-                //     }
-                //     return null;
-                // });
+                var executedAt = DateTime.Now;
+                var email = _context.HttpContext.User.FindFirst("email").Value;
+
+                //var tracerHelper = _app.ApplicationServices.GetService<ITracerHelper>();
+                _queue.QueueBackgroundWorkItem(async token => _commandHistoryHelper.Add(rawQuery, executedAt, email, recordId));
             }
         }
 
@@ -74,16 +84,8 @@ namespace PrimeApps.Studio.Services
             {
                 query = query.Replace(parameter.ParameterName, parameter.Value.ToString());
             }
+
             return query;
-        }
-
-        public string GetTableName(string query)
-        {
-            Regex nameExtractor = new Regex("((?<=INSERT\\sINTO\\s)|(?<=UPDATE\\s)|(?<=DELETE\\sFROM\\s))([^\\s]+)");
-
-            Match match = nameExtractor.Match(query);
-
-            return match.Value;
         }
     }
 }

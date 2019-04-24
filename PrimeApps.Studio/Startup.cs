@@ -7,6 +7,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
+using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio
@@ -125,9 +127,11 @@ namespace PrimeApps.Studio
             {
                 var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
+                var context = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                var tracerHelper = app.ApplicationServices.GetService<ICommandHistoryHelper>();
                 
                 var listener = databaseContext.GetService<DiagnosticSource>();
-                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, app));
+                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, tracerHelper, context, Configuration));
             }
             
 
