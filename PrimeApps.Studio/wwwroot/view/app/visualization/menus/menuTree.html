@@ -3,7 +3,7 @@
     <!--<a class="btn btn-success btn-xs" ng-if="node.nodes && node.nodes.length > 0" data-nodrag ng-click="toggle(this)"><i 
             class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></i></a>-->
     
-    <span ng-if="!node.isEdit">{{node.name}}</span>
+    <span ng-if="!node.isEdit"><i class="{{node.icon}}"></i> {{node.name}}</span>
     <span data-nodrag ng-if="node.isEdit">
         <div class="menueditmode">
             <input class="form-control" maxlength="50" ng-model="node.name" />
@@ -35,9 +35,10 @@
         </option>
     </select>
     <div data-nodrag ng-if="!node.isEdit" class="action-buttons-block">
-        <a ng-if="node.menuModuleType === 'Tanım Giriş'" ng-click="addModule(node.no)"><i class="fas fa-plus"></i></a> 
+       <!-- <a ng-click="addModule(node.no)"><i class="fas fa-plus"></i></a> --> <!-- ng-if="node.menuModuleType === 'Tanım Giriş'" -->
         <a ng-if="!node.showModuleList" class="action-buttons-edit" ng-click="edit(node)"><i class="fas fa-pen"></i> </a>
-        <a ng-if="!node.showModuleList" class="action-buttons-delete" ng-click="remve($parent.$parent.$modelValue, $parent.$parent.$parentNodesScope.$modelValue, $parent.$parent.$parentNodeScope.$modelValue)"><i class="fas fa-trash"></i></a>
+        <a ng-if="!node.showModuleList" class="action-buttons-delete" ng-click="disable($parent.$parent.$modelValue, $parent.$parent.$parentNodesScope.$modelValue, $parent.$parent.$parentNodeScope.$modelValue, $index)"><i class="{{node.newIcon}}"></i></a>
+        <a ng-if="!node.menuName" class="action-buttons-delete" ng-click="deleteItem(node,$parent.$parent.$parentNodesScope.$modelValue, $index)"><i class="fas fa-trash"></i></a>
     </div>
     
 </span>

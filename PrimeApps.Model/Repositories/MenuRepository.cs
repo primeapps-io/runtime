@@ -46,7 +46,8 @@ namespace PrimeApps.Model.Repositories
             var menuItems = await DbContext.MenuItems
                 .Include(x => x.MenuItems).ThenInclude(z => z.CreatedBy)
                 .Include(x => x.CreatedBy)
-                .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null)
+                .Where(x => x.MenuId == id &&
+                            x.ParentId == null) //!x.Deleted && deleted oalnlar ui'da disable olarak gösterilecektir
                 .OrderBy(x => x.Order).ToListAsync();
 
 
@@ -85,7 +86,7 @@ namespace PrimeApps.Model.Repositories
                     LabelEn = module.LabelEnPlural,
                     LabelTr = module.LabelTrPlural,
                     MenuIcon = module.MenuIcon,
-                    Order = (short)(menuItems.Count + 1),
+                    Order = (short) (menuItems.Count + 1),
                     IsDynamic = true
                 };
 
@@ -139,11 +140,19 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> DeleteSoftMenuItems(int id)
         {
-            var menuItems = DbContext.MenuItems.Where(x => !x.Deleted && x.Id == id);
+            var menuItems = DbContext.MenuItems.Where(x => x.Id == id); //!x.Deleted &&
             foreach (var menuItem in menuItems)
                 menuItem.Deleted = true;
 
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteHardMenuItems(int id)
+        {
+            var menuItem = DbContext.MenuItems.Where(x => x.Id == id).SingleOrDefault();
+            
+            DbContext.MenuItems.Remove(menuItem);
+             await DbContext.SaveChangesAsync();
         }
 
         public async Task<int> UpdateMenuItem(MenuItem menuItem)
@@ -168,8 +177,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<MenuItem>> GetMenuItemsByMenuId(int menuId)
         {
             var menuItems = await DbContext.MenuItems
-                .Where(x => !x.Deleted && x.MenuId == menuId)
-                .ToListAsync();
+                .Where(x => x.MenuId == menuId)
+                .ToListAsync(); //!x.Deleted &&
 
             return menuItems;
         }
@@ -177,14 +186,16 @@ namespace PrimeApps.Model.Repositories
         public async Task<MenuItem> GetMenuItemsById(int id)
         {
             var menuItem = await DbContext.MenuItems
-                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id); // !x.Deleted &&
 
             return menuItem;
         }
 
         public async Task<MenuItem> GetMenuItemIdByName(string labelName, int menuId)
         {
-            var result = DbContext.MenuItems.FirstOrDefaultAsync(x => !x.Deleted && x.ParentId == null && x.LabelTr == labelName && x.Route == null);
+            var result =
+                DbContext.MenuItems.FirstOrDefaultAsync(x =>
+                    x.ParentId == null && x.LabelTr == labelName && x.Route == null); //!x.Deleted && 
             return await result;
         }
 

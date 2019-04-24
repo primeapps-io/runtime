@@ -186,14 +186,14 @@ angular.module('primeapps')
              ];*/
 
             $scope.newModuleList = angular.copy($rootScope.appModules);
-            var parentItem = {
-                label_tr_plural: "Add Empty Menu Item",
-                label_en_plural: "Add Empty Menu Item",
-                menu_icon: "fa fa-square",
-                order: 0,
-                display: true
-            };
-            $scope.newModuleList.push(parentItem);
+            /* var parentItem = {
+                 label_tr_plural: "Add Empty Menu Item",
+                 label_en_plural: "Add Empty Menu Item",
+                 menu_icon: "fa fa-square",
+                 order: 0,
+                 display: true
+             };*/
+            // $scope.newModuleList.push(parentItem);
             //push customModules to modules
             /*  angular.forEach(customModules, function (customModule) {
                   $scope.newModuleList.push(customModule);
@@ -221,6 +221,9 @@ angular.module('primeapps')
                 if (id) {
                     setMenuList(id);
                 } else {
+                    for (var i = 0; i < $scope.newModuleList.length; i++) {
+                        $scope.addItem($scope.newModuleList[i]);
+                    }
                     $scope.loadingModal = false;
                 }
                 $scope.addNewMenuFormModal = $scope.addNewMenuFormModal || $modal({
@@ -276,28 +279,33 @@ angular.module('primeapps')
                                         menuList.no = i + 1;//response.data[i].order;
                                         menuList.menuId = menuList.no;
                                         menuList.parentId = 0;
+                                        menuList.disabled = response.data[i].deleted;
                                         menuList.isEdit = false;
                                         menuList.nodes = [];
+                                        menuList.newIcon = response.data[i].deleted ? "fa fa-eye-slash" : "fa fa-eye";
                                         menuList.route = response.data[i].route ? response.data[i].route.contains('modules/') ? '' : response.data[i].route : '';
                                         menuList.icon = response.data[i].menu_icon ? response.data[i].menu_icon : 'fa fa-square';
                                         menuList.menuName = response.data[i].route ? response.data[i].route.replace('modules/', '') : '';
                                         // menuList.menuParent = [];
 
                                         for (var j = 0; j < response.data[i].menu_items.length; j++) {
-                                            if (!response.data[i].menu_items[j].deleted) {
-                                                var labelMenu = {};
-                                                labelMenu.name = response.data[i].menu_items[j].label_tr;
-                                                labelMenu.menuName = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.replace('modules/', '') : '';
-                                                labelMenu.no = j + 1;//response.data[i].menu_items[j].order;
-                                                labelMenu.menuId = menuList.no;
-                                                labelMenu.isEdit = false;
-                                                labelMenu.id = response.data[i].menu_items[j].id;
-                                                labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
-                                                labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
-                                                labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : 'fa fa-square';
-                                                labelMenu.route = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.contains('modules/') ? '' : response.data[i].menu_items[j].route : '';
-                                                menuList.nodes.push(labelMenu);
-                                            }
+                                            // if (!response.data[i].menu_items[j].deleted) {
+                                            var labelMenu = {};
+                                            labelMenu.name = response.data[i].menu_items[j].label_tr;
+                                            labelMenu.menuName = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.replace('modules/', '') : '';
+                                            labelMenu.no = j + 1;//response.data[i].menu_items[j].order;
+                                            labelMenu.menuId = menuList.no;
+                                            labelMenu.isEdit = false;
+                                            labelMenu.nodes = [];
+                                            labelMenu.disabled = response.data[i].menu_items[j].deleted;
+                                            labelMenu.newIcon = response.data[i].menu_items[j].deleted ? "fa fa-eye-slash" : "fa fa-eye";
+                                            labelMenu.id = response.data[i].menu_items[j].id;
+                                            labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
+                                            labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
+                                            labelMenu.icon = response.data[i].menu_items[j].menu_icon ? response.data[i].menu_items[j].menu_icon : 'fa fa-square';
+                                            labelMenu.route = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.contains('modules/') ? '' : response.data[i].menu_items[j].route : '';
+                                            menuList.nodes.push(labelMenu);
+                                            // }
                                         }
                                         $scope.data.push(menuList);
                                     }
@@ -334,28 +342,40 @@ angular.module('primeapps')
 
             };
 
-            $scope.addItem = function () {
+            $scope.addItem = function (module) {
+                if (!module) {
+                    module = {
+                        label_tr_plural: "Yeni Kategori Adını Giriniz",
+                        label_en_plural: "Enter New Category Name",
+                        menu_icon: "fa fa-square",
+                        order: 0,
+                        display: true
+                    };
+                }
 
                 var menuList = {};
                 menuList.no = $scope.counter;
+                menuList.newIcon = "fa fa-eye";
                 /**Tanım Giriş yoksa Modüldür
                  * menuItem-> Tanım Giriş
                  * moduleItem->modül picklist
                  * moduleItem.menu_icon-> modülün iconu
                  * menu_icon -> Tanım giriş için seçilen icon
                  * */
-                menuList.menuModuleType = !$scope.menu.moduleItem.id ? "Tanım Giriş" : "Mevcut Modül";
-                menuList.name = $scope.language === 'tr' ? $scope.menu.moduleItem.label_tr_plural : $scope.menu.moduleItem.label_en_plural;
-                menuList.menuName = $scope.menu.moduleItem.name;
+                menuList.menuModuleType = !module.id ? "Tanım Giriş" : "Mevcut Modül";// !$scope.menu.moduleItem.id
+                menuList.isEdit = !module.id ? true : false;
+                menuList.name = $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural;
+                menuList.menuName = module.name; //$scope.menu.moduleItem.name;
                 menuList.id = 0;
-                menuList.isDynamic = $scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
-                menuList.route = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
+                menuList.isDynamic = module.name ? true : false; //$scope.menu.moduleItem ? $scope.menu.moduleItem.custom ? false : true : false;
+                menuList.route = module.route ? module.route : '';//$scope.menu.moduleItem != null ? $scope.menu.moduleItem.route ? $scope.menu.moduleItem.route : '' : '';
                 menuList.menuId = menuList.no;
-                menuList.icon = $scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.value : 'fa fa-square';
+                menuList.icon = module.menu_icon ? module.menu_icon : 'fa fa-square';//$scope.menu.moduleItem != null ? $scope.menu.moduleItem.menu_icon ? $scope.menu.moduleItem.menu_icon : 'fa fa-square' : $scope.menu.menu_icon != null ? $scope.menu.menu_icon.value : 'fa fa-square';
                 $scope.counter += 1;
                 menuList.parentId = 0;
+                menuList.disabled = false;
                 menuList.nodes = [];
-                menuList.isEdit = true;
+                menuList.newIcon = 'fa fa-eye';
                 menuList.index = $scope.index;
                 $scope.index += 1;
                 $scope.data.push(menuList);
@@ -405,42 +425,61 @@ angular.module('primeapps')
             $scope.save = function (menu, menuForm) {
 
                 var copyData = angular.copy($scope.data);
-                var updateData = [];
                 $scope.saving = true;
                 var resultPromise;
                 var count = 0;
-                var countChield = 0;
+                //  var countChield = 0;
                 for (var i = 0; i < copyData.length; i++) {
 
+                    //  if (!copyData[i].disabled) {
                     /*Her türlü burada menuId ve no'ları yeniden düzenlemeliyiz*/
-                    copyData[i].no = count + 1;//copyData[i].id === 0 ? count + 1 : i + 1;
-                    copyData[i].menuId = count + 1;// copyData[i].id === 0 ? count + 1 : i + 1;
+                    copyData[i].no = count + 1;//count + 1;//copyData[i].id === 0 ? count + 1 : i + 1;
+                    copyData[i].menuId = count + 1;// count + 1;// copyData[i].id === 0 ? count + 1 : i + 1;
                     copyData[i].menuNo = copyData[i].menuId;
 
                     /*eğer kategori ise alt kırılımında yeni eklenen child var mı ? varsa ekle*/
                     for (var j = 0; j < copyData[i].nodes.length; j++) {
 
+                        //  if (!copyData[i].nodes[j].disabled) {
                         var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
-                        copyData[i].nodes[j].no = countChield + 1;
-                        copyData[i].nodes[j].menuId = count + 1;
+                        copyData[i].nodes[j].no = j + 1; // countChield + 1;
+                        copyData[i].nodes[j].menuId = count + 1;//count + 1;
                         copyData[i].nodes[j].menuNo = copyData[i].nodes[j].menuId;
-
-                        if (createItem && copyData[i].id > 0) {
+                        //parentId ana kırılımın id'si olacaktır
+                        copyData[i].nodes[j].parentId = copyData[i].id;
+                        //daha önceden eklenmiş bir parent altına child eklenmişse createArray'e pushla
+                        /*if (createItem && copyData[i].id > 0) {
                             $scope.createArray.push(createItem);
+                        }*/
+                        // } 
+                        /*else {
                             copyData[i].nodes.splice(j, 1);
-                            j--
-                        }
-                        countChield++;
-                    }
+                            j--;
+                            countChield++;
+                        }*/
 
-                    if (copyData[i].id === 0) {
-                        $scope.createArray.push(copyData[i]);
-                        copyData.splice(i, 1);
-                        i--;
                     }
-                    count++;
+                    //Eğer ana kırılım(modül ya da kategori) ilk defa ekleniyorsa nodelarla beraber ekle
+                    if (copyData[i].id === 0) {
+                        /*menu.id yoksa nodes'lara dokunulmayacak ilk create gerçekleşecek
+                        * Eğer menu.id varsa bu menu daha önceden create edilmiştir.Bu yüzden nodesları tekrardan create etmemek için nodes arrayini temizliyoruz*/
+
+                       // copyData[i].nodes = menu.id ? [] : copyData[i].nodes;
+                        $scope.createArray.push(copyData[i]);
+                        copyData.splice(i,1);
+                        i--;
+                        count++;
+                    }
+                    //}
+                    /* else {
+                            copyData.splice(i, 1);
+                            i--;
+                            count++;
+                        }*/
+
                 }
 
+                $scope.data = copyData;
                 //If update
                 if (menu.id && !$scope.clone) {
 
@@ -545,8 +584,8 @@ angular.module('primeapps')
                         }];
 
                     MenusService.create(menu).then(function () {
-                        if ($scope.createArray.length > 0) {
-                            MenusService.createMenuItems($scope.createArray, menu[0].profile_id).then(function onSuccess() {
+                        if ($scope.data.length > 0) {
+                            MenusService.createMenuItems($scope.data, menu[0].profile_id).then(function onSuccess() {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
@@ -565,8 +604,7 @@ angular.module('primeapps')
                         }
                     });
                 }
-            }
-            ;
+            };
 
             $scope.edit = function (node) {
                 node.isEdit = true;
@@ -574,44 +612,79 @@ angular.module('primeapps')
 
             $scope.update = function (node) {
                 node.isEdit = false;
+                node.icon = angular.isObject(node.icon) ? node.icon.value : node.icon;
                 isUpdate = true;
             };
 
-            $scope.remve = function (node, parentList, parent) { //(node, index) {
-                var index = parentList.indexOf(node);
+            $scope.disable = function (node, parentList, parent, index) {
+
+
+                $scope.copyData = $scope.copyData ? $scope.copyData : angular.copy($scope.data);
+                index = parent ? parentList.indexOf(node) : index;
+
                 if (index > -1) {
-                    //Ana kırılım 
-                    if (node.id > 0 && !parent) {
-                        //ana kırılımın childları var mı ?
-                        for (var i = 0; i < node.nodes.length; i++) {
-                            node.nodes[i].no = i + 1;
-                            if (node.nodes[i].id > 0) {
-                                $scope.deleteArray.push(node.nodes[i].id);
-                                $scope.data[node.no].nodes.splice(i, 1);
-                                i--;
-                            }
+                    //disable butonuna her tıklandığında her koşulda icon ve disable olma özelliği kontrol edilmeli
+                    node.disabled = node.disabled ? false : true;
+                    node.newIcon = node.disabled ? "fa fa-eye-slash" : 'fa fa-eye';
+
+                    /*Gelen ana kırılımdan ise parent yoktur*/
+                    if (!parent) {
+                        var count = 0;
+                        //alt kırlım varsa, diğerlerininde iconunu disable'e çek
+                        for (var k = 0; k < $scope.copyData[index].nodes.length; k++) {
+
+                            node.nodes[k].no = k + 1;
+                            node.nodes[k].disabled = node.nodes[k].disabled ? false : true;
+                            node.nodes[k].newIcon = node.nodes[k].disabled ? "fa fa-eye-slash" : 'fa fa-eye';
+
+                            /*  if (node.nodes[k].disabled) {
+                                  if (node.nodes[k].id > 0)
+                                      $scope.deleteArray.push(node.nodes[k].id);
+  
+                                  // $scope.copyData[index].nodes.splice(k, 1);
+                                  // k--;
+  
+                              }*/
+                            //  count++;
                         }
-                        $scope.deleteArray.push(node.id);
-                        $scope.data.splice(index, 1);
+                        // $scope.deleteArray.push(node.id);
+                        //$scope.copyData.splice(index, 1);
+                        $scope.copyData[index] = node;
                     }
-                    //alt kırılım
-                    else if (node.id > 0 && parent) {
-                        $scope.deleteArray.push(node.id);
-                        //Daha öncesinden data arryinden herhangi bir veri silinmiş olabilir 
-                        /* var parentIndex = $scope.data.indexOf(parent);
-                         $scope.data[parentIndex].nodes.splice(index, 1);*/
-                    }
-                    var parentIndex = $scope.data.indexOf(parent);
-                    if (parentIndex > -1) {
-                        $scope.data[parentIndex].nodes.splice(index, 1);
-                        for (var k = 0; k < $scope.data[parentIndex].nodes.length; k++) {
-                            $scope.data[parentIndex].nodes[k].no = k + 1;
+
+                    /*parent varsa alt kırılımdır
+                   * Ana kırılım disable, alt kırılımda disabledır 
+                   * User bunu visable'a çekecekse artık bunu ana kırılım disable olduğu için bunu ana kırılımdan çıkarıyoruz.*/
+                    else {
+
+                        /* if (node.disabled) {
+                             /!*  var parentIndex = $scope.copyData.findIndex(function (el) {
+                                   return el.no === parent.no;
+                               });*!/
+                             //eğer idsi varsa delete'e pushla
+                             if (node.id > 0) {
+                                 $scope.deleteArray.push(node.id);
+                             }
+                             // $scope.copyData[parentIndex].nodes.splice(index, 1);
+                         }*/
+
+                        /*Bulunduğu node içerisinden kaldır                    
+                        Eğer disable değilse arraylere pushla*/
+                        //else {
+                        if (!node.disabled) {
+                            /*ana arrayin length'i +1 nosunu verir*/
+                            node.menuId = $scope.data.length + 1;
+                            node.no = node.menuId;
+                            node.parentId = 0;
+                            parentList.splice(index, 1);
+                            $scope.copyData.push(node);
+                            $scope.data.push(node);
                         }
-                    } else if (parentIndex < 0 && !parent && node.id < 0) {
-                        $scope.data.splice(index, 1);
+
                     }
 
                 }
+
                 isUpdate = true;
             };
 
@@ -890,6 +963,7 @@ angular.module('primeapps')
                 accept: function (sourceNodeScope, destNodesScope, destIndex) {
                     //modulü yer değiştirirken
                     if (!destNodesScope.$parent.$modelValue && sourceNodeScope.$modelValue.menuName) {
+
                         return true;
                     }
                     //kategoriyi yer değiştirirken
@@ -898,11 +972,37 @@ angular.module('primeapps')
                     }
                     //gideceği yer module değilse ve giden kategori değilse 
                     else if (destNodesScope.$parent.$modelValue && !destNodesScope.$parent.$modelValue.menuName && sourceNodeScope.$modelValue.menuName) {
+                        //eğer modülün gideceği kategori disabled ise module disabled olmalı
+                        if (destNodesScope.$parent.$modelValue.disabled) {
+                            sourceNodeScope.$modelValue.disabled = true;
+                            sourceNodeScope.$modelValue.newIcon = "fa fa-eye-slash";
+                        }
                         return true;
                     }
                     return false;
                 }
             };
 
+            $scope.deleteItem = function (node, parentList, index) {
+
+                if (node.id > 0) {
+                    $scope.deleteArray.push(node.id);
+                }
+                /*id:0 ise daha eklenmemiştir direkt arrayden siliyoruz*/
+                // else {
+                //eğer node'ları var ise array'e pushluyoruz, sadece var olan kategoriyi array'den kaldırıyoruz
+
+                for (var i = 0; i < node.nodes.length; i++) {
+
+                    node.nodes[i].menuId = $scope.data.length; //+1 eklememe sebebimiz, en altta ana kırılım array'den çıkarılacağı için eş değer oluyor
+                    node.nodes[i].no = node.nodes[i].menuId;
+                    node.nodes[i].parentId = 0;
+                    parentList.push(node.nodes[i]);
+                }
+                parentList.splice(index, 1);
+                // }
+            };
+
         }
-    ]);
+    ])
+;

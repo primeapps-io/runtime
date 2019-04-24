@@ -113,14 +113,14 @@
 								<!--ng-show="!loading"-->
 								<div class="panel">
 
-									<ui-select ng-model="menu.moduleItem" class="bigwhiteselect" on-select="addItem()">
+								<!--	<ui-select ng-model="menu.moduleItem" class="bigwhiteselect" on-select="addItem()">
 										<ui-select-match allow-clear="true" placeholder="Please choose your menu item">
 											{{$select.selected['label_'+language+'_plural']}}
 										</ui-select-match>
 										<ui-select-choices repeat="module in newModuleList | filter:{ label_en_plural: $select.search} | filter:{display:'!false'} | orderBy:'label_' + language + '_plural'">
 											<span ng-bind-html="module['label_'+language+'_plural'] | highlight: $select.search"></span>
 										</ui-select-choices>
-									</ui-select>
+									</ui-select>-->
 
 									<!--   <div class="form-group">ür
 										   <div>
@@ -172,6 +172,10 @@
 										  <button type="button" ng-click="addItem()" ng-disabled=" !menu.menuItem && !menu.moduleItem " class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Common.Add' | translate}}</button>
 									  </div>-->
 
+									<div class="form-group">
+										<button type="button" ng-click="addItem()" class="btn add-button btn-radius btn-blue"><i class="fas fa-plus"></i> {{'Menu.AddNewCategory' | translate}}</button>
+									</div>
+									
 									<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
 
 									<div class="row" style="margin-top: 30px;">
