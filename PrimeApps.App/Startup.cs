@@ -45,7 +45,7 @@ namespace PrimeApps.App
 
             services.AddWorkflow(cfg =>
                 {
-                    cfg.UseRedisPersistence(redisConnection, "wfc");
+                    cfg.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true);
                     cfg.UseRedisLocking(redisConnection);
                     cfg.UseRedisQueues(redisConnection, "wfc");
                     cfg.UseRedisEventHub(redisConnection, "wfc");
