@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DiagnosticAdapter;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
 
@@ -59,13 +60,18 @@ namespace PrimeApps.Studio.Services
             {
                 Console.WriteLine("OnCommandExecuted");
                 var rawQuery = GetGeneratedQuery(dbCommand);
-                
-                //Get id from reader
-                var recordId = 1;
+
+                JArray queryResult = command.DbDataReader.ResultToJArray();
+
+                int recordId = 0;
+
+                if (queryResult.HasValues)
+                {
+                    recordId = queryResult.First.Value<int>("id");
+                }
 
                 var executedAt = DateTime.Now;
                 var email = _context.HttpContext.User.FindFirst("email").Value;
-
                 //var tracerHelper = _app.ApplicationServices.GetService<ITracerHelper>();
                 _queue.QueueBackgroundWorkItem(async token => _commandHistoryHelper.Add(rawQuery, executedAt, email, recordId));
             }
