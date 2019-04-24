@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
@@ -14,7 +15,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Models;
+using PrimeApps.Studio.Models; 
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -31,11 +32,14 @@ namespace PrimeApps.Studio.Controllers
         private IPermissionHelper _permissionHelper;
         private IBpmHelper _bpmHelper;
 
-        public BpmController(IConfiguration configuration, IBpmRepository bpmRepository, IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper, IPermissionHelper permissionHelper)
+        public BpmController(IConfiguration configuration, IBpmRepository bpmRepository,
+            IWorkflowCoreRepository workflowCoreRepository, IBpmHelper bpmHelper, IPermissionHelper permissionHelper)
         {
             _configuration = configuration;
             _bpmRepository = bpmRepository;
             _workflowCoreRepository = workflowCoreRepository;
+            //_workflowHost = workflowHost;
+            //_definitionLoader = definitionLoader;
             _bpmHelper = bpmHelper;
             _permissionHelper = permissionHelper;
         }
@@ -121,7 +125,7 @@ namespace PrimeApps.Studio.Controllers
             bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
             //For Runtime
-            ////Load string JSON Data on WorkFlowEngine
+            //Load string JSON Data on WorkFlowEngine
             //var str = JsonConvert.SerializeObject(definitionJson);
             //var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
@@ -158,7 +162,7 @@ namespace PrimeApps.Studio.Controllers
             //if (bpmRecord != null)
             //{
             //To increase the last version number of the record we want to update
-            var searchResult = await _bpmRepository.GetAll(bpmWorkflowEntity.Code);
+            var searchResult = await _bpmRepository.GetAll(bpmWorkflowEntity.Code, active: bpmWorkflowEntity.Active);
             if (searchResult != null && searchResult.Count > 0)
             {
                 var lastVersion = searchResult.OrderByDescending(q => q.Version).First().Version;
@@ -201,14 +205,14 @@ namespace PrimeApps.Studio.Controllers
             if (bpmWorkflowEntity == null)
                 return NotFound();
 
-            await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
+            var result = await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
 
             //For Runtime
             //var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
 
             //TODO We should be delete from Definition List?
 
-            return Ok();
+            return Ok(result);
         }
     }
 }

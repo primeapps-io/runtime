@@ -6,7 +6,7 @@ kind: Ingress
 metadata:
   annotations:
 {{ toYaml .Values.studio.ingress.annotations | indent 4 }}
-  name: {{ template "fullname" . }}-app
+  name: {{ template "fullname" . }}-studio
 spec:
   rules:
   - host: {{ .Values.studio.ingress.hostname | quote }}
@@ -14,7 +14,7 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: {{ template "fullname" . }}-app
+          serviceName: {{ template "fullname" . }}-studio
           servicePort: {{ .Values.studio.servicePort }}
 {{- if .Values.studio.ingress.tls }}
   tls:
