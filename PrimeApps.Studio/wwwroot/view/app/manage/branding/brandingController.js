@@ -176,16 +176,38 @@ angular.module('primeapps')
             };
 
             $scope.logoRemove = function (item) {
-                if(item=='$scope.authFavicon'){
-                    $scope.authFavicon ="";
-                    $scope.authTheme.favicon ="";
+                if (item == 'authFavicon') {
+                    $scope.authFavicon = "";
+                    $scope.authTheme.favicon = "";
                 }
                 
+                if (item == 'authLogo') {
+                    $scope.authLogo = "";
+                    $scope.authTheme.logo = "";
+                }  
+                
+                if (item == 'authBanner') {
+                    $scope.authBanner = "";
+                    $scope.authTheme.banner = "";
+                }
+                
+                if (item == 'appThemeFavicon') {
+                    $scope.appThemeFavicon = "";
+                    $scope.appTheme.favicon = "";
+                } 
+                
+                if (item == 'appLogo') {
+                    $scope.appThemeLogo = "";
+                    $scope.appTheme.logo = "";
+                }
+
                 // if (uploader.queue[0]) {
                 //     //uploader.queue[0].image = null;
                 //     uploader.queue[0].remove();
                 // }
             };
+
+            console.log("");
 
             BrandingService.getAppTheme($scope.appId).then(function (response) {
                 var appTheme = response.data;
@@ -216,14 +238,14 @@ angular.module('primeapps')
                     $scope.authTheme.banner = authTheme.banner[0].image;
                     if (authTheme.banner[0].descriptions.en) {
                         $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
-                     
+
                     }
                     if (authTheme.banner[0].descriptions.tr) {
                         $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
                     }
 
                 }
-                
+
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
                 $scope.authTheme.favicon = authTheme.favicon;

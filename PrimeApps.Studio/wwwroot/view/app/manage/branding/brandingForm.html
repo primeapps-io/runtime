@@ -310,14 +310,14 @@
 
                                 <div class="form-group">
                                     <label class="required-field">3-Logo</label>
-                                    <div class="newupload" ng-if="!appLogo.image && !appTheme.logo">
+                                    <div class="newupload" ng-if="!appThemeLogo.image && !appTheme.logo">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
                                                 <div nv-file-drop="" uploader="uploader">
                                                     <div nv-file-over="" uploader="uploader"
                                                          over-class="another-file-over-class" class="my-drop-zone">
                                                         <input type="file" nv-file-select
-                                                               uploader="uploaderImage('appLogo')" nv-file-over
+                                                               uploader="uploaderImage('appThemeLogo')" nv-file-over
                                                                ng-disabled="croppedImage">
                                                         <span>
                                                             <i class="fas fa-cloud-upload-alt"></i>
@@ -329,11 +329,11 @@
                                         </label>
 
                                     </div>
-                                    <div ng-show="appLogo.image || appTheme.logo">
+                                    <div ng-show="appThemeLogo.image || appTheme.logo">
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appLogo.image || appTheme.logo}}" class="resultimg"
+                                                    <img ng-src="{{appThemeLogo.image || appTheme.logo}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
