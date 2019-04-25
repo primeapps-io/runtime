@@ -222,8 +222,15 @@ namespace PrimeApps.Studio.Controllers
 				{
 					//check if exist default = true
 					var allMenus = await _menuRepository.GetAll();
-			
-					foreach (var menuItem in allMenus) //allMenus.Where(x => x.Default)
+					var allMenusCopy = allMenus;
+					allMenusCopy = allMenusCopy.Where(x => x.Default).ToList();
+					/*Burada tüm menuleri' getiriyoruz daha önceden admin için menu oluşturulmuş olabilir*/
+					if (allMenusCopy.Count > 0)
+					{
+						allMenus = allMenusCopy;
+					}
+					
+					foreach (var menuItem in allMenus) 
 					{
 						if (menuItem.ProfileId != (int)defaultMenu["profile_id"])
 						{
