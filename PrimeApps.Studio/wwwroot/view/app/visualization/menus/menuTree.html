@@ -1,15 +1,10 @@
-
 <span ui-tree-handle class="tree-node tree-node-content">
-    <!--<a class="btn btn-success btn-xs" ng-if="node.nodes && node.nodes.length > 0" data-nodrag ng-click="toggle(this)"><i 
-            class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></i></a>-->
-    
     <span ng-if="!node.isEdit"><i class="{{node.icon}}"></i> {{node.name}}</span>
     <span data-nodrag ng-if="node.isEdit">
         <div class="menueditmode">
-            <input class="form-control" maxlength="50" ng-model="node.name" />
+            <input class="form-control" maxlength="50" ng-model="node.name"/>
             <ui-select ng-model="node.icon">
                 <ui-select-match placeholder="Select an icon">
-                    <!--<div ng-bind-html="$select.selected.label || '<i class='+$select.selected+'>'"></div>-->
                     <div>
                         <span ng-if="$select.selected.value" class="{{$select.selected.value}}">{{ $select.selected.value }}</span>
                         <span ng-if="!$select.selected.value" class="{{$select.selected}}">{{ $select.selected }}</span>
@@ -35,14 +30,19 @@
         </option>
     </select>
     <div data-nodrag ng-if="!node.isEdit" class="action-buttons-block">
-       <!-- <a ng-click="addModule(node.no)"><i class="fas fa-plus"></i></a> --> <!-- ng-if="node.menuModuleType === 'Tanım Giriş'" -->
-        <a ng-if="!node.showModuleList" class="action-buttons-edit" ng-click="edit(node)"><i class="fas fa-pen"></i> </a>
-        <a ng-if="!node.showModuleList" class="action-buttons-delete" ng-click="disable($parent.$parent.$modelValue, $parent.$parent.$parentNodesScope.$modelValue, $parent.$parent.$parentNodeScope.$modelValue, $index)"><i class="{{node.newIcon}}"></i></a>
-        <a ng-if="!node.menuName" class="action-buttons-delete" ng-click="deleteItem(node,$parent.$parent.$parentNodesScope.$modelValue, $index)"><i class="fas fa-trash"></i></a>
+        <a ng-if="!node.showModuleList && !node.isExample" class="action-buttons-edit" ng-click="edit(node)"><i
+                class="fas fa-pen"></i> </a>
+        <a ng-if="!node.showModuleList && !node.isExample" class="action-buttons-delete"
+           ng-click="disable($parent.$parent.$modelValue, $parent.$parent.$parentNodesScope.$modelValue, $parent.$parent.$parentNodeScope.$modelValue, $index)"><i
+                class="{{node.newIcon}}"></i></a>
+        <a ng-if="!node.menuName" class="action-buttons-delete"
+           ng-click="deleteItem(node,$parent.$parent.$parentNodesScope.$modelValue, $index)"><i
+                class="fas fa-trash"></i></a>
     </div>
     
 </span>
 <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'">
+    <li ng-class="{'example':node.isEample}" ng-repeat="node in node.nodes" ui-tree-node
+        ng-include="'view/app/visualization/menus/menuTree.html'">
     </li>
 </ol>

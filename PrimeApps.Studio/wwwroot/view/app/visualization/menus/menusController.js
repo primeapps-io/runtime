@@ -374,6 +374,7 @@ angular.module('primeapps')
                 $scope.counter += 1;
                 menuList.parentId = 0;
                 menuList.disabled = false;
+                //menuList.nodes = module.nodes ? module.nodes : [];
                 menuList.nodes = [];
                 menuList.newIcon = 'fa fa-eye';
                 menuList.index = $scope.index;
@@ -464,9 +465,9 @@ angular.module('primeapps')
                         /*menu.id yoksa nodes'lara dokunulmayacak ilk create gerçekleşecek
                         * Eğer menu.id varsa bu menu daha önceden create edilmiştir.Bu yüzden nodesları tekrardan create etmemek için nodes arrayini temizliyoruz*/
 
-                       // copyData[i].nodes = menu.id ? [] : copyData[i].nodes;
+                        // copyData[i].nodes = menu.id ? [] : copyData[i].nodes;
                         $scope.createArray.push(copyData[i]);
-                        copyData.splice(i,1);
+                        copyData.splice(i, 1);
                         i--;
                         count++;
                     }
@@ -479,7 +480,7 @@ angular.module('primeapps')
 
                 }
 
-                $scope.data = copyData;
+                // $scope.data = copyData;
                 //If update
                 if (menu.id && !$scope.clone) {
 
@@ -584,8 +585,8 @@ angular.module('primeapps')
                         }];
 
                     MenusService.create(menu).then(function () {
-                        if ($scope.data.length > 0) {
-                            MenusService.createMenuItems($scope.data, menu[0].profile_id).then(function onSuccess() {
+                        if ($scope.createArray.length > 0) {
+                            MenusService.createMenuItems($scope.createArray, menu[0].profile_id).then(function onSuccess() {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
                                 $scope.changePage($scope.activePage);
@@ -613,6 +614,15 @@ angular.module('primeapps')
             $scope.update = function (node) {
                 node.isEdit = false;
                 node.icon = angular.isObject(node.icon) ? node.icon.value : node.icon;
+              /*  /!*ilk eklenen parent'a örnek bir child eklenmeli*!/
+                if (node.id === 0) {
+                    node.nodes = [{
+                        name: "Drag and drop your module",
+                        isExample: true,
+                        newIcon: "fa fa-eye",
+                        menuName: "example"
+                    }];
+                }*/
                 isUpdate = true;
             };
 
@@ -961,6 +971,7 @@ angular.module('primeapps')
 
             $scope.treeOptions = {
                 accept: function (sourceNodeScope, destNodesScope, destIndex) {
+
                     //modulü yer değiştirirken
                     if (!destNodesScope.$parent.$modelValue && sourceNodeScope.$modelValue.menuName) {
 
@@ -972,6 +983,18 @@ angular.module('primeapps')
                     }
                     //gideceği yer module değilse ve giden kategori değilse 
                     else if (destNodesScope.$parent.$modelValue && !destNodesScope.$parent.$modelValue.menuName && sourceNodeScope.$modelValue.menuName) {
+/*
+
+                        /!*Eğer modülün gideceği parent altında example child varsa kaldır*!/
+                        var exampleChildIndex = destNodesScope.$parent.$modelValue.nodes.findIndex(function (el) {
+                            return el.isExample === true;
+                        });
+
+                        if (exampleChildIndex > -1) {
+                            destNodesScope.$parent.$modelValue.nodes.splice(exampleChildIndex, 1);
+                        }
+*/
+
                         //eğer modülün gideceği kategori disabled ise module disabled olmalı
                         if (destNodesScope.$parent.$modelValue.disabled) {
                             sourceNodeScope.$modelValue.disabled = true;

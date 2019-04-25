@@ -386,11 +386,11 @@ namespace PrimeApps.Studio.Controllers
                         else
                         {
                             //ParentId'sini güncelliyoruz
-                            request["menuLabel"][i]["nodes"][j]["parentId"] = parent.Id;
-                            menuItem = await _menuRepository.GetMenuItemsById((int) request["menuLabel"][i]["nodes"][j]["id"]);
+                            request["module"][i]["nodes"][j]["parentId"] = parent.Id;
+                            menuItem = await _menuRepository.GetMenuItemsById((int) request["module"][i]["nodes"][j]["id"]);
                             if (menuItem == null)
                                 return NotFound();
-                            menuItem = MenuHelper.UpdateMenuItems((JObject) request["menuLabel"][i]["nodes"][j], menuItem);
+                            menuItem = MenuHelper.UpdateMenuItems((JObject) request["module"][i]["nodes"][j], menuItem);
                             await _menuRepository.UpdateMenuItem(menuItem);
                         }
                     }
@@ -487,8 +487,7 @@ namespace PrimeApps.Studio.Controllers
 
                 for (int j = 0; j < ((JArray) request["menuLabel"][i]["nodes"]).Count; j++)
                 {
-                    menuItem = await _menuRepository.GetMenuItemsById(
-                        (int) request["menuLabel"][i]["nodes"][j]["id"]);
+                    menuItem = await _menuRepository.GetMenuItemsById((int) request["menuLabel"][i]["nodes"][j]["id"]);
                     if (menuItem == null)
                         return NotFound();
 
