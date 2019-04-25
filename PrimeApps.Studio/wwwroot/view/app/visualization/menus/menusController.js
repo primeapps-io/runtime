@@ -469,8 +469,10 @@ angular.module('primeapps')
                         $scope.createArray.push(copyData[i]);
                         copyData.splice(i, 1);
                         i--;
-                        count++;
                     }
+
+                    count++;
+                    
                     //}
                     /* else {
                             copyData.splice(i, 1);

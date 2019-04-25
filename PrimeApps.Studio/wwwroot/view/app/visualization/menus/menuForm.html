@@ -113,7 +113,7 @@
                                             <div ng-if="$parent.$parent.data.length > 0" ui-tree="treeOptions"
                                                  id="tree-root" class="roleslist angular-ui-tree ">
                                                 <ol ui-tree-nodes ng-model="data">
-                                                    <li ng-class="{'disable':node.disabled}" ng-repeat="node in data"
+                                                    <li ng-class="{'disable':node.disabled, 'category':!node.menuName}" ng-repeat="node in data"
                                                         ui-tree-node
                                                         ng-include="'view/app/visualization/menus/menuTree.html'"></li>
                                                 </ol>
