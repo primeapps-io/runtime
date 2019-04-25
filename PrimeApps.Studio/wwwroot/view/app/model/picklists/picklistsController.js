@@ -427,9 +427,11 @@ angular.module('primeapps')
             $scope.editModeOpen = function (item) {
                 if (!item)
                     return;
-
+                
                 item.edit = true;
                 $scope.editItem = true;
+                //editModeClase'ta kullanılacak
+                $scope.copyPicklistName = item.label_en;
             };
 
             $scope.editModeClose = function (item) {
@@ -437,6 +439,7 @@ angular.module('primeapps')
                     return;
 
                 item.edit = false;
+                item.label_en = $scope.copyPicklistName;
                 $scope.editItem = false;
             };
 
