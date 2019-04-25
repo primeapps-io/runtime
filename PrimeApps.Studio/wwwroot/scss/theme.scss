@@ -3705,7 +3705,7 @@ button, select {
       }
     }
     .menueditmode{
-      padding-right: 30px;
+      padding-right: 60px;
       display: flex;
       justify-content: space-between;
       width: 100%;
@@ -3777,7 +3777,14 @@ button, select {
             color: #FFF;
           }
         }
-
+        &.action-buttons-check {
+          background: rgba(77, 170, 62, 0.75);
+          color: #FFF;
+          &:hover {
+            background: rgba(77, 170, 62, 1);
+            color: #FFF;
+          }
+        }
         &:hover {
           background: rgba(13, 111, 170, 1);
           color: rgba(255, 255, 255, 1);
@@ -3949,6 +3956,14 @@ button, select {
         color: #FFF;
         &:hover {
           background: rgba(206, 4, 4, 1);
+          color: #FFF;
+        }
+      }
+      &.check-btn {
+        background: rgba(77, 170, 62, 0.75);
+        color: #FFF;
+        &:hover {
+          background: rgba(77, 170, 62, 1);
           color: #FFF;
         }
       }

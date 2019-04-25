@@ -2997,7 +2997,7 @@ button:focus, select:focus {
   display: none;
 }
 .primeapps .roleslist .menueditmode {
-  padding-right: 30px;
+  padding-right: 60px;
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -3063,6 +3063,14 @@ button:focus, select:focus {
 }
 .primeapps .roleslist .action-buttons-block a.action-buttons-delete:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-delete:hover {
   background: #ce0404;
+  color: #FFF;
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-check, .primeapps .roleslist .action-buttons-block button.action-buttons-check {
+  background: rgba(77, 170, 62, 0.75);
+  color: #FFF;
+}
+.primeapps .roleslist .action-buttons-block a.action-buttons-check:hover, .primeapps .roleslist .action-buttons-block button.action-buttons-check:hover {
+  background: #4daa3e;
   color: #FFF;
 }
 .primeapps .roleslist .action-buttons-block a:hover, .primeapps .roleslist .action-buttons-block button:hover {
@@ -3208,6 +3216,14 @@ button:focus, select:focus {
 }
 .primeapps .new-actions button.delete-btn:hover, .primeapps .new-actions a.delete-btn:hover {
   background: #ce0404;
+  color: #FFF;
+}
+.primeapps .new-actions button.check-btn, .primeapps .new-actions a.check-btn {
+  background: rgba(77, 170, 62, 0.75);
+  color: #FFF;
+}
+.primeapps .new-actions button.check-btn:hover, .primeapps .new-actions a.check-btn:hover {
+  background: #4daa3e;
   color: #FFF;
 }
 .primeapps .new-actions button.edit-btn, .primeapps .new-actions a.edit-btn {

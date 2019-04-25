@@ -573,6 +573,10 @@ angular.module('primeapps')
                 node.isEdit = false;
                 node.icon = angular.isObject(node.icon) ? node.icon.value : node.icon;
                 isUpdate = true;
+            };   
+            
+            $scope.editModeClose = function (node) {
+                node.isEdit = false;
             };
 
             $scope.disable = function (node, parentList, parent, index) {
