@@ -42,7 +42,5 @@
     
 </span>
 <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-class="{'example':node.isEample}" ng-repeat="node in node.nodes" ui-tree-node
-        ng-include="'view/app/visualization/menus/menuTree.html'">
-    </li>
+    <li ng-class="{'notvisible':node.disabled, 'example':node.isEample}" ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"> </li>
 </ol>

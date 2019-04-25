@@ -111,11 +111,9 @@
                                     <div class="row" style="margin-top: 30px;">
                                         <div class="col-sm-12">
                                             <div ng-if="$parent.$parent.data.length > 0" ui-tree="treeOptions"
-                                                 id="tree-root" class="roleslist angular-ui-tree ">
+                                                 id="tree-root" class="roleslist dragmenulist angular-ui-tree ">
                                                 <ol ui-tree-nodes ng-model="data">
-                                                    <li ng-class="{'disable':node.disabled, 'category':!node.menuName}" ng-repeat="node in data"
-                                                        ui-tree-node
-                                                        ng-include="'view/app/visualization/menus/menuTree.html'"></li>
+                                                    <li ng-class="{'notvisible':node.disabled, 'category':!node.menuName}" ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"></li>
                                                 </ol>
                                             </div>
                                         </div>
