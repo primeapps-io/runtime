@@ -3792,9 +3792,27 @@ button, select {
         color: rgba(0, 0, 0, 0.25);
       }
     }
-    &.dragmenulist{
+    .category{
+      > ol{
+        .category_place_holder{
+          > span{
+            background: transparent;
+            border: 1px dashed rgba(0, 0, 0, 0.25);
+            color: rgba(0, 0, 0, 0.25);
+            padding: 4px 10px;
+          }
+        }
+      }
+      
       
     }
+    /*.angular-ui-tree-placeholder {
+      background: #f0f9ff;
+      border: 2px dashed #bed2db;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }*/
   }
   .uploadedfilename {
     padding: 5px 10px;

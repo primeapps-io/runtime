@@ -42,5 +42,6 @@
     
 </span>
 <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-class="{'notvisible':node.disabled, 'example':node.isEample}" ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"> </li>
+    <li class="category_place_holder" ui-tree-node ng-if="!node.menuName && node.nodes < 1"><span>Drag-drop here your modules</span></li>
+    <li ng-class="{'notvisible':node.disabled}" ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"> </li>
 </ol>
