@@ -212,6 +212,7 @@
                 var l = Ladda.create(this);
                 l.start();
                 if (fieldsHasValue()) {
+                    removeFieldErrors();
                     $(".error-all").removeClass("error");
                     $(".error-all").text("");
 
