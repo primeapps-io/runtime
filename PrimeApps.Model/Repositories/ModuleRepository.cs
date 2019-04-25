@@ -399,8 +399,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)
         {
-            var module = await DbContext.Modules
-                .Include(x => x.Fields)
+            var module = await GetModuleQuery()
                 .FirstOrDefaultAsync(x => x.Name == moduleName && !x.Deleted);
 
             return module.Fields;
@@ -411,7 +410,6 @@ namespace PrimeApps.Model.Repositories
             var module = await GetModuleFullQuery()
                 .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
-            return module;
             return module;
         }
 

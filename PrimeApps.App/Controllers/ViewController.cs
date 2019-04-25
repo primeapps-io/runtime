@@ -14,18 +14,26 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/view"), Authorize]
     public class ViewController : ApiBaseController
     {
+        private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
         private IViewRepository _viewRepository;
         private IUserRepository _userRepository;
         private IDashboardRepository _dashboardRepository;
         private IRecordHelper _recordHelper;
 
-        public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
+        public ViewController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, 
+            IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
         {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
             _viewRepository = viewRepository;
             _userRepository = userRepository;
             _dashboardRepository = dashboardRepository;

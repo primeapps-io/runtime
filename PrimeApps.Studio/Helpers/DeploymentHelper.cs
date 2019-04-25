@@ -11,6 +11,7 @@ using PrimeApps.Model.Repositories;
 using PrimeApps.Studio.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -91,7 +92,7 @@ namespace PrimeApps.Studio.Helpers
                     using (var httpClient = _functionHelper.SetClientOptions())
                     {
                         var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/fn/functions/{name}";
-                        
+
                         var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                         var content = await response.Content.ReadAsStringAsync();
 
@@ -125,6 +126,7 @@ namespace PrimeApps.Studio.Helpers
                 {
                     _appDraftRepository.CurrentUser = _deploymentComponentRepository.CurrentUser = _componentRepository.CurrentUser = _currentUser;
 
+                    component = await _componentRepository.Get(component.Id);
                     var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
 
                     if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
@@ -139,6 +141,7 @@ namespace PrimeApps.Studio.Helpers
 
                             try
                             {
+                                var content = JObject.Parse(component.Content);
                                 foreach (var file in files)
                                 {
                                     var path = file["path"].ToString();
@@ -147,7 +150,6 @@ namespace PrimeApps.Studio.Helpers
 
                                     var code = File.ReadAllText(localPath + "//" + path);
 
-                                    var content = JObject.Parse(component.Content);
                                     var folderName = content.HasValues && content["level"] != null && content["level"].ToString() != "app" ? "tenant-" + tenantId : "app-" + appId;
                                     var bucketName = UnifiedStorage.GetPathComponents(folderName, component.Name);
 
@@ -161,12 +163,18 @@ namespace PrimeApps.Studio.Helpers
 
                                     if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
                                     {
-                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
                                         content["app"]["templateUrl"] = url;
-                                        component.Content = JsonConvert.SerializeObject(content);
-                                        await _componentRepository.Update(component);
+                                    }
+                                    else
+                                    {
+                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                                        content["files"].FirstOrDefault(i => i.Type == JTokenType.String && (string)i == fileName)?.Replace(url);
                                     }
                                 }
+                                
+                                component.Content = JsonConvert.SerializeObject(content);
+                                await _componentRepository.Update(component);
 
                                 deployment.Status = DeploymentStatus.Succeed;
                             }
@@ -216,7 +224,7 @@ namespace PrimeApps.Studio.Helpers
                         {
                             var code = "";
 
-                             var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
+                            var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
                             // var files = _giteaHelper.GetFileNames(localPath, "components/" + script.Name);
                             var fileName = $"/scripts/{script.Name}.js";
 

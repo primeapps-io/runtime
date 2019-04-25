@@ -74,6 +74,7 @@ namespace PrimeApps.Model.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Module = x.Module,
+                    ModuleId=x.ModuleId,
                     RecordOperations = x.RecordOperations,
                     Active = x.Active,
                     Deleted = x.Deleted

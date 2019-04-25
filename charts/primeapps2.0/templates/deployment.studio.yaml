@@ -44,11 +44,11 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.studio.secrets }}
+            {{- range $ref, $values := .Values.studio.config }}
             {{- range $key, $value := $values }}
             - name: {{ $ref }}__{{ $key }}
               valueFrom:
-                secretKeyRef:
+                configMapKeyRef:
                   name: {{ template "fullname" . }}-studio-{{ $ref | lower }}
                   key: {{ $key }}
             {{- end }}

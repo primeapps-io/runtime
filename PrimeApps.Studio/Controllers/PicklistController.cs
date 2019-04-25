@@ -20,15 +20,16 @@ namespace PrimeApps.Studio.Controllers
         private IPicklistRepository _picklistRepository;
         private IPermissionHelper _permissionHelper;
 
-        public PicklistController(IPicklistRepository picklistRepository)
+        public PicklistController(IPicklistRepository picklistRepository, IPermissionHelper permissionHelper)
         {
             _picklistRepository = picklistRepository;
+            _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_picklistRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_picklistRepository, PreviewMode, AppId, TenantId); 
 
             base.OnActionExecuting(context);
         }

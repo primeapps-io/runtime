@@ -276,7 +276,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -327,7 +327,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -484,7 +484,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,

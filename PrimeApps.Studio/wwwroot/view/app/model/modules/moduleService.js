@@ -2008,7 +2008,170 @@ angular.module('primeapps')
 
                 deleteActionButton: function (id) {
                     return $http.delete(config.apiUrl + 'action_button/delete/' + id);
-                }
+                },
+
+                lookup: function (searchTerm, field, record, additionalFields, exactMatch) {
+                    var deferred = $q.defer();
+                    var lookupType = field.lookup_type;
+                    var that = this;
+                    var isDropdownField = field.data_type === 'lookup' && field.show_as_dropdown;
+                    if (field.lookupModulePrimaryField.data_type != 'text_single' && field.lookupModulePrimaryField.data_type != 'picklist' && field.lookupModulePrimaryField.data_type != 'email' &&
+                        field.lookupModulePrimaryField.data_type != 'number' && field.lookupModulePrimaryField.data_type != 'number_auto') {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    if (lookupType === 'relation')
+                        lookupType = record[field.lookup_relation] != undefined ? record[field.lookup_relation].value : null;
+
+                    if (!lookupType) {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    var hasPermission = lookupType != 'users' && lookupType != 'profiles' && lookupType != 'roles' ? helper.hasPermission(lookupType, operations.read) : true;
+
+                    if (!hasPermission && !($rootScope.branchAvailable && lookupType == 'branchs')) {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    if (!searchTerm && !isDropdownField) {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    var lookupModule = $filter('filter')($rootScope.appModules, { name: lookupType }, true)[0];
+                    var selectedFields = [];
+                    selectedFields.push(field.lookupModulePrimaryField.name);
+
+                    if (additionalFields) {
+                        for (var i = 0; i < additionalFields.length; i++) {
+                            var additionalField = additionalFields[i];
+
+                            if (additionalField != field.lookupModulePrimaryField.name && additionalField != 'id')
+                                selectedFields.push(additionalField)
+                        }
+                    }
+
+                    var filters = [];
+
+                    if (field.lookupModulePrimaryField.data_type != 'number' && field.lookupModulePrimaryField.data_type != 'number_auto') {
+                        if (!exactMatch)
+                            switch (field.lookup_search_type) {
+                                case 'contains':
+                                    filters.push({ field: field.lookupModulePrimaryField.name, operator: 'contains', value: searchTerm, no: 1 });
+                                    break;
+                                case 'starts_with':
+                                    filters.push({ field: field.lookupModulePrimaryField.name, operator: 'starts_with', value: searchTerm, no: 1 });
+                                    break;
+                                default:
+                                    filters.push({ field: field.lookupModulePrimaryField.name, operator: 'starts_with', value: searchTerm, no: 1 });
+                                    break;
+                            }
+                        else
+                            filters.push({ field: field.lookupModulePrimaryField.name, operator: 'is', value: searchTerm, no: 1 });
+                    }
+                    else {
+                        filters.push({ field: field.lookupModulePrimaryField.name, operator: 'equals', value: parseInt(searchTerm), no: 1 });
+                    }
+
+
+                    var findRequest = {
+                        fields: selectedFields,
+                        filters: filters,
+                        sort_field: field.lookupModulePrimaryField.name,
+                        sort_direction: 'asc',
+                        limit: 1000,
+                        offset: 0
+                    };
+
+                    //Lookup type show as dropdown
+                    if (isDropdownField) {
+                        findRequest.filters = [];
+                        findRequest.limit = 1000;
+                    }
+                    //get only active users to list! if need also inactive users, use utils lookupuser with includeInactiveUsers parameter
+                    if (lookupModule.name == 'users' || ($rootScope.branchAvailable && lookupType == 'branchs')) {
+                        var filterOrderNo = findRequest.filters.length + 1;
+                        findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo });
+                    }
+
+                    //lookup field filters (from field_filters table)
+                    if (field.filters) {
+                        var no = findRequest.filters.length;
+                        for (var z = 0; z < field.filters.length; z++) {
+                            var filter = field.filters[z];
+                            no++;
+                            var filterMatch = filter.value.match(/^\W+(.+)]/i);
+                            if (filterMatch != null && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
+                                var recordMatch = filterMatch[1].split('.');
+                                var findRecordValue;
+
+                                if (recordMatch.length === 1 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]];
+
+                                if (recordMatch.length === 2 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]][recordMatch[1]];
+
+                                if (recordMatch.length === 3 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]][recordMatch[1]][recordMatch[2]];
+
+                                if (findRecordValue != null) {
+                                    findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: findRecordValue, no: no });
+                                    findRequest.fields.push(filter.filter_field);
+                                }
+
+                            } else {
+                                findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
+                                findRequest.fields.push(filter.filter_field);
+                            }
+
+                        }
+                    }
+
+                    this.findRecords(lookupType, findRequest)
+                        .then(function (response) {
+                            if (!response.data || !response.data.length) {
+                                deferred.resolve([]);
+                                return deferred.promise;
+                            }
+
+                            var lookupRecords = [];
+
+                            if (!additionalFields) {
+                                for (var i = 0; i < response.data.length; i++) {
+                                    var recordItem = response.data[i];
+                                    if (lookupType == 'profiles' && recordItem['id'] === 1) {
+                                        recordItem['name'] = $rootScope.user.tenant_language === 'tr' ? 'Sistem Yöneticisi' : 'Administrator';
+                                    }
+                                    var lookupRecord = angular.copy(recordItem);
+
+                                    lookupRecord.primary_value = recordItem[field.lookupModulePrimaryField.name];
+                                    lookupRecords.push(lookupRecord);
+                                    deferred.resolve(lookupRecords);
+                                }
+                            }
+                            else {
+                                that.getPicklists(lookupModule)
+                                    .then(function (picklists) {
+                                        for (var i = 0; i < response.data.length; i++) {
+                                            var recordItem = response.data[i];
+                                            var lookupRecord = angular.copy(recordItem);
+                                            lookupRecord = that.processRecordSingle(lookupRecord, lookupModule, picklists);
+                                            lookupRecord.primary_value = recordItem[field.lookupModulePrimaryField.name];
+                                            lookupRecords.push(lookupRecord);
+                                            deferred.resolve(lookupRecords);
+                                        }
+                                    });
+                            }
+                        })
+                        .catch(function (reason) {
+                            deferred.reject(reason.data);
+                        });
+
+                    return deferred.promise;
+                },
             };
 
 
