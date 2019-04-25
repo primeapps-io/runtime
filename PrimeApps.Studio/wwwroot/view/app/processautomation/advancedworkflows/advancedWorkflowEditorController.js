@@ -589,21 +589,21 @@ angular.module('primeapps')
                 return filterValue;
             };
 
-            $scope.validate = function (tabClick) {
-                if (!$scope.workflowForm)
-                    $scope.workflowForm = tabClick;
+            ////$scope.validate = function (tabClick) {
+            ////    if (!$scope.workflowForm)
+            ////        $scope.workflowForm = tabClick;
 
-                $scope.workflowForm.$submitted = true;
-                $scope.validateOperations(tabClick);
+            ////    $scope.workflowForm.$submitted = true;
+            ////    $scope.validateOperations(tabClick);
 
-                if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.operation.$valid)
-                    return false;
+            ////    if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.operation.$valid)
+            ////        return false;
 
-                if ($scope.workflowStartModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
-                    return false;
-                //TODO 
-                return $scope.validateActions($scope.workflowForm);
-            };
+            ////    if ($scope.workflowStartModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
+            ////        return false;
+            ////    //TODO 
+            ////    return $scope.validateActions($scope.workflowForm);
+            ////};
 
             $scope.validateOperations = function (tabClick) {
                 if (!$scope.workflowForm)
@@ -631,87 +631,87 @@ angular.module('primeapps')
                 return false;
             };
 
-            $scope.validateSendNotification = function () {
-                return $scope.workflowModel.send_notification &&
-                    (($scope.workflowModel.send_notification.recipients && $scope.workflowModel.send_notification.recipients.length) || $scope.workflowModel.send_notification.customRecipient) &&
-                    $scope.workflowModel.send_notification.subject &&
-                    $scope.workflowModel.send_notification.message;
-            };
+            ////$scope.validateSendNotification = function () {
+            ////    return $scope.workflowModel.send_notification &&
+            ////        (($scope.workflowModel.send_notification.recipients && $scope.workflowModel.send_notification.recipients.length) || $scope.workflowModel.send_notification.customRecipient) &&
+            ////        $scope.workflowModel.send_notification.subject &&
+            ////        $scope.workflowModel.send_notification.message;
+            ////};
 
-            $scope.validateCreateTask = function () {
-                return $scope.workflowModel.create_task &&
-                    $scope.workflowModel.create_task.owner &&
-                    $scope.workflowModel.create_task.owner.length === 1 &&
-                    $scope.workflowModel.create_task.subject &&
-                    $scope.workflowModel.create_task.task_due_date;
-            };
+            ////$scope.validateCreateTask = function () {
+            ////    return $scope.workflowModel.create_task &&
+            ////        $scope.workflowModel.create_task.owner &&
+            ////        $scope.workflowModel.create_task.owner.length === 1 &&
+            ////        $scope.workflowModel.create_task.subject &&
+            ////        $scope.workflowModel.create_task.task_due_date;
+            ////};
 
-            $scope.validateUpdateField = function () {
-                if ($scope.workflowModel.field_update) {
-                    if ($scope.workflowModel.field_update.updateOption && $scope.workflowModel.field_update.updateOption === '1') {
-                        return $scope.workflowModel.field_update.updateOption &&
-                            $scope.workflowModel.field_update.module &&
-                            $scope.workflowModel.field_update.field &&
-                            ($scope.workflowModel.field_update.value !== undefined && $scope.workflowModel.field_update.value !== null);
-                    } else if ($scope.workflowModel.field_update.updateOption && $scope.workflowModel.field_update.updateOption === '2') {
-                        return $scope.workflowModel.field_update.updateOption &&
-                            $scope.workflowModel.field_update.firstModule &&
-                            $scope.workflowModel.field_update.secondModule &&
-                            $scope.workflowModel.field_update.first_field &&
-                            $scope.workflowModel.field_update.second_field;
-                    }
-                }
-            };
+            ////$scope.validateUpdateField = function () {
+            ////    if ($scope.workflowModel.field_update) {
+            ////        if ($scope.workflowModel.field_update.updateOption && $scope.workflowModel.field_update.updateOption === '1') {
+            ////            return $scope.workflowModel.field_update.updateOption &&
+            ////                $scope.workflowModel.field_update.module &&
+            ////                $scope.workflowModel.field_update.field &&
+            ////                ($scope.workflowModel.field_update.value !== undefined && $scope.workflowModel.field_update.value !== null);
+            ////        } else if ($scope.workflowModel.field_update.updateOption && $scope.workflowModel.field_update.updateOption === '2') {
+            ////            return $scope.workflowModel.field_update.updateOption &&
+            ////                $scope.workflowModel.field_update.firstModule &&
+            ////                $scope.workflowModel.field_update.secondModule &&
+            ////                $scope.workflowModel.field_update.first_field &&
+            ////                $scope.workflowModel.field_update.second_field;
+            ////        }
+            ////    }
+            ////};
 
-            $scope.validateWebHook = function () {
-                return $scope.workflowModel.webHook && $scope.workflowModel.webHook.callbackUrl && $scope.workflowModel.webHook.methodType;
-            };
+            ////$scope.validateWebHook = function () {
+            ////    return $scope.workflowModel.webHook && $scope.workflowModel.webHook.callbackUrl && $scope.workflowModel.webHook.methodType;
+            ////};
 
-            $scope.sendNotificationIsNullOrEmpty = function () {
-                if (!$scope.workflowModel.send_notification)
-                    return true;
+            ////$scope.sendNotificationIsNullOrEmpty = function () {
+            ////    if (!$scope.workflowModel.send_notification)
+            ////        return true;
 
-                if ((!$scope.workflowModel.send_notification.recipients || !$scope.workflowModel.send_notification.recipients.length) && !$scope.workflowModel.send_notification.subject && !$scope.workflowModel.send_notification.schedule && !$scope.workflowModel.send_notification.message)
-                    return true;
+            ////    if ((!$scope.workflowModel.send_notification.recipients || !$scope.workflowModel.send_notification.recipients.length) && !$scope.workflowModel.send_notification.subject && !$scope.workflowModel.send_notification.schedule && !$scope.workflowModel.send_notification.message)
+            ////        return true;
 
-                return false;
-            };
+            ////    return false;
+            ////};
 
-            $scope.createTaskIsNullOrEmpty = function () {
-                if (!$scope.workflowModel.create_task)
-                    return true;
+            ////$scope.createTaskIsNullOrEmpty = function () {
+            ////    if (!$scope.workflowModel.create_task)
+            ////        return true;
 
-                if ((!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length) && !$scope.workflowModel.create_task.subject && !$scope.workflowModel.create_task.task_due_date && !$scope.workflowModel.create_task.task_status && !$scope.workflowModel.create_task.task_priority && !$scope.workflowModel.create_task.task_notification && !$scope.workflowModel.create_task.description)
-                    return true;
+            ////    if ((!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length) && !$scope.workflowModel.create_task.subject && !$scope.workflowModel.create_task.task_due_date && !$scope.workflowModel.create_task.task_status && !$scope.workflowModel.create_task.task_priority && !$scope.workflowModel.create_task.task_notification && !$scope.workflowModel.create_task.description)
+            ////        return true;
 
-                return false;
-            };
+            ////    return false;
+            ////};
 
 
-            $scope.fieldUpdateIsNullOrEmpty = function () {
-                if (!$scope.workflowModel.field_update)
-                    return true;
+            ////$scope.fieldUpdateIsNullOrEmpty = function () {
+            ////    if (!$scope.workflowModel.field_update)
+            ////        return true;
 
-                if ($scope.workflowModel.field_update.updateOption === '1') {
-                    if (!$scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field && !$scope.workflowModel.field_update.value)
-                        return true;
-                } else {
-                    if (!$scope.workflowModel.field_update.firstModule && !$scope.workflowModel.field_update.secondModule && !$scope.workflowModel.field_update.first_field && !$scope.workflowModel.field_update.second_field)
-                        return true;
-                }
+            ////    if ($scope.workflowModel.field_update.updateOption === '1') {
+            ////        if (!$scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field && !$scope.workflowModel.field_update.value)
+            ////            return true;
+            ////    } else {
+            ////        if (!$scope.workflowModel.field_update.firstModule && !$scope.workflowModel.field_update.secondModule && !$scope.workflowModel.field_update.first_field && !$scope.workflowModel.field_update.second_field)
+            ////            return true;
+            ////    }
 
-                return false;
-            };
+            ////    return false;
+            ////};
 
-            $scope.webHookIsNullOrEmpty = function () {
-                if (!$scope.workflowModel.webHook)
-                    return true;
+            ////$scope.webHookIsNullOrEmpty = function () {
+            ////    if (!$scope.workflowModel.webHook)
+            ////        return true;
 
-                if (!$scope.workflowModel.webHook.callbackUrl && !$scope.workflowModel.webHook.methodType)
-                    return true;
+            ////    if (!$scope.workflowModel.webHook.callbackUrl && !$scope.workflowModel.webHook.methodType)
+            ////        return true;
 
-                return false;
-            };
+            ////    return false;
+            ////};
 
             $scope.getUpdatableModules = function () {
                 $scope.updatableModules = [];
@@ -1129,112 +1129,112 @@ angular.module('primeapps')
                 $scope.currentLookupField = field;
             };
 
-            $scope.validateActions = function (tabClick) {
-                if (!$scope.lastStepClicked && !tabClick) {
-                    tabClick.$submitted = false;
-                    return true;
-                }
-                var sendNotificationIsNullOrEmpty = $scope.sendNotificationIsNullOrEmpty();
-                var createTaskIsNullOrEmpty = $scope.createTaskIsNullOrEmpty();
-                var fieldUpdateIsNullOrEmpty = $scope.fieldUpdateIsNullOrEmpty();
-                var webHookIsNullOrEmpty = $scope.webHookIsNullOrEmpty();
+            ////$scope.validateActions = function (tabClick) {
+            ////    if (!$scope.lastStepClicked && !tabClick) {
+            ////        tabClick.$submitted = false;
+            ////        return true;
+            ////    }
+            ////    var sendNotificationIsNullOrEmpty = $scope.sendNotificationIsNullOrEmpty();
+            ////    var createTaskIsNullOrEmpty = $scope.createTaskIsNullOrEmpty();
+            ////    var fieldUpdateIsNullOrEmpty = $scope.fieldUpdateIsNullOrEmpty();
+            ////    var webHookIsNullOrEmpty = $scope.webHookIsNullOrEmpty();
 
-                tabClick.actions.$setValidity('actionRequired', true);
+            ////    tabClick.actions.$setValidity('actionRequired', true);
 
-                if (sendNotificationIsNullOrEmpty && createTaskIsNullOrEmpty && fieldUpdateIsNullOrEmpty && webHookIsNullOrEmpty) {
-                    if (tabClick) {
-                        tabClick.$submitted = false;
-                        return true;
-                    }
+            ////    if (sendNotificationIsNullOrEmpty && createTaskIsNullOrEmpty && fieldUpdateIsNullOrEmpty && webHookIsNullOrEmpty) {
+            ////        if (tabClick) {
+            ////            tabClick.$submitted = false;
+            ////            return true;
+            ////        }
 
-                    tabClick.$submitted = false;
+            ////        tabClick.$submitted = false;
 
-                    if (tabClick.recipients)
-                        tabClick.recipients.$setValidity('minTags', true);
+            ////        if (tabClick.recipients)
+            ////            tabClick.recipients.$setValidity('minTags', true);
 
-                    if (tabClick.customRecipient)
-                        tabClick.customRecipient.$setValidity('required', true);
+            ////        if (tabClick.customRecipient)
+            ////            tabClick.customRecipient.$setValidity('required', true);
 
-                    tabClick.subjectNotification.$setValidity('required', true);
-                    tabClick.message.$setValidity('required', true);
-                    tabClick.owner.$setValidity('required', true);
-                    tabClick.subjectTask.$setValidity('required', true);
-                    tabClick.dueDate.$setValidity('required', true);
-                    tabClick.updateOption.$setValidity('required', true);
-                    tabClick.callbackUrl.$setValidity('required', true);
-                    tabClick.methodType.$setValidity('required', true);
+            ////        tabClick.subjectNotification.$setValidity('required', true);
+            ////        tabClick.message.$setValidity('required', true);
+            ////        tabClick.owner.$setValidity('required', true);
+            ////        tabClick.subjectTask.$setValidity('required', true);
+            ////        tabClick.dueDate.$setValidity('required', true);
+            ////        tabClick.updateOption.$setValidity('required', true);
+            ////        tabClick.callbackUrl.$setValidity('required', true);
+            ////        tabClick.methodType.$setValidity('required', true);
 
 
-                    if (tabClick.updateField && $scope.workflowModel.field_update.updateOption === '1')
-                        tabClick.updateField.$setValidity('required', true);
+            ////        if (tabClick.updateField && $scope.workflowModel.field_update.updateOption === '1')
+            ////            tabClick.updateField.$setValidity('required', true);
 
-                    if (tabClick.updateValue && $scope.workflowModel.field_update.updateOption === '1')
-                        tabClick.updateValue.$setValidity('required', true);
+            ////        if (tabClick.updateValue && $scope.workflowModel.field_update.updateOption === '1')
+            ////            tabClick.updateValue.$setValidity('required', true);
 
-                    tabClick.actions.$setValidity('actionRequired', false);
-                    return false;
-                }
+            ////        tabClick.actions.$setValidity('actionRequired', false);
+            ////        return false;
+            ////    }
 
-                if (tabClick.subjectNotification.$pristine && tabClick.message.$pristine &&
-                    tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
-                    (tabClick.updateField && tabClick.updateField.$pristine) && (tabClick.updateValue && tabClick.updateValue.$pristine) &&
-                    tabClick.callbackUrl.$pristine) {
-                    tabClick.$submitted = false;
-                    return true;
-                }
+            ////    if (tabClick.subjectNotification.$pristine && tabClick.message.$pristine &&
+            ////        tabClick.owner.$pristine && tabClick.subjectTask.$pristine && tabClick.dueDate.$pristine &&
+            ////        (tabClick.updateField && tabClick.updateField.$pristine) && (tabClick.updateValue && tabClick.updateValue.$pristine) &&
+            ////        tabClick.callbackUrl.$pristine) {
+            ////        tabClick.$submitted = false;
+            ////        return true;
+            ////    }
 
-                if (!sendNotificationIsNullOrEmpty && (!$scope.workflowModel.send_notification.recipients || !$scope.workflowModel.send_notification.recipients.length) && !$scope.workflowModel.send_notification.customRecipient)
-                    tabClick.recipients.$setValidity('minTags', false);
+            ////    if (!sendNotificationIsNullOrEmpty && (!$scope.workflowModel.send_notification.recipients || !$scope.workflowModel.send_notification.recipients.length) && !$scope.workflowModel.send_notification.customRecipient)
+            ////        tabClick.recipients.$setValidity('minTags', false);
 
-                if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.subject)
-                    tabClick.subjectNotification.$setValidity('required', false);
+            ////    if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.subject)
+            ////        tabClick.subjectNotification.$setValidity('required', false);
 
-                if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.message)
-                    tabClick.message.$setValidity('required', false);
+            ////    if (!sendNotificationIsNullOrEmpty && !$scope.workflowModel.send_notification.message)
+            ////        tabClick.message.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
-                    tabClick.owner.$setValidity('minTags', false);
+            ////    if (!createTaskIsNullOrEmpty && (!$scope.workflowModel.create_task.owner || !$scope.workflowModel.create_task.owner.length))
+            ////        tabClick.owner.$setValidity('minTags', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
-                    tabClick.subjectTask.$setValidity('required', false);
+            ////    if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.subject)
+            ////        tabClick.subjectTask.$setValidity('required', false);
 
-                if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
-                    tabClick.dueDate.$setValidity('required', false);
+            ////    if (!createTaskIsNullOrEmpty && !$scope.workflowModel.create_task.task_due_date)
+            ////        tabClick.dueDate.$setValidity('required', false);
 
-                if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field)
-                    tabClick.updateField.$setValidity('required', false);
+            ////    if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && !$scope.workflowModel.field_update.field)
+            ////        tabClick.updateField.$setValidity('required', false);
 
-                if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && $scope.workflowModel.field_update.field && ($scope.workflowModel.field_update.value === undefined || $scope.workflowModel.field_update.value === null))
-                    tabClick.updateValue.$setValidity('required', false);
+            ////    if (!fieldUpdateIsNullOrEmpty && $scope.workflowModel.field_update.updateOption === '1' && $scope.workflowModel.field_update.module && $scope.workflowModel.field_update.field && ($scope.workflowModel.field_update.value === undefined || $scope.workflowModel.field_update.value === null))
+            ////        tabClick.updateValue.$setValidity('required', false);
 
-                if (!webHookIsNullOrEmpty && !$scope.workflowModel.webHook.callbackUrl) {
-                    tabClick.callbackUrl.$setValidity('required', false);
-                }
-                if (!webHookIsNullOrEmpty && !$scope.workflowModel.webHook.methodType) {
-                    tabClick.methodType.$setValidity('required', false);
-                }
+            ////    if (!webHookIsNullOrEmpty && !$scope.workflowModel.webHook.callbackUrl) {
+            ////        tabClick.callbackUrl.$setValidity('required', false);
+            ////    }
+            ////    if (!webHookIsNullOrEmpty && !$scope.workflowModel.webHook.methodType) {
+            ////        tabClick.methodType.$setValidity('required', false);
+            ////    }
 
-                var isSendNotificationValid = $scope.validateSendNotification();
-                var isCreateTaskValid = $scope.validateCreateTask();
-                var isUpdateFieldValid = $scope.validateUpdateField();
-                var isWebhookValid = $scope.validateWebHook();
+            ////    var isSendNotificationValid = $scope.validateSendNotification();
+            ////    var isCreateTaskValid = $scope.validateCreateTask();
+            ////    var isUpdateFieldValid = $scope.validateUpdateField();
+            ////    var isWebhookValid = $scope.validateWebHook();
 
-                if ((isSendNotificationValid && isCreateTaskValid && isUpdateFieldValid && isWebhookValid) ||
-                    (isSendNotificationValid && isCreateTaskValid) ||
-                    (isSendNotificationValid && isUpdateFieldValid) ||
-                    (isCreateTaskValid && isUpdateFieldValid) ||
-                    (isWebhookValid && isSendNotificationValid) ||
-                    (isWebhookValid && isUpdateFieldValid) ||
-                    (isWebhookValid && isCreateTaskValid) ||
-                    (isSendNotificationValid || isCreateTaskValid || isUpdateFieldValid || isWebhookValid)) {
-                    tabClick.$submitted = false;
-                    return true;
-                }
+            ////    if ((isSendNotificationValid && isCreateTaskValid && isUpdateFieldValid && isWebhookValid) ||
+            ////        (isSendNotificationValid && isCreateTaskValid) ||
+            ////        (isSendNotificationValid && isUpdateFieldValid) ||
+            ////        (isCreateTaskValid && isUpdateFieldValid) ||
+            ////        (isWebhookValid && isSendNotificationValid) ||
+            ////        (isWebhookValid && isUpdateFieldValid) ||
+            ////        (isWebhookValid && isCreateTaskValid) ||
+            ////        (isSendNotificationValid || isCreateTaskValid || isUpdateFieldValid || isWebhookValid)) {
+            ////        tabClick.$submitted = false;
+            ////        return true;
+            ////    }
 
-                return false;
-            };
+            ////    return false;
+            ////};
 
-            $scope.setFormValid = function (form) {
+            ////$scope.setFormValid = function (form) {
                 //if (!$scope.workflowForm)
                 //    $scope.workflowForm = form;
 
@@ -1257,7 +1257,7 @@ angular.module('primeapps')
 
                 //if ($scope.workflowForm.updateValue && $scope.workflowModel.field_update.updateOption === '1')
                 //    $scope.workflowForm.updateValue.$setValidity('required', true);
-            };
+           //// };
 
             var setWebHookModules = function () {
                 $scope.hookParameters = [];

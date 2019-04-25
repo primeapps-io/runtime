@@ -747,7 +747,7 @@ function init() {
                 selectionObjectName: "MAINPANEL",
                 isShadowed: true,
                 shadowOffset: new go.Point(0, 0),
-                shadowBlur: 3,
+                shadowBlur: 2,
                 selectionAdornmentTemplate:
                     $(go.Adornment, "Spot",
                         $(go.Panel, "Auto",
