@@ -297,7 +297,7 @@ angular.module('primeapps')
                 //    $scope.currentRelation[key] = $scope.currentRelationState[key];
                 //});
                 $scope.formModal.hide();
-
+                $scope.currentObj = null;
                 //var modelName = $scope.SelectedNodeItem.ngModelName;
 
                 //if (modelName === 'start')

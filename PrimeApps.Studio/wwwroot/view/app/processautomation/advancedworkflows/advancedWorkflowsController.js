@@ -111,7 +111,7 @@ angular.module('primeapps')
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
 
-                $scope.workflowModel = [];
+                $scope.workflowModel = []; 
                 $scope.id = null;
                 $scope.formModal.hide();
             };
