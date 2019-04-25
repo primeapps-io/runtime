@@ -1078,6 +1078,8 @@
       "CombinationField1": "Birleşim Alan 1",
       "CombinationField2": "Birleşim Alan 2",
       "EditSection": "Bölüm Düzenleme",
+      "SectionInfo": "Bölüm Bilgisi",
+      "CreateSection": "Bölüm Oluşturma",
       "SectionName": "Bölüm İsmi",
       "ColumnCount": "Kolon Sayısı",
       "ModuleRelations": "Modül İlişkileri",

@@ -3,19 +3,15 @@
           ng-submit="saveSection(sectionForm); showAdvancedOptionsSection = false;" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Modules.EditSection' | translate}}</h4>
+                <h4 ng-if="!currentSection.isNew" class="modal-title"> {{'Setup.Modules.EditSection' | translate}}</h4>
+                <h4 ng-if="currentSection.isNew" class="modal-title"> {{'Setup.Modules.CreateSection' | translate}} </h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
-                            <button type="button" ng-click="cancelSection(); showAdvancedOptionsSection = false;"
-                                    class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel'
-                                | translate}}
-                            </button>
+                            <button type="button" ng-click="cancelSection(); showAdvancedOptionsSection = false;" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
                         </li>
                         <li>
-                            <button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save'
-                                | translate}}
-                            </button>
+                            <button type="submit" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
                         </li>
                     </ul>
                 </div>
@@ -24,7 +20,7 @@
 
         <div class="modal-dialog scroll-style-4">
             <div class="section">
-                <h4 style="color: #0d6faa;font-weight: bold;">Section Info</h4>
+                <h4 style="color: #0d6faa;font-weight: bold;">{{'Setup.Modules.SectionInfo' | translate}}</h4>
                 <div class="panel">
                     <div class="form-group"
                          ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">

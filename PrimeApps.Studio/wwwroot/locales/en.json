@@ -1069,6 +1069,8 @@
       "CombinationField1": "Field 1",
       "CombinationField2": "Field 2",
       "EditSection": "Edit Section",
+      "SectionInfo": "Section Info",
+      "CreateSection": "Create Section",
       "SectionName": "Section Name",
       "ColumnCount": "Column Count",
       "ModuleRelations": "Relations",
