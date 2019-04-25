@@ -264,7 +264,7 @@ angular.module('primeapps')
                                         menuList.disabled = response.data[i].deleted;
                                         menuList.isEdit = false;
                                         menuList.nodes = [];
-                                        menuList.newIcon = response.data[i].deleted ? "fa fa-eye-slash" : "fa fa-eye";
+                                        //menuList.newIcon = response.data[i].deleted ? "fa fa-eye-slash" : "fa fa-eye";
                                         menuList.route = response.data[i].route ? response.data[i].route.contains('modules/') ? '' : response.data[i].route : '';
                                         menuList.icon = response.data[i].menu_icon ? response.data[i].menu_icon : 'fa fa-square';
                                         menuList.menuName = response.data[i].route ? response.data[i].route.replace('modules/', '') : '';
@@ -280,7 +280,7 @@ angular.module('primeapps')
                                             labelMenu.isEdit = false;
                                             labelMenu.nodes = [];
                                             labelMenu.disabled = response.data[i].menu_items[j].deleted;
-                                            labelMenu.newIcon = response.data[i].menu_items[j].deleted ? "fa fa-eye-slash" : "fa fa-eye";
+                                            //labelMenu.newIcon = response.data[i].menu_items[j].deleted ? "fa fa-eye-slash" : "fa fa-eye";
                                             labelMenu.id = response.data[i].menu_items[j].id;
                                             labelMenu.isDynamic = response.data[i].menu_items[j].is_dynamic;
                                             labelMenu.parentId = $scope.clone ? 0 : response.data[i].menu_items[j].parent_id;
@@ -337,7 +337,7 @@ angular.module('primeapps')
 
                 var menuList = {};
                 menuList.no = $scope.counter;
-                menuList.newIcon = "fa fa-eye";
+               // menuList.newIcon = "fa fa-eye";
                 /**Tanım Giriş yoksa Modüldür
                  * menuItem-> Tanım Giriş
                  * moduleItem->modül picklist
@@ -357,7 +357,7 @@ angular.module('primeapps')
                 menuList.parentId = 0;
                 menuList.disabled = false;
                 menuList.nodes = [];
-                menuList.newIcon = 'fa fa-eye';
+                //menuList.newIcon = 'fa fa-eye';
                 menuList.index = $scope.index;
                 $scope.index += 1;
                 $scope.data.push(menuList);
@@ -567,6 +567,8 @@ angular.module('primeapps')
 
             $scope.edit = function (node) {
                 node.isEdit = true;
+                /*Close edit mode'ta inputa müdahale edilemediğinden dolayı bu değişkene ihtiyaç var*/
+                $scope.copyNodeName = node.name;
             };
 
             $scope.update = function (node) {
@@ -577,6 +579,7 @@ angular.module('primeapps')
             
             $scope.editModeClose = function (node) {
                 node.isEdit = false;
+                node.name = $scope.copyNodeName;
             };
 
             $scope.disable = function (node, parentList, parent, index) {
@@ -595,7 +598,7 @@ angular.module('primeapps')
 
                             node.nodes[k].no = k + 1;
                             node.nodes[k].disabled = node.disabled ? false : true;
-                            node.nodes[k].newIcon = node.nodes[k].disabled ? "fa fa-eye-slash" : 'fa fa-eye';
+                           // node.nodes[k].newIcon = node.nodes[k].disabled ? "fa fa-eye-slash" : 'fa fa-eye';
                         }
                         $scope.copyData[index] = node;
                     }
@@ -618,7 +621,7 @@ angular.module('primeapps')
                     }
                     //disable butonuna her tıklandığında her koşulda icon ve disable olma özelliği kontrol edilmeli
                     node.disabled = node.disabled ? false : true;
-                    node.newIcon = node.disabled ? "fa fa-eye-slash" : 'fa fa-eye';
+                  //  node.newIcon = node.disabled ? "fa fa-eye-slash" : 'fa fa-eye';
                 }
 
                 isUpdate = true;
@@ -720,11 +723,8 @@ angular.module('primeapps')
                     var child = e.source.nodeScope.$modelValue;
                     isUpdate = true;
                     //eğer modülün gideceği kategori disabled ise module disabled olmalı
-                    // if (parent.disabled) {
-                  
                     child.disabled = parent.disabled;
-                    child.newIcon  = parent.newIcon;
-                    // }
+                   // child.newIcon  = parent.newIcon;
                 }
             };
 

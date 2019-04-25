@@ -222,8 +222,8 @@ namespace PrimeApps.Studio.Controllers
 				{
 					//check if exist default = true
 					var allMenus = await _menuRepository.GetAll();
-
-					foreach (var menuItem in allMenus.Where(x => x.Default))
+			
+					foreach (var menuItem in allMenus) //allMenus.Where(x => x.Default)
 					{
 						if (menuItem.ProfileId != (int)defaultMenu["profile_id"])
 						{
