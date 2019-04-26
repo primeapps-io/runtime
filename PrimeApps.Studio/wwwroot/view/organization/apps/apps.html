@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <h4 class="h4-title blue-color font-bold">Apps</h4>
         </div>
-        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" ng-show="loading">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-show="loading">
             <div class="appbox2 animated-background" style="min-height: 200px;">
                 
             </div>
@@ -14,7 +14,7 @@
             <div class="col-sm-12">
                 <h4 class="h4-title blue-color font-bold">Apps</h4>
             </div>
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" ng-if="currentOrganization.role ==='administrator'" ui-sref="studio.appsForm({orgId:currentOrgId})">
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-if="currentOrganization.role ==='administrator'" ui-sref="studio.appsForm({orgId:currentOrgId})">
                 <div class="appbox2 text-center">
                     <div class="flex-between">
                         <div>&nbsp;</div>
@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" ng-repeat="app in apps" ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})">
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-repeat="app in apps" ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})">
                 <div class="appbox2 text-center">
                     <div class="flex-between">
                         <div>
