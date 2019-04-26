@@ -7,7 +7,8 @@
             <span>Overview</span>
         </a>
     </li>
-    <li ng-class="subMenuOpen =='model' ? 'active sub-open':''" ng-click="openSubMenu('model');$event.stopPropagation();" ng-show="checkUserProfile('model',null,null)">
+    <li ng-class="subMenuOpen =='model' ? 'active sub-open':''"
+        ng-click="openSubMenu('model');$event.stopPropagation();" ng-show="checkUserProfile('model',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Model" bs-tooltip data-placement="right">
             <i class="fas fa-th-large"></i>
@@ -30,13 +31,7 @@
                     <span>Relations</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/dependencies" data-trigger="hover" data-type="info"
-                   data-title="Dependencies" bs-tooltip data-placement="right">
-                    <i class="far fa-object-ungroup"></i>
-                    <span>Dependencies</span>
-                </a>
-            </li>
+
             <li ng-class="activeMenuItem ==='picklists' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/picklists " data-trigger="hover" data-type="info"
                    data-title="Picklists " bs-tooltip data-placement="right">
@@ -46,39 +41,57 @@
             </li>
         </ul>
     </li>
-    <li ng-class="subMenuOpen =='automation' ? 'active sub-open':''" ng-click="openSubMenu('automation'); $event.stopPropagation();" ng-show="checkUserProfile('automation',null,null)">
+    <li ng-class="subMenuOpen =='customCode' ? 'active sub-open':''"
+        ng-click="openSubMenu('customCode') ; $event.stopPropagation();"
+        ng-show="checkUserProfile('customCode',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
-           data-title="Process Automation" bs-tooltip data-placement="right">
-            <i class="fas fa-bolt"></i>
-            <span>Process Automation</span>
+           data-title="Custom Code" bs-tooltip data-placement="right">
+            <i class="fas fa-code"></i>
+            <span>Customization </span>
         </a>
-
         <ul ng-click="$event.stopPropagation();">
-            <li ng-class="activeMenuItem ==='simpleworkflows' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/simpleworkflows" data-trigger="hover" data-type="info"
-                   data-title="Simple Workflows" bs-tooltip data-placement="right">
-                    <i class="fas fa-forward "></i>
-                    <span>Simple Workflows</span>
+            <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
+                <a href="/#/org/{{ orgId}}/app/{{ appId}}/dependencies" data-trigger="hover" data-type="info"
+                   data-title="Dependencies" bs-tooltip data-placement="right">
+                    <i class="far fa-object-ungroup"></i>
+                    <span>Dependencies</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem ==='approvalprocesses' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/approvalprocesses" data-trigger="hover" data-type="info"
-                   data-title="Approval Processes" bs-tooltip data-placement="right">
-                    <i class="fas fa-check-square"></i>
-                    <span>Approval Processes</span>
+            <li ng-class="activeMenuItem ==='buttons' ?'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/actionButtons?id={{module.id}}"
+                   data-trigger="hover" data-type="info"
+                   data-title="Action Buttons" bs-tooltip data-placement="right">
+                    <i class="fas fa-caret-square-right"></i>
+                    <span>Action Buttons</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='scripts' ? 'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/scripts" data-trigger="hover" data-type="info"
+                   data-title="Scripts" bs-tooltip data-placement="right">
+                    <i class="fab fa-js-square"></i>
+                    <span>Scripts</span>
                 </a>
             </li>
             <li ng-class="activeMenuItem ==='advancedWorkflows' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedWorkflows" data-trigger="hover" data-type="info"
                    data-title="Advanced Workflows" bs-tooltip data-placement="right">
                     <i class="fas fa-project-diagram"></i>
-                    <span>Advanced Workflows</span>
+                    <span>Workflows</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
+                   data-title="Functions" bs-tooltip data-placement="right">
+                    <i class="fas fa-file-code"></i>
+                    <span>Functions</span>
                 </a>
             </li>
 
         </ul>
     </li>
-    <li ng-class="subMenuOpen =='visualization' ? 'active sub-open':''" ng-click="openSubMenu('visualization');$event.stopPropagation();" ng-show="checkUserProfile('visualization',null,null)">
+    <li ng-class="subMenuOpen =='visualization' ? 'active sub-open':''"
+        ng-click="openSubMenu('visualization');$event.stopPropagation();"
+        ng-show="checkUserProfile('visualization',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Visualization" bs-tooltip data-placement="right">
             <i class="fas fa-magic"></i>
@@ -108,16 +121,12 @@
                     <span>Menus</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem ==='buttons' ?'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/actionButtons?id={{module.id}}" data-trigger="hover" data-type="info"
-                   data-title="Action Buttons" bs-tooltip data-placement="right">
-                    <i class="fas fa-caret-square-right"></i>
-                    <span>Action Buttons</span>
-                </a>
-            </li>
+
         </ul>
     </li>
-    <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''" ng-click="openSubMenu('templates'); $event.stopPropagation();" ng-show="checkUserProfile('templates',null,null)">
+    <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''"
+        ng-click="openSubMenu('templates'); $event.stopPropagation();"
+        ng-show="checkUserProfile('templates',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Templates" bs-tooltip data-placement="right">
             <i class="fas fa-file-alt"></i>
@@ -128,65 +137,37 @@
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesEmail" data-trigger="hover" data-type="info"
                    data-title="Email" bs-tooltip data-placement="right">
                     <i class="fas fa-envelope"></i>
-                    <span>Email</span>
+                    <span>E-mail</span>
                 </a>
             </li>
-            <!--<li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">-->
-            <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appEmailTemplates" data-trigger="hover" data-type="info"-->
-            <!--data-title="Email Templates" bs-tooltip data-placement="right">-->
-            <!--<i class="fas fa-at"></i>-->
-            <!--<span>Email Templates</span>-->
-            <!--</a>-->
-            <!--</li>-->
+         
             <li ng-class="activeMenuItem ==='templatesWord' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesWord" data-trigger="hover" data-type="info"
                    data-title="Word Templates" bs-tooltip data-placement="right">
                     <i class="fas fa-file-word"></i>
-                    <span>Word</span>
+                    <span>Document</span>
                 </a>
             </li>
             <li ng-class="activeMenuItem ==='templatesExcel' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesExcel" data-trigger="hover" data-type="info"
                    data-title="Excel" bs-tooltip data-placement="right">
                     <i class="fas fa-file-excel"></i>
-                    <span>Excel</span>
+                    <span>Spreadsheet </span>
                 </a>
             </li>
 
         </ul>
     </li>
-    <li ng-class="subMenuOpen =='customCode' ? 'active sub-open':''" ng-click="openSubMenu('customCode') ; $event.stopPropagation();" ng-show="checkUserProfile('customCode',null,null)">
-        <a href="javascript:;" data-trigger="hover" data-type="info"
-           data-title="Custom Code" bs-tooltip data-placement="right">
-            <i class="fas fa-code"></i>
-            <span>Custom Code</span>
+    <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='components' ? 'active' :''">
+        <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
+           data-title="Components" bs-tooltip data-placement="right">
+            <i class="fas fa-shapes"></i>
+            <span>Components</span>
         </a>
-        <ul ng-click="$event.stopPropagation();">
-            <li ng-class="activeMenuItem ==='scripts' ? 'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/scripts" data-trigger="hover" data-type="info"
-                   data-title="Scripts" bs-tooltip data-placement="right">
-                    <i class="fab fa-js-square"></i>
-                    <span>Scripts</span>
-                </a>
-            </li>
-            <li ng-class="activeMenuItem ==='components' ? 'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/components" data-trigger="hover" data-type="info"
-                   data-title="Components" bs-tooltip data-placement="right">
-                    <i class="fas fa-shapes"></i>
-                    <span>Components</span>
-                </a>
-            </li>
-            <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
-                   data-title="Functions" bs-tooltip data-placement="right">
-                    <i class="fas fa-file-code"></i>
-                    <span>Functions</span>
-                </a>
-            </li>
-
-        </ul>
     </li>
-    <li ng-class="subMenuOpen =='accessControl' ? 'active sub-open':''" ng-click="openSubMenu('accessControl'); $event.stopPropagation();" ng-show="checkUserProfile('accessControl',null,null)">
+    <li ng-class="subMenuOpen =='accessControl' ? 'active sub-open':''"
+        ng-click="openSubMenu('accessControl'); $event.stopPropagation();"
+        ng-show="checkUserProfile('accessControl',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Access Control" bs-tooltip data-placement="right">
             <i class="fas fa-lock"></i>
@@ -209,67 +190,29 @@
             </li>
         </ul>
     </li>
-    <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='help' ? 'active' :''" ng-show="checkUserProfile('help',null,null)">
+    <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='help' ? 'active' :''"
+        ng-show="checkUserProfile('help',null,null)">
         <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/help" data-trigger="hover" data-type="info"
            data-title="User Guides" bs-tooltip data-placement="right">
             <i class="fas fa-book"></i>
             <span>User Guides</span>
         </a>
     </li>
-
-    <!--<li ng-class="subMenuOpen =='deployments' ? 'active sub-open':''" ng-click="openSubMenu('deployments');$event.stopPropagation();"-->
-    <!--ng-class="activeMenuItem ==='deployments' ?  'active' :''">-->
-    <!--<a href="javascript:;" data-trigger="hover" data-type="info"-->
-    <!--data-title="Deployments" bs-tooltip data-placement="right">-->
-    <!--<i class="fas fa-upload"></i>-->
-    <!--<span>Deployments</span>-->
-    <!--</a>-->
-    <!--<ul ng-click="$event.stopPropagation();">-->
-    <!--<li ng-class="activeMenuItem ==='appDeployment' ? 'active' :''">-->
-    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDeployment" data-trigger="hover" data-type="info"-->
-    <!--data-title="App" bs-tooltip data-placement="right">-->
-    <!--<i class="fas fa-layer-group"></i>-->
-    <!--<span>App</span>-->
-    <!--</a>-->
-    <!--</li>-->
-    <!--<li ng-class="activeMenuItem ==='scriptsDeployment' ? 'active' :''">-->
-    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/scriptsDeployment" data-trigger="hover" data-type="info"-->
-    <!--data-title="Scripts" bs-tooltip data-placement="right">-->
-    <!--<i class="fab fa-js-square"></i>-->
-    <!--<span>Scripts</span>-->
-    <!--</a>-->
-    <!--</li>-->
-    <!--<li ng-class="activeMenuItem ==='componentsDeployment' ? 'active' :''">-->
-    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/componentsDeployment" data-trigger="hover" data-type="info"-->
-    <!--data-title="Components" bs-tooltip data-placement="right">-->
-    <!--<i class="fas fa-shapes"></i>-->
-    <!--<span>Components</span>-->
-    <!--</a>-->
-    <!--</li>-->
-    <!--<li ng-class="activeMenuItem ==='functionsDeployment' ? 'active' :''">-->
-    <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/functionsDeployment" data-trigger="hover" data-type="info"-->
-    <!--data-title="Functions" bs-tooltip data-placement="right">-->
-    <!--<i class="fas fa-file-code"></i>-->
-    <!--<span>Functions</span>-->
-    <!--</a>-->
-    <!--</li>-->
-    <!--</ul>-->
-    <!--</li>-->
-    <!---->
-    <li ng-class="subMenuOpen =='manage' ? 'active sub-open':''" ng-click="openSubMenu('manage');$event.stopPropagation();" ng-show="checkUserProfile('manage',null,null)">
+    <li ng-class="subMenuOpen =='manage' ? 'active sub-open':''"
+        ng-click="openSubMenu('manage');$event.stopPropagation();" ng-show="checkUserProfile('manage',null,null)">
         <a href="javascript:;" data-trigger="hover" data-type="info"
            data-title="Manage" bs-tooltip data-placement="right">
             <i class="fas fa-cogs"></i>
             <span>Manage</span>
         </a>
         <ul ng-click="$event.stopPropagation();">
-            <li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"
-                   data-title="App Details" bs-tooltip data-placement="right">
-                    <i class="fas fa-cog"></i>
-                    <span>App Details</span>
-                </a>
-            </li>
+            <!--<li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">-->
+                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"-->
+                   <!--data-title="App Details" bs-tooltip data-placement="right">-->
+                    <!--<i class="fas fa-cog"></i>-->
+                    <!--<span>App Details</span>-->
+                <!--</a>-->
+            <!--</li>-->
             <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/appCollaborators" data-trigger="hover" data-type="info"
                    data-title="Collaborators" bs-tooltip data-placement="right">
@@ -306,7 +249,8 @@
                 </a>
             </li>
             <li ng-class="subMenuOpen =='identity' ? 'active sub-open':''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/authentication" data-trigger="hover" data-type="info"
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/authentication" data-trigger="hover"
+                   data-type="info"
                    data-title="Identity" bs-tooltip data-placement="right">
                     <i class="fas fa-key"></i>
                     <span>Identity</span>

@@ -2317,6 +2317,7 @@ button, select {
     cursor: pointer;
     @include hoverEffect();
     &:before{
+      
       content: "\f107";
       font-weight: 900;
       font-family: "Font Awesome 5 Free";
