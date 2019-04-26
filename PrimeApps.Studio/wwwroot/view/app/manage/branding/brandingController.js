@@ -258,7 +258,7 @@ angular.module('primeapps')
                     $scope.saveAuthTheme();
                 else
                     $scope.saveAppTheme();
-
+                $scope.formModal.hide();
             };
 
             $scope.saveAuthTheme = function () {
