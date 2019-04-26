@@ -3951,23 +3951,26 @@ button, select {
       text-decoration: none;
       cursor: pointer;
     }
+    .form-control{
+      height: 35px;
+    }
     ol {
       li {
         position: relative;
         > span {
-          width: 100%;
+          width: calc(100% - 15px);
           display: block;
-          line-height: 25px;
+          line-height: 35px;
           background: rgba(0, 0, 0, 0.03);
-          margin-bottom: 5px;
           padding: 5px 10px;
           border-radius: 5px;
           font-weight: bold;
+          margin: 10px 0px 10px 15px;
         }
         &:before {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 0px;
           width: 1px;
           height: 15px;
@@ -3976,7 +3979,7 @@ button, select {
         &:after {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 15px;
           width: 10px;
           height: 1px;
@@ -3992,12 +3995,48 @@ button, select {
         }
       }
     }
+    .ui-select-choices-group{
+      &:before, &:after {
+        display: none;
+      }
+    }
+    .menueditmode{
+      padding-right: 60px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .ui-select-bootstrap{
+        height: 35px;
+        line-height: 35px;
+        margin-left: 10px;
+        .form-control{
+          height: 35px;
+          line-height: 35px;
+        }
+        .ui-select-match-text{
+          > div{
+            height: 28px;
+            display: flex;
+            align-items: center;
+          }
+          span{
+            font-weight: bold;
+            height: 15px;
+            &:before{
+              padding-right: 5px;
+              display: inline-block;
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
 
     .action-buttons-block {
       display: inline-block;
       position: absolute;
       right: 10px;
-      top: 5px;
+      top: 10px;
       width: auto;
       line-height: 25px;
 
@@ -4034,14 +4073,49 @@ button, select {
             color: #FFF;
           }
         }
-
+        &.action-buttons-check {
+          background: rgba(77, 170, 62, 0.75);
+          color: #FFF;
+          &:hover {
+            background: rgba(77, 170, 62, 1);
+            color: #FFF;
+          }
+        }
         &:hover {
           background: rgba(13, 111, 170, 1);
           color: rgba(255, 255, 255, 1);
         }
 
       }
+      
     }
+    .notvisible{
+      > span{
+        background: rgba(0, 0, 0, 0.01);
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+    .category{
+      > ol{
+        .category_place_holder{
+          > span{
+            background: transparent;
+            border: 1px dashed rgba(0, 0, 0, 0.25);
+            color: rgba(0, 0, 0, 0.25);
+            padding: 4px 10px;
+          }
+        }
+      }
+      
+      
+    }
+    /*.angular-ui-tree-placeholder {
+      background: #f0f9ff;
+      border: 2px dashed #bed2db;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }*/
   }
   .uploadedfilename {
     padding: 5px 10px;
@@ -4068,6 +4142,22 @@ button, select {
       background: $primeapps-color;
       color: #FFF;
       border-radius: 100px;
+    }
+  }
+  .oldiconset{
+    i{
+      font: normal normal normal 14px/1 Nunito;
+      &:before{
+        width: 30px;
+        display: inline-block;
+        text-align: center;
+        font: normal normal normal 14px/1 FontAwesome;
+      }
+    }
+  }
+  .setup-modal{
+    ul.dropdown-menu{
+      font-family: inherit !important;
     }
   }
   .primetabs {
@@ -4162,6 +4252,14 @@ button, select {
         color: #FFF;
         &:hover {
           background: rgba(206, 4, 4, 1);
+          color: #FFF;
+        }
+      }
+      &.check-btn {
+        background: rgba(77, 170, 62, 0.75);
+        color: #FFF;
+        &:hover {
+          background: rgba(77, 170, 62, 1);
           color: #FFF;
         }
       }
@@ -4364,6 +4462,21 @@ button, select {
           opacity: 1;
         }
       }
+    }
+  }
+  .angular-ui-tree-drag{
+    .tree-node{
+      width: 100%;
+      display: block;
+      line-height: 25px;
+      background: rgba(0, 0, 0, 0.03);
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .action-buttons-block{
+      display:none;
     }
   }
 }

@@ -21,6 +21,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> UpdateMenu(Menu menu);
 		Task<int> CreateMenuItems(MenuItem menuItem);
 		Task<int> DeleteSoftMenuItems(int id);
+		Task DeleteHardMenuItems(int id);
 		Task<int> UpdateMenuItem(MenuItem menuItem);
 		Task<Menu> GetById(int id);
 		Task<MenuItem> GetMenuItemsById(int id);

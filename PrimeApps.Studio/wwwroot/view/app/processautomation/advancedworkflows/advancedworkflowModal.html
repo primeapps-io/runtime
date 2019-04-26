@@ -352,7 +352,7 @@
                                         tabindex="1"
                                         required
                                         ng-model="workflowModel.field_update.module"
-                                        ng-change="updateModuleChanged(); setFormValid();"
+                                        ng-change="updateModuleChanged();"
                                         ng-options="o as o['label_' + language + '_singular'] for o in updatableModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -369,7 +369,7 @@
                                         tabindex="2"
                                         required
                                         ng-model="workflowModel.field_update.field"
-                                        ng-change="updateFieldChanged(); setFormValid();"
+                                        ng-change="updateFieldChanged(); "
                                         ng-options="o as o['label_' + language] for o in workflowModel.field_update.module.fields | orderBy:'order' track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -388,7 +388,6 @@
                                        tabindex="3"
                                        placeholder="{{workflowModel.field_update.field.placeholder}}"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="{{workflowModel.field_update.field.validation.required}}"
                                        ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
                                        maxlength="{{workflowModel.field_update.field.validation.max_length || 50}}"
@@ -401,7 +400,6 @@
                                           tabindex="3"
                                           placeholder="{{workflowModel.field_update.field.placeholder}}"
                                           ng-model="workflowModel.field_update.value"
-                                          ng-change="setFormValid()"
                                           ng-required="{{workflowModel.field_update.field.validation.required}}"
                                           ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
                                           maxlength="{{workflowModel.field_update.field.validation.max_length || 500}}"
@@ -415,7 +413,6 @@
                                        tabindex="3"
                                        placeholder="{{workflowModel.field_update.field.placeholder}}"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="workflowModel.field_update.field.validation.required"
                                        ng-readonly="workflowModel.field_update.field.validation.readonly"
                                        ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
@@ -432,7 +429,6 @@
                                        tabindex="3"
                                        placeholder="{{workflowModel.field_update.field.placeholder}}"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="workflowModel.field_update.field.validation.required"
                                        ng-readonly="workflowModel.field_update.field.validation.readonly"
                                        min="workflowModel.field_update.field.validation.min"
@@ -448,7 +444,6 @@
                                        tabindex="3"
                                        placeholder="{{workflowModel.field_update.field.placeholder}}"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="workflowModel.field_update.field.validation.required"
                                        ng-readonly="workflowModel.field_update.field.validation.readonly"
                                        min="workflowModel.field_update.field.validation.min"
@@ -464,7 +459,6 @@
                                        tabindex="3"
                                        placeholder="{{workflowModel.field_update.field.placeholder}}"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="{{workflowModel.field_update.field.validation.required}}"
                                        ng-minlength="workflowModel.field_update.field.validation.min_length || 0"
                                        maxlength="{{workflowModel.field_update.field.validation.max_length || 100}}"
@@ -483,7 +477,6 @@
                                        class="form-control ng-animate-disabled"
                                        tabindex="3"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="setFormValid()"
                                        ng-required="{{workflowModel.field_update.field.validation.required}}"
                                        data-autoclose="1"
                                        data-date-type="iso"
@@ -501,7 +494,7 @@
                                            class="form-control ng-animate-disabled pull-left datetime-date"
                                            tabindex="3"
                                            ng-model="workflowModel.field_update.value"
-                                           ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                           ng-change="workflowForm.updateValue.$setValidity('date', true);"
                                            ng-required="{{workflowModel.field_update.field.validation.required}}"
                                            placeholder="{{'Common.Date' | translate}}"
                                            data-autoclose="1"
@@ -516,7 +509,7 @@
                                            style="{{workflowModel.field_update.field.style.input}}"
                                            tabindex="3"
                                            ng-model="workflowModel.field_update.value"
-                                           ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                           ng-change="workflowForm.updateValue.$setValidity('date', true);"
                                            ng-disabled="!workflowModel.field_update.value && !workflowForm.updateValue.$dirty"
                                            placeholder="{{'Common.Time' | translate}}"
                                            data-autoclose="1"
@@ -534,7 +527,7 @@
                                        class="form-control"
                                        tabindex="3"
                                        ng-model="workflowModel.field_update.value"
-                                       ng-change="workflowForm.updateValue.$setValidity('date', true); setFormValid();"
+                                       ng-change="workflowForm.updateValue.$setValidity('date', true);"
                                        ng-required="{{workflowModel.field_update.field.validation.required}}"
                                        data-autoclose="1"
                                        data-time-type="iso"
@@ -551,7 +544,6 @@
                                         name="updateValue"
                                         tabindex="3"
                                         ng-model="workflowModel.field_update.value"
-                                        ng-change="setFormValid()"
                                         ng-required="{{workflowModel.field_update.field.validation.required}}"
                                         ng-options="o as o.label[language] for o in modulePicklists[workflowModel.field_update.field.picklist_id] | filter:{inactive:'!true',hidden:'!true'} track by o.id"
                                         ng-if="workflowModel.field_update.field.data_type === 'picklist'">
@@ -656,7 +648,6 @@
                                                   text-searching="{{'Common.Searching' | translate}}"
                                                   text-no-results="{{'Common.NoResults' | translate}}"
                                                   use-original-object="true"
-                                                  value-changed="setFormValid()"
                                                   hide-create-new="true"
                                                   ng-if="workflowModel.field_update.field.data_type === 'lookup'" />
                                 <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
@@ -679,8 +670,6 @@
                                             key-property="id"
                                             min-tags="1"
                                             max-tags="1"
-                                            on-tag-added="setFormValid()"
-                                            on-tag-removed="setFormValid()"
                                             placeholder="{{'Common.Search' | translate}}"
                                             replace-spaces-with-dashes="false"
                                             add-from-autocomplete-only="true"
@@ -704,7 +693,6 @@
                                        tabindex="2"
                                        required
                                        ng-model="workflowModel.create_task.subject"
-                                       ng-change="setFormValid()"
                                        ng-minlength="taskFields.subject.validation.min_length || 0"
                                        maxlength="{{taskFields.subject.validation.max_length || 50}}"
                                        pattern="{{taskFields.subject.validation.pattern}}"
@@ -721,7 +709,6 @@
                                         tabindex="3"
                                         required
                                         ng-model="workflowModel.create_task.task_due_date"
-                                        ng-change="setFormValid()"
                                         ng-options="o as o.label for o in dueDateItems track by o.value">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -737,7 +724,6 @@
                                         tabindex="4"
                                         ng-model="workflowModel.create_task.task_status"
                                         ng-required="{{taskFields.task_status.validation.required}}"
-                                        ng-change="setFormValid()"
                                         ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_status.picklist_id] | filter:{inactive:'!true'} track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -753,7 +739,6 @@
                                         tabindex="5"
                                         ng-model="workflowModel.create_task.task_priority"
                                         ng-required="{{taskFields.task_priority.validation.required}}"
-                                        ng-change="setFormValid()"
                                         ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_priority.picklist_id] | filter:{inactive:'!true'} track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -769,7 +754,6 @@
                                         tabindex="6"
                                         ng-model="workflowModel.create_task.task_notification"
                                         ng-required="{{taskFields.task_notification.validation.required}}"
-                                        ng-change="setFormValid()"
                                         ng-options="o as o.label[language] for o in picklistsActivity[taskFields.task_notification.picklist_id] | filter:{inactive:'!true'} track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -785,7 +769,6 @@
                                           tabindex="7"
                                           ng-model="workflowModel.create_task.description"
                                           ng-required="{{taskFields.description.validation.required}}"
-                                          ng-change="setFormValid()"
                                           ng-minlength="taskFields.description.validation.min_length || 0"
                                           maxlength="{{taskFields.description.validation.max_length || 500}}"
                                           pattern="{{taskFields.description.validation.pattern}}"
@@ -813,7 +796,7 @@
                                         tabindex="1"
                                         required
                                         ng-model="workflowModel.send_notification_module"
-                                        ng-change="SendNotificationModuleChanged(); setFormValid(); "
+                                        ng-change="SendNotificationModuleChanged();"
                                         ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -824,7 +807,6 @@
                                         tabindex="2"
                                         required
                                         ng-model="workflowModel.send_notification.customRecipient"
-                                        ng-change="setFormValid();"
                                         ng-options="o as o['label_' + language] for o in workflowModel.send_notification_module.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -836,8 +818,6 @@
                                             key-property="id"
                                             min-tags="1"
                                             max-tags="5"
-                                            on-tag-added="setFormValid()"
-                                            on-tag-removed="setFormValid()"
                                             placeholder="{{'Common.Search' | translate}}"
                                             replace-spaces-with-dashes="false"
                                             add-from-autocomplete-only="true">
@@ -856,7 +836,7 @@
                                         name="sendNotificationCCModule"
                                         tabindex="1"
                                         ng-model="workflowModel.send_notification_ccmodule"
-                                        ng-change="SendNotificationCCModuleChanged(); setFormValid();"
+                                        ng-change="SendNotificationCCModuleChanged();"
                                         ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -867,7 +847,6 @@
                                         tabindex="2"
                                         required
                                         ng-model="workflowModel.send_notification.customCC"
-                                        ng-change="setFormValid();"
                                         ng-options="o as o['label_' + language] for o in workflowModel.send_notification_ccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -879,8 +858,6 @@
                                             key-property="id"
                                             min-tags="1"
                                             max-tags="5"
-                                            on-tag-added="setFormValid()"
-                                            on-tag-removed="setFormValid()"
                                             placeholder="{{'Common.Search' | translate}}"
                                             replace-spaces-with-dashes="false"
                                             add-from-autocomplete-only="true">
@@ -899,7 +876,7 @@
                                         name="sendNotificationBccModule"
                                         tabindex="1"
                                         ng-model="workflowModel.send_notification_bccmodule"
-                                        ng-change="SendNotificationBccModuleChanged(); setFormValid();"
+                                        ng-change="SendNotificationBccModuleChanged();"
                                         ng-options="o as o.name for o in fieldUpdateModulesForNotification | filter:{display:'!false'}:true | orderNotZero track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -910,7 +887,6 @@
                                         tabindex="2"
                                         ng-required="workflowModel.send_notification_bccmodule && workflowModel.send_notification_bccmodule.module && workflowModel.send_notification_bccmodule.module.name != 'users'"
                                         ng-model="workflowModel.send_notification.customBcc"
-                                        ng-change="setFormValid();"
                                         ng-options="o as o['label_' + language] for o in workflowModel.send_notification_bccmodule.module.fields | filter:{data_type:'email', deleted:'!true'} | filter:{deleted:false} | orderBy:'order' track by o.id">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -922,8 +898,6 @@
                                             key-property="id"
                                             min-tags="1"
                                             max-tags="5"
-                                            on-tag-added="setFormValid()"
-                                            on-tag-removed="setFormValid()"
                                             placeholder="{{'Common.Search' | translate}}"
                                             replace-spaces-with-dashes="false"
                                             add-from-autocomplete-only="true">
@@ -945,8 +919,7 @@
                                        class="form-control"
                                        required
                                        ng-trim="false"
-                                       maxlength="200"
-                                       ng-change="setFormValid()" />
+                                       maxlength="200" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -971,7 +944,6 @@
                                         name="scheduleNotification"
                                         tabindex="4"
                                         ng-model="workflowModel.send_notification.schedule"
-                                        ng-change="setFormValid()"
                                         ng-options="o as o.label for o in scheduleItems track by o.value">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -1001,7 +973,6 @@
                                        class="form-control"
                                        maxlength="300"
                                        ng-model="workflowModel.webHook.callbackUrl"
-                                       ng-change="setFormValid()"
                                        placeholder="http://" />
                             </div>
                         </div>

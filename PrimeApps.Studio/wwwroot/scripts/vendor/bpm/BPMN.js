@@ -391,10 +391,16 @@ function init() {
 
     var myKey;
     var myDeleteActive = false;
+    var myOldNodeData = {};
 
     function DeleteNode(e, obj) {
         var cmdhnd = window.myDiagram.commandHandler;
         var node = window.myDiagram.findNodeForKey(myKey);
+
+        if (!node) {
+            cmdhnd.deleteSelection(e);
+            return false;
+        }
         window.myDiagram.remove(node);
 
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
@@ -412,6 +418,14 @@ function init() {
     };
 
     function mouseEnter(e, obj) {
+        if (myOldNodeData.e && myOldNodeData.obj) {
+            mouseLeave(myOldNodeData.e, myOldNodeData.obj);
+            myOldNodeData = {};
+        }
+
+        myOldNodeData.e = e;
+        myOldNodeData.obj = obj;
+
         myKey = obj.Zd.key;
         var deleteButton = obj.findObject("Delete");
 
@@ -442,10 +456,18 @@ function init() {
     };
 
     function mouseEnterForEvent(e, obj) {
+        if (myOldNodeData.e && myOldNodeData.obj) {
+            mouseLeave(myOldNodeData.e, myOldNodeData.obj);
+            myOldNodeData = {};
+        }
+
+        myOldNodeData.e = e;
+        myOldNodeData.obj = obj;
+
         myKey = obj.Zd.key;
         var deleteButton = obj.findObject("Delete");
 
-        if (deleteButton && !deleteButton.visible) {
+        if (deleteButton) {
             deleteButton.visible = true;
             return;
         }
@@ -499,39 +521,56 @@ function init() {
                 name: "SHAPEMAIN",
                 locationSpot: go.Spot.Center,
                 resizable: true, resizeObjectName: "PANEL",
-                toolTip: tooltiptemplate,
-                selectionAdorned: false,  // use a Binding on the Shape.stroke to show selection
+                //toolTip: tooltiptemplate,
+
+                selectionAdorned: true,  // use a Binding on the Shape.stroke to show selection
                 // contextMenu: activityNodeMenu,
-                itemTemplate: boundaryEventItemTemplate,
-                mouseEnter: mouseEnter,
-                mouseLeave: mouseLeave,
+                selectionObjectName: "SHAPE",
+                //itemTemplate: boundaryEventItemTemplate,
+                click: mouseEnter,
+                //mouseLeave: mouseLeave, 
                 isShadowed: true,
-                shadowOffset:new go.Point(4,4),
-                shadowBlur :4
+                shadowOffset: new go.Point(10, 10),
+                shadowBlur: 10,
+                shadowColor: "rgba(0, 0, 0, 0.10)",
+                selectionAdornmentTemplate:
+                    $(go.Adornment, "Spot",
+                        $(go.Panel, "Auto",
+                            // this Adornment has a rectangular blue Shape around the selected node
+                            $(go.Shape, "Rectangle", {
+                                fill: null, stroke: "dodgerblue", strokeWidth: 1,
+                                desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight),
+                            }),
+                            $(go.Placeholder)
+                        )),
             },
             { resizable: false, resizeObjectName: "SHAPEMAIN" },
             new go.Binding("itemArray", "boundaryEventArray"),
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
             // move a selected part into the Foreground layer, so it isn"t obscured by any non-selected parts
-            new go.Binding("layerName", "isSelected", function (s) {
-                return s ? "Foreground" : "";
-            }).ofObject(),
+            //new go.Binding("layerName", "isSelected", function (s) {
+            //    return s ? "Foreground" : "";
+            //}).ofObject(),
+            new go.Binding("click", "isSelected", function (sel) {
+                if (sel) return mouseEnter; else return mouseLeave;
+            }).ofObject(""),
             $(go.Panel, "Auto",
                 {
                     name: "PANEL",
                     // minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                    desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight)
+                    desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight),
 
                 },
                 new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
                 $(go.Panel, "Spot",
-                    $(go.Shape, "Rectangle",  // the outside rounded rectangle
+                    $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
                         {
                             name: "SHAPE",
                             fill: ActivityNodeFill, stroke: ActivityNodeStroke,
-                            parameter1: 10, // corner size
+                            parameter1: 5, // corner size
                             portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
-                            fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide, fromLinkableDuplicates: true, toLinkableDuplicates: true
+                            fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide, fromLinkableDuplicates: true, toLinkableDuplicates: true,
+
                         },
                         new go.Binding("toMaxLinks", "toMaxLink"),
                         new go.Binding("fromMaxLinks", "fromMaxLink"),
@@ -563,7 +602,7 @@ function init() {
             ),
             $(go.TextBlock,
                 {
-                    alignment: go.Spot.Bottom, textAlign: "center", margin: 8, font: "bold 12px Nunito", wrap: go.TextBlock.WrapFit,
+                    alignment: go.Spot.Bottom, textAlign: "center", margin: 15, font: "bold 12px Nunito", wrap: go.TextBlock.WrapFit, stroke:"rgba(0, 0, 0, 0.5)",
                     overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 60, editable: true, cursor: "move"
                 },
                 new go.Binding("text").makeTwoWay())
@@ -577,7 +616,7 @@ function init() {
             {
                 locationObjectName: "SHAPEMAIN",
                 //locationSpot: go.Spot.Center,
-                //selectionAdorned: false,
+                selectionAdorned: false,
                 //minSize: new go.Size(ActivityNodeTemplateWidth, ActivityNodeTemplateHeight),
                 desiredSize: new go.Size(ActivityNodeTemplateWidth + 25, ActivityNodeTemplateHeight + 20),
                 cursor: "move"
@@ -589,11 +628,11 @@ function init() {
                     name: "PANEL",
                     desiredSize: new go.Size(ActivityNodeTemplateWidth / palscale, ActivityNodeTemplateHeight / palscale)
                 },
-                $(go.Shape, "Rectangle",  // the outside rounded rectangle
+                $(go.Shape, "RoundedRectangle",  // the outside rounded rectangle
                     {
                         name: "SHAPE",
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
-                        parameter1: 10 / palscale  // corner size (default 10)
+                        parameter1: 5 / palscale  // corner size (default 10)
                     }),
 
                 $(go.Shape,
@@ -606,7 +645,7 @@ function init() {
 
             ),
             $(go.TextBlock,  // the center text
-                { alignment: go.Spot.Bottom, textAlign: "center", verticalAlignment: go.Spot.Bottom, margin: 5, font: "bold 10px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize },
+                { alignment: go.Spot.Bottom, textAlign: "center", verticalAlignment: go.Spot.Bottom, margin: 8, font: "bold 10px Nunito", stroke:"rgba(0, 0, 0, 0.75)", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize },
                 new go.Binding("text").makeTwoWay()),
             makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
 
@@ -657,6 +696,7 @@ function init() {
         $(go.Node, "Vertical",
             {
                 locationObjectName: "SHAPEMAIN",
+                selectionAdorned: false,
                 //locationSpot: go.Spot.Center,
                 //toolTip: tooltiptemplate,
                 //minSize: new go.Size(ActivityNodeTemplateWidth-20, ActivityNodeTemplateHeight-20),
@@ -692,7 +732,7 @@ function init() {
 
             ),
             $(go.TextBlock,
-                { margin: 8, editable: true, font: "bold 10px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move" },
+                { margin: 8, editable: true, font: "bold 10px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move", stroke:"rgba(0, 0, 0, 0.75)" },
                 new go.Binding("text"))
 
 
@@ -705,16 +745,34 @@ function init() {
                 name: "SHAPEMAIN",
                 locationSpot: go.Spot.BottomLeft,
                 toolTip: tooltiptemplate,
-                selectionAdorned: false,  // use a Binding on the Shape.stroke to show selection 
-                //minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight + 30),
-                mouseEnter: mouseEnterForEvent,
-                mouseLeave: mouseLeave,
+                selectionAdorned: true,  // use a Binding on the Shape.stroke to show selection 
+                selectionObjectName: "MAINPANEL",
                 isShadowed: true,
-                shadowOffset: new go.Point(4, 4),
-                shadowBlur: 4
+                shadowOffset: new go.Point(10, 10),
+                shadowBlur: 10,
+                shadowColor:"rgba(0, 0, 0, 0.10)",
+                selectionAdornmentTemplate:
+                    $(go.Adornment, "Spot",
+                        $(go.Panel, "Auto",
+                            // this Adornment has a rectangular blue Shape around the selected node
+                            $(go.Shape, "Ellipse", {
+                                fill: null, stroke: "dodgerblue", strokeWidth: 1.5,
+                                desiredSize: new go.Size(EventNodeSize + 18, EventNodeSize + 18),
+                            }),
+                            $(go.Placeholder)
+                        )),
+                //minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
+                desiredSize: new go.Size(ActivityNodeTemplateWidth + 47, ActivityNodeTemplateHeight + 47),
+                click: mouseEnterForEvent,
+                //mouseLeave: mouseLeave,
+                //isShadowed: true,
+                //shadowOffset: new go.Point(4, 4),
+                //shadowBlur: 4
             },
             new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            new go.Binding("click", "isSelected", function (sel) {
+                if (sel) return mouseEnterForEvent; else return mouseLeave;
+            }).ofObject(""),
             // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
             //new go.Binding("layerName", "isSelected", function (s) { return s ? "Foreground" : ""; }).ofObject(),
             // can be resided according to the user's desires
@@ -725,15 +783,18 @@ function init() {
                 },
                 $(go.Shape, "Ellipse",  // Outer circle
                     {
+                        name: "MAINPANEL",
                         strokeWidth: 1,
                         margin: new go.Margin(20, 10, 0, 0),
                         alignment: new go.Spot(0.5, 1),
                         // alignmentFocus: go.Spot.Top,
-                        desiredSize: new go.Size(EventNodeSize, EventNodeSize),
+                        desiredSize: new go.Size(EventNodeSize + 18, EventNodeSize + 18),
                         portId: "", cursor: "se-resize",
                         fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
-                        parameter1: 10, fromLinkableDuplicates: true, toLinkableDuplicates: true
+                        parameter1: 10, fromLinkableDuplicates: true, toLinkableDuplicates: true,
+
+
                     },
                     new go.Binding("toMaxLinks", "toMaxLink"),
                     new go.Binding("fromMaxLinks", "fromMaxLink"),
@@ -750,8 +811,8 @@ function init() {
 
             $(go.TextBlock,
                 {
-                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(8, 10, 0, 0), editable: true, font: "bold 12px Nunito",
-                    wrap: go.TextBlock.WrapFit, overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 20, cursor: "move"
+                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(5, 10, 5, 0), editable: true, font: "bold 12px Nunito", stroke:"rgba(0, 0, 0, 0.5)",
+                    wrap: go.TextBlock.WrapFit, overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 40, cursor: "move"
                 },
                 new go.Binding("text").makeTwoWay())
 
@@ -1301,33 +1362,37 @@ function init() {
     var sequenceLinkTemplate =
         $(go.Link,
             {
-                contextMenu:
-                    $(go.Adornment, "Vertical",
-                        $("ContextMenuButton",
-                            $(go.TextBlock, "Default Flow"),
-                            // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
-                            {
-                                click: function (e, obj) {
-                                    setSequenceLinkDefaultFlow(obj.part.adornedObject);
-                                }
-                            }),
-                        $("ContextMenuButton",
-                            $(go.TextBlock, "Conditional Flow"),
-                            // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
-                            {
-                                click: function (e, obj) {
-                                    setSequenceLinkConditionalFlow(obj.part.adornedObject);
-                                }
-                            })
-                    ),
-                routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10,
+                //contextMenu:
+                //    $(go.Adornment, "Vertical",
+                //        $("ContextMenuButton",
+                //            $(go.TextBlock, "Default Flow"),
+                //            // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
+                //            {
+                //                click: function (e, obj) {
+                //                    setSequenceLinkDefaultFlow(obj.part.adornedObject);
+                //                }
+                //            }),
+                //        $("ContextMenuButton",
+                //            $(go.TextBlock, "Conditional Flow"),
+                //            // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
+                //            {
+                //                click: function (e, obj) {
+                //                    setSequenceLinkConditionalFlow(obj.part.adornedObject);
+                //                }
+                //            })
+                //), 
+                name: "PANEL",
+                
+                routing: go.Link.AvoidsNodes, curve: go.Link.JumpOver, corner: 10,
                 //fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
-                reshapable: true, relinkableFrom: true, relinkableTo: true, toEndSegmentLength: 20
+                reshapable: true, relinkableFrom: true, relinkableTo: true, toEndSegmentLength: 20,
+                click: mouseEnter,
+                actionCancel: mouseLeave,
             },
             new go.Binding("points").makeTwoWay(),
-            $(go.Shape, { stroke: "black", strokeWidth: 1 }),
-            $(go.Shape, { toArrow: "Triangle", scale: 1.2, fill: "black", stroke: null }),
-            $(go.Shape, { fromArrow: "", scale: 1.5, stroke: "black", fill: "white" },
+            $(go.Shape, { stroke: "#707070", strokeWidth: 1 }),
+            $(go.Shape, { toArrow: "Triangle", scale: 1.2, fill: "#707070", stroke: null }),
+            $(go.Shape, { fromArrow: "Circle", scale: 0.5, stroke: "null", fill: "#707070" },
                 new go.Binding("fromArrow", "isDefault", function (s) {
                     if (s === null) return "";
                     return s ? "BackSlash" : "StretchedDiamond";
@@ -1431,10 +1496,12 @@ function init() {
                     // when the selection is dropped in the diagram's background,
                     // make sure the selected Parts no longer belong to any Group
                     var ok = window.myDiagram.commandHandler.addTopLevelParts(window.myDiagram.selection, true);
-                    if (!ok) window.myDiagram.currentTool.doCancel();
+                    //window.myDiagram.clearSelection();
                     //var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
                     //scope.currentObj = e;
                     //scope.toogleSideMenu(true);
+
+                    if (!ok) window.myDiagram.currentTool.doCancel();
 
                 },
                 linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
@@ -1442,20 +1509,59 @@ function init() {
                 "SelectionCopied": relayoutDiagram
             });
 
-    //Object Single Mouse Click
-    window.myDiagram.addDiagramListener("ObjectDoubleClicked", function (e) {
+
+    //Object Double Mouse Click
+    window.myDiagram.addDiagramListener("ObjectDoubleClicked", function (e, obj) {
         if (e.Pw.Sb === "Delete") {
             return;
         }
+
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
         scope.currentObj = e;
         scope.toogleSideMenu(true);
     });
 
-    window.myDiagram.addDiagramListener("BackgroundDoubleClicked", function (e) {
+    ////Object Single Mouse Click
+    //window.myDiagram.addDiagramListener("ObjectSingleClicked", function (e) {
+    //    if (e.Pw.Sb === "Delete") {
+
+    //        return;
+    //    }
+    //});
+
+    //Object drop on diagram from external
+    window.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+        var node = e.diagram.Fi.Th.key;
+
+        if (!node)
+            return;
+
+        var result = eventOnceArray.filter(q => q.item == node.item);
+        if (result.length <= 0)
+            return;
+
+        if (!window.myDiagram.model.nodeDataArray)
+            return;
+
+        var isThere = window.myDiagram.model.nodeDataArray.filter(q => q.item == node.item && q.key != node.key);
+
+        if (isThere.length > 0) {
+            window.myDiagram.currentTool.doCancel();
+            window.myDiagram.model.removeNodeData(node);
+        }
+    });
+
+
+    window.myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
+        if (myOldNodeData.e && myOldNodeData.obj) {
+            mouseLeave(myOldNodeData.e, myOldNodeData.obj);
+            myOldNodeData = {};
+        }
         var scope = angular.element(document.getElementById("WorkflowEditorController")).scope();
-        scope.currentObj = e;
-        scope.toogleSideMenu(false);
+        if (scope.currentObj)
+            scope.toogleSideMenu(false);
+
+        scope.currentObj = null;
     });
 
     //window.myDiagram.addModelChangedListener(function (evt) {
@@ -1490,6 +1596,11 @@ function init() {
             scope.toogleSideMenu(false);
         }
     });
+
+    //window.myDiagram.mouseDragOver = function (e) {
+    //    window.myDiagram.clearSelection();
+    //    myOldNodeData = {};
+    //}
 
     //window.myDiagram.toolManager.mouseDownTools.insertAt(0, new LaneResizingTool());
 
@@ -1575,21 +1686,21 @@ function init() {
                 // -------------------------- Event Nodes
                 { key: 101, category: "event", text: "Basic Start", eventType: 1, eventDimension: 1, icon: "start", color: "#25A65B", item: "Start", sidebar: true, ngModelName: "start", fromLink: true, toLink: false, toMaxLink: 0, fromMaxLink: 1 }, //"Start"
                 //{ key: 102, category: "event", text: "Message", eventType: 2, eventDimension: 2, item: "Message", sidebar: false }, //"Message" // BpmnTaskMessage
-                { key: 103, category: "event", text: "Timer Start", eventType: 1, eventDimension: 2, icon: "timer", color: "#25A65B", item: "Timer", sidebar: true, ngModelName: "timer", fromLink: true, toLink: false, toMaxLink: 1, fromMaxLink: 1 }, //"Timer"
+                ////{ key: 103, category: "event", text: "Timer Start", eventType: 1, eventDimension: 2, icon: "timer", color: "#25A65B", item: "Timer", sidebar: true, ngModelName: "timer", fromLink: true, toLink: false, toMaxLink: 1, fromMaxLink: 1 }, //"Timer"
                 { key: 104, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, icon: "end", color: "#DC3023", item: "End", sidebar: false, fromLink: false, toLink: true, toMaxLink: 1 }, //"End"
-                { key: 105, category: "event", text: "Wait Signal", eventType: 1, eventDimension: 4, icon: "wait", color: "#F06933", item: "Wait", sidebar: true, ngModelName: "wait", fromLink: true, toLink: true, toMaxLink: 1, fromMaxLink: 1 }, //"Wait"
+                ////{ key: 105, category: "event", text: "Wait Signal", eventType: 1, eventDimension: 4, icon: "wait", color: "#F06933", item: "Wait", sidebar: true, ngModelName: "wait", fromLink: true, toLink: true, toMaxLink: 1, fromMaxLink: 1 }, //"Wait"
                 //{ key: 107, category: "event", text: "Message", eventType: 2, eventDimension: 8, item: "End Message", sidebar: false },//"End Message" // BpmnTaskMessage
                 //{ key: 108, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, item: "Terminate", sidebar: false }, //"Terminate"
                 // -------------------------- Task/Activity Nodes
                 { key: 131, category: "activity", text: "Notification", item: "Notification Task", icon: "notification", taskType: 0, sidebar: true, ngModelName: "send_notification", toMaxLink: 1, fromMaxLink: 1 }, //"Notification Task"
-                { key: 132, category: "activity", text: "Create Task", item: "User Task", icon: "task", taskType: 0, sidebar: true, ngModelName: "create_task", toMaxLink: 1, fromMaxLink: 1 }, //"User Task"
+                ////{ key: 132, category: "activity", text: "Create Task", item: "User Task", icon: "task", taskType: 0, sidebar: true, ngModelName: "create_task", toMaxLink: 1, fromMaxLink: 1 }, //"User Task"
                 { key: 133, category: "activity", text: "WebHook", item: "WebHook Task", icon: "hook", taskType: 0, sidebar: true, ngModelName: "webHook", toMaxLink: 1, fromMaxLink: 1 }, //"WebHook Task"
-                { key: 134, category: "activity", text: "Change Access", item: "Change Access", icon: "access", taskType: 0, sidebar: true, ngModelName: "access", toMaxLink: 1, fromMaxLink: 1 },
+                ////{ key: 134, category: "activity", text: "Change Access", item: "Change Access", icon: "access", taskType: 0, sidebar: true, ngModelName: "access", toMaxLink: 1, fromMaxLink: 1 },
                 { key: 135, category: "activity", text: "Data Update", item: "Data Task", icon: "update", taskType: 0, sidebar: true, ngModelName: "field_update", toMaxLink: 1, fromMaxLink: 1 },
-                { key: 136, category: "activity", text: "Data Read", item: "Data Read Task", icon: "read", taskType: 0, sidebar: true, ngModelName: "data_read", toMaxLink: 1, fromMaxLink: 1 },
-                { key: 137, category: "activity", text: "Data Add", item: "Data Add", icon: "add", taskType: 0, sidebar: true, ngModelName: "data_add", toMaxLink: 1, fromMaxLink: 1 },
-                { key: 138, category: "activity", text: "Data Delete", item: "Data Delete", icon: "delete", taskType: 0, sidebar: true, ngModelName: "data_delete", toMaxLink: 1, fromMaxLink: 1 },
-                { key: 139, category: "activity", text: "Function", item: "Function Task", icon: "function", taskType: 0, sidebar: true, ngModelName: "function", toMaxLink: 1, fromMaxLink: 1 },
+                ////{ key: 136, category: "activity", text: "Data Read", item: "Data Read Task", icon: "read", taskType: 0, sidebar: true, ngModelName: "data_read", toMaxLink: 1, fromMaxLink: 1 },
+                ////{ key: 137, category: "activity", text: "Data Add", item: "Data Add", icon: "add", taskType: 0, sidebar: true, ngModelName: "data_add", toMaxLink: 1, fromMaxLink: 1 },
+                ////{ key: 138, category: "activity", text: "Data Delete", item: "Data Delete", icon: "delete", taskType: 0, sidebar: true, ngModelName: "data_delete", toMaxLink: 1, fromMaxLink: 1 },
+               //// { key: 139, category: "activity", text: "Function", item: "Function Task", icon: "function", taskType: 0, sidebar: true, ngModelName: "function", toMaxLink: 1, fromMaxLink: 1 },
 
 
                 // subprocess and start and end
@@ -1608,6 +1719,9 @@ function init() {
                 //{ key: 701, category: "annotation", icon: "read", text: "note", item: "Note" }
             ]  // end nodeDataArray
         });  // end model
+
+    //For use only once can be added.
+    var eventOnceArray = window.myPaletteLevel1.model.nodeDataArray.filter(q => q.category == 'event' && q.item != "Wait");
 
     // an activity with a boundary event:
     //        {
