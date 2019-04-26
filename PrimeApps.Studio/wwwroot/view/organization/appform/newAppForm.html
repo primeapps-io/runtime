@@ -37,15 +37,17 @@
                                            focus="true"
                                            required
                                            maxlength="50"
-                                           ng-blur="checkNameBlur();"
-                                           ng-change="generateAppName()"
+                                           ng-blur="!appModel.id  ? checkNameBlur():'';"
+                                           ng-change="!appModel.id ? generateAppName():''"
                                            ng-model="appModel.label">
                                 </div>
                                 <div class="form-group" style="position: relative;"
+                                     ng-disabled="appModel.id"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
                                     <label class="col-sm-4 required-field">Identifier <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text"
                                            name="name"
+                                           ng-disabled="appModel.id"
                                            class="form-control ng-animate-disabled col-sm-6 text-lowercase"
                                            required
                                            maxlength="50"
@@ -90,8 +92,8 @@
                                     <div class="iconandcolor">
                                         <div class="flex-evenly">
                                             <div>
-                                                <div style="background: #DC3023;" class="appicon" title="">
-                                                    <i class="fas fa-box-open"></i>
+                                                <div   ng-style="{background:appModel.color}" class="appicon" title="">
+                                                    <i ng-class=" appModel.icon.value ?  appModel.icon.value :appModel.icon"  class="fas fa-box-open"></i>
                                                     <div class="icon-search-list">
                                                         <ui-select ng-model="appModel.icon" ng-disabled="ctrl.disabled">
                                                             <ui-select-match placeholder="Select an icon">
@@ -109,30 +111,30 @@
                                                     
                                                 </div>
                                             </div>
-                                            <div data-trigger="hover" data-type="info" data-title="Choose Your App Color" bs-tooltip data-placement="top">
+                                            <div >
                                                 <div class="appcolor">
-                                                    <span style="background: #D24D57;"></span>
-                                                    <span style="background: #BE90D4;"></span>
-                                                    <span style="background: #5AABE3;"></span>
-                                                    <span style="background: #87D37C;"></span>
-                                                    <span style="background: #F4D03E;"></span>
-                                                    <span style="background: #B8BEC2;"></span>
+                                                    <span ng-click="appModel.color='#D24D57'" ng-class="appModel.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
+                                                    <span ng-click="appModel.color='#BE90D4'" ng-class="appModel.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
+                                                    <span ng-click="appModel.color='#5AABE3'" ng-class="appModel.color =='#5AABE3' ? 'active':'' " style="background: #5AABE3;"></span>
+                                                    <span ng-click="appModel.color='#87D37C'" ng-class="appModel.color =='#87D37C' ? 'active':'' " style="background: #87D37C;"></span>
+                                                    <span ng-click="appModel.color='#F4D03E'" ng-class="appModel.color =='#F4D03E' ? 'active':'' " style="background: #F4D03E;"></span>
+                                                    <span ng-click="appModel.color='#B8BEC2'" ng-class="appModel.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
                                                 </div>
                                                 <div class="appcolor">
-                                                    <span class="active" style="background: #DC3023;"></span>
-                                                    <span style="background: #8E44AD;"></span>
-                                                    <span style="background: #19B5FE;"></span>
-                                                    <span style="background: #25A65B;"></span>
-                                                    <span style="background: #FFB61E;"></span>
-                                                    <span style="background: #959EA4;"></span>
+                                                    <span ng-click="appModel.color='#DC3023'" ng-class="appModel.color =='#DC3023' ? 'active':''"  style="background: #DC3023;"></span>
+                                                    <span ng-click="appModel.color='#8E44AD'" ng-class="appModel.color =='#8E44AD' ? 'active':''"  style="background: #8E44AD;"></span>
+                                                    <span ng-click="appModel.color='#19B5FE'" ng-class="appModel.color =='#19B5FE' ? 'active':''"  style="background: #19B5FE;"></span>
+                                                    <span ng-click="appModel.color='#25A65B'" ng-class="appModel.color =='#25A65B' ? 'active':''"  style="background: #25A65B;"></span>
+                                                    <span ng-click="appModel.color='#FFB61E'" ng-class="appModel.color =='#FFB61E' ? 'active':''"  style="background: #FFB61E;"></span>
+                                                    <span ng-click="appModel.color='#959EA4'" ng-class="appModel.color =='#959EA4' ? 'active':''"  style="background: #959EA4;"></span>
                                                 </div>
                                                 <div class="appcolor">
-                                                    <span style="background: #C3272B;"></span>
-                                                    <span style="background: #763668;"></span>
-                                                    <span style="background: #1F4688;"></span>
-                                                    <span style="background: #006442;"></span>
-                                                    <span style="background: #CA6924;"></span>
-                                                    <span style="background: #4D5C66;"></span>
+                                                    <span ng-click="appModel.color='#C3272B'" ng-class="appModel.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
+                                                    <span ng-click="appModel.color='#763668'" ng-class="appModel.color =='#763668' ? 'active':''" style="background: #763668;"></span>
+                                                    <span ng-click="appModel.color='#1F4688'" ng-class="appModel.color =='#1F4688' ? 'active':''" style="background: #1F4688;"></span>
+                                                    <span ng-click="appModel.color='#006442'" ng-class="appModel.color =='#006442' ? 'active':''" style="background: #006442;"></span>
+                                                    <span ng-click="appModel.color='#CA6924'" ng-class="appModel.color =='#CA6924' ? 'active':''" style="background: #CA6924;"></span>
+                                                    <span ng-click="appModel.color='#4D5C66'" ng-class="appModel.color =='#4D5C66' ? 'active':''" style="background: #4D5C66;"></span>
                                                 </div>
                                             </div>
                                         </div>

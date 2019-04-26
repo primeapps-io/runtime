@@ -41,7 +41,26 @@ angular.module('primeapps')
                 page: null,
                 status: 0
             };
-
+            
+            
+            $scope.openEditModal = function (app) {
+                 $scope.appModel =app;
+               
+                $scope.appFormModal = $scope.appFormModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/organization/appform/newAppForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+                
+                $scope.appFormModal.$promise.then(function () {
+                    $scope.appFormModal.show();
+                });
+                
+            };
+            
+            
             AppsService.getOrganizationApps($scope.appsFilter)
                 .then(function (result) {
                     $scope.apps = result.data;

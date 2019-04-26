@@ -43,12 +43,12 @@
                                 class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                             </div>
                         </div>
-                        <div>
-                            <a class="appmanage" href="#" data-trigger="hover" data-type="success" data-title="Edit" bs-tooltip><i class="fas fa-cog"></i></a>
+                        <div ng-click="$event.stopPropagation();openEditModal(app);">
+                            <span class="appmanage"  data-trigger="hover" data-type="success" data-title="Edit" bs-tooltip><i class="fas fa-cog"></i></span>
                         </div>
                     </div>
-                    <div class="appicon2" style="background: #DC3023;">
-                        <i class="fas fa-box-open"></i>
+                    <div class="appicon2" ng-style="{background:app.color}">
+                        <i ng-class="app.icon  ? app.icon  :  'fas fa-box-open'"></i>
                     </div>
                     <div class="apptext">
                         <div>

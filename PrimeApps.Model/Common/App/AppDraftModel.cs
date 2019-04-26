@@ -25,6 +25,12 @@ namespace PrimeApps.Model.Common.App
         [JsonProperty("logo"), DataMember(Name = "logo")]
         public string Logo { get; set; }
 
+        [JsonProperty("color"), DataMember(Name = "color")]
+        public string Color { get; set; }
+
+        [JsonProperty("icon"), DataMember(Name = "icon")]
+        public string Icon { get; set; }
+
         [JsonProperty("templet_id"), DataMember(Name = "templet_id")]
         public int TempletId { get; set; }
 
