@@ -1,64 +1,72 @@
 <div class="page-container">
-
-    <div class="row" style="margin-top: 50px">
-        <div class="col-sm-12" ng-if="apps.length >0 && !loading">
+    <div class="row" ng-if="loading">
+        <div class="col-sm-12">
             <h4 class="h4-title blue-color font-bold">Apps</h4>
         </div>
-        <div class="col-sm-6 col-md-3 app-layout-box" ng-show="loading">
-            <div class="app-box animated-background"></div>
-            <div class="app-info animated-background"></div>
-        </div>
-        <div ng-if="apps.length > 0 && !loading">
-            <div class="col-sm-6 col-md-3 app-layout-box am-fade" ng-if="currentOrganization.role ==='administrator'" ui-sref="studio.appsForm({orgId:currentOrgId})">
-                <div class="app-box">
-                    <span class="applogo"><i class="fas fa-layer-group"></i></span>
-                </div>
-                <div class="app-info">
-                    <button class="btn btn-blue btn-radius btn-bold shadowh">
-                        <i class="fas fa-plus"></i> Create New App
-                    </button>
-                </div>
-            </div>
-
-
-
-            <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps"
-                 ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})" ng-show="!loading">
-                <div class="app-box">
-                    <div class="oval">
-                        <span data-trigger="hover" data-type="success"
-                              data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
-                              class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
-                    </div>
-                    <img class="applogo" ng-src="{{app.logo}}" alt="" />
-                  
-                </div>
-                <div class="app-info">
-                    <div>
-                        <h3>{{app.label}}</h3>
-                        <h4>{{app.description}} </h4>
-                    </div>
-
-                </div>
+        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-show="loading">
+            <div class="appbox2 animated-background" style="min-height: 200px;">
+                
             </div>
         </div>
-
     </div>
-    <div class="row" ng-if="apps.length < 1 && !loading">
-        <div>
-            <div class="dashboard apps clearfix" style="padding: 0px !important;">
-                <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-4 new-app-content">
-                        <img src="images/primeapps/create-app-sceen-image.png"
-                             srcset="images/primeapps/create-app-sceen-image@2x.png 2x,
-                         images/primeapps/create-app-sceen-image@3x.png 3x">
-                        <button ng-if="currentOrganization.role ==='administrator'" class="create-app-btn" ui-sref="studio.appsForm({orgId:currentOrgId})">
-                            Create your first app
-                        </button>
+    <div ng-if="!loading">
+        <div class="row" ng-if="apps.length > 0">
+            <div class="col-sm-12">
+                <h4 class="h4-title blue-color font-bold">Apps</h4>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-if="currentOrganization.role ==='administrator'" ui-sref="studio.appsForm({orgId:currentOrgId})">
+                <div class="appbox2 text-center">
+                    <div class="flex-between">
+                        <div>&nbsp;</div>
+                        <div>&nbsp;</div>
                     </div>
-                    <div class="col-sm-4"></div>
+                    <div class="appicon2">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="apptext">
+                        <div>
+                            <button class="btn btn-blue btn-radius btn-bold">
+                                <i class="fas fa-plus"></i> Create New App
+                            </button>
+                        </div>
+                        
+                    </div>
                 </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" ng-repeat="app in apps" ui-sref="studio.app.overview({orgId:app.organization_id,appId:app.id})">
+                <div class="appbox2 text-center">
+                    <div class="flex-between">
+                        <div>
+                            <div class="oval">
+                                <span data-trigger="hover" data-type="success"
+                                data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
+                                class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
+                            </div>
+                        </div>
+                        <div ng-click="$event.stopPropagation();openEditModal(app);">
+                            <span class="appmanage"  data-trigger="hover" data-type="success" data-title="Edit" bs-tooltip><i class="fas fa-cog"></i></span>
+                        </div>
+                    </div>
+                    <div class="appicon2" ng-style="{background:app.color}">
+                        <i ng-class="app.icon  ? app.icon  :  'fas fa-box-open'"></i>
+                    </div>
+                    <div class="apptext">
+                        <div>
+                            <h3>{{app.label}}</h3>
+                            <h4>{{app.description}} </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="apps.length < 1">
+            <div class="col-sm-offset-4 col-sm-4 text-center">
+                <img class="width100" src="images/primeapps/create-app-sceen-image.png"
+                     srcset="images/primeapps/create-app-sceen-image@2x.png 2x,
+                     images/primeapps/create-app-sceen-image@3x.png 3x">
+                <button ng-if="currentOrganization.role ==='administrator'" class="btn btn-blue shadowh create-app-btn" ui-sref="studio.appsForm({orgId:currentOrgId})">
+                    Create your first app
+                </button>
             </div>
         </div>
     </div>

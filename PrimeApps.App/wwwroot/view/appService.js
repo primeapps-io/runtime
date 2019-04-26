@@ -275,7 +275,7 @@ angular.module('primeapps')
                                     $rootScope.customMenu = false;
                                    // var menu = response[10].data;
                                     var menu = $filter('filter')( response[10].data, {deleted: false}, true);
-                                    if (menu) {
+                                    if (menu.length > 0) {
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
                                     }

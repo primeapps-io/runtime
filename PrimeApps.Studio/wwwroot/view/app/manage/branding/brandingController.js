@@ -13,6 +13,9 @@ angular.module('primeapps')
             $scope.imageRun = {};
             $scope.$parent.activeMenuItem = 'branding';
             $rootScope.breadcrumblist[2].title = 'Branding';
+            $scope.tabManage = {
+                activeTab: "loginpage"
+            };
 
             $scope.uploaderImage = function (field) {
                 $scope.image[field] = {};
@@ -32,7 +35,7 @@ angular.module('primeapps')
                         .then(function (image) {
                             item.image = image;
                             var img = new Image();
-                            resizeService.resizeImage(item.image, { width: 1024 }, function (err, resizedImage) {
+                            resizeService.resizeImage(item.image, {width: 1024}, function (err, resizedImage) {
                                 if (err)
                                     return;
 
@@ -172,12 +175,39 @@ angular.module('primeapps')
 
             };
 
-            // $scope.logoRemove = function () {
-            //     if (uploader.queue[0]) {
-            //         //uploader.queue[0].image = null;
-            //         uploader.queue[0].remove();
-            //     }
-            // };
+            $scope.logoRemove = function (item) {
+                if (item == 'authFavicon') {
+                    $scope.authFavicon = "";
+                    $scope.authTheme.favicon = "";
+                }
+                
+                if (item == 'authLogo') {
+                    $scope.authLogo = "";
+                    $scope.authTheme.logo = "";
+                }  
+                
+                if (item == 'authBanner') {
+                    $scope.authBanner = "";
+                    $scope.authTheme.banner = "";
+                }
+                
+                if (item == 'appThemeFavicon') {
+                    $scope.appThemeFavicon = "";
+                    $scope.appTheme.favicon = "";
+                } 
+                
+                if (item == 'appLogo') {
+                    $scope.appThemeLogo = "";
+                    $scope.appTheme.logo = "";
+                }
+
+                // if (uploader.queue[0]) {
+                //     //uploader.queue[0].image = null;
+                //     uploader.queue[0].remove();
+                // }
+            };
+
+            console.log("");
 
             BrandingService.getAppTheme($scope.appId).then(function (response) {
                 var appTheme = response.data;
@@ -206,15 +236,30 @@ angular.module('primeapps')
                 var authTheme = response.data;
                 if (authTheme && authTheme.banner) {
                     $scope.authTheme.banner = authTheme.banner[0].image;
-                    $scope.authTheme.descriptionTr = authTheme.banner[0].description.tr;
-                    $scope.authTheme.descriptionEn = authTheme.banner[0].description.en;
+                    if (authTheme.banner[0].descriptions.en) {
+                        $scope.authTheme.descriptionEn = authTheme.banner[0].descriptions.en;
+
+                    }
+                    if (authTheme.banner[0].descriptions.tr) {
+                        $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
+                    }
+
                 }
+
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
                 $scope.authTheme.favicon = authTheme.favicon;
                 $scope.authTheme.logo = authTheme.logo;
             });
 
+
+            $scope.save = function () {
+                if ($scope.acitveTab == 'login')
+                    $scope.saveAuthTheme();
+                else
+                    $scope.saveAppTheme();
+                $scope.formModal.hide();
+            };
 
             $scope.saveAuthTheme = function () {
                 $scope.savingAuth = true;
@@ -223,7 +268,7 @@ angular.module('primeapps')
                 description.en = $scope.authTheme.descriptionEn;
                 description.tr = $scope.authTheme.descriptionTr;
                 var banner = [
-                    { descriptions: description, image: $scope.authTheme.banner }
+                    {descriptions: description, image: $scope.authTheme.banner}
                 ];
                 authThemes.color = $scope.authTheme.color;
                 authThemes.title = $scope.authTheme.title;
@@ -237,27 +282,20 @@ angular.module('primeapps')
                     });
             };
 
-            // $scope.addMasterUser = function () {
-            //     var newCol = {};
-            //     newCol.role_id = 1;
-            //     newCol.profile_id = 1;
-            //     newCol.first_name = "master";
-            //     newCol.last_name = "test";
-            //     newCol.email = "master.test@usertest3.com";
-            //     newCol.password = "1234567";
-            //     newCol.created_at = new Date();
-            //
-            //     BrandingService.addAppUser(newCol)
-            //         .then(function (response) {
-            //             if (response.data) {
-            //                 toastr.success('Collaborator is saved successfully');
-            //
-            //             }
-            //         })
-            //         .catch(function () {
-            //             toastr.error($filter('translate')('Common.Error'));
-            //
-            //         });
-            // };
+
+            $scope.showEditModal = function (tab, field) {
+                $scope.acitveTab = tab;
+                $scope.formModal = $scope.formModal ||
+                    $modal({
+                        scope: $scope,
+                        templateUrl: 'view/app/manage/branding/brandingForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
+                $scope.formModal.$promise.then($scope.formModal.show);
+            };
+
+
         }
     ]);

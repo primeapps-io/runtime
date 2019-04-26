@@ -66,7 +66,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/organization/apps/appsService.js',
-                                cdnUrl + 'view/organization/apps/appsController.js'
+                                cdnUrl + 'view/organization/apps/appsController.js',
+                                cdnUrl + 'view/organization/appform/appFormService.js',
                             ]);
                         }]
                     }
@@ -178,7 +179,7 @@ angular.module('primeapps')
                                 }
                             }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
+                            return $ocLazyLoad.load([                                
                                 cdnUrl + 'view/organization/organizationController.js',
                                 cdnUrl + 'view/organization/organizationService.js'
                             ]);
