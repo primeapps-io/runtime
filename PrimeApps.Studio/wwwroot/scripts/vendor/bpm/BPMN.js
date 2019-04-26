@@ -69,7 +69,7 @@ function init() {
     var SubprocessNodeFill = ActivityNodeFill;
     var SubprocessNodeStroke = ActivityNodeStroke;
 
-    var EventNodeSize = 42;
+    var EventNodeSize = 40;
     var EventNodeInnerSize = EventNodeSize - 6;
     var EventNodeSymbolSize = EventNodeInnerSize - 14;
     var EventEndOuterFillColor = "rgba(0, 0, 0, 0.05)";
@@ -484,7 +484,7 @@ function init() {
         icon.background = "#F2F2F2";//ActivityNodeFill;
         icon.width = 20;
         icon.height = 20;
-        icon.margin = new go.Margin(0, 0, 5, 25);
+        //icon.margin = new go.Margin(0, 0,5, 25);
         icon.opacity = 0.5;
         icon.alignment = go.Spot.TopRight;
         //icon.alignmentFocus = go.Spot.BottomLeft;
@@ -519,7 +519,7 @@ function init() {
             {
                 locationObjectName: "SHAPEMAIN",
                 name: "SHAPEMAIN",
-                locationSpot: go.Spot.Center,
+                //locationSpot: go.Spot.Center,
                 resizable: true, resizeObjectName: "PANEL",
                 //toolTip: tooltiptemplate,
 
@@ -568,13 +568,12 @@ function init() {
                             name: "SHAPE",
                             fill: ActivityNodeFill, stroke: ActivityNodeStroke,
                             parameter1: 5, // corner size
-                            portId: "", fromLinkable: true, toLinkable: true, cursor: "se-resize",
+                            portId: "", fromLinkable: true, toLinkable: true, cursor: "url(images/primeapps/bpm_cursor_arrow.cur),auto",
                             fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide, fromLinkableDuplicates: true, toLinkableDuplicates: true,
 
                         },
                         new go.Binding("toMaxLinks", "toMaxLink"),
                         new go.Binding("fromMaxLinks", "fromMaxLink"),
-                        new go.Binding("fill", "color"),
                         new go.Binding("strokeWidth", "isCall",
                             function (s) {
                                 return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth;
@@ -595,14 +594,16 @@ function init() {
                             fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 18, height: 18, cursor: "move"
 
                         },
-                        new go.Binding("geometry", "icon", geoFunc)),
+                        new go.Binding("geometry", "icon", geoFunc),
+                        new go.Binding("fill", "color")),
+
 
                     //makeMarkerPanel(false, 1) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
                 )
             ),
             $(go.TextBlock,
                 {
-                    alignment: go.Spot.Bottom, textAlign: "center", margin: 15, font: "bold 12px Nunito", wrap: go.TextBlock.WrapFit, stroke:"rgba(0, 0, 0, 0.5)",
+                    alignment: go.Spot.Bottom, textAlign: "center", margin: 15, font: "bold 12px Nunito", wrap: go.TextBlock.WrapFit, stroke: "rgba(0, 0, 0, 0.5)",
                     overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 60, editable: true, cursor: "move"
                 },
                 new go.Binding("text").makeTwoWay())
@@ -645,7 +646,7 @@ function init() {
 
             ),
             $(go.TextBlock,  // the center text
-                { alignment: go.Spot.Bottom, textAlign: "center", verticalAlignment: go.Spot.Bottom, margin: 8, font: "bold 10px Nunito", stroke:"rgba(0, 0, 0, 0.75)", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize },
+                { alignment: go.Spot.Bottom, textAlign: "center", verticalAlignment: go.Spot.Bottom, margin: 8, font: "bold 10px Nunito", stroke: "rgba(0, 0, 0, 0.75)", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize },
                 new go.Binding("text").makeTwoWay()),
             makeMarkerPanel(false, palscale) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
 
@@ -732,7 +733,7 @@ function init() {
 
             ),
             $(go.TextBlock,
-                { margin: 8, editable: true, font: "bold 10px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move", stroke:"rgba(0, 0, 0, 0.75)" },
+                { margin: 8, editable: true, font: "bold 10px Nunito", maxLines: 1, wrap: go.TextBlock.WrapDesiredSize, cursor: "move", stroke: "rgba(0, 0, 0, 0.75)" },
                 new go.Binding("text"))
 
 
@@ -743,26 +744,26 @@ function init() {
             {
                 locationObjectName: "SHAPEMAIN",
                 name: "SHAPEMAIN",
-                locationSpot: go.Spot.BottomLeft,
                 toolTip: tooltiptemplate,
+                //locationObjectName: "MAINPANEL", locationSpot: go.Spot.Center,
                 selectionAdorned: true,  // use a Binding on the Shape.stroke to show selection 
                 selectionObjectName: "MAINPANEL",
                 isShadowed: true,
                 shadowOffset: new go.Point(10, 10),
                 shadowBlur: 10,
-                shadowColor:"rgba(0, 0, 0, 0.10)",
+                shadowColor: "rgba(0, 0, 0, 0.10)",
                 selectionAdornmentTemplate:
                     $(go.Adornment, "Spot",
                         $(go.Panel, "Auto",
                             // this Adornment has a rectangular blue Shape around the selected node
                             $(go.Shape, "Ellipse", {
-                                fill: null, stroke: "dodgerblue", strokeWidth: 1.5,
-                                desiredSize: new go.Size(EventNodeSize + 18, EventNodeSize + 18),
+                                fill: null, stroke: "dodgerblue", strokeWidth: 1,
+                                desiredSize: new go.Size(EventNodeSize + 20, EventNodeSize + 20),
                             }),
                             $(go.Placeholder)
                         )),
                 //minSize: new go.Size(ActivityNodeWidth, ActivityNodeHeight),
-                desiredSize: new go.Size(ActivityNodeTemplateWidth + 47, ActivityNodeTemplateHeight + 47),
+                desiredSize: new go.Size(ActivityNodeTemplateWidth + 40, ActivityNodeTemplateHeight + 40),
                 click: mouseEnterForEvent,
                 //mouseLeave: mouseLeave,
                 //isShadowed: true,
@@ -788,11 +789,17 @@ function init() {
                         margin: new go.Margin(20, 10, 0, 0),
                         alignment: new go.Spot(0.5, 1),
                         // alignmentFocus: go.Spot.Top,
-                        desiredSize: new go.Size(EventNodeSize + 18, EventNodeSize + 18),
-                        portId: "", cursor: "se-resize",
+                        desiredSize: new go.Size(EventNodeSize + 20, EventNodeSize + 20),
+                        portId: "", cursor: "url(images/primeapps/bpm_cursor_arrow.cur),auto",
                         fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
                         fill: ActivityNodeFill, stroke: ActivityNodeStroke,
-                        parameter1: 10, fromLinkableDuplicates: true, toLinkableDuplicates: true,
+                        parameter1: 10,
+                        fromLinkable: true,
+                        fromLinkableSelfNode: true,
+                        fromLinkableDuplicates: true,
+                        toLinkable: true,
+                        toLinkableSelfNode: true,
+                        toLinkableDuplicates: true,
 
 
                     },
@@ -803,7 +810,7 @@ function init() {
                 ),
                 $(go.Shape,
                     {
-                        margin: 8, fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 18, height: 18, cursor: "move"
+                        fill: "rgba(0, 0, 0, 0.5)", strokeWidth: 0, width: 18, height: 18, cursor: "move"
                     },
                     new go.Binding("geometry", "icon", geoFunc),
                     new go.Binding("fill", "color"))
@@ -811,7 +818,7 @@ function init() {
 
             $(go.TextBlock,
                 {
-                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(5, 10, 5, 0), editable: true, font: "bold 12px Nunito", stroke:"rgba(0, 0, 0, 0.5)",
+                    verticalAlignment: go.Spot.Bottom, alignment: go.Spot.Bottom, textAlign: "center", margin: new go.Margin(5, 10, 5, 0), editable: true, font: "bold 12px Nunito", stroke: "rgba(0, 0, 0, 0.5)",
                     wrap: go.TextBlock.WrapFit, overflow: go.TextBlock.OverflowEllipsis, maxLines: 2, width: ActivityNodeTemplateWidth + 40, cursor: "move"
                 },
                 new go.Binding("text").makeTwoWay())
@@ -1382,10 +1389,11 @@ function init() {
                 //            })
                 //), 
                 name: "PANEL",
-                
+
                 routing: go.Link.AvoidsNodes, curve: go.Link.JumpOver, corner: 10,
                 //fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
                 reshapable: true, relinkableFrom: true, relinkableTo: true, toEndSegmentLength: 20,
+                adjusting: go.Link.Stretch,
                 click: mouseEnter,
                 actionCancel: mouseLeave,
             },
@@ -1507,8 +1515,23 @@ function init() {
                 linkingTool: new BPMNLinkingTool(), // defined in BPMNClasses.js
                 "SelectionMoved": relayoutDiagram,  // defined below
                 "SelectionCopied": relayoutDiagram
-            });
-
+            }
+        );
+    window.myDiagram.grid = $(go.Panel, "Grid",
+        {
+            name: "GRID",
+            visible: false,
+            gridCellSize: new go.Size(20, 20),
+            gridOrigin: new go.Point(0, 0)
+        },
+        $(go.Shape, "LineH", { stroke: "rgba(0, 0, 0, 0.10)", strokeWidth: 0.5, interval: 1 }),
+        $(go.Shape, "LineH", { stroke: "rgba(0, 0, 0, 0.15)", strokeWidth: 0.5, interval: 5 }),
+        $(go.Shape, "LineH", { stroke: "rgba(0, 0, 0, 0.15)", strokeWidth: 1.0, interval: 10 }),
+        $(go.Shape, "LineV", { stroke: "rgba(0, 0, 0, 0.10)", strokeWidth: 0.5, interval: 1 }),
+        $(go.Shape, "LineV", { stroke: "rgba(0, 0, 0, 0.15)", strokeWidth: 0.5, interval: 5 }),
+        $(go.Shape, "LineV", { stroke: "rgba(0, 0, 0, 0.15)", strokeWidth: 1.0, interval: 10 })
+    );
+ 
 
     //Object Double Mouse Click
     window.myDiagram.addDiagramListener("ObjectDoubleClicked", function (e, obj) {
@@ -1531,6 +1554,8 @@ function init() {
 
     //Object drop on diagram from external
     window.myDiagram.addDiagramListener("ExternalObjectsDropped", function (e) {
+        window.myDiagram.clearSelection(e);
+
         var node = e.diagram.Fi.Th.key;
 
         if (!node)
@@ -1692,15 +1717,15 @@ function init() {
                 //{ key: 107, category: "event", text: "Message", eventType: 2, eventDimension: 8, item: "End Message", sidebar: false },//"End Message" // BpmnTaskMessage
                 //{ key: 108, category: "event", text: "Terminate", eventType: 13, eventDimension: 8, item: "Terminate", sidebar: false }, //"Terminate"
                 // -------------------------- Task/Activity Nodes
-                { key: 131, category: "activity", text: "Notification", item: "Notification Task", icon: "notification", taskType: 0, sidebar: true, ngModelName: "send_notification", toMaxLink: 1, fromMaxLink: 1 }, //"Notification Task"
+                { key: 131, category: "activity", text: "Notification", item: "Notification Task", icon: "notification", taskType: 0, sidebar: true, color: "#0D6FAA", ngModelName: "send_notification", toMaxLink: 1, fromMaxLink: 1 }, //"Notification Task"
                 ////{ key: 132, category: "activity", text: "Create Task", item: "User Task", icon: "task", taskType: 0, sidebar: true, ngModelName: "create_task", toMaxLink: 1, fromMaxLink: 1 }, //"User Task"
-                { key: 133, category: "activity", text: "WebHook", item: "WebHook Task", icon: "hook", taskType: 0, sidebar: true, ngModelName: "webHook", toMaxLink: 1, fromMaxLink: 1 }, //"WebHook Task"
+                { key: 133, category: "activity", text: "WebHook", item: "WebHook Task", icon: "hook", taskType: 0, sidebar: true, color: "#0D6FAA", ngModelName: "webHook", toMaxLink: 1, fromMaxLink: 1 }, //"WebHook Task"
                 ////{ key: 134, category: "activity", text: "Change Access", item: "Change Access", icon: "access", taskType: 0, sidebar: true, ngModelName: "access", toMaxLink: 1, fromMaxLink: 1 },
-                { key: 135, category: "activity", text: "Data Update", item: "Data Task", icon: "update", taskType: 0, sidebar: true, ngModelName: "field_update", toMaxLink: 1, fromMaxLink: 1 },
+                { key: 135, category: "activity", text: "Data Update", item: "Data Task", icon: "update", taskType: 0, sidebar: true, color: "#0D6FAA", ngModelName: "field_update", toMaxLink: 1, fromMaxLink: 1 },
                 ////{ key: 136, category: "activity", text: "Data Read", item: "Data Read Task", icon: "read", taskType: 0, sidebar: true, ngModelName: "data_read", toMaxLink: 1, fromMaxLink: 1 },
                 ////{ key: 137, category: "activity", text: "Data Add", item: "Data Add", icon: "add", taskType: 0, sidebar: true, ngModelName: "data_add", toMaxLink: 1, fromMaxLink: 1 },
                 ////{ key: 138, category: "activity", text: "Data Delete", item: "Data Delete", icon: "delete", taskType: 0, sidebar: true, ngModelName: "data_delete", toMaxLink: 1, fromMaxLink: 1 },
-               //// { key: 139, category: "activity", text: "Function", item: "Function Task", icon: "function", taskType: 0, sidebar: true, ngModelName: "function", toMaxLink: 1, fromMaxLink: 1 },
+                //// { key: 139, category: "activity", text: "Function", item: "Function Task", icon: "function", taskType: 0, sidebar: true, ngModelName: "function", toMaxLink: 1, fromMaxLink: 1 },
 
 
                 // subprocess and start and end
@@ -2012,11 +2037,13 @@ function rename(obj) {
 // shows/hides gridlines
 // to be implemented onclick of a button
 function updateGridOption(value) {
-    window.myDiagram.startTransaction("grid");
+    //window.myDiagram.startTransaction("grid");
 
-    window.myDiagram.commitTransaction("grid");
+    //window.myDiagram.commitTransaction("grid");
+     
+
     window.myDiagram.grid.visible = value;
-    window.myDiagram.grid.gridCellSize = new go.Size(20, 20);
+    //window.myDiagram.grid.gridCellSize = new go.Size(20, 20);
 
 }
 
@@ -2026,7 +2053,7 @@ function updateSnapOption(value) {
     if (value) {
         window.myDiagram.toolManager.draggingTool.isGridSnapEnabled = true;
         window.myDiagram.toolManager.resizingTool.isGridSnapEnabled = true;
-        window.myDiagram.toolManager.draggingTool.gridSnapCellSize = new go.Size(10, 5);
+        window.myDiagram.toolManager.draggingTool.gridSnapCellSize = new go.Size(20, 20);
     } else {
         window.myDiagram.toolManager.draggingTool.isGridSnapEnabled = false;
         window.myDiagram.toolManager.resizingTool.isGridSnapEnabled = false;
@@ -2254,3 +2281,5 @@ function closeElement(id) {
 function myChange() {
     document.getElementById("jsonData").innerHTML = window.myDiagram.model.toJson();
 }
+
+

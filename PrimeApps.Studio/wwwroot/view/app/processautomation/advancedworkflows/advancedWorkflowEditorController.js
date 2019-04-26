@@ -6,6 +6,8 @@ angular.module('primeapps')
         function ($rootScope, $scope, $location, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, AdvancedWorkflowsService, LayoutService, ModuleService, $http, config, operators, $localStorage, $cookies) {
             $scope.loading = true;
             $scope.saving = false;
+            $scope.gridValue = true;
+            $scope.snapValue = true;
             $scope.modalLoading = false;
             $scope.id = $location.search().id;
             $scope.workflowModel = {};
@@ -38,6 +40,9 @@ angular.module('primeapps')
                     window.updateSnapOption(value);
                 });
             };
+
+            $scope.gridChange($scope.gridValue);
+            $scope.snapeGridChange($scope.snapValue);
 
             $scope.triggerBpm = function () {
                 angular.element(function () {
@@ -1235,29 +1240,29 @@ angular.module('primeapps')
             ////};
 
             ////$scope.setFormValid = function (form) {
-                //if (!$scope.workflowForm)
-                //    $scope.workflowForm = form;
+            //if (!$scope.workflowForm)
+            //    $scope.workflowForm = form;
 
-                //$scope.workflowForm.$submitted = false;
+            //$scope.workflowForm.$submitted = false;
 
-                //if ($scope.workflowForm.recipients)
-                //    $scope.workflowForm.recipients.$setValidity('minTags', true);
+            //if ($scope.workflowForm.recipients)
+            //    $scope.workflowForm.recipients.$setValidity('minTags', true);
 
-                //$scope.workflowForm.subjectNotification.$setValidity('required', true);
-                //$scope.workflowForm.message.$setValidity('required', true);
-                //$scope.workflowForm.owner.$setValidity('minTags', true);
-                //$scope.workflowForm.subjectTask.$setValidity('required', true);
-                //$scope.workflowForm.dueDate.$setValidity('required', true);
-                //$scope.workflowForm.actions.$setValidity('actionRequired', true);
-                ////$scope.workflowForm.updateOption.$setValidity('required', true);
-                //$scope.workflowForm.callbackUrl.$setValidity('required', true);
+            //$scope.workflowForm.subjectNotification.$setValidity('required', true);
+            //$scope.workflowForm.message.$setValidity('required', true);
+            //$scope.workflowForm.owner.$setValidity('minTags', true);
+            //$scope.workflowForm.subjectTask.$setValidity('required', true);
+            //$scope.workflowForm.dueDate.$setValidity('required', true);
+            //$scope.workflowForm.actions.$setValidity('actionRequired', true);
+            ////$scope.workflowForm.updateOption.$setValidity('required', true);
+            //$scope.workflowForm.callbackUrl.$setValidity('required', true);
 
-                //if ($scope.workflowForm.updateField && $scope.workflowModel.field_update.updateOption === '1')
-                //    $scope.workflowForm.updateField.$setValidity('required', true);
+            //if ($scope.workflowForm.updateField && $scope.workflowModel.field_update.updateOption === '1')
+            //    $scope.workflowForm.updateField.$setValidity('required', true);
 
-                //if ($scope.workflowForm.updateValue && $scope.workflowModel.field_update.updateOption === '1')
-                //    $scope.workflowForm.updateValue.$setValidity('required', true);
-           //// };
+            //if ($scope.workflowForm.updateValue && $scope.workflowModel.field_update.updateOption === '1')
+            //    $scope.workflowForm.updateValue.$setValidity('required', true);
+            //// };
 
             var setWebHookModules = function () {
                 $scope.hookParameters = [];
@@ -1698,9 +1703,9 @@ angular.module('primeapps')
                         var bcc = [];
                         if (workflowModel.bcc) {
                             angular.forEach(data[currentNode.ngModelName].bcc, function (user) {
-                                 bcc.push(user.email);
-                             });
-                             data[currentNode.ngModelName].bcc = bcc;
+                                bcc.push(user.email);
+                            });
+                            data[currentNode.ngModelName].bcc = bcc;
                         }
                         else if (workflowModel.send_notification_bccmodule && workflowModel.customBcc) {
                             workflowModel.bcc = [];
@@ -2146,7 +2151,7 @@ angular.module('primeapps')
             //For Editor
 
 
-           
+
 
             var getFakeUserModule = function () {
                 var userModule = {};
