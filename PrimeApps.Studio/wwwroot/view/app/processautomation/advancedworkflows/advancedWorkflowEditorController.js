@@ -28,6 +28,7 @@ angular.module('primeapps')
             //BPM element menu loading start
             angular.element(function () {
                 window.initFunc();
+                 
             });
 
             $scope.gridChange = function (value) {
@@ -41,6 +42,18 @@ angular.module('primeapps')
                 });
             };
 
+            $scope.$watch('toggleClass', function () { 
+                $timeout(function () {
+                    $scope.triggerBpm(); 
+                }, 250);
+            });
+
+            $scope.$watch('subtoggleClass', function () { 
+                $timeout(function () {
+                    $scope.triggerBpm(); 
+                }, 250);
+            });
+
             $scope.gridChange($scope.gridValue);
             $scope.snapeGridChange($scope.snapValue);
 
@@ -49,7 +62,7 @@ angular.module('primeapps')
                     jQuery("#accordion").accordion({
                         activate: function (event, ui) {
                             window.myPaletteLevel1.requestUpdate();
-                            window.myPaletteLevel2.requestUpdate();
+                            //window.myPaletteLevel2.requestUpdate();
                         }
                     });
                     if ($scope.id) {
