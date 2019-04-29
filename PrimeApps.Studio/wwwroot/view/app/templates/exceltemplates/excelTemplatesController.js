@@ -9,7 +9,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesExcel';
 
-            $rootScope.breadcrumblist[2].title = 'Excel Templates';
+            $rootScope.breadcrumblist[2].title = 'Spreadsheet';
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];

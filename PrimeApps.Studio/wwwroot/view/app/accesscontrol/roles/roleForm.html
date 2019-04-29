@@ -2,7 +2,7 @@
     <form name="roleForm" class="form-horizontal form-custom" ng-submit="save(roleForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Roles.Title2' | translate}}</h4>
+                <h4 class="modal-title">{{role.id ? 'Edit Role' : 'New Role'}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>

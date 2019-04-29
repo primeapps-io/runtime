@@ -9,7 +9,7 @@ angular.module('primeapps')
             //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
-            $rootScope.breadcrumblist[2].title = 'Email Templates';
+            $rootScope.breadcrumblist[2].title = 'E-mail';
             $scope.moduleDisabled = false;
             $scope.activePage = 1;
 

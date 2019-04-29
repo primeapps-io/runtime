@@ -1414,7 +1414,7 @@
       "TemplateFieldName": "fieldname",
       "SelectSubModul": "Please Select Sub Module",
       "SelectMainModul": "Please Select Main Module",
-      "TemplateGuide1": "Select the module and an Excel Template download button will appear below",
+      "TemplateGuide1": "Select the module and an Spreadsheet download button will appear below",
       "TemplateGuide2": "Add the opening tag to",
       "TemplateGuide3": " to the beginning of the document.",
       "TemplateGuide4": "<br>(This tag should be at <b> the top </b> of the document. It should not be placed in any table.)",
