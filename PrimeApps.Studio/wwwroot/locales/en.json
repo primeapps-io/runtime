@@ -269,7 +269,6 @@
     "Feed": "Activity Feed",
     "Documents": "Latest Attachments",
     "RequiredError": "Highlighted fields are required and cannot be empty.",
-    "MaxValueError": ""
     "TagMaxMinError": "Highlighted search field should select up to much {{limit}} record",
     "EmailError": "Email address is invalid.",
     "RequiredAutoCompleteError": "You should select an item from list for search fields.",

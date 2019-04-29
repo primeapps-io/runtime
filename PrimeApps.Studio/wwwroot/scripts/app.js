@@ -53,40 +53,20 @@ angular.module('primeapps',
             // $locationProvider.html5Mode(true).hashPrefix('*');
 
             $locationProvider.hashPrefix('');
-            var whiteList = [];
-
-            if (cdnUrl)
-                whiteList.push(cdnUrl + '**');
-
-            if (blobUrl)
-                whiteList.push(blobUrl + '**');
-
-            if (functionUrl)
-                whiteList.push(functionUrl + '**');
-
-            if (whiteList.length > 0) {
-                whiteList.push('self');
-                $sceDelegateProvider.resourceUrlWhitelist(whiteList);
-            }
 
             $httpProvider.interceptors.push('genericInterceptor');
 
-            var language = window.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
+            moment.locale('en');
 
-            if (!language) {
-                window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', 'en');
-                language = 'en';
-            }
-            moment.locale(language);
-
+            //TODO: Delete this when multi-language support added
+            window.localStorage.removeItem('NG_TRANSLATE_LANG_KEY');
+            
             $translateProvider.useStaticFilesLoader({
                 prefix: cdnUrl + 'locales/',
                 suffix: '.json'
-            }).useLocalStorage().preferredLanguage('tr').useSanitizeValueStrategy(null);
+            }).useLocalStorage().preferredLanguage('en').useSanitizeValueStrategy(null);
 
-
-            var locale = window.localStorage['locale_key'] || language;
-            tmhDynamicLocaleProvider.defaultLocale(locale);
+            tmhDynamicLocaleProvider.defaultLocale('en');
             tmhDynamicLocaleProvider.localeLocationPattern('scripts/vendor/locales/angular-locale_{{locale}}.js');
 
             angular.extend($datepickerProvider.defaults, {
@@ -168,7 +148,6 @@ angular.module('primeapps',
 
                 var currentUrl = toState.url;
 
-
                 if (currentUrl.indexOf("moduleDesigner") > 0 || currentUrl.indexOf("workflowEditor") > 0) {
 
                     if ($rootScope.subtoggleClass == '') {
@@ -182,8 +161,8 @@ angular.module('primeapps',
                     }
                     $rootScope.cacheMenuStatus.status = true;
 
-
-                } else {
+                }
+                else {
 
                     if ($rootScope.cacheMenuStatus.status == true) {
                         if ($rootScope.cacheMenuStatus.homeMenu != 'Open')
@@ -203,10 +182,10 @@ angular.module('primeapps',
                     $rootScope.currentPath = $location.$$url;
                     $window.scrollTo(0, 0);
 
-                } catch (error) {
+                }
+                catch (error) {
                     return;
                 }
             });
-
 
         }]);
