@@ -366,11 +366,13 @@ angular.module('primeapps')
 				//menuList.newIcon = 'fa fa-eye';
 				menuList.index = $scope.index;
 				$scope.index += 1;
-				$scope.data.push(menuList);
+				//$scope.data.push(menuList);
+				/*Eklenen kategori en üstte gelmeli*/
+				$scope.data.splice(0, 0, menuList);
 
-				$scope.menu.menuItem = null;
+				/*$scope.menu.menuItem = null;
 				$scope.menu.moduleItem = null;
-				$scope.menu.menu_icon = null;
+				$scope.menu.menu_icon = null;*/
 
 			};
 
