@@ -8,7 +8,7 @@ angular.module('primeapps')
 			$scope.$parent.activeMenu = 'app';
 			$scope.$parent.activeMenuItem = 'menus';
 
-			$rootScope.breadcrumblist[2].title = 'Menu';
+			$rootScope.breadcrumblist[2].title = 'Menus';
 
 			$scope.icons = ModuleService.getIcons();
 

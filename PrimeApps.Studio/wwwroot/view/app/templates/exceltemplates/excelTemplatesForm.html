@@ -2,7 +2,7 @@
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="save(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Common.ExcelTemplate' | translate}}</h4>
+                <h4 class="modal-title">{{template.id ? 'Edit Spreadsheet' :'New Spreadsheet'}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>

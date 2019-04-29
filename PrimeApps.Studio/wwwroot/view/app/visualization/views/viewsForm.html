@@ -2,7 +2,7 @@
     <form name="viewForm" class="form-horizontal form-custom" ng-submit="save(viewForm)" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">{{'Setup.Modules.TitleFilters' | translate}}</h4>
+                <h4 class="modal-title">{{ view.id ? 'Edit View' : 'New View'}}</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <li>
