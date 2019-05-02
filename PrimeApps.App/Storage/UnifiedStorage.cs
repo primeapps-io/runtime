@@ -56,6 +56,29 @@ namespace PrimeApps.App.Storage
             {ObjectType.NONE, ""}
         };
 
+
+        const string HttpReferrerPolicy = @"{ 
+    ""Statement"":[{ 
+    ""Sid"":""Allow get requests originating from {domainName}."", 
+    ""Effect"":""Allow"", 
+    ""Principal"": { ""AWS"": ""*"" }, 
+    ""Action"":[""s3:GetObject""], 
+    ""Resource"":[""arn:aws:s3:::{bucketName}/*""] 
+}]}";
+        const string PublicReadPolicy = @"{ 
+    ""Statement"":[{ 
+    ""Sid"":""Public Read Policy for {bucketName}"", 
+    ""Effect"":""Allow"", 
+    ""Principal"": { ""AWS"": ""*"" }, 
+    ""Action"":[""s3:GetObject""], 
+    ""Resource"":[""arn:aws:s3:::{bucketName}/*""] 
+}]}";
+
+        public enum PolicyType
+        {
+            HTTPReferrer,
+            PublicRead
+        }
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
@@ -183,6 +206,30 @@ namespace PrimeApps.App.Storage
             };
 
             return await _client.PutACLAsync(request);
+        }
+
+        public async Task<PutBucketPolicyResponse> CreateHTTPReferrerBucketPolicy(string bucket, string domainName, PolicyType policyType)
+        {
+            string policy = string.Empty;
+
+            switch (policyType)
+            {
+                case PolicyType.HTTPReferrer:
+                    policy = HttpReferrerPolicy;
+                    break;
+                case PolicyType.PublicRead:
+                    policy = PublicReadPolicy;
+                    break;
+            }
+            policy = policy.Replace("{domainName}", domainName).Replace("{bucketName}", bucket);
+
+            PutBucketPolicyRequest putRequest = new PutBucketPolicyRequest
+            {
+                BucketName = bucket,
+                Policy = policy
+            };
+
+            return await _client.PutBucketPolicyAsync(putRequest);
         }
 
         /// <summary>
