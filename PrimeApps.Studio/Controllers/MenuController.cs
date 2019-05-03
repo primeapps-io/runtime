@@ -24,17 +24,19 @@ namespace PrimeApps.Studio.Controllers
 		private ISettingRepository _settingsRepository;
 		private IModuleRepository _moduleRepository;
 		private IConfiguration _configuration;
-        private IPermissionHelper _permissionHelper;
+		private IPermissionHelper _permissionHelper;
 
-        public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPermissionHelper permissionHelper)
+		public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository,
+			ISettingRepository settingsRepository, IModuleRepository moduleRepository, IConfiguration configuration,
+			IPermissionHelper permissionHelper)
 		{
 			_profileRepository = profileRepository;
 			_menuRepository = menuRepository;
 			_settingsRepository = settingsRepository;
 			_moduleRepository = moduleRepository;
 			_configuration = configuration;
-            _permissionHelper = permissionHelper;
-        }
+			_permissionHelper = permissionHelper;
+		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
@@ -88,7 +90,7 @@ namespace PrimeApps.Studio.Controllers
 			foreach (var menuCategory in menuCategories)
 			{
 				var menuCategoryItems = new List<MenuItem>();
-				menuCategory.MenuItems = menuCategory.MenuItems.Where(x => !x.Deleted).OrderBy(x => x.Order).ToList();
+				menuCategory.MenuItems = menuCategory.MenuItems.OrderBy(x => x.Order).ToList(); //Where(x => !x.Deleted)
 
 				foreach (var menuItem in menuCategory.MenuItems)
 				{
@@ -137,14 +139,16 @@ namespace PrimeApps.Studio.Controllers
 						break;
 					case "newsfeed":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasNewsFeedPermission = UserHelper.CheckPermission(PermissionEnum.Read, null, EntityType.Newsfeed, currentProfile);
+						var hasNewsFeedPermission = UserHelper.CheckPermission(PermissionEnum.Read, null,
+							EntityType.Newsfeed, currentProfile);
 
 						if (hasNewsFeedPermission)
 							return true;
 						break;
 					case "reports":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasReportsPermission = UserHelper.CheckPermission(PermissionEnum.Read, null, EntityType.Report, currentProfile);
+						var hasReportsPermission = UserHelper.CheckPermission(PermissionEnum.Read, null,
+							EntityType.Report, currentProfile);
 
 						if (hasReportsPermission)
 							return true;
@@ -155,25 +159,29 @@ namespace PrimeApps.Studio.Controllers
 						break;
 					case "timesheet":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasTimesheetPermission = UserHelper.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, currentProfile);//29 is timesheet module id
+						var hasTimesheetPermission = UserHelper.CheckPermission(PermissionEnum.Write, 29,
+							EntityType.Module, currentProfile); //29 is timesheet module id
 
 						if (hasTimesheetPermission)
 							return true;
 						break;
 					case "timetrackers":
 						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
-						var hasTimetrackersPermission = UserHelper.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, currentProfile);//35 is timetrackers module id
+						var hasTimetrackersPermission = UserHelper.CheckPermission(PermissionEnum.Write, 35,
+							EntityType.Module, currentProfile); //35 is timetrackers module id
 
 						if (hasTimetrackersPermission)
 							return true;
 						break;
 					case "analytics":
 						//TODO Removed
-						if (instance.HasAnalytics.HasValue && instance.HasAnalytics.Value /*&& AppUser.HasAnalyticsLicense*/)
+						if (instance.HasAnalytics.HasValue &&
+							instance.HasAnalytics.Value /*&& AppUser.HasAnalyticsLicense*/)
 							return true;
 						break;
 					case "expense":
-						var hasExpensePermission = UserHelper.CheckPermission(PermissionEnum.Write, 20, EntityType.Module, currentProfile); //20 is masraflar module id
+						var hasExpensePermission = UserHelper.CheckPermission(PermissionEnum.Write, 20,
+							EntityType.Module, currentProfile); //20 is masraflar module id
 						if (hasExpensePermission)
 							return true;
 						break;
@@ -181,19 +189,23 @@ namespace PrimeApps.Studio.Controllers
 
 				return false;
 			}
+
 			//TODO Removed
-			var hasPermission = true;//await Workgroup.CheckPermission(PermissionEnum.Read, menuItem.ModuleId, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);
+			var
+				hasPermission =
+					true; //await Workgroup.CheckPermission(PermissionEnum.Read, menuItem.ModuleId, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);
 
 			return hasPermission;
 		}
 
 		[Route("create"), HttpPost]
-		public async Task<IActionResult> Create([FromBody]List<Menu> menuList)
+		public async Task<IActionResult> Create([FromBody] List<Menu> menuList)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
-                return StatusCode(403);
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
+				return StatusCode(403);
 
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			var defaultMenu = new JObject();
@@ -210,8 +222,15 @@ namespace PrimeApps.Studio.Controllers
 				{
 					//check if exist default = true
 					var allMenus = await _menuRepository.GetAll();
-
-					foreach (var menuItem in allMenus.Where(x => x.Default))
+					var allMenusCopy = allMenus;
+					allMenusCopy = allMenusCopy.Where(x => x.Default).ToList();
+					/*Burada tüm menuleri' getiriyoruz daha önceden admin için menu oluşturulmuş olabilir*/
+					if (allMenusCopy.Count > 0)
+					{
+						allMenus = allMenusCopy;
+					}
+					
+					foreach (var menuItem in allMenus) 
 					{
 						if (menuItem.ProfileId != (int)defaultMenu["profile_id"])
 						{
@@ -238,12 +257,13 @@ namespace PrimeApps.Studio.Controllers
 		}
 
 		[Route("delete/{id:int}"), HttpDelete]
-		public async Task<IActionResult> Delete([FromUri]int id)
+		public async Task<IActionResult> Delete([FromUri] int id)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
-                return StatusCode(403);
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
+				return StatusCode(403);
 
-            if (id < 0)
+			if (id < 0)
 				return BadRequest("id is required");
 
 			var menuEntity = await _menuRepository.GetById(id);
@@ -259,12 +279,13 @@ namespace PrimeApps.Studio.Controllers
 
 
 		[Route("update/{id:int}"), HttpPut]
-		public async Task<IActionResult> Update(int id, [FromBody]List<Menu> menuList)
+		public async Task<IActionResult> Update(int id, [FromBody] List<Menu> menuList)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
-                return StatusCode(403);
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
+				return StatusCode(403);
 
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			if (id < 0)
@@ -306,17 +327,19 @@ namespace PrimeApps.Studio.Controllers
 
 			return Ok(menuEntity);
 		}
+
 		[Route("create/menu_items"), HttpPost]
-		public async Task<IActionResult> CreateMenuItems([FromBody]JObject request)
+		public async Task<IActionResult> CreateMenuItems([FromBody] JObject request)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
-                return StatusCode(403);
-            /**
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Create))
+				return StatusCode(403);
+			/**
 			 * moduleItem: modül
 			 * profileItem: profil 
 			 * menuItem:label-Tanım Giriş
 			 */
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			if (!request["module"].HasValues)
@@ -336,7 +359,7 @@ namespace PrimeApps.Studio.Controllers
 				//creating Label
 				//If does not have items, its main Menu 
 				// step 1
-				if (((JArray)request["module"][i]["items"]).Count > 0)
+				if (((JArray)request["module"][i]["nodes"]).Count > 0)
 				{
 					//step 1.1 helper
 					menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, null, null);
@@ -344,18 +367,37 @@ namespace PrimeApps.Studio.Controllers
 
 					if (result < 1)
 						throw new HttpResponseException(HttpStatusCode.InternalServerError);
+					
+					var parent = menuItem;
 
-					for (int j = 0; j < ((JArray)request["module"][i]["items"]).Count; j++)
+					for (int j = 0; j < ((JArray)request["module"][i]["nodes"]).Count; j++)
 					{
-						var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["items"][j]["route"].ToString()) ? await _moduleRepository.GetByName(request["module"][i]["items"][j]["menuName"].ToString()) : null;
-						var parent = await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
-						// step 1.2 helper
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["items"][j], menu, moduleEntity, parent);
+						 //await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
+											   //İlk defa create edilecek menuItemslar için
+						if ((int)request["module"][i]["nodes"][j]["id"] < 1)
+						{
+							var moduleEntity =
+								string.IsNullOrWhiteSpace(request["module"][i]["nodes"][j]["route"].ToString())? await _moduleRepository.GetByName(request["module"][i]["nodes"][j]["menuName"].ToString()): null;
+							// parent =  await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
+							// step 1.2 helper
+							menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["nodes"][j], menu, moduleEntity, parent);
 
-						result = await _menuRepository.CreateMenuItems(menuItem);
+							result = await _menuRepository.CreateMenuItems(menuItem);
 
-						if (result < 1)
-							throw new HttpResponseException(HttpStatusCode.InternalServerError);
+							if (result < 1)
+								throw new HttpResponseException(HttpStatusCode.InternalServerError);
+						}
+						//Parent create edilip, daha önceden eklenmiş olan moduller bu parent altına eklenmişse update edilecek
+						else
+						{
+							//ParentId'sini güncelliyoruz
+							request["module"][i]["nodes"][j]["parentId"] = parent.Id;
+							menuItem = await _menuRepository.GetMenuItemsById((int)request["module"][i]["nodes"][j]["id"]);
+							if (menuItem == null)
+								return NotFound();
+							menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem);
+							await _menuRepository.UpdateMenuItem(menuItem);
+						}
 					}
 				}
 
@@ -363,7 +405,9 @@ namespace PrimeApps.Studio.Controllers
 				else if ((int)request["module"][i]["parentId"] > 0)
 				{
 					//module->request["module"][i]["menuName"].ToString()
-					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString()) ? await _moduleRepository.GetByName(request["module"][i]["menuName"].ToString()) : null;
+					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString())
+						? await _moduleRepository.GetByName(request["module"][i]["menuName"].ToString())
+						: null;
 					menu = await _menuRepository.GetByProfileId((int)request["profileId"]);
 					//step 2.1 helper
 					menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null);
@@ -378,16 +422,18 @@ namespace PrimeApps.Studio.Controllers
 				{
 					//If exist id, this is update label, else id is null this is new module
 					var moduleType = (string)request["module"][i]["menuModuleType"];
-					var module = string.Equals(moduleType, "Tanım Giriş") ? null : request["module"][i]["menuName"].ToString();
-					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString()) ? await _moduleRepository.GetByName(module) : null;
+					var module = string.Equals(moduleType, "Tanım Giriş")? null: request["module"][i]["menuName"].ToString();
+					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString())? await _moduleRepository.GetByName(module): null;
 					menu = await _menuRepository.GetByProfileId((int)request["profileId"]);
 
 					if (!string.IsNullOrEmpty(module))
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null, true);
+						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null,
+							true);
 
 					//If user send only label without childs
 					else
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null, true);
+						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null,
+							true);
 
 					var result = await _menuRepository.CreateMenuItems(menuItem);
 
@@ -400,12 +446,13 @@ namespace PrimeApps.Studio.Controllers
 		}
 
 		[Route("delete/menu_items"), HttpDelete]
-		public async Task<IActionResult> DeleteMenuItems([FromBody]int[] ids)
+		public async Task<IActionResult> DeleteMenuItems([FromBody] int[] ids)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
-                return StatusCode(403);
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Delete))
+				return StatusCode(403);
 
-            var menuItemsEntity = new MenuItem();
+			var menuItemsEntity = new MenuItem();
 			foreach (var id in ids)
 			{
 				if (id < 0)
@@ -415,19 +462,20 @@ namespace PrimeApps.Studio.Controllers
 				if (menuItemsEntity == null)
 					return NotFound();
 
-				await _menuRepository.DeleteSoftMenuItems(id);
+				await _menuRepository.DeleteHardMenuItems(id);
 			}
 
-			return Ok(menuItemsEntity);
+			return Ok();
 		}
 
 		[Route("update/menu_items"), HttpPut]
-		public async Task<IActionResult> UpdateMenuItems([FromBody]JObject request)
+		public async Task<IActionResult> UpdateMenuItems([FromBody] JObject request)
 		{
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
-                return StatusCode(403);
+			if (UserProfile != ProfileEnum.Manager &&
+				!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.Update))
+				return StatusCode(403);
 
-            var menuItem = new MenuItem();
+			var menuItem = new MenuItem();
 			for (int i = 0; i < ((JArray)request["menuLabel"]).Count; i++)
 			{
 				menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["id"]);
@@ -436,16 +484,19 @@ namespace PrimeApps.Studio.Controllers
 
 				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem);
 				await _menuRepository.UpdateMenuItem(menuItem);
-				for (int j = 0; j < ((JArray)request["menuLabel"][i]["items"]).Count; j++)
+				//eğer daha önceden mevcut olan parent'ın childları varsa, childları update et
+
+				for (int j = 0; j < ((JArray)request["menuLabel"][i]["nodes"]).Count; j++)
 				{
-					menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["items"][j]["id"]);
+					menuItem = await _menuRepository.GetMenuItemsById((int)request["menuLabel"][i]["nodes"][j]["id"]);
 					if (menuItem == null)
 						return NotFound();
 
-					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["items"][j], menuItem);
+					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem);
 					await _menuRepository.UpdateMenuItem(menuItem);
 				}
 			}
+
 			return Ok(request);
 		}
 
@@ -473,7 +524,7 @@ namespace PrimeApps.Studio.Controllers
 		}
 
 		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
 		{
 			var menus = await _menuRepository.Find(paginationModel);
 
@@ -485,7 +536,7 @@ namespace PrimeApps.Studio.Controllers
 
 
 		[Route("get_menu_items/{id:int}"), HttpGet]
-		public async Task<IActionResult> GetMenuItemsByMenuId([FromUri]int menuId)
+		public async Task<IActionResult> GetMenuItemsByMenuId([FromUri] int menuId)
 		{
 			var menuItems = await _menuRepository.GetMenuItemsByMenuId(menuId);
 
@@ -494,8 +545,5 @@ namespace PrimeApps.Studio.Controllers
 
 			return Ok(menuItems);
 		}
-
 	}
-
-
 }

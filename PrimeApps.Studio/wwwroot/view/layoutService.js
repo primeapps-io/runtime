@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'icons',
-        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons) {
+    .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'icons', 'icons2',
+        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons, icons2) {
             return {
                 getAll: function () {
                     var promises = [];
@@ -31,8 +31,11 @@ angular.module('primeapps')
                 getUserAppProfile: function () {
                     return $http.get(config.apiUrl + 'app_collaborator/get_user_profile');
                 },
-                getIcons: function () {
-                    return icons.icons;
+                getIcons: function (version) {
+                    if (version === 2)
+                        return icons2.icons;
+                    else
+                        return icons.icons
                 },
                 myOrganizations: function () {
                     return $http.get(config.apiUrl + 'user/organizations');
@@ -81,8 +84,7 @@ angular.module('primeapps')
                                     profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
-                            }
-                            else {
+                            } else {
                                 section.permissions.push({
                                     id: sectionPermission.id,
                                     profile_id: profile.id,
@@ -127,8 +129,7 @@ angular.module('primeapps')
                                     var operatorLookup = operators[operatorIdLookup];
                                     field.operators.push(operatorLookup);
                                 }
-                            }
-                            else {
+                            } else {
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
                                 field.operators.push(operators.empty);
@@ -137,19 +138,16 @@ angular.module('primeapps')
                                 if (field.lookup_type === 'users') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                }
-                                else if (field.lookup_type === 'profiles') {
+                                } else if (field.lookup_type === 'profiles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                }
-                                else if (field.lookup_type === 'roles') {
+                                } else if (field.lookup_type === 'roles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                             }
 
-                        }
-                        else {
+                        } else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];
@@ -230,8 +228,7 @@ angular.module('primeapps')
                                 }
 
                                 module.display_dependencies.push(displayDependency);
-                            }
-                            else {
+                            } else {
                                 if (dependency.value_map && !angular.isArray(dependency.value_map)) {
                                     dependency.value_maps = {};
 

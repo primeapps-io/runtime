@@ -1,12 +1,12 @@
 {{- $root := . }}
-{{- range $name, $values := .Values.app.secrets }}
+{{- range $name, $values := .Values.app.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "fullname" . }}-app-{{ $name | lower }}
 data:
   {{- range $key, $value := $values }}
-  {{ $key }}: {{ $value }}
+  {{ $key }}: {{ $value | quote }}
   {{- end }}
 ---
 {{- end }}

@@ -116,7 +116,9 @@ namespace PrimeApps.Model.Repositories
                     Description = x.AppDraft.Description,
                     Logo = x.AppDraft.Logo,
                     TempletId = x.AppDraft.TempletId,
-                    Status = x.AppDraft.Status
+                    Status = x.AppDraft.Status,
+                    Icon = x.AppDraft.Icon,
+                    Color = x.AppDraft.Color
                 })
                 .Skip(50 * page)
                 .Take(50)

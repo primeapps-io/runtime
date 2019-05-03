@@ -12,7 +12,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'automation';
             $scope.$parent.activeMenuItem = 'advancedWorkflows';
             $rootScope.subtoggleClass = '';
-            $rootScope.toggleClass=''
+            $rootScope.toggleClass = ''
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
 
             $scope.generator = function (limit) {
@@ -33,10 +33,13 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
-            AdvancedWorkflowsService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
+            var count = function () {
+                AdvancedWorkflowsService.count().then(function (response) {
+                    $scope.pageTotal = response.data;
+                });
+            };
 
+            count();
             AdvancedWorkflowsService.find($scope.requestModel).then(function (response) {
                 if (response.data) {
                     var data = fillModule(response.data);
@@ -49,7 +52,7 @@ angular.module('primeapps')
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
-                $scope.count();
+                count();
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
@@ -108,12 +111,12 @@ angular.module('primeapps')
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
 
-                $scope.workflowModel = [];
+                $scope.workflowModel = []; 
                 $scope.id = null;
                 $scope.formModal.hide();
             };
 
-            $scope.delete = function (id) {
+            $scope.delete = function (workflow) {
                 swal({
                     title: "Are you sure?",
                     text: " ",
@@ -122,14 +125,16 @@ angular.module('primeapps')
                     dangerMode: true
                 }).then(function (value) {
                     if (value) {
-                        AdvancedWorkflowsService.delete(id)
+                        workflow.delete = true;
+                        AdvancedWorkflowsService.delete(workflow.id)
                             .then(function (response) {
                                 if (response.data) {
-                                    $scope.cancel();
+                                    $scope.workflowModel = [];
                                     $scope.id = null;
                                     //$state.reload();
                                     $scope.changePage(1);
                                     toastr.success("Workflow is deleted successfully.", "Deleted!");
+                                    workflow.delete = false;
                                 }
                             });
                     }
@@ -137,6 +142,6 @@ angular.module('primeapps')
             };
 
             //Modal End
-             
+
         }
     ]);

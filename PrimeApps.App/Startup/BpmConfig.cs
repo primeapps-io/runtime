@@ -10,8 +10,21 @@ namespace PrimeApps.App
 {
     public partial class Startup
     {
-        public void BpmConfiguration(IApplicationBuilder app, IConfiguration configuration)
+        public static void BpmConfiguration(IApplicationBuilder app, IConfiguration configuration)
         {
+
+            var enableBpmSetting = configuration.GetValue("AppSettings:EnableBpm", string.Empty);
+
+            if (!string.IsNullOrEmpty(enableBpmSetting))
+            {
+                var enableBpm = bool.Parse(enableBpmSetting);
+
+                if (!enableBpm)
+                    return;
+            }
+            else
+                return;
+
             var host = app.ApplicationServices.GetService<IWorkflowHost>();
 
             //Register worflows here if platform needs. Use host.RegisterWorkflow method of Worflow-Core.

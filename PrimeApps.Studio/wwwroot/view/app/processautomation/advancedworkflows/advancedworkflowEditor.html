@@ -5,11 +5,31 @@
             <div>
                 <ul class="list-unstyled list-inline">
                     <li>
-                        <a href ui-sref="studio.app.advancedWorkflows" class="btn  btn-radius btn-gray" ng-disabled="saving">
+
+                        <label class="checkbox-inline newinput" style="margin-top: 5px;">
+                            <input name="gridValue" type="checkbox" ng-change="gridChange(gridValue)" ng-model="gridValue"><small style="font-size:100%;">Grid</small>
+                            <span></span>
+                        </label>
+
+                    </li>
+                    <li>
+                        <label class="checkbox-inline newinput" style="margin-top: 5px;">
+                            <input name="snapValue" type="checkbox" ng-change="snapeGridChange(snapValue)" ng-model="snapValue"><small style="font-size:100%;">Snap Grid</small>
+                            <span></span>
+                        </label><br>
+                    </li>
+
+                    <li>
+                        <button ui-sref="studio.app.advancedWorkflows" class="btn  btn-radius btn-gray" ng-disabled="saving">
                             <i class="fas fa-angle-left"></i>
                             {{'Common.Cancel' | translate}}
-                        </a>
+                        </button>
                     </li>
+                    <!--<li>
+                        <button type="button" class="btn btn-radius btn-blue" ng-click="" ng-disabled="saving">
+                            <i class="fas fa-cog"></i>{{'Common.Settings' | translate}}
+                        </button>
+                    </li>-->
                     <li>
                         <button type="button" class="btn btn-radius btn-blue" ng-click="save();" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
@@ -37,14 +57,14 @@
             </ul>
             <!--END menu bar -->
         </div>
-        <div class="tab-content"><div id="myDiagramDiv"></div></div>
+        <div class="tab-content"><div id="myDiagramDiv" resize ></div></div>
     </div>
     <div class="col-sm-3">
         <div class="tab-content">
-            <div id="accordion">
-                <h4 style="display:none;"></h4>
-                <div>
-                    <div id="myPaletteLevel1" class="myPaletteDiv"></div>
+            <div id="accordion" class="scroll-style-4" >
+                <h4 style="display:none;" ></h4>
+                <div class="scroll-style-4">
+                    <div id="myPaletteLevel1" class="myPaletteDiv scroll-style-4"></div>
                 </div>
             </div>
         </div>

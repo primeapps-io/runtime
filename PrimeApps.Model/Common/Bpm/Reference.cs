@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PrimeApps.Model.Common.Bpm
 {
-   public class Reference
+    public class Reference
     {
         public int Id { get; set; }
 
@@ -15,5 +15,10 @@ namespace PrimeApps.Model.Common.Bpm
         public string Language { get; set; }
 
         public int TenantId { get; set; }
+
+        public int AppId { get; set; }
+
+        public int ProfileId { get; set; }
+
     }
 }

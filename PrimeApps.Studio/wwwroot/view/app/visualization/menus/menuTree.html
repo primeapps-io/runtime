@@ -1,0 +1,40 @@
+<span ui-tree-handle class="tree-node tree-node-content">
+    <span class="flex-between" ng-if="!node.isEdit">
+        <div>
+            <i class="{{node.icon}}"></i> {{node.name}}
+        </div>
+        <div>
+            <div data-nodrag class="action-buttons-block">
+                <a ng-if="!node.menuName" class="action-buttons-delete" title="{{'Common.Delete' | translate}}" ng-click="deleteItem(node,$parent.$parent.$parentNodesScope.$modelValue, $index)"><i class="fas fa-trash"></i></a>
+                <a ng-if="!node.showModuleList" class="action-buttons-edit" title="{{'Common.Edit' | translate}}" ng-click="edit(node)"><i class="fas fa-pen"></i> </a>
+                <a ng-if="!node.showModuleList" title="{{node.disabled ? 'Common.Activate':'Common.Deactivate' | translate}}" class="" ng-click="disable($parent.$parent.$modelValue, $parent.$parent.$parentNodesScope.$modelValue, $parent.$parent.$parentNodeScope.$modelValue, $index)"><i ng-class="node.disabled ? 'fas fa-eye-slash':'fas fa-eye'"></i></a>
+            </div>
+        </div>
+    </span>
+    <span class="flex-between" data-nodrag ng-if="node.isEdit">
+        <div data-nodrag class="menueditmode">
+            <input class="form-control" maxlength="50" ng-model="node.name"/>
+            <ui-select ng-model="node.icon">
+                <ui-select-match placeholder="Select an icon">
+                    <div>
+                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}">{{ $select.selected.value }}</span>
+                        <span ng-if="!$select.selected.value" class="{{$select.selected}}">{{ $select.selected }}</span>
+                    </div>
+                </ui-select-match>
+                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                    <div class="oldiconset" ng-bind-html="icon.label"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <div>
+            <div class="action-buttons-block">
+                <a class="action-buttons-check" ng-click="update(node)"><i class="fa fa-check"></i></a>
+                <a class="action-buttons-delete" title="{{'Common.Cancel' | translate}}" ng-click="editModeClose(node);"><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+    </span>
+</span>
+<ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+    <li class="category_place_holder" ui-tree-node ng-if="!node.menuName && node.nodes < 1"><span>Drag-drop here your modules</span></li>
+    <li ng-class="{'notvisible':node.disabled}" ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"> </li>
+</ol>

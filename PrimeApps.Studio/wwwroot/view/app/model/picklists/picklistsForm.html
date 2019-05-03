@@ -201,15 +201,16 @@
                             </td>
                             <td class="text-right">
                                 <div class="new-actions" ng-show="!picklistItem.edit">
+                                    <button ng-show="picklistItem.id" ng-click="editModeOpen(picklistItem)" class="edit-btn"
+                                            title="{{'Common.Edit' | translate}}">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
                                     <button ng-show="picklistItem.id" ladda="picklistItem.savingItem"
                                             ng-click="picklistItem.inactive=!picklistItem.inactive; updateItem(picklistItem)"
                                             title="{{picklistItem.inactive ? 'Common.Activate':'Common.Deactivate' | translate}}">
                                         <i ng-class="picklistItem.inactive ? 'fas fa-eye-slash':'fas fa-eye'"></i>
                                     </button>
-                                    <button ng-show="picklistItem.id" ng-click="editModeOpen(picklistItem)" class="edit-btn"
-                                            title="{{'Common.Edit' | translate}}">
-                                        <i class="fas fa-pen"></i>
-                                    </button>
+                                    
                                     <button ng-show="picklistItem.id" ladda="picklistItem.deletingItem"
                                             ng-click="deleteItem(picklistItem)" class="delete-btn"
                                             title="{{'Common.Delete' | translate}}">
@@ -217,7 +218,7 @@
                                     </button>
                                 </div>
                                 <div class="new-actions" ng-show="picklistItem.edit">
-                                    <button title="{{'Common.Save' | translate}}" ladda="picklistItem.savingItem"
+                                    <button title="{{'Common.Save' | translate}}" ladda="picklistItem.savingItem" class="check-btn"
                                             ng-click="updateItem(picklistItem); editModeClose(picklistItem);">
                                         <i class="fas fa-check"></i>
                                     </button>

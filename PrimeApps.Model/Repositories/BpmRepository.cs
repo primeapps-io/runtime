@@ -45,7 +45,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<List<BpmWorkflow>> GetByModuleId(int moduleId, bool active = true, bool deleted = false)
         {
-            var bpmWorkFlows = await DbContext.BpmWorkflows.Where(q => q.ModuleId == moduleId && q.Active == active && q.Deleted == deleted).ToListAsync();
+            var bpmWorkFlows = await DbContext.BpmWorkflows
+                .Include(x => x.Filters).Where(z => !z.Deleted)
+                .Where(q => q.ModuleId == moduleId && q.Active == active && q.Deleted == deleted).ToListAsync();
 
             return bpmWorkFlows;
         }
@@ -74,6 +76,7 @@ namespace PrimeApps.Model.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Module = x.Module,
+                    ModuleId=x.ModuleId,
                     RecordOperations = x.RecordOperations,
                     Active = x.Active,
                     Deleted = x.Deleted

@@ -1,12 +1,12 @@
 {{- $root := . }}
-{{- range $name, $values := .Values.auth.secrets }}
+{{- range $name, $values := .Values.auth.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "fullname" . }}-auth-{{ $name | lower }}
 data:
   {{- range $key, $value := $values }}
-  {{ $key }}: {{ $value }}
+  {{ $key }}: {{ $value | quote }}
   {{- end }}
 ---
 {{- end }}

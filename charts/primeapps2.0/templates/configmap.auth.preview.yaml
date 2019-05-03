@@ -1,13 +1,13 @@
 {{- if eq .Values.deployment "internal" }}
 {{- $root := . }}
-{{- range $name, $values := .Values.authPre.secrets }}
+{{- range $name, $values := .Values.authPre.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "fullname" . }}-auth-pre-{{ $name | lower }}
 data:
   {{- range $key, $value := $values }}
-  {{ $key }}: {{ $value }}
+  {{ $key }}: {{ $value  | quote }}
   {{- end }}
 ---
 {{- end }}

@@ -5,7 +5,15 @@
   right: -5px;
   border: none;
 }
-
+@keyframes pagepointmove {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
 
 .flexy{
   display:flex;
@@ -112,14 +120,14 @@ $primeapps-color: #0D6FAA;
       ~ span {
         display: block;
         position: relative;
-        padding: 25px 25px 20px 25px;
-        background: rgba(0, 0, 0, 0.1);
+        padding: 15px 15px 10px 15px;
+        background: rgba(0, 0, 0, 0.05);
         border-radius: 2px;
         text-align: center;
         color: rgba(0, 0, 0, 0.25);
         @include hoverEffect();
         i {
-          font-size: 50px;
+          font-size: 40px;
           display: block;
         }
         small {
@@ -129,11 +137,11 @@ $primeapps-color: #0D6FAA;
         &:before {
           content: "";
           padding: 5px;
-          left: 10px;
-          top: 10px;
+          left: 8px;
+          top: 8px;
           position: absolute;
-          width: calc(100% - 20px);
-          height: calc(100% - 20px);
+          width: calc(100% - 16px);
+          height: calc(100% - 16px);
           border: 1px dashed rgba(0, 0, 0, 0.1);
           z-index: 1;
           @include hoverEffect();
@@ -142,13 +150,12 @@ $primeapps-color: #0D6FAA;
       &:hover, &:focus, &.nv-file-over {
         ~ span {
           color: rgba(0, 0, 0, 0.5);
-          background: rgba(0, 0, 0, 0.15);
           &:before {
             border-color: rgba(0, 0, 0, 0.25);
-            left: 15px;
-            top: 15px;
-            width: calc(100% - 30px);
-            height: calc(100% - 30px);
+            left: 13px;
+            top: 13px;
+            width: calc(100% - 26px);
+            height: calc(100% - 26px);
           }
         }
       }
@@ -1018,7 +1025,7 @@ button, select {
 
   .create-app-btn {
     font-family: Nunito;
-    font-size: 16px;
+    font-size: 14px !important;
     font-weight: bold;
     font-style: normal;
     font-stretch: normal;
@@ -1074,6 +1081,55 @@ button, select {
       }
 
     }
+  }
+  .b_loginpage{
+    position: relative;
+    display: block;
+    span{
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      z-index: 5;
+      text-align: center;
+      color: #FFF;
+      background: #F06933;
+      border-radius: 50%;
+      &:after{
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;  
+        border-radius: 50%;
+        background: #F06933;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        z-index: -1;
+        animation: pagepointmove 1s linear infinite;
+      }
+      
+    }
+  }
+  .custom-tabx{
+    .tab-content{
+      background: #FFF;
+      box-shadow: none;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-top: -1px;
+      border-top-left-radius: 0px;
+    } 
+    .nav-tabs > li.active > a,.nav-tabs > li > a:hover{
+      background: #FFF !important;
+    }
+    a{
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
   }
 
   .table-responsive {
@@ -2238,6 +2294,241 @@ button, select {
     }
 
   }
+  .iconandcolor{
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+  }
+  .appicon{
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+    padding: 20px;
+    line-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    @include hoverEffect();
+    &:before{
+      
+      content: "\f107";
+      font-weight: 900;
+      font-family: "Font Awesome 5 Free";
+      -webkit-font-smoothing: antialiased;
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      line-height: 1;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      margin-top: -10px;
+      line-height: 20px;
+      font-size: 18px;
+    }
+    .icon-search-list{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      left: 0px;
+      top: 0px;
+      line-height: inherit;
+      border-radius: 50%;
+      background: transparent;
+      
+    }
+    .ui-select-container{
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      .ui-select-match{
+        width: 100%;
+        height: 100%;
+      }
+      .form-control,.ui-select-search{
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        opacity: 0;
+      }
+      .ui-select-choices{
+        top: 110px;
+        height: 140px;
+        width: 360px !important;
+      }
+    }
+    &:hover{
+      background: rgba(0, 0, 0, 0.75) !important;
+      
+    }
+  }
+  
+  .appcolor{
+    &:after{
+      content:'';
+      width: 100%;
+      display: table;
+    }
+    span{
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      border-radius: 10px;
+      background: #FFF;
+      position: relative;
+      margin: 6px;
+      cursor: pointer;
+      float:left;
+      &:after{
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        display: inline-block;
+        left: 50%;
+        top: 50%;
+        border: 2px solid $primeapps-color;
+        @include hoverEffect();
+        visibility: hidden;
+        opacity: 0;
+      }
+      &:hover{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: .5;
+        }
+      }
+      &.active{
+        &:after{
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+  }
+  .appbox2{
+    @include hoverEffect();
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    .tooltip.tooltip-success .tooltip-inner {
+      background-color: rgba(0, 0, 0, 1);
+      border-color: rgba(0, 0, 0,1);
+      font-weight: bold;
+      color: #fff;
+    }
+    .tooltip.tooltip-success.top .tooltip-arrow {
+      border-top-color: rgba(0, 0, 0, 1);
+    }
+    .appmanage{
+      color: rgba(0,0,0,0.25);
+      font-size: 16px;
+      line-height: 20px;
+      &:hover{
+        color: rgba(0,0,0,0.5);
+      }
+    }
+    .oval {
+      span {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        display: block;
+        &.oval-green {
+          background-color: #92c549;
+        }
+
+        &.oval-orange {
+          background-color: #e08340;
+        }
+
+        &.oval-gray {
+          background-color: #bfbfbf;
+        }
+      }
+    }
+    .appicon2{
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      padding: 20px;
+      line-height: 60px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 35px;
+      position: relative;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn{
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .apptext{
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      > div{
+        width: 100%;
+      }
+      h3,h4{
+        line-height: 20px;
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        font-weight: bold;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center;
+      }
+      h4{
+        font-size: 14px;
+        line-height: 15px;
+        font-weight: 400;
+      }
+    }
+    &:hover{
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+      h3,h4{
+        color: $primeapps-color;
+      }
+      
+      .apptext{
+        button{
+          background: $primeapps-color;
+        }
+      }
+    }
+  }
 
   .dropdown-menu {
     border: none;
@@ -2951,6 +3242,19 @@ button, select {
     align-items: center;
     width: 100%;
   }
+  .flex-around {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+  }
+  .flex-evenly {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+  }
+  
 
   .btn {
     padding: 5px 10px;
@@ -3655,23 +3959,26 @@ button, select {
       text-decoration: none;
       cursor: pointer;
     }
+    .form-control{
+      height: 35px;
+    }
     ol {
       li {
         position: relative;
         > span {
-          width: 100%;
+          width: calc(100% - 15px);
           display: block;
-          line-height: 25px;
+          line-height: 35px;
           background: rgba(0, 0, 0, 0.03);
-          margin-bottom: 5px;
           padding: 5px 10px;
           border-radius: 5px;
           font-weight: bold;
+          margin: 10px 0px 10px 15px;
         }
         &:before {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 0px;
           width: 1px;
           height: 15px;
@@ -3680,7 +3987,7 @@ button, select {
         &:after {
           content: '';
           position: absolute;
-          left: -15px;
+          left: 0px;
           top: 15px;
           width: 10px;
           height: 1px;
@@ -3696,12 +4003,48 @@ button, select {
         }
       }
     }
+    .ui-select-choices-group{
+      &:before, &:after {
+        display: none;
+      }
+    }
+    .menueditmode{
+      padding-right: 60px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .ui-select-bootstrap{
+        height: 35px;
+        line-height: 35px;
+        margin-left: 10px;
+        .form-control{
+          height: 35px;
+          line-height: 35px;
+        }
+        .ui-select-match-text{
+          > div{
+            height: 28px;
+            display: flex;
+            align-items: center;
+          }
+          span{
+            font-weight: bold;
+            height: 15px;
+            &:before{
+              padding-right: 5px;
+              display: inline-block;
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
 
     .action-buttons-block {
       display: inline-block;
       position: absolute;
       right: 10px;
-      top: 5px;
+      top: 10px;
       width: auto;
       line-height: 25px;
 
@@ -3738,14 +4081,49 @@ button, select {
             color: #FFF;
           }
         }
-
+        &.action-buttons-check {
+          background: rgba(77, 170, 62, 0.75);
+          color: #FFF;
+          &:hover {
+            background: rgba(77, 170, 62, 1);
+            color: #FFF;
+          }
+        }
         &:hover {
           background: rgba(13, 111, 170, 1);
           color: rgba(255, 255, 255, 1);
         }
 
       }
+      
     }
+    .notvisible{
+      > span{
+        background: rgba(0, 0, 0, 0.01);
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+    .category{
+      > ol{
+        .category_place_holder{
+          > span{
+            background: transparent;
+            border: 1px dashed rgba(0, 0, 0, 0.25);
+            color: rgba(0, 0, 0, 0.25);
+            padding: 4px 10px;
+          }
+        }
+      }
+      
+      
+    }
+    /*.angular-ui-tree-placeholder {
+      background: #f0f9ff;
+      border: 2px dashed #bed2db;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }*/
   }
   .uploadedfilename {
     padding: 5px 10px;
@@ -3772,6 +4150,22 @@ button, select {
       background: $primeapps-color;
       color: #FFF;
       border-radius: 100px;
+    }
+  }
+  .oldiconset{
+    i{
+      font: normal normal normal 14px/1 Nunito;
+      &:before{
+        width: 30px;
+        display: inline-block;
+        text-align: center;
+        font: normal normal normal 14px/1 FontAwesome;
+      }
+    }
+  }
+  .setup-modal{
+    ul.dropdown-menu{
+      font-family: inherit !important;
     }
   }
   .primetabs {
@@ -3866,6 +4260,14 @@ button, select {
         color: #FFF;
         &:hover {
           background: rgba(206, 4, 4, 1);
+          color: #FFF;
+        }
+      }
+      &.check-btn {
+        background: rgba(77, 170, 62, 0.75);
+        color: #FFF;
+        &:hover {
+          background: rgba(77, 170, 62, 1);
           color: #FFF;
         }
       }
@@ -4068,6 +4470,21 @@ button, select {
           opacity: 1;
         }
       }
+    }
+  }
+  .angular-ui-tree-drag{
+    .tree-node{
+      width: 100%;
+      display: block;
+      line-height: 25px;
+      background: rgba(0, 0, 0, 0.03);
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .action-buttons-block{
+      display:none;
     }
   }
 }

@@ -43,11 +43,11 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.auth.secrets }}
+            {{- range $ref, $values := .Values.auth.config }}
             {{- range $key, $value := $values }}
             - name: {{ $ref }}__{{ $key }}
               valueFrom:
-                secretKeyRef:
+                configMapKeyRef:
                   name: {{ template "fullname" . }}-auth-{{ $ref | lower }}
                   key: {{ $key }}
             {{- end }}
