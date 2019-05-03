@@ -41,7 +41,6 @@ namespace PrimeApps.Auth.Controllers
         private IRoleRepository _roleRepository;
         private readonly IEventService _events;
         private IConfiguration _configuration;
-
         private IUserHelper _userHelper;
 
         public UserController(
@@ -91,7 +90,7 @@ namespace PrimeApps.Auth.Controllers
             //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
             var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
 
-            var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+            var platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
 
             var password = Utils.GenerateRandomUnique(8);
 
@@ -169,7 +168,7 @@ namespace PrimeApps.Auth.Controllers
             //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
             var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
 
-            var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+            var platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
 
             var password = Utils.GenerateRandomUnique(8);
 
@@ -293,7 +292,7 @@ namespace PrimeApps.Auth.Controllers
             }
             else
             {
-                platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+                platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
             }
 
             var appInfo = await _applicationRepository.Get(addUserBindingModel.AppId);

@@ -157,7 +157,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
                 var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
@@ -191,7 +191,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, uniqueName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, uniqueName, stream);
                 }
 
                 var result = new DocumentUploadResult
@@ -289,7 +289,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
                 var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);

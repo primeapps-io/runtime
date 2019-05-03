@@ -7,8 +7,13 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Storage
 {
@@ -17,12 +22,26 @@ namespace PrimeApps.Studio.Storage
     /// </summary>
     public class UnifiedStorage : IUnifiedStorage
     {
+        private IBackgroundTaskQueue _queue;
+        private IHistoryHelper _historyHelper;
         private IAmazonS3 _client;
-        public IAmazonS3 Client { get { return _client; } }
+        private IHttpContextAccessor _context;
 
-        public UnifiedStorage(IAmazonS3 client)
+        public IAmazonS3 Client
+        {
+            get { return _client; }
+        }
+
+        private CurrentUser _currentUser { get; set; }
+
+        private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
+
+        public UnifiedStorage(IAmazonS3 client, IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context)
         {
             _client = client;
+            _queue = queue;
+            _historyHelper = historyHelper;
+            _context = context;
             ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
         }
 
@@ -65,13 +84,17 @@ namespace PrimeApps.Studio.Storage
         /// <param name="key"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public async Task Upload(string bucket, string key, Stream stream)
+        public async Task Upload(string fileName, string bucket, string key, Stream stream)
         {
             await CreateBucketIfNotExists(bucket);
 
             using (TransferUtility transUtil = new TransferUtility(_client))
             {
                 await transUtil.UploadAsync(stream, bucket, key);
+                var currenUser = CurrentUser;
+
+                var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+                _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currenUser));
             }
         }
 
@@ -83,7 +106,6 @@ namespace PrimeApps.Studio.Storage
         /// <returns>Upload id required to upload parts.</returns>
         public async Task<string> InitiateMultipartUpload(string bucket, string key)
         {
-
             bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
             if (!exists)
             {
@@ -202,6 +224,7 @@ namespace PrimeApps.Studio.Storage
                 }
             }
         }
+
         /// <summary>
         /// Deletes a bucket with everything under it.
         /// </summary>
@@ -258,6 +281,7 @@ namespace PrimeApps.Studio.Storage
             };
             return await _client.CopyObjectAsync(request);
         }
+
         /// <summary>
         /// Deletes an object from a bucket.
         /// </summary>
@@ -287,7 +311,7 @@ namespace PrimeApps.Studio.Storage
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
-        
+
         public static string GetPathComponents(string folderName, string componentName)
         {
             return $"components/{folderName}/{componentName}";

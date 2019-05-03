@@ -93,7 +93,7 @@ namespace PrimeApps.Model.Context
         private void CreateModelMapping(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UsersUserGroup>()
-                .HasKey(ug => new { ug.UserId, ug.UserGroupId });
+                .HasKey(ug => new {ug.UserId, ug.UserGroupId});
 
             modelBuilder.Entity<UsersUserGroup>()
                 .HasOne(ug => ug.User)
@@ -118,7 +118,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ViewShares>()
-                .HasKey(vs => new { vs.UserId, vs.ViewId });
+                .HasKey(vs => new {vs.UserId, vs.ViewId});
 
             modelBuilder.Entity<ViewShares>()
                 .HasOne(vs => vs.User)
@@ -176,7 +176,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AnalyticShares>()
-                .HasKey(t => new { t.UserId, t.AnaltyicId });
+                .HasKey(t => new {t.UserId, t.AnaltyicId});
 
             modelBuilder.Entity<AnalyticShares>()
                 .HasOne(pt => pt.Analytic)
@@ -189,7 +189,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<TemplateShares>()
-                .HasKey(t => new { t.UserId, t.TemplateId }); /*We must ensure the primary key constraint names are matching*/
+                .HasKey(t => new {t.UserId, t.TemplateId}); /*We must ensure the primary key constraint names are matching*/
 
             modelBuilder.Entity<TemplateShares>()
                 .HasOne(pt => pt.Template)
@@ -202,7 +202,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<NoteLikes>()
-                .HasKey(t => new { t.UserId, t.NoteId });
+                .HasKey(t => new {t.UserId, t.NoteId});
 
             modelBuilder.Entity<NoteLikes>()
                 .HasOne(pt => pt.Note)
@@ -215,7 +215,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<ReportShares>()
-                .HasKey(t => new { t.UserId, t.ReportId });
+                .HasKey(t => new {t.UserId, t.ReportId});
 
             modelBuilder.Entity<ReportShares>()
                 .HasOne(pt => pt.Report)
@@ -243,7 +243,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.Deleted);
 
             //ActionButtonPermission
-            modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => new { x.ActionButtonId, x.ProfileId }).IsUnique().HasName("action_button_permissions_IX_action_button_id_profile_id");
+            modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => new {x.ActionButtonId, x.ProfileId}).IsUnique().HasName("action_button_permissions_IX_action_button_id_profile_id");
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.Deleted);
@@ -316,7 +316,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Document>().HasIndex(x => x.Deleted);
 
             //Field
-            modelBuilder.Entity<Field>().HasIndex(x => new { x.ModuleId, x.Name }).HasName("fields_IX_module_id_name").IsUnique();
+            modelBuilder.Entity<Field>().HasIndex(x => new {x.ModuleId, x.Name}).HasName("fields_IX_module_id_name").IsUnique();
             modelBuilder.Entity<Field>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Field>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Field>().HasIndex(x => x.Deleted);
@@ -324,7 +324,7 @@ namespace PrimeApps.Model.Context
             //FieldCombination
             //FieldFilter
             //FieldPermission
-            modelBuilder.Entity<FieldPermission>().HasIndex(x => new { x.FieldId, x.ProfileId }).HasName("field_permissions_IX_field_id_profile_id");
+            modelBuilder.Entity<FieldPermission>().HasIndex(x => new {x.FieldId, x.ProfileId}).HasName("field_permissions_IX_field_id_profile_id");
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.Deleted);
@@ -436,13 +436,13 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ReportCategory>().HasIndex(x => x.Deleted);
 
             //Section
-            modelBuilder.Entity<Section>().HasIndex(x => new { x.ModuleId, x.Name }).HasName("sections_IX_module_id_name").IsUnique();
+            modelBuilder.Entity<Section>().HasIndex(x => new {x.ModuleId, x.Name}).HasName("sections_IX_module_id_name").IsUnique();
             modelBuilder.Entity<Section>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Section>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Section>().HasIndex(x => x.Deleted);
 
             //SectionPermission
-            modelBuilder.Entity<SectionPermission>().HasIndex(x => new { x.SectionId, x.ProfileId }).HasName("section_permissions_IX_section_id_profile_id").IsUnique();
+            modelBuilder.Entity<SectionPermission>().HasIndex(x => new {x.SectionId, x.ProfileId}).HasName("section_permissions_IX_section_id_profile_id").IsUnique();
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.Deleted);
@@ -455,14 +455,14 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Setting>().HasIndex(x => x.Deleted);
 
             //Template
-            modelBuilder.Entity<Template>().HasIndex(x => new { x.Code, x.Language }).IsUnique();
+            modelBuilder.Entity<Template>().HasIndex(x => new {x.Code, x.Language}).IsUnique();
             modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<Template>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Template>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Template>().HasIndex(x => x.Deleted);
 
             //TemplatePermission
-            modelBuilder.Entity<TemplatePermission>().HasIndex(x => new { x.TemplateId, x.ProfileId }).HasName("template_permissions_IX_template_id_profile_id").IsUnique();
+            modelBuilder.Entity<TemplatePermission>().HasIndex(x => new {x.TemplateId, x.ProfileId}).HasName("template_permissions_IX_template_id_profile_id").IsUnique();
             modelBuilder.Entity<TemplatePermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<TemplatePermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<TemplatePermission>().HasIndex(x => x.Deleted);
@@ -476,14 +476,14 @@ namespace PrimeApps.Model.Context
 
             //View
             modelBuilder.Entity<View>().HasIndex(x => x.ModuleId);
-            modelBuilder.Entity<View>().HasIndex(x => new { x.ModuleId, x.SystemCode }).HasName("views_IX_module_id_system_code").IsUnique();
+            modelBuilder.Entity<View>().HasIndex(x => new {x.ModuleId, x.SystemCode}).HasName("views_IX_module_id_system_code").IsUnique();
             modelBuilder.Entity<View>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<View>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<View>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<View>().HasIndex(x => x.Deleted);
 
             //ViewState
-            modelBuilder.Entity<ViewState>().HasIndex(x => new { x.ModuleId, x.UserId }).HasName("view_states_IX_module_id_user_id").IsUnique();
+            modelBuilder.Entity<ViewState>().HasIndex(x => new {x.ModuleId, x.UserId}).HasName("view_states_IX_module_id_user_id").IsUnique();
             modelBuilder.Entity<ViewState>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ViewState>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ViewState>().HasIndex(x => x.Deleted);
@@ -552,8 +552,9 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
         }
-        
-        public DbSet<CommandHistory> CommandHistories { get; set; }
+
+        public DbSet<HistoryDatabase> HistoryDatabases { get; set; }
+        public DbSet<HistoryStorage> HistoryStorages { get; set; }
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Profile> Profiles { get; set; }

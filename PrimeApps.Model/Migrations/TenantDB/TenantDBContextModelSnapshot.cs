@@ -687,33 +687,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("charts");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.CommandHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("CommandText")
-                        .HasColumnName("command_text");
-
-                    b.Property<string>("CreatedByEmail")
-                        .IsRequired()
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("ExecutedAt")
-                        .HasColumnName("executed_at");
-
-                    b.Property<int>("RecordId")
-                        .HasColumnName("record_id");
-
-                    b.Property<string>("TableName")
-                        .HasColumnName("table_name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("command_history");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Component", b =>
                 {
                     b.Property<int>("Id")
@@ -1771,6 +1744,72 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("helps");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.HistoryDatabase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CommandId")
+                        .HasColumnName("command_id");
+
+                    b.Property<string>("CommandText")
+                        .HasColumnName("command_text");
+
+                    b.Property<string>("CreatedByEmail")
+                        .IsRequired()
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime?>("ExecutedAt")
+                        .HasColumnName("executed_at");
+
+                    b.Property<string>("TableName")
+                        .HasColumnName("table_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("history_database");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.HistoryStorage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<string>("CreatedByEmail")
+                        .IsRequired()
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime?>("ExecutedAt")
+                        .HasColumnName("executed_at");
+
+                    b.Property<string>("FileName")
+                        .HasColumnName("file_name");
+
+                    b.Property<string>("MimeType")
+                        .HasColumnName("mime_type");
+
+                    b.Property<string>("Operation")
+                        .HasColumnName("operation");
+
+                    b.Property<string>("Path")
+                        .HasColumnName("path");
+
+                    b.Property<string>("UniqueName")
+                        .HasColumnName("unique_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("history_storage");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Import", b =>

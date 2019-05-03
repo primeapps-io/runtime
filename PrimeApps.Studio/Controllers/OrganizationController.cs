@@ -398,7 +398,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (var httpClient = new HttpClient())
                 {
-                    var platformUser = await _platformUserRepository.Get(model.Email);
+                    var platformUser = await _platformUserRepository.GetAsync(model.Email);
                     
                     if (platformUser == null)
                     {
@@ -417,7 +417,7 @@ namespace PrimeApps.Studio.Controllers
                         if (!response.IsSuccessStatusCode)
                             return BadRequest(response);
                         
-                        platformUser = await _platformUserRepository.Get(model.Email);
+                        platformUser = await _platformUserRepository.GetAsync(model.Email);
                     }
                     
                     var studioUser = await _studioUserRepository.GetWithOrganizations(platformUser.Id);
@@ -576,7 +576,7 @@ namespace PrimeApps.Studio.Controllers
             if (string.IsNullOrEmpty(email))
                 return BadRequest("Email is required!");
 
-            var result = await _platformUserRepository.Get(email);
+            var result = await _platformUserRepository.GetAsync(email);
 
             return Ok(result);
         }

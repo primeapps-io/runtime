@@ -1,5 +1,7 @@
 using System;
+using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -17,23 +19,38 @@ namespace PrimeApps.Studio.Services
     {
         private IConfiguration _configuration;
         private IBackgroundTaskQueue _queue;
-        private ICommandHistoryHelper _commandHistoryHelper;
+        private IHistoryHelper _historyHelper;
         private IHttpContextAccessor _context;
-        private static DbCommand _currentCommand;
 
-        public CommandListener(IBackgroundTaskQueue queue, ICommandHistoryHelper commandHistoryHelper, IHttpContextAccessor context, IConfiguration configuration)
+        private CurrentUser _currentUser { get; set; }
+        private DbCommand _command;
+        private bool _hastExecuting = false;
+        private Guid? _lastCommandId = null;
+
+        private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
+
+        public CommandListener(IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context, IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
             _queue = queue;
-            _commandHistoryHelper = commandHistoryHelper;
+            _historyHelper = historyHelper;
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuting")]
         public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId, Guid connectionId, bool async, DateTimeOffset startTime)
         {
-            Console.WriteLine("OnCommandExecuting");
-            _currentCommand = command;
+            if ((command.CommandText.StartsWith("INSERT", true, null) && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage")) ||
+                command.CommandText.StartsWith("UPDATE", true, null) ||
+                command.CommandText.StartsWith("CREATE", true, null) ||
+                command.CommandText.StartsWith("DELETE", true, null) ||
+                command.CommandText.StartsWith("DROP", true, null) ||
+                command.CommandText.StartsWith("ALTER", true, null))
+            {
+                _lastCommandId = commandId;
+                _hastExecuting = true;
+                _command = command;
+            }
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted")]
@@ -41,46 +58,41 @@ namespace PrimeApps.Studio.Services
         {
             if (result == null) return;
 
-            DbCommand dbCommand;
-            RelationalDataReader command = null;
-            if (!(result is RelationalDataReader)  && _currentCommand != null)
-                dbCommand = _currentCommand;
+            DbCommand command;
+            if (!(result is RelationalDataReader) && _command != null)
+                command = _command;
             else
             {
-                command = (RelationalDataReader)result;
-                dbCommand = command.DbCommand;
+                command = ((RelationalDataReader)result).DbCommand;
             }
 
-            if (dbCommand.CommandText.StartsWith("INSERT", true, null) ||
-                dbCommand.CommandText.StartsWith("UPDATE", true, null) ||
-                dbCommand.CommandText.StartsWith("CREATE", true, null) ||
-                dbCommand.CommandText.StartsWith("DELETE", true, null) ||
-                dbCommand.CommandText.StartsWith("DROP", true, null) ||
-                dbCommand.CommandText.StartsWith("ALTER", true, null))
+            if (command != null && (command.CommandText.StartsWith("INSERT", true, null) && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage")) ||
+                command.CommandText.StartsWith("UPDATE", true, null) ||
+                command.CommandText.StartsWith("CREATE", true, null) ||
+                command.CommandText.StartsWith("DELETE", true, null) ||
+                command.CommandText.StartsWith("DROP", true, null) ||
+                command.CommandText.StartsWith("ALTER", true, null))
             {
-                Console.WriteLine("OnCommandExecuted");
-                var rawQuery = GetGeneratedQuery(dbCommand);
-
-                JArray queryResult = command.DbDataReader.ResultToJArray();
-
-                int recordId = 0;
-
-                if (queryResult.HasValues)
+                if (_hastExecuting && _lastCommandId.HasValue)
                 {
-                    recordId = queryResult.First.Value<int>("id");
+                    var rawQuery = GetGeneratedQuery(_command);
+                    var executedAt = DateTime.Now;
+                    var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+                    var currenUser = CurrentUser;
+                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(rawQuery, executedAt, email, currenUser, (Guid)_lastCommandId));
                 }
 
-                var executedAt = DateTime.Now;
-                var email = _context.HttpContext.User.FindFirst("email").Value;
-                //var tracerHelper = _app.ApplicationServices.GetService<ITracerHelper>();
-                _queue.QueueBackgroundWorkItem(async token => _commandHistoryHelper.Add(rawQuery, executedAt, email, recordId));
+                _hastExecuting = false;
             }
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandError")]
-        public void OnCommandError(Exception exception, bool async)
+        public void OnCommandError(Exception ex, bool async)
         {
-            Console.WriteLine("OnCommandError");
+            var currenUser = CurrentUser;
+
+            if (_lastCommandId.HasValue && _hastExecuting)
+                _queue.QueueBackgroundWorkItem(token => _historyHelper.DeleteDbRecord(currenUser, (Guid)_lastCommandId));
         }
 
         public string GetGeneratedQuery(DbCommand dbCommand)
@@ -88,7 +100,35 @@ namespace PrimeApps.Studio.Services
             var query = dbCommand.CommandText;
             foreach (DbParameter parameter in dbCommand.Parameters)
             {
-                query = query.Replace(parameter.ParameterName, parameter.Value.ToString());
+                var value = "";
+
+                if (string.IsNullOrEmpty(parameter.Value.ToString()) && parameter.IsNullable)
+                    value = "NULL";
+                else
+                    value = parameter.Value.ToString();
+
+                if (value != "NULL")
+                {
+                    if (parameter.DbType == DbType.DateTime)
+                    {
+                        var e = DateTime.Parse(value);
+
+                        value = "'" + e.ToString("yyyy-MM-dd hh:mm:ss.fffff") + "'";
+                    }
+                    else if (parameter.DbType == DbType.String)
+                    {
+                        value = "'" + value.ToString() + "'";
+                    }
+                    else if (parameter.DbType == DbType.Boolean)
+                    {
+                        value = bool.Parse(value) ? "'t'" : "'f'";
+                    }
+                }
+
+                if (query.Contains(parameter.ParameterName + ","))
+                    query = query.Replace(parameter.ParameterName + ",", value + ",");
+                else
+                    query = query.Replace(parameter.ParameterName, value);
             }
 
             return query;

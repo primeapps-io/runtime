@@ -159,7 +159,7 @@ namespace PrimeApps.Studio.Helpers
                                     writer.Flush();
                                     stream.Position = 0;
 
-                                    await _storage.Upload(bucketName, fileName, stream);
+                                    await _storage.Upload(path, bucketName, fileName, stream);
 
                                     if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
                                     {
@@ -172,7 +172,7 @@ namespace PrimeApps.Studio.Helpers
                                         content["files"].FirstOrDefault(i => i.Type == JTokenType.String && (string)i == fileName)?.Replace(url);
                                     }
                                 }
-                                
+
                                 component.Content = JsonConvert.SerializeObject(content);
                                 await _componentRepository.Update(component);
 

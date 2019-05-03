@@ -402,7 +402,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var userEntity = await _platformUserRepository.Get(email);
+            var userEntity = await _platformUserRepository.GetAsync(email);
 
             if (userEntity == null)
                 return NotFound();

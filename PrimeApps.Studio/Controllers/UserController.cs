@@ -172,7 +172,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
                 var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);

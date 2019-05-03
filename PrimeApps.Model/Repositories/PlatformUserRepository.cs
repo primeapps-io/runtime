@@ -4,6 +4,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,11 +29,17 @@ namespace PrimeApps.Model.Repositories
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<PlatformUser> Get(string email)
+        public async Task<PlatformUser> GetAsync(string email)
         {
             return await DbContext.Users
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
+        }
+        
+        public PlatformUser Get(string email)
+        {
+            return DbContext.Users
+                .SingleOrDefault(x => x.Email == email);
         }
 
         public async Task<List<PlatformUser>> GetByIds(List<int> ids)

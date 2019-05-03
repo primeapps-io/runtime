@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,8 @@ using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Helpers;
 using PrimeApps.Auth.Models;
 using PrimeApps.Auth.Providers;
+using PrimeApps.Auth.Repositories;
+using PrimeApps.Auth.Repositories.IRepositories;
 using PrimeApps.Auth.Services;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
@@ -27,12 +30,12 @@ namespace PrimeApps.Auth
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
 
             //Register all repositories
-            foreach (var assembly in new[] { "PrimeApps.Model" })
+            foreach (var assembly in new[] {"PrimeApps.Model"})
             {
                 var assemblies = Assembly.Load(assembly);
                 var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
@@ -54,6 +57,7 @@ namespace PrimeApps.Auth
                 }
             }
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<QueuedHostedService>();
             services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
@@ -66,6 +70,7 @@ namespace PrimeApps.Auth
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
 
             services.AddScoped<SignInManager<ApplicationUser>, ApplicationSignInManager>();
+            services.AddTransient<IClientRepository, ClientRepository>();
         }
     }
 }

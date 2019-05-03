@@ -128,7 +128,7 @@ namespace PrimeApps.Studio
                 var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
                 var context = app.ApplicationServices.GetService<IHttpContextAccessor>();
-                var tracerHelper = app.ApplicationServices.GetService<ICommandHistoryHelper>();
+                var tracerHelper = app.ApplicationServices.GetService<IHistoryHelper>();
                 
                 var listener = databaseContext.GetService<DiagnosticSource>();
                 (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, tracerHelper, context, Configuration));

@@ -18,7 +18,7 @@ namespace PrimeApps.Studio.Storage
         Task<FileStreamResult> Download(string bucket, string key, string fileName);
         string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true);
         Task<string> InitiateMultipartUpload(string bucket, string key);
-        Task Upload(string bucket, string key, Stream stream);
+        Task Upload(string fileName, string bucket, string key, Stream stream);
         Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream);
     }
 }

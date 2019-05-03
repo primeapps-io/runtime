@@ -889,7 +889,6 @@ namespace PrimeApps.Studio.Controllers
             return Ok("Fail");
         }
 
-
         [Route("upload_logo")]
         [ProducesResponseType(typeof(string), 200)]
         //[ResponseType(typeof(string))]
@@ -1209,8 +1208,6 @@ namespace PrimeApps.Studio.Controllers
 
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
-
-
 
         [Route("export_excel_view")]
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)

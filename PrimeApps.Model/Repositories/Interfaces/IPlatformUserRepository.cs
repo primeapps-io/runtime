@@ -12,7 +12,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<PlatformUser> Get(int platformUserId);
         Task<PlatformUser> GetSettings(int platformUserId);
         Task<List<PlatformUser>> GetByIds(List<int> ids);
-        Task<PlatformUser> Get(string email);
+        PlatformUser Get(string email);
+        Task<PlatformUser> GetAsync(string email);
         Task<PlatformUser> GetWithTenants(string email);
         Task<PlatformUser> GetWithSettings(string email);
         Task<int> CreateUser(PlatformUser user);
@@ -29,5 +30,5 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Tenant> GetTenantByEmailAndAppId(string email, int appId);
         Task<int> GetTenantModuleLicenseCount(int tenantId);
         PlatformUser GetByEmail(string email);
-	}
+    }
 }

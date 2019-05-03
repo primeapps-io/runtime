@@ -237,7 +237,7 @@ namespace PrimeApps.Auth.UI
 
                 if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
                 {
-                    var platformUser = await _platformUserRepository.Get(model.Username);
+                    var platformUser = await _platformUserRepository.GetAsync(model.Username);
 
                     if (platformUser != null)
                     {
