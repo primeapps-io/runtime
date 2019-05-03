@@ -118,6 +118,19 @@ namespace PrimeApps.Auth
 			app.UseStaticFiles();
 			app.UseIdentityServer();
 			app.UseMvcWithDefaultRoute();
+			
+			/*app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					name: "default",
+					template: "{controller=Home}/{action=Index}/{id?}"
+				);
+
+				routes.MapRoute(
+					name: "DefaultApi",
+					template: "api/{controller}/{id}"
+				);
+			});*/
 		}
 	}
 }

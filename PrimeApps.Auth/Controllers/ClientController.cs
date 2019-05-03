@@ -1,9 +1,14 @@
 using System.Threading.Tasks;
+using IdentityServer4;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Auth.Models.Api.ClientApiModels;
 using PrimeApps.Auth.Repositories.IRepositories;
+using PrimeApps.Model.Context;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -52,7 +57,7 @@ namespace PrimeApps.Auth.Controllers
             return Ok();
         }
         
-        [Route("update/{clientId:string}"), HttpPut]
+        [Route("update/{clientId}"), HttpPut]
         public async Task<IActionResult> Update(string clientId, [FromBody]CreateClientBindingModel clientModel)
         {
             if (!ModelState.IsValid)
