@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
+using static PrimeApps.App.Storage.UnifiedStorage;
 
 namespace PrimeApps.App.Storage
 {
@@ -23,8 +24,7 @@ namespace PrimeApps.App.Storage
         string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP);
         Task<GetObjectResponse> GetObject(string bucket, string key);
         Task<bool> ObjectExists(string bucket, string key);
-
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
-
+        Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType);
     }
 }

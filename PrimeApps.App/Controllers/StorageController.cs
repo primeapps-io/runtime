@@ -374,9 +374,9 @@ namespace PrimeApps.App.Controllers
                 {
                     await _storage.Upload(bucketName, fileName, stream);
                 }
-
+                // var result = await _storage.CreateBucketPolicy($"app{AppUser.AppId}","http://localhost:5006",PolicyType.HTTPReferrer);
                 var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-
+                
                 return Ok(profilePicture);
             }
 

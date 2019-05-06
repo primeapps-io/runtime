@@ -57,22 +57,36 @@ namespace PrimeApps.App.Storage
         };
 
 
-        const string HttpReferrerPolicy = @"{ 
-    ""Statement"":[{ 
-    ""Sid"":""Allow get requests originating from {domainName}."", 
-    ""Effect"":""Allow"", 
-    ""Principal"": { ""AWS"": ""*"" }, 
-    ""Action"":[""s3:GetObject""], 
-    ""Resource"":[""arn:aws:s3:::{bucketName}/*""] 
-}]}";
-        const string PublicReadPolicy = @"{ 
-    ""Statement"":[{ 
-    ""Sid"":""Public Read Policy for {bucketName}"", 
-    ""Effect"":""Allow"", 
-    ""Principal"": { ""AWS"": ""*"" }, 
-    ""Action"":[""s3:GetObject""], 
-    ""Resource"":[""arn:aws:s3:::{bucketName}/*""] 
-}]}";
+        const string HttpReferrerPolicy = "{" +
+"  \"Version\":\"2012-10-17\"," +
+"  \"Id\":\"http referer policy for {domainName}\"," +
+"  \"Statement\":[" +
+"    {" +
+"      \"Sid\":\"Allow get requests originating from {domainName}.\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\":\"*\"," +
+"      \"Action\":\"s3:GetObject\"," +
+"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"      \"Condition\":{" +
+"        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+"      }" +
+"    }" +
+"  ]" +
+"}";
+
+        const string PublicReadPolicy = "{" +
+"  \"Version\":\"2012-10-17\"," +
+"  \"Id\":\"Public read policy for {domainName}\"," +
+"  \"Statement\":[" +
+"    {" +
+"      \"Sid\":\"Allow get requests originating from public for {domainName}\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\":\"*\"," +
+"      \"Action\":\"s3:GetObject\"," +
+"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"    }" +
+"  ]" +
+"}";
 
         public enum PolicyType
         {
@@ -208,7 +222,7 @@ namespace PrimeApps.App.Storage
             return await _client.PutACLAsync(request);
         }
 
-        public async Task<PutBucketPolicyResponse> CreateHTTPReferrerBucketPolicy(string bucket, string domainName, PolicyType policyType)
+        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType)
         {
             string policy = string.Empty;
 
@@ -304,8 +318,8 @@ namespace PrimeApps.App.Storage
                     Protocol = protocol
                 };
 
+            // return $"http://storage-dev.primeapps.io/{bucket}/{key}";
             var preSignedUrl = _client.GetPreSignedURL(request);
-
             return preSignedUrl;
         }
 

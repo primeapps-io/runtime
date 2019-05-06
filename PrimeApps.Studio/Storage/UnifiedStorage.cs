@@ -76,7 +76,42 @@ namespace PrimeApps.Studio.Storage
             {ObjectType.APPLOGO, "/app_logo/"},
             {ObjectType.APPTEMPLATE, "/app_template/"}
         };
+        const string HttpReferrerPolicy = "{" +
+"  \"Version\":\"2012-10-17\"," +
+"  \"Id\":\"http referer policy for {domainName}\"," +
+"  \"Statement\":[" +
+"    {" +
+"      \"Sid\":\"Allow get requests originating from {domainName}.\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\":\"*\"," +
+"      \"Action\":\"s3:GetObject\"," +
+"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"      \"Condition\":{" +
+"        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+"      }" +
+"    }" +
+"  ]" +
+"}";
 
+        const string PublicReadPolicy = "{" +
+"  \"Version\":\"2012-10-17\"," +
+"  \"Id\":\"Public read policy for {domainName}\"," +
+"  \"Statement\":[" +
+"    {" +
+"      \"Sid\":\"Allow get requests originating from public for {domainName}\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\":\"*\"," +
+"      \"Action\":\"s3:GetObject\"," +
+"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"    }" +
+"  ]" +
+"}";
+
+        public enum PolicyType
+        {
+            HTTPReferrer,
+            PublicRead
+        }
         /// <summary>
         /// Uploads a file stream into a bucket.
         /// </summary>
@@ -259,6 +294,30 @@ namespace PrimeApps.Studio.Storage
             var preSignedUrl = _client.GetPreSignedURL(request);
 
             return preSignedUrl;
+        }
+
+        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType)
+        {
+            string policy = string.Empty;
+
+            switch (policyType)
+            {
+                case PolicyType.HTTPReferrer:
+                    policy = HttpReferrerPolicy;
+                    break;
+                case PolicyType.PublicRead:
+                    policy = PublicReadPolicy;
+                    break;
+            }
+            policy = policy.Replace("{domainName}", domainName).Replace("{bucketName}", bucket);
+
+            PutBucketPolicyRequest putRequest = new PutBucketPolicyRequest
+            {
+                BucketName = bucket,
+                Policy = policy
+            };
+
+            return await _client.PutBucketPolicyAsync(putRequest);
         }
 
 
