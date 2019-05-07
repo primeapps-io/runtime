@@ -10,16 +10,16 @@ angular.module('primeapps')
             $rootScope.currentOrgId = parseInt($stateParams.orgId);
 
             if (!$rootScope.currentOrgId && $rootScope.organizations) {
-                var defaultOrg = $filter('filter')($rootScope.organizations, {default: true}, true)[0];
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
                 window.location.href = '/#/apps?orgId=' + defaultOrg.id;
             }
 
             if ($rootScope.organizations)
-                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
+                $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: parseInt($rootScope.currentOrgId) }, true)[0];
 
             if (!$rootScope.currentOrganization || $rootScope.currentOrganization.role !== 'administrator') {
                 toastr.warning($filter('translate')('Common.Forbidden'));
-                var defaultOrg = $filter('filter')($rootScope.organizations, {default: true}, true)[0];
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
                 window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
@@ -28,12 +28,12 @@ angular.module('primeapps')
                 title: $rootScope.currentOrganization.label,
                 link: '#/apps?orgId=' + $rootScope.currentOrgId
             };
-            $rootScope.breadcrumblist[1] = {title: "Create App"};
+            $rootScope.breadcrumblist[1] = { title: "Create App" };
             $rootScope.breadcrumblist[2] = {};
 
             if (!$rootScope.currentOrgId) {
                 toastr.warning($filter('translate')('Common.NotFound'));
-                var defaultOrg = $filter('filter')($rootScope.organizations, {default: true}, true)[0];
+                var defaultOrg = $filter('filter')($rootScope.organizations, { default: true }, true)[0];
                 window.location.href = '/#/apps?orgId=' + defaultOrg.id;
                 return;
             }
@@ -94,12 +94,12 @@ angular.module('primeapps')
                 $scope.nameValid = null;
                 $scope.requiredColor = "";
                 $scope.appFormModal = $scope.appFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/appform/newAppForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/appform/newAppForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.appFormModal.$promise.then(function () {
                     $scope.appFormModal.show();
                 });
@@ -186,11 +186,14 @@ angular.module('primeapps')
                 }
 
                 $scope.appSaving = true;
-                $scope.checkNameValid($scope.appModel.name);             
-                if ($scope.appModel.icon.value) {
-                        $scope.appModel.icon = $scope.appModel.icon.value;
+                $scope.checkNameValid($scope.appModel.name);
+                if ($scope.appModel.icon && $scope.appModel.icon.value) {
+                    $scope.appModel.icon = $scope.appModel.icon.value;
                 }
-                
+                else {
+                    $scope.appModel.icon = "fas fa-box-open";
+                }
+
                 AppFormService.isUniqueName($scope.appModel.name)
                     .then(function (response) {
                         $scope.nameChecking = false;
@@ -207,7 +210,7 @@ angular.module('primeapps')
                                         orgId: $rootScope.currentOrgId,
                                         appId: $rootScope.currentAppId
                                     });
-                                    
+
                                     // var header = {
                                     //     'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
                                     //     'Accept': 'application/json',
@@ -275,6 +278,6 @@ angular.module('primeapps')
                         $scope.nameChecking = false;
                     });
             };
-      
+
         }
     ]);
