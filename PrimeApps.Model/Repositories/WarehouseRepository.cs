@@ -49,10 +49,9 @@ namespace PrimeApps.Model.Repositories
             }
 
             // Wait two minute for Sql Server database creation is completed
-            // await Task.Delay(120000);
- 
+            await Task.Delay(120000);
 
-             var warehouse = _platformWarehouseRepository.Create(new PlatformWarehouse()
+            var warehouse = _platformWarehouseRepository.Create(new PlatformWarehouse()
             {
                 Completed = false,
                 DatabaseName = request.DatabaseName,
@@ -61,11 +60,8 @@ namespace PrimeApps.Model.Repositories
                 TenantId = request.TenantId,
                 CreatedById = request.TenantId,
                 UpdatedById = request.TenantId
-             });
+            });
 
-          
-
-             //Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
             Sync(warehouse, modules, userEmail, tenantLanguage);
         }
 
@@ -99,6 +95,5 @@ namespace PrimeApps.Model.Repositories
                 }
             }
         }
- 
     }
 }
