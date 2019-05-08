@@ -1837,7 +1837,7 @@ button:focus, select:focus {
 .primeapps .iconandcolor {
   border-radius: 2px;
   background-color: rgba(0, 0, 0, 0.05);
-  padding: 20px;
+  padding: 10px;
 }
 .primeapps .appicon {
   width: 100px;
