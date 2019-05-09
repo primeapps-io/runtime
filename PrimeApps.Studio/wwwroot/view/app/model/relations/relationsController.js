@@ -142,28 +142,34 @@ angular.module('primeapps')
 
                     var containerLeft = document.querySelector('#availableFields');
                     var containerRight = document.querySelector('#selectedFields');
-
-                    drakeAvailableFields = dragularService([containerLeft], {
-                        scope: $scope,
-                        containersModel: [$scope.fields.availableFields],
-                        classes: {
-                            mirror: 'gu-mirror-option',
-                            transit: 'gu-transit-option'
-                        },
-                        accepts: accepts,
-                        moves: function (el, container, handle) {
-                            return handle.classList.contains('dragable');
-                        }
-                    });
-
-                    drakeSelectedFields = dragularService([containerRight], {
-                        scope: $scope,
-                        classes: {
-                            mirror: 'gu-mirror-option',
-                            transit: 'gu-transit-option'
-                        },
-                        containersModel: [$scope.fields.selectedFields]
-                    });
+                    
+                    if (containerLeft) 
+                    {
+                        drakeAvailableFields = dragularService([containerLeft], {
+                            scope: $scope,
+                            containersModel: [$scope.fields.availableFields],
+                            classes: {
+                                mirror: 'gu-mirror-option',
+                                transit: 'gu-transit-option'
+                            },
+                            accepts: accepts,
+                            moves: function (el, container, handle) {
+                                return handle.classList.contains('dragable');
+                            }
+                        });
+                    }
+                   
+                    if (containerRight) {
+                        drakeSelectedFields = dragularService([containerRight], {
+                            scope: $scope,
+                            classes: {
+                                mirror: 'gu-mirror-option',
+                                transit: 'gu-transit-option'
+                            },
+                            containersModel: [$scope.fields.selectedFields]
+                        });
+                    }
+                    
 
                     function accepts(el, target, source) {
                         if (source !== target) {
