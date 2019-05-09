@@ -142,9 +142,8 @@ angular.module('primeapps')
 
                     var containerLeft = document.querySelector('#availableFields');
                     var containerRight = document.querySelector('#selectedFields');
-                    
-                    if (containerLeft) 
-                    {
+
+                    if (containerLeft) {
                         drakeAvailableFields = dragularService([containerLeft], {
                             scope: $scope,
                             containersModel: [$scope.fields.availableFields],
@@ -158,7 +157,7 @@ angular.module('primeapps')
                             }
                         });
                     }
-                   
+
                     if (containerRight) {
                         drakeSelectedFields = dragularService([containerRight], {
                             scope: $scope,
@@ -169,7 +168,7 @@ angular.module('primeapps')
                             containersModel: [$scope.fields.selectedFields]
                         });
                     }
-                    
+
 
                     function accepts(el, target, source) {
                         if (source !== target) {
@@ -235,13 +234,13 @@ angular.module('primeapps')
 
             $scope.save = function (relationForm) {
                 if (!relationForm.$valid || $scope.fields.selectedFields.length < 1) {
-                    
+
                     if (relationForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
-                    
+
                     if ($scope.currentRelation.related_module && $scope.fields.selectedFields && $scope.fields.selectedFields.length < 1)
                         toastr.error($filter('translate')('View.FieldError'));
-                    
+
                     return;
                 }
 
@@ -413,6 +412,6 @@ angular.module('primeapps')
                 } else
                     $scope.background_color = "background-color: #fbfbfb";
             });
-            
+
         }
     ]);
