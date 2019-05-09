@@ -276,10 +276,10 @@ namespace PrimeApps.App.Helpers
 		private PowerBIClient CreateClient()
 		{
 			var powerbiAccessKey = _configuration.GetValue("AppSettings:PowerbiAccessKey", string.Empty);
-			var credentials = new TokenCredentials(null, null);
+			var credentials = new TokenCredentials("AppKey");
 			if (!string.IsNullOrEmpty(powerbiAccessKey))
 			{
-				credentials = new TokenCredentials(powerbiAccessKey, "AppKey");
+				 credentials = new TokenCredentials(powerbiAccessKey, "AppKey");
 			}
 			var client = new PowerBIClient(credentials)
 			{

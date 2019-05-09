@@ -12,66 +12,71 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class PlatformWarehouseRepository : RepositoryBasePlatform, IPlatformWarehouseRepository
-    {
-        public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
+	public class PlatformWarehouseRepository : RepositoryBasePlatform, IPlatformWarehouseRepository
+	{
+		public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
 
-        public Task<PlatformWarehouse> GetByTenantId(int tenantId)
-        {
-            return DbContext.Warehouses.Where(x => x.TenantId == tenantId).SingleOrDefaultAsync();
-        }
+		public Task<PlatformWarehouse> GetByTenantId(int tenantId)
+		{
+			return DbContext.Warehouses.Where(x => x.TenantId == tenantId).SingleOrDefaultAsync();
+		}
 
-        public PlatformWarehouse GetByTenantIdSync(int tenantId)
-        {
-            return DbContext.Warehouses.SingleOrDefault(x => x.TenantId == tenantId);
-        }
+		public PlatformWarehouse GetByTenantIdSync(int tenantId)
+		{
+			return DbContext.Warehouses.SingleOrDefault(x => x.TenantId == tenantId);
+		}
 
-        public PlatformWarehouse Create(PlatformWarehouse warehouse)
-        {
-            warehouse.Completed = false;
+		public PlatformWarehouse Create(PlatformWarehouse warehouse)
+		{
+			warehouse.Completed = false;
 
-            DbContext.Warehouses.Add(warehouse);
-            DbContext.SaveChanges();
+			DbContext.Warehouses.Add(warehouse);
+			DbContext.SaveChanges();
 
-            return warehouse;
-        }
+			return warehouse;
+		}
 
-        public void SetCompleted(PlatformWarehouse warehouse, string userEmail)
-        {
-            warehouse.Completed = true;
-            DbContext.SaveChanges();
+		public void SetCompleted(PlatformWarehouse warehouse, string userEmail)
+		{
+			warehouse.Completed = true;
+			DbContext.SaveChanges();
 
-            SetAnalyticsLicense(warehouse.TenantId);
-            SendCompletedMail(warehouse.DatabaseName, userEmail);
-        }
+			SetAnalyticsLicense(warehouse.TenantId);
+			//SendCompletedMail(warehouse.DatabaseName, userEmail);
+		}
 
-        private void SetAnalyticsLicense(int tenantId)
-        {
-            var tenant = DbContext.Tenants.Single(x => x.Id == tenantId);
+		private void SetAnalyticsLicense(int tenantId)
+		{
+			// var tenant = DbContext.Tenants.Single(x => x.Id == tenantId);
+			var tenantLicenses = DbContext.TenantLicenses.Single(x => x.TenantId == tenantId);
 
-            if (tenant.License == null)
-                tenant.License = new TenantLicense();
+			//Eğer count 0'dan büyükse kullanıcının lisansı vardır.
+			if (tenantLicenses != null && tenantLicenses.AnalyticsLicenseCount > 0)
+			{
+				DbContext.SaveChanges();
+			}
+			//if (tenant.License == null)
+			//    tenant.License = new TenantLicense();
 
-            tenant.License.AnalyticsLicenseCount = 1;
+			//tenant.License.AnalyticsLicenseCount = 1;
+			//DbContext.SaveChanges();
+		}
 
-            DbContext.SaveChanges();
-        }
+		private void SendCompletedMail(string warehouseName, string email)
+		{
+			//var emailQueue = new crmEmailQueue()
+			//{
+			//    EmailTo = email,
+			//    EmailFrom = "destek@ofisim.com",
+			//    ReplyTo = "destek@ofisim.com",
+			//    FromName = "Ofisim.com",
+			//    Subject = "Warehouse veritabanı oluşturuldu",
+			//    Body = warehouseName + " isimli warehouse veritabanı başarılı şekilde oluşturuldu.",
+			//    UniqueID = null,
+			//    QueueTime = DateTime.UtcNow
+			//};
 
-        private void SendCompletedMail(string warehouseName, string email)
-        {
-            //var emailQueue = new crmEmailQueue()
-            //{
-            //    EmailTo = email,
-            //    EmailFrom = "destek@ofisim.com",
-            //    ReplyTo = "destek@ofisim.com",
-            //    FromName = "Ofisim.com",
-            //    Subject = "Warehouse veritabanı oluşturuldu",
-            //    Body = warehouseName + " isimli warehouse veritabanı başarılı şekilde oluşturuldu.",
-            //    UniqueID = null,
-            //    QueueTime = DateTime.UtcNow
-            //};
-
-            //session.SaveOrUpdate(emailQueue);
-        }
-    }
+			//session.SaveOrUpdate(emailQueue);
+		}
+	}
 }
