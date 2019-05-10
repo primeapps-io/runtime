@@ -71,16 +71,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<BpmWorkflow>> FindForStudio(PaginationModel paginationModel)
         {
-            var bpm = DbContext.BpmWorkflows.Select(x => new BpmWorkflow
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Module = x.Module,
-                    ModuleId=x.ModuleId,
-                    RecordOperations = x.RecordOperations,
-                    Active = x.Active,
-                    Deleted = x.Deleted
-                }).Where(x => !x.Deleted)
+            var bpm = DbContext.BpmWorkflows.Where(x => !x.Deleted)
                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);

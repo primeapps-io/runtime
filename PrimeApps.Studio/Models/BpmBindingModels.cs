@@ -25,16 +25,16 @@ namespace PrimeApps.Studio.Models
 
         public bool Active { get; set; }
 
-        [Required]
+        //[Required]
         public BpmTriggerType TriggerType { get; set; }
 
-        [Required]
+        //[Required]
         public string RecordOperations { get; set; }
 
-        [Required]
+        //[Required]
         public WorkflowFrequency Frequency { get; set; }
 
-        [Required]
+        //[Required]
         public WorkflowProcessFilter ProcessFilter { get; set; }
 
         [MaxLength(4000)]
@@ -50,6 +50,7 @@ namespace PrimeApps.Studio.Models
 
         public List<BpmRecordFilter> Filters { get; set; }
 
+        public bool Valid { get; set; }
 
 
     }

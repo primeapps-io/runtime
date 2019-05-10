@@ -47,7 +47,7 @@ namespace PrimeApps.App.Models
 
         public string DiagramJson { get; set; }
 
-        public int ModuleId { get; set; }
+        public int? ModuleId { get; set; }
 
         public List<BpmRecordFilter> Filters { get; set; }
 

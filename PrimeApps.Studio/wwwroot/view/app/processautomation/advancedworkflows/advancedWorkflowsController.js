@@ -45,7 +45,7 @@ angular.module('primeapps')
                     var data = fillModule(response.data);
 
                     $scope.workflows = data;
-                    $scope.$parent.workflows = data;
+                    //$scope.$parent.workflows = data;
                     $scope.loading = false;
                 }
             });
@@ -62,7 +62,7 @@ angular.module('primeapps')
                         var data = fillModule(response.data);
 
                         $scope.workflows = data;
-                        $scope.$parent.workflows = data;
+                        //$scope.$parent.workflows = data;
                         $scope.loading = false;
                     });
 
@@ -75,8 +75,11 @@ angular.module('primeapps')
             var fillModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var moduleId = data[i].module_id;
-                    var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
-                    data[i].module = angular.copy(module);
+
+                    if (moduleId) {
+                        var module = $filter('filter')($rootScope.appModules, { id: moduleId }, true)[0];
+                        data[i].module = angular.copy(module);
+                    }
                 }
 
                 return data;
@@ -111,7 +114,7 @@ angular.module('primeapps')
                     $scope.currentRelation[key] = $scope.currentRelationState[key];
                 });
 
-                $scope.workflowModel = []; 
+                $scope.workflowModel = [];
                 $scope.id = null;
                 $scope.formModal.hide();
             };
