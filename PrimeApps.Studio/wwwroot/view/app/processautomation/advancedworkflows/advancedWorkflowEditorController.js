@@ -1865,7 +1865,7 @@ angular.module('primeapps')
                 var isThereStart = $filter('filter')(diagram.nodeDataArray, { item: "Start" }, true).length > 0;
 
                 if (noValidNode.length > 0 || diagram.nodeDataArray.length - 1 != diagram.linkDataArray.length ||
-                    diagram.nodeDataArray.length < 3 || diagram.linkDataArray.length < 2 || isThereEnd || isThereStart) {
+                    diagram.nodeDataArray.length < 3 || diagram.linkDataArray.length < 2 || !isThereEnd || !isThereStart) {
                     swal({
                         title: "\"" + $scope.workflowModel.name + "\" cannot be run!",
                         text: "Required fields of some elements are not filled in or not linked each other.\n\n Do you want to save it anyway?",
