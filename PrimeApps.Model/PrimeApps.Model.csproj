@@ -27,4 +27,7 @@
   <ItemGroup>
     <Folder Include="Migrations\StudioDB" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="devart.key" />
+  </ItemGroup>
 </Project>
