@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleDetailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', 'sipHelper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'entityTypes', 'operations', 'config', 'guidEmpty', '$popover', '$timeout', '$modal', '$sce', 'pdfLabels', 'yesNo', 'activityTypes', 'transactionTypes', '$anchorScroll', 'FileUploader', 'DocumentService', 'ModuleService', '$http', 'components',
-        function ($rootScope, $scope, ngToast, $filter, helper, sipHelper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, entityTypes, operations, config, guidEmpty, $popover, $timeout, $modal, $sce, pdfLabels, yesNo, activityTypes, transactionTypes, $anchorScroll, FileUploader, DocumentService, ModuleService, $http, components) {
+    .controller('ModuleDetailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', 'sipHelper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'entityTypes', 'operations', 'config', 'guidEmpty', '$popover', '$timeout', '$modal', '$sce', 'yesNo', 'activityTypes', 'transactionTypes', '$anchorScroll', 'FileUploader', 'DocumentService', 'ModuleService', '$http', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, sipHelper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, entityTypes, operations, config, guidEmpty, $popover, $timeout, $modal, $sce, yesNo, activityTypes, transactionTypes, $anchorScroll, FileUploader, DocumentService, ModuleService, $http, components) {
             $scope.type = $stateParams.type;
             $scope.id = $location.search().id;
             $scope.parentType = $location.search().ptype;
@@ -47,7 +47,8 @@ angular.module('primeapps')
             $scope.currentModuleProcess = null;
             $scope.customHide = false;
             $scope.googleMapsApiKey = googleMapsApiKey;
-
+            $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;          
+            
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');

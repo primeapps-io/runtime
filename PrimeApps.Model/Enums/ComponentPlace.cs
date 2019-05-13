@@ -4,35 +4,26 @@ namespace PrimeApps.Model.Enums
 {
     public enum ComponentPlace
     {
-        [EnumMember(Value = "")]
-        NotSet = 0,
+        [EnumMember(Value = "")] NotSet = 0,
 
-        [EnumMember(Value = "field_change")]
-        FieldChange = 1,
+        [EnumMember(Value = "field_change")] FieldChange = 1,
 
-        [EnumMember(Value = "before_create")]
-        BeforeCreate = 2,
+        [EnumMember(Value = "before_create")] BeforeCreate = 2,
 
-        [EnumMember(Value = "after_create")]
-        AfterCreate = 3,
+        [EnumMember(Value = "after_create")] AfterCreate = 3,
 
-        [EnumMember(Value = "before_update")]
-        BeforeUpdate = 4,
+        [EnumMember(Value = "before_update")] BeforeUpdate = 4,
 
-        [EnumMember(Value = "after_update")]
-        AfterUpdate = 5,
+        [EnumMember(Value = "after_update")] AfterUpdate = 5,
 
-        [EnumMember(Value = "before_delete")]
-        BeforeDelete = 6,
+        [EnumMember(Value = "before_delete")] BeforeDelete = 6,
 
-        [EnumMember(Value = "after_delete")]
-        AfterDelete = 7,
+        [EnumMember(Value = "after_delete")] AfterDelete = 7,
 
         [EnumMember(Value = "after_record_loaded")]
         AfterRecordLoaded = 8,
 
-        [EnumMember(Value = "before_lookup")]
-        BeforeLookup = 9,
+        [EnumMember(Value = "before_lookup")] BeforeLookup = 9,
 
         [EnumMember(Value = "picklist_filter")]
         PicklistFilter = 10,
@@ -57,12 +48,23 @@ namespace PrimeApps.Model.Enums
 
         [EnumMember(Value = "before_list_request")]
         BeforeListRequest = 17,
-        
+
+        [EnumMember(Value = "ModuleFormLoaded")]
+        ModuleFormCodeInject = 18,
+
         
         /*
          * Global config script
          */
-        [EnumMember(Value = "global_config")]
-        GlobalConfig = 100
+        [EnumMember(Value = "global_config")] GlobalConfig = 100,
+
+        /*
+         * Component Place
+         */
+        [EnumMember(Value = "page")] Page = 1000,
+
+        [EnumMember(Value = "section")] Section = 1001,
+
+        [EnumMember(Value = "navbar")] Navbar = 1002,
     }
 }
