@@ -54,10 +54,10 @@ spec:
         - name: git-storage
           emptyDir: {}
       imagePullSecrets:
-        - name: gcr-pull-secret
+        - name: image-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:1.19.093.1
+          image: primeappsadmin/primeapps-studio:1.19.132.2
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:

@@ -10,11 +10,9 @@ app:
   containerPort: 80
   component: app
   replicas: 1
-  image: gcr.io/primeapps/primeapps-app/debian
-  imageTag: 5.19.093.1
+  image: primeapps/primeapps-app
+  imageTag: 1.19.132.2-debian
   imagePullPolicy: Always
-  ##Secrets
-  pullsecret: gcr-pull-secret
   cpu: 100m
   memory: 1Gi
   ## Ingress settings
@@ -65,11 +63,11 @@ studio:
   containerPort: 80
   component: studio
   replicas: 1
-  image: gcr.io/primeapps/primeapps-studio/debian
-  imageTag: 1.19.093.1
+  image: primeappsadmin/primeapps-studio
+  imageTag: 1.19.132.2
   imagePullPolicy: Always
   ##Secrets
-  pullsecret: gcr-pull-secret
+  pullsecret: image-pull-secret
   cpu: 100m
   memory: 1Gi
   ## Ingress settings
@@ -123,11 +121,9 @@ auth:
   containerPort: 80
   component: auth
   replicas: 1
-  image: gcr.io/primeapps/primeapps-auth/debian
-  imageTag: 5.19.093.1
+  image: primeapps/primeapps-auth
+  imageTag: 1.19.132.2-debian
   imagePullPolicy: Always
-  ##Secrets
-  pullsecret: gcr-pull-secret
   cpu: 100m
   memory: 512Mi
   ## Ingress settings
@@ -167,11 +163,9 @@ appPre:
   containerPort: 80
   component: app-preview
   replicas: 1
-  image: gcr.io/primeapps/primeapps-app/debian
-  imageTag: 5.19.093.1
+  image: primeapps/primeapps-app
+  imageTag: 1.19.132.2-debian
   imagePullPolicy: Always
-  ##Secrets
-  pullsecret: gcr-pull-secret
   cpu: 100m
   memory: 1Gi
   ## Ingress settings
@@ -223,11 +217,9 @@ authPre:
   containerPort: 80
   component: auth-preview
   replicas: 1
-  image: gcr.io/primeapps/primeapps-auth/debian
-  imageTag: 5.19.093.1
+  image: primeapps/primeapps-auth
+  imageTag: 1.19.132.2-debian
   imagePullPolicy: Always
-  ##Secrets
-  pullsecret: gcr-pull-secret
   cpu: 100m
   memory: 512Mi
   ## Ingress settings
