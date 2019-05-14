@@ -36,7 +36,7 @@ namespace PrimeApps.Studio
             //Configure Authentication
             AuthConfiguration(services, Configuration);
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
-            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
+            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
 
             var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
