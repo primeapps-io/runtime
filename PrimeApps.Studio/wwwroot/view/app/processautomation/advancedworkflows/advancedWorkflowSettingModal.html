@@ -4,8 +4,8 @@
             <h4 class="modal-title">Settings</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" class="btn add-button btn-radius btn-gray" tabindex="5" ng-disabled="saving" ng-click="settingCancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="submit" class="btn add-button btn-radius btn-blue" tabindex="4" ng-click="saveSetting(settingForm);" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li><button type="button" class="btn add-button btn-radius btn-gray" tabindex="5" ng-disabled="savingSetting" ng-click="settingCancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
+                    <li><button type="submit" class="btn add-button btn-radius btn-blue" tabindex="4" ng-click="saveSetting(settingForm);" ladda="savingSetting"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
                 </ul>
             </div>
         </div>

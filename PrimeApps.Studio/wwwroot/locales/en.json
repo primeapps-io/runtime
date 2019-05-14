@@ -1692,7 +1692,7 @@
         "Step2": "You can specify certain criteria to further filter out the records the workflow will be executed against. For example, the workflow rule can be triggered when \"Lead Source\" is \"Interested\".",
         "Step3": "You can define actions to execute when the workflow is triggered. You can either send an e-mail or create a new task."
       },
-      "SubmitSuccess": "Workflow is successfully created.",
+      "SubmitSuccess": "Workflow is created successfully.",
       "MaximumHookWarning": "You have reached 10 maxiumum webhook amount to send per one flow."
     },
     "Functions": {
