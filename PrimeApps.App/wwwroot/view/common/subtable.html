@@ -1,4 +1,14 @@
-<div style="margin-bottom: 10px;" class="pull-right">    
+<div style="margin-bottom: 10px;" class="pull-right">
+    <div style="display: inline-block" ng-repeat="custombuttons in $parent.relationActionButtons">
+        <div style="display: inline-block" ng-repeat="custombutton in custombuttons | filter:{module_id:module.id}">
+            <button class="{{custombutton.css_class}}" type="button"
+                    ng-click="$parent.$parent.$parent.$parent.$parent.showModuleFrameModal(custombutton.url);"
+                    ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown"
+                    style="margin-left: 10px">
+                <i ng-class="custombutton.icon"></i> {{custombutton.name}}
+            </button>
+        </div>
+    </div>
     <a href
        ng-click="$parent.showFilterSubModules[$parent.type][relatedModule.related_module] = $parent.getCurrentTime()"
        class="btn btn-sm btn-custom">

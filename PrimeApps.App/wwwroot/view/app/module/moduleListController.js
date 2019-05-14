@@ -42,7 +42,7 @@ angular.module('primeapps')
             ModuleService.getActionButtons($scope.module.id)
                 .then(function (actionButtons) {
                     $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
-                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'Form';
+                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'Relation';
                     }, true);
                 });
 
