@@ -97,7 +97,6 @@ namespace PrimeApps.App
                 .AddDataAnnotationsLocalization();
 
 
-
             var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(storageUrl))
