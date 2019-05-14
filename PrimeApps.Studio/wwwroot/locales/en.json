@@ -1184,7 +1184,8 @@
       "FieldViewType": "View Type",
       "Position": "Position",
       "StarCount": "Star Count",
-      "MaxLookupCount": "Up to 10 search fields can be added in one module "
+      "MaxLookupCount": "Up to 10 search fields can be added in one module ",
+      "Relation" : "Relation"
     },
     "Conversion": {
       "Lead": "Lead",

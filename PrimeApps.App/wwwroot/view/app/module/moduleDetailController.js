@@ -518,7 +518,7 @@ angular.module('primeapps')
                             ModuleService.getActionButtons($scope.module.id)
                                 .then(function (actionButtons) {
                                     $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
-                                        return actionButton.trigger !== 'List' && actionButton.trigger !== 'Form';
+                                        return actionButton.trigger !== 'List' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'Relation';
                                     }, true);
                                     //dependency control for action buttons
                                     angular.forEach($scope.actionButtons, function (item) {
@@ -1557,7 +1557,7 @@ angular.module('primeapps')
                                 ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateNotFound'), className: 'warning' });
                             else
                                 ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateDefined'), className: 'warning' });
-                            
+
                             $scope.pdfCreating = false;
                         }
                         else {
@@ -2098,5 +2098,38 @@ angular.module('primeapps')
                     });
             };
 
+            if ($scope.module.relations.length > 0) {
+                $scope.relationActionButtons = [];
+                var moduleRelation = $filter('filter')($scope.module.relations, { deleted: false }, true);
+                if (moduleRelation.length > 0) {
+                    for (var i = 0; i < moduleRelation.length; i++) {
+                        var module = $filter('filter')($rootScope.modules, { name: moduleRelation[i].related_module }, true)[0];
+                        ModuleService.getActionButtons(module.id)
+                            .then(function (actionButtons) {
+                                if (actionButtons.length > 0) {
+                                    var relationActionButton = $filter('filter')(actionButtons, function (actionButton) {
+                                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'List';
+                                    }, true);
+                                    $scope.relationActionButtons.push(relationActionButton);
+                                    $scope.RelationButtonIsShown();
+                                }
+                            });
+                    }
+                }
+
+                $scope.RelationButtonIsShown = function () {
+                    for (var i = 0; i < $scope.relationActionButtons.length; i++) {
+                        angular.forEach($scope.relationActionButtons[i], function (item) {
+                            item.isShown = false;
+                            if (item.dependent_field) {
+                                if (record[item.dependent_field] && record[item.dependent_field].labelStr == item.dependent)
+                                    item.isShown = true;
+                            } else {
+                                item.isShown = true;
+                            }
+                        });
+                    }
+                }
+            }
         }
     ]);

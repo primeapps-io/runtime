@@ -64,6 +64,10 @@ angular.module('primeapps')
                     {
                         name: $filter('translate')('Setup.Modules.All'),
                         value: 3
+                    },
+                    {
+                        name: $filter('translate')('Setup.Modules.Relation'),
+                        value: 5
                     }
                 ];
 
