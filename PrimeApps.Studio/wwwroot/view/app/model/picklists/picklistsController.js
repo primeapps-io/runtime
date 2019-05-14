@@ -361,11 +361,13 @@ angular.module('primeapps')
                     return false;
                 }
 
-                PicklistsService.updateItem(item.id, item)
+                var tempItem = angular.copy(item);
+                PicklistsService.updateItem(tempItem.id, tempItem)
                     .then(function (response) {
-                        if (response.data)
+                        if (response.data) {
                             toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
-
+                            $scope.selectPicklist($scope.id);
+                        }
                         item.edit = false;
                         $timeout(function () {
                             item.savingItem = false;
@@ -427,7 +429,7 @@ angular.module('primeapps')
             $scope.editModeOpen = function (item) {
                 if (!item)
                     return;
-                
+
                 item.edit = true;
                 $scope.editItem = true;
                 //editModeClase'ta kullanılacak
