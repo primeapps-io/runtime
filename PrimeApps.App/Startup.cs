@@ -17,6 +17,7 @@ using System.Linq;
 using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
 using PrimeApps.App.Logging;
+using Hangfire.Redis;
 
 namespace PrimeApps.App
 {
@@ -36,19 +37,22 @@ namespace PrimeApps.App
 
             //Configure Authentication
             AuthConfiguration(services, Configuration);
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
 
-            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
+            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
+
+            var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
-            var redisConnection = Configuration.GetConnectionString("RedisConnection");
+
 
             services.AddWorkflow(cfg =>
                 {
-                    cfg.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true);
-                    cfg.UseRedisLocking(redisConnection);
-                    cfg.UseRedisQueues(redisConnection, "wfc");
-                    cfg.UseRedisEventHub(redisConnection, "wfc");
+                    cfg.UseRedisPersistence(redisConnectionPersist, "wfc");
+                    cfg.UseRedisLocking(redisConnectionPersist);
+                    cfg.UseRedisQueues(redisConnectionPersist, "wfc");
+                    cfg.UseRedisEventHub(redisConnectionPersist, "wfc");
                 }
             );
 

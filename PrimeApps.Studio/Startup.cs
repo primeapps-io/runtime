@@ -4,6 +4,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Hangfire.Redis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -34,8 +35,10 @@ namespace PrimeApps.Studio
 
             //Configure Authentication
             AuthConfiguration(services, Configuration);
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
+            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
 
-            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("StudioDBConnection"));
+            var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
