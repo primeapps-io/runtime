@@ -86,6 +86,7 @@ studio:
       TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=primeAppsI0d;database=prod;command timeout=0;keepalive=30;"
       PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=primeAppsI0d;database=platform;command timeout=0;keepalive=30;"
       StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=primeAppsI0d;database=studio;command timeout=0;keepalive=30;"
+      RedisConnection: "cache-redis-master.cache:6379,password=primeAppsI0r,defaultDatabase=1"
     AppSettings:
       StorageUrl: "https://storage-test.primeapps.io"
       StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
