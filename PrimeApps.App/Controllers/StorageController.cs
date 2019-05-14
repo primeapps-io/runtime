@@ -6,10 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Document;
-using PrimeApps.App.Storage;
+using PrimeApps.Util.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using PrimeApps.App.Storage.Unified;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
@@ -17,7 +16,8 @@ using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Extensions;
-using static PrimeApps.App.Storage.UnifiedStorage;
+using static PrimeApps.Util.Storage.UnifiedStorage;
+using PrimeApps.Util.Storage.Unified;
 
 namespace PrimeApps.App.Controllers
 {
@@ -128,7 +128,7 @@ namespace PrimeApps.App.Controllers
 
                     if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL)// Add here the types where publicURLs are required.
                     {
-                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                        response.PublicURL = _storage.GetLink(bucketName, fileName);
                     }
                 }
             }
@@ -207,7 +207,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, uniqueName, stream);
                 }
 
-                var link = _storage.GetShareLink(bucketName, uniqueName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var link = _storage.GetLink(bucketName, uniqueName);
 
                 var result = new DocumentUploadResult
                 {
@@ -343,8 +343,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadProfilePicture()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId, AppUser.AppId, AppUser.Id);
-
+            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId, 0, AppUser.Id);
             if (parser.Success)
             {
                 //if succesfully parsed, then continue to thread.
@@ -374,9 +373,9 @@ namespace PrimeApps.App.Controllers
                 {
                     await _storage.Upload(bucketName, fileName, stream);
                 }
-                // var result = await _storage.CreateBucketPolicy($"app{AppUser.AppId}","http://localhost:5006",PolicyType.HTTPReferrer);
-                var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
-                
+
+                var profilePicture = _storage.GetLink(bucketName, fileName);
+
                 return Ok(profilePicture);
             }
 
@@ -419,7 +418,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(logo);
@@ -457,7 +456,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var excelUrl = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                var excelUrl = _storage.GetLink(bucketName, fileName);
                 excelUrl = excelUrl + "--" + parser.Filename;
 
                 import.ExcelUrl = excelUrl;

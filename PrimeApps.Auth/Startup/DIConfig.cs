@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Amazon.S3;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Auth
 {
@@ -59,6 +61,7 @@ namespace PrimeApps.Auth
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<QueuedHostedService>();
+            services.AddAWSService<IAmazonS3>();
             services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<IUserHelper, UserHelper>();
@@ -68,6 +71,7 @@ namespace PrimeApps.Auth
             services.AddTransient<IPlatformRepository, PlatformRepository>();
             services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
             services.AddScoped<SignInManager<ApplicationUser>, ApplicationSignInManager>();
             services.AddTransient<IClientRepository, ClientRepository>();

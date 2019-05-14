@@ -17,6 +17,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Studio.Storage;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
@@ -163,12 +164,12 @@ namespace PrimeApps.Studio.Helpers
 
                                     if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
                                     {
-                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                                        var url = _storage.GetLink(bucketName, fileName);
                                         content["app"]["templateUrl"] = url;
                                     }
                                     else
                                     {
-                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                                        var url = _storage.GetLink(bucketName, fileName);
                                         content["files"].FirstOrDefault(i => i.Type == JTokenType.String && (string)i == fileName)?.Replace(url);
                                     }
                                 }

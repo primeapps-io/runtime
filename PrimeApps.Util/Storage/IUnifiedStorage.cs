@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
-using static PrimeApps.App.Storage.UnifiedStorage;
+using static PrimeApps.Util.Storage.UnifiedStorage;
 
-namespace PrimeApps.App.Storage
+namespace PrimeApps.Util.Storage
 {
     public interface IUnifiedStorage
     {
@@ -20,11 +20,14 @@ namespace PrimeApps.App.Storage
         Task<FileStreamResult> Download(string bucket, string key, string fileName);
         Task<string> InitiateMultipartUpload(string bucket, string key);
         Task Upload(string bucket, string key, Stream stream);
+        Task Upload(string fileName, string bucket, string key, Stream stream);
         Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream);
         string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP);
+        string GetLink(string bucket, string key, string storageHostUrl = null);
         Task<GetObjectResponse> GetObject(string bucket, string key);
         Task<bool> ObjectExists(string bucket, string key);
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
-        Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType);
+        Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool CreateBucketIfNotExists = true);
+        event FileUploaded FileUploadedEvent;
     }
 }

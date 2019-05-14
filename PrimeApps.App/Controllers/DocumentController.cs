@@ -6,7 +6,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.App.Storage;
+using PrimeApps.Util.Storage;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -431,7 +431,7 @@ namespace PrimeApps.App.Controllers
 
 				foreach (var document in result.Documents)
 				{
-					document.FileUrl = _storage.GetShareLink(bucketName, document.UniqueName, DateTime.UtcNow.AddDays(1));
+					document.FileUrl = _storage.GetLink(bucketName, document.UniqueName);
 				}
 			}
 

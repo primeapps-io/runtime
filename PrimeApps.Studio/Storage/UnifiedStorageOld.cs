@@ -20,7 +20,7 @@ namespace PrimeApps.Studio.Storage
     /// <summary>
     /// Unified Storage library based on Amazon S3
     /// </summary>
-    public class UnifiedStorage : IUnifiedStorage
+    public class UnifiedStorageOld : IUnifiedStorageOld
     {
         private IBackgroundTaskQueue _queue;
         private IHistoryHelper _historyHelper;
@@ -36,7 +36,7 @@ namespace PrimeApps.Studio.Storage
 
         private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
 
-        public UnifiedStorage(IAmazonS3 client, IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context)
+        public UnifiedStorageOld(IAmazonS3 client, IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context)
         {
             _client = client;
             _queue = queue;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PrimeApps.App.Storage.Unified
+namespace PrimeApps.Util.Storage.Unified
 {
     public class MultipartResponse
     {

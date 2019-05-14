@@ -16,6 +16,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Storage;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -175,7 +176,7 @@ namespace PrimeApps.Studio.Controllers
                     await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(logo);

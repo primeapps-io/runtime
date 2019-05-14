@@ -283,7 +283,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp, {alt: file.name});
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {

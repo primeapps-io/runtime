@@ -2,7 +2,7 @@
 @using PrimeApps.Model.Common.App
 @{
     var appInfo = (ApplicationInfoViewModel)ViewBag.AppInfo;
-    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
+    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.BlobUrl) ? ViewBag.BlobUrl : "";
     var tenantId = ViewBag.TenantId;
     var token = ViewBag.Token;
     var appId = ViewBag.AppId;

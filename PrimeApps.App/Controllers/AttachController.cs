@@ -13,7 +13,8 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Storage;
+using PrimeApps.Util.Storage;
+using PrimeApps.Util;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
@@ -237,8 +238,8 @@ namespace PrimeApps.App.Controllers
                 await _storage.Upload(publicPath, publicFileName, outputStream);
 
                 outputStream.Position = 0;
-                var blobUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-				var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
+                var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+				var result = new { filename = fileName, fileurl = _storage.GetLink(publicPath, publicFileName, storageUrl) };
 
                 return Ok(result);
             }
@@ -259,7 +260,7 @@ namespace PrimeApps.App.Controllers
             //    StatusCode = (int)rMessage.StatusCode
             //};
 
-            ////var response = ResponseMessage(rMessage);
+            //var response = ResponseMessage(rMessage);
 
             return File(outputStream, mimeType, fileName, true);
         }

@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
-using static PrimeApps.Studio.Storage.UnifiedStorage;
+using static PrimeApps.Studio.Storage.UnifiedStorageOld;
 
 namespace PrimeApps.Studio.Storage
 {
-    public interface IUnifiedStorage
+    public interface IUnifiedStorageOld
     {
         Task AbortMultipartUpload(string bucket, string key, string uploadId);
         Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId);

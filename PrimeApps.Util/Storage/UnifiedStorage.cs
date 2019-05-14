@@ -3,7 +3,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -12,8 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
 
-namespace PrimeApps.App.Storage
+namespace PrimeApps.Util.Storage
 {
     /// <summary>
     /// Unified Storage library based on Amazon S3
@@ -27,7 +27,6 @@ namespace PrimeApps.App.Storage
         {
             get { return _client; }
         }
-
         public enum ObjectType
         {
             MAIL,
@@ -39,7 +38,9 @@ namespace PrimeApps.App.Storage
             NOTE,
             LOGO,
             PROFILEPICTURE,
-            NONE
+            NONE,
+            APPLOGO,
+            APPTEMPLATE
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -53,16 +54,20 @@ namespace PrimeApps.App.Storage
             {ObjectType.LOGO, "/logos/"},
             {ObjectType.MAIL, "/mail/"},
             {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
-            {ObjectType.NONE, ""}
+            {ObjectType.NONE, ""},
+            {ObjectType.APPLOGO, "/app_logo/"},
+            {ObjectType.APPTEMPLATE, "/app_template/"}
         };
+
+
 
 
         const string HttpReferrerPolicy = "{" +
 "  \"Version\":\"2012-10-17\"," +
-"  \"Id\":\"http referer policy for {domainName}\"," +
+"  \"Id\":\"{bucketName}_http_referrer\"," +
 "  \"Statement\":[" +
 "    {" +
-"      \"Sid\":\"Allow get requests originating from {domainName}.\"," +
+"      \"Sid\":\"{bucketName}_http_referrer\"," +
 "      \"Effect\":\"Allow\"," +
 "      \"Principal\":\"*\"," +
 "      \"Action\":\"s3:GetObject\"," +
@@ -76,22 +81,46 @@ namespace PrimeApps.App.Storage
 
         const string PublicReadPolicy = "{" +
 "  \"Version\":\"2012-10-17\"," +
-"  \"Id\":\"Public read policy for {domainName}\"," +
+"  \"Id\":\"{bucketName}_public_read\"," +
 "  \"Statement\":[" +
 "    {" +
-"      \"Sid\":\"Allow get requests originating from public for {domainName}\"," +
+"      \"Sid\":\"{bucketName}_public_read\"," +
 "      \"Effect\":\"Allow\"," +
-"      \"Principal\":\"*\"," +
-"      \"Action\":\"s3:GetObject\"," +
-"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"      \"Principal\": \"*\"," +
+"      \"Action\":[\"s3:GetObject\"]," +
+"      \"Resource\":[\"arn:aws:s3:::{bucketName}/*\"]" +
 "    }" +
 "  ]" +
 "}";
 
+        const string TenantPolicy = "{" +
+"  \"Version\":\"2012-10-17\"," +
+"  \"Id\":\"{bucketName}_policy\"," +
+"  \"Statement\":[" +
+"    {" +
+"      \"Sid\":\"http_referrer\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\":\"*\"," +
+"      \"Action\":\"s3:GetObject\"," +
+"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+"      \"Condition\":{" +
+"        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+"      }" +
+"    }, " +
+"    {" +
+"      \"Sid\":\"public_read_email\"," +
+"      \"Effect\":\"Allow\"," +
+"      \"Principal\": \"*\"," +
+"      \"Action\":[\"s3:GetObject\"]," +
+"      \"Resource\":[\"arn:aws:s3:::{bucketName}/mail/*\"]" +
+"    }" +
+"  ]" +
+"}";
         public enum PolicyType
         {
             HTTPReferrer,
-            PublicRead
+            PublicRead,
+            TenantPolicy
         }
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
@@ -115,7 +144,34 @@ namespace PrimeApps.App.Storage
             {
                 await transUtil.UploadAsync(stream, bucket, key);
             }
+
         }
+
+        public async Task Upload(string fileName, string bucket, string key, Stream stream)
+        {
+            await Upload(bucket, key, stream);
+            if (FileUploadedEvent != null)
+            {
+                FileUploadedEvent(bucket, key, fileName);
+            }
+        }
+
+        // public async Task UploadWith(string fileName, string bucket, string key, Stream stream)
+        // {
+        //     await CreateBucketIfNotExists(bucket);
+
+        //     using (TransferUtility transUtil = new TransferUtility(_client))
+        //     {
+        //         await transUtil.UploadAsync(stream, bucket, key);
+        //         var currenUser = CurrentUser;
+
+        //         var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+        //         _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currenUser));
+        //     }
+        // }
+
+        public event FileUploaded FileUploadedEvent;
+        public delegate void FileUploaded(string bucket, string key, string fileName);
 
         /// <summary>
         /// Initiates multipart upload.
@@ -222,7 +278,7 @@ namespace PrimeApps.App.Storage
             return await _client.PutACLAsync(request);
         }
 
-        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType)
+        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool createBucketIfNotExists = true)
         {
             string policy = string.Empty;
 
@@ -234,12 +290,20 @@ namespace PrimeApps.App.Storage
                 case PolicyType.PublicRead:
                     policy = PublicReadPolicy;
                     break;
+                case PolicyType.TenantPolicy:
+                    policy = TenantPolicy;
+                    break;
             }
+
+            await CreateBucketIfNotExists(bucket);
+
+            string topBucketName = bucket.Split("/").FirstOrDefault();
+
             policy = policy.Replace("{domainName}", domainName).Replace("{bucketName}", bucket);
 
             PutBucketPolicyRequest putRequest = new PutBucketPolicyRequest
             {
-                BucketName = bucket,
+                BucketName = topBucketName,
                 Policy = policy
             };
 
@@ -304,6 +368,31 @@ namespace PrimeApps.App.Storage
         /// <param name="expires"></param>
         /// <param name="protocol"></param>
         /// <returns></returns>
+        public string GetLink(string bucket, string key, string storageHostUrl = null)
+        {
+            string storageUrl = string.Empty;
+            if (bucket.EndsWith('/'))
+                bucket = bucket.Remove(bucket.Length - 1, 1);
+            if (!string.IsNullOrEmpty(storageHostUrl))
+            {
+                storageUrl = $"{storageHostUrl}/{bucket}/{key}";
+            }
+            else
+            {
+                storageUrl = $"{bucket}/{key}";
+            }
+
+            return storageUrl;
+        }
+
+        /// <summary>
+        /// Creates a share link to a file with a specified time period.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="expires"></param>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
         public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP)
         {
             if (bucket.EndsWith('/'))
@@ -318,7 +407,6 @@ namespace PrimeApps.App.Storage
                     Protocol = protocol
                 };
 
-            // return $"http://storage-dev.primeapps.io/{bucket}/{key}";
             var preSignedUrl = _client.GetPreSignedURL(request);
             return preSignedUrl;
         }
@@ -476,6 +564,17 @@ namespace PrimeApps.App.Storage
                 return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
             else
                 return $"app{appId}{"/user" + userId}{pathMap[objectType]}{extraPath}";
+        }
+
+        public static string GetPathPictures(string type, int userId, string extraPath = "")
+        {
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+
+            return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
+        }
+        public static string GetPathComponents(string folderName, string componentName)
+        {
+            return $"components/{folderName}/{componentName}";
         }
 
         public static ObjectType GetType(string type)

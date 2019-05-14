@@ -285,8 +285,7 @@ angular.module('primeapps')
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 if (status === 200) {
                     var userModel = angular.copy($rootScope.user);
-                    userModel.picture = response;
-
+                    userModel.picture = config.storage_host + response;
                     SettingService.editUser(userModel)
                         .then(function () {
                             uploader.clearQueue();

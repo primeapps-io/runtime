@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +9,9 @@ using Microsoft.Extensions.Primitives;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 using PrimeApps.Studio.Storage;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -24,8 +27,11 @@ namespace PrimeApps.Studio.Controllers
         private IImportRepository _importRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
+        private IBackgroundTaskQueue _queue;
+        private IHistoryHelper _historyHelper;
+        private IHttpContextAccessor _context;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -36,8 +42,11 @@ namespace PrimeApps.Studio.Controllers
             _importRepository = importRepository;
             _storage = storage;
             _configuration = configuration;
+            _queue = queue;
+            _historyHelper = historyHelper;
+            _context = context;
+            _storage.FileUploadedEvent += FileUploaded;
         }
-
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
@@ -160,7 +169,7 @@ namespace PrimeApps.Studio.Controllers
                     await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var url = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(url);
@@ -292,7 +301,7 @@ namespace PrimeApps.Studio.Controllers
                     await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(logo);
@@ -343,5 +352,13 @@ namespace PrimeApps.Studio.Controllers
         //    //this request invalid because there is no file, return fail code to the client.
         //    return NotFound();
         //}
+
+        public async void FileUploaded(string bucket, string key, string fileName)
+        {
+            var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+
+            // _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
+        }
+
     }
 }

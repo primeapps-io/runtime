@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Localization;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
 using Microsoft.AspNetCore.HttpOverrides;
+using Amazon.Runtime;
+using Amazon;
+using Amazon.S3;
 
 namespace PrimeApps.Auth
 {
@@ -47,6 +50,25 @@ namespace PrimeApps.Auth
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 			services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+
+            var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                var awsOptions = Configuration.GetAWSOptions();
+                awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+                awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                awsOptions.DefaultClientConfig.EndpointDiscoveryEnabled = false;
+                awsOptions.Profile = "default";
+
+                var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
+                var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
+                awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<IAmazonS3>();
+            }
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)

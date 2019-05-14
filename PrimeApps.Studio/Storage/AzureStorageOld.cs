@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
-namespace PrimeApps.App.Storage
+namespace PrimeApps.Studio.Storage
 {
 	/// <summary>
 	/// Main storage class for the Webservice.
@@ -20,7 +20,7 @@ namespace PrimeApps.App.Storage
 	/// Also we use crmDocuments table to store some information about files, like file name, content-type, file size, user and instance on Windows Azure.
 	/// For more information about Windows Azure Storage: http://www.windowsazure.com/en-us/documentation/services/storage/
 	/// </summary>
-	public class AzureStorage
+	public class AzureStorageOld
 	{
 		/// <summary>
 		/// This method allows to upload chunked files to the AzureStorage.
@@ -82,7 +82,6 @@ namespace PrimeApps.App.Storage
 			{
 				newBlob.Metadata.Add("recordid", relatedMetadataRecordIdForBlob);
 			}
-
 			if (relatedMetadataModuleNameForBlob != null)
 			{
 				newBlob.Metadata.Add("module", relatedMetadataModuleNameForBlob);
@@ -97,7 +96,6 @@ namespace PrimeApps.App.Storage
 			{
 				newBlob.Metadata.Add("viewfilename", relatedMetadataViewFileName);
 			}
-
 			//copy data from temprorary blob to the new blob.
 			await MoveBlockBlobAsync(tempBlob, newBlob);
 
@@ -162,10 +160,11 @@ namespace PrimeApps.App.Storage
 				// Use the local storage account.
 				cloudStorageAccount = CloudStorageAccount.Parse(azureStorageConnectionString);
 			}
+
 			// create blob container
 			blobClient = cloudStorageAccount.CreateCloudBlobClient();
 			blobContainer = blobClient.GetContainerReference(containerName);
-			blobContainer.CreateIfNotExistsAsync(accessType, null, null);
+			blobContainer.CreateIfNotExistsAsync();
 
 			return blobContainer;
 		}
@@ -200,20 +199,22 @@ namespace PrimeApps.App.Storage
 		/// Gets avatar full url
 		/// </summary>
 		/// <returns></returns>
-		public static string GetProfilePictureUrl(string profilePicture, IConfiguration configuration)
+		public static string GetAvatarUrl(string avatar, IConfiguration configuration)
 		{
-			if (string.IsNullOrWhiteSpace(profilePicture))
+			if (string.IsNullOrWhiteSpace(avatar))
 			{
 				return string.Empty;
 			}
 
-			var storageUrl = configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-			var blobUrl = "";
-			if (!string.IsNullOrEmpty(storageUrl))
+			var blobUrl = configuration.GetValue("AppSettings:BlobUrl", string.Empty);
+
+			if (!string.IsNullOrEmpty(blobUrl))
 			{
-				blobUrl = storageUrl;
+				return $"{blobUrl}/user-images/{avatar}";
 			}
-			return $"{blobUrl}/{profilePicture}";
+
+			else
+				return string.Empty;
 		}
 
 		public static string GetLogoUrl(string logo, IConfiguration configuration)
@@ -222,13 +223,16 @@ namespace PrimeApps.App.Storage
 			{
 				return string.Empty;
 			}
-			var storageUrl = configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-			var blobUrl = "";
-			if (!string.IsNullOrEmpty(storageUrl))
+
+			var blobUrl = configuration.GetValue("AppSettings:BlobUrl", string.Empty);
+
+			if (!string.IsNullOrEmpty(blobUrl))
 			{
-				blobUrl = storageUrl;
-			}
-			return $"{blobUrl}/{logo}";
+				return $"{blobUrl}/app-logo/{logo}";
+			}	
+
+			else
+				return string.Empty;
 		}
 
 		private static async Task MoveBlockBlobAsync(CloudBlockBlob sourceBlob, CloudBlockBlob destBlob)
@@ -237,6 +241,7 @@ namespace PrimeApps.App.Storage
 
 			try
 			{
+
 				// Lease the source blob for the copy operation to prevent another client from modifying it.
 				// Specifying null for the lease interval creates an infinite lease.
 				leaseId = await sourceBlob.AcquireLeaseAsync(null);
@@ -295,5 +300,7 @@ namespace PrimeApps.App.Storage
 		//    };
 		//    return result;
 		//}
+
 	}
+
 }

@@ -7,7 +7,7 @@
      ng-if="field.data_type=='image' && field.valueFormatted && field.valueFormatted !=null" class="img-responsive"
 
      ng-style="field.image_size_list >0 ? {'max-width':field.image_size_list+'px'}  : {'max-width':'250px'}"
-     ng-src="{{ $root.config.imageUrl + field.valueFormatted }}">
+     ng-src="{{ $root.config.storage_host + field.valueFormatted }}">
 <input-stars
         ng-if="field.data_type === 'rating'"
         max="{{field.max}}"

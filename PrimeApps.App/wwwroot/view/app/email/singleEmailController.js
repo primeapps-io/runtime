@@ -309,12 +309,12 @@ angular.module('primeapps')
                     uploadProgress: function (uploader, file) {
                     },
                     fileUploaded: function (uploader, file, response) {
-                        uploader.settings.multipart_params.response_list="";
+                        uploader.settings.multipart_params.response_list = "";
                         uploader.settings.multipart_params.upload_id = 0;
 
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -376,7 +376,7 @@ angular.module('primeapps')
                     },
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                         tinymce.activeEditor.windowManager.close();
                     },
@@ -392,9 +392,9 @@ angular.module('primeapps')
                         }
                     },
                     error: function (file, error) {
-                        this.settings.multipart_params.response_list="";
+                        this.settings.multipart_params.response_list = "";
                         this.settings.multipart_params.upload_id = 0;
-                        
+
                         switch (error.code) {
                             case -600:
                                 tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
@@ -593,17 +593,17 @@ angular.module('primeapps')
                         $scope.subject,
                         $scope.attachmentLink,
                         $scope.attachmentName).then(function (response) {
-                        $scope.submittingModal = false;
-                        $scope.mailModal.hide();
-                        $scope.$parent.$parent.isAllSelected = false;
-                        $scope.$parent.$parent.selectedRows = [];
-                        if ($scope.$parent.$parent.emailSent) {
-                            $scope.$parent.$parent.emailSent();
-                        }
-                        ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
+                            $scope.submittingModal = false;
+                            $scope.mailModal.hide();
+                            $scope.$parent.$parent.isAllSelected = false;
+                            $scope.$parent.$parent.selectedRows = [];
+                            if ($scope.$parent.$parent.emailSent) {
+                                $scope.$parent.$parent.emailSent();
+                            }
+                            ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
 
 
-                    })
+                        })
                         .catch(function () {
                             $scope.submittingModal = false;
                             $scope.mailModal.hide();
