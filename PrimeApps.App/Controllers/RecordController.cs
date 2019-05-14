@@ -327,7 +327,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Create(string module, [FromBody]JObject record, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
+        public async Task<IActionResult> Create(string module, [FromBody]JObject record, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180, [FromQuery(Name = "convertPicklists")]bool? convertPicklists = true)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -335,10 +335,10 @@ namespace PrimeApps.App.Controllers
             var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             if (moduleEntity == null || record == null)
-                return BadRequest();
+                return BadRequest();         
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
-
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, appUser: AppUser);
+            
             if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                 return StatusCode(resultBefore, ModelState);
 
