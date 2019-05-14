@@ -12,6 +12,7 @@ data:
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
+  EnableBpm: "false"
   EnableRequestLogging: "false"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
@@ -86,6 +87,11 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: EnableJobs
+            - name: AppSettings__EnableBpm
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-app-preview-config
+                    key: EnableBpm
             - name: AppSettings__EnableRequestLogging
               valueFrom:
                 configMapKeyRef:
