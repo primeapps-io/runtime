@@ -45,7 +45,7 @@ namespace PrimeApps.App
 
             services.AddWorkflow(cfg =>
                 {
-                    cfg.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true);
+                    cfg.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, false);
                     cfg.UseRedisLocking(redisConnection);
                     cfg.UseRedisQueues(redisConnection, "wfc");
                     cfg.UseRedisEventHub(redisConnection, "wfc");
@@ -91,7 +91,6 @@ namespace PrimeApps.App
                 })
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
-
 
 
             var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
