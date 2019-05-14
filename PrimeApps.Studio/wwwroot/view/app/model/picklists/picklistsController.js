@@ -325,9 +325,17 @@ angular.module('primeapps')
             $scope.saveItem = function () {
                 $scope.itemModel.saving = true;
 
-                if ((!$scope.itemModel.system_code && !$scope.itemModel.label_tr) || !$scope.id) {
+                if (!$scope.id) {
                     $scope.itemModel.saving = false;
-                    toastr.warning('Name and System Code cannot be empty!');
+                    $scope.cancel();
+                }
+
+                if (!$scope.itemModel.system_code || !$scope.itemModel.label_tr) {
+                    $scope.itemModel.saving = false;
+                    if (!$scope.itemModel.system_code)
+                        toastr.warning('System Code cannot be empty!');
+                    else if (!$scope.itemModel.label_tr)
+                        toastr.warning('Name cannot be empty!');
                     return false;
                 }
 
