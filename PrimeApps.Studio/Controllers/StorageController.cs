@@ -356,8 +356,8 @@ namespace PrimeApps.Studio.Controllers
         public async void FileUploaded(string bucket, string key, string fileName)
         {
             var email = _context?.HttpContext?.User?.FindFirst("email").Value;
-
-            // _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
+            var currentUser = UserHelper.GetCurrentUser(_context);
+            _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
         }
 
     }
