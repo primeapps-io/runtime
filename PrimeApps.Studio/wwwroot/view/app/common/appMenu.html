@@ -277,6 +277,13 @@
                     <span>Extensions</span>
                 </a>
             </li>
+            <li ng-class="activeMenuItem ==='deployments' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployments" data-trigger="hover" data-type="info"
+                   data-title="Deployments" bs-tooltip data-placement="right">
+                    <i class="fas fa-rocket"></i>
+                    <span>Deployments</span>
+                </a>
+            </li>
         </ul>
     </li>
 </ul>

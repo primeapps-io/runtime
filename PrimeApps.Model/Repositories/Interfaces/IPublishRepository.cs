@@ -1,11 +1,11 @@
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IPublishRepository : IRepositoryBaseTenant
+    public interface IPublishRepository : IRepositoryBaseStudio
     {
-        JArray GetAllDynamicTables();
-        bool CleanUp(JArray tableNames = null);
-        bool CleanUpTables(JArray tableNames = null);
+        Task<Deployment> GetLastDeployment(int appId);
     }
 }

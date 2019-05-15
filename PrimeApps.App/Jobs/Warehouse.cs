@@ -33,6 +33,7 @@ namespace PrimeApps.App.Jobs
         public async Task Create(WarehouseCreateRequest request, UserItem appUser)
         {
             _warehouseRepository.TenantId = request.TenantId;
+            
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();

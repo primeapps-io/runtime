@@ -30,7 +30,7 @@ namespace PrimeApps.Studio
             services.AddHttpContextAccessor();
 
             //Register all repositories
-            foreach (var assembly in new[] { "PrimeApps.Model" })
+            foreach (var assembly in new[] {"PrimeApps.Model"})
             {
                 var assemblies = Assembly.Load(assembly);
                 var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
@@ -73,12 +73,14 @@ namespace PrimeApps.Studio
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
             services.AddScoped<IDeploymentHelper, DeploymentHelper>();
-            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();//What the fuck!
-            services.AddScoped<Email, Email>();//What the fuck!
-            services.AddScoped<Warehouse, Warehouse>();//What the fuck!
+            services.AddScoped<ActionButtonHelper, ActionButtonHelper>(); //What the fuck!
+            services.AddScoped<Email, Email>(); //What the fuck!
+            services.AddScoped<Warehouse, Warehouse>(); //What the fuck!
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddScoped<IReportHelper, ReportHelper>();
             services.AddSingleton<IHistoryHelper, HistoryHelper>();
+            services.AddSingleton<IWebSocketHelper, WebSocketHelper>();
+            services.AddSingleton<IPublishHelper, Helpers.PublishHelper>();
         }
     }
 }
