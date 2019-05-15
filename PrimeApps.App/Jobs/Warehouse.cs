@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,8 @@ namespace PrimeApps.App.Jobs
 		private IConfiguration _configuration;
 		private IMenuRepository _menuRepository;
 		private IServiceScopeFactory _serviceScopeFactory;
-		public Warehouse(IWarehouseRepository warehouseRepository, ITenantRepository tenantRepository, IMenuRepository menuRepository, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+
+		public Warehouse(IWarehouseRepository warehouseRepository, ITenantRepository tenantRepository,IMenuRepository menuRepository, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
 		{
 			_warehouseRepository = warehouseRepository;
 			_tenantRepository = tenantRepository;
@@ -45,17 +47,32 @@ namespace PrimeApps.App.Jobs
 					var tenantLanguage = appUser.TenantLanguage;
 
 					await _warehouseRepository.Create(request, modules, appUser.Email, tenantLanguage);
-					var menuItems = await _menuRepository.GetAllMenuItems();
 
-					if (menuItems != null && menuItems.Count > 0)
+					var menu = await _menuRepository.GetByProfileId((int)appUser.ProfileId);
+					/*mevcut menu yoksa defaultta analytic'in menüde görülmesi için gereken işlemler await _warehouseRepository.Create'te yer almaktadır*/
+					if (menu != null)
 					{
+						var isCreate = true;
+						var menuItems = await _menuRepository.GetMenuItemsByMenuId(menu.Id);
 						foreach (var menuItem in menuItems)
 						{
-							if (menuItem.Route == "analytics")
-								continue;
+							if (menuItem.Route == "analytics" && !menuItem.Deleted)
+							{
+								isCreate = false;
+								break;
+							}
 
-							var menu = await _menuRepository.GetByProfileId((int)appUser.ProfileId);
+							else if (menuItem.Route == "analytics" && menuItem.Deleted)
+							{
+								menuItem.Deleted = false;
+								isCreate = false;
+								await _menuRepository.UpdateMenuItem(menuItem);
+								break;
+							}
+						}
 
+						if (isCreate)
+						{
 							MenuItem menuItemAdd = new MenuItem()
 							{
 								MenuId = menu.Id,
@@ -75,7 +92,6 @@ namespace PrimeApps.App.Jobs
 					}
 				}
 			}
-
 		}
 
 		public void ChangePassword(WarehousePasswordRequest request, PlatformWarehouse warehouse)

@@ -42,7 +42,7 @@ namespace PrimeApps.App.Jobs
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 				var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 					var tenants = await _tenantRepository.GetAllActive();
 					var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
@@ -52,7 +52,7 @@ namespace PrimeApps.App.Jobs
 					{
 						try
 						{
-							using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 							using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
 							{
 

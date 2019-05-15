@@ -15,11 +15,11 @@ namespace PrimeApps.Model.Repositories
 {
 	public class PlatformRepository : RepositoryBasePlatform, IPlatformRepository
 	{
-		private ICacheHelper _cacheHelper;
+		//private ICacheHelper _cacheHelper;
 
-		public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
+		public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
 		{
-			_cacheHelper = cacheHelper;
+			//_cacheHelper = cacheHelper;
 		}
 
 		public Tenant GetTenant(int tenantId)

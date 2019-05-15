@@ -18,11 +18,11 @@ namespace PrimeApps.Model.Repositories
 
         public ICacheHelper CacheHelper { get; set; }
 
-        public RepositoryBasePlatform(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper)
+        public RepositoryBasePlatform(PlatformDBContext dbContext, IConfiguration configuration)//, ICacheHelper cacheHelper)
         {
             _dbContext = dbContext;
             _configuration = configuration;
-            CacheHelper = cacheHelper;
+            //CacheHelper = cacheHelper;
         }
 
         public PlatformDBContext DbContext

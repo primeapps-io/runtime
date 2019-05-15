@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
     {
-        public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
+        public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
         public async Task<App> Get(string domain)
         {
             return await DbContext.Apps

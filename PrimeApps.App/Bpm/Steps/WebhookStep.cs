@@ -70,8 +70,8 @@ namespace PrimeApps.App.Bpm.Steps
                     var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-                    using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
-                    using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                    using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+					using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                     {
                         _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = _currentUser;
 

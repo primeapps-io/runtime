@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Repositories
 {
 	public class PlatformWarehouseRepository : RepositoryBasePlatform, IPlatformWarehouseRepository
 	{
-		public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
+		public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { } /*, ICacheHelper cacheHelper , cacheHelper*/
 
 		public Task<PlatformWarehouse> GetByTenantId(int tenantId)
 		{
@@ -50,16 +50,13 @@ namespace PrimeApps.Model.Repositories
 			// var tenant = DbContext.Tenants.Single(x => x.Id == tenantId);
 			var tenantLicenses = DbContext.TenantLicenses.Single(x => x.TenantId == tenantId);
 
-			//Eğer count 0'dan büyükse kullanıcının lisansı vardır.
-			if (tenantLicenses != null && tenantLicenses.AnalyticsLicenseCount > 0)
+			//App publish edildikten sonra 
+			if (tenantLicenses != null) //&& tenantLicenses.AnalyticsLicenseCount > 0)
 			{
+				//AnalyticsLicenseCount'u 1'e çekiyoruz.
+				tenantLicenses.AnalyticsLicenseCount = 1;
 				DbContext.SaveChanges();
-			}
-			//if (tenant.License == null)
-			//    tenant.License = new TenantLicense();
-
-			//tenant.License.AnalyticsLicenseCount = 1;
-			//DbContext.SaveChanges();
+			}		
 		}
 
 		private void SendCompletedMail(string warehouseName, string email)

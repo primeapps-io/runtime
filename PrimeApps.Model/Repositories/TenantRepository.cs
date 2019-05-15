@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class TenantRepository : RepositoryBasePlatform, ITenantRepository
     {
-        public TenantRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
+        public TenantRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
 
