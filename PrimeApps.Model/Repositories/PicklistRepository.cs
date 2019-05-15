@@ -129,25 +129,25 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public Task<PicklistItem> GetItemById(int id)
+        public async Task<PicklistItem> GetItemById(int id)
         {
-            var picklistItem = DbContext.PicklistItems
+            var picklistItem = await DbContext.PicklistItems
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return picklistItem;
         }
 
-        public Task<PicklistItem> GetItemBySystemCode(string systemCode)
+        public async Task<PicklistItem> GetItemBySystemCode(string systemCode)
         {
-            var picklistItem = DbContext.PicklistItems
+            var picklistItem = await DbContext.PicklistItems
                 .FirstOrDefaultAsync(x => !x.Deleted && x.SystemCode == systemCode);
 
             return picklistItem;
         }
 
-        public Task<bool> GetItemUniqueBySystemCode(string systemCode)
+        public async Task<bool> GetItemUniqueBySystemCode(string systemCode)
         {
-            var result = DbContext.PicklistItems
+            var result = await DbContext.PicklistItems
                 .AnyAsync(x => x.SystemCode == systemCode);
 
             return result;
@@ -155,11 +155,11 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<PicklistItem>> GetItemsAll()
         {
-            var picklistItems = DbContext.PicklistItems
+            var picklistItems = await DbContext.PicklistItems
                 .Where(x => !x.Deleted)
                 .ToListAsync();
 
-            return await picklistItems;
+            return picklistItems;
         }
 
         public async Task<ICollection<PicklistItem>> FindItems(List<int> ids)
@@ -167,12 +167,12 @@ namespace PrimeApps.Model.Repositories
             if (ids == null || ids.Count < 1)
                 return null;
 
-            var picklistItems = DbContext.PicklistItems
+            var picklistItems = await DbContext.PicklistItems
                 .Where(x => !x.Deleted)
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
 
-            return await picklistItems;
+            return picklistItems;
         }
 
         public async Task<PicklistItem> FindItemByLabel(int picklistId, string label, string language)
@@ -236,17 +236,17 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public Task<Picklist> GetPicklistByLabelEn(string labelEn)
+        public async Task<Picklist> GetPicklistByLabelEn(string labelEn)
         {
-            var picklist = DbContext.Picklists
+            var picklist = await DbContext.Picklists
                 .FirstOrDefaultAsync(x => !x.Deleted && x.LabelEn == labelEn);
 
             return picklist;
         }
 
-        public Task<bool> isUniqueCheck(string systemCode)
+        public async Task<bool> isUniqueCheck(string systemCode)
         {
-            return DbContext.Picklists.AnyAsync(x => x.SystemCode == systemCode && !x.Deleted);
+            return await DbContext.Picklists.AnyAsync(x => x.SystemCode == systemCode && !x.Deleted);
         }
     }
 }

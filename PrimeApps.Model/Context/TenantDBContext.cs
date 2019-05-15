@@ -15,12 +15,18 @@ namespace PrimeApps.Model.Context
 
         public int? UserId { get; set; }
 
-        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options) { }
+        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
+        {
+        }
 
         public TenantDBContext(int tenantId, IConfiguration configuration)
         {
             TenantId = tenantId;
-            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId, "tenant");
+
+            var dbConnection = Database.GetDbConnection();
+
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId, "tenant");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,9 +56,12 @@ namespace PrimeApps.Model.Context
             return UserId ?? (TenantId ?? 0);
         }
 
-        public void SetCustomConnectionDatabaseName(string databaseName)
+        public void SetConnectionDatabaseName(string databaseName, IConfiguration configuration, string externalConnectionString = null)
         {
-            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(Database.GetDbConnection().ConnectionString, databaseName);
+            var dbConnection = Database.GetDbConnection();
+
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
         }
 
         private void SetDefaultValues()
@@ -189,7 +198,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<TemplateShares>()
-                .HasKey(t => new { t.UserId, t.TemplateId }); /*We must ensure the primary key constraint names are matching*/
+                .HasKey(t => new { t.UserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
 
             modelBuilder.Entity<TemplateShares>()
                 .HasOne(pt => pt.Template)

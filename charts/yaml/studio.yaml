@@ -8,6 +8,7 @@ data:
   TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
   PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
   StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
   StorageUrl: "https://storage.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
@@ -54,10 +55,10 @@ spec:
         - name: git-storage
           emptyDir: {}
       imagePullSecrets:
-        - name: gcr-pull-secret
+        - name: image-pull-secret
       containers:
         - name: primeapps-studio
-          image: gcr.io/primeapps/primeapps-studio/debian:1.19.093.1
+          image: primeappsadmin/primeapps-studio:1.19.132.2
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
@@ -74,6 +75,11 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: StudioDBConnection
+            - name: ConnectionStrings__RedisConnection
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-app-config
+                    key: RedisConnection
             - name: AppSettings__StorageUrl
               valueFrom:
                 configMapKeyRef:

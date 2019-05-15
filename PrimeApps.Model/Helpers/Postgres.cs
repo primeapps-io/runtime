@@ -161,7 +161,7 @@ namespace PrimeApps.Model.Helpers
             return result;
         }
 
-        public static IEnumerable<string> GetTenantDatabases(string connectionString, string externalConnectionString = null)
+        public static IEnumerable<string> GetTenantDatabases(string connectionString, string prefix = "tenant", string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             try
@@ -172,7 +172,7 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'tenant%' ORDER BY datname";
+                        command.CommandText = $"SELECT datname FROM pg_database WHERE datname LIKE '{prefix}%' ORDER BY datname";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {
@@ -201,7 +201,7 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' OR datname LIKE 'templet%' ORDER BY datname";
+                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' OR datname AND datistemplate=true LIKE 'templet%' ORDER BY datname";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {

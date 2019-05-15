@@ -8,6 +8,7 @@ using PrimeApps.Model.Context;
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.CLI
@@ -26,45 +27,41 @@ namespace PrimeApps.CLI
             }
 
             // Adding JSON file into IConfiguration.
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                            .SetBasePath(Directory.GetCurrentDirectory())
-                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             Configuration = builder.Build();
 
             // Setup DI
-            ServiceProvider serviceProvider = new ServiceCollection()
+            var serviceProvider = new ServiceCollection()
                 .AddLogging(config => config.SetMinimumLevel(LogLevel.Error))
                 .AddEntityFrameworkNpgsql()
-                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")))
-                .AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
-                .AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()))
+                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
+                .AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
+                .AddDbContext<StudioDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("StudioDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
                 .AddHttpContextAccessor()
                 .AddSingleton<IDatabaseService, DatabaseService>()
                 .AddSingleton<IConfiguration>(Configuration)
                 .BuildServiceProvider();
 
-
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
 
-            ILogger<Program> logger = LoggerFactory.CreateLogger<Program>();
+            var logger = LoggerFactory.CreateLogger<Program>();
             logger.LogDebug("Starting application");
 
-            IDatabaseService databaseMigration = serviceProvider.GetService<IDatabaseService>();
-
-
-
-            string commandArea = args[0];
-            string command = args[1];
-            string param1 = args.Length > 2 ? args[2] : null;
-            string param2 = args.Length > 3 ? args[3] : null;
-            string param3 = args.Length > 4 ? args[4] : null;
+            var databaseMigration = serviceProvider.GetService<IDatabaseService>();
+            var commandArea = args[0];
+            var command = args[1];
+            var param1 = args.Length > 2 ? args[2] : null;
+            var param2 = args.Length > 3 ? args[3] : null;
+            var param3 = args.Length > 4 ? args[4] : null;
             string connStr = null;
             string version = null;
 
-            JObject result = new JObject();
+            var result = new JObject();
             Exception exception = null;
-            bool deploy = false;
+            var deploy = false;
 
             try
             {
@@ -74,7 +71,7 @@ namespace PrimeApps.CLI
                         switch (command)
                         {
                             case "-all":
-                                result = databaseMigration.MigrateTenantDatabases(param1);
+                                result = databaseMigration.MigrateTenantDatabases("tenant", param1);
                                 break;
                             case "-all-deploy":
                                 deploy = true;
@@ -89,7 +86,7 @@ namespace PrimeApps.CLI
                                     version = param1;
                                 }
 
-                                result = databaseMigration.MigrateTenantDatabases(version, connStr);
+                                result = databaseMigration.MigrateTenantDatabases("tenant", version, connStr);
 
                                 break;
                             default:
@@ -97,6 +94,36 @@ namespace PrimeApps.CLI
                                 result = databaseMigration.MigrateDatabase(tenantDatabaseName, param1);
                                 break;
                         }
+
+                        break;
+                    case "appUpdate":
+                        switch (command)
+                        {
+                            case "-all":
+                                result = databaseMigration.MigrateTenantDatabases("app", param1);
+                                break;
+                            case "-all-deploy":
+                                deploy = true;
+                                if (!string.IsNullOrWhiteSpace(param1) && param1.Contains("server="))
+                                {
+                                    connStr = param1;
+                                    version = param2;
+                                }
+                                else if (!string.IsNullOrWhiteSpace(param2) && param2.Contains("server="))
+                                {
+                                    connStr = param2;
+                                    version = param1;
+                                }
+
+                                result = databaseMigration.MigrateTenantDatabases("app", version, connStr);
+
+                                break;
+                            default:
+                                string tenantDatabaseName = command;
+                                result = databaseMigration.MigrateDatabase(tenantDatabaseName, param1);
+                                break;
+                        }
+
                         break;
                     case "templateUpdate":
                         switch (command)
@@ -121,6 +148,7 @@ namespace PrimeApps.CLI
                                 result = databaseMigration.MigrateTemplateDatabases(version, connStr);
                                 break;
                         }
+
                         break;
                     case "runSql":
                         switch (command)
@@ -128,10 +156,14 @@ namespace PrimeApps.CLI
                             case "-template":
                                 result = databaseMigration.RunSqlTemplateDatabases(param1, param2);
                                 break;
+                            case "-app":
+                                result = databaseMigration.RunSqlTenantDatabases("app", param1, param2, param3);
+                                break;
                             default:
-                                result = databaseMigration.RunSqlTenantDatabases(param1, param2, param3);
+                                result = databaseMigration.RunSqlTenantDatabases("tenant", param1, param2, param3);
                                 break;
                         }
+
                         break;
                     default:
                         Console.WriteLine("No command area specified. CLI will exit.");
@@ -152,12 +184,13 @@ namespace PrimeApps.CLI
         {
             if (version != null)
             {
-                Console.WriteLine("DbStatus:" + result.ToString() + " for version " + version);
+                Console.WriteLine("DbStatus:" + result + " for version " + version);
             }
             else
             {
-                Console.WriteLine("DbStatus:" + result.ToString());
+                Console.WriteLine("DbStatus:" + result);
             }
+
             if (!result["failed"].IsNullOrEmpty() && ((JArray)result["failed"]).Any() && deploy)
             {
                 throw new Exception("Aborted deployment because of unsuccesful migration.");

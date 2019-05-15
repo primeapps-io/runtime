@@ -4,10 +4,10 @@ namespace PrimeApps.CLI.Migration
 {
     public interface IDatabaseService
     {
-        JObject MigrateDatabase(string _databaseName, string targetVersion = null, string externalConnectionString = null);
+        JObject MigrateDatabase(string databaseName, string targetVersion = null, string externalConnectionString = null);
         JObject MigrateTemplateDatabases(string targetVersion = null, string externalConnectionString = null);
-        JObject MigrateTenantDatabases(string targetVersion = null, string externalConnectionString = null);
+        JObject MigrateTenantDatabases(string prefix, string targetVersion = null, string externalConnectionString = null);
         JObject RunSqlTemplateDatabases(string sqlFilePath, string externalConnectionString = null);
-        JObject RunSqlTenantDatabases(string sqlFilePath, string externalConnectionString = null, string app = null);
+        JObject RunSqlTenantDatabases(string prefix, string sqlFilePath, string externalConnectionString = null, string app = null);
     }
 }

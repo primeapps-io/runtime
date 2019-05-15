@@ -69,6 +69,7 @@
             <td ng-if="actionButton.trigger == 'Detail'">{{'Setup.Modules.Detail' | translate}}</td>
             <td ng-if="actionButton.trigger == 'Form'">Form</td>
             <td ng-if="actionButton.trigger == 'All'">{{'Setup.Modules.All' | translate}}</td>
+            <td ng-if="actionButton.trigger == 'Relation'">{{'Setup.Modules.Relation' | translate}}</td>
             <td class="text-center">
                 <div class="action-buttons-block">
                     <button ng-click="$event.stopPropagation(); delete(actionButton, $event);" type="button"

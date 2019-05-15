@@ -54,7 +54,7 @@ angular.module('primeapps')
                 ActionButtonsService.find($scope.id, requestModel).then(function (response) {
                     $scope.actionButtons = response.data;
                     for (var i = 0; i < response.data.length; i++) {
-                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, {id: response.data[i].module_id}, true)[0];
+                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: response.data[i].module_id }, true)[0];
                         $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
                     }
                     $scope.actionbuttonState = angular.copy($scope.actionButtons);
@@ -120,16 +120,20 @@ angular.module('primeapps')
                     {
                         name: $filter('translate')('Setup.Modules.All'),
                         value: 3
+                    },
+                    {
+                        name: $filter('translate')('Setup.Modules.Relation'),
+                        value: 5
                     }
                 ];
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
@@ -137,14 +141,14 @@ angular.module('primeapps')
             };
 
             $scope.save = function (actionButtonForm) {
-                
+
                 if (!actionButtonForm.$valid) {
                     if (actionButtonForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
-                    
+
                     return;
                 }
-                
+
                 $scope.saving = true;
                 var actionButton = angular.copy($scope.currentActionButton);
 
@@ -165,7 +169,7 @@ angular.module('primeapps')
                     angular.forEach($scope.hookParameters, function (hookParameter) {
                         var moduleName;
                         if ($scope.module.name !== hookParameter.selectedModule.name)
-                            moduleName = $filter('filter')($scope.module.fields, {lookup_type: hookParameter.selectedModule.name}, true)[0].name;
+                            moduleName = $filter('filter')($scope.module.fields, { lookup_type: hookParameter.selectedModule.name }, true)[0].name;
                         else
                             moduleName = hookParameter.selectedModule.name;
 
@@ -287,7 +291,7 @@ angular.module('primeapps')
 
                     angular.forEach($scope.module.fields, function (field) {
                         if (field.lookup_type && field.lookup_type !== $scope.module.name && field.lookup_type !== 'users' && !field.deleted) {
-                            var module = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
+                            var module = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
                             $scope.updatableModules.push(module);
                         }
                     });
@@ -355,6 +359,9 @@ angular.module('primeapps')
                 if (actionButton.trigger === 'All')
                     actionButton.triggerType = 3;
 
+                if (actionButton.trigger === 'Relation')
+                    actionButton.triggerType = 5;
+
                 if (actionButton.type === 3) {
                     $scope.hookParameters = [];
 
@@ -387,17 +394,17 @@ angular.module('primeapps')
                         var selectedModule;
 
                         if ($scope.module.name === parameter[1]) {
-                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: parameter[1]}, true)[0];
+                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: parameter[1] }, true)[0];
                         } else {
-                            var lookupModuleName = $filter('filter')($scope.module.fields, {name: parameter[1]}, true)[0].lookup_type;
-                            selectedModule = $filter('filter')(editParameter.selectedModules, {name: lookupModuleName}, true)[0];
+                            var lookupModuleName = $filter('filter')($scope.module.fields, { name: parameter[1] }, true)[0].lookup_type;
+                            selectedModule = $filter('filter')(editParameter.selectedModules, { name: lookupModuleName }, true)[0];
                         }
 
                         if (!selectedModule)
                             return;
 
                         editParameter.selectedModule = selectedModule;
-                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, {name: parameter[2]}, true)[0];
+                        editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
 
                         $scope.hookParameters.push(editParameter);
                     });

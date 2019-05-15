@@ -303,7 +303,7 @@ angular.module('primeapps')
                             $scope.modalLoading = false;
                         }
                         else {
-                            //$scope.workflowModel = {};
+                            $scope.workflowModel[node.ngModelName] = {};
 
                             if (node.ngModelName === 'webHook') {
                                 $scope.workflowModel.webHook = { methodType: 'post' };
@@ -1434,16 +1434,16 @@ angular.module('primeapps')
 
             $scope.saveSetting = function (settingForm) {
                 settingForm.$submitted = true;
-                $scope.saving = true;
+                $scope.savingSetting = true;
 
                 if (!settingForm.$valid) {
                     toastr.warning($filter('translate')('Module.RequiredError'));
-                    $scope.saving = false;
+                    $scope.savingSetting = false;
                     return;
                 }
 
                 setTimeout(function () {
-                    $scope.saving = false;
+                    $scope.savingSetting = false;
                     $scope.settingCancel();
                 }, 1000);
             };
