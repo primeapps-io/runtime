@@ -10,7 +10,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $rootScope.toggleClass = 'toggled full-toggled';
                     $rootScope.subtoggleClass = 'full-toggled2';
                 });
-            } else {
+            }
+            else {
                 $scope.$apply(function () {
                     $rootScope.toggleClass = '';
                     $rootScope.subtoggleClass = '';
@@ -23,7 +24,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $rootScope.toggledOrgMenu = function () {
-            $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled'; 
+            $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled';
         };
 
         $scope.nameBlur = false;
@@ -60,6 +61,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             return check;
         };
 
+        $scope.publish = function () {
+            $state.go('studio.app.deployment', {
+                publish: true,
+                orgId: $rootScope.currentOrgId,
+                appId: $rootScope.currentAppId
+            });
+        };
+
         $scope.preview = function () {
 
             //  if (!$scope.appLoading && $scope.appModules.length > 0) {
@@ -80,7 +89,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                         });
                         $rootScope.previewActivating = false;
                         return;
-                    } else {
+                    }
+                    else {
                         LayoutService.getPreviewToken()
                             .then(function (response) {
                                 $scope.previewActivating = false;
@@ -137,9 +147,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 if (currentUrl.charAt(index - 1) === ':') {
                     currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '?') {
+                }
+                else if (currentUrl.charAt(index - 1) === '?') {
                     currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '&') {
+                }
+                else if (currentUrl.charAt(index - 1) === '&') {
                     currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
                 }
             });
@@ -148,7 +160,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 $state.reload();
             }
         };
-
 
         $scope.toggleAppMenu = function ($timeout) {
             angular.element($scope.appLauncher).toggleClass('toggled');
@@ -164,16 +175,16 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.colors = [
-            { value: '#D72A20' },
-            { value: '#833CA3' },
-            { value: '#17ACFE' },
-            { value: '#33ffff' },
-            { value: '#229C51' },
-            { value: '#FFAD1C' },
-            { value: '#1C3E7D' },
-            { value: '#C35E21' },
-            { value: '#F3C937' },
-            { value: '#6B2F5D' },
+            {value: '#D72A20'},
+            {value: '#833CA3'},
+            {value: '#17ACFE'},
+            {value: '#33ffff'},
+            {value: '#229C51'},
+            {value: '#FFAD1C'},
+            {value: '#1C3E7D'},
+            {value: '#C35E21'},
+            {value: '#F3C937'},
+            {value: '#6B2F5D'},
         ];
 
         $scope.newOrganization = function () {
@@ -211,7 +222,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.nameValid = null;
             $scope.nameBlur = false;
 
-
         };
 
         $scope.saveOrganization = function (organizationForm) {
@@ -247,25 +257,26 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $scope.organization = {};
                                 $scope.nameValid = null;
                                 $scope.nameBlur = false;
-                                $state.go('studio.apps', { orgId: response.data });
+                                $state.go('studio.apps', {orgId: response.data});
                             }).catch(function () {
-                                toastr.error('Organization ' + $scope.organization.label + ' not created.');
-                                $scope.organizationSaving = false;
-                                $scope.nameValid = null;
-                                $scope.nameBlur = false;
-                            });
-                    } else {
+                            toastr.error('Organization ' + $scope.organization.label + ' not created.');
+                            $scope.organizationSaving = false;
+                            $scope.nameValid = null;
+                            $scope.nameBlur = false;
+                        });
+                    }
+                    else {
                         $scope.nameValid = false;
                         $scope.organizationSaving = false;
                     }
                 }).catch(function () {
-                    $scope.nameValid = false;
-                    if (!$scope.nameValid) {
-                        toastr.warning("Organization Identifier value must be unique! ");
-                        return;
-                    }
-                    $scope.nameChecking = false;
-                });
+                $scope.nameValid = false;
+                if (!$scope.nameValid) {
+                    toastr.warning("Organization Identifier value must be unique! ");
+                    return;
+                }
+                $scope.nameChecking = false;
+            });
 
         };
 
@@ -311,7 +322,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.nameChecking = false;
                     if (response.data) {
                         $scope.nameValid = true;
-                    } else {
+                    }
+                    else {
                         $scope.nameValid = false;
                     }
                 })

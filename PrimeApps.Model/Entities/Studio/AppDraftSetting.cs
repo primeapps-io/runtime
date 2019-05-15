@@ -46,6 +46,9 @@ namespace PrimeApps.Model.Entities.Studio
 
         [Column("tenant_operation_webhook")]
         public string TenantOperationWebhook { get; set; }
+        
+        [Column("enable_registration")]
+        public bool EnableRegistration { get; set; }
 
         public virtual AppDraft App { get; set; }
     }

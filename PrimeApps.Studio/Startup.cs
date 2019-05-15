@@ -1,5 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -17,8 +22,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
 
@@ -129,11 +138,11 @@ namespace PrimeApps.Studio
                 var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
                 var context = app.ApplicationServices.GetService<IHttpContextAccessor>();
                 var tracerHelper = app.ApplicationServices.GetService<IHistoryHelper>();
-                
+
                 var listener = databaseContext.GetService<DiagnosticSource>();
                 (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, tracerHelper, context, Configuration));
             }
-            
+
 
             var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
             if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
@@ -167,6 +176,35 @@ namespace PrimeApps.Studio
             );
 
             JobConfiguration(app, Configuration);
+
+            var webSocketOptions = new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                ReceiveBufferSize = 4 * 1024
+            };
+
+            app.UseWebSockets();
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Request.Path == "/log_stream")
+                {
+                    if (ctx.WebSockets.IsWebSocketRequest)
+                    {
+                        var webSocketHelper = (IWebSocketHelper)ctx.RequestServices.GetService(typeof(IWebSocketHelper));
+
+                        var wSocket = await ctx.WebSockets.AcceptWebSocketAsync();
+                        await webSocketHelper.LogStream(ctx, wSocket);
+                    }
+                    else
+                    {
+                        ctx.Response.StatusCode = 400;
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+            });
 
             app.UseMvc(routes =>
             {

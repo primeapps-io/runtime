@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Model", "PrimeApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Util", "PrimeApps.Util\PrimeApps.Util.csproj", "{1BE049AB-A18E-46BC-A2BE-12A9FE185729}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BE049AB-A18E-46BC-A2BE-12A9FE185729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE049AB-A18E-46BC-A2BE-12A9FE185729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE049AB-A18E-46BC-A2BE-12A9FE185729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE049AB-A18E-46BC-A2BE-12A9FE185729}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

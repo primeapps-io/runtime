@@ -22,6 +22,9 @@ namespace PrimeApps.Model.Entities.Studio
 
         [Column("end_time")]
         public DateTime EndTime { get; set; }
+        
+        [Column("settings", TypeName = "jsonb")]
+        public string Settings { get; set; }
 
         public virtual AppDraft AppDraft { get; set; }
     }

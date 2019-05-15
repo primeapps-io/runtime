@@ -53,6 +53,9 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("registration_type")]
         public RegistrationType RegistrationType { get; set; }
+        
+        [Column("enable_registration")]
+        public bool EnableRegistration { get; set; }
 
         public virtual App App { get; set; }
     }

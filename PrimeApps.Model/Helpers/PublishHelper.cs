@@ -1,13 +1,125 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
+using Devart.Data.PostgreSql;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Npgsql;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Helpers
 {
+    public enum Location
+    {
+        [EnumMember(Value = "PDE")]PDE = 1,
+
+        [EnumMember(Value = "PRE")]PRE = 2
+    }
+
     public class PublishHelper
     {
-        public static string SetRecordsIsSample()
+        public static bool Create(bool clearAllRecords, string dbName, int version, int deploymentId, IConfiguration configuration)
+        {
+            var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
+            var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
+            var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+
+            path = $"{path}\\published\\logs\\{dbName}";
+
+            if (!File.Exists(path))
+                Directory.CreateDirectory(path);
+
+            /*if (!File.Exists($"{path}\\{version}.txt"))
+            {
+                var logFile = File.Create($"{path}\\{version}.txt");
+                logFile.Close();
+            }*/
+
+            path = $"{path}\\{version}.txt";
+
+            try
+            {
+                File.AppendAllText(path, DateTime.Now + " : Publish starting..." + Environment.NewLine);
+                File.AppendAllText(path, DateTime.Now + " : Database sql generating..." + Environment.NewLine);
+                //tw.WriteLine("Publish starting...");
+                //tw.WriteLine("Database sql generating...");
+                //await wSocket.SendAsync(CreateWSMessage("Database sql generating"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                var sqlDump = PublishHelper.GetSqlDump(PDEConnectionString, Location.PDE, dbName);
+
+                if (string.IsNullOrEmpty(sqlDump))
+                    File.AppendAllText(path, DateTime.Now + " : Unhandle exception. While creating sql dump script." + Environment.NewLine);
+                //tw.WriteLine("Unhandle exception. While creating sql dump script.");
+
+                File.AppendAllText(path, DateTime.Now + " : Restoring your database..." + Environment.NewLine);
+                //tw.WriteLine("Restoring your database...");
+                //await wSocket.SendAsync(CreateWSMessage("Restoring your database"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                var restoreResult = PublishHelper.RestoreDatabase(PREConnectionString, sqlDump, Location.PRE, dbName);
+
+                if (!restoreResult)
+                    File.AppendAllText(path, DateTime.Now + " : Unhandle exception. While restoring your database." + Environment.NewLine);
+                //tw.WriteLine("Unhandle exception. While restoring your database.");
+
+                File.AppendAllText(path, DateTime.Now + " : System tables clearing..." + Environment.NewLine);
+                //tw.WriteLine("System tables clearing...");
+                //await wSocket.SendAsync(CreateWSMessage("System tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                PublishHelper.CleanUpSystemTables(PREConnectionString, Location.PRE, dbName);
+
+                File.AppendAllText(path, DateTime.Now + " : Dynamic tables clearing..." + Environment.NewLine);
+                //tw.WriteLine("Dynamic tables clearing...");
+                //await wSocket.SendAsync(CreateWSMessage("Dynamic tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                PublishHelper.CleanUpTables(PREConnectionString, Location.PRE, dbName, clearAllRecords ? null : new JArray());
+
+                File.AppendAllText(path, DateTime.Now + " : Records are marking as sample..." + Environment.NewLine);
+                //tw.WriteLine("Records are marking as sample...");
+                //await wSocket.SendAsync(CreateWSMessage("Records are marking as sample"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                PublishHelper.SetRecordsIsSample(PREConnectionString, Location.PRE, dbName);
+
+                File.AppendAllText(path, DateTime.Now + " : Final arrangements being made..." + Environment.NewLine);
+                //tw.WriteLine("Final arrangements being made...");
+                //await wSocket.SendAsync(CreateWSMessage("Final arrangements being made"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                PublishHelper.SetAllUserFK(PREConnectionString, Location.PRE, dbName);
+
+                //await wSocket.SendAsync(CreateWSMessage("Database marking as template"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                //PublishHelper.SetDatabaseIsTemplate(PREConnectionString, Location.PRE, dbName);
+
+                //await wSocket.SendAsync(CreateWSMessage("You application is ready"), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                //result = await wSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+
+                //await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+
+                File.AppendAllText(path, DateTime.Now + " : Done..." + Environment.NewLine);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                File.AppendAllText(path, DateTime.Now + " : " + e.Message + Environment.NewLine);
+
+                //tw.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public static string GetConnectionString(string connectionString, Location location, string database)
+        {
+            var connection = new NpgsqlConnectionStringBuilder(connectionString);
+
+            if (location == Location.PDE)
+                return $"host={connection.Host};port={connection.Port};user id={connection.Username};password={connection.Password};database={database};";
+
+            return $"host={connection.Host};port={connection.Port};user id={connection.Username};password={connection.Password};database={database};";
+        }
+
+        public static string SetRecordsIsSampleSql()
         {
             return "SELECT 'update \"' || cl.\"table_name\" || '\" set is_sample=true;' " +
                    "FROM information_schema.\"columns\" cl " +
@@ -15,7 +127,27 @@ namespace PrimeApps.Model.Helpers
                    "ORDER BY cl.\"table_name\" ";
         }
 
-        public static string CleanUpSystemTables()
+        public static bool SetRecordsIsSample(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
+                connection.Open();
+
+                var dropCommand = new PgSqlCommand(SetRecordsIsSampleSql()) {Connection = connection};
+                var result = dropCommand.ExecuteReader();
+
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public static string CleanUpSystemTablesSql()
         {
             return "DELETE FROM analytic_shares; " +
                    "DELETE FROM audit_logs; " +
@@ -35,6 +167,60 @@ namespace PrimeApps.Model.Helpers
                    "DELETE FROM workflow_logs; ";
         }
 
+        public static bool CleanUpTables(string connectionString, Location location, string dbName, JArray tableNames = null)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
+                connection.Open();
+
+                if (tableNames == null)
+                    tableNames = GetAllDynamicTables(connectionString, location, dbName);
+
+                foreach (var table in tableNames)
+                {
+                    var sql = $"DELETE FROM {table["table_name"]};";
+                    var dropCommand = new PgSqlCommand(sql) {Connection = connection};
+                    dropCommand.ExecuteReader();
+                }
+
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public static bool CleanUpSystemTables(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
+                connection.Open();
+
+                var sqls = CleanUpSystemTablesSql().Split("; ");
+                foreach (var sql in sqls)
+                {
+                    if (string.IsNullOrEmpty(sql))
+                        continue;
+
+                    var dropCommand = new PgSqlCommand(sql) {Connection = connection};
+                    var result = dropCommand.ExecuteReader();
+                }
+
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public static string GetAllSystemTablesSql()
         {
             return "SELECT table_name FROM information_schema.tables WHERE table_type != 'VIEW' AND table_schema = 'public' AND table_name NOT LIKE '%_d'";
@@ -43,6 +229,81 @@ namespace PrimeApps.Model.Helpers
         public static string GetAllDynamicTablesSql()
         {
             return "SELECT table_name FROM information_schema.tables WHERE table_type != 'VIEW' AND table_schema = 'public' AND table_name LIKE '%_d'";
+        }
+
+        public static bool SetAllUserFK(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
+                connection.Open();
+
+                var dropCommand = new PgSqlCommand(GetAllSystemTablesSql()) {Connection = connection};
+                var tableData = dropCommand.ExecuteReader().ResultToJArray();
+
+                if (!tableData.HasValues) return false;
+
+                foreach (var t in tableData)
+                {
+                    var table = t["table_name"];
+                    dropCommand = new PgSqlCommand(GetUserFKColumnsSql(table.ToString())) {Connection = connection};
+                    var columns = dropCommand.ExecuteReader().ResultToJArray();
+
+                    if (!columns.HasValues) continue;
+
+                    dropCommand = new PgSqlCommand(ColumnIsExistsSql(table.ToString(), "id")) {Connection = connection};
+                    var idColumnIsExists = dropCommand.ExecuteReader();
+                    var idExists = true;
+
+                    var fkColumns = (JArray)columns.DeepClone();
+
+                    if (!idColumnIsExists.HasRows)
+                    {
+                        dropCommand = new PgSqlCommand(GetAllColumnNamesSql(table.ToString())) {Connection = connection};
+                        columns = dropCommand.ExecuteReader().ResultToJArray();
+
+                        idExists = false;
+                    }
+                    else
+                    {
+                        columns.Add(new JObject {["column_name"] = "id"});
+                    }
+
+                    dropCommand = new PgSqlCommand(GetAllRecordsWithColumnsSql(table.ToString(), columns)) {Connection = connection};
+                    var records = dropCommand.ExecuteReader().ResultToJArray();
+
+                    foreach (var record in records)
+                    {
+                        dropCommand = new PgSqlCommand(UpdateRecordSql(record, table.ToString(), fkColumns, 1, idExists)) {Connection = connection};
+                        var result = dropCommand.ExecuteReader().ResultToJArray();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static JArray GetAllDynamicTables(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
+                connection.Open();
+
+                var dropCommand = new PgSqlCommand(GetAllDynamicTablesSql()) {Connection = connection};
+                var result = dropCommand.ExecuteReader().ResultToJArray();
+
+                connection.Close();
+                return result;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public static string GetUserFKColumnsSql(string tableName)
@@ -60,9 +321,9 @@ namespace PrimeApps.Model.Helpers
                    "WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='" + tableName + "' AND ccu.table_name = 'users';";
         }
 
-        public static string GetAllRecordsWithColumns(string tableName, JArray columns)
+        public static string GetAllRecordsWithColumnsSql(string tableName, JArray columns)
         {
-            var sql = new StringBuilder("SELECT id,");
+            var sql = new StringBuilder("SELECT ");
 
             foreach (var column in columns)
             {
@@ -76,9 +337,9 @@ namespace PrimeApps.Model.Helpers
             return sql.ToString();
         }
 
-        public static string UpdateRecordSql(JToken record, string tableName, JArray columns, int value)
+        public static string UpdateRecordSql(JToken record, string tableName, JArray columns, int value, bool idExists)
         {
-            var sql = new StringBuilder("UPDATE " + tableName);
+            var sql = new StringBuilder("UPDATE " + tableName + " SET ");
 
             foreach (var column in columns)
             {
@@ -87,14 +348,141 @@ namespace PrimeApps.Model.Helpers
                 if (string.IsNullOrEmpty(record[columnName.ToString()].ToString()))
                     continue;
 
-                sql.Append(" SET " + columnName + " = " + value + " AND");
+                sql.Append(columnName + " = " + value + ",");
             }
 
-            sql = sql.Remove(sql.Length - 3, 3);
+            sql = sql.Remove(sql.Length - 1, 1);
 
-            sql.Append("WHERE id = " + (int)record["id"] + ";");
+            if (idExists)
+            {
+                sql.Append(" WHERE id = " + (int)record["id"] + ";");
+            }
+            else
+            {
+                if (columns.Count > 0)
+                {
+                    sql.Append("WHERE ");
+                    foreach (var column in columns)
+                    {
+                        var columnName = column["column_name"];
+
+                        if (!string.IsNullOrEmpty(record[columnName.ToString()].ToString()))
+                        {
+                            sql.Append(columnName + " = " + record[columnName] + " ,");
+                        }
+                    }
+
+                    sql = sql.Remove(sql.Length - 1, 1);
+                }
+            }
 
             return sql.ToString();
+        }
+
+        public static string GetAllColumnNamesSql(string tableName)
+        {
+            return "SELECT column_name " +
+                   "FROM information_schema.columns " +
+                   "WHERE table_schema = 'public' " +
+                   "AND table_name   = '" + tableName + "';";
+        }
+
+        public static string ColumnIsExistsSql(string tableName, string columnName)
+        {
+            return "SELECT column_name " +
+                   "FROM information_schema.columns " +
+                   "WHERE table_name='" + tableName + "' and column_name='" + columnName + "';";
+        }
+
+        public static bool CreateDatabaseIfNotExists(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, "postgres"));
+                connection.Open();
+
+                var dropCommand = new PgSqlCommand($"DROP DATABASE IF EXISTS {dbName};");
+                dropCommand.Connection = connection;
+                dropCommand.ExecuteReader();
+
+                var createCommand = new PgSqlCommand($"CREATE DATABASE {dbName};");
+                createCommand.Connection = connection;
+                createCommand.ExecuteReader();
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public static bool SetDatabaseIsTemplate(string connectionString, Location location, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, "postgres"));
+                connection.Open();
+
+                var terminateCommand = new PgSqlCommand($"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();") {Connection = connection};
+                terminateCommand.ExecuteReader();
+
+                var setTemplateCommand = new PgSqlCommand($"UPDATE pg_database SET datistemplate = TRUE WHERE datname = '{dbName}';") {Connection = connection};
+                setTemplateCommand.ExecuteReader();
+
+                var notAllowConnectionCommand = new PgSqlCommand($"UPDATE pg_database SET datallowconn = FALSE WHERE datname = '{dbName}';") {Connection = connection};
+                notAllowConnectionCommand.ExecuteReader();
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public static string GetSqlDump(string connectionString, Location location, string database)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, database));
+
+                connection.Open();
+                var dump = new PgSqlDump {Connection = connection, Schema = "public", IncludeDrop = false};
+                dump.Backup();
+                connection.Close();
+
+                return dump.DumpText;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public static bool RestoreDatabase(string connectionString, string dumpSql, Location location, string database)
+        {
+            try
+            {
+                var result = CreateDatabaseIfNotExists(connectionString, location, database);
+                if (!result)
+                    return false;
+
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, location, database));
+
+                connection.Open();
+                var dump = new PgSqlDump {Connection = connection, DumpText = dumpSql};
+                dump.Restore();
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }
