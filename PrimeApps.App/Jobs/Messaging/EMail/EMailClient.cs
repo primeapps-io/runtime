@@ -79,8 +79,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 					databaseContext.TenantId = emailQueueItem.TenantId;
 
-					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
-					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
 

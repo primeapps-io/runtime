@@ -863,8 +863,8 @@ namespace PrimeApps.App.Helpers
 
                             //domain = "http://localhost:5554/";
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
-                            {
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+							{
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {

@@ -48,8 +48,7 @@ namespace PrimeApps.Model.Repositories
 
 			analytics.OrderBy(x => x.CreatedAt);
 
-
-			return await analytics.ToListAsync(); ;
+			return await analytics.ToListAsync();
 		}
 
 		public async Task<int> Create(Analytic analytic)

@@ -38,7 +38,7 @@ namespace PrimeApps.App.Jobs
 				var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
 				previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 					var tenants = await tenantRepository.GetAllActive();
 
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Jobs
 
 						try
 						{
-							using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 							using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
 							{
 

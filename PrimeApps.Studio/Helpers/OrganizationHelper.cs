@@ -39,8 +39,8 @@ namespace PrimeApps.Studio.Helpers
 
                 var collaborators = new List<OrganizationUserModel>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration, cacheHelper))
-                {
+                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))
+				{
                     foreach (var user in users)
                     {
                         var platformUser = await _platformUserRepository.GetSettings(user.UserId);

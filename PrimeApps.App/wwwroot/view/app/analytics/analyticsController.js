@@ -2,116 +2,131 @@
 
 angular.module('primeapps')
 
-    .controller('AnalyticsController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'ngToast', 'AnalyticsService',
-        function ($rootScope, $scope, $location, $filter, $timeout, $state, ngToast, AnalyticsService) {
-            $scope.id = $location.search().id;
-            $scope.filterPaneEnabled = false;
-            $scope.analyticsLoading = true;
+	.controller('AnalyticsController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'ngToast', 'AnalyticsService',
+		function ($rootScope, $scope, $location, $filter, $timeout, $state, ngToast, AnalyticsService) {
+			$scope.id = $location.search().id;
+			$scope.filterPaneEnabled = false;
+			$scope.analyticsLoading = true;
 
-            if (!$rootScope.user.has_analytics) {
-                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
-            }
+			if (!$rootScope.user.has_analytics) {
+				ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+				$state.go('app.dashboard');
+				return;
+			}
 
-            $scope.embedReport = function (analyticsCurrentReport) {
-                $scope.loading = true;
-                var report;
+			$scope.embedReport = function (analyticsCurrentReport) {
+				$scope.loading = true;
+				var report;
 
-                if (!analyticsCurrentReport) {
-                    if (!$scope.id)
-                        report = $scope.analyticsReports[0];
-                    else
-                        report = $filter('filter')($scope.analyticsReports, { id: parseInt($scope.id) }, true)[0];
-                }
-                else {
-                    report = analyticsCurrentReport;
-                }
+				if (!analyticsCurrentReport) {
+					if (!$scope.id)
+						report = $scope.analyticsReports[0];
+					else
+						report = $filter('filter')($scope.analyticsReports, { id: parseInt($scope.id) }, true)[0];
+				}
+				else {
+					report = analyticsCurrentReport;
+				}
 
-                $scope.analyticsCurrentReport = report;
+				$scope.analyticsCurrentReport = report;
 
-                var config = {
-                    type: 'report',
-                    accessToken: report.access_token,
-                    embedUrl: report.embed_url,
-                    id: report.report_id,
-                    settings: {
-                        filterPaneEnabled: false,
-                        navContentPaneEnabled: false
-                    }
-                };
+				var config = {
+					type: 'report',
+					accessToken: report.access_token,
+					embedUrl: report.embed_url,
+					id: report.report_id,
+					settings: {
+						filterPaneEnabled: false,
+						navContentPaneEnabled: false
+					}
+				};
 
-                var reportContainer = angular.element(document.getElementById('report'))[0];
-                $scope.reportEmbedded = powerbi.embed(reportContainer, config);
+				var reportContainer = angular.element(document.getElementById('report'))[0];
+				$scope.reportEmbedded = powerbi.embed(reportContainer, config);
 
-                $scope.reportEmbedded.off('loaded');
-                $scope.reportEmbedded.on('loaded', function () {
-                    $scope.reportEmbedded.getPages()
-                        .then(function (pages) {
-                            $timeout(function () {
-                                $scope.pages = pages;
-                                $scope.currentPage = pages[0];
-                                $scope.loading = false;
-                                $scope.analyticsLoading = false;
-                            });
-                        });
-                });
-            };
+				$scope.reportEmbedded.off('loaded');
+				$scope.reportEmbedded.on('loaded', function () {
+					$scope.reportEmbedded.getPages()
+						.then(function (pages) {
+							$timeout(function () {
+								$scope.pages = pages;
+								$scope.currentPage = pages[0];
+								$scope.loading = false;
+								$scope.analyticsLoading = false;
+							});
+						});
+				});
+			};
 
-            $scope.delete = function (reportId) {
-                AnalyticsService.delete(reportId)
-                    .then(function () {
-                        AnalyticsService.getReports()
-                            .then(function (reports) {
-                                reports = reports.data;
+			$scope.delete = function (reportId) {
+				AnalyticsService.delete(reportId)
+					.then(function () {
+						AnalyticsService.getReports()
+							.then(function (reports) {
+								reports = reports.data;
+								$scope.analyticsLoading = false;
 
-                                if (!reports || !reports.length)
-                                    return;
+								if (!reports)// || !reports.length)
+									return;
 
-                                $scope.analyticsReports = reports;
-                                $scope.embedReport();
-                            });
-                    });
-            };
+								$scope.analyticsReports = reports;
+								if (reports && reports.length > 0) {
+									$scope.embedReport();
+								}
+								$scope.reportEmbedded = undefined;
+								$scope.analyticsCurrentReport = undefined;
+								$scope.pages = [];
+								$scope.currentPage = [];
+							});
+					});
+			};
 
-            AnalyticsService.getReports()
-                .then(function (reports) {
-                    reports = reports.data;
-                    $scope.analyticsLoading = false;
+			AnalyticsService.getReports()
+				.then(function (reports) {
+					reports = reports.data;
+					$scope.analyticsLoading = false;
 
-                    if (!reports || !reports.length)
-                        return;
+					if (!reports)
+						return;
 
-                    $scope.analyticsReports = reports;
-                    $scope.embedReport();
-                });
+					$scope.analyticsReports = reports;
+					if (reports && reports.length > 0) {
+						$scope.embedReport();
+					}
+				});
 
-            $scope.changePage = function (page) {
-                $scope.currentPage = page;
-                $scope.reportEmbedded.setPage(page.name);
-            };
+			$scope.changePage = function (page) {
+				$scope.currentPage = page;
+				$scope.reportEmbedded.setPage(page.name);
+			};
 
-            $scope.fullScreen = function () {
-                $scope.reportEmbedded.fullscreen();
-            };
+			$scope.fullScreen = function () {
+				if ($scope.reportEmbedded) {
+					$scope.reportEmbedded.fullscreen();
+				}
+			};
 
-            $scope.enableFilterPane = function (filterPaneEnabled) {
-                $scope.reportEmbedded.updateSettings({ filterPaneEnabled: filterPaneEnabled });
-                $scope.filterPaneEnabled = filterPaneEnabled;
-            };
+			$scope.enableFilterPane = function (filterPaneEnabled) {
+				if ($scope.reportEmbedded) {
+					$scope.reportEmbedded.updateSettings({ filterPaneEnabled: filterPaneEnabled });
+					$scope.filterPaneEnabled = filterPaneEnabled;
+				}
+			};
 
-            $scope.cycle = function (interval) {
-                if ($scope.cycling)
+			$scope.cycle = function (interval) {
+				if ($scope.cycling)
 
-                    angular.forEach($scope.pages, function (page) {
-                        $timeout(function () {
-                            $scope.changePage(page);
-                        }, interval);
-                    });
-            };
+					angular.forEach($scope.pages, function (page) {
+						$timeout(function () {
+							$scope.changePage(page);
+						}, interval);
+					});
+			};
 
-            $scope.print = function () {
-                $scope.reportEmbedded.print();
-            };
-        }
-    ]);
+			$scope.print = function () {
+				if ($scope.reportEmbedded) {
+					$scope.reportEmbedded.print();
+				}
+			};
+		}
+	]);

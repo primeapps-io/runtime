@@ -429,7 +429,7 @@ namespace PrimeApps.App.Helpers
 						}
 						domain = string.Format(domain, subdomain);
 
-						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 						{
 							var app = await _appRepository.Get(appUser.AppId);
 							if (app != null)
@@ -1052,7 +1052,7 @@ namespace PrimeApps.App.Helpers
 						}
 						domain = string.Format(domain, subdomain);
 
-						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 						{
 							var app = await _appRepository.Get(appUser.AppId);
 							if (app != null)
@@ -1185,7 +1185,7 @@ namespace PrimeApps.App.Helpers
 							}
 							domain = string.Format(domain, subdomain);
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 							{
 								var app = await _appRepository.Get(appUser.AppId);
 								if (app != null)
@@ -1284,7 +1284,7 @@ namespace PrimeApps.App.Helpers
 							}
 							domain = string.Format(domain, subdomain);
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 							{
 								var app = await _appRepository.Get(appUser.AppId);
 								if (app != null)
@@ -1453,7 +1453,7 @@ namespace PrimeApps.App.Helpers
 					}
 					domain = string.Format(domain, subdomain);
 
-					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 					{
 						var app = await _appRepository.Get(appUser.AppId);
 						if (app != null)
@@ -1633,7 +1633,7 @@ namespace PrimeApps.App.Helpers
 					}
 					domain = string.Format(domain, subdomain);
 
-					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 					{
 						var app = await _appRepository.Get(appUser.AppId);
 						if (app != null)
