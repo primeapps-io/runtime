@@ -3528,6 +3528,7 @@ angular.module('primeapps')
                                                                     })
                                                                     .finally(function () {
                                                                         scope.loading = false;
+                                                                        components.run('SubListLoaded', 'Script', scope);
                                                                         tableBlockUI.stop();
 
                                                                         if (params.pagination) {
