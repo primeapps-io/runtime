@@ -102,6 +102,7 @@ namespace PrimeApps.App.Helpers
 
                         var record = recordRepository.GetById(module, recordId, true, null, true);
                         var isBranch = await settingRepository.GetByKeyAsync("branch");
+                        module = await moduleRepository.GetByIdFullModule(module.Id);
 
                         if (operationType == OperationType.insert || operationType == OperationType.update)
                         {
