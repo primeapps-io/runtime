@@ -57,8 +57,11 @@ namespace PrimeApps.Model.Enums
 
         [EnumMember(Value = "before_list_request")]
         BeforeListRequest = 17,
-        
-        
+
+        [EnumMember(Value = "sub_list_loaded")]
+        SubListLoaded = 18,
+
+
         /*
          * Global config script
          */
