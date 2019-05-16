@@ -127,6 +127,11 @@ angular.module('primeapps')
                 $scope.addNewRelationsFormModal.$promise.then(function () {
                     $scope.addNewRelationsFormModal.show();
                 });
+
+                if ($scope.id) {
+                    var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
+                    $scope.currentRelation.module = module;
+                }
             };
 
             var drakeAvailableFields;
