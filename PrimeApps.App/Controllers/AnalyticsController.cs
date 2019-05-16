@@ -1,13 +1,10 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.ActionFilters;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -17,7 +14,7 @@ using PrimeApps.Model.Common.Warehouse;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.App.Storage;
+using PrimeApps.Util.Storage;
 using Microsoft.Extensions.Primitives;
 using System.IO;
 
@@ -184,7 +181,7 @@ namespace PrimeApps.App.Controllers
 					Chunks = 0
 				};
 
-				var pibxUrl = _storage.GetShareLink(bucketName, uniqueName, DateTime.UtcNow.AddYears(100));
+				var pibxUrl = _storage.GetLink(bucketName, uniqueName);
 				
 				//return content type of the file to the client
 				return Ok(pibxUrl);
