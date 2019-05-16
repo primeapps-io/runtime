@@ -55,7 +55,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.relations = response.data;
                         angular.forEach($scope.relations, function (relation) {
-                            relation.related_module = $filter('filter')($rootScope.appModules, {name: relation.related_module}, true)[0];
+                            relation.related_module = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
                         });
 
                         $scope.relationsState = angular.copy($scope.relations);
@@ -117,12 +117,12 @@ angular.module('primeapps')
 
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/model/relations/relationForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/model/relations/relationForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewRelationsFormModal.$promise.then(function () {
                     $scope.addNewRelationsFormModal.show();
@@ -131,6 +131,7 @@ angular.module('primeapps')
                 if ($scope.id) {
                     var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
                     $scope.currentRelation.module = module;
+                    $scope.moduleChanged();
                 }
             };
 
@@ -205,13 +206,13 @@ angular.module('primeapps')
 
                         if ($scope.currentRelation.related_module)
                             $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.related_module.fields, {
-                                data_type: 'lookup',
-                                lookup_type: $scope.currentRelation.module.name,
-                                deleted: false
-                            }, true).length > 0;
+                                    data_type: 'lookup',
+                                    lookup_type: $scope.currentRelation.module.name,
+                                    deleted: false
+                                }, true).length > 0;
 
                         if ($scope.currentRelation.related_module && ($scope.currentRelation.related_module.name === 'activities' || $scope.currentRelation.related_module.name === 'mails') && ($scope.module.name !== 'activities' || $scope.module.name !== 'mails') && $scope.currentRelation.relation_type === 'one_to_many')
-                            $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, {name: 'related_to'}, true)[0];
+                            $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, { name: 'related_to' }, true)[0];
 
                         else if ($scope.currentRelation.hasRelationField && !$scope.currentRelation.isNew)
                             $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, {
@@ -263,18 +264,18 @@ angular.module('primeapps')
                         relation.display_fields.push(selectedField.name);
 
                         if (selectedField.lookup_type) {
-                            var lookupModule = $filter('filter')($rootScope.appModules, {name: selectedField.lookup_type}, true)[0];
+                            var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
                             //TODO user gelirse patlıyor user module olarak eklendiğinde düzeltilecek
                             if (lookupModule)
                                 ModuleService.getModuleFields(lookupModule.name).then(function (response) {
                                     lookupModule.fields = response.data;
-                                    var primaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                     relation.display_fields.push(selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary');
                                 });
                         }
                     });
                 } else {
-                    var primaryField = $filter('filter')(relation.related_module.fields, {primary: true})[0];
+                    var primaryField = $filter('filter')(relation.related_module.fields, { primary: true })[0];
                     relation.display_fields.push(primaryField.name);
                 }
 
@@ -339,7 +340,7 @@ angular.module('primeapps')
 
                 if (!relation.id) {
                     if (relation.mainModule)
-                        var mainModuleId = ($filter('filter')($rootScope.appModules, {name: relation.mainModule}, true)[0]).id;
+                        var mainModuleId = ($filter('filter')($rootScope.appModules, { name: relation.mainModule }, true)[0]).id;
                     RelationsService.createModuleRelation(relation, relation.two_way ? mainModuleId : $scope.module.id)
                         .then(function () {
                             success();

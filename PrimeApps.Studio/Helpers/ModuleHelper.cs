@@ -795,7 +795,8 @@ namespace PrimeApps.Studio.Helpers
                 LabelTrSingular = relationModel.LabelTrSingular,
                 LabelTrPlural = relationModel.LabelTrPlural,
                 Readonly = relationModel.Readonly,
-                Order = relationModel.Order
+                Order = relationModel.Order,
+                DetailViewType = relationModel.DetailViewType
             };
 
             return relationEntity;
