@@ -23,7 +23,7 @@ namespace PrimeApps.App.Controllers
                 string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            var configuration = (IConfiguration) HttpContext.RequestServices.GetService(typeof(IConfiguration));
+            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             PreviewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             PreviewMode = !string.IsNullOrEmpty(PreviewMode) ? PreviewMode : "tenant";
 
@@ -34,7 +34,8 @@ namespace PrimeApps.App.Controllers
             if (PreviewMode == "tenant")
             {
                 if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-                    context.Result = new UnauthorizedResult();
+                    if (!context.HttpContext.Request.Headers.TryGetValue("x-tenant-id", out tenantIdValues))
+                        context.Result = new UnauthorizedResult();
 
                 if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) ||
                     !int.TryParse(tenantIdValues[0], out tenantId))
@@ -48,7 +49,8 @@ namespace PrimeApps.App.Controllers
             else
             {
                 if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
-                    context.Result = new UnauthorizedResult();
+                    if (!context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues))
+                        context.Result = new UnauthorizedResult();
 
                 if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) ||
                     !int.TryParse(appIdValues[0], out appId))
@@ -60,7 +62,7 @@ namespace PrimeApps.App.Controllers
                 AppId = appId;
             }
 
-            var cacheHelper = (ICacheHelper) context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             var email = context.HttpContext.User.FindFirst("email").Value;
             //var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
             //var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
@@ -68,9 +70,9 @@ namespace PrimeApps.App.Controllers
             //if (platformUser == null)
             //{
             var platformUserRepository =
-                (IPlatformUserRepository) context.HttpContext.RequestServices.GetService(
+                (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(
                     typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
             if (appId > 0)
             {

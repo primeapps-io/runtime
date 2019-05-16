@@ -12,10 +12,14 @@ namespace PrimeApps.Studio.Helpers
     {
         public static CurrentUser GetCurrentUser(IHttpContextAccessor context)
         {
-            context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues);
-            context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues);
-            context.HttpContext.Request.Headers.TryGetValue("X-Organization-Id", out var organizationIdValues);
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+                context.HttpContext.Request.Headers.TryGetValue("x-tenant-id", out tenantIdValues);
 
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
+                context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues);
+
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-Organization-Id", out var organizationIdValues))
+                context.HttpContext.Request.Headers.TryGetValue("x-organization-id", out organizationIdValues);
 
             var tenantId = 0;
             var appId = 0;
@@ -66,7 +70,6 @@ namespace PrimeApps.Studio.Helpers
 
                 userId = platformUser.Id;
                 context.HttpContext.Items.Add("tenant_id", tenantId);
-
             }
             else
             {
