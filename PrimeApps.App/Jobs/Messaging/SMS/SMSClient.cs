@@ -215,7 +215,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
+				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))//, cacheHelper))
 				{
 					subscriber = await platformUserRepository.GetWithSettingsAsync(messageDto.TenantId);
 				}
@@ -403,7 +403,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
+				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))//, cacheHelper))
 				{
 					subscriber = await platformUserRepository.GetWithSettingsAsync(appUser.TenantId);
 				}

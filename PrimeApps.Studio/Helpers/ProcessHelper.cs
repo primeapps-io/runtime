@@ -421,9 +421,9 @@ namespace PrimeApps.Studio.Helpers
 							subdomain = testMode == "true" ? "test" : appDomain;
 						}
 						domain = string.Format(domain, subdomain);
-						var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+						//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 						{
 							var app = await _appRepository.Get(appUser.AppId);
 							if (app != null)
@@ -1047,9 +1047,9 @@ namespace PrimeApps.Studio.Helpers
 							subdomain = testMode == "true" ? "test" : appDomain;
 						}
 						domain = string.Format(domain, subdomain);
-						var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+						//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+						using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 						{
 							var app = await _appRepository.Get(appUser.AppId);
 							if (app != null)
@@ -1183,9 +1183,9 @@ namespace PrimeApps.Studio.Helpers
 								subdomain = testMode == "true" ? "test" : appDomain;
 							}
 							domain = string.Format(domain, subdomain);
-							var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+							//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 							{
 								var app = await _appRepository.Get(appUser.AppId);
 								if (app != null)
@@ -1284,9 +1284,9 @@ namespace PrimeApps.Studio.Helpers
 								subdomain = testMode == "true" ? "test" : appDomain;
 							}
 							domain = string.Format(domain, subdomain);
-							var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+							//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 							{
 								var app = await _appRepository.Get(appUser.AppId);
 								if (app != null)
@@ -1453,9 +1453,9 @@ namespace PrimeApps.Studio.Helpers
 						subdomain = testMode == "true" ? "test" : appDomain;
 					}
 					domain = string.Format(domain, subdomain);
-					var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+					//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 					{
 						var app = await _appRepository.Get(appUser.AppId);
 						if (app != null)
@@ -1636,9 +1636,9 @@ namespace PrimeApps.Studio.Helpers
 						subdomain = testMode == "true" ? "test" : appDomain;
 					}
 					domain = string.Format(domain, subdomain);
-					var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+					//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
 					{
 						var app = await _appRepository.Get(appUser.AppId);
 						if (app != null)

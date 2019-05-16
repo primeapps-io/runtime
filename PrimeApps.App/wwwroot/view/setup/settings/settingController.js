@@ -351,9 +351,9 @@ angular.module('primeapps')
             };
 
             $scope.themes = SettingService.getThemes();
-            $scope.selectedTheme = $localStorage.read('theme');
+            //$scope.selectedTheme = $localStorage.read('theme');
             $scope.setThemeColor = function (theme) {
-                $localStorage.write('theme', theme.name);
+                //$localStorage.write('theme', theme.name);
                 $scope.selectedTheme = theme.name;
                 $rootScope.theme = theme.name;
 

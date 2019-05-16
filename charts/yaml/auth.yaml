@@ -35,11 +35,9 @@ spec:
       labels:
         k8s-app: primeapps-auth
     spec:
-      imagePullSecrets:
-        - name: gcr-pull-secret
       containers:
         - name: primeapps-auth
-          image: gcr.io/primeapps/primeapps-auth/debian:5.19.093.1
+          image: primeapps/primeapps-auth:1.19.132.2-debian
           env:
             - name: ConnectionStrings__AuthDBConnection
               valueFrom:

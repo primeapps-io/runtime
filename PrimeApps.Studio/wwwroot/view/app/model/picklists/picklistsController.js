@@ -325,9 +325,17 @@ angular.module('primeapps')
             $scope.saveItem = function () {
                 $scope.itemModel.saving = true;
 
-                if ((!$scope.itemModel.system_code && !$scope.itemModel.label_tr) || !$scope.id) {
+                if (!$scope.id) {
                     $scope.itemModel.saving = false;
-                    toastr.warning('Name and System Code cannot be empty!');
+                    $scope.cancel();
+                }
+
+                if (!$scope.itemModel.system_code || !$scope.itemModel.label_tr) {
+                    $scope.itemModel.saving = false;
+                    if (!$scope.itemModel.system_code)
+                        toastr.warning('System Code cannot be empty!');
+                    else if (!$scope.itemModel.label_tr)
+                        toastr.warning('Name cannot be empty!');
                     return false;
                 }
 
@@ -361,11 +369,13 @@ angular.module('primeapps')
                     return false;
                 }
 
-                PicklistsService.updateItem(item.id, item)
+                var tempItem = angular.copy(item);
+                PicklistsService.updateItem(tempItem.id, tempItem)
                     .then(function (response) {
-                        if (response.data)
+                        if (response.data) {
                             toastr.success($filter('translate')('Picklist.SaveItemSuccess'));
-
+                            $scope.selectPicklist($scope.id);
+                        }
                         item.edit = false;
                         $timeout(function () {
                             item.savingItem = false;
@@ -427,7 +437,7 @@ angular.module('primeapps')
             $scope.editModeOpen = function (item) {
                 if (!item)
                     return;
-                
+
                 item.edit = true;
                 $scope.editItem = true;
                 //editModeClase'ta kullanılacak

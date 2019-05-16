@@ -15,7 +15,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Models; 
+using PrimeApps.Studio.Models;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -117,12 +117,27 @@ namespace PrimeApps.Studio.Controllers
             if (response.Count() > 0)
                 throw new ApplicationException(HttpStatusCode.InternalServerError.ToString());
 
-            var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
+            JObject definitionJson = null;
 
-            if (definitionJson.IsNullOrEmpty())
-                return BadRequest();
+            if (bpmWorkflow.Valid)
+            {
+                definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
 
-            bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
+                if (definitionJson.IsNullOrEmpty())
+                {
+                    bpmWorkflowEntity.Active = false;
+                    bpmWorkflowEntity.DefinitionJson = null;
+                    //   return BadRequest();
+                }
+                else
+                    bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
+
+            }
+            else
+            {
+                bpmWorkflowEntity.Active = false;
+                bpmWorkflowEntity.DefinitionJson = null;
+            }
 
             //For Runtime
             //Load string JSON Data on WorkFlowEngine
@@ -169,9 +184,24 @@ namespace PrimeApps.Studio.Controllers
                 var newVersion = lastVersion + 1;
 
                 bpmWorkflowEntity.Version = newVersion;
-                var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, newVersion, JObject.Parse(bpmWorkflow.DiagramJson));
-                bpmWorkflow.DefinitionJson = definitionJson;
+                JObject definitionJson = null;
 
+                if (bpmWorkflow.Valid)
+                {
+                    definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, newVersion, JObject.Parse(bpmWorkflow.DiagramJson));
+                    if (definitionJson.IsNullOrEmpty())
+                    {
+                        bpmWorkflow.Active = false;
+                        bpmWorkflow.DefinitionJson = null;
+                    }
+                    else
+                        bpmWorkflow.DefinitionJson = definitionJson;
+                }
+                else
+                {
+                    bpmWorkflow.Active = false;
+                    bpmWorkflow.DefinitionJson = null;
+                }
             }
             else
             {

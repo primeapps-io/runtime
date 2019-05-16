@@ -11,6 +11,9 @@ namespace PrimeApps.Model.Enums
         Record = 1,
 
         [EnumMember(Value = "timer")]
-        Timer = 2
+        Timer = 2,
+
+        [EnumMember(Value = "manual")]
+        Manual = 3
     }
 }

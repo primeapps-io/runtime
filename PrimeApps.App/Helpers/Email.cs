@@ -173,7 +173,7 @@ namespace PrimeApps.App.Helpers
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-				using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration, cacheHelper))
+				using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))//, cacheHelper))
 				{
 					var instance = tRepo.Get(appUser.TenantId);
 
@@ -341,7 +341,7 @@ namespace PrimeApps.App.Helpers
 					var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-					using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration, cacheHelper))
+					using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
 					{
 						var tenant = tRepo.Get(appUser.TenantId);
 						if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
@@ -406,7 +406,7 @@ namespace PrimeApps.App.Helpers
 					var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 					var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-					using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration, cacheHelper))
+					using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
 					{
 						var instance = tRepo.Get(appUser.TenantId);
 						if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))

@@ -287,6 +287,7 @@ namespace PrimeApps.App.Controllers
                 acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
                 acc.user.tenantId = AppUser.TenantId;
                 acc.user.appId = AppUser.AppId;
+                acc.user.hasAnalytics = tenant[0].licenses.AnalyticsLicenseCount > 0 ? true : false;
                 acc.apps = apps;
 
                 if (acc.user.deactivated && previewMode != "app")

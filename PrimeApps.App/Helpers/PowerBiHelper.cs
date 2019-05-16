@@ -17,6 +17,8 @@ using Microsoft.PowerBI.Api.V1;
 using Microsoft.PowerBI.Api.V1.Models;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Common.Cache;
+using System.IO;
+using System.Net.Http;
 
 namespace PrimeApps.App.Helpers
 {
@@ -67,9 +69,9 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<CacheHelper>();
+				//var cacheHelper = _scope.ServiceProvider.GetRequiredService<CacheHelper>();
 
-				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 
 					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -102,9 +104,9 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<CacheHelper>();
+				//var cacheHelper = _scope.ServiceProvider.GetRequiredService<CacheHelper>();
 
-				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 
 					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -158,9 +160,9 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+				//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 
 					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -169,22 +171,23 @@ namespace PrimeApps.App.Helpers
 				}
 			}
 
-			using (var webClient = new WebClient())
+			using (HttpClient htppClient = new HttpClient())
 			{
-				using (var fileStream = webClient.OpenRead(pbixUrl))
+				var file = await htppClient.GetAsync(pbixUrl);
+				var bytes = await file.Content.ReadAsByteArrayAsync();
+				var stream = new MemoryStream(bytes);
+
+				using (var client = CreateClient())
 				{
-					using (var client = CreateClient())
+					client.HttpClient.Timeout = TimeSpan.FromMinutes(5);
+					client.HttpClient.DefaultRequestHeaders.Add("ActivityId", Guid.NewGuid().ToString());
+					var powerbiWorkspaceCollection = _configuration.GetValue("AppSettings:PowerbiWorkspaceCollection", string.Empty);
+					var import = new Microsoft.PowerBI.Api.V1.Models.Import();
+					if (!string.IsNullOrEmpty(powerbiWorkspaceCollection))
 					{
-						client.HttpClient.Timeout = TimeSpan.FromMinutes(5);
-						client.HttpClient.DefaultRequestHeaders.Add("ActivityId", Guid.NewGuid().ToString());
-						var powerbiWorkspaceCollection = _configuration.GetValue("AppSettings:PowerbiWorkspaceCollection", string.Empty);
-						var import = new Microsoft.PowerBI.Api.V1.Models.Import();
-						if (!string.IsNullOrEmpty(powerbiWorkspaceCollection))
-						{
-							import = client.Imports.PostImportWithFile(powerbiWorkspaceCollection, warehouse.PowerbiWorkspaceId, fileStream, reportName);
-						}
-						return import;
+						import = await client.Imports.PostImportWithFileAsync(powerbiWorkspaceCollection, warehouse.PowerbiWorkspaceId, stream, reportName);
 					}
+					return import;
 				}
 			}
 		}
@@ -198,9 +201,9 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+				//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 
 					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -246,9 +249,9 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+				//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 
 					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -276,7 +279,7 @@ namespace PrimeApps.App.Helpers
 		private PowerBIClient CreateClient()
 		{
 			var powerbiAccessKey = _configuration.GetValue("AppSettings:PowerbiAccessKey", string.Empty);
-			var credentials = new TokenCredentials(null, null);
+			var credentials = new TokenCredentials("AppKey");
 			if (!string.IsNullOrEmpty(powerbiAccessKey))
 			{
 				credentials = new TokenCredentials(powerbiAccessKey, "AppKey");

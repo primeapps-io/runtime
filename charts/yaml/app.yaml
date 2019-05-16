@@ -12,6 +12,7 @@ data:
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
+  EnableBpm: "false"
   EnableRequestLogging: "false"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
@@ -47,11 +48,9 @@ spec:
       labels:
         k8s-app: primeapps-app
     spec:
-      imagePullSecrets:
-        - name: gcr-pull-secret
       containers:
         - name: primeapps-app
-          image: gcr.io/primeapps/primeapps-app/debian:5.19.093.1
+          image: primeapps/primeapps-auth:1.19.132.2-debian
           env:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
@@ -88,6 +87,11 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-config
                   key: EnableJobs
+            - name: AppSettings__EnableBpm
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-app-config
+                    key: EnableBpm
             - name: AppSettings__EnableRequestLogging
               valueFrom:
                 configMapKeyRef:

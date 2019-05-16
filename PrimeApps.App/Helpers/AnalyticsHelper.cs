@@ -75,7 +75,7 @@ namespace PrimeApps.App.Helpers
 
 				PlatformWarehouse warehouse = null;
 
-				using (PlatformWarehouseRepository platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (PlatformWarehouseRepository platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 					warehouse = await platformWarehouseRepository.GetByTenantId(tenantId);
 

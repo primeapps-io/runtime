@@ -136,8 +136,8 @@ namespace PrimeApps.Studio.Helpers
                     var ownerName = repo["owner"]["username"].ToString();
                     var currentGiteaUsers = await GetRepositoryCollaborators(ownerName, app.Name);
 
-                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration, cacheHelper))
-                    {
+                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))//, cacheHelper))
+					{
                         foreach (var id in userIds)
                         {
                             var user = await platformUserRepository.Get(id);

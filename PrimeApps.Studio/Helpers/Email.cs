@@ -162,8 +162,8 @@ namespace PrimeApps.Studio.Helpers
                     var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration, cacheHelper))
-                    {
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
+					{
                         var tenant = tRepo.Get(appUser.TenantId);
                         if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
                         {

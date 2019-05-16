@@ -28,7 +28,8 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("active")]
         public bool Active { get; set; }
 
-        [Column("trigger_type"), Required]
+        //[Column("trigger_type"), Required]
+        [Column("trigger_type")]
         public BpmTriggerType TriggerType { get; set; }
 
         [Column("start_time")]
@@ -37,10 +38,12 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("end_time")]
         public DateTime EndTime { get; set; }
 
-        [Column("record_operations"), MaxLength(50), Required]
+        //[Column("record_operations"), MaxLength(50), Required]
+        [Column("record_operations"), MaxLength(50)]
         public string RecordOperations { get; set; }
 
-        [Column("frequency"), Required]
+        //[Column("frequency"), Required]
+        [Column("frequency")]
         public WorkflowFrequency Frequency { get; set; }
 
         [Column("changed_fields"), MaxLength(4000)]
@@ -56,9 +59,10 @@ namespace PrimeApps.Model.Entities.Tenant
         public string DiagramJson { get; set; }
 
         [Column("module_id"), Range(1, int.MaxValue)]
-        public int ModuleId { get; set; }
+        public int? ModuleId { get; set; }
 
-        [Column("process_filter"), Required]
+        //[Column("process_filter"), Required]
+        [Column("process_filter")]
         public WorkflowProcessFilter ProcessFilter { get; set; }
 
         public virtual BpmCategory Category { get; set; }

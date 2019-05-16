@@ -64,7 +64,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
 						string reminderType = reminder.ReminderType;
 
-						using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
+						using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 						{
 							platformUserRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 

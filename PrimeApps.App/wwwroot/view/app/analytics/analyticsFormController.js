@@ -56,7 +56,7 @@ angular.module('primeapps')
 
 			uploader.onCompleteItem = function (fileItem, response, status, headers) {
 				if (status === 200) {
-					$scope.report.pbix_url = response.result;
+					$scope.report.pbix_url = response;//response.result;
 					if (!$scope.id) {
 						AnalyticsService.create($scope.report)
 							.then(function (response) {

@@ -240,7 +240,7 @@ namespace PrimeApps.App.Jobs.Email
 				var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
 					subscriber = await tenantRepository.GetAsync(tenantId);
 				}

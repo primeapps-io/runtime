@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class PlatformUserRepository : RepositoryBasePlatform, IPlatformUserRepository
     {
-        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
+        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
 

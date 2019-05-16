@@ -15,7 +15,8 @@ namespace PrimeApps.Model.Enums
             Detail = 1,
             Form = 2,
             All = 3,
-			List = 4
+			List = 4,
+			Relation = 5
 		}
         public enum WebhhookHttpMethod
         {

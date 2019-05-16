@@ -35,7 +35,7 @@ namespace PrimeApps.App.Jobs
 				var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
 				previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
+				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				using (var userRepository = new UserRepository(databaseContext, _configuration))
 				{
 					var tenants = await tenantRepository.GetExpiredTenants();

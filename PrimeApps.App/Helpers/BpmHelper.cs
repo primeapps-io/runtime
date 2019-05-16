@@ -111,7 +111,7 @@ namespace PrimeApps.App.Helpers
                     //workflow's Filters is pulling
                     if (bpmWorkflowModel.Filters != null && bpmWorkflowModel.Filters.Count > 0)
                     {
-                        var module = await _moduleRepository.GetById(bpmWorkflowModel.ModuleId);
+                        var module = await _moduleRepository.GetById((int)bpmWorkflowModel.ModuleId);
                         var picklistItemsIDs = new List<int>();
                         bpmWorkflowModel.Filters = new List<BpmRecordFilter>();
 
@@ -228,7 +228,7 @@ namespace PrimeApps.App.Helpers
                         if (bpmWorkflow.Filters == null)
                             bpmWorkflow.Filters = new List<BpmRecordFilter>();
 
-                        var module = await _moduleRepository.GetById(bpmWorkflowModel.ModuleId);
+                        var module = await _moduleRepository.GetById((int)bpmWorkflowModel.ModuleId);
                         var picklistItemIds = new List<int>();
 
                         foreach (var filter in bpmWorkflowModel.Filters)

@@ -182,28 +182,31 @@ angular.module('primeapps')
                 var containerRight = document.querySelector('#selectedFields');
 
                 //dragularService.cleanEnviroment();
-
-                $scope.availableFields_ = dragularService([containerLeft], {
-                    scope: $scope,
-                    containersModel: [$scope.fields.availableFields],
-                    classes: {
-                        mirror: 'gu-mirror-view',
-                        transit: 'gu-transit-view'
-                    },
-                    accepts: accepts,
-                    moves: function (el, container, handle) {
-                        return handle.classList.contains('dragable');
-                    }
-                });
-
-                $scope.selectedFields_ = dragularService([containerRight], {
-                    scope: $scope,
-                    classes: {
-                        mirror: 'gu-mirror-view',
-                        transit: 'gu-transit-view'
-                    },
-                    containersModel: [$scope.fields.selectedFields]
-                });
+                if (containerLeft) {
+                    $scope.availableFields_ = dragularService([containerLeft], {
+                        scope: $scope,
+                        containersModel: [$scope.fields.availableFields],
+                        classes: {
+                            mirror: 'gu-mirror-view',
+                            transit: 'gu-transit-view'
+                        },
+                        accepts: accepts,
+                        moves: function (el, container, handle) {
+                            return handle.classList.contains('dragable');
+                        }
+                    });
+                }
+                
+                if (containerRight) {
+                    $scope.selectedFields_ = dragularService([containerRight], {
+                        scope: $scope,
+                        classes: {
+                            mirror: 'gu-mirror-view',
+                            transit: 'gu-transit-view'
+                        },
+                        containersModel: [$scope.fields.selectedFields]
+                    });
+                }
 
                 function accepts(el, target, source) {
                     if (source !== target) {
@@ -237,7 +240,7 @@ angular.module('primeapps')
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
                     $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
-                   
+
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
                             $scope.modulePicklists = picklists;

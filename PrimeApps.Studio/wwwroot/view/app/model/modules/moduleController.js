@@ -5,7 +5,7 @@ angular.module('primeapps')
         [
             '$rootScope', '$scope', '$filter', '$state', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache',
             'LayoutService',
-            function($rootScope,
+            function ($rootScope,
                 $scope,
                 $filter,
                 $state,
@@ -17,7 +17,7 @@ angular.module('primeapps')
                 LayoutService) {
                 $scope.$parent.activeMenuItem = 'modules';
 
-                $scope.generator = function(limit) {
+                $scope.generator = function (limit) {
                     $scope.placeholderArray = [];
                     for (var i = 0; i < limit; i++) {
                         $scope.placeholderArray[i] = i;
@@ -38,12 +38,12 @@ angular.module('primeapps')
                 $scope.activePage = 1;
 
                 ModuleService.count()
-                    .then(function(response) {
+                    .then(function (response) {
                         $scope.pageTotal = response.data;
                         $scope.changePage(1);
                     });
 
-                $scope.changePage = function(page) {
+                $scope.changePage = function (page) {
                     $scope.loading = true;
 
                     if (page !== 1) {
@@ -62,7 +62,7 @@ angular.module('primeapps')
                     requestModel.offset = page - 1;
 
                     ModuleService.find(requestModel)
-                        .then(function(response) {
+                        .then(function (response) {
                             $scope.modules = response.data;
                             $rootScope.appModules = $scope.modules;
                             $scope.loading = false;
@@ -70,11 +70,11 @@ angular.module('primeapps')
 
                 };
 
-                $scope.changeOffset = function() {
+                $scope.changeOffset = function () {
                     $scope.changePage($scope.activePage);
                 };
 
-                $scope.delete = function(module, event) {
+                $scope.delete = function (module, event) {
                     var willDelete =
                         swal({
                             title: "Are you sure?",
@@ -82,12 +82,12 @@ angular.module('primeapps')
                             icon: "warning",
                             buttons: ['Cancel', 'Yes'],
                             dangerMode: true
-                        }).then(function(value) {
+                        }).then(function (value) {
                             if (value) {
                                 var elem = angular.element(event.srcElement);
                                 angular.element(elem.closest('tr')).addClass('animated-background');
                                 ModuleService.delete(module.id)
-                                    .then(function() {
+                                    .then(function () {
                                         $scope.pageTotal--;
                                         var index = $rootScope.appModules.indexOf(module);
                                         $rootScope.appModules.splice(index, 1);
@@ -98,7 +98,7 @@ angular.module('primeapps')
                                         toastr.success("Module is deleted successfully.", "Deleted!");
 
                                     })
-                                    .catch(function() {
+                                    .catch(function () {
                                         angular.element(document.getElementsByClassName('ng-scope animated-background'))
                                             .removeClass('animated-background');
                                     });
@@ -107,7 +107,7 @@ angular.module('primeapps')
                         });
                 };
 
-                $scope.showEditModal = function(moduleId) {
+                $scope.showEditModal = function (moduleId) {
                     $scope.modalLoading = true;
                     $scope.editModal = $scope.editModal ||
                         $modal({
@@ -121,7 +121,7 @@ angular.module('primeapps')
                     // $scope.module = $filter('filter')($scope.modules, {id: moduleId}, true)[0];
                     // $scope.module.is_component = angular.equals($scope.module.system_type, "component");
                     ModuleService.getModuleById(moduleId)
-                        .then(function(result) {
+                        .then(function (result) {
                             $scope.module = result.data;
                             $scope.module.is_component = angular.equals($scope.module.system_type, "component");
                             $scope.modalLoading = false;
@@ -129,11 +129,11 @@ angular.module('primeapps')
                     $scope.editModal.$promise.then($scope.editModal.show);
                 };
 
-                $scope.cancelModule = function() {
+                $scope.cancelModule = function () {
                     $scope.editModal.hide();
                 };
 
-                $scope.saveSettings = function(editForm) {
+                $scope.saveSettings = function (editForm) {
                     if (editForm.$invalid)
                         return;
 
@@ -142,11 +142,11 @@ angular.module('primeapps')
                         $scope.module.menu_icon = $scope.module.menu_icon.value;
 
                     ModuleService.moduleUpdate($scope.module, $scope.module.id)
-                        .then(function() {
+                        .then(function () {
                             toastr.success($filter('translate')('Setup.Modules.SaveSuccess'));
                             $scope.editModal.hide();
                             $scope.changePage($scope.activePage);
-                        }).finally(function() {
+                        }).finally(function () {
                             $scope.saving = false;
 
                         });

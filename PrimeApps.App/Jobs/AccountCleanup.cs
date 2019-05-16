@@ -31,8 +31,8 @@ namespace PrimeApps.App.Jobs
                 var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 
-                using (var tenantRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
-                {
+                using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))//, cacheHelper))
+				{
                     expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
                 }
 

@@ -124,8 +124,8 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
-                {
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+				{
                     var result = await _platformUserRepository.CreateUser(user);
                     if (result != 0)
                     {
@@ -207,9 +207,9 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
-                using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
-                {
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+				{
                     var tenant = await _tenantRepository.GetAsync(tenantId);
                     var platformUser = await _platformUserRepository.GetWithTenants(user.Email);
 

@@ -1,7 +1,7 @@
 ﻿<div class="row">
     <div class="col-sm-9" style="border: none ;">
         <div class="setup-title">
-            <h2>Advanced Workflows</h2>
+            <h2>{{workflowModel.name ? workflowModel.name:'New Workflow'}}</h2>
             <div>
                 <ul class="list-unstyled list-inline">
                     <li>
@@ -25,11 +25,11 @@
                             {{'Common.Cancel' | translate}}
                         </button>
                     </li>
-                    <!--<li>
-                        <button type="button" class="btn btn-radius btn-blue" ng-click="" ng-disabled="saving">
+                    <li>
+                        <button type="button" class="btn btn-radius btn-blue" ng-click="showSettingFormModal()" ng-disabled="saving">
                             <i class="fas fa-cog"></i>{{'Common.Settings' | translate}}
                         </button>
-                    </li>-->
+                    </li>
                     <li>
                         <button type="button" class="btn btn-radius btn-blue" ng-click="save();" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
@@ -57,20 +57,20 @@
             </ul>
             <!--END menu bar -->
         </div>
-        <div class="tab-content"><div id="myDiagramDiv" resize ></div></div>
+        <div class="tab-content"><div id="myDiagramDiv" resize></div></div>
     </div>
     <div class="col-sm-3">
         <div class="tab-content">
-            <div id="accordion" class="scroll-style-4" >
-                <h4 style="display:none;" ></h4>
+            <div id="accordion" class="scroll-style-4">
+                <h4 style="display:none;"></h4>
                 <div class="scroll-style-4">
                     <div id="myPaletteLevel1" class="myPaletteDiv scroll-style-4"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-12" style="display:none;">
-        <div id="myOverviewDiv"></div>
+    <div class="col-sm-12 scroll-style-4" style="display:none;">
+        <div id="myOverviewDiv" class="scroll-style-4"></div>
     </div>
 </div>
 <div id="openDocument" style="display:none;" class="draggable">

@@ -78,14 +78,14 @@ namespace PrimeApps.Studio.Helpers
                 StartTime = bpmWorkflowModel.StartTime,
                 EndTime = bpmWorkflowModel.EndTime,
                 TriggerType = bpmWorkflowModel.TriggerType,
-                RecordOperations = bpmWorkflowModel.RecordOperations,
+                RecordOperations = bpmWorkflowModel.RecordOperations ?? string.Empty,
                 Frequency = bpmWorkflowModel.Frequency,
                 ProcessFilter = bpmWorkflowModel.ProcessFilter,
                 ChangedFields = bpmWorkflowModel.Changed_Field,
                 CanStartManuel = bpmWorkflowModel.CanStartManuel,
-                DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString(),
+                DefinitionJson = bpmWorkflowModel.DefinitionJson == null ? null : bpmWorkflowModel.DefinitionJson.ToJsonString(),
                 DiagramJson = bpmWorkflowModel.DiagramJson,
-                ModuleId = bpmWorkflowModel.ModuleId
+                ModuleId = bpmWorkflowModel.ModuleId == 0 ? new int?() : bpmWorkflowModel.ModuleId
             };
 
             using (var _scope = _serviceScopeFactory.CreateScope())
@@ -196,14 +196,14 @@ namespace PrimeApps.Studio.Helpers
             bpmWorkflow.StartTime = bpmWorkflowModel.StartTime;
             bpmWorkflow.EndTime = bpmWorkflowModel.EndTime;
             bpmWorkflow.TriggerType = bpmWorkflowModel.TriggerType;
-            bpmWorkflow.RecordOperations = bpmWorkflowModel.RecordOperations;
+            bpmWorkflow.RecordOperations = bpmWorkflowModel.RecordOperations ?? string.Empty;
             bpmWorkflow.Frequency = bpmWorkflowModel.Frequency;
             bpmWorkflow.ProcessFilter = bpmWorkflowModel.ProcessFilter;
             bpmWorkflow.ChangedFields = bpmWorkflowModel.Changed_Field;
             bpmWorkflow.CanStartManuel = bpmWorkflowModel.CanStartManuel;
-            bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString();
+            bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson == null ? null : bpmWorkflowModel.DefinitionJson.ToJsonString();
             bpmWorkflow.DiagramJson = bpmWorkflowModel.DiagramJson;
-            bpmWorkflow.ModuleId = bpmWorkflowModel.ModuleId;
+            bpmWorkflow.ModuleId = bpmWorkflowModel.ModuleId == 0 ? new int?() : bpmWorkflowModel.ModuleId;
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -319,7 +319,7 @@ namespace PrimeApps.Studio.Helpers
                 {
                     _userRepository.CurrentUser = _picklistRepository.CurrentUser = _BpmWorkflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
                     var bpmWorkflows = await _BpmWorkflowRepository.GetByModuleId(module.Id);
-                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString()) && q.Active).ToList();
+                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString()) && q.Active && !string.IsNullOrEmpty(q.DefinitionJson)).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
                     if (bpmWorkflows.Count < 1)

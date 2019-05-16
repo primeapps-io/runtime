@@ -14,7 +14,7 @@
         <thead>
             <tr>
                 <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
+                <th>{{'Setup.BpmWorkflow.Module' | translate}}</th> 
                 <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
                 <th width="70"></th>
@@ -44,9 +44,11 @@
     <table class="table" ng-show="!loading">
         <thead>
             <tr>
-                <th>{{'Setup.BpmWorkflow.Title' | translate}}</th>
+                <!--<th>{{'Setup.BpmWorkflow.Title' | translate}}</th>-->
+                <th>Name</th>
                 <th>{{'Setup.BpmWorkflow.Module' | translate}}</th>
-                <th>{{'Setup.BpmWorkflow.RuleTrigger' | translate}}</th>
+                <th>Trigger Type</th>
+                <th>Record Operations</th>
                 <th>{{'Setup.BpmWorkflow.Status' | translate}}</th>
                 <th width="70"></th>
             </tr>
@@ -54,9 +56,11 @@
         <tbody>
             <tr ng-repeat="workflow in workflows" ui-sref="studio.app.workflowEditor({id:workflow.id})">
                 <td>{{workflow.name}}</td>
-                <td>{{workflow.module['label_'+language+'_plural']}}</td>
-                <td>{{workflow.record_operations}}</td>
-                <td>{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
+                <td>{{workflow.module ? workflow.module['label_'+language+'_plural'] : "-"}}</td>
+                <td style="text-transform: capitalize;">{{workflow.trigger_type ? workflow.trigger_type:"-"}}</td>
+                <td style="text-transform: capitalize;">{{workflow.record_operations ? workflow.record_operations:"-"}}</td>
+                <td ng-if="workflow.definition_json">{{workflow.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
+                <td ng-if="!workflow.definition_json">Draft</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(workflow);" type="button" ladda="workflow.delete"

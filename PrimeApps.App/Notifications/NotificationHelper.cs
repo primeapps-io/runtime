@@ -183,8 +183,8 @@ namespace PrimeApps.App.Notifications
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration, cacheHelper))
-                {
+                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))
+				{
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
                         oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
@@ -217,8 +217,8 @@ namespace PrimeApps.App.Notifications
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
-                using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
                     _recordRepository.CurrentUser = _currentUser;
 

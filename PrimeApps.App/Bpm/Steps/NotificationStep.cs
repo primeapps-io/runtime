@@ -59,9 +59,9 @@ namespace PrimeApps.App.Bpm.Steps
                 {
                     var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                     var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+                    //var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                    using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
+                    using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
                     using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                     {
                         _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = _currentUser;
@@ -146,7 +146,7 @@ namespace PrimeApps.App.Bpm.Steps
                             domain = string.Format(domain, subdomain);
                             //domain = "http://localhost:5554/";
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
                             {
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
