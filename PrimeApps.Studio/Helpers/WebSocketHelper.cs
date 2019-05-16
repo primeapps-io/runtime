@@ -20,7 +20,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IWebSocketHelper
     {
-        Task LogStream(HttpContext hContext, WebSocket wSocket);
+        Task LogStream(HttpContext hContext, WebSocket wSocket, int deploymentId);
     }
 
     public class WebSocketHelper : IWebSocketHelper
@@ -45,7 +45,7 @@ namespace PrimeApps.Studio.Helpers
         }
 
 
-        public async Task LogStream(HttpContext hContext, WebSocket wSocket)
+        public async Task LogStream(HttpContext hContext, WebSocket wSocket, int deploymentId)
         {
             try
             {
@@ -92,7 +92,6 @@ namespace PrimeApps.Studio.Helpers
 
                 var appDraftRepository = (IAppDraftRepository)hContext.RequestServices.GetService(typeof(IAppDraftRepository));
                 var tenantRepository = (ITenantRepository)hContext.RequestServices.GetService(typeof(ITenantRepository));
-                var deploymentRepository = (IDeploymentRepository)hContext.RequestServices.GetService(typeof(IDeploymentRepository));
 
                 var appIds = appDraftRepository.GetAppIdsByOrganizationId(organizationId);
                 var previewMode = "";
@@ -115,17 +114,9 @@ namespace PrimeApps.Studio.Helpers
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
 
-                var deploymentIdResult = int.TryParse(wsParameters["deployment_id"].ToString(), out var deploymentId);
-
-                if (!deploymentIdResult)
-                {
-                    await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                    throw new Exception("Deployment id not found.");
-                }
-
                 while (!result.CloseStatus.HasValue)
                 {
+                    var deploymentRepository = (IDeploymentRepository)hContext.RequestServices.GetService(typeof(IDeploymentRepository));
                     var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment == null || deployment.Status != DeploymentStatus.Running)
@@ -147,7 +138,7 @@ namespace PrimeApps.Studio.Helpers
 
 
                     await wSocket.SendAsync(CreateWSMessage(text), result.MessageType, result.EndOfMessage, CancellationToken.None);
-
+                    Thread.Sleep(2000);
 
                     /*await wSocket.SendAsync(CreateWSMessage("Database sql generating"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                     var sqlDump = PublishHelper.GetSqlDump(PDEConnectionString, Location.PDE, dbName);

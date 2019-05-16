@@ -21,22 +21,66 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IDeploymentRepository _deploymentRepository;
         private IPermissionHelper _permissionHelper;
+        private IWebSocketHelper _webSocketHelper;
 
         public DeploymentController(IBackgroundTaskQueue queue,
             IConfiguration configuration,
             IDeploymentRepository deploymentRepository,
-            IPermissionHelper permissionHelper)
+            IPermissionHelper permissionHelper,
+            IWebSocketHelper webSocketHelper)
         {
             Queue = queue;
             _configuration = configuration;
             _deploymentRepository = deploymentRepository;
             _permissionHelper = permissionHelper;
+            _webSocketHelper = webSocketHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
             base.OnActionExecuting(context);
+        }
+        
+        [Route("log/{id}"), HttpGet]
+        public async Task<IActionResult> Log(int id)
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var deployment = await _deploymentRepository.Get(id);
+
+            if (deployment == null)
+                return BadRequest();
+
+            return Ok(deployment);
+        }
+
+        [Route("log_stream/{id}"), HttpGet]
+        public async Task<IActionResult> LogStream(int id)
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var deployment = await _deploymentRepository.Get(id);
+
+            if (deployment == null)
+                return BadRequest();
+
+            var context = ControllerContext.HttpContext;
+            var isSocketRequest = context.WebSockets.IsWebSocketRequest;
+
+            if (isSocketRequest)
+            {
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                await _webSocketHelper.LogStream(context, webSocket, id);
+            }
+            else
+            {
+                context.Response.StatusCode = 400;
+            }
+
+            return Ok(deployment);
         }
 
         [Route("count"), HttpGet]

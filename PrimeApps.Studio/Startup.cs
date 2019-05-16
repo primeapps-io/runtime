@@ -184,7 +184,7 @@ namespace PrimeApps.Studio
             };
 
             app.UseWebSockets();
-            app.Use(async (ctx, next) =>
+            /*app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path == "/log_stream")
                 {
@@ -204,7 +204,7 @@ namespace PrimeApps.Studio
                 {
                     await next();
                 }
-            });
+            });*/
 
             app.UseMvc(routes =>
             {
