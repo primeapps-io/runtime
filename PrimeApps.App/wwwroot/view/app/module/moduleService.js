@@ -287,8 +287,8 @@ angular.module('primeapps')
                         var linkPrefix = '#/app/module/';
 
                         /*
-                        * Lookup bir alan external link içeriyorsa record id yerine lookup olan record un id sini basıyoruz.
-                        * */
+                         * Lookup bir alan external link içeriyorsa record id yerine lookup olan record un id sini basıyoruz.
+                         * */
                         if (orjField.external_link) {
                             if (isLookup) {
                                 field.link = orjField.external_link + '?id=' + field.value_id + '&back=' + type;
@@ -1171,12 +1171,12 @@ angular.module('primeapps')
                                     newCurrentRecord[field.name] = newCurrentRecord[field.name] ? newCurrentRecord[field.name].id : null;
                                     break;
                                 case 'text_multi':
-                                    function htmltext(html) {
-                                        var tag = document.createElement('div');
-                                        tag.innerHTML = html;
+                                function htmltext(html) {
+                                    var tag = document.createElement('div');
+                                    tag.innerHTML = html;
 
-                                        return tag.innerHTML.toString();
-                                    }
+                                    return tag.innerHTML.toString();
+                                }
 
                                     var htmlValue = newRecord[field.name];
                                     if (field.multiline_type_use_html === true) {
@@ -2442,8 +2442,8 @@ angular.module('primeapps')
                         if (record['izin_turu_data'] && record['baslangic_tarihi'] && record['bitis_tarihi']) {
 
                             /*
-                            * Sadece tam gün olarak kullanılan izinlerde saati 00:00 setlediği için utc formata çevirirken 1 gün öncesine geçip saati 21:00 yapıyordu bu yüzden saati sabah 8 olarak setliyoruz.
-                            * */
+                             * Sadece tam gün olarak kullanılan izinlerde saati 00:00 setlediği için utc formata çevirirken 1 gün öncesine geçip saati 21:00 yapıyordu bu yüzden saati sabah 8 olarak setliyoruz.
+                             * */
                             if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
                                 var bitisTarihi = new Date(record['bitis_tarihi']);
                                 var baslangicTarihi = new Date(record['baslangic_tarihi']);
@@ -3244,7 +3244,7 @@ angular.module('primeapps')
 
                                                                                 var currentFilter = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
 
-																				/*
+                                                                                /*
                                                                                  * Tek başına !angular.isUndefined(currentFilter.isView) olarak kontrol etmek.
                                                                                  * View larda oluşturulan filtrelerin ezilmesine sebep oluyordu.
                                                                                  * Extra !currentFilter.isView kontrolü eklenerek view filtrelerinin korunması sağlandı.
@@ -3256,10 +3256,10 @@ angular.module('primeapps')
                                                                             }
 
                                                                             /*
-                                                                            * View da filtre eklenen bir alan eğer listeye de kolon olarak eklenmiş ise ve
-                                                                            * Bu alana liste de ayrı bir filtre uygulanırsa view de oluşturulan filtre ve liste de oluşturulan filtre birlikte gidiyordu
-                                                                            * Liste de eklenen filtre'nin view de kini ezmesi sağlandı.
-                                                                            * */
+                                                                             * View da filtre eklenen bir alan eğer listeye de kolon olarak eklenmiş ise ve
+                                                                             * Bu alana liste de ayrı bir filtre uygulanırsa view de oluşturulan filtre ve liste de oluşturulan filtre birlikte gidiyordu
+                                                                             * Liste de eklenen filtre'nin view de kini ezmesi sağlandı.
+                                                                             * */
                                                                             var currentFilter = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
                                                                             if (currentFilter && !angular.isUndefined(currentFilter.isView) && currentFilter.isView &&
                                                                                 (
@@ -3528,6 +3528,9 @@ angular.module('primeapps')
                                                                     })
                                                                     .finally(function () {
                                                                         scope.loading = false;
+                                                                        if (scope.parentId) {
+                                                                            components.run('SubListLoaded', 'Script', scope);
+                                                                        }
                                                                         tableBlockUI.stop();
 
                                                                         if (params.pagination) {
@@ -3579,6 +3582,9 @@ angular.module('primeapps')
                                                                         if (response === null || !response.length || response[0] === null || response[0].total_count === null) {
                                                                             $defer.resolve([]);
                                                                             scope.isEmpty = response.length < 1 && !hasFilter;
+                                                                            if (scope.parentId) {
+                                                                                components.run('SubListLoaded', 'Script', scope);
+                                                                            }
                                                                             scope.loading = false;
                                                                             tableBlockUI.stop();
                                                                         }
