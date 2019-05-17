@@ -64,7 +64,7 @@
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
                                             ng-model="component.module"
-                                            ng-options="o as o['label_' + language + '_singular'] for o in appModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                            ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                         <option value="">Select Module</option>
                                     </select>
                                 </div>

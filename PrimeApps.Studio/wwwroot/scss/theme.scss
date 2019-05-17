@@ -4487,6 +4487,17 @@ button, select {
       display:none;
     }
   }
+  
+  .copy-hover{
+    .copy-button{
+      visibility: hidden;
+    }
+    &:hover{
+      .copy-button{
+        visibility: visible;
+      }
+    }
+  }
 }
 
 .placeholder {

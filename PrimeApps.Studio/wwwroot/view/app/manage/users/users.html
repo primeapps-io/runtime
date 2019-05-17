@@ -51,8 +51,9 @@
                 <td>
                     {{user.full_name}}
                 </td>
-                <td>
+                <td class="copy-hover">
                     {{user.email}}
+                    <span ng-click="$event.stopPropagation();" class="copy-button pull-right" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{user.email}}"><i class="copy-icon fa fa-clipboard"></i></span>
                 </td>
                 <td>
                     {{user.role.label_en}}
