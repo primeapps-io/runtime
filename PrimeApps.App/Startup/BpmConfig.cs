@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -12,7 +13,6 @@ namespace PrimeApps.App
     {
         public static void BpmConfiguration(IApplicationBuilder app, IConfiguration configuration)
         {
-
             var enableBpmSetting = configuration.GetValue("AppSettings:EnableBpm", string.Empty);
 
             if (!string.IsNullOrEmpty(enableBpmSetting))
@@ -34,6 +34,8 @@ namespace PrimeApps.App
             //host.RegisterWorkflow<TestWorkflow, BpmReadDataModel>();
 
             host.Start();
+
+            Console.WriteLine("Workflow Host started");
 
             //var record = new JObject { ["id"] = 19281 };//19281:bayan - 19282:bay
             //var data = new BpmReadDataModel { ModuleId = 3, Record = record };

@@ -31,17 +31,22 @@ angular.module('primeapps')
                         var getValue = function (key) {
                             switch (key) {
                                 case 'X-User-Id':
+                                case 'x-user-id':
                                 case 'user_id':
                                     return $rootScope.user.id;
                                 case 'X-Tenant-Id':
+                                case 'x-tenant-id':
                                 case 'tenant_id':
                                     return $rootScope.user.tenant_id;
                                 case 'X-App-Id':
+                                case 'x-app-id':
                                 case 'app_id':
                                     return appId;
                                 case 'X-Auth-Key':
+                                case 'x-auth-key':
                                     return encryptedUserId;
                                 case 'X-Branch-Id':
+                                case 'x-branch-id':
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                             }

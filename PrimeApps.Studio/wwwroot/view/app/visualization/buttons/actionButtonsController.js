@@ -138,6 +138,11 @@ angular.module('primeapps')
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
                 });
+
+                if ($scope.id) {
+                    var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
+                    $scope.currentActionButton.module = module;
+                }
             };
 
             $scope.save = function (actionButtonForm) {

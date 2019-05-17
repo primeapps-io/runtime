@@ -1832,6 +1832,7 @@ angular.module('primeapps')
                         AdvancedWorkflowsService.update(data)
                             .then(function (response) {
                                 if (response.data) {
+                                    toastr.success('Workflow is updated successfully.');
                                     success();
                                 }
                             }).catch(function onError() {
@@ -1849,6 +1850,7 @@ angular.module('primeapps')
                                     if (!$scope.id) {
                                         AdvancedWorkflowsService.create(data)
                                             .then(function onSuccess() {
+                                                toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
                                                 success();
                                             }).catch(function onError() {
                                                 $scope.saving = false;
@@ -1867,7 +1869,7 @@ angular.module('primeapps')
                 if (noValidNode.length > 0 || diagram.nodeDataArray.length - 1 != diagram.linkDataArray.length ||
                     diagram.nodeDataArray.length < 3 || diagram.linkDataArray.length < 2 || !isThereEnd || !isThereStart) {
                     swal({
-                        title: "\"" + $scope.workflowModel.name + "\" cannot be run!",
+                        title: "\"" + $scope.workflowModel.name + "\" is not properly formatted.",
                         text: "Required fields of some elements are not filled in or not linked each other.\n\n Do you want to save it anyway?",
                         icon: "warning",
                         buttons: ['Cancel', 'Save'],
@@ -1876,6 +1878,7 @@ angular.module('primeapps')
 
                         if (!value) {
                             $scope.saving = false;
+                            $scope.$apply();
                         }
                         else {
                             data.active = false;
@@ -1897,7 +1900,7 @@ angular.module('primeapps')
             var success = function () {
                 $scope.saving = false;
                 $state.go('studio.app.advancedWorkflows');
-                toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
+
             };
 
             $scope.workflowCodeGenerate = function () {

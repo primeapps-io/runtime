@@ -848,7 +848,7 @@
                         </div>
                         <div class="form-group">
                             <label>CC</label>
-                            <div ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}" style="margin-bottom: 10px !important;">
+                            <div ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_ccmodule && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}" style="margin-bottom: 10px !important;">
                                 <select class="form-control"
                                         name="sendNotificationCCModule"
                                         tabindex="1"
@@ -858,7 +858,8 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_ccmodule && workflowModel.send_notification_ccmodule.module && workflowModel.send_notification_ccmodule.module.name != 'users'">
+                            <div ng-if="workflowModel.send_notification_ccmodule && workflowModel.send_notification_ccmodule.module && workflowModel.send_notification_ccmodule.module.name != 'users'"
+                                 ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_ccmodule.module && workflowForm.customCC.$invalid}">
                                 <select class="form-control"
                                         name="customCC"
                                         tabindex="2"
@@ -868,8 +869,9 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_ccmodule.module.name == 'users'">
+                            <div ng-if="workflowModel.send_notification_ccmodule.module.name == 'users'" ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_ccmodule.module && workflowForm.cc.$invalid}">
                                 <tags-input name="cc"
+                                            class="form-control"
                                             ng-model="workflowModel.send_notification.cc"
                                             display-property="full_name"
                                             key-property="id"
@@ -888,7 +890,7 @@
                         </div>
                         <div class="form-group">
                             <label>BCC</label>
-                            <div ng-class="{'has-error': workflowForm.$submitted && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}" style="margin-bottom: 10px !important;">
+                            <div ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule && (workflowForm.$error.minTags || workflowForm.$error.maxTags)}" style="margin-bottom: 10px !important;">
                                 <select class="form-control"
                                         name="sendNotificationBccModule"
                                         tabindex="1"
@@ -898,7 +900,8 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_bccmodule && workflowModel.send_notification_bccmodule.module && workflowModel.send_notification_bccmodule.module.name != 'users'">
+                            <div ng-if="workflowModel.send_notification_bccmodule && workflowModel.send_notification_bccmodule.module && workflowModel.send_notification_bccmodule.module.name != 'users'"
+                                 ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.customBcc.$invalid}">
                                 <select class="form-control"
                                         name="customBcc"
                                         tabindex="2"
@@ -908,8 +911,9 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'">
+                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'"  ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.bcc.$invalid}">
                                 <tags-input name="bcc"
+                                            class="form-control"
                                             ng-model="workflowModel.send_notification.bcc"
                                             display-property="full_name"
                                             key-property="id"

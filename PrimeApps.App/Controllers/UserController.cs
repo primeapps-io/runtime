@@ -282,12 +282,15 @@ namespace PrimeApps.App.Controllers
                 {
                     acc.imageUrl = storageUrl + "/record-detail-" + tenant[0].tenantId + "/";
                 }
-
-                acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
-                acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
+                /*Eğer previewmode değilse lisansları setle*/
+                if (String.Equals(previewMode,"tenant"))
+                {
+                    acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
+                    acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
+                    acc.user.hasAnalytics = tenant[0].licenses.AnalyticsLicenseCount > 0 ? true : false;
+                }
                 acc.user.tenantId = AppUser.TenantId;
                 acc.user.appId = AppUser.AppId;
-                acc.user.hasAnalytics = tenant[0].licenses.AnalyticsLicenseCount > 0 ? true : false;
                 acc.apps = apps;
 
                 if (acc.user.deactivated && previewMode != "app")

@@ -17,7 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.modules = $filter('filter')($rootScope.appModules, {system_type: 'component'}, true);
+            $scope.modules = $filter('filter')($rootScope.appModules, { system_type: 'component' }, true);
 
             $scope.component = {};
             $scope.components = [];
@@ -83,38 +83,39 @@ angular.module('primeapps')
 
             $scope.openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/customcode/components/componentFormModal.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/customcode/components/componentFormModal.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
             };
 
             $scope.save = function (componentFormValidation) {
-                if (!componentFormValidation.$valid){
+                if (!componentFormValidation.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return;
                 }
-                    
+
 
                 $scope.saving = true;
 
-                var module = $filter('filter')($scope.modules, {id: $scope.component.module_id}, true)[0];
+                var module = $filter('filter')($scope.appModules, { id: $scope.component.module.id }, true)[0];
 
                 $scope.component.place = 0;
                 $scope.component.order = 0;
                 $scope.component.name = module.name.replace(/_/g, '');
+                $scope.component.module_id = module.id;
 
                 ComponentsService.create($scope.component)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         toastr.success("Component is created successfully.");
-                        $state.go('studio.app.componentDetail', {id: response.data});
+                        $state.go('studio.app.componentDetail', { id: response.data });
                     })
                     .catch(function (response) {
                         if (response.status === 409) {
@@ -125,7 +126,7 @@ angular.module('primeapps')
             };
 
             $scope.getModuleName = function (id) {
-                return $filter('filter')($scope.modules, {id: id}, true)[0]['label_en_singular'];
+                return $filter('filter')($scope.modules, { id: id }, true)[0]['label_en_singular'];
             };
 
             $scope.delete = function (id, event) {

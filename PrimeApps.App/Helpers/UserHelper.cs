@@ -22,7 +22,8 @@ namespace PrimeApps.App.Helpers
             if (previewMode == "tenant")
             {
                 if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-                    return null;
+                    if (!context.HttpContext.Request.Headers.TryGetValue("x-tenant-id", out tenantIdValues))
+                        return null;
 
                 if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) ||
                     !int.TryParse(tenantIdValues[0], out tenantId))
@@ -38,7 +39,8 @@ namespace PrimeApps.App.Helpers
             else
             {
                 if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
-                    return null;
+                    if (!context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues))
+                        return null;
 
                 if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) ||
                     !int.TryParse(appIdValues[0], out appId))
@@ -57,9 +59,9 @@ namespace PrimeApps.App.Helpers
             //if (platformUser == null)
             //{
             var platformUserRepository =
-                (IPlatformUserRepository) context.HttpContext.RequestServices.GetService(
+                (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(
                     typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
             PlatformUser platformUser;
 
             if (appId > 0)
