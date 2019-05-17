@@ -103,7 +103,7 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
-                var module = $filter('filter')($scope.appModules, { id: $scope.component.module.id }, true)[0];
+                var module = $filter('filter')($scope.modules, { id: $scope.component.module.id }, true)[0];
 
                 $scope.component.place = 0;
                 $scope.component.order = 0;
