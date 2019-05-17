@@ -67,6 +67,11 @@
                                            maxlength="100"
                                            ng-change="resultModel.recipient = me.email + ';' + userModel.email + ';'"
                                            ng-model="userModel.email"/>
+                                    <div class="ng-scope" style="padding-right: 140px;">
+                                        <span  class="copy-button pull-right" title="{{'Common.Copy' | translate}}" ngclipboard data-clipboard-text="{{userModel.email}}" style="position: absolute; bottom: 8px;
+                                        right: 8px;
+                                        line-height: 16px;"><i class="copy-icon fa fa-clipboard"></i></span>
+                                    </div>
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
