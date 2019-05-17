@@ -61,6 +61,7 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
+            components.run('BeforeFormLoaded', 'script', $scope);
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
             //allow encrypted fields
             if (!$scope.id) {
@@ -106,7 +107,7 @@ angular.module('primeapps')
             if (!$scope.id) {
                 $scope.title = $filter('translate')('Module.New', {title: $scope.module['label_' + $rootScope.language + '_singular']});
             }
-            
+
             //<--TODO:COMPONENT
             //Sets holidays to business days 
             var setHolidays = function () {
@@ -170,7 +171,7 @@ angular.module('primeapps')
             };
 
             setHolidays();
-            
+
             //TODO:COMPONENT -->
             //checks if user has permission for editin process record
             for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
@@ -186,7 +187,7 @@ angular.module('primeapps')
                         $scope.hasProcessEditPermission = true;
                 }
             }
-            
+
             //TODO:COMPONENT
             if ($scope.parentType) {
                 if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
@@ -263,7 +264,7 @@ angular.module('primeapps')
                 }
             };
             //TODO:COMPONENT --> 
-            
+
             //<--TODO:COMPONENT
             var checkBranchSettingsAvailable = function () {
                 if ($rootScope.branchAvailable) {
@@ -289,7 +290,7 @@ angular.module('primeapps')
                 }
             };
             //TODO:COMPONENT --> 
-            
+
             var checkEditPermission = function () {
                 if (!$scope.hasProcessEditPermission) {
                     if ($scope.id && (($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights))) {
@@ -305,7 +306,7 @@ angular.module('primeapps')
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
                     var ownerField = $filter('filter')($scope.module.fields, {name: 'owner'}, true)[0];
-                    
+
                     var setFieldDependencies = function () {
                         angular.forEach($scope.module.fields, function (field) {
                             ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
@@ -318,10 +319,8 @@ angular.module('primeapps')
                         });
                     };
 
-                    //<--TODO:COMPONENT
-                    $scope.currencyField = $filter('filter')($scope.module.fields, {name: 'currency'}, true)[0];
-                    //TODO:COMPONENT --> 
-
+                    components.run('BeforeFormPicklistLoaded', 'Script', $scope); 
+                    
                     //<--TODO:COMPONENT
                     if ($scope.module && $scope.module.name === 'izinler') {
                         var toField = $filter('filter')($scope.module.fields, {name: 'to_entry_type'}, true)[0];
@@ -332,10 +331,10 @@ angular.module('primeapps')
                             $scope.record['to_entry_type'] = picklists[toField.picklist_id][0];
                             $scope.record['from_entry_type'] = picklists[toField.picklist_id][0];
                         }
-                    }                    
+                    }
                     //TODO:COMPONENT --> 
-                    
-                    if (!$scope.id) {                        
+
+                    if (!$scope.id) {
                         $scope.loading = false;
                         $scope.record.owner = $scope.currentUser;
 
@@ -353,7 +352,7 @@ angular.module('primeapps')
                                     $scope.userLicenseKalan = $scope.userLicenseControl.Total - $scope.userLicenseControl.Used;
                                 });
                         }
-                        
+
                         //TODO:COMPONENT --> 
 
                         //<--TODO:COMPONENT
@@ -367,23 +366,23 @@ angular.module('primeapps')
                             }
                         }
                         //TODO:COMPONENT --> 
-                        
+
                         //Teklif burası kaldıralım gerek yok olmaması lazım 
                         //<--TODO:COMPONENT
-                        if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') && $scope.currencyField) {
-                            if (!$scope.currencyField.validation)
-                                $scope.currencyField.validation = {};
+                        // if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') && $scope.currencyField) {
+                        //     if (!$scope.currencyField.validation)
+                        //         $scope.currencyField.validation = {};
+                        //
+                        //     $scope.currencyField.validation.readonly = false;
+                        // }
+                         //TODO:COMPONENT --> 
 
-                            $scope.currencyField.validation.readonly = false;
-                        }
-                        //TODO:COMPONENT --> 
-                        
                         if ($scope.parentId) {
                             var moduleParent = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
 
                             ModuleService.getRecord($scope.parentModule, $scope.parentId)
                                 .then(function onSuccess(parent) {
-                                    
+
                                     var moduleParentPrimaryField = $filter('filter')(moduleParent.fields, {
                                         primary: true,
                                         deleted: false
@@ -391,7 +390,7 @@ angular.module('primeapps')
                                     var lookupRecord = {};
                                     lookupRecord.id = parent.data.id;
                                     lookupRecord.primary_value = parent.data[moduleParentPrimaryField.name];
-                                    
+
                                     //<--TODO:COMPONENT
                                     if (parent.data['currency']) {
                                         lookupRecord['currency'] = parent.data['currency'];
@@ -404,7 +403,7 @@ angular.module('primeapps')
                                     //TODO:COMPONENT --> 
 
                                     //<--TODO:COMPONENT
-                                    
+
                                     if (($scope.type === 'activities' || $scope.type === 'mails') && $scope.relatedToField) {
                                         $scope.record['related_to'] = lookupRecord;
                                         $scope.record['related_module'] = $filter('filter')(picklists['900000'], {value: $scope.parentType}, true)[0];
@@ -417,7 +416,7 @@ angular.module('primeapps')
                                             $scope.record[$scope.parentType] = lookupRecord;
                                         }
 
-                                       
+
                                         var relatedDependency = $filter('filter')($scope.module.dependencies, {dependent_field: $scope.parentType}, true)[0];
 
                                         if (relatedDependency && relatedDependency.deleted != true) {
@@ -430,10 +429,10 @@ angular.module('primeapps')
 
                                         setFieldDependencies();
                                     }
-                                    
+
                                     //TODO:COMPONENT --> 
-                                    
-                                    
+
+
                                 });
                         } else {
                             setFieldDependencies();
@@ -447,15 +446,13 @@ angular.module('primeapps')
                             $rootScope.hideSipPhone();
                         }
                         components.run('FieldChange', 'Script', $scope, $scope.record, ownerField);
-                        
-                        components.run('PicklitLoaded', 'Script', $scope);
-                        
-                        
+
                         return;
                     }
 
                     ModuleService.getRecord($scope.module.name, $scope.id)
                         .then(function onSuccess(recordData) {
+
                             if (Object.keys(recordData.data).length === 0) {
                                 ngToast.create({
                                     content: $filter('translate')('Common.Forbidden'),
@@ -467,7 +464,7 @@ angular.module('primeapps')
 
                             var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
-                             //<--TODO:COMPONENT
+                            //<--TODO:COMPONENT
                             //Kullanıcı oluşturulduysa edit sayfasında kullanıcı oluşturma alanları gizleniyor.
                             if ($scope.module.name === 'calisanlar') {
                                 var userCreateField = $filter('filter')($scope.module.fields, {name: 'kullanici_olustur'}, true)[0];
@@ -486,7 +483,7 @@ angular.module('primeapps')
                                 }
                             }
                             //TODO:COMPONENT --> 
-                            
+
                             if (!$scope.hasPermission($scope.type, $scope.operations.modify, recordData.data) || (isFreeze(record) && !$scope.hasAdminRights)) {
                                 ngToast.create({
                                     content: $filter('translate')('Common.Forbidden'),
@@ -495,38 +492,15 @@ angular.module('primeapps')
                                 $state.go('app.dashboard');
                                 return;
                             }
-                            //<--TODO:COMPONENT
-                                $scope.multiCurrency();
-                            //<--TODO:COMPONENT
-                            if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders') && $scope.currencyField) {
+                            
 
-                                var currencyValidationSet = function (status) {
-                                    if ($scope.currencyField.validation)
-                                        $scope.currencyField.validation.readonly = status;
-                                    else
-                                        $scope.currencyField["validation"] = [{readonly: status}];
-                                };
-
-                                if (record['currency']) {
-                                    currencyValidationSet(true);
-                                } else {
-
-                                    if ($scope.currencyField.data_type === 'picklist') {
-                                        record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], {value: $rootScope.currencySymbol})[0];
-                                    }
-
-                                    currencyValidationSet(false);
-                                }
-
-                                if ($scope.clone) {
-                                    currencyValidationSet(false);
-                                }
-                            }
-
+                            components.run('BeforeFormRecordLoaded', 'Script', $scope,record);
                             ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
                             $scope.title = $scope.primaryField.valueFormatted;
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
+
+                           
 
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -552,12 +526,14 @@ angular.module('primeapps')
 
                                 ModuleService.getRecord(lookupModule.name, record['related_to'], true)
                                     .then(function onSuccess(relatedRecord) {
+
                                         relatedRecord = relatedRecord.data;
                                         relatedRecord.primary_value = relatedRecord[lookupModulePrimaryField.name];
                                         record['related_to'] = relatedRecord;
 
                                         $scope.record = record;
                                         $scope.recordState = angular.copy($scope.record);
+
 
                                         if ($scope.module.name != 'activities')
                                             setFieldDependencies();
@@ -597,20 +573,23 @@ angular.module('primeapps')
 
                             if ($scope.record.currency)
                                 $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
-                            //Teklif         
-                            //   $scope.getProductRecords($scope.type);
+
                             ModuleService.customActions($scope.module, $scope.record);
 
                             components.run('FieldChange', 'Script', $scope, $scope.record, ownerField);
-                            components.run('RecordLoaded', 'Script', $scope);
+
+                            components.run('AfterFormRecordLoaded', 'Script', $scope);
                         })
                         .catch(function onError() {
                             $scope.loading = false;
                         });
+
+                    components.run('AfterFormPicklistLoaded', 'Script', $scope);
                 });
 
 
             $scope.lookup = function (searchTerm) {
+                $scope.searchTerm = searchTerm;
                 if ($scope.currentLookupField.lookup_type === 'users' && !$scope.currentLookupField.lookupModulePrimaryField) {
                     var userModulePrimaryField = {};
                     userModulePrimaryField.data_type = 'text_single';
@@ -653,29 +632,7 @@ angular.module('primeapps')
                     return $q.defer().promise;
                 }
 
-                if ($scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') {
-                    var discountField = null;
-
-                    if ($scope.currentLookupField.lookup_type === 'contacts') {
-                        $scope.contactModule = $filter('filter')($rootScope.modules, {name: 'contacts'}, true)[0];
-                        discountField = $filter('filter')($scope.contactModule.fields, {
-                            name: 'discount',
-                            deleted: '!true'
-                        }, true)[0];
-                    } else if ($scope.currentLookupField.lookup_type === 'accounts') {
-                        $scope.accountModule = $filter('filter')($rootScope.modules, {name: 'accounts'}, true)[0];
-                        discountField = $filter('filter')($scope.accountModule.fields, {
-                            name: 'discount',
-                            deleted: '!true'
-                        }, true)[0];
-                    }
-
-                    if (discountField)
-                        return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['discount']);
-                    else
-                        return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
-                }
-
+ 
                 if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
                     var parentModuleName = '';
 
@@ -700,6 +657,10 @@ angular.module('primeapps')
 
                 components.run('BeforeLookup', 'Script', $scope);
 
+                if($scope.lookupCurrentData){
+                    return $scope.lookupCurrentData;
+                }
+                
                 if ($scope.currentLookupField.lookup_type === 'users')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email'], false, $scope.customFilters);
                 else if ($scope.currentLookupField.lookup_type === 'profiles')
@@ -710,6 +671,7 @@ angular.module('primeapps')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta'], false, $scope.customFilters);
                 else
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
+
             };
 
             $scope.multiselect = function (searchTerm, field) {
@@ -965,12 +927,14 @@ angular.module('primeapps')
                 }
 
                 $scope.submitting = true;
-
+                
+      
                 if (!$scope.moduleForm.$valid || !validate()) {
                     $scope.submitting = false;
                     return;
                 }
 
+                components.run('BeforeFormSubmit', 'Script', $scope, record);
 
                 if (!$scope.id || $scope.clone) {
                     $scope.executeCode = false;
@@ -1061,13 +1025,7 @@ angular.module('primeapps')
                     });
                     $scope.recordState = null;
                 }
-
-                if (record.discount_percent && record.discount_amount == null)
-                    record.discount_amount = parseFloat(record.total - record.discounted_total);
-
-                if (record.discount_amount && record.discount_percent == null)
-                    record.discount_percent = parseFloat((100 * (record.total - record.discounted_total)) / record.total);
-
+                 
                 record = ModuleService.prepareRecord(record, $scope.module, $scope.recordState);
 
                 var recordCopy = angular.copy($scope.record);
@@ -1238,388 +1196,10 @@ angular.module('primeapps')
                 function result(response) {
                     $scope.addedUser = false;
                     $scope.recordId = response.id;
-
-                    //scriptx    
-                    if ($scope.type === 'quotes') {
-                        var quoteProducts = [];
-                        var no = 1;
-                        var quoteProductsOrders = $filter('orderBy')($scope.quoteProducts, 'order');
-                        angular.forEach(quoteProductsOrders, function (quoteProduct) {
-                            if (quoteProduct.deleted)
-                                return;
-
-                            var quote = {};
-                            quote.id = $scope.recordId;
-                            quote.primary_value = $scope.record[$scope.primaryField.name];
-                            quoteProduct.quote = quote;
-                            delete quoteProduct.vat;
-                            delete quoteProduct.currencyConvertList;
-                            delete quoteProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (quoteProduct.id);
-                                delete (quoteProduct._rev);
-                            }
-
-                            if (!quoteProduct.separator && quoteProduct.no) {
-                                quoteProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (quoteProduct.discount_percent && quoteProduct.discount_amount == null)
-                                quoteProduct.discount_amount = parseFloat((quoteProduct.unit_price * quoteProduct.quantity) - quoteProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (quoteProduct.discount_amount && quoteProduct.discount_percent == null)
-                                quoteProduct.discount_percent = parseFloat((100 * ((quoteProduct.unit_price * quoteProduct.quantity) - quoteProduct.amount)) / quoteProduct.unit_price);
-
-                            quoteProducts.push(quoteProduct);
-                        });
-
-                        var quoteProductRecordsBulk = ModuleService.prepareRecordBulk(quoteProducts, $scope.quoteProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.quoteProductModule.name, quoteProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (quoteProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.quoteProducts, function (quoteProduct) {
-                                if (quoteProduct.id)
-                                    ids.push(quoteProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.quoteProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (quoteProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.quoteProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'sales_invoices') {
-                        var salesInvoiceProducts = [];
-                        var no = 1;
-                        var salesInvoiceProductsOrders = $filter('orderBy')($scope.salesInvoiceProducts, 'order');
-                        angular.forEach(salesInvoiceProductsOrders, function (salesInvoiceProduct) {
-                            if (salesInvoiceProduct.deleted)
-                                return;
-
-                            var salesInvoice = {};
-                            salesInvoice.id = $scope.recordId;
-                            salesInvoice.primary_value = $scope.record[$scope.primaryField.name];
-                            salesInvoiceProduct.sales_invoice = salesInvoice;
-                            delete salesInvoiceProduct.vat;
-                            delete salesInvoiceProduct.currencyConvertList;
-                            delete salesInvoiceProduct.defaultCurrency;
-
-                            if ($scope.clone) {
-                                delete (salesInvoiceProduct.id);
-                                delete (salesInvoiceProduct._rev);
-                            }
-
-                            if (!salesInvoiceProduct.separator && salesInvoiceProduct.no) {
-                                salesInvoiceProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (salesInvoiceProduct.discount_percent && salesInvoiceProduct.discount_amount == null)
-                                salesInvoiceProduct.discount_amount = parseFloat((salesInvoiceProduct.unit_price * salesInvoiceProduct.quantity) - salesInvoiceProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (salesInvoiceProduct.discount_amount && salesInvoiceProduct.discount_percent == null)
-                                salesInvoiceProduct.discount_percent = parseFloat((100 * ((salesInvoiceProduct.unit_price * salesInvoiceProduct.quantity) - salesInvoiceProduct.amount)) / salesInvoiceProduct.unit_price);
-
-                            salesInvoiceProducts.push(salesInvoiceProduct);
-                        });
-
-                        var salesInvoiceProductRecordsBulk = ModuleService.prepareRecordBulk(salesInvoiceProducts, $scope.salesInvoiceProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.salesInvoiceProductModule.name, salesInvoiceProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (salesInvoiceProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.salesInvoiceProducts, function (salesInvoiceProduct) {
-                                if (salesInvoiceProduct.id)
-                                    ids.push(salesInvoiceProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.salesInvoiceProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (salesInvoiceProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.salesInvoiceProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-
-
-                    } else if ($scope.type === 'purchase_invoices') {
-                        var purchaseInvoiceProducts = [];
-                        var no = 1;
-                        var purchaseInvoiceProductsOrders = $filter('orderBy')($scope.purchaseInvoiceProducts, 'order');
-                        angular.forEach(purchaseInvoiceProductsOrders, function (purchaseInvoiceProduct) {
-                            if (purchaseInvoiceProduct.deleted)
-                                return;
-
-                            var purchaseInvoice = {};
-                            purchaseInvoice.id = $scope.recordId;
-                            purchaseInvoice.primary_value = $scope.record[$scope.primaryField.name];
-                            purchaseInvoiceProduct.purchase_invoice = purchaseInvoice;
-                            delete purchaseInvoiceProduct.vat;
-                            delete purchaseInvoiceProduct.currencyConvertList;
-                            delete purchaseInvoiceProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (purchaseInvoiceProduct.id);
-                                delete (purchaseInvoiceProduct._rev);
-                            }
-
-                            if (!purchaseInvoiceProduct.separator && purchaseInvoiceProduct.no) {
-                                purchaseInvoiceProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (purchaseInvoiceProduct.discount_percent && purchaseInvoiceProduct.discount_amount == null)
-                                purchaseInvoiceProduct.discount_amount = parseFloat((purchaseInvoiceProduct.unit_price * purchaseInvoiceProduct.quantity) - purchaseInvoiceProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (purchaseInvoiceProduct.discount_amount && purchaseInvoiceProduct.discount_percent == null)
-                                purchaseInvoiceProduct.discount_percent = parseFloat((100 * ((purchaseInvoiceProduct.unit_price * purchaseInvoiceProduct.quantity) - purchaseInvoiceProduct.amount)) / purchaseInvoiceProduct.unit_price);
-
-                            purchaseInvoiceProducts.push(purchaseInvoiceProduct);
-                        });
-
-                        var purchaseInvoiceProductRecordsBulk = ModuleService.prepareRecordBulk(purchaseInvoiceProducts, $scope.purchaseInvoiceProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.purchaseInvoiceProductModule.name, purchaseInvoiceProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (purchaseInvoiceProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.purchaseInvoiceProducts, function (purchaseInvoiceProduct) {
-                                if (purchaseInvoiceProduct.id)
-                                    ids.push(purchaseInvoiceProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.purchaseInvoiceProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (purchaseInvoiceProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.purchaseInvoiceProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'sales_orders') {
-                        var orderProducts = [];
-                        var no = 1;
-                        var orderProductsOrder = $filter('orderBy')($scope.orderProducts, 'order');
-                        angular.forEach(orderProductsOrder, function (orderProduct) {
-                            if (orderProduct.deleted)
-                                return;
-
-                            var sales_order = {};
-                            sales_order.id = $scope.recordId;
-                            sales_order.primary_value = $scope.record[$scope.primaryField.name];
-                            orderProduct.sales_order = sales_order;
-                            delete orderProduct.vat;
-                            delete orderProduct.currencyConvertList;
-                            delete orderProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (orderProduct.id);
-                                delete (orderProduct._rev);
-                            }
-
-                            if (!orderProduct.separator && orderProduct.no) {
-                                orderProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (orderProduct.discount_percent && orderProduct.discount_amount == null)
-                                orderProduct.discount_amount = parseFloat((orderProduct.unit_price * orderProduct.quantity) - orderProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (orderProduct.discount_amount && orderProduct.discount_percent == null)
-                                orderProduct.discount_percent = parseFloat((100 * ((orderProduct.unit_price * orderProduct.quantity) - orderProduct.amount)) / orderProduct.unit_price);
-
-                            orderProducts.push(orderProduct);
-                        });
-
-                        var orderProductRecordsBulk = ModuleService.prepareRecordBulk(orderProducts, $scope.orderProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.orderProductModule.name, orderProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (orderProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.orderProducts, function (orderProduct) {
-                                if (orderProduct.id)
-                                    ids.push(orderProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.orderProductModule.name, ids)
-                                    .then(function () {
-                                        if (orderProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.orderProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'purchase_orders') {
-                        var purchaseProducts = [];
-                        var no = 1;
-                        var purchaseProductsOrders = $filter('orderBy')($scope.purchaseProducts, 'order');
-                        angular.forEach(purchaseProductsOrders, function (purchaseProduct) {
-                            if (purchaseProduct.deleted)
-                                return;
-
-                            var purchase_order = {};
-                            purchase_order.id = $scope.recordId;
-                            purchase_order.primary_value = $scope.record[$scope.primaryField.name];
-                            purchaseProduct.purchase_order = purchase_order;
-                            delete purchaseProduct.vat;
-                            delete purchaseProduct.currencyConvertList;
-                            delete purchaseProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (purchaseProduct.id);
-                                delete (purchaseProduct._rev);
-                            }
-
-                            if (!purchaseProduct.separator && purchaseProduct.no) {
-                                purchaseProduct.no = no++;
-                            }
-
-                            //Discount percent applied also calculate discount amount.
-                            if (purchaseProduct.discount_percent && purchaseProduct.discount_amount == null)
-                                purchaseProduct.discount_amount = parseFloat((purchaseProduct.unit_price * purchaseProduct.quantity) - purchaseProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (purchaseProduct.discount_amount && purchaseProduct.discount_percent == null)
-                                purchaseProduct.discount_percent = parseFloat((100 * ((purchaseProduct.unit_price * purchaseProduct.quantity) - purchaseProduct.amount)) / purchaseProduct.unit_price);
-
-                            purchaseProducts.push(purchaseProduct);
-                        });
-
-                        var purchaseProductRecordsBulk = ModuleService.prepareRecordBulk(purchaseProducts, $scope.purchaseProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.purchaseProductModule.name, purchaseProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (purchaseProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.purchaseProducts, function (purchaseProduct) {
-                                if (purchaseProduct.id)
-                                    ids.push(purchaseProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.purchaseProductModule.name, ids)
-                                    .then(function () {
-                                        if (purchaseProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.purchaseProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else {
-                        if ($scope.uploader.queue.length < 1)
-                            success();
-                    }
-
-                    function success() {
+                    
+                    components.run('BeforeFormSubmitResult', 'Script', $scope,response);
+                    
+                   $scope.success = function success() {
                         var params = {type: $scope.type, id: response.id};
                         if ($scope.saveAndNew) {
                             $scope.record = {};
@@ -1629,6 +1209,7 @@ angular.module('primeapps')
                                 content: $filter('translate')('Module.SuccessMessage', {title: $scope.module['label_' + $rootScope.language + '_singular']}),
                                 className: 'success'
                             });
+
                             $scope.uploader.clearQueue();
 
                             $scope.$broadcast('angucomplete-alt:clearInput');
@@ -2147,7 +1728,6 @@ angular.module('primeapps')
                 }
             };
 
-
             $scope.$on('$locationChangeStart', function (event) {
                 if ($scope.moduleForm) {
                     if ($scope.moduleForm.$dirty) {
@@ -2184,7 +1764,7 @@ angular.module('primeapps')
                     });
             };
 
-            components.run('ModuleFormLoaded', 'script', $scope);
+            components.run('AfterFormLoaded', 'script', $scope);
 
 
         }

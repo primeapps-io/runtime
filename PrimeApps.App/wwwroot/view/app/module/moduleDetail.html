@@ -741,11 +741,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <ng-include ng-show="module.name === 'quotes'" src="'view/app/product/quoteProducts.html'"></ng-include>
-                                        <ng-include ng-show="module.name === 'sales_orders'" src="'view/app/product/orderProducts.html'"></ng-include>
-                                        <ng-include ng-show="module.name === 'purchase_orders'" src="'view/app/product/purchaseProducts.html'"></ng-include>
-                                        <ng-include ng-show="module.name === 'sales_invoices'" src="'view/app/product/salesInvoiceProducts.html'"></ng-include>
-                                        <ng-include ng-show="module.name === 'purchase_invoices'" src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>
+                                        <div ng-repeat="section in currentSectionComponentsTemplate">
+                                            <ng-include src="section"></ng-include>
+                                        </div>
+                                        
+                                        
                                         <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
                                             <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
                                             <div class="subpanel-body">

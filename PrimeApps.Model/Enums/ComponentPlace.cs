@@ -49,10 +49,39 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "before_list_request")]
         BeforeListRequest = 17,
 
-        [EnumMember(Value = "ModuleFormLoaded")]
-        ModuleFormCodeInject = 18,
+        [EnumMember(Value = "before_form_loaded")]
+        BeforeFormLoaded = 18,
 
+        [EnumMember(Value = "after_form_loaded")]
+        AfterFormLoaded = 19,
+
+        [EnumMember(Value = "before_form_picklist_loaded")]
+        BeforeFormPicklistLoaded = 20,
+
+        [EnumMember(Value = "after_form_picklist_loaded")]
+        AfterFormPicklistLoaded = 21,
+
+        [EnumMember(Value = "before_form_record_loaded")]
+        BeforeFormRecordLoaded = 22,
+
+        [EnumMember(Value = "after_form_record_loaded")]
+        AfterFormRecordLoaded = 23,   
         
+        [EnumMember(Value = "before_detail_loaded")]
+        BeforeDetailLoaded = 24,
+        
+        [EnumMember(Value = "after_detail_loaded")]
+        AfterDetailLoaded = 25, 
+        
+        [EnumMember(Value = "before_form_submit")]
+        BeforeFormSubmit = 26,  
+        
+        [EnumMember(Value = "before_form_submit_result")]
+        BeforeFormSubmitResult = 27, 
+  
+        [EnumMember(Value = "sub_list_loaded")]
+        SubListLoaded = 28,
+
         /*
          * Global config script
          */

@@ -61,6 +61,7 @@ angular.module('primeapps')
                 return;
             }
 
+            components.run('BeforeDetailLoaded', 'script', $scope); 
             $scope.setDropdownData = function (field) {
                 if (field.filters && field.filters.length > 0)
                     $scope.dropdownFieldDatas[field.name] = null;
@@ -501,8 +502,7 @@ angular.module('primeapps')
                                 if ($scope.record.currency)
                                     $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
 
-                                components.run('AfterRecordLoaded', 'Script', $scope, $scope.record);
-                                getProducts($scope.type);
+                                components.run('AfterRecordLoaded', 'Script', $scope, $scope.record); 
 
                                 if ($scope.currentModuleProcess && $scope.currentModuleProcess.profile_list) {
                                     if ($scope.currentModuleProcess.profile_list.indexOf($rootScope.user.profile.ID.toString()) > -1)
@@ -1051,460 +1051,461 @@ angular.module('primeapps')
                         $scope.loadingDocuments = false;
                     });
             };
-
-            function getVatList() {
-                if (!$scope.record.vat_list)
-                    return;
-
-                var vatListStr = angular.copy($scope.record.vat_list);
-                var vatList = vatListStr.split('|');
-                $scope.vatList = [];
-
-                angular.forEach(vatList, function (vatItem) {
-                    var vatParts = vatItem.split(';');
-                    var vat = {};
-                    vat.percent = vatParts[0];
-                    vat.total = vatParts[1];
-
-                    $scope.vatList.push(vat);
-                });
-            }
-
-            function setQuoteButtonsDisplay() {
-                var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
-                var quoteStagesPendingRevise = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'pending_revise' }, true)[0];
-                var quoteStagesDelivered = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'delivered' }, true)[0];
-                var quoteStagesConverted = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'converted' }, true)[0];
-
-                if (!$scope.record.quote_stage || $scope.record.quote_stage.id === quoteStagesPendingRevise.id || $scope.record.quote_stage.id === quoteStagesDelivered.id)
-                    $scope.displayReviseButton = true;
-                else
-                    $scope.displayReviseButton = false;
-
-                if (!$scope.record.quote_stage || $scope.record.quote_stage.id != quoteStagesConverted.id)
-                    $scope.displayConvertButton = true;
-                else
-                    $scope.displayConvertButton = false;
-            }
-
-            function getProducts(module) {
-                if (module != 'quotes' && module != 'sales_orders' && module != 'purchase_orders' && module != 'sales_invoices' && module != 'purchase_invoices')
-                    return;
-
-                $scope.currencyField = $filter('filter')($scope.module.fields, { name: 'currency' }, true)[0];
-                $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-
-                ModuleService.getPicklists($scope.productModule)
-                    .then(function (productModulePicklists) {
-                        if (module === 'quotes') {
-                            $scope.quoteProductsLoading = true;
-                            $scope.quoteProductModule = $filter('filter')($rootScope.modules, { name: 'quote_products' }, true)[0];
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.quoteProductModule.fields, { name: extraFields[i] }, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-                            ModuleService.getPicklists($scope.quoteProductModule)
-                                .then(function (quoteProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{ field: 'quote', operator: 'equals', value: $scope.id }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.quoteProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.quoteProducts = [];
-
-                                            angular.forEach(response.data, function (quoteProductRecordData) {
-                                                angular.forEach(quoteProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        quoteProductRecordData[keyParts[0] + '.' + keyParts[2]] = quoteProductRecordData[key];
-                                                        delete quoteProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var quoteProductRecord = ModuleService.processRecordSingle(quoteProductRecordData, $scope.quoteProductModule, quoteProductModulePicklists);
-
-                                                if (quoteProductRecord.product) {
-                                                    if (quoteProductRecord.usage_unit === null || !quoteProductRecord.usage_unit) {
-                                                        quoteProductRecord.usage_unit = angular.isObject(quoteProductRecord.product.usage_unit) ? quoteProductRecord.product.usage_unit['label_' + $rootScope.language] : quoteProductRecord.product.usage_unit;
-                                                    } else {
-                                                        quoteProductRecord.usage_unit = angular.isObject(quoteProductRecord.usage_unit) ? quoteProductRecord.usage_unit['label_' + $rootScope.language] : quoteProductRecord.usage_unit;
-                                                    }
-
-                                                    if (quoteProductRecord.currency == null || !quoteProductRecord.currency) {
-                                                        if (quoteProductRecord.product.currency && !angular.isObject(quoteProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: quoteProductRecord.product.currency }, true)[0];
-                                                            quoteProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    }
-                                                    else {
-                                                        quoteProductRecord.product.currency = quoteProductRecord.currency;
-                                                    }
-                                                    if (quoteProductRecord.vat_percent < 0) {
-                                                        quoteProductRecord.vat_percent = quoteProductRecord.product.vat_percent;
-                                                    } else {
-                                                        quoteProductRecord.product.vat_percent = quoteProductRecord.vat_percent;
-                                                    }
-                                                }
-
-
-                                                if (angular.isObject(quoteProductRecord.usage_unit)) {
-                                                    quoteProductRecord.usage_unit = quoteProductRecord.usage_unit['label_' + $rootScope.language];
-                                                } else {
-                                                    if (quoteProductRecord.product && (quoteProductRecord.usage_unit === null || !quoteProductRecord.usage_unit)) {
-                                                        quoteProductRecord.usage_unit = quoteProductRecord.product.usage_unit;
-                                                    }
-                                                }
-
-                                                $scope.quoteProducts.push(quoteProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.quoteProductsLoading = false;
-                                        });
-                                });
-
-                            setQuoteButtonsDisplay();
-                        }
-                        else if (module === 'sales_orders') {
-                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
-                                $scope.salesOrderStageSystemCode = $scope.record.order_stage.system_code;
-
-                            $scope.orderProductsLoading = true;
-                            $scope.orderProductModule = $filter('filter')($rootScope.modules, { name: 'order_products' }, true)[0];
-
-                            ModuleService.getPicklists($scope.orderProductModule)
-                                .then(function (orderProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
-                                    findRequest.filters = [{ field: 'sales_order', operator: 'equals', value: $scope.id }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-                                    ModuleService.findRecords($scope.orderProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.orderProducts = [];
-
-                                            angular.forEach(response.data, function (orderProductRecordData) {
-                                                angular.forEach(orderProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        orderProductRecordData[keyParts[0] + '.' + keyParts[2]] = orderProductRecordData[key];
-                                                        delete orderProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var orderProductRecord = ModuleService.processRecordSingle(orderProductRecordData, $scope.orderProductModule, orderProductModulePicklists);
-
-                                                if (orderProductRecord.product) {
-                                                    if (orderProductRecord.usage_unit === null || !orderProductRecord.usage_unit) {
-                                                        orderProductRecord.usage_unit = angular.isObject(orderProductRecord.product.usage_unit) ? orderProductRecord.product.usage_unit['label_' + $rootScope.language] : orderProductRecord.product.usage_unit;
-                                                    } else {
-                                                        orderProductRecord.usage_unit = angular.isObject(orderProductRecord.usage_unit) ? orderProductRecord.usage_unit['label_' + $rootScope.language] : orderProductRecord.usage_unit;
-                                                    }
-
-                                                    if (orderProductRecord.currency == null || !orderProductRecord.currency) {
-                                                        if (orderProductRecord.product.currency && !angular.isObject(orderProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: orderProductRecord.product.currency }, true)[0];
-                                                            orderProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    }
-                                                    else {
-                                                        orderProductRecord.product.currency = orderProductRecord.currency;
-                                                    }
-                                                    if (orderProductRecord.vat_percent < 0) {
-                                                        orderProductRecord.vat_percent = orderProductRecord.product.vat_percent;
-                                                    } else {
-                                                        orderProductRecord.product.vat_percent = orderProductRecord.vat_percent;
-                                                    }
-                                                }
-
-
-                                                if (angular.isObject(orderProductRecord.usage_unit)) {
-                                                    orderProductRecord.usage_unit = orderProductRecord.usage_unit['label_' + $rootScope.language];
-                                                } else {
-                                                    if (orderProductRecord.product && (orderProductRecord.usage_unit === null || !orderProductRecord.usage_unit)) {
-                                                        orderProductRecord.usage_unit = orderProductRecord.product.usage_unit;
-                                                    }
-                                                }
-
-                                                $scope.orderProducts.push(orderProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.orderProductsLoading = false;
-                                        });
-                                });
-                        }
-                        else if (module === 'purchase_orders') {
-                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
-                                $scope.purchaseOrderStageSystemCode = $scope.record.order_stage.system_code;
-
-                            $scope.purchaseProductsLoading = true;
-                            $scope.purchaseProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_order_products' }, true)[0];
-
-                            ModuleService.getPicklists($scope.purchaseProductModule)
-                                .then(function (purchaseProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'currency', 'purchase_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.purchase_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{ field: 'purchase_order', operator: 'equals', value: $scope.id }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-                                    ModuleService.findRecords($scope.purchaseProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.purchaseProducts = [];
-
-                                            angular.forEach(response.data, function (purchaseProductRecordData) {
-                                                angular.forEach(purchaseProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        purchaseProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseProductRecordData[key];
-                                                        delete purchaseProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var purchaseProductRecord = ModuleService.processRecordSingle(purchaseProductRecordData, $scope.purchaseProductModule, purchaseProductModulePicklists);
-                                                if (purchaseProductRecord.product) {
-                                                    if (purchaseProductRecord.usage_unit === null || !purchaseProductRecord.usage_unit) {
-                                                        purchaseProductRecord.usage_unit = angular.isObject(purchaseProductRecord.product.usage_unit) ? purchaseProductRecord.product.usage_unit['label_' + $rootScope.language] : purchaseProductRecord.product.usage_unit;
-                                                    } else {
-                                                        purchaseProductRecord.usage_unit = angular.isObject(purchaseProductRecord.usage_unit) ? purchaseProductRecord.usage_unit['label_' + $rootScope.language] : purchaseProductRecord.usage_unit;
-                                                    }
-
-                                                    if (purchaseProductRecord.currency == null || !purchaseProductRecord.currency) {
-                                                        if (purchaseProductRecord.product.currency && !angular.isObject(purchaseProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: purchaseProductRecord.product.currency }, true)[0];
-                                                            purchaseProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    }
-                                                    else {
-                                                        purchaseProductRecord.product.currency = purchaseProductRecord.currency;
-                                                    }
-                                                    if (purchaseProductRecord.vat_percent < 0) {
-                                                        purchaseProductRecord.vat_percent = purchaseProductRecord.product.vat_percent;
-                                                    } else {
-                                                        purchaseProductRecord.product.vat_percent = purchaseProductRecord.vat_percent;
-                                                    }
-                                                }
-
-
-                                                if (angular.isObject(purchaseProductRecord.usage_unit)) {
-                                                    purchaseProductRecord.usage_unit = purchaseProductRecord.usage_unit['label_' + $rootScope.language];
-                                                } else {
-                                                    if (purchaseProductRecord.product && (purchaseProductRecord.usage_unit === null || !purchaseProductRecord.usage_unit)) {
-                                                        purchaseProductRecord.usage_unit = purchaseProductRecord.product.usage_unit;
-                                                    }
-                                                }
-
-
-                                                $scope.purchaseProducts.push(purchaseProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.purchaseProductsLoading = false;
-                                        });
-                                });
-                        }
-                        else if (module === 'sales_invoices') {
-                            $scope.quoteProductsLoading = true;
-                            $scope.salesInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices_products' }, true)[0];
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.salesInvoiceProductModule.fields, { name: extraFields[i] }, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-                            ModuleService.getPicklists($scope.salesInvoiceProductModule)
-                                .then(function (salesInvoiceProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{ field: 'sales_invoice', operator: 'equals', value: $scope.id }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.salesInvoiceProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.salesInvoiceProducts = [];
-
-                                            angular.forEach(response.data, function (salesInvoiceProductRecordData) {
-                                                angular.forEach(salesInvoiceProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        salesInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = salesInvoiceProductRecordData[key];
-                                                        delete salesInvoiceProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var salesInvoiceProductRecord = ModuleService.processRecordSingle(salesInvoiceProductRecordData, $scope.salesInvoiceProductModule, salesInvoiceProductModulePicklists);
-
-                                                if (salesInvoiceProductRecord.product) {
-                                                    if (salesInvoiceProductRecord.usage_unit === null || !salesInvoiceProductRecord.usage_unit) {
-                                                        salesInvoiceProductRecord.usage_unit = angular.isObject(salesInvoiceProductRecord.product.usage_unit) ? salesInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language] : salesInvoiceProductRecord.product.usage_unit;
-                                                    } else {
-                                                        salesInvoiceProductRecord.usage_unit = angular.isObject(salesInvoiceProductRecord.usage_unit) ? salesInvoiceProductRecord.usage_unit['label_' + $rootScope.language] : salesInvoiceProductRecord.usage_unit;
-                                                    }
-
-                                                    if (salesInvoiceProductRecord.currency == null || !salesInvoiceProductRecord.currency) {
-                                                        if (salesInvoiceProductRecord.product.currency && !angular.isObject(salesInvoiceProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: salesInvoiceProductRecord.product.currency }, true)[0];
-                                                            salesInvoiceProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    }
-                                                    else {
-                                                        salesInvoiceProductRecord.product.currency = salesInvoiceProductRecord.currency;
-                                                    }
-                                                    if (salesInvoiceProductRecord.vat_percent < 0) {
-                                                        salesInvoiceProductRecord.vat_percent = salesInvoiceProductRecord.product.vat_percent;
-                                                    } else {
-                                                        salesInvoiceProductRecord.product.vat_percent = salesInvoiceProductRecord.vat_percent;
-                                                    }
-                                                }
-
-
-                                                if (angular.isObject(salesInvoiceProductRecord.usage_unit)) {
-                                                    salesInvoiceProductRecord.usage_unit = salesInvoiceProductRecord.usage_unit['label_' + $rootScope.language];
-                                                } else {
-                                                    if (salesInvoiceProductRecord.product && (salesInvoiceProductRecord.usage_unit === null || !salesInvoiceProductRecord.usage_unit)) {
-                                                        salesInvoiceProductRecord.usage_unit = salesInvoiceProductRecord.product.usage_unit;
-                                                    }
-                                                }
-
-                                                $scope.salesInvoiceProducts.push(salesInvoiceProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.salesInvoiceProductsLoading = false;
-                                        });
-                                });
-
-                            // setQuoteButtonsDisplay();
-                        }
-                        else if (module === 'purchase_invoices') {
-                            $scope.quoteProductsLoading = true;
-                            $scope.purchaseInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_invoices_products' }, true)[0];
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.purchaseInvoiceProductModule.fields, { name: extraFields[i] }, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-                            ModuleService.getPicklists($scope.purchaseInvoiceProductModule)
-                                .then(function (purchaseInvoiceProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{ field: 'purchase_invoice', operator: 'equals', value: $scope.id }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.purchaseInvoiceProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.purchaseInvoiceProducts = [];
-
-                                            angular.forEach(response.data, function (purchaseInvoiceProductRecordData) {
-                                                angular.forEach(purchaseInvoiceProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        purchaseInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseInvoiceProductRecordData[key];
-                                                        delete purchaseInvoiceProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var purchaseInvoiceProductRecord = ModuleService.processRecordSingle(purchaseInvoiceProductRecordData, $scope.purchaseInvoiceProductModule, purchaseInvoiceProductModulePicklists);
-
-                                                if (purchaseInvoiceProductRecord.product) {
-                                                    if (purchaseInvoiceProductRecord.usage_unit === null || !purchaseInvoiceProductRecord.usage_unit) {
-                                                        purchaseInvoiceProductRecord.usage_unit = angular.isObject(purchaseInvoiceProductRecord.product.usage_unit) ? purchaseInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language] : purchaseInvoiceProductRecord.product.usage_unit;
-                                                    } else {
-                                                        purchaseInvoiceProductRecord.usage_unit = angular.isObject(purchaseInvoiceProductRecord.usage_unit) ? purchaseInvoiceProductRecord.usage_unit['label_' + $rootScope.language] : purchaseInvoiceProductRecord.usage_unit;
-                                                    }
-
-                                                    if (purchaseInvoiceProductRecord.currency == null || !purchaseInvoiceProductRecord.currency) {
-                                                        if (purchaseInvoiceProductRecord.product.currency && !angular.isObject(purchaseInvoiceProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: purchaseInvoiceProductRecord.product.currency }, true)[0];
-                                                            purchaseInvoiceProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    }
-                                                    else {
-                                                        purchaseInvoiceProductRecord.product.currency = purchaseInvoiceProductRecord.currency;
-                                                    }
-                                                    if (purchaseInvoiceProductRecord.vat_percent < 0) {
-                                                        purchaseInvoiceProductRecord.vat_percent = purchaseInvoiceProductRecord.product.vat_percent;
-                                                    } else {
-                                                        purchaseInvoiceProductRecord.product.vat_percent = purchaseInvoiceProductRecord.vat_percent;
-                                                    }
-                                                }
-
-
-                                                if (angular.isObject(purchaseInvoiceProductRecord.usage_unit)) {
-                                                    purchaseInvoiceProductRecord.usage_unit = purchaseInvoiceProductRecord.usage_unit['label_' + $rootScope.language];
-                                                } else {
-                                                    if (purchaseInvoiceProductRecord.product && (purchaseInvoiceProductRecord.usage_unit === null || !purchaseInvoiceProductRecord.usage_unit)) {
-                                                        purchaseInvoiceProductRecord.usage_unit = purchaseInvoiceProductRecord.product.usage_unit;
-                                                    }
-                                                }
-
-                                                $scope.purchaseInvoiceProducts.push(purchaseInvoiceProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.purchaseInvoiceProductsLoading = false;
-                                        });
-                                });
-
-                            // setQuoteButtonsDisplay();
-                        }
-                    });
-
-                if ($scope.record.master_id && $scope.module.name === 'quotes') {
-                    ModuleService.getRecord($scope.module.name, $scope.record.master_id, true)
-                        .then(function (masterRecord) {
-                            $scope.masterRecord = ModuleService.processRecordSingle(masterRecord.data, $scope.module, $scope.picklistsModule);
-                        });
-                }
-
-                getVatList();
-            }
-
-            $scope.getAttachments();
+             
+            //Remove
+            // function getVatList() {
+            //     if (!$scope.record.vat_list)
+            //         return;
+            //
+            //     var vatListStr = angular.copy($scope.record.vat_list);
+            //     var vatList = vatListStr.split('|');
+            //     $scope.vatList = [];
+            //
+            //     angular.forEach(vatList, function (vatItem) {
+            //         var vatParts = vatItem.split(';');
+            //         var vat = {};
+            //         vat.percent = vatParts[0];
+            //         vat.total = vatParts[1];
+            //
+            //         $scope.vatList.push(vat);
+            //     });
+            // }
+            //
+            // function setQuoteButtonsDisplay() {
+            //     var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
+            //     var quoteStagesPendingRevise = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'pending_revise' }, true)[0];
+            //     var quoteStagesDelivered = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'delivered' }, true)[0];
+            //     var quoteStagesConverted = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'converted' }, true)[0];
+            //
+            //     if (!$scope.record.quote_stage || $scope.record.quote_stage.id === quoteStagesPendingRevise.id || $scope.record.quote_stage.id === quoteStagesDelivered.id)
+            //         $scope.displayReviseButton = true;
+            //     else
+            //         $scope.displayReviseButton = false;
+            //
+            //     if (!$scope.record.quote_stage || $scope.record.quote_stage.id != quoteStagesConverted.id)
+            //         $scope.displayConvertButton = true;
+            //     else
+            //         $scope.displayConvertButton = false;
+            // }
+
+            // function getProducts(module) {
+            //     if (module != 'quotes' && module != 'sales_orders' && module != 'purchase_orders' && module != 'sales_invoices' && module != 'purchase_invoices')
+            //         return;
+            //
+            //     $scope.currencyField = $filter('filter')($scope.module.fields, { name: 'currency' }, true)[0];
+            //     $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
+            //     $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //
+            //     ModuleService.getPicklists($scope.productModule)
+            //         .then(function (productModulePicklists) {
+            //             if (module === 'quotes') {
+            //                 $scope.quoteProductsLoading = true;
+            //                 $scope.quoteProductModule = $filter('filter')($rootScope.modules, { name: 'quote_products' }, true)[0];
+            //                 var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
+            //                 var additionalFields = [];
+            //                 for (var i = 0; extraFields.length > i; i++) {
+            //                     var field = $filter('filter')($scope.quoteProductModule.fields, { name: extraFields[i] }, true);
+            //                     if (field.length > 0) {
+            //                         additionalFields.push(extraFields[i]);
+            //                     }
+            //                 }
+            //                 ModuleService.getPicklists($scope.quoteProductModule)
+            //                     .then(function (quoteProductModulePicklists) {
+            //                         var findRequest = {};
+            //                         findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
+            //                         findRequest.filters = [{ field: 'quote', operator: 'equals', value: $scope.id }];
+            //                         findRequest.sort_field = 'order';
+            //                         findRequest.sort_direction = 'asc';
+            //                         findRequest.limit = 1000;
+            //                         findRequest.fields = findRequest.fields.concat(additionalFields);
+            //                         if ($scope.productCurrencyField)
+            //                             findRequest.fields.push('product.products.currency');
+            //
+            //                         ModuleService.findRecords($scope.quoteProductModule.name, findRequest)
+            //                             .then(function (response) {
+            //                                 $scope.quoteProducts = [];
+            //
+            //                                 angular.forEach(response.data, function (quoteProductRecordData) {
+            //                                     angular.forEach(quoteProductRecordData, function (value, key) {
+            //                                         if (key.indexOf('.') > -1) {
+            //                                             var keyParts = key.split('.');
+            //
+            //                                             quoteProductRecordData[keyParts[0] + '.' + keyParts[2]] = quoteProductRecordData[key];
+            //                                             delete quoteProductRecordData[key];
+            //                                         }
+            //                                     });
+            //
+            //                                     var quoteProductRecord = ModuleService.processRecordSingle(quoteProductRecordData, $scope.quoteProductModule, quoteProductModulePicklists);
+            //
+            //                                     if (quoteProductRecord.product) {
+            //                                         if (quoteProductRecord.usage_unit === null || !quoteProductRecord.usage_unit) {
+            //                                             quoteProductRecord.usage_unit = angular.isObject(quoteProductRecord.product.usage_unit) ? quoteProductRecord.product.usage_unit['label_' + $rootScope.language] : quoteProductRecord.product.usage_unit;
+            //                                         } else {
+            //                                             quoteProductRecord.usage_unit = angular.isObject(quoteProductRecord.usage_unit) ? quoteProductRecord.usage_unit['label_' + $rootScope.language] : quoteProductRecord.usage_unit;
+            //                                         }
+            //
+            //                                         if (quoteProductRecord.currency == null || !quoteProductRecord.currency) {
+            //                                             if (quoteProductRecord.product.currency && !angular.isObject(quoteProductRecord.product.currency)) {
+            //                                                 var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //                                                 var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: quoteProductRecord.product.currency }, true)[0];
+            //                                                 quoteProductRecord.product.currency = currencyPicklistItem;
+            //                                             }
+            //                                         }
+            //                                         else {
+            //                                             quoteProductRecord.product.currency = quoteProductRecord.currency;
+            //                                         }
+            //                                         if (quoteProductRecord.vat_percent < 0) {
+            //                                             quoteProductRecord.vat_percent = quoteProductRecord.product.vat_percent;
+            //                                         } else {
+            //                                             quoteProductRecord.product.vat_percent = quoteProductRecord.vat_percent;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     if (angular.isObject(quoteProductRecord.usage_unit)) {
+            //                                         quoteProductRecord.usage_unit = quoteProductRecord.usage_unit['label_' + $rootScope.language];
+            //                                     } else {
+            //                                         if (quoteProductRecord.product && (quoteProductRecord.usage_unit === null || !quoteProductRecord.usage_unit)) {
+            //                                             quoteProductRecord.usage_unit = quoteProductRecord.product.usage_unit;
+            //                                         }
+            //                                     }
+            //
+            //                                     $scope.quoteProducts.push(quoteProductRecord);
+            //                                 });
+            //                             })
+            //                             .finally(function () {
+            //                                 $scope.quoteProductsLoading = false;
+            //                             });
+            //                     });
+            //
+            //                 setQuoteButtonsDisplay();
+            //             }
+            //             else if (module === 'sales_orders') {
+            //                 if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+            //                     $scope.salesOrderStageSystemCode = $scope.record.order_stage.system_code;
+            //
+            //                 $scope.orderProductsLoading = true;
+            //                 $scope.orderProductModule = $filter('filter')($rootScope.modules, { name: 'order_products' }, true)[0];
+            //
+            //                 ModuleService.getPicklists($scope.orderProductModule)
+            //                     .then(function (orderProductModulePicklists) {
+            //                         var findRequest = {};
+            //                         findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
+            //                         findRequest.filters = [{ field: 'sales_order', operator: 'equals', value: $scope.id }];
+            //                         findRequest.sort_field = 'order';
+            //                         findRequest.sort_direction = 'asc';
+            //                         findRequest.limit = 1000;
+            //                         if ($scope.productCurrencyField)
+            //                             findRequest.fields.push('product.products.currency');
+            //                         ModuleService.findRecords($scope.orderProductModule.name, findRequest)
+            //                             .then(function (response) {
+            //                                 $scope.orderProducts = [];
+            //
+            //                                 angular.forEach(response.data, function (orderProductRecordData) {
+            //                                     angular.forEach(orderProductRecordData, function (value, key) {
+            //                                         if (key.indexOf('.') > -1) {
+            //                                             var keyParts = key.split('.');
+            //
+            //                                             orderProductRecordData[keyParts[0] + '.' + keyParts[2]] = orderProductRecordData[key];
+            //                                             delete orderProductRecordData[key];
+            //                                         }
+            //                                     });
+            //
+            //                                     var orderProductRecord = ModuleService.processRecordSingle(orderProductRecordData, $scope.orderProductModule, orderProductModulePicklists);
+            //
+            //                                     if (orderProductRecord.product) {
+            //                                         if (orderProductRecord.usage_unit === null || !orderProductRecord.usage_unit) {
+            //                                             orderProductRecord.usage_unit = angular.isObject(orderProductRecord.product.usage_unit) ? orderProductRecord.product.usage_unit['label_' + $rootScope.language] : orderProductRecord.product.usage_unit;
+            //                                         } else {
+            //                                             orderProductRecord.usage_unit = angular.isObject(orderProductRecord.usage_unit) ? orderProductRecord.usage_unit['label_' + $rootScope.language] : orderProductRecord.usage_unit;
+            //                                         }
+            //
+            //                                         if (orderProductRecord.currency == null || !orderProductRecord.currency) {
+            //                                             if (orderProductRecord.product.currency && !angular.isObject(orderProductRecord.product.currency)) {
+            //                                                 var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //                                                 var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: orderProductRecord.product.currency }, true)[0];
+            //                                                 orderProductRecord.product.currency = currencyPicklistItem;
+            //                                             }
+            //                                         }
+            //                                         else {
+            //                                             orderProductRecord.product.currency = orderProductRecord.currency;
+            //                                         }
+            //                                         if (orderProductRecord.vat_percent < 0) {
+            //                                             orderProductRecord.vat_percent = orderProductRecord.product.vat_percent;
+            //                                         } else {
+            //                                             orderProductRecord.product.vat_percent = orderProductRecord.vat_percent;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     if (angular.isObject(orderProductRecord.usage_unit)) {
+            //                                         orderProductRecord.usage_unit = orderProductRecord.usage_unit['label_' + $rootScope.language];
+            //                                     } else {
+            //                                         if (orderProductRecord.product && (orderProductRecord.usage_unit === null || !orderProductRecord.usage_unit)) {
+            //                                             orderProductRecord.usage_unit = orderProductRecord.product.usage_unit;
+            //                                         }
+            //                                     }
+            //
+            //                                     $scope.orderProducts.push(orderProductRecord);
+            //                                 });
+            //                             })
+            //                             .finally(function () {
+            //                                 $scope.orderProductsLoading = false;
+            //                             });
+            //                     });
+            //             }
+            //             else if (module === 'purchase_orders') {
+            //                 if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+            //                     $scope.purchaseOrderStageSystemCode = $scope.record.order_stage.system_code;
+            //
+            //                 $scope.purchaseProductsLoading = true;
+            //                 $scope.purchaseProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_order_products' }, true)[0];
+            //
+            //                 ModuleService.getPicklists($scope.purchaseProductModule)
+            //                     .then(function (purchaseProductModulePicklists) {
+            //                         var findRequest = {};
+            //                         findRequest.fields = ['quantity', 'usage_unit', 'currency', 'purchase_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.purchase_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
+            //                         findRequest.filters = [{ field: 'purchase_order', operator: 'equals', value: $scope.id }];
+            //                         findRequest.sort_field = 'order';
+            //                         findRequest.sort_direction = 'asc';
+            //                         findRequest.limit = 1000;
+            //
+            //                         if ($scope.productCurrencyField)
+            //                             findRequest.fields.push('product.products.currency');
+            //                         ModuleService.findRecords($scope.purchaseProductModule.name, findRequest)
+            //                             .then(function (response) {
+            //                                 $scope.purchaseProducts = [];
+            //
+            //                                 angular.forEach(response.data, function (purchaseProductRecordData) {
+            //                                     angular.forEach(purchaseProductRecordData, function (value, key) {
+            //                                         if (key.indexOf('.') > -1) {
+            //                                             var keyParts = key.split('.');
+            //
+            //                                             purchaseProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseProductRecordData[key];
+            //                                             delete purchaseProductRecordData[key];
+            //                                         }
+            //                                     });
+            //
+            //                                     var purchaseProductRecord = ModuleService.processRecordSingle(purchaseProductRecordData, $scope.purchaseProductModule, purchaseProductModulePicklists);
+            //                                     if (purchaseProductRecord.product) {
+            //                                         if (purchaseProductRecord.usage_unit === null || !purchaseProductRecord.usage_unit) {
+            //                                             purchaseProductRecord.usage_unit = angular.isObject(purchaseProductRecord.product.usage_unit) ? purchaseProductRecord.product.usage_unit['label_' + $rootScope.language] : purchaseProductRecord.product.usage_unit;
+            //                                         } else {
+            //                                             purchaseProductRecord.usage_unit = angular.isObject(purchaseProductRecord.usage_unit) ? purchaseProductRecord.usage_unit['label_' + $rootScope.language] : purchaseProductRecord.usage_unit;
+            //                                         }
+            //
+            //                                         if (purchaseProductRecord.currency == null || !purchaseProductRecord.currency) {
+            //                                             if (purchaseProductRecord.product.currency && !angular.isObject(purchaseProductRecord.product.currency)) {
+            //                                                 var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //                                                 var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: purchaseProductRecord.product.currency }, true)[0];
+            //                                                 purchaseProductRecord.product.currency = currencyPicklistItem;
+            //                                             }
+            //                                         }
+            //                                         else {
+            //                                             purchaseProductRecord.product.currency = purchaseProductRecord.currency;
+            //                                         }
+            //                                         if (purchaseProductRecord.vat_percent < 0) {
+            //                                             purchaseProductRecord.vat_percent = purchaseProductRecord.product.vat_percent;
+            //                                         } else {
+            //                                             purchaseProductRecord.product.vat_percent = purchaseProductRecord.vat_percent;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     if (angular.isObject(purchaseProductRecord.usage_unit)) {
+            //                                         purchaseProductRecord.usage_unit = purchaseProductRecord.usage_unit['label_' + $rootScope.language];
+            //                                     } else {
+            //                                         if (purchaseProductRecord.product && (purchaseProductRecord.usage_unit === null || !purchaseProductRecord.usage_unit)) {
+            //                                             purchaseProductRecord.usage_unit = purchaseProductRecord.product.usage_unit;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     $scope.purchaseProducts.push(purchaseProductRecord);
+            //                                 });
+            //                             })
+            //                             .finally(function () {
+            //                                 $scope.purchaseProductsLoading = false;
+            //                             });
+            //                     });
+            //             }
+            //             else if (module === 'sales_invoices') {
+            //                 $scope.quoteProductsLoading = true;
+            //                 $scope.salesInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices_products' }, true)[0];
+            //                 var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
+            //                 var additionalFields = [];
+            //                 for (var i = 0; extraFields.length > i; i++) {
+            //                     var field = $filter('filter')($scope.salesInvoiceProductModule.fields, { name: extraFields[i] }, true);
+            //                     if (field.length > 0) {
+            //                         additionalFields.push(extraFields[i]);
+            //                     }
+            //                 }
+            //                 ModuleService.getPicklists($scope.salesInvoiceProductModule)
+            //                     .then(function (salesInvoiceProductModulePicklists) {
+            //                         var findRequest = {};
+            //                         findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
+            //                         findRequest.filters = [{ field: 'sales_invoice', operator: 'equals', value: $scope.id }];
+            //                         findRequest.sort_field = 'order';
+            //                         findRequest.sort_direction = 'asc';
+            //                         findRequest.limit = 1000;
+            //                         findRequest.fields = findRequest.fields.concat(additionalFields);
+            //                         if ($scope.productCurrencyField)
+            //                             findRequest.fields.push('product.products.currency');
+            //
+            //                         ModuleService.findRecords($scope.salesInvoiceProductModule.name, findRequest)
+            //                             .then(function (response) {
+            //                                 $scope.salesInvoiceProducts = [];
+            //
+            //                                 angular.forEach(response.data, function (salesInvoiceProductRecordData) {
+            //                                     angular.forEach(salesInvoiceProductRecordData, function (value, key) {
+            //                                         if (key.indexOf('.') > -1) {
+            //                                             var keyParts = key.split('.');
+            //
+            //                                             salesInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = salesInvoiceProductRecordData[key];
+            //                                             delete salesInvoiceProductRecordData[key];
+            //                                         }
+            //                                     });
+            //
+            //                                     var salesInvoiceProductRecord = ModuleService.processRecordSingle(salesInvoiceProductRecordData, $scope.salesInvoiceProductModule, salesInvoiceProductModulePicklists);
+            //
+            //                                     if (salesInvoiceProductRecord.product) {
+            //                                         if (salesInvoiceProductRecord.usage_unit === null || !salesInvoiceProductRecord.usage_unit) {
+            //                                             salesInvoiceProductRecord.usage_unit = angular.isObject(salesInvoiceProductRecord.product.usage_unit) ? salesInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language] : salesInvoiceProductRecord.product.usage_unit;
+            //                                         } else {
+            //                                             salesInvoiceProductRecord.usage_unit = angular.isObject(salesInvoiceProductRecord.usage_unit) ? salesInvoiceProductRecord.usage_unit['label_' + $rootScope.language] : salesInvoiceProductRecord.usage_unit;
+            //                                         }
+            //
+            //                                         if (salesInvoiceProductRecord.currency == null || !salesInvoiceProductRecord.currency) {
+            //                                             if (salesInvoiceProductRecord.product.currency && !angular.isObject(salesInvoiceProductRecord.product.currency)) {
+            //                                                 var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //                                                 var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: salesInvoiceProductRecord.product.currency }, true)[0];
+            //                                                 salesInvoiceProductRecord.product.currency = currencyPicklistItem;
+            //                                             }
+            //                                         }
+            //                                         else {
+            //                                             salesInvoiceProductRecord.product.currency = salesInvoiceProductRecord.currency;
+            //                                         }
+            //                                         if (salesInvoiceProductRecord.vat_percent < 0) {
+            //                                             salesInvoiceProductRecord.vat_percent = salesInvoiceProductRecord.product.vat_percent;
+            //                                         } else {
+            //                                             salesInvoiceProductRecord.product.vat_percent = salesInvoiceProductRecord.vat_percent;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     if (angular.isObject(salesInvoiceProductRecord.usage_unit)) {
+            //                                         salesInvoiceProductRecord.usage_unit = salesInvoiceProductRecord.usage_unit['label_' + $rootScope.language];
+            //                                     } else {
+            //                                         if (salesInvoiceProductRecord.product && (salesInvoiceProductRecord.usage_unit === null || !salesInvoiceProductRecord.usage_unit)) {
+            //                                             salesInvoiceProductRecord.usage_unit = salesInvoiceProductRecord.product.usage_unit;
+            //                                         }
+            //                                     }
+            //
+            //                                     $scope.salesInvoiceProducts.push(salesInvoiceProductRecord);
+            //                                 });
+            //                             })
+            //                             .finally(function () {
+            //                                 $scope.salesInvoiceProductsLoading = false;
+            //                             });
+            //                     });
+            //
+            //                 // setQuoteButtonsDisplay();
+            //             }
+            //             else if (module === 'purchase_invoices') {
+            //                 $scope.quoteProductsLoading = true;
+            //                 $scope.purchaseInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_invoices_products' }, true)[0];
+            //                 var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent', 'usage_unit'];
+            //                 var additionalFields = [];
+            //                 for (var i = 0; extraFields.length > i; i++) {
+            //                     var field = $filter('filter')($scope.purchaseInvoiceProductModule.fields, { name: extraFields[i] }, true);
+            //                     if (field.length > 0) {
+            //                         additionalFields.push(extraFields[i]);
+            //                     }
+            //                 }
+            //                 ModuleService.getPicklists($scope.purchaseInvoiceProductModule)
+            //                     .then(function (purchaseInvoiceProductModulePicklists) {
+            //                         var findRequest = {};
+            //                         findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
+            //                         findRequest.filters = [{ field: 'purchase_invoice', operator: 'equals', value: $scope.id }];
+            //                         findRequest.sort_field = 'order';
+            //                         findRequest.sort_direction = 'asc';
+            //                         findRequest.limit = 1000;
+            //                         findRequest.fields = findRequest.fields.concat(additionalFields);
+            //                         if ($scope.productCurrencyField)
+            //                             findRequest.fields.push('product.products.currency');
+            //
+            //                         ModuleService.findRecords($scope.purchaseInvoiceProductModule.name, findRequest)
+            //                             .then(function (response) {
+            //                                 $scope.purchaseInvoiceProducts = [];
+            //
+            //                                 angular.forEach(response.data, function (purchaseInvoiceProductRecordData) {
+            //                                     angular.forEach(purchaseInvoiceProductRecordData, function (value, key) {
+            //                                         if (key.indexOf('.') > -1) {
+            //                                             var keyParts = key.split('.');
+            //
+            //                                             purchaseInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseInvoiceProductRecordData[key];
+            //                                             delete purchaseInvoiceProductRecordData[key];
+            //                                         }
+            //                                     });
+            //
+            //                                     var purchaseInvoiceProductRecord = ModuleService.processRecordSingle(purchaseInvoiceProductRecordData, $scope.purchaseInvoiceProductModule, purchaseInvoiceProductModulePicklists);
+            //
+            //                                     if (purchaseInvoiceProductRecord.product) {
+            //                                         if (purchaseInvoiceProductRecord.usage_unit === null || !purchaseInvoiceProductRecord.usage_unit) {
+            //                                             purchaseInvoiceProductRecord.usage_unit = angular.isObject(purchaseInvoiceProductRecord.product.usage_unit) ? purchaseInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language] : purchaseInvoiceProductRecord.product.usage_unit;
+            //                                         } else {
+            //                                             purchaseInvoiceProductRecord.usage_unit = angular.isObject(purchaseInvoiceProductRecord.usage_unit) ? purchaseInvoiceProductRecord.usage_unit['label_' + $rootScope.language] : purchaseInvoiceProductRecord.usage_unit;
+            //                                         }
+            //
+            //                                         if (purchaseInvoiceProductRecord.currency == null || !purchaseInvoiceProductRecord.currency) {
+            //                                             if (purchaseInvoiceProductRecord.product.currency && !angular.isObject(purchaseInvoiceProductRecord.product.currency)) {
+            //                                                 var currencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
+            //                                                 var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], { labelStr: purchaseInvoiceProductRecord.product.currency }, true)[0];
+            //                                                 purchaseInvoiceProductRecord.product.currency = currencyPicklistItem;
+            //                                             }
+            //                                         }
+            //                                         else {
+            //                                             purchaseInvoiceProductRecord.product.currency = purchaseInvoiceProductRecord.currency;
+            //                                         }
+            //                                         if (purchaseInvoiceProductRecord.vat_percent < 0) {
+            //                                             purchaseInvoiceProductRecord.vat_percent = purchaseInvoiceProductRecord.product.vat_percent;
+            //                                         } else {
+            //                                             purchaseInvoiceProductRecord.product.vat_percent = purchaseInvoiceProductRecord.vat_percent;
+            //                                         }
+            //                                     }
+            //
+            //
+            //                                     if (angular.isObject(purchaseInvoiceProductRecord.usage_unit)) {
+            //                                         purchaseInvoiceProductRecord.usage_unit = purchaseInvoiceProductRecord.usage_unit['label_' + $rootScope.language];
+            //                                     } else {
+            //                                         if (purchaseInvoiceProductRecord.product && (purchaseInvoiceProductRecord.usage_unit === null || !purchaseInvoiceProductRecord.usage_unit)) {
+            //                                             purchaseInvoiceProductRecord.usage_unit = purchaseInvoiceProductRecord.product.usage_unit;
+            //                                         }
+            //                                     }
+            //
+            //                                     $scope.purchaseInvoiceProducts.push(purchaseInvoiceProductRecord);
+            //                                 });
+            //                             })
+            //                             .finally(function () {
+            //                                 $scope.purchaseInvoiceProductsLoading = false;
+            //                             });
+            //                     });
+            //
+            //                 // setQuoteButtonsDisplay();
+            //             }
+            //         });
+            //
+            //     if ($scope.record.master_id && $scope.module.name === 'quotes') {
+            //         ModuleService.getRecord($scope.module.name, $scope.record.master_id, true)
+            //             .then(function (masterRecord) {
+            //                 $scope.masterRecord = ModuleService.processRecordSingle(masterRecord.data, $scope.module, $scope.picklistsModule);
+            //             });
+            //     }
+            //
+            //     getVatList();
+            // }
+            //
+            // $scope.getAttachments();
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
@@ -1598,6 +1599,8 @@ angular.module('primeapps')
                     .catch(function () {
                         $scope.pdfCreating = false;
                     });
+                
+                
             };
 
             $scope.getDownloadUrl = function (format) {
@@ -2132,5 +2135,6 @@ angular.module('primeapps')
                     }
                 }
             }
+            components.run('AfterDetailLoaded', 'script', $scope);
         }
     ]);
