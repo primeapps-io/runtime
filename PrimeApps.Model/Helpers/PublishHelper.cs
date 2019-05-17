@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading.Tasks;
 using Devart.Data.PostgreSql;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using PrimeApps.Model.Enums;
-using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Helpers
 
     public class PublishHelper
     {
-        public static bool Create(bool clearAllRecords, string dbName, int version, int deploymentId, IConfiguration configuration)
+        public static async Task<bool> Create(JObject app, bool clearAllRecords, string dbName, int version, int deploymentId, IConfiguration configuration)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
@@ -81,7 +81,7 @@ namespace PrimeApps.Model.Helpers
                 //await wSocket.SendAsync(CreateWSMessage("Records are marking as sample"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetRecordsIsSample(PREConnectionString, Location.PRE, dbName);
 
-                File.AppendAllText(path, DateTime.Now + " : Final arrangements being made..." + Environment.NewLine);
+                File.AppendAllText(path, DateTime.Now + " : Editing your records..." + Environment.NewLine);
                 //tw.WriteLine("Final arrangements being made...");
                 //await wSocket.SendAsync(CreateWSMessage("Final arrangements being made"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetAllUserFK(PREConnectionString, Location.PRE, dbName);
@@ -95,6 +95,71 @@ namespace PrimeApps.Model.Helpers
 
                 //await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                 //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+
+
+                File.AppendAllText(path, DateTime.Now + " : Final arrangements being made..." + Environment.NewLine);
+                var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
+                var secretEncrypt = CryptoHelper.Encrypt(secret);
+                PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt);
+
+                using (var httpClient = new HttpClient())
+                {
+                    var dict = new Dictionary<string, string>
+                    {
+                        {"grant_type", "client_credentials"},
+                        {"username", "bc@primeapps.io"},
+                        {"password", "123456"},
+                        {"scope", "api1"},
+                        {"client_id", "primeapps_studio"},
+                        {"client_secret", "secret"}
+                    };
+                    
+
+                    var authUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+
+
+                    var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
+                    var res = await httpClient.SendAsync(req);
+                   
+                    if (res.IsSuccessStatusCode)
+                    {
+                        var resp = await res.Content.ReadAsStringAsync();
+                        if (!string.IsNullOrEmpty(resp))
+                        {
+                            var obj = JObject.Parse(resp);
+                            var token = obj["access_token"].ToString();
+
+                            using (var client = new HttpClient())
+                            {
+                                var clientRequest = new JObject
+                                {
+                                    ["client_id"] = app["name"].ToString(),
+                                    ["client_name"] = app["label"].ToString(),
+                                    ["allowed_grant_types"] = "hybrid",
+                                    ["allow_remember_consent"] = false,
+                                    ["always_send_client_claims"] = true,
+                                    ["require_consent"] = false,
+                                    ["client_secrets"] = secret,
+                                    ["redirect_uris"] = "http://localhost:5010/signin-oidc",
+                                    ["post_logout_redirect_uris"] = "http://localhost:5010/signout-callback-oidc",
+                                    ["allowed_scopes"] = "openid;profile;email;api1",
+                                    ["access_token_life_time"] = 864000
+                                };
+
+                                client.DefaultRequestHeaders.Accept.Clear();
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                                var response = await client.PostAsync(authUrl + "/api/client/create", new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
+
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    resp = await response.Content.ReadAsStringAsync();
+                                }
+                            }
+                        }
+                    }
+                }
 
                 File.AppendAllText(path, DateTime.Now + " : Done..." + Environment.NewLine);
 
@@ -475,6 +540,44 @@ namespace PrimeApps.Model.Helpers
                 connection.Open();
                 var dump = new PgSqlDump {Connection = connection, DumpText = dumpSql};
                 dump.Restore();
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public static JArray CreatePlatformAppSql(JObject app, string secret)
+        {
+            var sqls = new JArray
+            {
+                $"INSERT INTO \"public\".\"apps\"(\"id\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"name\", \"label\", \"description\", \"logo\", \"use_tenant_settings\", \"app_draft_id\", \"secret\") VALUES (" + app["id"] + ", 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff",  CultureInfo.InvariantCulture) + "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" + app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
+                $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" + app["id"] + ", " + (!string.IsNullOrEmpty(app["setting"]["app_domain"].ToString()) ? "'" + app["setting"]["app_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_domain"].ToString()) ? "'" + app["setting"]["auth_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", 2, '" + app["setting"]["enable_registration"].ToString().Substring(0, 1).ToLower() + "');"
+            };
+
+
+            //app["templates"].Aggregate(sql, (current, template) => current + ($"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL, '2018-10-01 11:41:02.829818', NULL, '" + template["deleted"] + "', " + app["id"] + ", '" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + template["type"] + ", '" + template["system_code"] + "', '" + template["active"] + "', '" + template["settings"] + "');" + Environment.NewLine));
+            return sqls;
+        }
+
+        public static bool CreatePlatformApp(string connectionString, JObject app, string secret)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, Location.PRE, "platform"));
+                connection.Open();
+
+                var sqls = CreatePlatformAppSql(app, secret);
+
+                foreach (var sql in sqls)
+                {
+                    var dropCommand = new PgSqlCommand(sql.ToString()) {Connection = connection};
+                    dropCommand.ExecuteReader();
+                }
+
                 connection.Close();
 
                 return true;

@@ -186,8 +186,8 @@ namespace PrimeApps.Studio
                 ReceiveBufferSize = 4 * 1024
             };
 
-            app.UseWebSockets();
-            /*app.Use(async (ctx, next) =>
+            app.UseWebSockets(new WebSocketOptions() {KeepAliveInterval = TimeSpan.FromSeconds(10)});
+            app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path == "/log_stream")
                 {
@@ -207,7 +207,7 @@ namespace PrimeApps.Studio
                 {
                     await next();
                 }
-            });*/
+            });
 
             app.UseMvc(routes =>
             {

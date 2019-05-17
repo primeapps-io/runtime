@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -39,9 +41,10 @@ namespace PrimeApps.Studio.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
+            SetCurrentUser(_deploymentRepository);
             base.OnActionExecuting(context);
         }
-        
+
         [Route("log/{id}"), HttpGet]
         public async Task<IActionResult> Log(int id)
         {
@@ -53,34 +56,23 @@ namespace PrimeApps.Studio.Controllers
             if (deployment == null)
                 return BadRequest();
 
-            return Ok(deployment);
-        }
+            var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
 
-        [Route("log_stream/{id}"), HttpGet]
-        public async Task<IActionResult> LogStream(int id)
-        {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
-                return StatusCode(403);
+            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var text = "";
 
-            var deployment = await _deploymentRepository.Get(id);
+            if (!System.IO.File.Exists($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt"))
+                return Ok("Your logs have been deleted...");
 
-            if (deployment == null)
-                return BadRequest();
-
-            var context = ControllerContext.HttpContext;
-            var isSocketRequest = context.WebSockets.IsWebSocketRequest;
-
-            if (isSocketRequest)
+            using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var sr = new StreamReader(fs, Encoding.Default))
             {
-                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                await _webSocketHelper.LogStream(context, webSocket, id);
-            }
-            else
-            {
-                context.Response.StatusCode = 400;
+                text = sr.ReadToEnd();
+                sr.Close();
+                fs.Close();
             }
 
-            return Ok(deployment);
+            return Ok(text);
         }
 
         [Route("count"), HttpGet]

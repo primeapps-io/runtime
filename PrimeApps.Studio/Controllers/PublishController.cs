@@ -76,7 +76,7 @@ namespace PrimeApps.Studio.Controllers
 
             await _deploymentRepository.Create(deploymentObj);
 
-            _queue.QueueBackgroundWorkItem(token => _publishHelper.Create(model.ClearAllRecords, dbName, version, deploymentObj.Id));
+            _queue.QueueBackgroundWorkItem(token => _publishHelper.Create((int)AppId, model.ClearAllRecords, dbName, version, deploymentObj.Id));
 
             return Ok(deploymentObj.Id);
         }

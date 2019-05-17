@@ -66,7 +66,7 @@ namespace PrimeApps.Studio.Services
                 command = ((RelationalDataReader)result).DbCommand;
             }
 
-            if (command != null && (command.CommandText.StartsWith("INSERT", true, null) && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage")) ||
+            if (command != null && command.Connection.Database != "studio" && (command.CommandText.StartsWith("INSERT", true, null) && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage")) ||
                 command.CommandText.StartsWith("UPDATE", true, null) ||
                 command.CommandText.StartsWith("CREATE", true, null) ||
                 command.CommandText.StartsWith("DELETE", true, null) ||

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
@@ -20,22 +21,18 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IWebSocketHelper
     {
-        Task LogStream(HttpContext hContext, WebSocket wSocket, int deploymentId);
+        Task LogStream(HttpContext hContext, WebSocket wSocket);
     }
 
     public class WebSocketHelper : IWebSocketHelper
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-        private string PDEConnectionString;
-        private string PREConnectionString;
-
-        public WebSocketHelper(IConfiguration configuration)
+        public WebSocketHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
-
-            PDEConnectionString = _configuration.GetConnectionString("StudioDBConnection");
-            PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public ArraySegment<byte> CreateWSMessage(string message)
@@ -45,7 +42,7 @@ namespace PrimeApps.Studio.Helpers
         }
 
 
-        public async Task LogStream(HttpContext hContext, WebSocket wSocket, int deploymentId)
+        public async Task LogStream(HttpContext hContext, WebSocket wSocket)
         {
             try
             {
@@ -114,70 +111,43 @@ namespace PrimeApps.Studio.Helpers
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
 
-                while (!result.CloseStatus.HasValue)
+                var deploymentIdResult = int.TryParse(wsParameters["deployment_id"].ToString(), out var deploymentId);
+
+                if (!deploymentIdResult)
                 {
-                    var deploymentRepository = (IDeploymentRepository)hContext.RequestServices.GetService(typeof(IDeploymentRepository));
-                    var deployment = await deploymentRepository.Get(deploymentId);
+                    await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                    throw new Exception("Deployment id not found.");
+                }
 
-                    if (deployment == null || deployment.Status != DeploymentStatus.Running)
+                while (result.MessageType != WebSocketMessageType.Close)
+                {
+                    string text;
+                    Deployment deployment;
+                    using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        result = await wSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                        await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                        await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                        continue;
-                        //throw new Exception("Deployment id not found.");
-                    }
+                        var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
-                    var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                    var text = "";
-                    using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    using (var sr = new StreamReader(fs, Encoding.Default))
-                    {
-                        text = sr.ReadToEnd();
-                    }
+                        using (var deploymentRepository = new DeploymentRepository(databaseContext, _configuration))
+                        {
+                            deployment = await deploymentRepository.Get(deploymentId);
 
+                            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+
+                            using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var sr = new StreamReader(fs, Encoding.Default))
+                            {
+                                text = sr.ReadToEnd();
+                            }
+                        }
+                    }
 
                     await wSocket.SendAsync(CreateWSMessage(text), result.MessageType, result.EndOfMessage, CancellationToken.None);
+
+                    if (deployment.Status != DeploymentStatus.Running)
+                        await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+
                     Thread.Sleep(2000);
-
-                    /*await wSocket.SendAsync(CreateWSMessage("Database sql generating"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    var sqlDump = PublishHelper.GetSqlDump(PDEConnectionString, Location.PDE, dbName);
-
-                    if (string.IsNullOrEmpty(sqlDump))
-                        throw new Exception("Unhandled Exception");
-
-                    await wSocket.SendAsync(CreateWSMessage("Restoring your database"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    var restoreResult = PublishHelper.RestoreDatabase(PREConnectionString, sqlDump, Location.PRE, dbName);
-
-                    if (!restoreResult)
-                        throw new Exception("Unhandled Exception");
-
-                    await wSocket.SendAsync(CreateWSMessage("System tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    PublishHelper.CleanUpSystemTables(PREConnectionString, Location.PRE, dbName);
-
-                    await wSocket.SendAsync(CreateWSMessage("Dynamic tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    JArray tableNames = null;
-
-                    if (wsParameters["table_names"] != null && wsParameters["table_names"].Type == JTokenType.Array)
-                        tableNames = JArray.Parse(wsParameters["table_names"].ToString());
-
-                    PublishHelper.CleanUpTables(PREConnectionString, Location.PRE, dbName, tableNames);
-
-                    await wSocket.SendAsync(CreateWSMessage("Records are marking as sample"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    PublishHelper.SetRecordsIsSample(PREConnectionString, Location.PRE, dbName);
-
-                    await wSocket.SendAsync(CreateWSMessage("Final arrangements being made"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    PublishHelper.SetAllUserFK(PREConnectionString, Location.PRE, dbName);
-
-                    //await wSocket.SendAsync(CreateWSMessage("Database marking as template"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    //PublishHelper.SetDatabaseIsTemplate(PREConnectionString, Location.PRE, dbName);
-
-                    await wSocket.SendAsync(CreateWSMessage("You application is ready"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                    //result = await wSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                    //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                    
-                    await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);*/
                 }
             }
             catch (Exception e)

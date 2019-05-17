@@ -16,13 +16,15 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Hangfire.Common;
+using Newtonsoft.Json.Serialization;
 using PrimeApps.Studio.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
     public interface IPublishHelper
     {
-        Task Create(bool clearAllRecords, string dbName, int version, int deploymentId);
+        Task Create(int appId, bool clearAllRecords, string dbName, int version, int deploymentId);
     }
 
     public class PublishHelper : IPublishHelper
@@ -42,17 +44,32 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
-        public async Task Create(bool clearAllRecords, string dbName, int version, int deploymentId)
+        public async Task Create(int appId, bool clearAllRecords, string dbName, int version, int deploymentId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
                 using (var deploymentRepository = new DeploymentRepository(databaseContext, _configuration))
+                using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                 {
-                    deploymentRepository.CurrentUser = _currentUser;
+                    appDraftRepository.CurrentUser = deploymentRepository.CurrentUser = _currentUser;
 
-                    var result = Model.Helpers.PublishHelper.Create(clearAllRecords, dbName, version, deploymentId, _configuration);
+                    var app = await appDraftRepository.Get(appId);
+
+                    var contractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+
+                    var appString = JsonConvert.SerializeObject(app, new JsonSerializerSettings
+                    {
+                        ContractResolver = contractResolver,
+                        Formatting = Formatting.Indented,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+
+                    var result = await Model.Helpers.PublishHelper.Create(JObject.Parse(appString), clearAllRecords, dbName, version, deploymentId, _configuration);
                     var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment != null)

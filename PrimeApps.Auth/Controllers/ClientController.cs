@@ -12,7 +12,7 @@ using PrimeApps.Model.Context;
 
 namespace PrimeApps.Auth.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ClientController : ApiBaseController<ClientController>
     {
         private IClientRepository _clientRepository;
