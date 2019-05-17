@@ -277,5 +277,13 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Users.Include(x => x.Setting).SingleOrDefault(x => x.Email == email);
         }
+
+        public async Task HardCodedUpdateUser(PlatformUser userToEdit)
+        {
+            var sql = $"UPDATE users set first_name='{userToEdit.FirstName}', last_name='{userToEdit.LastName}', updated_at= Now() where id ={userToEdit.Id};"
+					 +$"UPDATE user_settings set phone ='{userToEdit.Setting.Phone}' where user_id = {userToEdit.Id};";
+            
+            await DbContext.Database.ExecuteSqlCommandAsync(sql);
+        }
     }
 }
