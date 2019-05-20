@@ -1,9 +1,17 @@
 ﻿'use strict';
-
+var sectionComponents = {};
+var currentSectionComponentsTemplate = [];
 angular.module('primeapps')
 
-    .config(['$stateProvider', '$urlRouterProvider',
-        function ($stateProvider, $urlRouterProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$sceDelegateProvider',
+        function ($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
+
+            // $sceDelegateProvider.resourceUrlWhitelist([
+            //     // Allow same origin resource loads.
+            //     'self',
+            //     // Allow loading from our assets domain. **.
+            //     'http://gitea-dev.primeapps.io:3000/**'
+            // ]);
 
             /*if (window.location.hash.indexOf('#access_token') > -1) {
              var parseQueryString = function (queryString) {
@@ -137,28 +145,40 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
+                        plugins: ['$rootScope', '$state','$$animateJs', '$ocLazyLoad','$filter', function ($rootScope, $state,$$animateJs, $ocLazyLoad,$filter) {
+
+                            var files = [
                                 cdnUrl + 'view/app/module/moduleDetailController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
-                                cdnUrl + 'view/app/email/bulkEMailController.js',
-                                cdnUrl + 'view/app/product/quoteProductsController.js',
-                                cdnUrl + 'view/app/product/quoteProductsService.js',
-                                cdnUrl + 'view/app/product/orderProductsController.js',
-                                cdnUrl + 'view/app/product/orderProductsService.js',
-                                cdnUrl + 'view/app/product/purchaseProductsController.js',
-                                cdnUrl + 'view/app/product/purchaseProductsService.js',
+                                cdnUrl + 'view/app/email/bulkEMailController.js',                          
                                 cdnUrl + 'view/app/module/moduleAddModalController.js',
                                 cdnUrl + 'view/app/email/singleEmailController.js',
                                 cdnUrl + 'view/app/sms/singleSMSController.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/location/locationFormModalController.js',
-                                cdnUrl + 'view/app/email/templateService.js',
-                                cdnUrl + 'view/app/product/salesInvoiceProductsController.js',
-                                cdnUrl + 'view/app/product/salesInvoiceProductsService.js',
-                                cdnUrl + 'view/app/product/purchaseInvoiceProductsController.js',
-                                cdnUrl + 'view/app/product/purchaseInvoiceProductsService.js'
-                            ]);
+                                cdnUrl + 'view/app/email/templateService.js',                             
+                            ];
+
+                            currentSectionComponentsTemplate = [];
+                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+
+                            if (sectionComponents['component' + moduleId]) {
+                                var sectionComponent = sectionComponents['component' + moduleId];
+
+                                for (var i = 0; i < sectionComponent.length; i++) {
+                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                    angular.forEach(sectionFiles, function (item) {
+                                        files.push(item)
+                                    });
+
+
+                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                }
+                            }
+
+
+
+                            return $ocLazyLoad.load(files);
                         }]
                     }
                 })
@@ -172,23 +192,32 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
+
+
                             var files = [
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
-                                cdnUrl + 'view/app/product/quoteProductsController.js',
-                                cdnUrl + 'view/app/product/quoteProductsService.js',
-                                cdnUrl + 'view/app/product/orderProductsController.js',
-                                cdnUrl + 'view/app/product/orderProductsService.js',
-                                cdnUrl + 'view/app/product/purchaseProductsController.js',
-                                cdnUrl + 'view/app/product/purchaseProductsService.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
-                                cdnUrl + 'view/app/product/salesInvoiceProductsController.js',
-                                cdnUrl + 'view/app/product/salesInvoiceProductsService.js',
-                                cdnUrl + 'view/app/product/purchaseInvoiceProductsController.js',
-                                cdnUrl + 'view/app/product/purchaseInvoiceProductsService.js',
-                                cdnUrl + 'view/app/location/locationFormModalController.js'
                             ];
+
+                            currentSectionComponentsTemplate = [];
+                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+
+                            if (sectionComponents['component' + moduleId]) {
+                                var sectionComponent = sectionComponents['component' + moduleId];
+
+                                for (var i = 0; i < sectionComponent.length; i++) {
+                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                    angular.forEach(sectionFiles, function (item) {
+                                        files.push(item)
+                                    });
+
+
+                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                }
+                            }
+
 
                             if (googleMapsApiKey) {
                                 files.push({
@@ -593,8 +622,7 @@ angular.module('primeapps')
                                         .then(function () {
                                             deferred.resolve();
                                         });
-                                }
-                                else {
+                                } else {
                                     deferred.resolve();
                                 }
 
@@ -1363,8 +1391,22 @@ angular.module('primeapps')
                     if (!component.content)
                         return;
 
+
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
+
+                    if (component.place === 1001) {
+                        if (sectionComponents['component' + component.module_id]) {
+                            sectionComponents.push(component);
+
+                        } else {
+                            sectionComponents['component' + component.module_id] = [];
+                            sectionComponents['component' + component.module_id].push(component);
+                            // console.log(sectionComponents['component' + component.module_id][0].content);
+                        }
+                        return;
+                    }
+
 
                     var replaceDynamicValues = function (str) {
                         var splitUrls = str.split('{appConfigs.');

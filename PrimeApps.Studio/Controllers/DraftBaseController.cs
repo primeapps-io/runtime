@@ -27,8 +27,11 @@ namespace PrimeApps.Studio.Controllers
             TenantId = null;
             AppId = null;
 
-            context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues);
-            context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues);
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
+                context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues);
+
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+                context.HttpContext.Request.Headers.TryGetValue("x-tenant-id", out tenantIdValues);
 
             var tenantId = 0;
             var appId = 0;

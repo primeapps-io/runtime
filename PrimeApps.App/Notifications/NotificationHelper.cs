@@ -184,7 +184,7 @@ namespace PrimeApps.App.Notifications
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))
-				{
+                {
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
                         oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
@@ -218,7 +218,7 @@ namespace PrimeApps.App.Notifications
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
                     _recordRepository.CurrentUser = _currentUser;
 
@@ -246,7 +246,7 @@ namespace PrimeApps.App.Notifications
                     var modulePkey = module.Fields.Where(x => x.Primary == true).Select(v => v.Name).FirstOrDefault();
 
 
-                    emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString()); //?wtf to change
+                    emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString());//?wtf to change
 
                     Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                     email.AddRecipient(newOwner.Email);
@@ -290,8 +290,6 @@ namespace PrimeApps.App.Notifications
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
                     _recordRepository.CurrentUser = _currentUser;
-                    _recordRepository.TenantId = appUser.TenantId;
-                    //_recordRepository.UserId = appUser.TenantId;
 
                     var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                     var listLookupModule = new List<Module>

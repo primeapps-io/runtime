@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +56,8 @@ namespace PrimeApps.App.Controllers
                 else
                 {
                     if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
-                        context.Result = new UnauthorizedResult();
+                        if (!context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues))
+                            context.Result = new UnauthorizedResult();
 
                     if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) ||
                         !int.TryParse(appIdValues[0], out appId))

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components', '$cookies',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components, $cookies) {
+    .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components) {
 
             if (!$scope.$parent.$parent.formType) {
                 $scope.type = $stateParams.type;
@@ -41,6 +41,7 @@ angular.module('primeapps')
                 $scope.paramValue = parent.value;
 
             }
+
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
@@ -60,7 +61,8 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
-
+            components.run('BeforeFormLoaded', 'script', $scope);
+            $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
             //allow encrypted fields
             if (!$scope.id) {
                 for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -106,7 +108,8 @@ angular.module('primeapps')
                 $scope.title = $filter('translate')('Module.New', {title: $scope.module['label_' + $rootScope.language + '_singular']});
             }
 
-            //Sets holidays to business days
+            //<--TODO:COMPONENT
+            //Sets holidays to business days 
             var setHolidays = function () {
                 if ($scope.module.name === 'leaves' || $scope.module.name === 'izinler') {
                     var holidaysModule = $filter('filter')($rootScope.modules, {name: 'holidays'}, true)[0];
@@ -169,6 +172,7 @@ angular.module('primeapps')
 
             setHolidays();
 
+            //TODO:COMPONENT -->
             //checks if user has permission for editin process record
             for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
                 var currentProcess = $rootScope.approvalProcesses[j];
@@ -184,6 +188,7 @@ angular.module('primeapps')
                 }
             }
 
+            //TODO:COMPONENT
             if ($scope.parentType) {
                 if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
                     $scope.parentModule = $scope.parentType;
@@ -206,28 +211,6 @@ angular.module('primeapps')
                         $scope.parentModule = parentTypeField.lookup_type;
                     }
                 }
-            }
-
-            if ($scope.type === 'quotes') {
-                $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
-                $scope.quoteProductModule = $filter('filter')($rootScope.modules, {name: 'quote_products'}, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            } else if ($scope.type === 'sales_orders') {
-                $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
-                $scope.orderProductModule = $filter('filter')($rootScope.modules, {name: 'order_products'}, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            } else if ($scope.type === 'purchase_orders') {
-                $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
-                $scope.purchaseProductModule = $filter('filter')($rootScope.modules, {name: 'purchase_order_products'}, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            } else if ($scope.type === 'sales_invoices') {
-                $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
-                $scope.salesInvoiceProductModule = $filter('filter')($rootScope.modules, {name: 'sales_invoices_products'}, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-            } else if ($scope.type === 'purchase_invoices') {
-                $scope.productModule = $filter('filter')($rootScope.modules, {name: 'products'}, true)[0];
-                $scope.purchaseInvoiceProductModule = $filter('filter')($rootScope.modules, {name: 'purchase_invoices_products'}, true)[0];
-                $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
             }
 
             $scope.picklistFilter = function (param) {
@@ -261,6 +244,7 @@ angular.module('primeapps')
                 return type;
             };
 
+            //<--TODO:COMPONENT
             var setCurrencyCurrentAccounts = function () {
                 if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
                     var currencyValue;
@@ -279,7 +263,9 @@ angular.module('primeapps')
                     }
                 }
             };
+            //TODO:COMPONENT --> 
 
+            //<--TODO:COMPONENT
             var checkBranchSettingsAvailable = function () {
                 if ($rootScope.branchAvailable) {
                     $scope.branchManager = $filter('filter')($rootScope.users, {RoleId: parseInt($scope.record['branch'])}, true)[0];
@@ -303,6 +289,7 @@ angular.module('primeapps')
                     //$scope.authorities
                 }
             };
+            //TODO:COMPONENT --> 
 
             var checkEditPermission = function () {
                 if (!$scope.hasProcessEditPermission) {
@@ -318,7 +305,6 @@ angular.module('primeapps')
             ModuleService.getPicklists($scope.module)
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
-                    $scope.currencyField = $filter('filter')($scope.module.fields, {name: 'currency'}, true)[0];
                     var ownerField = $filter('filter')($scope.module.fields, {name: 'owner'}, true)[0];
 
                     var setFieldDependencies = function () {
@@ -333,6 +319,9 @@ angular.module('primeapps')
                         });
                     };
 
+                    components.run('BeforeFormPicklistLoaded', 'Script', $scope); 
+                    
+                    //<--TODO:COMPONENT
                     if ($scope.module && $scope.module.name === 'izinler') {
                         var toField = $filter('filter')($scope.module.fields, {name: 'to_entry_type'}, true)[0];
                         var fromField = $filter('filter')($scope.module.fields, {name: 'from_entry_type'}, true)[0];
@@ -343,11 +332,13 @@ angular.module('primeapps')
                             $scope.record['from_entry_type'] = picklists[toField.picklist_id][0];
                         }
                     }
+                    //TODO:COMPONENT --> 
 
                     if (!$scope.id) {
-                        //Çalışanlar Create sayfası açıldığında Kullanıcı Ekle checkboxında lisans kontrolü yapmak için Lisans bilgileri çekiliyor.
-                        //Düzenle sayfasına gidildiğinde gizlenen fieldların gözükmesi sağlanıyor.
+                        $scope.loading = false;
+                        $scope.record.owner = $scope.currentUser;
 
+                        //<--TODO:COMPONENT
                         if (!$rootScope.branchAvailable) {
                             var userCreateField = $filter('filter')($scope.module.fields, {name: 'kullanici_olustur'}, true)[0];
                             if (userCreateField)
@@ -362,9 +353,9 @@ angular.module('primeapps')
                                 });
                         }
 
-                        $scope.loading = false;
-                        $scope.record.owner = $scope.currentUser;
+                        //TODO:COMPONENT --> 
 
+                        //<--TODO:COMPONENT
                         if ($scope.subtype) {
                             if ($scope.type == 'activities') {
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
@@ -374,19 +365,24 @@ angular.module('primeapps')
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
                             }
                         }
+                        //TODO:COMPONENT --> 
 
-                        if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') && $scope.currencyField) {
-                            if (!$scope.currencyField.validation)
-                                $scope.currencyField.validation = {};
-
-                            $scope.currencyField.validation.readonly = false;
-                        }
+                        //Teklif burası kaldıralım gerek yok olmaması lazım 
+                        //<--TODO:COMPONENT
+                        // if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') && $scope.currencyField) {
+                        //     if (!$scope.currencyField.validation)
+                        //         $scope.currencyField.validation = {};
+                        //
+                        //     $scope.currencyField.validation.readonly = false;
+                        // }
+                         //TODO:COMPONENT --> 
 
                         if ($scope.parentId) {
                             var moduleParent = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
 
                             ModuleService.getRecord($scope.parentModule, $scope.parentId)
                                 .then(function onSuccess(parent) {
+
                                     var moduleParentPrimaryField = $filter('filter')(moduleParent.fields, {
                                         primary: true,
                                         deleted: false
@@ -395,6 +391,7 @@ angular.module('primeapps')
                                     lookupRecord.id = parent.data.id;
                                     lookupRecord.primary_value = parent.data[moduleParentPrimaryField.name];
 
+                                    //<--TODO:COMPONENT
                                     if (parent.data['currency']) {
                                         lookupRecord['currency'] = parent.data['currency'];
                                         setCurrencyCurrentAccounts();
@@ -403,6 +400,9 @@ angular.module('primeapps')
                                     if ($scope.parentModule === 'calisanlar') {
                                         lookupRecord['e_posta'] = parent.data['e_posta'];
                                     }
+                                    //TODO:COMPONENT --> 
+
+                                    //<--TODO:COMPONENT
 
                                     if (($scope.type === 'activities' || $scope.type === 'mails') && $scope.relatedToField) {
                                         $scope.record['related_to'] = lookupRecord;
@@ -416,6 +416,7 @@ angular.module('primeapps')
                                             $scope.record[$scope.parentType] = lookupRecord;
                                         }
 
+
                                         var relatedDependency = $filter('filter')($scope.module.dependencies, {dependent_field: $scope.parentType}, true)[0];
 
                                         if (relatedDependency && relatedDependency.deleted != true) {
@@ -428,6 +429,10 @@ angular.module('primeapps')
 
                                         setFieldDependencies();
                                     }
+
+                                    //TODO:COMPONENT --> 
+
+
                                 });
                         } else {
                             setFieldDependencies();
@@ -440,57 +445,14 @@ angular.module('primeapps')
                             $scope.record[$scope.paramField] = $scope.paramValue;
                             $rootScope.hideSipPhone();
                         }
-
-                        if ($scope.type === 'quotes') {
-                            var quoteProduct = {};
-                            quoteProduct.id = 0;
-                            quoteProduct.order = 1;
-                            quoteProduct.discount_type = 'percent';
-                            $scope.quoteProducts = [];
-                            $scope.quoteProducts.push(quoteProduct);
-                        }
-                        if ($scope.type === 'sales_invoices') {
-                            var salesInvoiceProduct = {};
-                            salesInvoiceProduct.id = 0;
-                            salesInvoiceProduct.order = 1;
-                            salesInvoiceProduct.discount_type = 'percent';
-                            $scope.salesInvoiceProducts = [];
-                            $scope.salesInvoiceProducts.push(salesInvoiceProduct);
-                        }
-                        if ($scope.type === 'purchase_invoices') {
-                            var purchaseInvoiceProduct = {};
-                            purchaseInvoiceProduct.id = 0;
-                            purchaseInvoiceProduct.order = 1;
-                            purchaseInvoiceProduct.discount_type = 'percent';
-                            $scope.purchaseInvoiceProducts = [];
-                            $scope.purchaseInvoiceProducts.push(purchaseInvoiceProduct);
-                        }
-
-                        if ($scope.type === 'sales_orders') {
-                            var orderProduct = {};
-                            orderProduct.id = 0;
-                            orderProduct.order = 1;
-                            orderProduct.discount_type = 'percent';
-                            $scope.orderProducts = [];
-                            $scope.orderProducts.push(orderProduct);
-                        }
-
-                        if ($scope.type === 'purchase_orders') {
-                            var purchaseProduct = {};
-                            purchaseProduct.id = 0;
-                            purchaseProduct.order = 1;
-                            purchaseProduct.discount_type = 'percent';
-                            $scope.purchaseProducts = [];
-                            $scope.purchaseProducts.push(purchaseProduct);
-                        }
-
-                        $scope.multiCurrency();
                         components.run('FieldChange', 'Script', $scope, $scope.record, ownerField);
+
                         return;
                     }
 
                     ModuleService.getRecord($scope.module.name, $scope.id)
                         .then(function onSuccess(recordData) {
+
                             if (Object.keys(recordData.data).length === 0) {
                                 ngToast.create({
                                     content: $filter('translate')('Common.Forbidden'),
@@ -502,6 +464,7 @@ angular.module('primeapps')
 
                             var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
+                            //<--TODO:COMPONENT
                             //Kullanıcı oluşturulduysa edit sayfasında kullanıcı oluşturma alanları gizleniyor.
                             if ($scope.module.name === 'calisanlar') {
                                 var userCreateField = $filter('filter')($scope.module.fields, {name: 'kullanici_olustur'}, true)[0];
@@ -519,6 +482,7 @@ angular.module('primeapps')
                                         });
                                 }
                             }
+                            //TODO:COMPONENT --> 
 
                             if (!$scope.hasPermission($scope.type, $scope.operations.modify, recordData.data) || (isFreeze(record) && !$scope.hasAdminRights)) {
                                 ngToast.create({
@@ -528,37 +492,15 @@ angular.module('primeapps')
                                 $state.go('app.dashboard');
                                 return;
                             }
+                            
 
-                            $scope.multiCurrency();
-                            if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders') && $scope.currencyField) {
-
-                                var currencyValidationSet = function (status) {
-                                    if ($scope.currencyField.validation)
-                                        $scope.currencyField.validation.readonly = status;
-                                    else
-                                        $scope.currencyField["validation"] = [{readonly: status}];
-                                };
-
-                                if (record['currency']) {
-                                    currencyValidationSet(true);
-                                } else {
-
-                                    if ($scope.currencyField.data_type === 'picklist') {
-                                        record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], {value: $rootScope.currencySymbol})[0];
-                                    }
-
-                                    currencyValidationSet(false);
-                                }
-
-                                if ($scope.clone) {
-                                    currencyValidationSet(false);
-                                }
-                            }
-
+                            components.run('BeforeFormRecordLoaded', 'Script', $scope,record);
                             ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
                             $scope.title = $scope.primaryField.valueFormatted;
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
+
+                           
 
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -584,12 +526,14 @@ angular.module('primeapps')
 
                                 ModuleService.getRecord(lookupModule.name, record['related_to'], true)
                                     .then(function onSuccess(relatedRecord) {
+
                                         relatedRecord = relatedRecord.data;
                                         relatedRecord.primary_value = relatedRecord[lookupModulePrimaryField.name];
                                         record['related_to'] = relatedRecord;
 
                                         $scope.record = record;
                                         $scope.recordState = angular.copy($scope.record);
+
 
                                         if ($scope.module.name != 'activities')
                                             setFieldDependencies();
@@ -630,46 +574,22 @@ angular.module('primeapps')
                             if ($scope.record.currency)
                                 $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
 
-                            getProductRecords($scope.type);
                             ModuleService.customActions($scope.module, $scope.record);
 
                             components.run('FieldChange', 'Script', $scope, $scope.record, ownerField);
+
+                            components.run('AfterFormRecordLoaded', 'Script', $scope);
                         })
                         .catch(function onError() {
                             $scope.loading = false;
                         });
+
+                    components.run('AfterFormPicklistLoaded', 'Script', $scope);
                 });
 
-            //MultiCurrency
-            $scope.multiCurrency = function () {
-                if ($scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') {
-                    if ($scope.currencyField) {
-                        $scope.showExchangeRates = true;
-
-
-                        ModuleService.getDailyRates()
-                            .then(function (response) {
-                                if (!response.data)
-                                    return;
-
-                                if ($scope.id && ($scope.record.exchange_rate_try_usd != null || !angular.isDefined($scope.record.exchange_rate_try_usd)))
-                                    return;
-
-                                var dailyRates = response.data;
-                                $scope.exchangeRatesDate = $filter('date')(dailyRates.date, 'dd MMMM yyyy') + ' 15:30';
-
-                                $scope.record.exchange_rate_try_usd = dailyRates.usd;
-                                $scope.record.exchange_rate_try_eur = dailyRates.eur;
-                                $scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
-                                $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
-                                $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
-                                $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
-                            })
-                    }
-                }
-            };
 
             $scope.lookup = function (searchTerm) {
+                $scope.searchTerm = searchTerm;
                 if ($scope.currentLookupField.lookup_type === 'users' && !$scope.currentLookupField.lookupModulePrimaryField) {
                     var userModulePrimaryField = {};
                     userModulePrimaryField.data_type = 'text_single';
@@ -712,29 +632,7 @@ angular.module('primeapps')
                     return $q.defer().promise;
                 }
 
-                if ($scope.module.name === 'quotes' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') {
-                    var discountField = null;
-
-                    if ($scope.currentLookupField.lookup_type === 'contacts') {
-                        $scope.contactModule = $filter('filter')($rootScope.modules, {name: 'contacts'}, true)[0];
-                        discountField = $filter('filter')($scope.contactModule.fields, {
-                            name: 'discount',
-                            deleted: '!true'
-                        }, true)[0];
-                    } else if ($scope.currentLookupField.lookup_type === 'accounts') {
-                        $scope.accountModule = $filter('filter')($rootScope.modules, {name: 'accounts'}, true)[0];
-                        discountField = $filter('filter')($scope.accountModule.fields, {
-                            name: 'discount',
-                            deleted: '!true'
-                        }, true)[0];
-                    }
-
-                    if (discountField)
-                        return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['discount']);
-                    else
-                        return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
-                }
-
+ 
                 if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
                     var parentModuleName = '';
 
@@ -759,6 +657,10 @@ angular.module('primeapps')
 
                 components.run('BeforeLookup', 'Script', $scope);
 
+                if($scope.lookupCurrentData){
+                    return $scope.lookupCurrentData;
+                }
+                
                 if ($scope.currentLookupField.lookup_type === 'users')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email'], false, $scope.customFilters);
                 else if ($scope.currentLookupField.lookup_type === 'profiles')
@@ -769,6 +671,7 @@ angular.module('primeapps')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta'], false, $scope.customFilters);
                 else
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
+
             };
 
             $scope.multiselect = function (searchTerm, field) {
@@ -932,7 +835,7 @@ angular.module('primeapps')
 
                                             $scope.submit(record);
                                             $scope.openCreateUserModal();
-                                          
+
                                         }
                                     })
                                     .catch(function (response) {
@@ -966,6 +869,7 @@ angular.module('primeapps')
                 function validate() {
                     var isValid = true;
 
+                    //Scriptx
                     if ($scope.module.name === 'current_accounts')
                         var hasShownWarning = false;
 
@@ -1023,12 +927,14 @@ angular.module('primeapps')
                 }
 
                 $scope.submitting = true;
-
+                
+      
                 if (!$scope.moduleForm.$valid || !validate()) {
                     $scope.submitting = false;
                     return;
                 }
 
+                components.run('BeforeFormSubmit', 'Script', $scope, record);
 
                 if (!$scope.id || $scope.clone) {
                     $scope.executeCode = false;
@@ -1119,13 +1025,7 @@ angular.module('primeapps')
                     });
                     $scope.recordState = null;
                 }
-
-                if (record.discount_percent && record.discount_amount == null)
-                    record.discount_amount = parseFloat(record.total - record.discounted_total);
-
-                if (record.discount_amount && record.discount_percent == null)
-                    record.discount_percent = parseFloat((100 * (record.total - record.discounted_total)) / record.total);
-
+                 
                 record = ModuleService.prepareRecord(record, $scope.module, $scope.recordState);
 
                 var recordCopy = angular.copy($scope.record);
@@ -1296,388 +1196,10 @@ angular.module('primeapps')
                 function result(response) {
                     $scope.addedUser = false;
                     $scope.recordId = response.id;
-
-
-                    if ($scope.type === 'quotes') {
-                        var quoteProducts = [];
-                        var no = 1;
-                        var quoteProductsOrders = $filter('orderBy')($scope.quoteProducts, 'order');
-                        angular.forEach(quoteProductsOrders, function (quoteProduct) {
-                            if (quoteProduct.deleted)
-                                return;
-
-                            var quote = {};
-                            quote.id = $scope.recordId;
-                            quote.primary_value = $scope.record[$scope.primaryField.name];
-                            quoteProduct.quote = quote;
-                            delete quoteProduct.vat;
-                            delete quoteProduct.currencyConvertList;
-                            delete quoteProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (quoteProduct.id);
-                                delete (quoteProduct._rev);
-                            }
-
-                            if (!quoteProduct.separator && quoteProduct.no) {
-                                quoteProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (quoteProduct.discount_percent && quoteProduct.discount_amount == null)
-                                quoteProduct.discount_amount = parseFloat((quoteProduct.unit_price * quoteProduct.quantity) - quoteProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (quoteProduct.discount_amount && quoteProduct.discount_percent == null)
-                                quoteProduct.discount_percent = parseFloat((100 * ((quoteProduct.unit_price * quoteProduct.quantity) - quoteProduct.amount)) / quoteProduct.unit_price);
-
-                            quoteProducts.push(quoteProduct);
-                        });
-
-                        var quoteProductRecordsBulk = ModuleService.prepareRecordBulk(quoteProducts, $scope.quoteProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.quoteProductModule.name, quoteProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (quoteProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.quoteProducts, function (quoteProduct) {
-                                if (quoteProduct.id)
-                                    ids.push(quoteProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.quoteProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (quoteProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.quoteProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'sales_invoices') {
-                        var salesInvoiceProducts = [];
-                        var no = 1;
-                        var salesInvoiceProductsOrders = $filter('orderBy')($scope.salesInvoiceProducts, 'order');
-                        angular.forEach(salesInvoiceProductsOrders, function (salesInvoiceProduct) {
-                            if (salesInvoiceProduct.deleted)
-                                return;
-
-                            var salesInvoice = {};
-                            salesInvoice.id = $scope.recordId;
-                            salesInvoice.primary_value = $scope.record[$scope.primaryField.name];
-                            salesInvoiceProduct.sales_invoice = salesInvoice;
-                            delete salesInvoiceProduct.vat;
-                            delete salesInvoiceProduct.currencyConvertList;
-                            delete salesInvoiceProduct.defaultCurrency;
-
-                            if ($scope.clone) {
-                                delete (salesInvoiceProduct.id);
-                                delete (salesInvoiceProduct._rev);
-                            }
-
-                            if (!salesInvoiceProduct.separator && salesInvoiceProduct.no) {
-                                salesInvoiceProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (salesInvoiceProduct.discount_percent && salesInvoiceProduct.discount_amount == null)
-                                salesInvoiceProduct.discount_amount = parseFloat((salesInvoiceProduct.unit_price * salesInvoiceProduct.quantity) - salesInvoiceProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (salesInvoiceProduct.discount_amount && salesInvoiceProduct.discount_percent == null)
-                                salesInvoiceProduct.discount_percent = parseFloat((100 * ((salesInvoiceProduct.unit_price * salesInvoiceProduct.quantity) - salesInvoiceProduct.amount)) / salesInvoiceProduct.unit_price);
-
-                            salesInvoiceProducts.push(salesInvoiceProduct);
-                        });
-
-                        var salesInvoiceProductRecordsBulk = ModuleService.prepareRecordBulk(salesInvoiceProducts, $scope.salesInvoiceProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.salesInvoiceProductModule.name, salesInvoiceProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (salesInvoiceProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.salesInvoiceProducts, function (salesInvoiceProduct) {
-                                if (salesInvoiceProduct.id)
-                                    ids.push(salesInvoiceProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.salesInvoiceProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (salesInvoiceProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.salesInvoiceProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-
-
-                    } else if ($scope.type === 'purchase_invoices') {
-                        var purchaseInvoiceProducts = [];
-                        var no = 1;
-                        var purchaseInvoiceProductsOrders = $filter('orderBy')($scope.purchaseInvoiceProducts, 'order');
-                        angular.forEach(purchaseInvoiceProductsOrders, function (purchaseInvoiceProduct) {
-                            if (purchaseInvoiceProduct.deleted)
-                                return;
-
-                            var purchaseInvoice = {};
-                            purchaseInvoice.id = $scope.recordId;
-                            purchaseInvoice.primary_value = $scope.record[$scope.primaryField.name];
-                            purchaseInvoiceProduct.purchase_invoice = purchaseInvoice;
-                            delete purchaseInvoiceProduct.vat;
-                            delete purchaseInvoiceProduct.currencyConvertList;
-                            delete purchaseInvoiceProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (purchaseInvoiceProduct.id);
-                                delete (purchaseInvoiceProduct._rev);
-                            }
-
-                            if (!purchaseInvoiceProduct.separator && purchaseInvoiceProduct.no) {
-                                purchaseInvoiceProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (purchaseInvoiceProduct.discount_percent && purchaseInvoiceProduct.discount_amount == null)
-                                purchaseInvoiceProduct.discount_amount = parseFloat((purchaseInvoiceProduct.unit_price * purchaseInvoiceProduct.quantity) - purchaseInvoiceProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (purchaseInvoiceProduct.discount_amount && purchaseInvoiceProduct.discount_percent == null)
-                                purchaseInvoiceProduct.discount_percent = parseFloat((100 * ((purchaseInvoiceProduct.unit_price * purchaseInvoiceProduct.quantity) - purchaseInvoiceProduct.amount)) / purchaseInvoiceProduct.unit_price);
-
-                            purchaseInvoiceProducts.push(purchaseInvoiceProduct);
-                        });
-
-                        var purchaseInvoiceProductRecordsBulk = ModuleService.prepareRecordBulk(purchaseInvoiceProducts, $scope.purchaseInvoiceProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.purchaseInvoiceProductModule.name, purchaseInvoiceProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (purchaseInvoiceProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.purchaseInvoiceProducts, function (purchaseInvoiceProduct) {
-                                if (purchaseInvoiceProduct.id)
-                                    ids.push(purchaseInvoiceProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.purchaseInvoiceProductModule.name, ids)
-                                    .then(function onSuccess() {
-                                        if (purchaseInvoiceProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.purchaseInvoiceProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'sales_orders') {
-                        var orderProducts = [];
-                        var no = 1;
-                        var orderProductsOrder = $filter('orderBy')($scope.orderProducts, 'order');
-                        angular.forEach(orderProductsOrder, function (orderProduct) {
-                            if (orderProduct.deleted)
-                                return;
-
-                            var sales_order = {};
-                            sales_order.id = $scope.recordId;
-                            sales_order.primary_value = $scope.record[$scope.primaryField.name];
-                            orderProduct.sales_order = sales_order;
-                            delete orderProduct.vat;
-                            delete orderProduct.currencyConvertList;
-                            delete orderProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (orderProduct.id);
-                                delete (orderProduct._rev);
-                            }
-
-                            if (!orderProduct.separator && orderProduct.no) {
-                                orderProduct.no = no++;
-                            }
-                            //Discount percent applied also calculate discount amount.
-                            if (orderProduct.discount_percent && orderProduct.discount_amount == null)
-                                orderProduct.discount_amount = parseFloat((orderProduct.unit_price * orderProduct.quantity) - orderProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (orderProduct.discount_amount && orderProduct.discount_percent == null)
-                                orderProduct.discount_percent = parseFloat((100 * ((orderProduct.unit_price * orderProduct.quantity) - orderProduct.amount)) / orderProduct.unit_price);
-
-                            orderProducts.push(orderProduct);
-                        });
-
-                        var orderProductRecordsBulk = ModuleService.prepareRecordBulk(orderProducts, $scope.orderProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.orderProductModule.name, orderProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (orderProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.orderProducts, function (orderProduct) {
-                                if (orderProduct.id)
-                                    ids.push(orderProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.orderProductModule.name, ids)
-                                    .then(function () {
-                                        if (orderProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.orderProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else if ($scope.type === 'purchase_orders') {
-                        var purchaseProducts = [];
-                        var no = 1;
-                        var purchaseProductsOrders = $filter('orderBy')($scope.purchaseProducts, 'order');
-                        angular.forEach(purchaseProductsOrders, function (purchaseProduct) {
-                            if (purchaseProduct.deleted)
-                                return;
-
-                            var purchase_order = {};
-                            purchase_order.id = $scope.recordId;
-                            purchase_order.primary_value = $scope.record[$scope.primaryField.name];
-                            purchaseProduct.purchase_order = purchase_order;
-                            delete purchaseProduct.vat;
-                            delete purchaseProduct.currencyConvertList;
-                            delete purchaseProduct.defaultCurrency;
-                            if ($scope.clone) {
-                                delete (purchaseProduct.id);
-                                delete (purchaseProduct._rev);
-                            }
-
-                            if (!purchaseProduct.separator && purchaseProduct.no) {
-                                purchaseProduct.no = no++;
-                            }
-
-                            //Discount percent applied also calculate discount amount.
-                            if (purchaseProduct.discount_percent && purchaseProduct.discount_amount == null)
-                                purchaseProduct.discount_amount = parseFloat((purchaseProduct.unit_price * purchaseProduct.quantity) - purchaseProduct.amount);
-
-                            //Discount amount applied also calculate discount percent.
-                            if (purchaseProduct.discount_amount && purchaseProduct.discount_percent == null)
-                                purchaseProduct.discount_percent = parseFloat((100 * ((purchaseProduct.unit_price * purchaseProduct.quantity) - purchaseProduct.amount)) / purchaseProduct.unit_price);
-
-                            purchaseProducts.push(purchaseProduct);
-                        });
-
-                        var purchaseProductRecordsBulk = ModuleService.prepareRecordBulk(purchaseProducts, $scope.purchaseProductModule);
-
-                        var insertRecords = function () {
-                            ModuleService.insertRecordBulk($scope.purchaseProductModule.name, purchaseProductRecordsBulk)
-                                .then(function onSuccess() {
-                                    success();
-                                });
-                        };
-
-                        if (!$scope.id || $scope.revise) {
-                            if (purchaseProducts.length) {
-                                insertRecords();
-                            } else {
-                                success();
-                            }
-                        } else {
-                            var ids = [];
-
-                            angular.forEach($scope.purchaseProducts, function (purchaseProduct) {
-                                if (purchaseProduct.id)
-                                    ids.push(purchaseProduct.id);
-                            });
-
-                            if (ids.length) {
-                                ModuleService.deleteRecordBulk($scope.purchaseProductModule.name, ids)
-                                    .then(function () {
-                                        if (purchaseProducts.length) {
-                                            insertRecords();
-                                        } else {
-                                            success();
-                                        }
-                                    });
-                            } else {
-                                if ($scope.purchaseProducts.length) {
-                                    insertRecords();
-                                } else {
-                                    success();
-                                }
-                            }
-                        }
-                    } else {
-                        if ($scope.uploader.queue.length < 1)
-                            success();
-                    }
-
-                    function success() {
+                    
+                    components.run('BeforeFormSubmitResult', 'Script', $scope,response);
+                    
+                   $scope.success = function success() {
                         var params = {type: $scope.type, id: response.id};
                         if ($scope.saveAndNew) {
                             $scope.record = {};
@@ -1687,6 +1209,7 @@ angular.module('primeapps')
                                 content: $filter('translate')('Module.SuccessMessage', {title: $scope.module['label_' + $rootScope.language + '_singular']}),
                                 className: 'success'
                             });
+
                             $scope.uploader.clearQueue();
 
                             $scope.$broadcast('angucomplete-alt:clearInput');
@@ -1752,6 +1275,7 @@ angular.module('primeapps')
                             $cache.remove('calendar_events');
 
                         if ($scope.saveAndNew) {
+                            //Teklif
                             if ($scope.type === 'quotes' || $scope.type === 'sales_invoices') {
                                 ModuleService.getDailyRates()
                                     .then(function (response) {
@@ -1883,433 +1407,6 @@ angular.module('primeapps')
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
-
-            function getVatList() {
-                if (!$scope.record.vat_list)
-                    return;
-
-                var vatListStr = angular.copy($scope.record.vat_list);
-                var vatList = vatListStr.split('|');
-                $scope.vatList = [];
-
-                angular.forEach(vatList, function (vatItem) {
-                    var vatParts = vatItem.split(';');
-                    var vat = {};
-                    vat.percent = vatParts[0];
-                    vat.total = vatParts[1];
-
-                    $scope.vatList.push(vat);
-                });
-            }
-
-            function getProductRecords(module) {
-                ModuleService.getPicklists($scope.productModule)
-                    .then(function (productModulePicklists) {
-                        if (module === 'quotes') {
-                            $scope.quoteProductsLoading = true;
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.quoteProductModule.fields, {name: extraFields[i]}, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-
-                            ModuleService.getPicklists($scope.quoteProductModule)
-                                .then(function (quoteProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{field: 'quote', operator: 'equals', value: $scope.id}];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.quoteProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.quoteProducts = [];
-
-                                            angular.forEach(response.data, function (quoteProductRecordData) {
-                                                angular.forEach(quoteProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        quoteProductRecordData[keyParts[0] + '.' + keyParts[2]] = quoteProductRecordData[key];
-                                                        delete quoteProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var quoteProductRecord = ModuleService.processRecordSingle(quoteProductRecordData, $scope.quoteProductModule, quoteProductModulePicklists);
-
-                                                if (quoteProductRecord.product) {
-                                                    if (quoteProductRecord.usage_unit == null || !quoteProductRecord.usage_unit) {
-                                                        if (angular.isArray(quoteProductRecord.product.usage_unit)) {
-                                                            quoteProductRecord.usage_unit = quoteProductRecord.product.usage_unit['label_' + $rootScope.language];
-                                                        } else {
-                                                            quoteProductRecord.usage_unit = quoteProductRecord.usage_unit;
-                                                        }
-                                                    } else {
-                                                        quoteProductRecord.product.usage_unit = quoteProductRecord.usage_unit;
-                                                        quoteProductRecord.product.purchase_price = quoteProductRecord.purchase_price;
-                                                    }
-
-                                                    if (quoteProductRecord.vat_percent == null || !quoteProductRecord.vat_percent) {
-                                                        quoteProductRecord.vat_percent = quoteProductRecord.product.vat_percent;
-                                                    } else {
-                                                        quoteProductRecord.product.vat_percent = quoteProductRecord.vat_percent;
-                                                    }
-
-                                                    if (quoteProductRecord.currency == null || !quoteProductRecord.currency) {
-                                                        if (quoteProductRecord.product.currency && !angular.isObject(quoteProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: quoteProductRecord.product.currency}, true)[0];
-                                                            quoteProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    } else {
-                                                        quoteProductRecord.product.currency = quoteProductRecord.currency;
-                                                        quoteProductRecord.product.unit_price = quoteProductRecord.unit_price;
-                                                    }
-
-                                                }
-
-
-                                                $scope.quoteProducts.push(quoteProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.quoteProductsLoading = false;
-                                        });
-                                });
-
-                            getVatList();
-                        } else if (module === 'sales_orders') {
-                            $scope.orderProductsLoading = true;
-
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.orderProductModule.fields, {name: extraFields[i]}, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-                            ModuleService.getPicklists($scope.orderProductModule)
-                                .then(function (orderProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{
-                                        field: 'sales_order',
-                                        operator: 'equals',
-                                        value: $scope.id
-                                    }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.orderProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.orderProducts = [];
-
-                                            angular.forEach(response.data, function (orderProductRecordData) {
-                                                angular.forEach(orderProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        orderProductRecordData[keyParts[0] + '.' + keyParts[2]] = orderProductRecordData[key];
-                                                        delete orderProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var orderProductRecord = ModuleService.processRecordSingle(orderProductRecordData, $scope.orderProductModule, orderProductModulePicklists);
-
-                                                if (orderProductRecord.product) {
-                                                    if (orderProductRecord.usage_unit == null || !orderProductRecord.usage_unit) {
-                                                        orderProductRecord.usage_unit = orderProductRecord.product.usage_unit['label_' + $rootScope.language];
-                                                    } else {
-                                                        orderProductRecord.product.usage_unit = orderProductRecord.usage_unit;
-                                                        orderProductRecord.product.purchase_price = orderProductRecord.purchase_price;
-                                                    }
-
-                                                    if (orderProductRecord.vat_percent == null || !orderProductRecord.vat_percent) {
-                                                        orderProductRecord.vat_percent = orderProductRecord.product.vat_percent;
-                                                    } else {
-                                                        orderProductRecord.product.vat_percent = orderProductRecord.vat_percent;
-                                                    }
-
-                                                    if (orderProductRecord.currency == null || !orderProductRecord.currency) {
-                                                        if (orderProductRecord.product.currency && !angular.isObject(orderProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: orderProductRecord.product.currency}, true)[0];
-                                                            orderProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    } else {
-                                                        orderProductRecord.product.currency = orderProductRecord.currency;
-                                                        orderProductRecord.product.unit_price = orderProductRecord.unit_price;
-                                                    }
-
-                                                }
-
-                                                $scope.orderProducts.push(orderProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.orderProductsLoading = false;
-                                        });
-                                });
-
-                            getVatList();
-                        } else if (module === 'purchase_orders') {
-                            $scope.purchaseProductsLoading = true;
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.purchaseProductModule.fields, {name: extraFields[i]}, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-                            ModuleService.getPicklists($scope.purchaseProductModule)
-                                .then(function (purchaseProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{
-                                        field: 'purchase_order',
-                                        operator: 'equals',
-                                        value: $scope.id
-                                    }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.purchaseProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.purchaseProducts = [];
-
-                                            angular.forEach(response.data, function (purchaseProductRecordData) {
-                                                angular.forEach(purchaseProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        purchaseProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseProductRecordData[key];
-                                                        delete purchaseProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var purchaseProductRecord = ModuleService.processRecordSingle(purchaseProductRecordData, $scope.purchaseProductModule, purchaseProductModulePicklists);
-
-                                                if (purchaseProductRecord.product) {
-                                                    if (purchaseProductRecord.usage_unit == null || !purchaseProductRecord.usage_unit) {
-                                                        purchaseProductRecord.usage_unit = purchaseProductRecord.product.usage_unit['label_' + $rootScope.language];
-                                                    } else {
-                                                        purchaseProductRecord.product.usage_unit = purchaseProductRecord.usage_unit;
-                                                        purchaseProductRecord.product.purchase_price = purchaseProductRecord.purchase_price;
-                                                    }
-
-                                                    if (purchaseProductRecord.vat_percent == null || !purchaseProductRecord.vat_percent) {
-                                                        purchaseProductRecord.vat_percent = purchaseProductRecord.product.vat_percent;
-                                                    } else {
-                                                        purchaseProductRecord.product.vat_percent = purchaseProductRecord.vat_percent;
-                                                    }
-
-                                                    if (purchaseProductRecord.currency == null || !purchaseProductRecord.currency) {
-                                                        if (purchaseProductRecord.product.currency && !angular.isObject(purchaseProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: purchaseProductRecord.product.currency}, true)[0];
-                                                            purchaseProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    } else {
-                                                        purchaseProductRecord.product.currency = purchaseProductRecord.currency;
-                                                        purchaseProductRecord.product.unit_price = purchaseProductRecord.unit_price;
-                                                    }
-
-                                                }
-
-                                                $scope.purchaseProducts.push(purchaseProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.purchaseProductsLoading = false;
-                                        });
-                                });
-
-                            getVatList();
-                        } else if (module === 'purchase_invoices') {
-                            $scope.purchaseInvoiceProductsLoading = true;
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.purchaseInvoiceProductModule.fields, {name: extraFields[i]}, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-
-                            ModuleService.getPicklists($scope.purchaseInvoiceProductModule)
-                                .then(function (purchaseInvoiceProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{
-                                        field: 'purchase_invoice',
-                                        operator: 'equals',
-                                        value: $scope.id
-                                    }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.purchaseInvoiceProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.purchaseInvoiceProducts = [];
-
-                                            angular.forEach(response.data, function (purchaseInvoiceProductRecordData) {
-                                                angular.forEach(purchaseInvoiceProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        purchaseInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = purchaseInvoiceProductRecordData[key];
-                                                        delete purchaseInvoiceProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var purchaseInvoiceProductRecord = ModuleService.processRecordSingle(purchaseInvoiceProductRecordData, $scope.purchaseInvoiceProductModule, purchaseInvoiceProductModulePicklists);
-
-                                                if (purchaseInvoiceProductRecord.product) {
-                                                    if (purchaseInvoiceProductRecord.usage_unit == null || !purchaseInvoiceProductRecord.usage_unit) {
-                                                        purchaseInvoiceProductRecord.usage_unit = purchaseInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language];
-                                                    } else {
-                                                        purchaseInvoiceProductRecord.product.usage_unit = purchaseInvoiceProductRecord.usage_unit;
-                                                        purchaseInvoiceProductRecord.product.purchase_price = purchaseInvoiceProductRecord.purchase_price;
-                                                    }
-
-                                                    if (purchaseInvoiceProductRecord.vat_percent == null || !purchaseInvoiceProductRecord.vat_percent) {
-                                                        purchaseInvoiceProductRecord.vat_percent = purchaseInvoiceProductRecord.product.vat_percent;
-                                                    } else {
-                                                        purchaseInvoiceProductRecord.product.vat_percent = purchaseInvoiceProductRecord.vat_percent;
-                                                    }
-
-                                                    if (purchaseInvoiceProductRecord.currency == null || !purchaseInvoiceProductRecord.currency) {
-                                                        if (purchaseInvoiceProductRecord.product.currency && !angular.isObject(purchaseInvoiceProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: purchaseInvoiceProductRecord.product.currency}, true)[0];
-                                                            purchaseInvoiceProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    } else {
-                                                        purchaseInvoiceProductRecord.product.currency = purchaseInvoiceProductRecord.currency;
-                                                        purchaseInvoiceProductRecord.product.unit_price = purchaseInvoiceProductRecord.unit_price;
-                                                    }
-
-                                                }
-
-
-                                                $scope.purchaseInvoiceProducts.push(purchaseInvoiceProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.purchaseInvoiceProductsLoading = false;
-                                        });
-                                });
-
-                            getVatList();
-                        } else if (module === 'sales_invoices') {
-                            $scope.salesInvoiceProductsLoading = true;
-                            var extraFields = ['unit_amount', 'separator', 'purchase_price', 'profit_amount', 'profit_percent'];
-                            var additionalFields = [];
-                            for (var i = 0; extraFields.length > i; i++) {
-                                var field = $filter('filter')($scope.salesInvoiceProductModule.fields, {name: extraFields[i]}, true);
-                                if (field.length > 0) {
-                                    additionalFields.push(extraFields[i]);
-                                }
-                            }
-
-                            ModuleService.getPicklists($scope.salesInvoiceProductModule)
-                                .then(function (salesInvoiceProductModulePicklists) {
-                                    var findRequest = {};
-                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
-                                    findRequest.filters = [{
-                                        field: 'sales_invoice',
-                                        operator: 'equals',
-                                        value: $scope.id
-                                    }];
-                                    findRequest.sort_field = 'order';
-                                    findRequest.sort_direction = 'asc';
-                                    findRequest.limit = 1000;
-                                    findRequest.fields = findRequest.fields.concat(additionalFields);
-
-                                    if ($scope.productCurrencyField)
-                                        findRequest.fields.push('product.products.currency');
-
-                                    ModuleService.findRecords($scope.salesInvoiceProductModule.name, findRequest)
-                                        .then(function (response) {
-                                            $scope.salesInvoiceProducts = [];
-
-                                            angular.forEach(response.data, function (salesInvoiceProductRecordData) {
-                                                angular.forEach(salesInvoiceProductRecordData, function (value, key) {
-                                                    if (key.indexOf('.') > -1) {
-                                                        var keyParts = key.split('.');
-
-                                                        salesInvoiceProductRecordData[keyParts[0] + '.' + keyParts[2]] = salesInvoiceProductRecordData[key];
-                                                        delete salesInvoiceProductRecordData[key];
-                                                    }
-                                                });
-
-                                                var salesInvoiceProductRecord = ModuleService.processRecordSingle(salesInvoiceProductRecordData, $scope.salesInvoiceProductModule, salesInvoiceProductModulePicklists);
-
-                                                if (salesInvoiceProductRecord.product) {
-                                                    if (salesInvoiceProductRecord.usage_unit == null || !salesInvoiceProductRecord.usage_unit) {
-                                                        salesInvoiceProductRecord.usage_unit = salesInvoiceProductRecord.product.usage_unit['label_' + $rootScope.language];
-                                                    } else {
-                                                        salesInvoiceProductRecord.product.usage_unit = salesInvoiceProductRecord.usage_unit;
-                                                        salesInvoiceProductRecord.product.purchase_price = salesInvoiceProductRecord.purchase_price;
-                                                    }
-
-                                                    if (salesInvoiceProductRecord.vat_percent == null || !salesInvoiceProductRecord.vat_percent) {
-                                                        salesInvoiceProductRecord.vat_percent = salesInvoiceProductRecord.product.vat_percent;
-                                                    } else {
-                                                        salesInvoiceProductRecord.product.vat_percent = salesInvoiceProductRecord.vat_percent;
-                                                    }
-
-                                                    if (salesInvoiceProductRecord.currency == null || !salesInvoiceProductRecord.currency) {
-                                                        if (salesInvoiceProductRecord.product.currency && !angular.isObject(salesInvoiceProductRecord.product.currency)) {
-                                                            var currencyField = $filter('filter')($scope.productModule.fields, {name: 'currency'}, true)[0];
-                                                            var currencyPicklistItem = $filter('filter')(productModulePicklists[currencyField.picklist_id], {labelStr: salesInvoiceProductRecord.product.currency}, true)[0];
-                                                            salesInvoiceProductRecord.product.currency = currencyPicklistItem;
-                                                        }
-                                                    } else {
-                                                        salesInvoiceProductRecord.product.currency = salesInvoiceProductRecord.currency;
-                                                        salesInvoiceProductRecord.product.unit_price = salesInvoiceProductRecord.unit_price;
-                                                    }
-
-                                                }
-
-
-                                                $scope.salesInvoiceProducts.push(salesInvoiceProductRecord);
-                                            });
-                                        })
-                                        .finally(function () {
-                                            $scope.salesInvoiceProductsLoading = false;
-                                        });
-                                });
-
-                            getVatList();
-                        }
-
-                    });
-            }
 
             ModuleService.getActionButtons($scope.module.id)
                 .then(function (actionButtons) {
@@ -2631,7 +1728,6 @@ angular.module('primeapps')
                 }
             };
 
-
             $scope.$on('$locationChangeStart', function (event) {
                 if ($scope.moduleForm) {
                     if ($scope.moduleForm.$dirty) {
@@ -2667,5 +1763,9 @@ angular.module('primeapps')
                         $scope.loadingDocuments = false;
                     });
             };
+
+            components.run('AfterFormLoaded', 'script', $scope);
+
+
         }
     ]);

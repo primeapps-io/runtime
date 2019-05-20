@@ -3720,6 +3720,13 @@ button:focus, select:focus {
   display: none;
 }
 
+.primeapps .copy-hover .copy-button{
+   visibility: hidden;
+ }
+.primeapps .copy-hover:hover .copy-button{
+  visibility: visible;
+}
+
 .placeholder {
   margin: 0 auto;
   min-height: 50px;

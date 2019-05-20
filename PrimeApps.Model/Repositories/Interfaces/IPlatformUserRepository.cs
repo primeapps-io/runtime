@@ -30,5 +30,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Tenant> GetTenantByEmailAndAppId(string email, int appId);
         Task<int> GetTenantModuleLicenseCount(int tenantId);
         PlatformUser GetByEmail(string email);
+        Task HardCodedUpdateUser(PlatformUser userToEdit);
     }
 }

@@ -154,6 +154,11 @@ angular.module('primeapps')
                 $scope.addNewFiltersModal.$promise.then(function () {
                     $scope.addNewFiltersModal.show();
                 });
+
+                if ($scope.id) {
+                    var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
+                    $scope.module = module;
+                }
             };
 
             $scope.selectedModuleChanged = function (module) {
