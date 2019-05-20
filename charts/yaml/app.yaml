@@ -205,10 +205,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - app.primeapps.io
-      secretName: primeapps-wildcard-ssl
+        - "*.primeapps.app"
+      secretName: primeapps-app-wildcard-ssl
   rules:
-    - host: app.primeapps.io
+    - host: "*.primeapps.app"
       http:
         paths:
           - path: "/"

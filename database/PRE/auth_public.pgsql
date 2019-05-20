@@ -535,6 +535,7 @@ INSERT INTO "public"."ClientGrantTypes" VALUES (3, 2, 'hybrid');
 INSERT INTO "public"."ClientGrantTypes" VALUES (4, 2, 'client_credentials');
 INSERT INTO "public"."ClientGrantTypes" VALUES (5, 3, 'hybrid');
 INSERT INTO "public"."ClientGrantTypes" VALUES (6, 3, 'client_credentials');
+INSERT INTO "public"."ClientGrantTypes" VALUES (7, 2, 'password');
 COMMIT;
 
 -- ----------------------------
@@ -599,7 +600,7 @@ ALTER TABLE "public"."ClientRedirectUris" OWNER TO "postgres";
 -- Records of ClientRedirectUris
 -- ----------------------------
 BEGIN;
-INSERT INTO "public"."ClientRedirectUris" VALUES (1, 1, 'https://app.primeapps.io/signin-oidc');
+INSERT INTO "public"."ClientRedirectUris" VALUES (1, 1, 'https://app.primeapps.app/signin-oidc');
 INSERT INTO "public"."ClientRedirectUris" VALUES (2, 2, 'https://studio.primeapps.io/signin-oidc');
 INSERT INTO "public"."ClientRedirectUris" VALUES (3, 3, 'https://preview.primeapps.io/signin-oidc');
 COMMIT;
