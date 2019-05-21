@@ -9,7 +9,6 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
-using PrimeApps.Studio.Storage;
 using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio
@@ -53,7 +52,6 @@ namespace PrimeApps.Studio
             }
 
             services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
@@ -76,11 +74,14 @@ namespace PrimeApps.Studio
             services.AddScoped<ActionButtonHelper, ActionButtonHelper>(); //What the fuck!
             services.AddScoped<Email, Email>(); //What the fuck!
             services.AddScoped<Warehouse, Warehouse>(); //What the fuck!
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddScoped<IReportHelper, ReportHelper>();
+            services.AddScoped<IPublishHelper, Helpers.PublishHelper>();
+
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<IHistoryHelper, HistoryHelper>();
             services.AddSingleton<IWebSocketHelper, WebSocketHelper>();
-            services.AddSingleton<IPublishHelper, Helpers.PublishHelper>();
         }
     }
 }

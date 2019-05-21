@@ -48,14 +48,19 @@ namespace PrimeApps.Studio.Helpers
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                var studioDbContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var deploymentRepository = new DeploymentRepository(databaseContext, _configuration))
-                using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
+                using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
+                using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
                 {
-                    appDraftRepository.CurrentUser = deploymentRepository.CurrentUser = _currentUser;
+                    deploymentRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = deploymentRepository.CurrentUser = _currentUser;
+
+                    var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
                     var app = await appDraftRepository.Get(appId);
+                    var studioApp = await platformRepository.AppGetByName(studioClientId);
 
                     var contractResolver = new DefaultContractResolver
                     {
@@ -68,8 +73,7 @@ namespace PrimeApps.Studio.Helpers
                         Formatting = Formatting.Indented,
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
-
-                    var result = await Model.Helpers.PublishHelper.Create(JObject.Parse(appString), clearAllRecords, dbName, version, deploymentId, _configuration);
+                    var result = await Model.Helpers.PublishHelper.Create(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, deploymentId, _configuration);
                     var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment != null)

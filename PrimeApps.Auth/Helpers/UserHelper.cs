@@ -48,8 +48,21 @@ namespace PrimeApps.Auth.Helpers
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
         }
 
+        public async Task<bool> IsUserExist(string email)
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                return await userManager.FindByNameAsync(email) != null;
+            }
+        }
+
         public async Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel, string domain)
         {
+            if (await IsUserExist(userModel.Email))
+                return null;
+
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -124,12 +137,12 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				{
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration)) //, cacheHelper))
+                {
                     var result = await _platformUserRepository.CreateUser(user);
                     if (result != 0)
                     {
-                        var platformUser =  await _platformUserRepository.GetWithTenants(userModel.Email);
+                        var platformUser = await _platformUserRepository.GetWithTenants(userModel.Email);
                         return platformUser;
                     }
 
@@ -207,9 +220,9 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				{
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration)) //, cacheHelper))
+                using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration)) //, cacheHelper))
+                {
                     var tenant = await _tenantRepository.GetAsync(tenantId);
                     var platformUser = await _platformUserRepository.GetWithTenants(user.Email);
 

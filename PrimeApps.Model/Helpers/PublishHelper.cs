@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Helpers
 
     public class PublishHelper
     {
-        public static async Task<bool> Create(JObject app, bool clearAllRecords, string dbName, int version, int deploymentId, IConfiguration configuration)
+        public static async Task<bool> Create(JObject app, string studioSecret, bool clearAllRecords, string dbName, int version, int deploymentId, IConfiguration configuration)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
@@ -46,43 +46,35 @@ namespace PrimeApps.Model.Helpers
 
             try
             {
-                File.AppendAllText(path, DateTime.Now + " : Publish starting..." + Environment.NewLine);
-                File.AppendAllText(path, DateTime.Now + " : Database sql generating..." + Environment.NewLine);
-                //tw.WriteLine("Publish starting...");
-                //tw.WriteLine("Database sql generating...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : " + "\u001b[92m" + "Publish starting..." + "\u001b[39m" + Environment.NewLine);
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database sql generating..." + Environment.NewLine);
+
                 //await wSocket.SendAsync(CreateWSMessage("Database sql generating"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 var sqlDump = PublishHelper.GetSqlDump(PDEConnectionString, Location.PDE, dbName);
 
                 if (string.IsNullOrEmpty(sqlDump))
-                    File.AppendAllText(path, DateTime.Now + " : Unhandle exception. While creating sql dump script." + Environment.NewLine);
-                //tw.WriteLine("Unhandle exception. While creating sql dump script.");
+                    File.AppendAllText(path, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
 
-                File.AppendAllText(path, DateTime.Now + " : Restoring your database..." + Environment.NewLine);
-                //tw.WriteLine("Restoring your database...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." + Environment.NewLine);
                 //await wSocket.SendAsync(CreateWSMessage("Restoring your database"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 var restoreResult = PublishHelper.RestoreDatabase(PREConnectionString, sqlDump, Location.PRE, dbName);
 
-                if (!restoreResult)
-                    File.AppendAllText(path, DateTime.Now + " : Unhandle exception. While restoring your database." + Environment.NewLine);
-                //tw.WriteLine("Unhandle exception. While restoring your database.");
+               if (!restoreResult)
+                    File.AppendAllText(path, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While restoring your database." + "\u001b[39m" + Environment.NewLine);
 
-                File.AppendAllText(path, DateTime.Now + " : System tables clearing..." + Environment.NewLine);
-                //tw.WriteLine("System tables clearing...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : System tables clearing..." + Environment.NewLine);
                 //await wSocket.SendAsync(CreateWSMessage("System tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.CleanUpSystemTables(PREConnectionString, Location.PRE, dbName);
 
-                File.AppendAllText(path, DateTime.Now + " : Dynamic tables clearing..." + Environment.NewLine);
-                //tw.WriteLine("Dynamic tables clearing...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Dynamic tables clearing..." + Environment.NewLine);
                 //await wSocket.SendAsync(CreateWSMessage("Dynamic tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.CleanUpTables(PREConnectionString, Location.PRE, dbName, clearAllRecords ? null : new JArray());
 
-                File.AppendAllText(path, DateTime.Now + " : Records are marking as sample..." + Environment.NewLine);
-                //tw.WriteLine("Records are marking as sample...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Records are marking as sample..." + Environment.NewLine);
                 //await wSocket.SendAsync(CreateWSMessage("Records are marking as sample"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetRecordsIsSample(PREConnectionString, Location.PRE, dbName);
 
-                File.AppendAllText(path, DateTime.Now + " : Editing your records..." + Environment.NewLine);
-                //tw.WriteLine("Final arrangements being made...");
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Editing your records..." + Environment.NewLine);
                 //await wSocket.SendAsync(CreateWSMessage("Final arrangements being made"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetAllUserFK(PREConnectionString, Location.PRE, dbName);
 
@@ -96,8 +88,7 @@ namespace PrimeApps.Model.Helpers
                 //await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                 //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
 
-
-                File.AppendAllText(path, DateTime.Now + " : Final arrangements being made..." + Environment.NewLine);
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Final arrangements being made..." + Environment.NewLine);
                 var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
                 var secretEncrypt = CryptoHelper.Encrypt(secret);
                 PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt);
@@ -106,21 +97,18 @@ namespace PrimeApps.Model.Helpers
                 {
                     var dict = new Dictionary<string, string>
                     {
-                        {"grant_type", "client_credentials"},
-                        {"username", "bc@primeapps.io"},
-                        {"password", "123456"},
-                        {"scope", "api1"},
+                        {"grant_type", "password"},
+                        {"username", "integration@primeapps.io"},
+                        {"password", studioSecret},
                         {"client_id", "primeapps_studio"},
-                        {"client_secret", "secret"}
+                        {"client_secret", studioSecret}
                     };
-                    
 
                     var authUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
 
-
-                    var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
+                    var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
                     var res = await httpClient.SendAsync(req);
-                   
+
                     if (res.IsSuccessStatusCode)
                     {
                         var resp = await res.Content.ReadAsStringAsync();
@@ -161,7 +149,7 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
 
-                File.AppendAllText(path, DateTime.Now + " : Done..." + Environment.NewLine);
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : " + "\u001b[92m" + "Done..." + "\u001b[39m" + Environment.NewLine);
 
                 return true;
             }
@@ -554,7 +542,7 @@ namespace PrimeApps.Model.Helpers
         {
             var sqls = new JArray
             {
-                $"INSERT INTO \"public\".\"apps\"(\"id\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"name\", \"label\", \"description\", \"logo\", \"use_tenant_settings\", \"app_draft_id\", \"secret\") VALUES (" + app["id"] + ", 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff",  CultureInfo.InvariantCulture) + "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" + app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
+                $"INSERT INTO \"public\".\"apps\"(\"id\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"name\", \"label\", \"description\", \"logo\", \"use_tenant_settings\", \"app_draft_id\", \"secret\") VALUES (" + app["id"] + ", 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" + app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
                 $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" + app["id"] + ", " + (!string.IsNullOrEmpty(app["setting"]["app_domain"].ToString()) ? "'" + app["setting"]["app_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_domain"].ToString()) ? "'" + app["setting"]["auth_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", 2, '" + app["setting"]["enable_registration"].ToString().Substring(0, 1).ToLower() + "');"
             };
 
