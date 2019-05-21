@@ -9,7 +9,7 @@ namespace PrimeApps.Studio.Helpers
         static Kubernetes client = new Kubernetes(config);
 
         /*Creates ingress for new deployments. */
-        static void CreateIngress(string host, string appName, bool external = false, bool useLetsEncrypt = true, bool customDomain = false, string tlsSecretName = null)
+        static void CreateIngress(string host, string appName)
         {
             var ingress = new k8s.Models.Extensionsv1beta1Ingress()
             {
@@ -45,16 +45,8 @@ namespace PrimeApps.Studio.Helpers
 
             };
 
-            if (useLetsEncrypt)
-            {
-                ingress.Metadata.Annotations.Add("certmanager.k8s.io/cluster-issuer", "letsencrypt-prod");
-            }
 
-            ingress.Spec.Tls.Add(new k8s.Models.Extensionsv1beta1IngressTLS()
-            {
-                Hosts = new List<string>() { host },
-                SecretName = "primeapps-wildcard-ssl" //TODO: Replace with actual value.
-            });
+            ingress.Metadata.Annotations.Add("certmanager.k8s.io/cluster-issuer", "letsencrypt-prod");
 
             client.CreateNamespacedIngress(ingress, "primeapps");
         }
