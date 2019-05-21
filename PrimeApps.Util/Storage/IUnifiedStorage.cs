@@ -14,6 +14,7 @@ namespace PrimeApps.Util.Storage
         Task AbortMultipartUpload(string bucket, string key, string uploadId);
         Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId);
         Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket, string destinationKey);
+        Task CopyBucket(string sourceBucket, string destinationBucket);
         Task CreateBucketIfNotExists(string bucket);
         Task DeleteBucket(string bucket);
         Task<DeleteObjectResponse> DeleteObject(string bucket, string key);

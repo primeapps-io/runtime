@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace PrimeApps.Util.Storage
 {
@@ -430,6 +431,22 @@ namespace PrimeApps.Util.Storage
                 DestinationKey = destinationKey
             };
             return await _client.CopyObjectAsync(request);
+        }
+
+        /// <summary>
+        /// Copies buckets with all objects.
+        /// </summary>
+        /// <param name="sourceBucket"></param>
+        /// <param name="destinationBucket"></param>
+        /// <param name="isRecursive"></param>
+        public async Task CopyBucket(string sourceBucket, string destinationBucket)
+        {
+            await CreateBucketIfNotExists(destinationBucket);
+            var listOfObjects = await _client.ListObjectsAsync(sourceBucket);
+            foreach (var obj in listOfObjects.S3Objects)
+            {
+                await CopyObject(sourceBucket, obj.Key, destinationBucket, obj.Key);
+            }
         }
 
         /// <summary>
