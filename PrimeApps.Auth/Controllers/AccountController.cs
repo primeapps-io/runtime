@@ -494,7 +494,7 @@ namespace PrimeApps.Auth.UI
         }
 
         [Route("api/account/create"), HttpPost]
-        public async Task<IActionResult> Create(CreateAccountBindingModel model)
+        public async Task<IActionResult> Create([FromBody]CreateAccountBindingModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -514,6 +514,7 @@ namespace PrimeApps.Auth.UI
                     TimeZone = app.Setting.TimeZone,
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                    RegistrationType = RegistrationType.Tenant
                 }
             };
 
