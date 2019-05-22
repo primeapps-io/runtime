@@ -129,7 +129,9 @@
 		"CanNotSendToProcess": "One of your entry is under the minimum daily working time ({{minSaat}} hours). Please submit at least {{minSaat}} hours per day.",
 		"BankAndCaseChosen": "Please select only one of the bank and the cash.",
 		"ChooseBankOrCase": "Please select a bank or cash.",
-		"Settings": "Settings"
+		"Settings": "Settings",
+		"Welcome": "Welcome",
+		"DashletMessage": "There is no dashlet to display here."
 	},
   "Auth": {
     "Email": "E-Mail",
