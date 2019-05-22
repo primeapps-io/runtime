@@ -81,7 +81,7 @@
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
     var customLanguage = '@appInfo.Language';
     var multiLanguage = ('@appInfo.MultiLanguage' !== 'False');
-    var appLogo = '@appInfo.Logo';
+    var appLogo = '@Html.Raw(appInfo.Logo)';
     var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
     var blobUrl = '@blobUrl';
     var tenantId = '@tenantId';
