@@ -50,9 +50,14 @@ namespace PrimeApps.App.Controllers
                 return BadRequest();
 
             var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+            var guidId = (Guid)request["guid_id"];
+            var appId = (int)request["app_id"];
+            var language = request["tenant_language"].ToString();
 
-            Queue.QueueBackgroundWorkItem(token =>
-                _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
+            await _documentHelper.UploadSampleDocuments(guidId, appId, language);
+
+            //Queue.QueueBackgroundWorkItem(token =>
+            //    _documentHelper.UploadSampleDocuments(guidId, appId, language));
 
             if (!string.IsNullOrEmpty(request["code"].ToString()) &&
                 (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
