@@ -28,9 +28,8 @@
     </style>
     <div class="col-sm-offset-3 col-sm-6" ng-if="!dashletMode && dashlets.length < 1 ">
         <img class="width100" style="padding-top:50px;padding-bottom: 30px" src="images/dashboard.svg">
-        <div style="text-align: center;"><label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;">Welcome {{user.full_name}}</label></div>
-        <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;">There is no dashlet to display here.
-        </label></div>
+        <div style="text-align: center;"><label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;"> {{ language === 'en' ? ('Common.Welcome' | translate)+' '+ user.full_name : user.full_name +' '+('Common.Welcome' | translate) }}</label></div>
+        <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;">{{'Common.DashletMessage' | translate}}</label></div>
         <!--<div style="text-align: center;margin: 15px;">-->
         <!--<a href="https://www.primeapps.io/platform/tutorials" style="border:none; padding: 9px 20px; font-size: 14px;" class="roundbutton">-->
         <!--Add New Dashlet-->
