@@ -131,7 +131,6 @@ namespace PrimeApps.App.Controllers
 		{
 			//get user to start modification.
 			PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
-			_userRepository.TenantId = AppUser.AppId;
 			User tenantUserToEdit = await _userRepository.GetById(AppUser.Id);
 
 			if (user.picture != tenantUserToEdit.Picture && user.picture != null)
