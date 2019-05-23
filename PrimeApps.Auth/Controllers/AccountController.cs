@@ -499,7 +499,16 @@ namespace PrimeApps.Auth.UI
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var app = await _applicationRepository.GetByNameAsync(model.AppName);
+            var client = await _clientStore.FindClientByIdAsync(model.ClientId);
+            var secret = new Secret(model.ClientSecret.Sha256());
+
+            if (client == null || !client.ClientSecrets.Any(x => x.Value == secret.Value))
+                return BadRequest();
+
+            var app = await _applicationRepository.GetByNameAsync(model.ClientId);
+
+            if (app == null)
+                return BadRequest();
 
             var application = new ApplicationInfoViewModel()
             {
@@ -507,6 +516,7 @@ namespace PrimeApps.Auth.UI
                 Name = app.Name,
                 Language = model.Language ?? app.Setting.Language,
                 Domain = app.Setting.AppDomain,
+                Secret = app.Secret,
                 ApplicationSetting = new ApplicationSettingViewModel
                 {
                     Culture = model.Culture ?? app.Setting.Culture,

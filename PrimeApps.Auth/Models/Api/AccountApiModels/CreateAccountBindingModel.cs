@@ -11,7 +11,7 @@ namespace PrimeApps.Auth.UI
     {
         [Required, JsonProperty("email")]
         public string Email { get; set; }
-        
+
         [JsonProperty("send_activation")]
         public bool SendActivation { get; set; }
 
@@ -23,9 +23,6 @@ namespace PrimeApps.Auth.UI
         [JsonProperty("culture")]
         public string Culture { get; set; }
 
-        [JsonProperty("app_name")]
-        public string AppName { get; set; }
-
         [JsonProperty("first_name")]
         public string FirstName { get; set; }
 
@@ -34,5 +31,11 @@ namespace PrimeApps.Auth.UI
 
         [JsonProperty("language")]
         public string Language { get; set; }
+
+        [JsonProperty("client_id")]
+        public string ClientId { get; set; }
+
+        [JsonProperty("client_secret")]
+        public string ClientSecret { get; set; }
     }
 }
