@@ -48,6 +48,7 @@ angular.module('primeapps')
             $scope.customHide = false;
             $scope.googleMapsApiKey = googleMapsApiKey;
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
+            #scope.scriptRunning = {};
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });

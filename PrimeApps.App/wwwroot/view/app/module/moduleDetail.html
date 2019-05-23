@@ -218,7 +218,8 @@
                                         </li>
                                         <li class="pull-right">
                                             <button class="{{custombutton.css_class}}" type="button"
-                                                    custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
+                                                    custom-scripting="{{custombutton.template}}" data-spinner-color="#666"
+                                                    ladda="scriptRunning[custombutton.id]"
                                                     ng-repeat="custombutton in actionButtons"
                                                     ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
