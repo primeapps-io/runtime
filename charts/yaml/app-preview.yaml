@@ -30,6 +30,7 @@ data:
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   PreviewClient: "primeapps_preview"
   SentryDsn: "https://9f004ecf59ff428a8a980b8684ca8aa4:b2332eb76fca4866b48d421dad70ea5c@log.primeapps.io/5"
+  StudioUrl: "https://studio.primeapps.io"
 ---
 kind: Deployment
 apiVersion: apps/v1

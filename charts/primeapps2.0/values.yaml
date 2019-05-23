@@ -215,6 +215,7 @@ appPre:
       PreviewMode: "tenant"
       GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
       PreviewClient: "primeapps_preview"
+      StudioUrl: "https://studio.primeapps.io"
     Sentry:
       Dsn: "https://73b84b2ef20e41c98a675608caa9d104:d4e70924ec284e38a4b6be717ed1b28e@log.primeapps.io/3"
   resources: {}
