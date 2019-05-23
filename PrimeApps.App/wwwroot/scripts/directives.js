@@ -1107,8 +1107,8 @@ angular.module('primeapps')
             });
         }])
 
-    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config', '$filter', 'blockUI',
-        function ($timeout, ngToast, ModuleService, $modal, $http, config, $filter, blockUI) {
+    .directive('customScripting', ['$timeout', 'ngToast', '$http',
+        function ($timeout, ngToast, $http) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
@@ -1127,15 +1127,22 @@ angular.module('primeapps')
                         };
 
                         try {
-                            scope.running = true;
-
                             $timeout(function () {
                                 var customScript = attrs['customScripting'];
-                                eval(customScript);
+
+                                if (customScript.lastIndexOf('http', 0) === 0) {
+                                    $http.get(customScript)
+                                        .then(function (response) {
+                                            eval(response.data);
+                                        });
+                                }
+                                else {
+                                    eval(customScript);
+                                }
                             });
                         }
                         catch (e) {
-                            scope.running = false;
+                            scope.$parent.$parent.scriptRunning[scope.$parent.custombutton.id] = false;
                             return null;
                         }
                     });
