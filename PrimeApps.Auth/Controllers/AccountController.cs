@@ -499,7 +499,6 @@ namespace PrimeApps.Auth.UI
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var tenantId = 0;
             var app = await _applicationRepository.GetByNameAsync(model.AppName);
 
             var application = new ApplicationInfoViewModel()
@@ -533,10 +532,12 @@ namespace PrimeApps.Auth.UI
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
 
-            if (createUserRespone["tenantId"] != null)
-                tenantId = (int)createUserRespone["tenantId"];
+            var response = new JObject();
 
-            return Ok("TenantId:" + tenantId);
+            if (createUserRespone["tenantId"] != null)
+                response["tenant_id"] = (int)createUserRespone["tenantId"];
+
+            return Ok(response);
         }
 
         [HttpGet]
