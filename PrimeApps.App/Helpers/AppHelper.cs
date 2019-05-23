@@ -46,7 +46,7 @@ namespace PrimeApps.App.Helpers
 							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
 						}
 						var appSettings = JObject.Parse(content);
-						if (appSettings != null)
+						if (appSettings != null && appSettings["app_theme"] != null)
 						{
 							app.Setting.AppTheme = (string)appSettings["app_theme"];
 						}

@@ -67,7 +67,7 @@ namespace PrimeApps.Auth.UI
 							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
 						}
 						appSettings = JObject.Parse(content);
-						if (appSettings != null)
+						if (appSettings != null && appSettings["auth_theme"] != null)
 						{
 							app.Setting.AuthTheme = (string)appSettings["auth_theme"];
 						}
