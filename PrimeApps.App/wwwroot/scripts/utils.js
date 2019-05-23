@@ -179,16 +179,16 @@ angular.module('primeapps')
 
                         $timeout(function () {
 
-                                if (callType === 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
-                                    soundPlay('DialSound', 'pause');
-                                    soundPlay('BusySound', 'play');
+                            if (callType === 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
+                                soundPlay('DialSound', 'pause');
+                                soundPlay('BusySound', 'play');
 
-                                    if (callType == 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
-                                        $rootScope.sipUser.lineInfo.PhoneStatus = response.reason_phrase;
-                                        $rootScope.sipUser.lineInfo.State = 'Reject';
-                                    }
+                                if (callType == 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
+                                    $rootScope.sipUser.lineInfo.PhoneStatus = response.reason_phrase;
+                                    $rootScope.sipUser.lineInfo.State = 'Reject';
                                 }
                             }
+                        }
                         );
                     }
                 });
@@ -303,7 +303,7 @@ angular.module('primeapps')
                     limit: 1,
                     offset: 0
                 };
-                 
+
                 findRequest.filters.push({
                     field: fieldName,
                     operator: 'contains',
@@ -558,7 +558,7 @@ angular.module('primeapps')
     .factory('helper', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache',
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache) {
             return {
-                SnakeToCamel: function(data, depth) {
+                SnakeToCamel: function (data, depth) {
 
                     function _processKeys(obj, processer, depth) {
                         if (depth === 0 || !angular.isObject(obj)) {
@@ -1422,23 +1422,23 @@ angular.module('primeapps')
                 var template = {
                     excel: '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
                     excelML: '<?xml version="1.0"?>'
-                    + '<?mso-application progid="Excel.Sheet"?>'
-                    + '<ss:Workbook xmlns:="urn:schemas-microsoft-com:office:spreadsheet" '
-                    + 'xmlns:o="urn:schemas-microsoft-com:office:office" '
-                    + 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
-                    + 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" '
-                    + 'xmlns:html="http://www.w3.org/TR/REC-html40">'
-                    + '<ss:Styles>'
-                    + '<ss:Style ss:ID="1">'
-                    + '<ss:Font ss:Bold="1"/>'
-                    + '</ss:Style>'
-                    + '</ss:Styles>'
-                    + '<ss:Worksheet ss:Name="Sheet1">'
-                    + '<ss:Table>'
-                    + '{columns}{rows}'
-                    + '</ss:Table>'
-                    + '</ss:Worksheet>'
-                    + '</ss:Workbook>',
+                        + '<?mso-application progid="Excel.Sheet"?>'
+                        + '<ss:Workbook xmlns:="urn:schemas-microsoft-com:office:spreadsheet" '
+                        + 'xmlns:o="urn:schemas-microsoft-com:office:office" '
+                        + 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
+                        + 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" '
+                        + 'xmlns:html="http://www.w3.org/TR/REC-html40">'
+                        + '<ss:Styles>'
+                        + '<ss:Style ss:ID="1">'
+                        + '<ss:Font ss:Bold="1"/>'
+                        + '</ss:Style>'
+                        + '</ss:Styles>'
+                        + '<ss:Worksheet ss:Name="Sheet1">'
+                        + '<ss:Table>'
+                        + '{columns}{rows}'
+                        + '</ss:Table>'
+                        + '</ss:Worksheet>'
+                        + '</ss:Workbook>',
                     rowOpen: "<ss:Row>",
                     rowClose: "</ss:Row>",
                     dataOpenString: '<ss:Data ss:Type="String">',
@@ -1526,24 +1526,53 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams',
-        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams) {
+    .factory('components', ['$filter', '$q', '$http',
+        function ($filter, $q, $http) {
             return {
                 run: function (place, type, scope, record, field) {
-                    var ModuleService = $injector.get('ModuleService');
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
-                    
-                    var components = $filter('orderBy')($filter('filter')(scope.module.components, function (component) {
+
+                    var components = $filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
-                    }, true), 'order');
-                    if(components){
+                    }, true)
+
+                    components = $filter('orderBy')(components, 'order');
+
+                    if (components && components.length > 0) {
+                        var promises = [];
+
                         for (var i = 0; i < components.length; i++) {
                             var component = components[i];
-                            eval(component.content);
+
+                            if (component.content.lastIndexOf('http', 0) === 0)
+                                promises.push($http.get(component.content));
+                        }
+
+                        var runScripts = function () {
+                            for (var i = 0; i < components.length; i++) {
+                                var component = components[i];
+                                eval(component.content);
+                            }
+                        };
+
+                        if (promises.length > 0) {
+                            $q.all(promises)
+                                .then(function (responses) {
+                                    for (var i = 0; i < responses.length; i++) {
+                                        var response = responses[i];
+
+                                        var currentComponent = $filter('filter')(scope.module.components, { content: response.config.url }, true)[0];
+                                        currentComponent.content = response.data;
+                                    }
+
+                                    runScripts();
+                                });
+                        }
+                        else {
+                            runScripts();
                         }
                     }
-                   
                 }
             }
         }]);
