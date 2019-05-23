@@ -1,6 +1,6 @@
 <div style="margin-bottom: 10px;" class="pull-right" ng-init="scriptRunning = {}; webhookRequesting = {};">
     <div style="display: inline-block"
-        ng-repeat="custombutton in $parent.relationActionButtons | filter:{module_name:$parent.$parent.relatedModule.related_module}">
+        ng-repeat="custombutton in $parent.relationActionButtons | filter:{module_name:$parent.$parent.relatedModule.related_module} track by custombutton.id">
         <button class="{{custombutton.css_class}}" type="button" custom-scripting="{{custombutton.template}}"
             data-spinner-color="#666" 
             ladda="scriptRunning[custombutton.id]"

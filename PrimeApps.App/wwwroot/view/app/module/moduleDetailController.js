@@ -2126,16 +2126,18 @@ angular.module('primeapps')
                         ModuleService.getActionButtons(module.id)
                             .then(function (actionButtons) {
                                 if (actionButtons.length > 0) {
-                                    var relationActionButton = $filter('filter')(actionButtons, function (actionButton) {
+                                    var relationActionButtons = $filter('filter')(actionButtons, function (actionButton) {
                                         return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'List';
-                                    }, true)[0];
+                                    }, true);
 
-                                    if (relationActionButton) {
-                                        relationActionButton.module_name = module.name;
-                                        $scope.relationActionButtons.push(relationActionButton);
-                                        relationButtonIsShown(relationActionButton);
+                                    if (relationActionButtons) {
+                                        for (var j = 0; j < relationActionButtons.length; j++) {
+                                            var relationActionButton = relationActionButtons[j];
+                                            relationActionButton.module_name = module.name;
+                                            $scope.relationActionButtons.push(relationActionButton);
+                                            relationButtonIsShown(relationActionButton);
+                                        }
                                     }
-
                                 }
                             });
                     }
