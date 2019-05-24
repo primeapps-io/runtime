@@ -1198,8 +1198,7 @@ angular.module('primeapps')
                     $scope.recordId = response.id;
                     
                     components.run('BeforeFormSubmitResult', 'Script', $scope,response);
-                    
-                   $scope.success = function success() {
+                   $scope.success = function() {
                         var params = {type: $scope.type, id: response.id};
                         if ($scope.saveAndNew) {
                             $scope.record = {};
@@ -1338,7 +1337,8 @@ angular.module('primeapps')
 
                         }
                         $scope.izinTuruData = null;
-                    }
+                    };
+                    $scope.success();
                 }
 
                 function error(data, status) {
