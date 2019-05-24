@@ -284,6 +284,7 @@ angular.module('primeapps')
 
 
             $scope.showEditModal = function (tab, field) {
+                $scope.focusPlace = field;
                 $scope.acitveTab = tab;
                 $scope.formModal = $scope.formModal ||
                     $modal({
