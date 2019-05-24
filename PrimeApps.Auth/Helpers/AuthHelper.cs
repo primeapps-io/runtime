@@ -42,7 +42,7 @@ namespace PrimeApps.Auth.UI
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;
             }
 
-            var clientId = GetClientId(returnUrl);
+            var clientId = GetQueryValue(returnUrl, "client_id");
 
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
@@ -51,10 +51,10 @@ namespace PrimeApps.Auth.UI
 
             if (preview)
             {
-                var previewAppId = GetPreviewAppId(returnUrl);
+                var previewAppId = GetQueryValue(returnUrl, "preview_app_id");
 
                 var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-                if (!string.IsNullOrEmpty(studioUrl) && previewAppId != 0)
+                if (!string.IsNullOrEmpty(studioUrl) && !string.IsNullOrEmpty(previewAppId))
                 {
                     using (var httpClient = new HttpClient())
                     {
@@ -119,8 +119,7 @@ namespace PrimeApps.Auth.UI
         {
             return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
         }
-
-        public static string GetClientId(string url)
+        public static string GetQueryValue(string url, string parameter)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new Exception("Url cannot be null.");
@@ -131,28 +130,12 @@ namespace PrimeApps.Auth.UI
                 returnUrl = "http://url.com" + returnUrl;
 
             var uri = new Uri(returnUrl);
-            var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
+            var value = HttpUtility.ParseQueryString(uri.Query).Get(parameter);
 
-            return clientId;
-        }
+            if (!string.IsNullOrEmpty(value))
+                return value;
 
-        public static int GetPreviewAppId(string url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new Exception("Url cannot be null.");
-
-            var returnUrl = HttpUtility.UrlDecode(url);
-
-            if (!returnUrl.StartsWith("http://") || !returnUrl.StartsWith("https://"))
-                returnUrl = "http://url.com" + returnUrl;
-
-            var uri = new Uri(returnUrl);
-            var appId = HttpUtility.ParseQueryString(uri.Query).Get("preview_app_id");
-
-            if (!string.IsNullOrEmpty(appId))
-                return int.Parse(appId);
-
-            return 0;
+            return null;
         }
 
         public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)

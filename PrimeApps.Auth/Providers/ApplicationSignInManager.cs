@@ -26,7 +26,7 @@ namespace PrimeApps.Auth.Providers
         }
         public override async Task<SignInResult> PasswordSignInAsync(string email, string password, bool isPersistent, bool shouldLockout)
         {
-            var clientId = AuthHelper.GetClientId(HttpUtility.ParseQueryString(_context.HttpContext.Request.QueryString.Value).Get("returnUrl"));
+            var clientId = AuthHelper.GetQueryValue(HttpUtility.ParseQueryString(_context.HttpContext.Request.QueryString.Value).Get("returnUrl"), "client_id");
             var applicationRepository = (IApplicationRepository)_context.HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
             var application = await applicationRepository.GetByNameAsync(clientId);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;

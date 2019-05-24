@@ -841,7 +841,7 @@ namespace PrimeApps.Auth.UI
 
             if (user != null)
             {
-                var clientId = AuthHelper.GetClientId(result.Properties.Items["returnUrl"]);
+                var clientId = AuthHelper.GetQueryValue(result.Properties.Items["returnUrl"], "client_id");
                 var model = new RegisterInputModel();
                 model.FirstName =
                     result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname");
