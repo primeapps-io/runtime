@@ -229,8 +229,8 @@ namespace PrimeApps.Studio.Controllers
 					{
 						allMenus = allMenusCopy;
 					}
-					
-					foreach (var menuItem in allMenus) 
+
+					foreach (var menuItem in allMenus)
 					{
 						if (menuItem.ProfileId != (int)defaultMenu["profile_id"])
 						{
@@ -356,89 +356,40 @@ namespace PrimeApps.Studio.Controllers
 
 			for (int i = 0; i < ((JArray)request["module"]).Count; i++)
 			{
-				//creating Label
-				//If does not have items, its main Menu 
-				// step 1
-				if (((JArray)request["module"][i]["nodes"]).Count > 0)
+				//isDynamic -> true ise kullanıcının create ettiği modüldür
+				var moduleEntity = (bool)request["module"][i]["isDynamic"] ? await _moduleRepository.GetByName(request["module"][i]["menuName"].ToString()) : null;//string.IsNullOrWhiteSpace(request["module"][i]["nodes"][j]["route"].ToString()) ?
+																																								   //Gelen module'de oalbilir
+				menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null);
+				var result = await _menuRepository.CreateMenuItems(menuItem);
+
+				if (result < 1)
+					throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+				var parent = menuItem;
+				for (int j = 0; j < ((JArray)request["module"][i]["nodes"]).Count; j++)
 				{
-					//step 1.1 helper
-					menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, null, null);
-					var result = await _menuRepository.CreateMenuItems(menuItem);
-
-					if (result < 1)
-						throw new HttpResponseException(HttpStatusCode.InternalServerError);
-					
-					var parent = menuItem;
-
-					for (int j = 0; j < ((JArray)request["module"][i]["nodes"]).Count; j++)
+					if ((int)request["module"][i]["nodes"][j]["id"] < 1)
 					{
-						 //await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
-											   //İlk defa create edilecek menuItemslar için
-						if ((int)request["module"][i]["nodes"][j]["id"] < 1)
-						{
-							var moduleEntity =
-								string.IsNullOrWhiteSpace(request["module"][i]["nodes"][j]["route"].ToString())? await _moduleRepository.GetByName(request["module"][i]["nodes"][j]["menuName"].ToString()): null;
-							// parent =  await _menuRepository.GetMenuItemIdByName(request["module"][i]["name"].ToString(), menuItem.MenuId);
-							// step 1.2 helper
-							menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["nodes"][j], menu, moduleEntity, parent);
+						moduleEntity = (bool)request["module"][i]["nodes"][j]["isDynamic"] ? await _moduleRepository.GetByName(request["module"][i]["nodes"][j]["menuName"].ToString()) : null;//string.IsNullOrWhiteSpace(request["module"][i]["nodes"][j]["route"].ToString()) ?
+						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i]["nodes"][j], menu, moduleEntity, parent);
 
-							result = await _menuRepository.CreateMenuItems(menuItem);
+						result = await _menuRepository.CreateMenuItems(menuItem);
 
-							if (result < 1)
-								throw new HttpResponseException(HttpStatusCode.InternalServerError);
-						}
-						//Parent create edilip, daha önceden eklenmiş olan moduller bu parent altına eklenmişse update edilecek
-						else
-						{
-							//ParentId'sini güncelliyoruz
-							request["module"][i]["nodes"][j]["parentId"] = parent.Id;
-							menuItem = await _menuRepository.GetMenuItemsById((int)request["module"][i]["nodes"][j]["id"]);
-							if (menuItem == null)
-								return NotFound();
-							menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem);
-							await _menuRepository.UpdateMenuItem(menuItem);
-						}
+						if (result < 1)
+							throw new HttpResponseException(HttpStatusCode.InternalServerError);
 					}
-				}
-
-				//step 2 if user added chield module than created
-				else if ((int)request["module"][i]["parentId"] > 0)
-				{
-					//module->request["module"][i]["menuName"].ToString()
-					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString())
-						? await _moduleRepository.GetByName(request["module"][i]["menuName"].ToString())
-						: null;
-					menu = await _menuRepository.GetByProfileId((int)request["profileId"]);
-					//step 2.1 helper
-					menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null);
-					var result = await _menuRepository.CreateMenuItems(menuItem);
-
-					if (result < 1)
-						throw new HttpResponseException(HttpStatusCode.InternalServerError);
-				}
-
-				//step 3 module and if only labelName
-				else
-				{
-					//If exist id, this is update label, else id is null this is new module
-					var moduleType = (string)request["module"][i]["menuModuleType"];
-					var module = string.Equals(moduleType, "Tanım Giriş")? null: request["module"][i]["menuName"].ToString();
-					var moduleEntity = string.IsNullOrWhiteSpace(request["module"][i]["route"].ToString())? await _moduleRepository.GetByName(module): null;
-					menu = await _menuRepository.GetByProfileId((int)request["profileId"]);
-
-					if (!string.IsNullOrEmpty(module))
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null,
-							true);
-
-					//If user send only label without childs
+					//Parent create edilip, daha önceden eklenmiş olan moduller bu parent altına eklenmişse update edilecek
 					else
-						menuItem = MenuHelper.CreateMenuItems((JObject)request["module"][i], menu, moduleEntity, null,
-							true);
+					{
+						//ParentId'sini güncelliyoruz
+						request["module"][i]["nodes"][j]["parentId"] = parent.Id;
+						menuItem = await _menuRepository.GetMenuItemsById((int)request["module"][i]["nodes"][j]["id"]);
+						if (menuItem == null)
+							return NotFound();
+						menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem);
+						await _menuRepository.UpdateMenuItem(menuItem);
+					}
 
-					var result = await _menuRepository.CreateMenuItems(menuItem);
-
-					if (result < 1)
-						throw new HttpResponseException(HttpStatusCode.InternalServerError);
 				}
 			}
 

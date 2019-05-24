@@ -198,6 +198,50 @@ angular.module('primeapps')
                 });
             };
 
+            var getLookupTypes = function (refresh) {
+                helper.getPicklists([0], refresh, $rootScope.appModules)
+                    .then(function (picklists) {
+                        $scope.lookupTypes = picklists['900000'];
+
+                        var hasUserLookType = $filter('filter')($scope.lookupTypes, { name: 'users' }, true).length > 0;
+
+                        if (!hasUserLookType) {
+                            var userLookType = {};
+                            userLookType.id = 900000;
+                            userLookType.label = {};
+                            userLookType.label.en = defaultLabels.UserLookupFieldEn;
+                            userLookType.label.tr = defaultLabels.UserLookupFieldTr;
+                            userLookType.order = 0;
+                            userLookType.type = 0;
+                            userLookType.value = 'users';
+
+                            $scope.lookupTypes.unshift(userLookType);
+
+                            var profileLookType = {};
+                            profileLookType.id = 900100;
+                            profileLookType.label = {};
+                            profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
+                            profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
+                            profileLookType.order = 0;
+                            profileLookType.type = 0;
+                            profileLookType.value = 'profiles';
+
+                            $scope.lookupTypes.push(profileLookType);
+
+                            var roleLookType = {};
+                            roleLookType.id = 900101;
+                            roleLookType.label = {};
+                            roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
+                            roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
+                            roleLookType.order = 0;
+                            roleLookType.type = 0;
+                            roleLookType.value = 'roles';
+
+                            $scope.lookupTypes.push(roleLookType);
+                        }
+                    });
+            };
+                       
             $scope.initModuleDesginer = function () {
 
                 $scope.module = ModuleService.processModule2($scope.module, $scope.modules);
@@ -211,6 +255,16 @@ angular.module('primeapps')
                     $scope.picklists = picklists.data;
                 });
 
+                $scope.reloadPicklist = function () {
+                    $scope.reloading = true;
+                    ModuleService.getPicklists().then(function onSuccess(picklists) {
+                        $scope.picklists = picklists.data;
+                        $scope.reloading = false;
+                    }).catch(function () {
+                        $scope.reloading = false;
+                    });
+                };
+                
                 var getMultilineTypes = function () {
                     var multilineType1 = {
                         value: 'small',
@@ -226,7 +280,7 @@ angular.module('primeapps')
                     $scope.multilineTypes.push(multilineType2);
                 };
 
-                var getLookupTypes = function (refresh) {
+                /*var getLookupTypes = function (refresh) {
                     helper.getPicklists([0], refresh, $rootScope.appModules)
                         .then(function (picklists) {
                             $scope.lookupTypes = picklists['900000'];
@@ -268,7 +322,7 @@ angular.module('primeapps')
                                 $scope.lookupTypes.push(roleLookType);
                             }
                         });
-                };
+                };*/
 
                 var getRoundingTypes = function () {
                     var roundingType1 = { value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff') };
@@ -959,7 +1013,6 @@ angular.module('primeapps')
             };
 
             $scope.saveSettings = function (editForm) {
-
                 if (!editForm.$valid) {
                     if (editForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
@@ -984,7 +1037,7 @@ angular.module('primeapps')
                     return;
                 }
 
-                if ($scope.currentField.firstDrag == true) {
+                if ($scope.currentField.firstDrag === true) {
                     $scope.currentField.firstDrag = false;
                 }
 
@@ -1510,8 +1563,10 @@ angular.module('primeapps')
                     if ($scope.editModal)
                         $scope.editModal.hide();
                 }
-
-
+            }
+            
+            $scope.reloadLookupType = function () {
+                getLookupTypes(false);
             }
         }
     ]);

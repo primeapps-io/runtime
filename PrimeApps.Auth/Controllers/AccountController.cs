@@ -497,12 +497,21 @@ namespace PrimeApps.Auth.UI
         }
 
         [Route("api/account/create"), HttpPost]
-        public async Task<IActionResult> Create(CreateAccountBindingModel model)
+        public async Task<IActionResult> Create([FromBody]CreateAccountBindingModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var app = await _applicationRepository.GetByNameAsync(model.AppName);
+            var client = await _clientStore.FindClientByIdAsync(model.ClientId);
+            var secret = new Secret(model.ClientSecret.Sha256());
+
+            if (client == null || !client.ClientSecrets.Any(x => x.Value == secret.Value))
+                return BadRequest();
+
+            var app = await _applicationRepository.GetByNameAsync(model.ClientId);
+
+            if (app == null)
+                return BadRequest();
 
             var application = new ApplicationInfoViewModel()
             {
@@ -510,6 +519,7 @@ namespace PrimeApps.Auth.UI
                 Name = app.Name,
                 Language = model.Language ?? app.Setting.Language,
                 Domain = app.Setting.AppDomain,
+                Secret = app.Secret,
                 ApplicationSetting = new ApplicationSettingViewModel
                 {
                     Culture = model.Culture ?? app.Setting.Culture,
@@ -517,6 +527,7 @@ namespace PrimeApps.Auth.UI
                     TimeZone = app.Setting.TimeZone,
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                    RegistrationType = RegistrationType.Tenant
                 }
             };
 
@@ -534,7 +545,12 @@ namespace PrimeApps.Auth.UI
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
 
-            return Ok();
+            var response = new JObject();
+
+            if (createUserRespone["tenantId"] != null)
+                response["tenant_id"] = (int)createUserRespone["tenantId"];
+
+            return Ok(response);
         }
 
         [HttpGet]
@@ -828,7 +844,7 @@ namespace PrimeApps.Auth.UI
 
             if (user != null)
             {
-                var clientId = await AuthHelper.GetClientId(result.Properties.Items["returnUrl"], _applicationRepository);
+                var clientId = AuthHelper.GetQueryValue(result.Properties.Items["returnUrl"], "client_id");
                 var model = new RegisterInputModel();
                 model.FirstName =
                     result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname");
@@ -1553,6 +1569,7 @@ namespace PrimeApps.Auth.UI
 
         private async Task<JObject> CreateUser(RegisterInputModel model, ApplicationInfoViewModel applicationInfo, string returnUrl, bool externalLogin = false)
         {
+            var tenantId = 0;
             var response = new JObject()
             {
                 ["Error"] = null
@@ -1650,7 +1667,6 @@ namespace PrimeApps.Auth.UI
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
-                    var tenantId = 0;
                     Tenant tenant = null;
                     //var tenantId = 2032;
                     try
@@ -1838,6 +1854,7 @@ namespace PrimeApps.Auth.UI
             }
 
             response["identity_user_id"] = identityUser.Id;
+            response["tenantId"] = tenantId;
 
             return response;
         }

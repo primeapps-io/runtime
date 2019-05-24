@@ -13,12 +13,14 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using PrimeApps.Model.Common.App;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Auth.UI
 {
@@ -40,17 +42,47 @@ namespace PrimeApps.Auth.UI
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;
             }
 
-            var clientId = await GetClientId(returnUrl, applicationRepository);
+            var clientId = GetQueryValue(returnUrl, "client_id");
+
+            var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
+            var appSettings = new JObject();
             var app = await applicationRepository.GetByNameAsync(clientId);
+
+            if (preview)
+            {
+                var previewAppId = GetQueryValue(returnUrl, "preview_app_id");
+
+                var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+                if (!string.IsNullOrEmpty(studioUrl) && !string.IsNullOrEmpty(previewAppId))
+                {
+                    using (var httpClient = new HttpClient())
+                    {
+                        var url = studioUrl + "/api/app_draft/get_app_settings/" + request.Cookies["app_id"];
+
+                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        var response = await httpClient.GetAsync(url);
+                        var content = await response.Content.ReadAsStringAsync();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
+                        }
+                        appSettings = JObject.Parse(content);
+                        if (appSettings != null && appSettings["auth_theme"] != null)
+                        {
+                            app.Setting.AuthTheme = (string)appSettings["auth_theme"];
+                        }
+                    }
+                }
+            }
+
             var multiLanguage = string.IsNullOrEmpty(app.Setting.Language);
 
             if (!multiLanguage)
                 language = app.Setting.Language;
 
             var theme = JObject.Parse(app.Setting.AuthTheme);
-
-            var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-            var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
 
             var application = new ApplicationInfoViewModel
             {
@@ -87,8 +119,8 @@ namespace PrimeApps.Auth.UI
         {
             return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
         }
-
-        public static async Task<string> GetClientId(string url, IApplicationRepository applicationRepository)
+        
+        public static string GetQueryValue(string url, string parameter)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new Exception("Url cannot be null.");
@@ -99,12 +131,12 @@ namespace PrimeApps.Auth.UI
                 returnUrl = "http://url.com" + returnUrl;
 
             var uri = new Uri(returnUrl);
-            var redirectUrlString = HttpUtility.ParseQueryString(uri.Query).Get("redirect_uri");
+            var value = HttpUtility.ParseQueryString(uri.Query).Get(parameter);
 
-            var redirectUri = new Uri(redirectUrlString);
+            if (!string.IsNullOrEmpty(value))
+                return value;
 
-            var client = await applicationRepository.GetAppWithDomain(redirectUri.Authority);
-            return client.Name;
+            return null;
         }
 
         public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)

@@ -68,20 +68,20 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '2'}">
                                     <label class="col-sm-4 required-field">
                                         2- Title
                                     </label>
                                     <input type="text"
                                            name="label"
                                            class="form-control ng-animate-disabled col-sm-8"
-                                           focus="true"
+                                           focus="focusPlace === '2'"
                                            required
                                            maxlength="50"
                                            ng-model="authTheme.title">
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '3'}">
                                     <label class="required-field">3-Logo</label>
                                     <div class="newupload" ng-if="!authLogo.image && !authTheme.logo">
                                         <label class="uploadlink">
@@ -121,7 +121,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '4'}">
                                     <label class="required-field">4-Button Color</label>
                                     <div class="iconandcolor">
                                         <div>
@@ -192,7 +192,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '5'}">
                                     <label class="  required-field">5-Main Image</label>
                                     <div class="newupload" ng-if="!authBanner.image && !authTheme.banner">
                                         <label class="uploadlink">
@@ -237,15 +237,13 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-                                    <label class="col-sm-4 required-field">
+                                <div class="form-group" ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid, 'focused': focusPlace === '6'}"<label class="col-sm-4 required-field">
                                         6- Main Text
                                     </label>
                                     <input type="text"
                                            name="label"
                                            class="form-control ng-animate-disabled col-sm-8"
-                                           focus="true"
+                                           focus="focusPlace === '6'"
                                            required
                                            maxlength="50"
                                            ng-model="authTheme.descriptionEn">
@@ -256,7 +254,7 @@
                         <div class="section app-page" id="section2" ng-if="acitveTab=='app'">
                             <div class="panel">
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '1'}">
                                     <label class="required-field">1-Favicon</label>
                                     <div class="newupload" ng-if="!appThemeFavicon.image && !appTheme.favicon">
                                         <label class="uploadlink">
@@ -295,20 +293,20 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '2'}">
                                     <label class="col-sm-4 required-field">
                                         2- Title
                                     </label>
                                     <input type="text"
                                            name="label"
                                            class="form-control ng-animate-disabled col-sm-8"
-                                           focus="true"
+                                           focus="focusPlace === '2'"
                                            required
                                            maxlength="50"
                                            ng-model="appTheme.title">
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '3'}">
                                     <label class="required-field">3-Logo</label>
                                     <div class="newupload" ng-if="!appThemeLogo.image && !appTheme.logo">
                                         <label class="uploadlink">
@@ -347,7 +345,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '4'}">
                                     <label class="required-field">4-Menu Color</label>
                                     <div class="iconandcolor">
                                         <div>

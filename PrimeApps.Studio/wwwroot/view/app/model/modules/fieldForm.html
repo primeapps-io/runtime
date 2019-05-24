@@ -77,8 +77,11 @@
                                     <div class="form-group"
                                          ng-if="currentField.dataType.name === 'lookup' && !currentField.systemReadonly"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
-                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.LookupType' |
-                                            translate}} <span class="required-label">(required)</span></label>
+                                        <label class="col-sm-12 required-field"> {{'Setup.Modules.LookupType' | translate}} <span class="required-label">(required) </span>
+                                            <a class="pull-right" href ng-click="reloadLookupType()" data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
+                                                <i class="fa fa-refresh fa-lg" ng-class="{'fa-spin fa-fw':reloading}"></i>
+                                            </a>
+                                        </label>
                                         <select name="lookupType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -94,8 +97,11 @@
                                          ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.picklistType.$invalid}"
                                          ng-show="!currentField.systemReadonly">
-                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.PicklistType' |
-                                            translate}} <span class="required-label">(required)</span></label>
+                                        <label class="col-sm-12 required-field"> {{'Setup.Modules.PicklistType' | translate}} <span class="required-label">(required)</span>
+                                            <a class="pull-right" href ng-click="reloadPicklist()" data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
+                                                <i class="fa fa-refresh fa-lg" ng-class="{'fa-spin fa-fw':reloading}"></i>
+                                            </a>
+                                        </label>
                                         <select name="picklistType"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -109,8 +115,7 @@
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField1.$invalid}">
-                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.CombinationField1' |
-                                            translate}} <span class="required-label">(required)</span></label>
+                                        <label class="col-sm-4 required-field"> {{'Setup.Modules.CombinationField1' | translate}} <span class="required-label">(required)</span></label>
                                         <select name="combinationField1"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required
@@ -121,8 +126,7 @@
                                     </div>
                                     <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
                                          ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField2.$invalid}">
-                                        <label class="col-sm-4 required-field">{{'Setup.Modules.CombinationField2' |
-                                            translate}} <span class="required-label">(required)</span></label>
+                                        <label class="col-sm-4 required-field">{{'Setup.Modules.CombinationField2' | translate}} <span class="required-label">(required)</span></label>
                                         <select name="combinationField2"
                                                 class="form-control ng-animate-disabled col-sm-8"
                                                 required

@@ -88,10 +88,10 @@ spec:
                   name: primeapps-app-config
                   key: EnableJobs
             - name: AppSettings__EnableBpm
-                valueFrom:
-                  configMapKeyRef:
-                    name: primeapps-app-config
-                    key: EnableBpm
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config
+                  key: EnableBpm
             - name: AppSettings__EnableRequestLogging
               valueFrom:
                 configMapKeyRef:
@@ -200,13 +200,15 @@ metadata:
   namespace: primeapps
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow"
 spec:
   tls:
     - hosts:
-        - app.primeapps.io
-      secretName: primeapps-wildcard-ssl
+        - "*.primeapps.app"
+      secretName: primeapps-app-wildcard-ssl
   rules:
-    - host: app.primeapps.io
+    - host: "*.primeapps.app"
       http:
         paths:
           - path: "/"

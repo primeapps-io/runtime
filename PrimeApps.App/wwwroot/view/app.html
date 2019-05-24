@@ -27,8 +27,8 @@
                     <a href ng-click="removeSampleData()" class="remove-sample-data" ng-if="workgroup.has_sample_data" ladda="sampleRemoving"><i class="fa-sidebar-icon fa fa-trash"></i> {{'Layout.RemoveSampleData' | translate}}</a>
                 </li>
                 <li ng-if="preview">
-                    <a href ng-click="reload()" data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
-                        <i class="fa fa-refresh fa-2x" ng-class="{'fa-spin fa-fw':reloading}"></i>
+                    <a href ng-click="reload()" class="help-link ng-scope"  data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
+                        <i class="fa fa-refresh fa-2x" style="font-size: 1.7em !important;padding-top: 1px;" ng-class="{'fa-spin fa-fw':reloading}"></i>
                     </a>
                 </li>
                 <li data-title="{{'Common.Help' | translate}}" ng-hide="helpIconHide" data-trigger="hover" data-placement="bottom" bs-tooltip>

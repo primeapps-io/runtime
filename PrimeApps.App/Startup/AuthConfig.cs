@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.App.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
@@ -75,11 +76,19 @@ namespace PrimeApps.App
                     options.Scope.Add("email");
                     options.Events.OnRedirectToIdentityProvider = ctx =>
                     {
-                        //options.ClientId = "bonjorno";
-                        //options.ClientSecret = CryptoHelper.Decrypt("1dlEdt110HyWXbgCg2v4JadbscAqfDcUOQdKFFJ9rAvmFqmCHgjyr111vl2NhPI4PFzS1XJUmbOFbPdFZVABSg==");
-                        var appId = ctx.HttpContext.Request.Cookies["app_id"];
-                        ctx.ProtocolMessage.SetParameter("app_id", appId);
-
+                        ctx.HttpContext.Request.Query.TryGetValue("preview", out var preview);
+                        if (!string.IsNullOrEmpty(preview))
+                        {
+                            var previewApp = AppHelper.GetPreviewApp(preview);
+                            if (!string.IsNullOrEmpty(previewApp))
+                            {
+                                if (previewApp.Contains("app"))
+                                {
+                                    var appId = previewApp.Split("app_id=")[1];
+                                    ctx.ProtocolMessage.SetParameter("preview_app_id", appId);
+                                }
+                            }
+                        }
                         return Task.CompletedTask;
                     };
                     options.Events.OnRemoteFailure = context =>
