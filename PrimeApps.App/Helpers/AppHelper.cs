@@ -7,11 +7,23 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.App;
+using System.Web;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Helpers
 {
 	public static class AppHelper
 	{
+		public static string GetPreviewApp(string preview)
+		{
+			var previewToken = HttpUtility.UrlDecode(preview);
+			var previewDB = CryptoHelper.Decrypt(previewToken.Replace(" ", "+"));
+			if (!string.IsNullOrEmpty(previewDB))
+				return previewDB;
+
+			return null;
+		}
+
 		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app, bool preview = false)
 		{
 			var language = request.Cookies["_lang"];

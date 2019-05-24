@@ -50,14 +50,13 @@ namespace PrimeApps.App.Controllers
 
 			if (preview != null)
 			{
-				var previewToken = HttpUtility.UrlDecode(preview);
-				var previewDB = CryptoHelper.Decrypt(previewToken.Replace(" ", "+"));
-				if (!string.IsNullOrEmpty(previewDB))
+				var previewApp = AppHelper.GetPreviewApp(preview);
+				if (!string.IsNullOrEmpty(previewApp))
 				{
-					if (previewDB.Contains("app"))
+					if (previewApp.Contains("app"))
 					{
 						var previewClient = _configuration.GetValue("AppSettings:PreviewClient", string.Empty);
-						var appId = int.Parse(previewDB.Split("app_id=")[1]);
+						var appId = int.Parse(previewApp.Split("app_id=")[1]);
 						var app = await applicationRepository.GetByNameAsync(!string.IsNullOrEmpty(previewClient) ? previewClient : "primeapps_preview");
 
 						var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
@@ -89,7 +88,7 @@ namespace PrimeApps.App.Controllers
 					}
 					else
 					{
-						var tenantId = int.Parse(previewDB.Split("tenant_id=")[1]);
+						var tenantId = int.Parse(previewApp.Split("tenant_id=")[1]);
 						var tenant = tenantRepository.Get(tenantId);
 
 						if (tenant == null)

@@ -24,174 +24,195 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Auth.UI
 {
-	public class AuthHelper
-	{
-		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, string returnUrl, IApplicationRepository applicationRepository)
-		{
-			var language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+    public class AuthHelper
+    {
+        public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, string returnUrl, IApplicationRepository applicationRepository)
+        {
+            var language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
-			if (string.IsNullOrEmpty(language))
-				language = "en";
+            if (string.IsNullOrEmpty(language))
+                language = "en";
 
-			var cdnUrlStatic = "";
-			var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
+            var cdnUrlStatic = "";
+            var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
 
-			if (!string.IsNullOrEmpty(cdnUrl))
-			{
-				var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-				cdnUrlStatic = cdnUrl + "/" + versionStatic;
-			}
+            if (!string.IsNullOrEmpty(cdnUrl))
+            {
+                var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                cdnUrlStatic = cdnUrl + "/" + versionStatic;
+            }
 
-			var clientId = GetClientId(returnUrl);
+            var clientId = GetClientId(returnUrl);
 
-			var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
-			var appSettings = new JObject();
-			var app = await applicationRepository.GetByNameAsync(clientId);
+            var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
+            var appSettings = new JObject();
+            var app = await applicationRepository.GetByNameAsync(clientId);
 
-			if (preview)
-			{
-				var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-				if (!string.IsNullOrEmpty(studioUrl))
-				{
-					using (var httpClient = new HttpClient())
-					{
-						var url = studioUrl + "/api/app_draft/get_app_settings/" + request.Cookies["app_id"];
+            if (preview)
+            {
+                var previewAppId = GetPreviewAppId(returnUrl);
 
-						httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+                if (!string.IsNullOrEmpty(studioUrl) && previewAppId != 0)
+                {
+                    using (var httpClient = new HttpClient())
+                    {
+                        var url = studioUrl + "/api/app_draft/get_app_settings/" + request.Cookies["app_id"];
 
-						var response = await httpClient.GetAsync(url);
-						var content = await response.Content.ReadAsStringAsync();
-						if (!response.IsSuccessStatusCode)
-						{
-							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
-						}
-						appSettings = JObject.Parse(content);
-						if (appSettings != null && appSettings["auth_theme"] != null)
-						{
-							app.Setting.AuthTheme = (string)appSettings["auth_theme"];
-						}
-					}
-				}
-			}
+                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			var multiLanguage = string.IsNullOrEmpty(app.Setting.Language);
+                        var response = await httpClient.GetAsync(url);
+                        var content = await response.Content.ReadAsStringAsync();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
+                        }
+                        appSettings = JObject.Parse(content);
+                        if (appSettings != null && appSettings["auth_theme"] != null)
+                        {
+                            app.Setting.AuthTheme = (string)appSettings["auth_theme"];
+                        }
+                    }
+                }
+            }
 
-			if (!multiLanguage)
-				language = app.Setting.Language;
+            var multiLanguage = string.IsNullOrEmpty(app.Setting.Language);
 
-			var theme = JObject.Parse(app.Setting.AuthTheme);
+            if (!multiLanguage)
+                language = app.Setting.Language;
 
-			var application = new ApplicationInfoViewModel
-			{
-				Id = app.Id,
-				Name = app.Name,
-				Title = theme["title"].ToString(),
-				MultiLanguage = multiLanguage,
-				Logo = theme["logo"].ToString(),
-				Theme = theme,
-				Color = theme["color"].ToString(),
-				CustomDomain = false,
-				Language = language,
-				Favicon = theme["favicon"].ToString(),
-				CdnUrl = cdnUrlStatic,
-				Domain = app.Setting.AppDomain,
-				ApplicationSetting = new ApplicationSettingViewModel
-				{
-					Culture = app.Setting.Culture,
-					Currency = app.Setting.Currency,
-					TimeZone = app.Setting.TimeZone,
-					GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
-					ExternalLogin = app.Setting.ExternalAuth,
-					RegistrationType = app.Setting.RegistrationType,
-					TenantOperationWebhook = app.Setting.TenantOperationWebhook,
-				},
-				Preview = preview,
-				Secret = app.Secret
-			};
+            var theme = JObject.Parse(app.Setting.AuthTheme);
 
-			return application;
-		}
+            var application = new ApplicationInfoViewModel
+            {
+                Id = app.Id,
+                Name = app.Name,
+                Title = theme["title"].ToString(),
+                MultiLanguage = multiLanguage,
+                Logo = theme["logo"].ToString(),
+                Theme = theme,
+                Color = theme["color"].ToString(),
+                CustomDomain = false,
+                Language = language,
+                Favicon = theme["favicon"].ToString(),
+                CdnUrl = cdnUrlStatic,
+                Domain = app.Setting.AppDomain,
+                ApplicationSetting = new ApplicationSettingViewModel
+                {
+                    Culture = app.Setting.Culture,
+                    Currency = app.Setting.Currency,
+                    TimeZone = app.Setting.TimeZone,
+                    GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
+                    ExternalLogin = app.Setting.ExternalAuth,
+                    RegistrationType = app.Setting.RegistrationType,
+                    TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                },
+                Preview = preview,
+                Secret = app.Secret
+            };
 
-		public static string CurrentLanguage(HttpRequest request)
-		{
-			return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
-		}
+            return application;
+        }
 
-		public static string GetClientId(string url)
-		{
-			if (string.IsNullOrWhiteSpace(url))
-				throw new Exception("Url cannot be null.");
+        public static string CurrentLanguage(HttpRequest request)
+        {
+            return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+        }
 
-			var returnUrl = HttpUtility.UrlDecode(url);
+        public static string GetClientId(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new Exception("Url cannot be null.");
 
-			if (!returnUrl.StartsWith("http://") || !returnUrl.StartsWith("https://"))
-				returnUrl = "http://url.com" + returnUrl;
+            var returnUrl = HttpUtility.UrlDecode(url);
 
-			var uri = new Uri(returnUrl);
-			var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
+            if (!returnUrl.StartsWith("http://") || !returnUrl.StartsWith("https://"))
+                returnUrl = "http://url.com" + returnUrl;
 
-			return clientId;
-		}
+            var uri = new Uri(returnUrl);
+            var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
 
-		public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)
-		{
-			if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
-				return true;
+            return clientId;
+        }
 
-			using (var httpClient = new HttpClient())
-			{
-				if (tenant.Id > 0)
-				{
-					var request = new JObject();
-					request["tenant_id"] = tenant.Id;
-					request["first_name"] = tenantUser.FirstName;
-					request["last_name"] = tenantUser.LastName;
-					request["phone"] = tenantUser.Phone;
-					request["email"] = tenantUser.Email;
+        public static int GetPreviewAppId(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new Exception("Url cannot be null.");
 
-					httpClient.DefaultRequestHeaders.Accept.Clear();
-					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-					var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+            var returnUrl = HttpUtility.UrlDecode(url);
 
-					if (!response.IsSuccessStatusCode)
-					{
-						var resp = await response.Content.ReadAsStringAsync();
-						ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " tenant_id: " + tenant.Id + " first_name: " + tenantUser.FirstName + " last_name: " + tenantUser.LastName + " phone: " + tenantUser.Phone + " email: " + tenantUser.Email);
-					}
-				}
-			}
+            if (!returnUrl.StartsWith("http://") || !returnUrl.StartsWith("https://"))
+                returnUrl = "http://url.com" + returnUrl;
 
-			return true;
-		}
-		public static async Task<bool> StudioOperationWebhook(ApplicationInfoViewModel app, PlatformUser platformUser)
-		{
-			if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
-				return true;
+            var uri = new Uri(returnUrl);
+            var appId = HttpUtility.ParseQueryString(uri.Query).Get("preview_app_id");
 
-			using (var httpClient = new HttpClient())
-			{
-				if (platformUser.Id > 0)
-				{
-					var request = new JObject();
-					request["user_id"] = platformUser.Id;
-					request["first_name"] = platformUser.FirstName;
-					request["last_name"] = platformUser.LastName;
-					request["email"] = platformUser.Email;
+            if (!string.IsNullOrEmpty(appId))
+                return int.Parse(appId);
 
-					httpClient.DefaultRequestHeaders.Accept.Clear();
-					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-					var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+            return 0;
+        }
 
-					if (!response.IsSuccessStatusCode)
-					{
-						var resp = await response.Content.ReadAsStringAsync();
-						ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " user_id: " + platformUser.Id + " first_name: " + platformUser.FirstName + " last_name: " + platformUser.LastName + " email: " + platformUser.Email);
-					}
-				}
-			}
+        public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)
+        {
+            if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
+                return true;
 
-			return true;
-		}
-	}
+            using (var httpClient = new HttpClient())
+            {
+                if (tenant.Id > 0)
+                {
+                    var request = new JObject();
+                    request["tenant_id"] = tenant.Id;
+                    request["first_name"] = tenantUser.FirstName;
+                    request["last_name"] = tenantUser.LastName;
+                    request["phone"] = tenantUser.Phone;
+                    request["email"] = tenantUser.Email;
+
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var resp = await response.Content.ReadAsStringAsync();
+                        ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " tenant_id: " + tenant.Id + " first_name: " + tenantUser.FirstName + " last_name: " + tenantUser.LastName + " phone: " + tenantUser.Phone + " email: " + tenantUser.Email);
+                    }
+                }
+            }
+
+            return true;
+        }
+        public static async Task<bool> StudioOperationWebhook(ApplicationInfoViewModel app, PlatformUser platformUser)
+        {
+            if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
+                return true;
+
+            using (var httpClient = new HttpClient())
+            {
+                if (platformUser.Id > 0)
+                {
+                    var request = new JObject();
+                    request["user_id"] = platformUser.Id;
+                    request["first_name"] = platformUser.FirstName;
+                    request["last_name"] = platformUser.LastName;
+                    request["email"] = platformUser.Email;
+
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var resp = await response.Content.ReadAsStringAsync();
+                        ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " user_id: " + platformUser.Id + " first_name: " + platformUser.FirstName + " last_name: " + platformUser.LastName + " email: " + platformUser.Email);
+                    }
+                }
+            }
+
+            return true;
+        }
+    }
 }
