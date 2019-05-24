@@ -18,9 +18,9 @@ namespace PrimeApps.Model.Helpers
 {
     public enum Location
     {
-        [EnumMember(Value = "PDE")]PDE = 1,
+        [EnumMember(Value = "PDE")] PDE = 1,
 
-        [EnumMember(Value = "PRE")]PRE = 2
+        [EnumMember(Value = "PRE")] PRE = 2
     }
 
     public class PublishHelper
@@ -36,12 +36,6 @@ namespace PrimeApps.Model.Helpers
             if (!File.Exists(path))
                 Directory.CreateDirectory(path);
 
-            /*if (!File.Exists($"{path}\\{version}.txt"))
-            {
-                var logFile = File.Create($"{path}\\{version}.txt");
-                logFile.Close();
-            }*/
-
             path = $"{path}\\{version}.txt";
 
             try
@@ -49,44 +43,34 @@ namespace PrimeApps.Model.Helpers
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : " + "\u001b[92m" + "Publish starting..." + "\u001b[39m" + Environment.NewLine);
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database sql generating..." + Environment.NewLine);
 
-                //await wSocket.SendAsync(CreateWSMessage("Database sql generating"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 var sqlDump = PublishHelper.GetSqlDump(PDEConnectionString, Location.PDE, dbName);
 
                 if (string.IsNullOrEmpty(sqlDump))
                     File.AppendAllText(path, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
 
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." + Environment.NewLine);
-                //await wSocket.SendAsync(CreateWSMessage("Restoring your database"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 var restoreResult = PublishHelper.RestoreDatabase(PREConnectionString, sqlDump, Location.PRE, dbName);
 
-               if (!restoreResult)
+                if (!restoreResult)
                     File.AppendAllText(path, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While restoring your database." + "\u001b[39m" + Environment.NewLine);
 
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Settings information adding..." + Environment.NewLine);
+                PublishHelper.CreateSettingsAppName(PREConnectionString, app["name"].ToString(), dbName);
+
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : System tables clearing..." + Environment.NewLine);
-                //await wSocket.SendAsync(CreateWSMessage("System tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.CleanUpSystemTables(PREConnectionString, Location.PRE, dbName);
 
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Dynamic tables clearing..." + Environment.NewLine);
-                //await wSocket.SendAsync(CreateWSMessage("Dynamic tables clearing"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.CleanUpTables(PREConnectionString, Location.PRE, dbName, clearAllRecords ? null : new JArray());
 
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Records are marking as sample..." + Environment.NewLine);
-                //await wSocket.SendAsync(CreateWSMessage("Records are marking as sample"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetRecordsIsSample(PREConnectionString, Location.PRE, dbName);
 
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Editing your records..." + Environment.NewLine);
-                //await wSocket.SendAsync(CreateWSMessage("Final arrangements being made"), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 PublishHelper.SetAllUserFK(PREConnectionString, Location.PRE, dbName);
 
-                //await wSocket.SendAsync(CreateWSMessage("Database marking as template"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                //PublishHelper.SetDatabaseIsTemplate(PREConnectionString, Location.PRE, dbName);
-
-                //await wSocket.SendAsync(CreateWSMessage("You application is ready"), result.MessageType, result.EndOfMessage, CancellationToken.None);
-                //result = await wSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-
-                //await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                //await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database marking as template..." + Environment.NewLine);
+                PublishHelper.SetDatabaseIsTemplate(PREConnectionString, Location.PRE, dbName);
 
                 File.AppendAllText(path, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Final arrangements being made..." + Environment.NewLine);
                 var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
@@ -98,15 +82,15 @@ namespace PrimeApps.Model.Helpers
                     var dict = new Dictionary<string, string>
                     {
                         {"grant_type", "password"},
-                        {"username", "integration@primeapps.io"},
+                        {"username", configuration.GetValue("AppSettings:IntegrationEmail", string.Empty)},
                         {"password", studioSecret},
-                        {"client_id", "primeapps_studio"},
+                        {"client_id", configuration.GetValue("AppSettings:ClientId", string.Empty)},
                         {"client_secret", studioSecret}
                     };
 
                     var authUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
 
-                    var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
+                    var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
                     var res = await httpClient.SendAsync(req);
 
                     if (res.IsSuccessStatusCode)
@@ -123,7 +107,7 @@ namespace PrimeApps.Model.Helpers
                                 {
                                     ["client_id"] = app["name"].ToString(),
                                     ["client_name"] = app["label"].ToString(),
-                                    ["allowed_grant_types"] = "hybrid",
+                                    ["allowed_grant_types"] = "password",
                                     ["allow_remember_consent"] = false,
                                     ["always_send_client_claims"] = true,
                                     ["require_consent"] = false,
@@ -145,6 +129,26 @@ namespace PrimeApps.Model.Helpers
                                     resp = await response.Content.ReadAsStringAsync();
                                 }
                             }
+
+                            using (var client = new HttpClient())
+                            {
+                                var clientRequest = new JObject
+                                {
+                                    ["urls"] = "http://localhost:5010",
+                                };
+
+                                client.DefaultRequestHeaders.Accept.Clear();
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                                var response = await client.PostAsync(authUrl + "/api/add_url", new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
+
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    resp = await response.Content.ReadAsStringAsync();
+                                }
+                            }
+
                         }
                     }
                 }
@@ -187,7 +191,7 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
                 connection.Open();
 
-                var dropCommand = new PgSqlCommand(SetRecordsIsSampleSql()) {Connection = connection};
+                var dropCommand = new PgSqlCommand(SetRecordsIsSampleSql()) { Connection = connection };
                 var result = dropCommand.ExecuteReader();
 
                 connection.Close();
@@ -233,7 +237,7 @@ namespace PrimeApps.Model.Helpers
                 foreach (var table in tableNames)
                 {
                     var sql = $"DELETE FROM {table["table_name"]};";
-                    var dropCommand = new PgSqlCommand(sql) {Connection = connection};
+                    var dropCommand = new PgSqlCommand(sql) { Connection = connection };
                     dropCommand.ExecuteReader();
                 }
 
@@ -260,7 +264,7 @@ namespace PrimeApps.Model.Helpers
                     if (string.IsNullOrEmpty(sql))
                         continue;
 
-                    var dropCommand = new PgSqlCommand(sql) {Connection = connection};
+                    var dropCommand = new PgSqlCommand(sql) { Connection = connection };
                     var result = dropCommand.ExecuteReader();
                 }
 
@@ -291,7 +295,7 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
                 connection.Open();
 
-                var dropCommand = new PgSqlCommand(GetAllSystemTablesSql()) {Connection = connection};
+                var dropCommand = new PgSqlCommand(GetAllSystemTablesSql()) { Connection = connection };
                 var tableData = dropCommand.ExecuteReader().ResultToJArray();
 
                 if (!tableData.HasValues) return false;
@@ -299,12 +303,12 @@ namespace PrimeApps.Model.Helpers
                 foreach (var t in tableData)
                 {
                     var table = t["table_name"];
-                    dropCommand = new PgSqlCommand(GetUserFKColumnsSql(table.ToString())) {Connection = connection};
+                    dropCommand = new PgSqlCommand(GetUserFKColumnsSql(table.ToString())) { Connection = connection };
                     var columns = dropCommand.ExecuteReader().ResultToJArray();
 
                     if (!columns.HasValues) continue;
 
-                    dropCommand = new PgSqlCommand(ColumnIsExistsSql(table.ToString(), "id")) {Connection = connection};
+                    dropCommand = new PgSqlCommand(ColumnIsExistsSql(table.ToString(), "id")) { Connection = connection };
                     var idColumnIsExists = dropCommand.ExecuteReader();
                     var idExists = true;
 
@@ -312,22 +316,22 @@ namespace PrimeApps.Model.Helpers
 
                     if (!idColumnIsExists.HasRows)
                     {
-                        dropCommand = new PgSqlCommand(GetAllColumnNamesSql(table.ToString())) {Connection = connection};
+                        dropCommand = new PgSqlCommand(GetAllColumnNamesSql(table.ToString())) { Connection = connection };
                         columns = dropCommand.ExecuteReader().ResultToJArray();
 
                         idExists = false;
                     }
                     else
                     {
-                        columns.Add(new JObject {["column_name"] = "id"});
+                        columns.Add(new JObject { ["column_name"] = "id" });
                     }
 
-                    dropCommand = new PgSqlCommand(GetAllRecordsWithColumnsSql(table.ToString(), columns)) {Connection = connection};
+                    dropCommand = new PgSqlCommand(GetAllRecordsWithColumnsSql(table.ToString(), columns)) { Connection = connection };
                     var records = dropCommand.ExecuteReader().ResultToJArray();
 
                     foreach (var record in records)
                     {
-                        dropCommand = new PgSqlCommand(UpdateRecordSql(record, table.ToString(), fkColumns, 1, idExists)) {Connection = connection};
+                        dropCommand = new PgSqlCommand(UpdateRecordSql(record, table.ToString(), fkColumns, 1, idExists)) { Connection = connection };
                         var result = dropCommand.ExecuteReader().ResultToJArray();
                     }
                 }
@@ -347,7 +351,7 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, dbName));
                 connection.Open();
 
-                var dropCommand = new PgSqlCommand(GetAllDynamicTablesSql()) {Connection = connection};
+                var dropCommand = new PgSqlCommand(GetAllDynamicTablesSql()) { Connection = connection };
                 var result = dropCommand.ExecuteReader().ResultToJArray();
 
                 connection.Close();
@@ -478,13 +482,13 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, "postgres"));
                 connection.Open();
 
-                var terminateCommand = new PgSqlCommand($"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();") {Connection = connection};
+                var terminateCommand = new PgSqlCommand($"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();") { Connection = connection };
                 terminateCommand.ExecuteReader();
 
-                var setTemplateCommand = new PgSqlCommand($"UPDATE pg_database SET datistemplate = TRUE WHERE datname = '{dbName}';") {Connection = connection};
+                var setTemplateCommand = new PgSqlCommand($"UPDATE pg_database SET datistemplate = TRUE WHERE datname = '{dbName}';") { Connection = connection };
                 setTemplateCommand.ExecuteReader();
 
-                var notAllowConnectionCommand = new PgSqlCommand($"UPDATE pg_database SET datallowconn = FALSE WHERE datname = '{dbName}';") {Connection = connection};
+                var notAllowConnectionCommand = new PgSqlCommand($"UPDATE pg_database SET datallowconn = FALSE WHERE datname = '{dbName}';") { Connection = connection };
                 notAllowConnectionCommand.ExecuteReader();
                 connection.Close();
 
@@ -503,7 +507,7 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, database));
 
                 connection.Open();
-                var dump = new PgSqlDump {Connection = connection, Schema = "public", IncludeDrop = false};
+                var dump = new PgSqlDump { Connection = connection, Schema = "public", IncludeDrop = false };
                 dump.Backup();
                 connection.Close();
 
@@ -526,8 +530,33 @@ namespace PrimeApps.Model.Helpers
                 var connection = new PgSqlConnection(GetConnectionString(connectionString, location, database));
 
                 connection.Open();
-                var dump = new PgSqlDump {Connection = connection, DumpText = dumpSql};
+                var dump = new PgSqlDump { Connection = connection, DumpText = dumpSql };
                 dump.Restore();
+                connection.Close();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+        public static string CreateSettingsAppNameSql(string name)
+        {
+            return $"INSERT INTO \"public\".\"settings\"(\"type\", \"user_id\", \"key\", \"value\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 1, 'app', '" + name + "', 1, NULL, '" + DateTime.UtcNow + "', NULL, 'f')";
+        }
+
+        public static bool CreateSettingsAppName(string connectionString, string name, string dbName)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, Location.PRE, dbName));
+                connection.Open();
+
+                var sql = CreateSettingsAppNameSql(name);
+                var dropCommand = new PgSqlCommand(sql) { Connection = connection };
+
+                dropCommand.ExecuteReader();
                 connection.Close();
 
                 return true;
@@ -562,7 +591,7 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    var dropCommand = new PgSqlCommand(sql.ToString()) {Connection = connection};
+                    var dropCommand = new PgSqlCommand(sql.ToString()) { Connection = connection };
                     dropCommand.ExecuteReader();
                 }
 

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace PrimeApps.Auth.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var newClient = new Client
+            var newClient = new IdentityServer4.Models.Client
             {
                 ClientId = client.ClientId,
                 ClientName = client.ClientName,
@@ -40,7 +41,7 @@ namespace PrimeApps.Auth.Controllers
 
                 ClientSecrets =
                 {
-                    new Secret(client.ClientSecrets.Sha256())
+                    new IdentityServer4.Models.Secret(client.ClientSecrets.Sha256())
                 },
 
                 RedirectUris = client.RedirectUris.Split(";"),
@@ -56,9 +57,9 @@ namespace PrimeApps.Auth.Controllers
 
             return Ok();
         }
-        
+
         [Route("update/{clientId}"), HttpPut]
-        public async Task<IActionResult> Update(string clientId, [FromBody]CreateClientBindingModel clientModel)
+        public async Task<IActionResult> Update([FromRoute]string clientId, [FromBody]UpdateClientBindingModel clientModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -67,26 +68,69 @@ namespace PrimeApps.Auth.Controllers
 
             if (client == null)
                 return NotFound();
-            
-            var newClient = new Client
-            {
-                ClientName = clientModel.ClientName,
-                AllowedGrantTypes = clientModel.AllowedGrantTypes.Split(";"),
-                AllowRememberConsent = false,
-                AlwaysSendClientClaims = true,
-                RequireConsent = false,
-                RedirectUris = clientModel.RedirectUris.Split(";"),
-                PostLogoutRedirectUris = clientModel.PostLogoutRedirectUris.Split(";"),
 
-                AllowedScopes = clientModel.AllowedScopes.Split(";"),
-                AccessTokenLifetime = clientModel.AccessTokenLifetime
+            var newClient = new IdentityServer4.Models.Client
+            {
+                ClientName = clientModel.ClientName ?? client.ClientName,
+                AllowRememberConsent = clientModel.AllowRememberConsent ?? client.AllowRememberConsent,
+                AlwaysSendClientClaims = clientModel.AlwaysSendClientClaims ?? client.AlwaysSendClientClaims,
+                RequireConsent = clientModel.RequireConsent ?? client.RequireConsent,
+                AccessTokenLifetime = clientModel.AccessTokenLifetime ?? client.AccessTokenLifetime
             };
+            if (!string.IsNullOrEmpty(clientModel.AllowedGrantTypes))
+                newClient.AllowedGrantTypes = clientModel.AllowedGrantTypes.Split(";");
+
+            if (!string.IsNullOrEmpty(clientModel.RedirectUris))
+                newClient.RedirectUris = clientModel.RedirectUris.Split(";");
+
+            if (!string.IsNullOrEmpty(clientModel.PostLogoutRedirectUris))
+                newClient.PostLogoutRedirectUris = clientModel.PostLogoutRedirectUris.Split(";");
+
+            if (!string.IsNullOrEmpty(clientModel.AllowedScopes))
+                newClient.AllowedScopes = clientModel.AllowedScopes.Split(";");
 
             var result = await _clientRepository.Update(newClient.ToEntity());
 
             if (result < 1)
                 return BadRequest();
-            
+
+            return Ok();
+        }
+
+        [Route("add_url"), HttpPost]
+        public async Task<IActionResult> AddUrl([FromBody]AddClientUrlBindingModel clientModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (string.IsNullOrEmpty(clientModel.ClientId))
+                clientModel.ClientId = "primeapps_app";
+
+            var client = await _clientRepository.Get(clientModel.ClientId);
+
+            if (client == null)
+                return NotFound();
+
+            foreach (var url in clientModel.Urls.Split(";"))
+            {
+                client.RedirectUris.Add(new ClientRedirectUri()
+                {
+                    Client = client,
+                    RedirectUri = url + "/signin-oidc"
+                });
+
+                client.PostLogoutRedirectUris.Add(new ClientPostLogoutRedirectUri()
+                {
+                    Client = client,
+                    PostLogoutRedirectUri = url + "/signout-callback-oidc"
+                });
+            }
+
+            var result = await _clientRepository.Update(client);
+
+            if (result < 1)
+                return BadRequest();
+
             return Ok();
         }
     }

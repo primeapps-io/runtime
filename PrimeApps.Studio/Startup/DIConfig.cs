@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
@@ -24,9 +25,9 @@ namespace PrimeApps.Studio
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
             services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>()));
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton(configuration);
 
             //Register all repositories
             foreach (var assembly in new[] {"PrimeApps.Model"})
@@ -79,9 +80,9 @@ namespace PrimeApps.Studio
 
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddSingleton<IHistoryHelper, HistoryHelper>();
-            services.AddSingleton<IWebSocketHelper, WebSocketHelper>();
+            services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
+            services.TryAddSingleton<IWebSocketHelper, WebSocketHelper>();
         }
     }
 }

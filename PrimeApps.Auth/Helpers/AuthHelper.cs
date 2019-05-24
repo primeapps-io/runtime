@@ -40,7 +40,7 @@ namespace PrimeApps.Auth.UI
                 cdnUrlStatic = cdnUrl + "/" + versionStatic;
             }
 
-            var clientId = GetClientId(returnUrl);
+            var clientId = await GetClientId(returnUrl, applicationRepository);
             var app = await applicationRepository.GetByNameAsync(clientId);
             var multiLanguage = string.IsNullOrEmpty(app.Setting.Language);
 
@@ -51,7 +51,7 @@ namespace PrimeApps.Auth.UI
 
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
-            
+
             var application = new ApplicationInfoViewModel
             {
                 Id = app.Id,
@@ -77,7 +77,7 @@ namespace PrimeApps.Auth.UI
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 },
                 Preview = preview,
-                Secret =  app.Secret
+                Secret = app.Secret
             };
 
             return application;
@@ -88,7 +88,7 @@ namespace PrimeApps.Auth.UI
             return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
         }
 
-        public static string GetClientId(string url)
+        public static async Task<string> GetClientId(string url, IApplicationRepository applicationRepository)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new Exception("Url cannot be null.");
@@ -99,9 +99,12 @@ namespace PrimeApps.Auth.UI
                 returnUrl = "http://url.com" + returnUrl;
 
             var uri = new Uri(returnUrl);
-            var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
+            var redirectUrlString = HttpUtility.ParseQueryString(uri.Query).Get("redirect_uri");
 
-            return clientId;
+            var redirectUri = new Uri(redirectUrlString);
+
+            var client = await applicationRepository.GetAppWithDomain(redirectUri.Authority);
+            return client.Name;
         }
 
         public static async Task<bool> TenantOperationWebhook(ApplicationInfoViewModel app, Tenant tenant, TenantUser tenantUser)
@@ -134,34 +137,35 @@ namespace PrimeApps.Auth.UI
 
             return true;
         }
-		public static async Task<bool> StudioOperationWebhook(ApplicationInfoViewModel app, PlatformUser platformUser)
-		{
-			if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
-				return true;
 
-			using (var httpClient = new HttpClient())
-			{
-				if (platformUser.Id > 0)
-				{
-					var request = new JObject();
-					request["user_id"] = platformUser.Id;
-					request["first_name"] = platformUser.FirstName;
-					request["last_name"] = platformUser.LastName;
-					request["email"] = platformUser.Email;
+        public static async Task<bool> StudioOperationWebhook(ApplicationInfoViewModel app, PlatformUser platformUser)
+        {
+            if (string.IsNullOrWhiteSpace(app.ApplicationSetting.TenantOperationWebhook))
+                return true;
 
-					httpClient.DefaultRequestHeaders.Accept.Clear();
-					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-					var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+            using (var httpClient = new HttpClient())
+            {
+                if (platformUser.Id > 0)
+                {
+                    var request = new JObject();
+                    request["user_id"] = platformUser.Id;
+                    request["first_name"] = platformUser.FirstName;
+                    request["last_name"] = platformUser.LastName;
+                    request["email"] = platformUser.Email;
 
-					if (!response.IsSuccessStatusCode)
-					{
-						var resp = await response.Content.ReadAsStringAsync();
-						ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " user_id: " + platformUser.Id + " first_name: " + platformUser.FirstName + " last_name: " + platformUser.LastName + " email: " + platformUser.Email);
-					}
-				}
-			}
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    var response = await httpClient.PostAsync(app.ApplicationSetting.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
-			return true;
-		}
-	}
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var resp = await response.Content.ReadAsStringAsync();
+                        ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + " user_id: " + platformUser.Id + " first_name: " + platformUser.FirstName + " last_name: " + platformUser.LastName + " email: " + platformUser.Email);
+                    }
+                }
+            }
+
+            return true;
+        }
+    }
 }

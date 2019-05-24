@@ -71,11 +71,10 @@ namespace PrimeApps.Model.Repositories
 			return 0;
 		}
 
-		public async Task<int> AppUpdate(App app)
+		public async Task<int> Update(App app)
 		{
 			//app.UserId = CurrentUser.UserId;
-			//return await DbContext.SaveChangesAsync();
-			return 0;
+			return await DbContext.SaveChangesAsync();
 		}
 
 		public async Task<int> AppDeleteSoft(App app)

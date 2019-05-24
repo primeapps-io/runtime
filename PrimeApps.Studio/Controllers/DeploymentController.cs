@@ -67,7 +67,7 @@ namespace PrimeApps.Studio.Controllers
             using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
-                text = sr.ReadToEnd();
+                text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
                 sr.Close();
                 fs.Close();
             }

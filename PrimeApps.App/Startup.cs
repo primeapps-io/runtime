@@ -44,7 +44,7 @@ namespace PrimeApps.App
             var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
-            
+
             services.AddWorkflow(cfg =>
                 {
                     cfg.UseRedisPersistence(redisConnectionPersist, "wfc");

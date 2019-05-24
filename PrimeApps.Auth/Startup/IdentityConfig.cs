@@ -51,7 +51,7 @@ namespace PrimeApps.Auth
                     options.ConfigureDbContext = opt => opt.UseNpgsql(configuration.GetConnectionString("AuthDBConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
 
                     options.EnableTokenCleanup = true;
-                    options.TokenCleanupInterval = 3600;//3600 (1 hour)
+                    options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
                 .AddSigningCredential(LoadCertificate());
 
@@ -62,9 +62,9 @@ namespace PrimeApps.Auth
                 services.ConfigureApplicationCookie(options => { options.Cookie.Name = ".AspNetCore.Identity.Application." + authority.Substring(authority.Length - 4); });
 
             var useLdap = configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
-            if(useLdap != null)
+            if (useLdap != null)
                 ser.AddLdapUsers<OpenLdapAppUser>(configuration.GetSection("Ldap"), UserStore.InMemory);
-                    
+
             ser.AddAspNetIdentity<ApplicationUser>();
             ser.AddProfileService<CustomProfileService>();
 

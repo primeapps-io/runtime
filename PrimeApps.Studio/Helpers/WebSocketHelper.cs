@@ -41,7 +41,6 @@ namespace PrimeApps.Studio.Helpers
             return new ArraySegment<byte>(outgoingMessage, 0, outgoingMessage.Length);
         }
 
-
         public async Task LogStream(HttpContext hContext, WebSocket wSocket)
         {
             try
@@ -64,7 +63,7 @@ namespace PrimeApps.Studio.Helpers
                     throw new Exception("User is not valid.");
 
                 var platformUserRepository = (IPlatformUserRepository)hContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
+                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
                 var platformUser = platformUserRepository.GetByEmail(email);
 
@@ -81,20 +80,19 @@ namespace PrimeApps.Studio.Helpers
                     throw new Exception("Authentication error.");
 
                 int.TryParse(wsParameters["X-App-Id"].ToString(), out appId);
-
                 int.TryParse("X-Tenant-Id", out var tenantId);
 
                 if (tenantId == 0 && appId == 0)
                     throw new Exception("Authentication error.");
 
-                var appDraftRepository = (IAppDraftRepository)hContext.RequestServices.GetService(typeof(IAppDraftRepository));
-                var tenantRepository = (ITenantRepository)hContext.RequestServices.GetService(typeof(ITenantRepository));
+                var _appDraftRepository = (IAppDraftRepository)hContext.RequestServices.GetService(typeof(IAppDraftRepository));
+                var _tenantRepository = (ITenantRepository)hContext.RequestServices.GetService(typeof(ITenantRepository));
 
-                var appIds = appDraftRepository.GetAppIdsByOrganizationId(organizationId);
+                var appIds = _appDraftRepository.GetAppIdsByOrganizationId(organizationId);
                 var previewMode = "";
                 if (tenantId != 0)
                 {
-                    var tenant = tenantRepository.Get(tenantId);
+                    var tenant = _tenantRepository.Get(tenantId);
 
                     if (!appIds.Contains(tenant.AppId))
                         throw new Exception("Authentication error.");
@@ -129,15 +127,26 @@ namespace PrimeApps.Studio.Helpers
                         var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
                         using (var deploymentRepository = new DeploymentRepository(databaseContext, _configuration))
+                        using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
-                            deployment = await deploymentRepository.Get(deploymentId);
-
                             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
+                            deployment = await deploymentRepository.Get(deploymentId);
+                            
                             using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs, Encoding.Default))
                             {
                                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
+
+                                if (text.Contains("Done..."))
+                                {
+                                    deployment.Status = DeploymentStatus.Succeed;
+                                    await deploymentRepository.Update(deployment);
+
+                                    var app = await appDraftRepository.Get(appId);
+                                    app.Status = PublishStatus.Published;
+                                    await appDraftRepository.Update(app);
+                                }
                             }
                         }
                     }

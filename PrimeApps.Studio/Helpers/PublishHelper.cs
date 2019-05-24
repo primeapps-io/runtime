@@ -52,10 +52,10 @@ namespace PrimeApps.Studio.Helpers
                 var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
-                using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
+                    //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
                 {
-                    deploymentRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = deploymentRepository.CurrentUser = _currentUser;
+                    platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
 
                     var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
@@ -74,7 +74,7 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
                     var result = await Model.Helpers.PublishHelper.Create(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, deploymentId, _configuration);
-                    var deployment = await deploymentRepository.Get(deploymentId);
+                    /*var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment != null)
                     {
@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Helpers
                         deployment.EndTime = DateTime.Now;
 
                         await deploymentRepository.Update(deployment);
-                    }
+                    }*/
                 }
             }
         }

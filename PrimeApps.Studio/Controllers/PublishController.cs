@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -40,12 +41,12 @@ namespace PrimeApps.Studio.Controllers
 
         [HttpGet]
         [Route("get_last_deployment")]
-        public IActionResult GetLastDeployment()
+        public async Task<IActionResult> GetLastDeployment()
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
                 return StatusCode(403);
 
-            var result = _publishRepository.GetLastDeployment((int)AppId);
+            var result = await _publishRepository.GetLastDeployment((int)AppId);
 
             return Ok(result);
         }
@@ -71,7 +72,12 @@ namespace PrimeApps.Studio.Controllers
                 AppId = (int)AppId,
                 Version = version.ToString(),
                 StartTime = DateTime.Now,
-                Status = DeploymentStatus.Running
+                Status = DeploymentStatus.Running,
+                Settings = new JObject {
+                    ["type"] = (int)model.Type,
+                    ["clear_all_records"] = model.ClearAllRecords,
+                    ["enable_registration"] = model.EnableRegistration
+                }.ToString()
             };
 
             await _deploymentRepository.Create(deploymentObj);
