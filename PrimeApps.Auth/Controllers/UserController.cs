@@ -315,7 +315,7 @@ namespace PrimeApps.Auth.Controllers
             }
 
             platformUser = await _platformUserRepository.Get(platformUser.Id);
-            var tenantUser = await _userRepository.GetById(platformUser.Id);
+            var tenantUser = _userRepository.GetById(platformUser.Id);
 
             if (tenantUser == null)
             {
@@ -325,7 +325,6 @@ namespace PrimeApps.Auth.Controllers
                 {
                     ModelState.AddModelError("", "Tenant user not created.");
                     return BadRequest(ModelState);
-                    return BadRequest();
                 }
             }
             else
@@ -392,7 +391,7 @@ namespace PrimeApps.Auth.Controllers
                     ["new_password"] = changePasswordViewModel.NewPassword
                 };
 
-                ExternalAuthHelper.ChangePassword(externalLogin, action, obj);
+                await ExternalAuthHelper.ChangePassword(externalLogin, action, obj);
             }
 
             var response = new JObject

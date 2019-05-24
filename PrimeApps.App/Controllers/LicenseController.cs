@@ -339,7 +339,7 @@ namespace PrimeApps.App.Controllers
             foreach (var user in users)
             {
                 await _platformUserRepository.UpdateAsync(user);
-                var userTenant = await _userRepository.GetById(tenantId);
+                var userTenant = _userRepository.GetById(tenantId);
 
                 if (userTenant != null)
                 {
@@ -374,7 +374,7 @@ namespace PrimeApps.App.Controllers
                 await _platformUserRepository.UpdateAsync(user);
 
                 _userRepository.DbContext.TenantId = tenantId;
-                var userTenant = await _userRepository.GetById(user.Id);
+                var userTenant = _userRepository.GetById(user.Id);
 
                 if (userTenant != null)
                 {

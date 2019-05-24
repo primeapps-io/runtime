@@ -18,8 +18,8 @@ namespace PrimeApps.App.Helpers
 {
 	public interface IAnalyticsHelper
 	{
-		Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository);
-		Task<Analytic> UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository);
+		Analytic CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository);
+		Analytic UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository);
 		Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration);
 	}
 
@@ -38,34 +38,34 @@ namespace PrimeApps.App.Helpers
 			_serviceScopeFactory = serviceScopeFactory;
 		}
 
-		public async Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository)
-		{
-			var analytic = new Analytic
-			{
-				Label = analyticModel.Label,
-				PbixUrl = analyticModel.PbixUrl,
-				SharingType = analyticModel.SharingType != AnalyticSharingType.NotSet ? analyticModel.SharingType : AnalyticSharingType.Everybody,
-				MenuIcon = analyticModel.MenuIcon ?? "fa fa-bar-chart"
-			};
+        public Analytic CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository)
+        {
+            var analytic = new Analytic
+            {
+                Label = analyticModel.Label,
+                PbixUrl = analyticModel.PbixUrl,
+                SharingType = analyticModel.SharingType != AnalyticSharingType.NotSet ? analyticModel.SharingType : AnalyticSharingType.Everybody,
+                MenuIcon = analyticModel.MenuIcon ?? "fa fa-bar-chart"
+            };
 
-			await CreateAnalyticShares(analyticModel, analytic, userRepository);
+            CreateAnalyticShares(analyticModel, analytic, userRepository);
 
-			return analytic;
-		}
+            return analytic;
+        }
 
-		public async Task<Analytic> UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
-		{
-			analytic.Label = analyticModel.Label;
-			analytic.PbixUrl = analyticModel.PbixUrl;
-			analytic.SharingType = analyticModel.SharingType != AnalyticSharingType.NotSet ? analyticModel.SharingType : AnalyticSharingType.Everybody;
-			analytic.MenuIcon = analyticModel.MenuIcon ?? "fa fa-bar-chart";
+        public Analytic UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
+        {
+            analytic.Label = analyticModel.Label;
+            analytic.PbixUrl = analyticModel.PbixUrl;
+            analytic.SharingType = analyticModel.SharingType != AnalyticSharingType.NotSet ? analyticModel.SharingType : AnalyticSharingType.Everybody;
+            analytic.MenuIcon = analyticModel.MenuIcon ?? "fa fa-bar-chart";
 
-			await CreateAnalyticShares(analyticModel, analytic, userRepository);
+            CreateAnalyticShares(analyticModel, analytic, userRepository);
 
-			return analytic;
-		}
+            return analytic;
+        }
 
-		public async Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration)
+        public async Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -100,20 +100,20 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		private async Task CreateAnalyticShares(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
-		{
-			if (analyticModel.Shares != null && analyticModel.Shares.Count > 0)
-			{
-				analytic.Shares = new List<AnalyticShares>();
+        private void CreateAnalyticShares(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
+        {
+            if (analyticModel.Shares != null && analyticModel.Shares.Count > 0)
+            {
+                analytic.Shares = new List<AnalyticShares>();
 
-				foreach (var userId in analyticModel.Shares)
-				{
-					var sharedUser = await userRepository.GetById(userId);
+                foreach (var userId in analyticModel.Shares)
+                {
+                    var sharedUser = userRepository.GetById(userId);
 
-					if (sharedUser != null)
-						analytic.Shares.Add(sharedUser.SharedAnalytics.FirstOrDefault(x => x.UserId == userId && x.AnaltyicId == analytic.Id));
-				}
-			}
-		}
-	}
+                    if (sharedUser != null)
+                        analytic.Shares.Add(sharedUser.SharedAnalytics.FirstOrDefault(x => x.UserId == userId && x.AnaltyicId == analytic.Id));
+                }
+            }
+        }
+    }
 }

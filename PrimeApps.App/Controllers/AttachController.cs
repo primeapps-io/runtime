@@ -238,7 +238,7 @@ namespace PrimeApps.App.Controllers
 
                 outputStream.Position = 0;
                 var blobUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-				var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
+                var result = new { filename = fileName, fileurl = _storage.GetShareLink(publicPath, publicFileName, DateTime.UtcNow.AddYears(100)) };
 
                 return Ok(result);
             }
@@ -1035,6 +1035,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel")]
+        [Obsolete]
         public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
@@ -1215,6 +1216,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export_excel_view")]
+        [Obsolete]
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
         {
             if (string.IsNullOrWhiteSpace(module))
@@ -1559,9 +1561,10 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel_no_data")]
+        [Obsolete]
         public async Task<FileStreamResult> ExportExcelNoData(string module, int viewId, int templateId, string templateName, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "")
         {
-            if (string.IsNullOrWhiteSpace(module) || templateId == null || templateId == 0)
+            if (string.IsNullOrWhiteSpace(module) || templateId <= 0)
             {
                 throw new HttpRequestException("Module field is required");
             }
@@ -1829,9 +1832,10 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel_data")]
+        [Obsolete]
         public async Task<FileStreamResult> ExportExcelData(string module, int viewId, string templateName, int templateId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "")
         {
-            if (string.IsNullOrWhiteSpace(module) || templateId == null || templateId == 0)
+            if (string.IsNullOrWhiteSpace(module) || templateId <= 0)
             {
                 throw new HttpRequestException("Module field is required");
             }

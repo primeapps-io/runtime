@@ -13,7 +13,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class DashboardHelper
     {
-        public static async Task<Dashboard> CreateEntity(DashboardBindingModel dashboardModel, UserItem user)
+        public static Dashboard CreateEntity(DashboardBindingModel dashboardModel, UserItem user)
         {
 
 
@@ -39,7 +39,7 @@ namespace PrimeApps.App.Helpers
             return dashboard;
         }
 
-        public static async Task UpdateEntity(DashboardBindingModel dashboardModel)
+        public static void UpdateEntity(DashboardBindingModel dashboardModel)
         {
             var dashboard = new Dashboard
             {

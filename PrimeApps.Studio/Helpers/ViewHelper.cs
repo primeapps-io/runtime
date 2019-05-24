@@ -11,7 +11,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public static class ViewHelper
     {
-        public static async Task<View> CreateEntity(ViewBindingModel viewModel, IUserRepository userRepository)
+        public static View CreateEntity(ViewBindingModel viewModel, IUserRepository userRepository)
         {
             var view = new View
             {
@@ -25,19 +25,19 @@ namespace PrimeApps.Studio.Helpers
                 Filters = new List<ViewFilter>()
             };
 
-            await CreateViewRelations(viewModel, view, userRepository);
+            CreateViewRelations(viewModel, view, userRepository);
 
             return view;
         }
 
-        public static async Task UpdateEntity(ViewBindingModel viewModel, View view, IUserRepository userRepository)
+        public static void UpdateEntity(ViewBindingModel viewModel, View view, IUserRepository userRepository)
         {
             view.LabelEn = viewModel.Label;
             view.LabelTr = viewModel.Label;
             view.SharingType = viewModel.SharingType != ViewSharingType.NotSet ? viewModel.SharingType : ViewSharingType.Me;
             view.FilterLogic = viewModel.FilterLogic;
 
-            await CreateViewRelations(viewModel, view, userRepository);
+            CreateViewRelations(viewModel, view, userRepository);
         }
 
         public static ViewViewModel MapToViewModel(View view)
@@ -431,7 +431,7 @@ namespace PrimeApps.Studio.Helpers
             return view;
         }
 
-        private static async Task CreateViewRelations(ViewBindingModel viewModel, View view, IUserRepository userRepository)
+        private static void CreateViewRelations(ViewBindingModel viewModel, View view, IUserRepository userRepository)
         {
             foreach (var viewFieldModel in viewModel.Fields)
             {
@@ -466,7 +466,7 @@ namespace PrimeApps.Studio.Helpers
 
                 foreach (var userId in viewModel.Shares)
                 {
-                    var sharedUser = await userRepository.GetById(userId);
+                    var sharedUser = userRepository.GetById(userId);
 
                     if (sharedUser != null)
                         view.Shares.Add(sharedUser.SharedViews.FirstOrDefault(x => x.UserId == userId && x.ViewId == view.Id));

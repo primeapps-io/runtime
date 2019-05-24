@@ -125,7 +125,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var helpEntity = await HelpHelper.CreateEntity(help, _userRepository);
+            var helpEntity = HelpHelper.CreateEntity(help, _userRepository);
             var result = await _helpRepository.Create(helpEntity);
 
             if (result < 1)
@@ -151,7 +151,7 @@ namespace PrimeApps.Studio.Controllers
             if (helpEntity == null)
                 return NotFound();
 
-            await HelpHelper.UpdateEntity(help, helpEntity, _userRepository);
+            HelpHelper.UpdateEntity(help, helpEntity, _userRepository);
             await _helpRepository.Update(helpEntity);
 
             return Ok(helpEntity);

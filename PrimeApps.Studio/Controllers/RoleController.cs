@@ -114,7 +114,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("update_user_role"), HttpPut]
 		public async Task UpdateUserRole([FromQuery(Name = "user_Id")]int userId, [FromQuery(Name = "role_Id")]int roleId)
 		{
-			var user = await _userRepository.GetById(AppUser.Id);
+			var user = _userRepository.GetById(AppUser.Id);
 
 			if (!user.Profile.HasAdminRights)
 				return;
@@ -129,21 +129,21 @@ namespace PrimeApps.Studio.Controllers
 			await _roleRepository.AddUserAsync(userId, roleId);
 		}
 
-		[Route("update_user_role_bulk"), HttpPut]
-		public async Task UpdateUserRoleBulk()
-		{
-			var user = await _userRepository.GetById(AppUser.Id);
+        [Route("update_user_role_bulk"), HttpPut]
+        public void UpdateUserRoleBulk()
+        {
+            var user = _userRepository.GetById(AppUser.Id);
 
-			if (!user.Profile.HasAdminRights)
-				return;
+            if (!user.Profile.HasAdminRights)
+                return;
 
-			BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
-		}
+            BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
+        }
 
-		[Route("add_owners"), HttpPost]
+        [Route("add_owners"), HttpPost]
 		public async Task AddOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
 		{
-			var user = await _userRepository.GetById(AppUser.Id);
+			var user = _userRepository.GetById(AppUser.Id);
 
 			if (!user.Profile.HasAdminRights)
 				return;
@@ -155,7 +155,7 @@ namespace PrimeApps.Studio.Controllers
 		[Route("remove_owners"), HttpPost]
 		public async Task RemoveOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
 		{
-			var user = await _userRepository.GetById(AppUser.Id);
+			var user = _userRepository.GetById(AppUser.Id);
 
 			if (!user.Profile.HasAdminRights)
 				return;

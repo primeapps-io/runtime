@@ -87,7 +87,6 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest(new {message = "User already exist"});
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
-            var result = 0;
             string password = "";
 
             if (!string.IsNullOrEmpty(clientId))
@@ -149,7 +148,7 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Update))
                 return StatusCode(403);
 
-            var user = await _userRepository.GetById(id);
+            var user = _userRepository.GetById(id);
             if (user == null)
                 return BadRequest();
 
@@ -176,7 +175,7 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            var user = await _userRepository.GetById(id);
+            var user = _userRepository.GetById(id);
 
             if (user == null)
                 return BadRequest();

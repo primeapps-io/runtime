@@ -91,7 +91,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var templateEntity = await TemplateHelper.CreateEntity(template, _userRepository);
+			var templateEntity = TemplateHelper.CreateEntity(template, _userRepository);
 			var result = await _templateRepostory.Create(templateEntity);
 
 			if (result < 1)
@@ -113,7 +113,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var templateEntity = await TemplateHelper.CreateEntityExcel(template, _userRepository);
+			var templateEntity = TemplateHelper.CreateEntityExcel(template, _userRepository);
 			var result = await _templateRepostory.Create(templateEntity);
 
 			if (result < 1)
@@ -139,7 +139,7 @@ namespace PrimeApps.Studio.Controllers
 			if (templateEntity == null)
 				return NotFound();
 
-			await TemplateHelper.UpdateEntity(template, templateEntity, _userRepository, null, null);
+			TemplateHelper.UpdateEntity(template, templateEntity, _userRepository, null, null);
 			await _templateRepostory.Update(templateEntity);
 
 			if (template.Chunks > 0)
@@ -164,17 +164,17 @@ namespace PrimeApps.Studio.Controllers
 			return Ok();
 		}
 
-		[Route("count"), HttpGet]
-		public async Task<IActionResult> Count([FromUri]TemplateType templateType)
-		{
+        [Route("count"), HttpGet]
+        public IActionResult Count([FromUri]TemplateType templateType)
+        {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var count = await _templateRepostory.Count(templateType);
-			return Ok(count);
-		}
+            var count = _templateRepostory.Count(templateType);
+            return Ok(count);
+        }
 
-		[Route("find"), HttpPost]
+        [Route("find"), HttpPost]
 		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType = 0)
 		{
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
@@ -194,7 +194,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
-			var templateEntity = await TemplateHelper.CreateEntityAppTemplate(template, app.Id);
+			var templateEntity = TemplateHelper.CreateEntityAppTemplate(template, app.Id);
 			var result = await _platformRepository.CreateAppTemplate(templateEntity);
 
 			if (result < 1)
@@ -220,7 +220,7 @@ namespace PrimeApps.Studio.Controllers
 				if (templateEntity == null)
 					return NotFound();
 
-				await TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
+				TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
 				await _platformRepository.UpdateAppTemplate(templateEntity);
 				return Ok(templateEntity);
 			}
@@ -239,7 +239,7 @@ namespace PrimeApps.Studio.Controllers
 			{
 				return Ok(0);
 			}
-			var count = await _platformRepository.Count(app.Id);
+			var count = _platformRepository.Count(app.Id);
 			return Ok(count);
 		}
 

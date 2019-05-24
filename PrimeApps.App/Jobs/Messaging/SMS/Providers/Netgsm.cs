@@ -103,6 +103,9 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
                     Status = NotificationStatus.SystemError
                 };
             }
+
+            await Task.FromResult("ok");//Added to allow asynchronous callers
+
             return new SMSResponse()
             {
                 Response = sWebPage,

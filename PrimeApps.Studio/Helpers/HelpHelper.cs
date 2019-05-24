@@ -7,7 +7,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public static class HelpHelper
     {
-        public static async Task<Help> CreateEntity(HelpBindingModel helpModel, IUserRepository userRepository)
+        public static Help CreateEntity(HelpBindingModel helpModel, IUserRepository userRepository)
         {
             var help = new Help
             {
@@ -20,14 +20,14 @@ namespace PrimeApps.Studio.Helpers
                 ModuleType = helpModel.ModuleType,
                 Name = helpModel.Name,
                 CustomHelp = helpModel.CustomHelp
-               
+
 
             };
 
             return help;
         }
 
-        public static async Task<Help> UpdateEntity(HelpBindingModel helpModel, Help help, IUserRepository userRepository)
+        public static Help UpdateEntity(HelpBindingModel helpModel, Help help, IUserRepository userRepository)
         {
             help.Template = helpModel.Template;
             help.ModuleId = helpModel.ModuleId;
@@ -38,7 +38,7 @@ namespace PrimeApps.Studio.Helpers
             help.ModuleType = helpModel.ModuleType;
             help.Name = helpModel.Name;
             help.CustomHelp = helpModel.CustomHelp;
-           
+
 
             return help;
         }

@@ -77,7 +77,7 @@ namespace PrimeApps.App.Controllers
         [Route("update"), HttpPut]
         public async Task Update([FromQuery]bool roleChange, [FromBody]RoleDTO role)
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;
@@ -97,7 +97,7 @@ namespace PrimeApps.App.Controllers
         [Route("delete"), HttpDelete]
         public async Task Delete([FromQuery(Name = "id")]int id, [FromQuery(Name = "transferRoleId")]int transferRoleId)
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;
@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
         [Route("update_user_role"), HttpPut]
         public async Task UpdateUserRole([FromQuery(Name = "user_Id")]int userId, [FromQuery(Name = "role_Id")]int roleId)
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;
@@ -124,9 +124,9 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_user_role_bulk"), HttpPut]
-        public async Task UpdateUserRoleBulk()
+        public void UpdateUserRoleBulk()
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;
@@ -137,7 +137,7 @@ namespace PrimeApps.App.Controllers
         [Route("add_owners"), HttpPost]
         public async Task AddOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;
@@ -149,7 +149,7 @@ namespace PrimeApps.App.Controllers
         [Route("remove_owners"), HttpPost]
         public async Task RemoveOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
         {
-            var user = await _userRepository.GetById(AppUser.Id);
+            var user = _userRepository.GetById(AppUser.Id);
 
             if (!user.Profile.HasAdminRights)
                 return;

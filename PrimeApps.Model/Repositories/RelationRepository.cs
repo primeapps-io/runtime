@@ -38,31 +38,31 @@ namespace PrimeApps.Model.Repositories
 			return await count.CountAsync();
 		}
 
-		public async Task<ICollection<Relation>> Find(int id, PaginationModel paginationModel)
-		{
-			var relations = GetPaginationGQuery(id, paginationModel)
-				.Skip(paginationModel.Offset * paginationModel.Limit)
-				.Take(paginationModel.Limit).ToList();
+        public ICollection<Relation> Find(int id, PaginationModel paginationModel)
+        {
+            var relations = GetPaginationGQuery(id, paginationModel)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
 
-			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-			{
-				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
 
-				if (paginationModel.OrderType == "asc")
-				{
-					relations = relations.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-				}
-				else
-				{
-					relations = relations.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-				}
+                if (paginationModel.OrderType == "asc")
+                {
+                    relations = relations.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    relations = relations.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
 
-			}
+            }
 
-			return relations;
-		}
+            return relations;
+        }
 
-		public async Task<Relation> GetById(int id)
+        public async Task<Relation> GetById(int id)
 		{
 			var relation = await GetRelationQuery()
 				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);

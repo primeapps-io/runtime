@@ -176,7 +176,7 @@ namespace PrimeApps.Studio.Helpers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
                 using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))
-				{
+                {
 
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
                     oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
@@ -212,7 +212,7 @@ namespace PrimeApps.Studio.Helpers
                 var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
                     _recordRepository.CurrentUser = _currentUser;
 
@@ -313,7 +313,6 @@ namespace PrimeApps.Studio.Helpers
                         //email.AddRecipient((string)fullRecord["owner.email"]);
                         //email.AddToQueue(appUser: appUser);
                     }
-
                     // Send task notification_sms if it is true
                     if (!fullRecord["task_notification_sms"].IsNullOrEmpty() && (bool)fullRecord["task_notification_sms"])
                     {
@@ -321,6 +320,8 @@ namespace PrimeApps.Studio.Helpers
                     }
                 }
             }
+
+            await Task.FromResult("ok");//Added to allow asynchronous callers
         }
     }
 }

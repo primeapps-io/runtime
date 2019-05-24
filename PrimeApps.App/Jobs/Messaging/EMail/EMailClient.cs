@@ -281,8 +281,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 			if (ids?.Length > 0 || isAllSelected)
 			{
-				var idsList = "";
-				if (isAllSelected)
+                if (isAllSelected)
 				{
 					//Query with filtered or non filtered selectedAll ids..
 					var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();

@@ -28,7 +28,6 @@ namespace PrimeApps.App.Controllers
 
             var tenantId = 0;
             var appId = 0;
-            var header = true;
 
             if (PreviewMode == "tenant")
             {

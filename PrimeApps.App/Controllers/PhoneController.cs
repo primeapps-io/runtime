@@ -185,17 +185,17 @@ namespace PrimeApps.App.Controllers
 
         }
         [Route("get_config")]
-        public async Task<IActionResult> GetConfigAndAccounts()
+        public IActionResult GetConfigAndAccounts()
         {
             var config = new JObject();
             var phoneSettings = _settingRepository.Get(SettingType.Phone);
 
             if (phoneSettings != null && phoneSettings.Count > 0)
             {
- 
+
                 var provider = phoneSettings.FirstOrDefault(r => r.Key == "provider");
                 var companyKey = phoneSettings.FirstOrDefault(r => r.Key == "sip_company_key");
-              
+
 
                 if (provider != null)
                     config["provider"] = provider.Value;

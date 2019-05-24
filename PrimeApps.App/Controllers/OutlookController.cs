@@ -657,7 +657,7 @@ namespace PrimeApps.App.Controllers
                     {
                         foreach (var combinationField in combinationFields)
                         {
-                            _recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
+                            await _recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
                         }
 
                         hasUpdate = true;

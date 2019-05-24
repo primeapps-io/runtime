@@ -153,7 +153,7 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<TenantUser> GetById(int userId)
+        public TenantUser GetById(int userId)
         {
             return DbContext.Users
                 .Include(x => x.Profile)

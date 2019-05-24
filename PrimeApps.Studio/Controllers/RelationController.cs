@@ -56,24 +56,24 @@ namespace PrimeApps.Studio.Controllers
 			return Ok(count);
 		}
 
-		[Route("find/{id:int}"), HttpPost]
-		public async Task<IActionResult> Find(int id,[FromBody]PaginationModel paginationModel)
-		{
-			var relations = await _relationRepository.Find(id,paginationModel);
+        [Route("find/{id:int}"), HttpPost]
+        public IActionResult Find(int id, [FromBody]PaginationModel paginationModel)
+        {
+            var relations = _relationRepository.Find(id, paginationModel);
 
-			//if (relations == null)
-				//return Ok(null);
+            //if (relations == null)
+            //return Ok(null);
 
-			//foreach (var relation in relations)
-			//{
-			//	var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
-			//	relation.RelationModule = relationModule;
-			//}
+            //foreach (var relation in relations)
+            //{
+            //	var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
+            //	relation.RelationModule = relationModule;
+            //}
 
-			return Ok(relations);
-		}
+            return Ok(relations);
+        }
 
-		[Route("get_all"), HttpGet]
+        [Route("get_all"), HttpGet]
 		public async Task<ICollection<Relation>> GetAll()
 		{
 			return await _relationRepository.GetAll();

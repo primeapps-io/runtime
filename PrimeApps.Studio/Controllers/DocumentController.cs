@@ -192,60 +192,60 @@ namespace PrimeApps.Studio.Controllers
 			//return NotFound();
 		}
 
-		/// <summary>
-		/// Uploads files by the chucks as a stream.
-		/// </summary>
-		/// <param name="fileContents">The file contents.</param>
-		/// <returns>System.String.</returns>
-		[Route("Upload"), HttpPost]
-		public async Task<IActionResult> Upload()
-		{
+        /// <summary>
+        /// Uploads files by the chucks as a stream.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <returns>System.String.</returns>
+        [Route("Upload"), HttpPost]
+        public IActionResult Upload()
+        {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
                 return StatusCode(403);
 
             DocumentUploadResult result;
-			var isUploaded = _documentHelper.Upload(Request.Body, out result);
+            var isUploaded = _documentHelper.Upload(Request.Body, out result);
 
-			if (!isUploaded && result == null)
-			{
-				return NotFound();
-			}
+            if (!isUploaded && result == null)
+            {
+                return NotFound();
+            }
 
-			if (!isUploaded)
-			{
-				return BadRequest();
-			}
+            if (!isUploaded)
+            {
+                return BadRequest();
+            }
 
-			return Ok(result);
-		}
+            return Ok(result);
+        }
 
-		[Route("Upload_Excel"), HttpPost]
-		public async Task<IActionResult> UploadExcel()
-		{
+        [Route("Upload_Excel"), HttpPost]
+        public IActionResult UploadExcel()
+        {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
                 return StatusCode(403);
 
             DocumentUploadResult result;
-			var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
+            var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
 
-			if (!isUploaded && result == null)
-			{
-				return NotFound();
-			}
+            if (!isUploaded && result == null)
+            {
+                return NotFound();
+            }
 
-			if (!isUploaded)
-			{
-				return BadRequest();
-			}
+            if (!isUploaded)
+            {
+                return BadRequest();
+            }
 
-			return Ok(result);
-		}
+            return Ok(result);
+        }
 
-		/// <summary>
-		/// Using at email attachments and on module 
-		/// </summary>
-		/// <returns></returns>
-		[Route("upload_attachment"), HttpPost]
+        /// <summary>
+        /// Using at email attachments and on module 
+        /// </summary>
+        /// <returns></returns>
+        [Route("upload_attachment"), HttpPost]
 		public async Task<IActionResult> UploadAttachment()
 		{
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "Document", RequestTypeEnum.Create))
@@ -602,7 +602,7 @@ namespace PrimeApps.Studio.Controllers
 
 			if (UniqueFileName != null)
 			{
-				AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
+				await AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
 				return Ok(UniqueFileName);
 			}
 
@@ -844,28 +844,28 @@ namespace PrimeApps.Studio.Controllers
 
 		}
 
-		[Route("document_search"), HttpPost]
-		public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
-		{
+        [Route("document_search"), HttpPost]
+        public IActionResult SearchDocument([FromBody]DocumentFilterRequest filterRequest)
+        {
             if (filterRequest != null && filterRequest.Filters.Count > 0)
-			{
-				DocumentSearch search = new DocumentSearch();
+            {
+                DocumentSearch search = new DocumentSearch();
 
-				var searchIndexName = AppUser.TenantGuid + "-" + filterRequest.Module;
+                var searchIndexName = AppUser.TenantGuid + "-" + filterRequest.Module;
 
-				if (filterRequest.Module == null || filterRequest.Top > 50)
-				{
-					return BadRequest();
-				}
+                if (filterRequest.Module == null || filterRequest.Top > 50)
+                {
+                    return BadRequest();
+                }
 
-				var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
+                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
 
-				return Ok(results);
-			}
-			return BadRequest();
-		}
+                return Ok(results);
+            }
+            return BadRequest();
+        }
 
-		[Route("find"), HttpPost]
+        [Route("find"), HttpPost]
 		public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
 		{
             var documents = await _documentRepository.GetDocumentsByLimit(request);

@@ -131,7 +131,7 @@ namespace PrimeApps.App.Controllers
 		{
 			//get user to start modification.
 			PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
-			User tenantUserToEdit = await _userRepository.GetById(AppUser.Id);
+			User tenantUserToEdit = _userRepository.GetById(AppUser.Id);
 
 			if (user.picture != tenantUserToEdit.Picture && user.picture != null)
 			{
@@ -419,7 +419,7 @@ namespace PrimeApps.App.Controllers
 				return NotFound();
 
 			_userRepository.TenantId = tenantId;
-			var user = await _userRepository.GetById(userEntity.Id);
+			var user = _userRepository.GetById(userEntity.Id);
 
 			var userModel = new
 			{
@@ -455,11 +455,11 @@ namespace PrimeApps.App.Controllers
 			return Ok(users);
 		}
 
-		//TODO Removed
-		[Route("get_office_users"), HttpGet]
-		public async Task<IActionResult> GetOfficeUsers()
-		{
-			/*var clientId = "7697cae4-0291-4449-8046-7b1cae642982";
+        //TODO Removed
+        [Route("get_office_users"), HttpGet]
+        public IActionResult GetOfficeUsers()
+        {
+            /*var clientId = "7697cae4-0291-4449-8046-7b1cae642982";
             var appKey = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
             var graphResourceID = "https://graph.windows.net";
             var graphSettings = new GraphSettings
@@ -542,10 +542,10 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok(false);
             }*/
-			return Ok();
-		}
+            return Ok();
+        }
 
-		/*
+        /*
         [Route("UpdateActiveDirectoryEmail"), HttpGet]
         public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)
         {
@@ -572,7 +572,7 @@ namespace PrimeApps.App.Controllers
         }
 
         */
-		/*private async Task<string> GetTokenForGraph(string tenantID, string signedInUserID, string userObjectID, string clientId, string appKey, string graphResourceID)
+        /*private async Task<string> GetTokenForGraph(string tenantID, string signedInUserID, string userObjectID, string clientId, string appKey, string graphResourceID)
         {
              // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
             ClientCredential clientcred = new ClientCredential(clientId, appKey);
@@ -581,5 +581,5 @@ namespace PrimeApps.App.Controllers
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
         }*/
-	}
+    }
 }

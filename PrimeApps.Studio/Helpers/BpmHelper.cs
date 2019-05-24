@@ -406,7 +406,7 @@ namespace PrimeApps.Studio.Helpers
                                 var filterField = module.Fields.Where(q => q.Name == filter.Field).FirstOrDefault();
                                 var filterFieldStr = filter.Field;
 
-                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id")) ;
+                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"))
                                 filterFieldStr = filter.Field + ".id";
 
                                 if (filterField == null || record[filterFieldStr] == null)

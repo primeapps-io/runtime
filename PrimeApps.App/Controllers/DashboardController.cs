@@ -85,7 +85,7 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]DashboardBindingModel dashboard)
         {
-            var dashboardEntity = await DashboardHelper.CreateEntity(dashboard, AppUser);
+            var dashboardEntity = DashboardHelper.CreateEntity(dashboard, AppUser);
             var create = await _dashboardRepository.Create(dashboardEntity);
             return Ok(create);
         }

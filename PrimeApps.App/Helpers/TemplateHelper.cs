@@ -10,7 +10,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class TemplateHelper
     {
-        public static async Task<Template> CreateEntity(TemplateBindingModel templateModel, IUserRepository userRepository)
+        public static Template CreateEntity(TemplateBindingModel templateModel, IUserRepository userRepository)
         {
             var template = new Template
             {
@@ -40,12 +40,12 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            await CreateTemplateRelations(templateModel, template, userRepository);
+            CreateTemplateRelations(templateModel, template, userRepository);
 
             return template;
         }
 
-        public static async Task<Template> CreateEntityExcel(TemplateBindingModel templateModel, IUserRepository userRepository)
+        public static Template CreateEntityExcel(TemplateBindingModel templateModel, IUserRepository userRepository)
         {
             var template = new Template
             {
@@ -75,12 +75,12 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            await CreateTemplateRelations(templateModel, template, userRepository);
+            CreateTemplateRelations(templateModel, template, userRepository);
 
             return template;
         }
 
-        public static async Task UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
+        public static void UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
         {
             template.Name = templateModel.Name;
             template.Subject = templateModel.Subject;
@@ -125,10 +125,10 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            await CreateTemplateRelations(templateModel, template, userRepository);
+            CreateTemplateRelations(templateModel, template, userRepository);
         }
 
-        private static async Task CreateTemplateRelations(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
+        private static void CreateTemplateRelations(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
         {
             if (templateModel.Shares != null && templateModel.Shares.Count > 0)
             {
@@ -136,7 +136,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var userId in templateModel.Shares)
                 {
-                    var sharedUser = await userRepository.GetById(userId);
+                    var sharedUser = userRepository.GetById(userId);
 
                     if (sharedUser != null)
                         template.Shares.Add(sharedUser.SharedTemplates.FirstOrDefault(x => x.UserId == userId && x.TemplateId == template.Id));

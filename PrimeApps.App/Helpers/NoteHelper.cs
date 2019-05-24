@@ -9,7 +9,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class NoteHelper
     {
-        public static async Task<Note> CreateEntity(NoteBindingModel noteModel, IUserRepository userRepository)
+        public static Note CreateEntity(NoteBindingModel noteModel, IUserRepository userRepository)
         {
             var note = new Note
             {
@@ -19,23 +19,23 @@ namespace PrimeApps.App.Helpers
                 NoteId = noteModel.NoteId
             };
 
-            await CreateLikesRelations(noteModel, note, userRepository);
+            CreateLikesRelations(noteModel, note, userRepository);
 
             return note;
         }
 
-        public static async Task<Note> UpdateEntity(NoteBindingModel noteModel, Note note, IUserRepository userRepository)
+        public static Note UpdateEntity(NoteBindingModel noteModel, Note note, IUserRepository userRepository)
         {
             note.Text = noteModel.Text;
-            
-            await CreateLikesRelations(noteModel, note, userRepository);
+
+            CreateLikesRelations(noteModel, note, userRepository);
 
             return note;
         }
 
-        public static async Task<Note> UpdateLikedNote(Note note, int userId, IUserRepository userRepository)
+        public static Note UpdateLikedNote(Note note, int userId, IUserRepository userRepository)
         {
-            var likedUser = await userRepository.GetById(userId);
+            var likedUser = userRepository.GetById(userId);
 
             var noteLike = new NoteLikes();
             noteLike.NoteId = note.Id;
@@ -49,10 +49,10 @@ namespace PrimeApps.App.Helpers
                     x++;
                     noteLike = like;
                 }
-                    
+
             }
 
-            if(x>0)
+            if (x > 0)
                 note.NoteLikes.Remove(noteLike);
             else
                 note.NoteLikes.Add(noteLike);
@@ -60,13 +60,13 @@ namespace PrimeApps.App.Helpers
             return note;
         }
 
-        private static async Task CreateLikesRelations(NoteBindingModel noteModel, Note note, IUserRepository userRepository)
+        private static void CreateLikesRelations(NoteBindingModel noteModel, Note note, IUserRepository userRepository)
         {
             if (noteModel.Likes != null && noteModel.Likes.Count > 0)
             {
                 foreach (var userId in noteModel.Likes)
                 {
-                    var likedUser = await userRepository.GetById(userId);
+                    var likedUser = userRepository.GetById(userId);
 
                     if (likedUser != null)
                         note.Likes.Add(likedUser);

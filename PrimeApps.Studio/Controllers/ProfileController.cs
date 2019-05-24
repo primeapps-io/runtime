@@ -156,12 +156,12 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("count"), HttpGet]
-        public async Task<IActionResult> Count([FromUri]TemplateType templateType)
+        public IActionResult Count([FromUri]TemplateType templateType)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var count = await _profileRepository.Count();
+            var count = _profileRepository.Count();
 
             //if (count < 1)
             //	return NotFound(count);
