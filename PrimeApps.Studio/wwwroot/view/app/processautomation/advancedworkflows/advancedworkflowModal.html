@@ -36,7 +36,7 @@
                                 Manual (Coming soon)
                                 <span></span>
                             </label>
-                        </div> 
+                        </div>
 
                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                             <label class="col-sm-12">{{'Setup.BpmWorkflow.Module' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
@@ -911,7 +911,7 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'"  ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.bcc.$invalid}">
+                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'" ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.bcc.$invalid}">
                                 <tags-input name="bcc"
                                             class="form-control"
                                             ng-model="workflowModel.send_notification.bcc"
@@ -1016,7 +1016,85 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 30px;">
+                        <div class="form-group">
+                            <label class="col-sm-12">
+                                Headers
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-group table-responsive">
+                                <table class="filter-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding-left:10px !important;">Data Type</th>
+                                            <th style="padding-left:10px !important;">Key</th>
+                                            <th style="padding-left:10px !important;">Value</th>
+                                            <th style="padding-left:10px !important;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="header in hookHeaders">
+                                            <td>
+                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderType_'+$index].$invalid}">
+                                                    <select class="form-control"
+                                                            name="hookHeaderType_{{$index}}"
+                                                            tabindex="{{$index}}"
+                                                            ng-model="header.type">
+                                                        <option value="">Select a Type -></option>
+                                                        <option value="static">Predefined</option>
+                                                        <option value="custom">Custom</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderKey_'+{{$index}}].$invalid}">
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           name="hookHeaderKey_{{$index}}"
+                                                           ng-required="header.type"
+                                                           ng-disabled="!header.type"
+                                                           ng-model="header.key"
+                                                           maxlength="50" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-if="header.type === 'static'">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderValue_'+{{$index}}].$invalid}">
+                                                        <select class="form-control"
+                                                                name="hookHeaderValue_{{$index}}"
+                                                                ng-required="header.type && header.key"
+                                                                ng-disabled="!header.key"
+                                                                ng-model="header.value">
+                                                            <option value="">Select a Value -></option>
+                                                            <option value="{:app:}">App ID</option>
+                                                            <option value="{:tenant:}">Tenant ID</option>
+                                                            <option value="{:user:}">User ID</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div ng-if="!header.type || header.type === 'custom'">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderCustomValue_'+{{$index}}].$invalid}">
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               name="hookHeaderCustomValue_{{$index}}"
+                                                               ng-required="header.type && header.key"
+                                                               ng-disabled="!header.key"
+                                                               ng-model="header.value">
+                                                    </div>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
+                                                <a href ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-12">
                                 {{'Setup.BpmWorkflow.WebHookParameters' | translate}}
                             </label>
@@ -1027,10 +1105,10 @@
                                 <table class="filter-table">
                                     <thead>
                                         <tr>
-                                            <th>{{'Setup.Workflow.ParameterName' | translate}} </th>
-                                            <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
-                                            <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
-                                            <th></th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.ParameterName' | translate}} </th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedModule' | translate}}</th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedField' | translate}}</th>
+                                            <th style="padding-left:10px !important;"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
