@@ -4,6 +4,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,7 +74,7 @@ namespace PrimeApps.Model.Repositories
         }
 
         public async Task<int> GetIdByEmail(string email)
-        { 
+        {
             return await DbContext.Users.Where(x => x.Email == email).Select(x => x.Id).SingleOrDefaultAsync();
         }
 
@@ -246,12 +247,12 @@ namespace PrimeApps.Model.Repositories
             //get instances by user id, then fetch entity types with it's fields.
             result = await DbContext.Tenants
                 .Where(x => x.OwnerId == id)
-                .Select(i => new Workgroup //create workgroup dto and assign its fields.
+                .Select(i => new Workgroup//create workgroup dto and assign its fields.
                 {
                     TenantId = i.Id,
                     Title = i.Title,
                     OwnerId = i.OwnerId,
-                    Users = i.TenantUsers.Select(u => new UserList //get users for the instance.
+                    Users = i.TenantUsers.Select(u => new UserList//get users for the instance.
                     {
                         Id = u.PlatformUser.Id,
                         userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
@@ -280,10 +281,15 @@ namespace PrimeApps.Model.Repositories
 
         public async Task HardCodedUpdateUser(PlatformUser userToEdit)
         {
-            var sql = $"UPDATE users set first_name='{userToEdit.FirstName}', last_name='{userToEdit.LastName}', updated_at= Now() where id ={userToEdit.Id};"
-					 +$"UPDATE user_settings set phone ='{userToEdit.Setting.Phone}' where user_id = {userToEdit.Id};";
-            
-            await DbContext.Database.ExecuteSqlCommandAsync(sql);
+            var sql = @"UPDATE users set first_name='@firstName', last_name='@lastName', updated_at= Now() where id = @userId1;"
+                      + "UPDATE user_settings set phone ='@phone' where user_id = @userId2;";
+
+            await DbContext.Database.ExecuteSqlCommandAsync(sql,
+                new SqlParameter("@firstName", userToEdit.FirstName),
+                new SqlParameter("@lastName", userToEdit.LastName),
+                new SqlParameter("@userId1", userToEdit.Id),
+                new SqlParameter("@phone", userToEdit.Setting.Phone),
+                new SqlParameter("@userId2", userToEdit.Id));
         }
     }
 }

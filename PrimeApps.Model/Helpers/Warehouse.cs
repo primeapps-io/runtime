@@ -44,10 +44,10 @@ namespace PrimeApps.Model.Helpers
                 connection.Open();
 
                 var sqlUserRole = "CREATE ROLE reader_view_creator AUTHORIZATION [dbo];\n" +
-                    "GRANT CREATE VIEW TO reader_view_creator;" +
-                    "GRANT SELECT, ALTER, VIEW DEFINITION ON SCHEMA::dbo TO reader_view_creator;" +
-                    $"CREATE USER {warehouseEntity.DatabaseUser} FROM LOGIN {warehouseEntity.DatabaseUser};\n" +
-                    $"EXEC sp_addrolemember 'reader_view_creator', '{warehouseEntity.DatabaseUser}';";
+                                  "GRANT CREATE VIEW TO reader_view_creator;" +
+                                  "GRANT SELECT, ALTER, VIEW DEFINITION ON SCHEMA::dbo TO reader_view_creator;" +
+                                  $"CREATE USER {warehouseEntity.DatabaseUser} FROM LOGIN {warehouseEntity.DatabaseUser};\n" +
+                                  $"EXEC sp_addrolemember 'reader_view_creator', '{warehouseEntity.DatabaseUser}';";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -57,16 +57,16 @@ namespace PrimeApps.Model.Helpers
                 }
 
                 var sqlTrigger = "CREATE TRIGGER trig_db_BlockAlterDropTable\n" +
-                    "ON DATABASE\n" +
-                    "FOR DROP_TABLE, ALTER_TABLE\n" +
-                    "AS\n" +
-                    "BEGIN\n" +
-                       "\tIF IS_MEMBER('reader_view_creator') = 1\n" +
-                       "\tBEGIN\n" +
-                           "\t\tPRINT 'You are not authorized to alter or drop a table.';\n" +
-                           "\t\tROLLBACK TRANSACTION;\n" +
-                       "\tEND;\n" +
-                    "END;";
+                                 "ON DATABASE\n" +
+                                 "FOR DROP_TABLE, ALTER_TABLE\n" +
+                                 "AS\n" +
+                                 "BEGIN\n" +
+                                 "\tIF IS_MEMBER('reader_view_creator') = 1\n" +
+                                 "\tBEGIN\n" +
+                                 "\t\tPRINT 'You are not authorized to alter or drop a table.';\n" +
+                                 "\t\tROLLBACK TRANSACTION;\n" +
+                                 "\tEND;\n" +
+                                 "END;";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -375,6 +375,7 @@ namespace PrimeApps.Model.Helpers
             {
                 connection = new SqlConnection(warehouseConnection);
             }
+
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -398,6 +399,7 @@ namespace PrimeApps.Model.Helpers
             {
                 connection = new SqlConnection(warehouseConnection);
             }
+
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -422,6 +424,7 @@ namespace PrimeApps.Model.Helpers
             {
                 connection = new SqlConnection(warehouseConnection);
             }
+
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -652,7 +655,6 @@ namespace PrimeApps.Model.Helpers
                     command.ExecuteNonQuery();
                 }
             }
-
         }
 
         public void CreateProfile(Profile profile, string databaseName, string tenantLanguage)
@@ -832,6 +834,7 @@ namespace PrimeApps.Model.Helpers
             var user = GetTenantUser(userId, currentUser);
             CreateTenantUser(user, databaseName, tenantLanguage);
         }
+
         public void UpdateTenantUser(Entities.Tenant.TenantUser user, string databaseName, string tenantLanguage, bool delete = false)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
@@ -1164,11 +1167,11 @@ namespace PrimeApps.Model.Helpers
 
         public void ImportRevert(int importId, string databaseName, string moduleName, CurrentUser currentUser)
         {
-            var sql = $"UPDATE {moduleName}_d SET deleted = true WHERE import_id = @importId";
+            var sql = @"UPDATE {moduleName}_d SET deleted = true WHERE import_id = @importId";
 
             _analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
-            _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql, importId);
+            _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql, new SqlParameter("@importId", importId));
         }
 
         private void CreateColumn(Database database, Table table, Module module, Field field)
@@ -1677,6 +1680,7 @@ namespace PrimeApps.Model.Helpers
                         columns.Add("[forecast_quarter]");
                         values.Add("@forecast_quarter");
                     }
+
                     break;
                 case "current_accounts":
                     command.Parameters.Add(new SqlParameter { ParameterName = "transaction_type_system", SqlValue = (string)record["transaction_type_system"], SqlDbType = SqlDbType.VarChar });
@@ -1725,6 +1729,7 @@ namespace PrimeApps.Model.Helpers
                         command.Parameters.Add(new SqlParameter { ParameterName = "activity_type_system", SqlValue = (string)record["activity_type_system"], SqlDbType = SqlDbType.VarChar });
                         sets.Add("[activity_type_system] = @activity_type_system");
                     }
+
                     break;
                 case "opportunities":
                     if (!record["forecast_type"].IsNullOrEmpty())
@@ -1756,6 +1761,7 @@ namespace PrimeApps.Model.Helpers
                         command.Parameters.Add(new SqlParameter { ParameterName = "forecast_quarter", SqlValue = (int)record["forecast_quarter"], SqlDbType = SqlDbType.Int });
                         sets.Add("[forecast_quarter] = @forecast_quarter");
                     }
+
                     break;
                 case "current_accounts":
                     if (!record["transaction_type_system"].IsNullOrEmpty())
@@ -1763,6 +1769,7 @@ namespace PrimeApps.Model.Helpers
                         command.Parameters.Add(new SqlParameter { ParameterName = "transaction_type_system", SqlValue = (string)record["transaction_type_system"], SqlDbType = SqlDbType.VarChar });
                         sets.Add("[transaction_type_system] = @transaction_type_system");
                     }
+
                     break;
             }
         }
