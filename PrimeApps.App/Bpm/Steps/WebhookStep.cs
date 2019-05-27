@@ -118,7 +118,7 @@ namespace PrimeApps.App.Bpm.Steps
                                         switch (value)
                                         {
                                             case "{:app:}":
-                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.TenantId.ToString());
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.AppId.ToString());
                                                 break;  
                                             case "{:tenant:}":
                                                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.TenantId.ToString()); 
@@ -129,8 +129,7 @@ namespace PrimeApps.App.Bpm.Steps
                                             default:
                                                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
                                                 break;
-                                        }
-                                       
+                                        } 
                                     }
                                 }
                             }

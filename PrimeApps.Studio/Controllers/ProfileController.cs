@@ -19,13 +19,13 @@ namespace PrimeApps.Studio.Controllers
 		private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository;
+		private ISettingRepository _settingRepository; 
 		private IConfiguration _configuration;
 		private Warehouse _warehouse;
 		private IModuleHelper _moduleHelper;
         private IPermissionHelper _permissionHelper;
 
-        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
+        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
 		{
 			_relationRepository = relationRepository;
 			_profileRepository = profileRepository;

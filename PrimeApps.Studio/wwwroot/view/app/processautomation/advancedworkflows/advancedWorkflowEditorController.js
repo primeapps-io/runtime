@@ -369,9 +369,7 @@ angular.module('primeapps')
             };
 
             $scope.showSettingFormModal = function () {
-
-                AdvancedWorkflowsService.get($scope.id)
-
+                 
                 $scope.settingFormModal = $scope.settingFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/processautomation/advancedworkflows/advancedWorkflowSettingModal.html',
