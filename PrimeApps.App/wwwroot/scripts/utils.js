@@ -1546,7 +1546,7 @@ angular.module('primeapps')
                             var component = components[i];
 
                             if (component.content.lastIndexOf('http', 0) === 0)
-                                promises.push($http.get(component.content));
+                                promises.push($http.get(component.content + '?v=' + new Date().getTime()));
                         }
 
                         var runScripts = function () {
