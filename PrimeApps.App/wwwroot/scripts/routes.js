@@ -145,38 +145,37 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$rootScope', '$state','$$animateJs', '$ocLazyLoad','$filter', function ($rootScope, $state,$$animateJs, $ocLazyLoad,$filter) {
+                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
 
                             var files = [
                                 cdnUrl + 'view/app/module/moduleDetailController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
-                                cdnUrl + 'view/app/email/bulkEMailController.js',                          
+                                cdnUrl + 'view/app/email/bulkEMailController.js',
                                 cdnUrl + 'view/app/module/moduleAddModalController.js',
                                 cdnUrl + 'view/app/email/singleEmailController.js',
                                 cdnUrl + 'view/app/sms/singleSMSController.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/location/locationFormModalController.js',
-                                cdnUrl + 'view/app/email/templateService.js',                             
+                                cdnUrl + 'view/app/email/templateService.js',
                             ];
 
-                            currentSectionComponentsTemplate = [];
-                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+                            if ($state.params.type) {
+                                currentSectionComponentsTemplate = [];
+                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
 
-                            if (sectionComponents['component' + moduleId]) {
-                                var sectionComponent = sectionComponents['component' + moduleId];
+                                if (sectionComponents['component' + moduleId]) {
+                                    var sectionComponent = sectionComponents['component' + moduleId];
 
-                                for (var i = 0; i < sectionComponent.length; i++) {
-                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                    angular.forEach(sectionFiles, function (item) {
-                                        files.push(item)
-                                    });
+                                    for (var i = 0; i < sectionComponent.length; i++) {
+                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                        angular.forEach(sectionFiles, function (item) {
+                                            files.push(item)
+                                        });
 
-
-                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                    }
                                 }
                             }
-
-
 
                             return $ocLazyLoad.load(files);
                         }]
@@ -201,23 +200,24 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                             ];
 
-                            currentSectionComponentsTemplate = [];
-                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+                            if ($state.params.type) {
+                                currentSectionComponentsTemplate = [];
+                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
 
-                            if (sectionComponents['component' + moduleId]) {
-                                var sectionComponent = sectionComponents['component' + moduleId];
+                                if (sectionComponents['component' + moduleId]) {
+                                    var sectionComponent = sectionComponents['component' + moduleId];
 
-                                for (var i = 0; i < sectionComponent.length; i++) {
-                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                    angular.forEach(sectionFiles, function (item) {
-                                        files.push(item)
-                                    });
+                                    for (var i = 0; i < sectionComponent.length; i++) {
+                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                        angular.forEach(sectionFiles, function (item) {
+                                            files.push(item)
+                                        });
 
 
-                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                    }
                                 }
                             }
-
 
                             if (googleMapsApiKey) {
                                 files.push({
