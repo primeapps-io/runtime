@@ -30,8 +30,7 @@ namespace PrimeApps.Studio.Controllers
         private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository;
-        private IModuleRepository _moduleRepository;
+        private ISettingRepository _settingRepository; 
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
@@ -41,7 +40,7 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformUserRepository _platformUserRepository;
         private IOrganizationRepository _organizationRepository;
 
-        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository, IOrganizationRepository organizationRepository)
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository, IOrganizationRepository organizationRepository)
         {
             _relationRepository = relationRepository;
             _profileRepository = profileRepository;

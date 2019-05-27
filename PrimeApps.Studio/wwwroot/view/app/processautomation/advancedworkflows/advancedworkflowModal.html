@@ -614,7 +614,7 @@
                                         {{workflowModel.field_update.value}}
                                     </label>
                                     <span>
-                                        <a href ng-show="workflowModel.field_update.value"
+                                        <a href="#" ng-show="workflowModel.field_update.value"
                                            ng-click="removeFile()">
                                             <i class="fa fa-minus-circle"></i>
                                         </a>
@@ -1047,7 +1047,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderKey_'+{{$index}}].$invalid}">
+                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderKey_'+$index].$invalid}">
                                                     <input type="text"
                                                            class="form-control"
                                                            name="hookHeaderKey_{{$index}}"
@@ -1059,7 +1059,7 @@
                                             </td>
                                             <td>
                                                 <div ng-if="header.type === 'static'">
-                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderValue_'+{{$index}}].$invalid}">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderValue_'+$index].$invalid}">
                                                         <select class="form-control"
                                                                 name="hookHeaderValue_{{$index}}"
                                                                 ng-required="header.type && header.key"
@@ -1073,7 +1073,7 @@
                                                     </div>
                                                 </div>
                                                 <div ng-if="!header.type || header.type === 'custom'">
-                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderCustomValue_'+{{$index}}].$invalid}">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderCustomValue_'+$index].$invalid}">
                                                         <input type="text"
                                                                class="form-control"
                                                                name="hookHeaderCustomValue_{{$index}}"
@@ -1085,8 +1085,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
-                                                <a href ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                                <a href="#" ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
+                                                <a href="#" ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1143,8 +1143,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
-                                                <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                                <a href="#" ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
+                                                <a href="#" ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
