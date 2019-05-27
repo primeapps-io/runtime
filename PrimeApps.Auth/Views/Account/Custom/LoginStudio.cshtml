@@ -7,7 +7,6 @@
 
 	var app = "primeapps";
 	var customDomain = false;
-	string customLanguage = null;
 	bool multiLanguage = true;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
 	if (Model.ApplicationInfo != null)
@@ -16,7 +15,6 @@
 		multiLanguage = Model.ApplicationInfo.MultiLanguage;
 		ViewBag.Title = Model.ApplicationInfo.Title;
 		customDomain = Model.ApplicationInfo.CustomDomain;
-		//customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
 	}
 	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
 }

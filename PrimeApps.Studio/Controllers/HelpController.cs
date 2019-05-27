@@ -24,7 +24,6 @@ namespace PrimeApps.Studio.Controllers
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
 		private ISettingRepository _settingRepository;
-		private IModuleRepository _moduleRepository;
 		private IConfiguration _configuration;
 		private Warehouse _warehouse;
 		private IModuleHelper _moduleHelper;

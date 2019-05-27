@@ -9,7 +9,6 @@ namespace PrimeApps.Studio.Controllers
     public class PreviewController : DraftBaseController
     {
         private IConfiguration _configuration;
-        private Warehouse _warehouse;
 
         public PreviewController(IConfiguration configuration)
         {
