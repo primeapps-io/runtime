@@ -33,6 +33,7 @@ angular.module('primeapps')
             var count = function () {
                 ScriptsService.count().then(function (response) {
                     $scope.pageTotal = response.data;
+                    $scope.changePage(1);
                 });
             };
             count();
