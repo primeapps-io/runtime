@@ -1838,7 +1838,7 @@ namespace PrimeApps.Studio.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", organizationId, appId), temp.Content, temp.Name + type);
+                return await _storage.Download(UnifiedStorage.GetPath("template", null, appId), temp.Content, temp.Name + type);
             }
             else
             {

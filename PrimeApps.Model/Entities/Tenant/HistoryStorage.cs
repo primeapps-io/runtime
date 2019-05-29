@@ -17,6 +17,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("operation")]
         public string Operation { get; set; }
 
+        [Column("tag")]
+        public string Tag { get; set; }
+        
         [Column("file_name")]
         public string FileName { get; set; }
 

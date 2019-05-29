@@ -20,14 +20,27 @@ namespace PrimeApps.Studio.Controllers
         private IBackgroundTaskQueue _queue;
         private IPublishRepository _publishRepository;
         private IDeploymentRepository _deploymentRepository;
+        private IAppDraftRepository _appDraftRepository;
+        private IHistoryDatabaseRepository _historyDatabaseRepository;
+        private IHistoryStorageRepository _historyStorageRepository;
         private IPermissionHelper _permissionHelper;
         private IPublishHelper _publishHelper;
 
-        public PublishController(IPublishHelper publishHelper, IPublishRepository publishRepository, IDeploymentRepository deploymentRepository, IPermissionHelper permissionHelper, IBackgroundTaskQueue queue)
+        public PublishController(IPublishHelper publishHelper,
+            IPublishRepository publishRepository,
+            IDeploymentRepository deploymentRepository,
+            IAppDraftRepository appDraftRepository,
+            IHistoryDatabaseRepository historyDatabaseRepository,
+            IHistoryStorageRepository historyStorageRepository,
+            IPermissionHelper permissionHelper,
+            IBackgroundTaskQueue queue)
         {
             _publishHelper = publishHelper;
             _deploymentRepository = deploymentRepository;
             _publishRepository = publishRepository;
+            _historyDatabaseRepository = historyDatabaseRepository;
+            _historyStorageRepository = historyStorageRepository;
+            _appDraftRepository = appDraftRepository;
             _permissionHelper = permissionHelper;
             _queue = queue;
         }
@@ -36,6 +49,8 @@ namespace PrimeApps.Studio.Controllers
         {
             SetContext(context);
             SetCurrentUser(_deploymentRepository);
+            SetCurrentUser(_historyDatabaseRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_historyStorageRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
         }
 
@@ -73,7 +88,8 @@ namespace PrimeApps.Studio.Controllers
                 Version = version.ToString(),
                 StartTime = DateTime.Now,
                 Status = DeploymentStatus.Running,
-                Settings = new JObject {
+                Settings = new JObject
+                {
                     ["type"] = (int)model.Type,
                     ["clear_all_records"] = model.ClearAllRecords,
                     ["enable_registration"] = model.EnableRegistration
@@ -81,6 +97,24 @@ namespace PrimeApps.Studio.Controllers
             };
 
             await _deploymentRepository.Create(deploymentObj);
+
+            var dbHistory = await _historyDatabaseRepository.GetLast();
+            if (dbHistory != null)
+            {
+                dbHistory.Tag = deploymentObj.Version;
+                await _historyDatabaseRepository.Update(dbHistory);
+            }
+
+            var storageHistory = await _historyStorageRepository.GetLast();
+            if (storageHistory != null)
+            {
+                storageHistory.Tag = deploymentObj.Version;
+                await _historyStorageRepository.Update(storageHistory);
+            }
+
+            var app = await _appDraftRepository.Get((int)AppId);
+            app.Setting.EnableRegistration = model.EnableRegistration;
+            await _appDraftRepository.Update(app);
 
             _queue.QueueBackgroundWorkItem(token => _publishHelper.Create((int)AppId, model.ClearAllRecords, dbName, version, deploymentObj.Id));
 

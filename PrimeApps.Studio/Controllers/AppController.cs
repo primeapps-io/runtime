@@ -73,13 +73,24 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
+
+            var authTheme = new JArray();
+            authTheme.Add(new JObject
+            {
+                ["image"] = "/images/banner.svg",
+                ["descriptions"] = new JObject
+                {
+                    ["en"] = "Welcome to PrimeApps",
+                    ["tr"] = "PrimeApps’e Hoşgeldiniz"
+                }
+            });
 
             var app = new AppDraft
             {
@@ -93,6 +104,31 @@ namespace PrimeApps.Studio.Controllers
                 Color = model.Color,
                 Icon = model.Icon,
                 Setting = new AppDraftSetting()
+                {
+                    AuthDomain = _configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty).Replace("https://", string.Empty).Replace("http://", string.Empty),
+                    AppDomain = string.Format(_configuration.GetValue("AppSettings:AppUrl", string.Empty), model.Name),
+                    Currency = "USD",
+                    Culture = "en-US",
+                    TimeZone = "America/New_York",
+                    Language = "en",
+                    AuthTheme = new JObject()
+                    {
+                        ["logo"] = "/images/logo.png",
+                        ["color"] = "#555198",
+                        ["title"] = "PrimeApps",
+                        ["banner"] = authTheme,
+                        ["favicon"] = "/images/primeapps.ico"
+                    }.ToJsonString(),
+                    AppTheme = new JObject()
+                    {
+                        ["logo"] = "/images/logo.jpg",
+                        ["color"] = "#555198",
+                        ["title"] = "PrimeApps",
+                        ["favicon"] = "images/favicon/primeapps.ico"
+                    }.ToJsonString(),
+                    MailSenderName = "PrimeApps",
+                    MailSenderEmail = "app@primeapps.io",
+                }
             };
 
             var result = await _appDraftRepository.Create(app);
@@ -101,7 +137,9 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest("An error occurred while creating an app");
 
             app.Collaborators = new List<AppCollaborator>
-                {new AppCollaborator {UserId = AppUser.Id, Profile = ProfileEnum.Manager}};
+                {new AppCollaborator {UserId = AppUser.Id, Profile = ProfileEnum.Manager
+    }
+};
 
             var resultUpdate = await _appDraftRepository.Update(app);
 
@@ -117,7 +155,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -154,7 +192,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody] JObject request)
+        public async Task<IActionResult> Organizations([FromBody]JObject request)
         {
             var search = "";
             var page = 0;
@@ -166,10 +204,10 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (request["page"].IsNullOrEmpty())
-                    page = (int) request["page"];
+                    page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus) int.Parse(request["status"].ToString());
+                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
             var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
@@ -201,7 +239,7 @@ namespace PrimeApps.Studio.Controllers
 
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -233,7 +271,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update_app_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

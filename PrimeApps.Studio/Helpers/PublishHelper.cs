@@ -52,7 +52,7 @@ namespace PrimeApps.Studio.Helpers
                 var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
-                    //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
+                //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
                 {
                     platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
@@ -73,7 +73,9 @@ namespace PrimeApps.Studio.Helpers
                         Formatting = Formatting.Indented,
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
+                    
                     var result = await Model.Helpers.PublishHelper.Create(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, deploymentId, _configuration);
+                    
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment != null)

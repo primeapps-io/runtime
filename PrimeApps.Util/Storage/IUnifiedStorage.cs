@@ -20,6 +20,7 @@ namespace PrimeApps.Util.Storage
         Task<DeleteObjectResponse> DeleteObject(string bucket, string key);
         Task<FileStreamResult> Download(string bucket, string key, string fileName);
         Task<string> InitiateMultipartUpload(string bucket, string key);
+        Task UploadDirAsync(string bucket, string folderPath);
         Task Upload(string bucket, string key, Stream stream);
         Task Upload(string fileName, string bucket, string key, Stream stream);
         Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream);

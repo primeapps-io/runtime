@@ -15,15 +15,18 @@ namespace PrimeApps.Auth.Repositories
 
         public async Task<Client> Get(string clientId)
         {
-            return await DbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId);
+            return await DbContext.Clients
+            .Include(x => x.RedirectUris)
+            .Include(x => x.PostLogoutRedirectUris)
+            .FirstOrDefaultAsync(x => x.ClientId == clientId);
         }
-        
+
         public async Task<int> Create(Client client)
         {
             DbContext.Clients.Add(client);
             return await DbContext.SaveChangesAsync();
         }
-        
+
         public async Task<int> Update(Client client)
         {
             return await DbContext.SaveChangesAsync();

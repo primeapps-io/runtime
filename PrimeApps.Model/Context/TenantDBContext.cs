@@ -211,7 +211,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<NoteLikes>()
-                .HasKey(t => new {t.UserId, t.NoteId});
+                .HasKey(t => new { t.UserId, t.NoteId });
 
             modelBuilder.Entity<NoteLikes>()
                 .HasOne(pt => pt.Note)
@@ -224,7 +224,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<ReportShares>()
-                .HasKey(t => new {t.UserId, t.ReportId});
+                .HasKey(t => new { t.UserId, t.ReportId });
 
             modelBuilder.Entity<ReportShares>()
                 .HasOne(pt => pt.Report)
@@ -443,13 +443,13 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ReportCategory>().HasIndex(x => x.Deleted);
 
             //Section
-            modelBuilder.Entity<Section>().HasIndex(x => new {x.ModuleId, x.Name}).HasName("sections_IX_module_id_name").IsUnique();
+            modelBuilder.Entity<Section>().HasIndex(x => new { x.ModuleId, x.Name }).HasName("sections_IX_module_id_name").IsUnique();
             modelBuilder.Entity<Section>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Section>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Section>().HasIndex(x => x.Deleted);
 
             //SectionPermission
-            modelBuilder.Entity<SectionPermission>().HasIndex(x => new {x.SectionId, x.ProfileId}).HasName("section_permissions_IX_section_id_profile_id").IsUnique();
+            modelBuilder.Entity<SectionPermission>().HasIndex(x => new { x.SectionId, x.ProfileId }).HasName("section_permissions_IX_section_id_profile_id").IsUnique();
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<SectionPermission>().HasIndex(x => x.Deleted);
@@ -558,6 +558,14 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
+
+            //HistoryDatabase
+            modelBuilder.Entity<HistoryDatabase>().HasIndex(x => x.Tag);
+            modelBuilder.Entity<HistoryDatabase>().HasIndex(x => x.TableName);
+
+            //HistoryStorage
+            modelBuilder.Entity<HistoryStorage>().HasIndex(x => x.Tag);
+            modelBuilder.Entity<HistoryStorage>().HasIndex(x => x.UniqueName);
         }
 
         public DbSet<HistoryDatabase> HistoryDatabases { get; set; }

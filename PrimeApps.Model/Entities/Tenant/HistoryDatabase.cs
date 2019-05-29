@@ -16,6 +16,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("table_name")]
         public string TableName { get; set; }
 
+        [Column("tag")]
+        public string Tag { get; set; }
+
         [Column("command_id")]
         public Guid CommandId { get; set; }
 

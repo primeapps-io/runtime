@@ -3,8 +3,10 @@ using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IHistoryStorageRepository: IRepositoryBaseTenant
+    public interface IHistoryStorageRepository : IRepositoryBaseTenant
     {
+        Task<HistoryStorage> GetLast();
         Task<int> Create(HistoryStorage historyStorage);
+        Task<int> Update(HistoryStorage historyDatabase);
     }
-}    
+}

@@ -118,7 +118,7 @@ namespace PrimeApps.Auth.Helpers
                     Culture = "en-US",
                     Language = "en",
                     Currency = "USD",
-                    TimeZone = "America/Chicago"
+                    TimeZone = "America/New_York",
                 };
             }
 
@@ -129,7 +129,7 @@ namespace PrimeApps.Auth.Helpers
                 LastName = userModel.LastName,
                 Setting = settings,
                 IsIntegrationUser = isIntegration,
-                IntegrationUserClientId = isIntegration ? $"{appName}-integration" : null
+                IntegrationUserClientId = isIntegration ? appName : null
             };
 
             using (var _scope = _serviceScopeFactory.CreateScope())

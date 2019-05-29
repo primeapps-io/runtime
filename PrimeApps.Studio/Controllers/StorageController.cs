@@ -148,7 +148,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("attachment",null, (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -184,7 +184,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("template",null, (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -270,7 +270,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo",null, (int)AppId);
 
             if (parser.Success)
             {

@@ -1642,7 +1642,7 @@ namespace PrimeApps.Auth.UI
                     {
                         settings.Culture = culture;
                         settings.Language = culture.Substring(0, 2);
-                        settings.TimeZone = "America/Chicago";
+                        settings.TimeZone = "America/New_York";
                         settings.Currency = culture.Substring(0, 2);
                     }
                     else

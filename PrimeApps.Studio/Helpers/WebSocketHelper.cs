@@ -16,6 +16,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
@@ -132,8 +133,8 @@ namespace PrimeApps.Studio.Helpers
                             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
                             deployment = await deploymentRepository.Get(deploymentId);
-                            
-                            using (var fs = new FileStream($"{path}\\published\\logs\\\\{dbName}\\{deployment.Version}.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+
+                            using (var fs = new FileStream($"{path}\\deployments\\{dbName}\\{deployment.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs, Encoding.Default))
                             {
                                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
@@ -146,6 +147,11 @@ namespace PrimeApps.Studio.Helpers
                                     var app = await appDraftRepository.Get(appId);
                                     app.Status = PublishStatus.Published;
                                     await appDraftRepository.Update(app);
+
+                                    var bucketName = UnifiedStorage.GetPath("releases", null, appId, "/" + deployment.Version + "/");
+
+                                    var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
+                                    await _storage.UploadDirAsync(bucketName, $"{path}\\deployments\\{dbName}\\{deployment.Version}");
                                 }
                             }
                         }

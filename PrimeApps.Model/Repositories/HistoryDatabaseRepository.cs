@@ -14,10 +14,14 @@ namespace PrimeApps.Model.Repositories
         public HistoryDatabaseRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
-        
+
         public async Task<HistoryDatabase> Get(Guid commandId)
         {
             return await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.CommandId == commandId);
+        }
+        public async Task<HistoryDatabase> GetLast()
+        {
+            return await DbContext.HistoryDatabases.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
         }
 
         public async Task<int> Create(HistoryDatabase historyDatabase)

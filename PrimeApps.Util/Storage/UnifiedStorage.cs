@@ -41,7 +41,8 @@ namespace PrimeApps.Util.Storage
             PROFILEPICTURE,
             NONE,
             APPLOGO,
-            APPTEMPLATE
+            APPTEMPLATE,
+            RELEASE
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -57,7 +58,8 @@ namespace PrimeApps.Util.Storage
             {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
             {ObjectType.NONE, ""},
             {ObjectType.APPLOGO, "/app_logo/"},
-            {ObjectType.APPTEMPLATE, "/app_template/"}
+            {ObjectType.APPTEMPLATE, "/app_template/"},
+            {ObjectType.RELEASE, "/release/"}
         };
 
 
@@ -128,6 +130,58 @@ namespace PrimeApps.Util.Storage
             _client = client;
             ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
+        }
+
+        /// <summary>
+        /// Uploads a file stream into a bucket.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public async Task UploadDirAsync(string bucket, string folderPath)
+        {
+            try
+            {
+                await CreateBucketIfNotExists(bucket);
+
+                var directoryTransferUtility =
+                    new TransferUtility(_client);
+
+                // 1. Upload a directory.
+                await directoryTransferUtility.UploadDirectoryAsync(folderPath, bucket);
+
+                // 2. Upload only the .txt files from a directory 
+                //    and search recursively. 
+                /*await directoryTransferUtility.UploadDirectoryAsync(
+                                               folderPath,
+                                               bucket,
+                                               "*",
+                                               SearchOption.AllDirectories);*/
+
+                // 3. The same as Step 2 and some optional configuration. 
+                //    Search recursively for .txt files to upload.
+                var request = new TransferUtilityUploadDirectoryRequest
+                {
+                    BucketName = bucket,
+                    Directory = folderPath,
+                    SearchOption = SearchOption.AllDirectories,
+                    SearchPattern = "*"
+                };
+
+                await directoryTransferUtility.UploadDirectoryAsync(request);
+                Console.WriteLine("Upload statement 3 completed");
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine(
+                        "Error encountered ***. Message:'{0}' when writing an object", e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(
+                    "Unknown encountered on server. Message:'{0}' when writing an object", e.Message);
+            }
         }
 
         /// <summary>
@@ -573,14 +627,14 @@ namespace PrimeApps.Util.Storage
         }
 
 
-        public static string GetPath(string type, int tenant, int appId = 0, int userId = 0, string extraPath = "")
+        public static string GetPath(string type, int? tenant = null, int? appId = null, string extraPath = "")
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
-            if (appId == 0)
+            if (appId == null)
                 return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
             else
-                return $"app{appId}{"/user" + userId}{pathMap[objectType]}{extraPath}";
+                return $"app{appId}{pathMap[objectType]}{extraPath}";
         }
 
         public static string GetPathPictures(string type, int userId, string extraPath = "")
