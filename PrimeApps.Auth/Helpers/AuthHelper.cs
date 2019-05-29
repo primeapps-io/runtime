@@ -58,7 +58,7 @@ namespace PrimeApps.Auth.UI
                 {
                     using (var httpClient = new HttpClient())
                     {
-                        var url = studioUrl + "/api/app_draft/get_app_settings/" + request.Cookies["app_id"];
+                        var url = studioUrl + "/api/app_draft/get_app_settings/" + previewAppId;
 
                         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -66,7 +66,7 @@ namespace PrimeApps.Auth.UI
                         var content = await response.Content.ReadAsStringAsync();
                         if (!response.IsSuccessStatusCode)
                         {
-                            ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
+                            ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " +previewAppId);
                         }
                         appSettings = JObject.Parse(content);
                         if (appSettings != null && appSettings["auth_theme"] != null)

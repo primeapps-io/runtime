@@ -111,9 +111,9 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Count(TemplateType templateType)
+        public int Count(TemplateType templateType)
         {
-			var count = DbContext.Templates
+            var count = DbContext.Templates
                .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
             return count;
         }

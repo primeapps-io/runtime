@@ -8,8 +8,7 @@ namespace PrimeApps.Studio.Controllers
     [Route("api/preview")]
     public class PreviewController : DraftBaseController
     {
-        private IConfiguration _configuration;
-        private Warehouse _warehouse;
+        private IConfiguration _configuration; 
 
         public PreviewController(IConfiguration configuration)
         {

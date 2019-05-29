@@ -261,7 +261,7 @@ namespace PrimeApps.Studio.Controllers
                     //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
                 await _moduleRepository.Update(entityRevert);

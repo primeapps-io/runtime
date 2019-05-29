@@ -24,7 +24,7 @@ namespace PrimeApps.App.Helpers
 			return null;
 		}
 
-		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app, bool preview = false)
+		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app,int? appId, bool preview = false)
 		{
 			var language = request.Cookies["_lang"];
 
@@ -43,11 +43,11 @@ namespace PrimeApps.App.Helpers
 			if (preview)
 			{
 				var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-				if (!string.IsNullOrEmpty(studioUrl))
+				if (!string.IsNullOrEmpty(studioUrl) && appId != null && appId > 0)
 				{
 					using (var httpClient = new HttpClient())
 					{
-						var url = studioUrl + "/api/app_draft/get_app_settings/" + request.Cookies["app_id"];
+						var url = studioUrl + "/api/app_draft/get_app_settings/" + appId;
 
 						httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -55,7 +55,7 @@ namespace PrimeApps.App.Helpers
 						var content = await response.Content.ReadAsStringAsync();
 						if (!response.IsSuccessStatusCode)
 						{
-							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + request.Cookies["app_id"]);
+							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + appId);
 						}
 						var appSettings = JObject.Parse(content);
 						if (appSettings != null && appSettings["app_theme"] != null)

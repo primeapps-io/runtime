@@ -1717,7 +1717,7 @@ namespace PrimeApps.Auth.UI
                             _userRepository.TenantId = _recordRepository.TenantId = tenantId;
 
                         var result = await _userHelper.CreateTenantUser(platformUser.Id, userModel, applicationInfo.Id, tenantId, platformUser.Setting.Culture, applicationInfo.ApplicationSetting.Currency);
-                        var tenantUser = await _userRepository.GetById(platformUser.Id);
+                        var tenantUser = _userRepository.GetById(platformUser.Id);
                         if (tenantUser == null)
                         {
                             response["Error"] = "UnexpectedError";

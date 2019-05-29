@@ -22,11 +22,12 @@ namespace PrimeApps.App.Logging
         {
             Queue = queue;
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var request = await FormatRequest(context.Request);
+            var request = FormatRequest(context.Request);
 
             var originalBodyStream = context.Response.Body;
 
@@ -48,11 +49,11 @@ namespace PrimeApps.App.Logging
 
                 if (context.Response.StatusCode == 200)
                 {
-                    Queue.QueueBackgroundWorkItem(async token => ErrorHandler.LogMessage(request + ", RESPONSE: " + response));
+                    //Queue.QueueBackgroundWorkItem(token => ErrorHandler.LogMessage(request + ", RESPONSE: " + response));//TODO: Cannot be static
                 }
             }
         }
-        private async Task<string> FormatRequest(HttpRequest request)
+        private string FormatRequest(HttpRequest request)
         {
             var injectedRequestStream = new MemoryStream();
 

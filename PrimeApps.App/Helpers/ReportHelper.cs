@@ -20,8 +20,8 @@ namespace PrimeApps.App.Helpers
 {
     public interface IReportHelper
     {
-        Task<Report> CreateEntity(ReportBindingModel reportModel);
-        Task UpdateEntity(ReportBindingModel reportModel, Report report);
+        Report CreateEntity(ReportBindingModel reportModel);
+        void UpdateEntity(ReportBindingModel reportModel, Report report);
         ReportViewModel MapToViewModel(Report report);
         List<ReportViewModel> MapToViewModel(ICollection<Report> reports);
         ReportCategory CreateCategoryEntity(ReportCategoryBindingModel reportCategoryModel);
@@ -31,7 +31,7 @@ namespace PrimeApps.App.Helpers
         Widget CreateWidgetEntity(WidgetBindingModel widgetModel, int reportId);
         Widget UpdateWidgetEntity(WidgetBindingModel widgetModel, Widget widget);
         void Validate(ReportBindingModel report, ModelStateDictionary modelState, ValidateFilterLogic ValidateFilterLogic);
-        Task CreateReportRelations(ReportBindingModel reportModel, Report report);
+        void CreateReportRelations(ReportBindingModel reportModel, Report report);
     }
 
     public class ReportHelper : IReportHelper
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context, configuration);
         }
 
-        public async Task<Report> CreateEntity(ReportBindingModel reportModel)
+        public Report CreateEntity(ReportBindingModel reportModel)
         {
             var report = new Report
             {
@@ -68,12 +68,12 @@ namespace PrimeApps.App.Helpers
                 Aggregations = new List<ReportAggregation>()
             };
 
-            await CreateReportRelations(reportModel, report);
+            CreateReportRelations(reportModel, report);
 
             return report;
         }
 
-        public async Task UpdateEntity(ReportBindingModel reportModel, Report report)
+        public void UpdateEntity(ReportBindingModel reportModel, Report report)
         {
             report.Name = reportModel.Name;
             report.ModuleId = reportModel.ModuleId;
@@ -85,7 +85,7 @@ namespace PrimeApps.App.Helpers
             report.SharingType = reportModel.SharingType != ReportSharingType.NotSet ? reportModel.SharingType : ReportSharingType.Me;
             report.FilterLogic = reportModel.FilterLogic;
 
-            await CreateReportRelations(reportModel, report);
+            CreateReportRelations(reportModel, report);
         }
 
         public ReportViewModel MapToViewModel(Report report)
@@ -147,7 +147,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var user in report.Shares)
                 {
-                    reportViewModel.Shares.Add(new UserBasicViewModel {Id = user.UserId, FullName = user.TenantUser.FullName});
+                    reportViewModel.Shares.Add(new UserBasicViewModel { Id = user.UserId, FullName = user.TenantUser.FullName });
                 }
             }
 
@@ -256,7 +256,7 @@ namespace PrimeApps.App.Helpers
                 modelState.AddModelError("request._widget", "Widget cannot be null when report type is single");
         }
 
-        public async Task CreateReportRelations(ReportBindingModel reportModel, Report report)
+        public void CreateReportRelations(ReportBindingModel reportModel, Report report)
         {
             if (reportModel.Fields != null)
             {
@@ -313,11 +313,11 @@ namespace PrimeApps.App.Helpers
                         var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                         using (var _userRepository = new UserRepository(databaseContext, _configuration))
                         {
-                            var sharedUser = await _userRepository.GetById(userId);
+                            var sharedUser = _userRepository.GetById(userId);
                             _userRepository.CurrentUser = _currentUser;
 
                             if (sharedUser != null)
-                                report.Shares.Add(new ReportShares {TenantUser = sharedUser});
+                                report.Shares.Add(new ReportShares { TenantUser = sharedUser });
                         }
                     }
                 }

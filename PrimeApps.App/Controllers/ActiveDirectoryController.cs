@@ -25,8 +25,8 @@ namespace PrimeApps.App.Controllers
         {
             _platformUserRepository = platformUserRepository;
         }
-		
-        public async Task<ActionResult> SignUp()
+
+        public ActionResult SignUp()
         {
             /*UserItem result = null;
             var userId = await Cache.ApplicationUser.GetId(User.Identity.Name);
@@ -52,7 +52,7 @@ namespace PrimeApps.App.Controllers
             var authorizationRequest = string.Format(
                 "https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}&state={3}",
                 Uri.EscapeDataString("7697cae4-0291-4449-8046-7b1cae642982"),
-				Uri.EscapeDataString("https://graph.windows.net"),
+                Uri.EscapeDataString("https://graph.windows.net"),
                 Uri.EscapeDataString(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
                 Uri.EscapeDataString(Guid.NewGuid().ToString())
             );
@@ -63,15 +63,15 @@ namespace PrimeApps.App.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> ProcessCode(string code, string error, string error_description, string resource, string state)
+        public ActionResult ProcessCode(string code, string error, string error_description, string resource, string state)
         {
 
-			if (error == "access_denied")
-			{
-				ViewBag.Error = "accessDenied";
-			}
-			return View();
-			/*
+            if (error == "access_denied")
+            {
+                ViewBag.Error = "accessDenied";
+            }
+            return View();
+            /*
 			var langCookie = Request.Cookies["_lang"];
             var language = langCookie != null ? langCookie : "tr";
             Thread.CurrentThread.CurrentUICulture = language == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
@@ -141,6 +141,6 @@ namespace PrimeApps.App.Controllers
 
                 return View();
             }*/
-		}
+        }
     }
 }

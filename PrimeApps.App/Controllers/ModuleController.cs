@@ -20,7 +20,7 @@ using Microsoft.Extensions.Configuration;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/module"), Authorize]
-	public class ModuleController : ApiBaseController
+    public class ModuleController : ApiBaseController
     {
         private IModuleRepository _moduleRepository;
         private IViewRepository _viewRepository;
@@ -30,7 +30,7 @@ namespace PrimeApps.App.Controllers
         private IConfiguration _configuration;
         private Warehouse _warehouse;
 
-	    private IModuleHelper _moduleHelper;
+        private IModuleHelper _moduleHelper;
 
         public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
         {
@@ -42,7 +42,7 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
             _menuRepository = menuRepository;
 
-	        _moduleHelper = moduleHelper;
+            _moduleHelper = moduleHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -140,8 +140,8 @@ namespace PrimeApps.App.Controllers
             //Create dynamic table
             try
             {
-				moduleEntity.Name = char.IsNumber(moduleEntity.Name[0]) ? "n" + moduleEntity.Name : moduleEntity.Name;
-				var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
+                moduleEntity.Name = char.IsNumber(moduleEntity.Name[0]) ? "n" + moduleEntity.Name : moduleEntity.Name;
+                var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
 
                 if (resultCreateTable != -1)
                 {
@@ -181,7 +181,7 @@ namespace PrimeApps.App.Controllers
             await _profileRepository.AddModuleAsync(moduleEntity.Id);
             await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
-	        _moduleHelper.AfterCreate(AppUser, moduleEntity);
+            _moduleHelper.AfterCreate(AppUser, moduleEntity);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
@@ -224,7 +224,7 @@ namespace PrimeApps.App.Controllers
                     //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
                 await _moduleRepository.Update(entityRevert);
@@ -243,16 +243,16 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-			//var viewStates = await _viewRepository.GetAllViewStates(id);
-			//if (viewStates.Count > 0)
-			//{
-			//    foreach (var viewState in viewStates)
-			//    {
-			//        await _viewRepository.DeleteHardViewState(viewState);
-			//    }
-			//}
+            //var viewStates = await _viewRepository.GetAllViewStates(id);
+            //if (viewStates.Count > 0)
+            //{
+            //    foreach (var viewState in viewStates)
+            //    {
+            //        await _viewRepository.DeleteHardViewState(viewState);
+            //    }
+            //}
 
-	        _moduleHelper.AfterUpdate(AppUser, moduleEntity);
+            _moduleHelper.AfterUpdate(AppUser, moduleEntity);
 
             return Ok();
         }
@@ -269,7 +269,7 @@ namespace PrimeApps.App.Controllers
 
             if (result > 0)
             {
-	            _moduleHelper.AfterDelete(AppUser, moduleEntity);
+                _moduleHelper.AfterDelete(AppUser, moduleEntity);
                 await _menuRepository.DeleteModuleFromMenu(id);
             }
 
@@ -342,7 +342,7 @@ namespace PrimeApps.App.Controllers
             if (relationEntity == null)
                 return NotFound();
 
-	        _moduleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
+            _moduleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
             await _moduleRepository.UpdateRelation(relationEntity);
 
             return Ok();
@@ -401,7 +401,7 @@ namespace PrimeApps.App.Controllers
             if (dependencyEntity == null)
                 return NotFound();
 
-	        _moduleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
+            _moduleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
             await _moduleRepository.UpdateDependency(dependencyEntity);
 
             return Ok();

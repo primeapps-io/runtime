@@ -101,28 +101,28 @@ namespace PrimeApps.App.Controllers
 			return Ok(warehouseInfo);
 		}
 
-		[Route("change_warehouse_password"), HttpPut]
-		public async Task<IActionResult> ChangeWarehousePassword([FromBody]WarehousePasswordRequest request)
-		{
-			var isPasswordComplex = Utils.IsComplexPassword(request.DatabasePassword);
+        [Route("change_warehouse_password"), HttpPut]
+        public IActionResult ChangeWarehousePassword([FromBody]WarehousePasswordRequest request)
+        {
+            var isPasswordComplex = Utils.IsComplexPassword(request.DatabasePassword);
 
-			if (!isPasswordComplex)
-				ModelState.AddModelError("password", "Password validation failed. The password does not meet policy requirements because it is not complex enough.");
+            if (!isPasswordComplex)
+                ModelState.AddModelError("password", "Password validation failed. The password does not meet policy requirements because it is not complex enough.");
 
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			//var warehouse = await _warehousePlatformRepository.GetByTenantId(AppUser.TenantId);
+            //var warehouse = await _warehousePlatformRepository.GetByTenantId(AppUser.TenantId);
 
-			//if (warehouse == null)
-			//    return NotFound();
+            //if (warehouse == null)
+            //    return NotFound();
 
-			//_warehouseHelper.ChangePassword(request, warehouse);
+            //_warehouseHelper.ChangePassword(request, warehouse);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
 		public async Task<IActionResult> Get(int id)
 		{
 			var analytic = await _analyticRepository.GetById(id);
@@ -197,7 +197,7 @@ namespace PrimeApps.App.Controllers
 		{
 			if (!ModelState.IsValid)
 				return BadRequest();
-			var analyticEntity = await _analyticsHelper.CreateEntity(analytic, _userRepository);
+			var analyticEntity = _analyticsHelper.CreateEntity(analytic, _userRepository);
 			var result = await _analyticRepository.Create(analyticEntity);
 
 			if (result < 1)
@@ -275,7 +275,7 @@ namespace PrimeApps.App.Controllers
 				}
 			}
 
-			await _analyticsHelper.UpdateEntity(analytic, analyticEntity, _userRepository);
+			_analyticsHelper.UpdateEntity(analytic, analyticEntity, _userRepository);
 			await _analyticRepository.Update(analyticEntity);
 
 			return Ok(analyticEntity);

@@ -23,7 +23,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Profile> GetDefaultUserProfile();
         Task<Profile> GetByIdBasic(int id);
         Task<int> DeleteSoft(Profile profile);
-        Task<int> Count();
+        int Count();
         Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel);
     }
 }

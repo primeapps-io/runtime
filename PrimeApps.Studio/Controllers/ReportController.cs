@@ -204,7 +204,7 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var reportEntity = await _reportHelper.CreateEntity(report);
+            var reportEntity = _reportHelper.CreateEntity(report);
             var resultReport = await _reportRepository.Create(reportEntity);
 
             if (resultReport < 1)
@@ -276,7 +276,7 @@ namespace PrimeApps.Studio.Controllers
                 }
             }
 
-            await _reportHelper.UpdateEntity(report, reportEntity);
+            _reportHelper.UpdateEntity(report, reportEntity);
             await _reportRepository.Update(reportEntity, currentFieldIds, currentFilterIds, currentAggregationIds);
 
             if (report.ReportType == ReportType.Summary)

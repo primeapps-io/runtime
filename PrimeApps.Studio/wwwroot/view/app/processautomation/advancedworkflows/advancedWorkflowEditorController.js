@@ -136,7 +136,7 @@ angular.module('primeapps')
             $scope.toogleSideMenu = function () {
                 if ($scope.currentObj.subject) {
                     $scope.modalLoading = true;
-                    var node = $scope.currentObj.subject.part.data;
+                    var node = angular.copy($scope.currentObj.subject.part.data);
 
                     if (node) {
                         $scope.SelectedNodeItem = node;
@@ -264,6 +264,7 @@ angular.module('primeapps')
                                 case 'webHook':
                                     $scope.workflowModel[node.ngModelName] = node.data[node.ngModelName];
                                     $scope.hookParameters = node.data[node.ngModelName].Parameters;
+                                    $scope.hookHeaders = node.data[node.ngModelName].Headers;
                                     $scope.modalLoading = false;
                                     break;
                                 case 'send_notification':
@@ -308,6 +309,7 @@ angular.module('primeapps')
                             if (node.ngModelName === 'webHook') {
                                 $scope.workflowModel.webHook = { methodType: 'post' };
                                 setWebHookModules();
+                                setWebHookHeaders();
                             }
                             $scope.modalLoading = false;
                         }
@@ -367,9 +369,7 @@ angular.module('primeapps')
             };
 
             $scope.showSettingFormModal = function () {
-
-                AdvancedWorkflowsService.get($scope.id)
-
+                 
                 $scope.settingFormModal = $scope.settingFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/processautomation/advancedworkflows/advancedWorkflowSettingModal.html',
@@ -506,6 +506,7 @@ angular.module('primeapps')
                         $scope.getSendNotificationUpdatableModules();
                         $scope.getDynamicFieldUpdateModules();
                         setWebHookModules();
+                        setWebHookHeaders();
                     });
             };
 
@@ -1169,6 +1170,17 @@ angular.module('primeapps')
                 $scope.hookParameters.push(parameter);
             };
 
+            var setWebHookHeaders = function () {
+                $scope.hookHeaders = [];
+
+                var header = {};
+                header.type = null;
+                header.key = null;
+                header.value = null;
+
+                $scope.hookHeaders.push(header);
+            };
+
             $scope.workflowModuleParameterAdd = function (addItem, workflowForm) {
                 workflowForm.$submitted = true;
 
@@ -1196,6 +1208,33 @@ angular.module('primeapps')
             $scope.workflowModuleParameterRemove = function (itemName) {
                 var index = $scope.hookParameters.indexOf(itemName);
                 $scope.hookParameters.splice(index, 1);
+            };
+
+            $scope.workflowHeaderAdd = function (addItem, workflowForm) {
+                workflowForm.$submitted = true;
+
+                var header = {};
+                header.type = addItem.type;
+                header.key = addItem.key;
+                header.value = addItem.value;
+
+                if (header.type && header.key && header.value) {
+                    if ($scope.hookHeaders.length <= 10) {
+                        $scope.hookHeaders.push(header);
+                    } else {
+                        toastr.warning('You have reached 10 maxiumum header amount to send per one flow.');
+                    }
+                }
+
+                var lastHookHeader = $scope.hookHeaders[$scope.hookHeaders.length - 1];
+                lastHookHeader.type = null;
+                lastHookHeader.key = null;
+                lastHookHeader.value = null;
+            };
+
+            $scope.workflowHeaderRemove = function (item) {
+                var index = $scope.hookHeaders.indexOf(item);
+                $scope.hookHeaders.splice(index, 1);
             };
 
             //$scope.getSummary = function () {
@@ -1580,6 +1619,7 @@ angular.module('primeapps')
                     case 'webHook':
                         data[currentNode.ngModelName] = bpmModel[currentNode.ngModelName];
                         data[currentNode.ngModelName].Parameters = angular.copy($scope.hookParameters);
+                        data[currentNode.ngModelName].Headers = angular.copy($scope.hookHeaders);
                         //$scope.nodeIsValid(currentNode, true);
                         currentNode.valid = true;
                         break;

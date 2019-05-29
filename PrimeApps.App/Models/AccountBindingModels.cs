@@ -196,8 +196,6 @@ namespace PrimeApps.App.Models
 
     public class AddUserBindingModel
     {
-        internal object ModuleLicenseCount;
-
         [Required, StringLength(100), JsonProperty("email")]
         public string Email { get; set; }
 

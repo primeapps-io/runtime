@@ -256,8 +256,8 @@ namespace PrimeApps.Util.Storage
 					await destBlob.FetchAttributesAsync();
 				}
 			}
-			catch (StorageException e)
-			{
+			catch (StorageException)
+            {
 				throw;
 			}
 			finally

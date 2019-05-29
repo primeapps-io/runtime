@@ -32,16 +32,17 @@ namespace PrimeApps.App.Jobs
 
 
                 using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))//, cacheHelper))
-				{
+                {
                     expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
                 }
 
                 foreach (var tenantId in expiredTenants)
                 {
-                    var dropSql = "DROP DATABASE IF EXISTS tenant" + tenantId + ";";
+                    var dropSql = "DROP DATABASE IF EXISTS @tenant;";
+
                     try
                     {
-                        platformDBContext.Database.ExecuteSqlCommand(dropSql);
+                        platformDBContext.Database.ExecuteSqlCommand(dropSql, $"tenant{tenantId}");
                     }
                     catch (Exception ex)
                     {

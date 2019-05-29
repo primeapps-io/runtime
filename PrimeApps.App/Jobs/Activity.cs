@@ -117,7 +117,7 @@ namespace PrimeApps.App.Jobs.Reminder
 				DateTime reminderStart = reminder.ReminderStart;
 				DateTime eventEnd = reminder.ReminderEnd;
 
-				var usr = await userRepository.GetById((int)reminder.Owner);
+				var usr = userRepository.GetById((int)reminder.Owner);
 
 				string email = usr.Email;
 				string subject = reminder.Subject;
@@ -155,7 +155,7 @@ namespace PrimeApps.App.Jobs.Reminder
 				DateTime reminderStart = reminder.ReminderStart;
 				DateTime eventEnd = reminder.ReminderEnd;
 
-				var usr = await userRepository.GetById((int)reminder.Owner);
+				var usr = userRepository.GetById((int)reminder.Owner);
 
 				string email = usr.Email;
 				string subject = reminder.Subject;
@@ -200,7 +200,7 @@ namespace PrimeApps.App.Jobs.Reminder
 					reminderFrequency = (long)reminder.ReminderFrequency;
 				}
 
-				var usr = await userRepository.GetById((int)reminder.Owner);
+				var usr = userRepository.GetById((int)reminder.Owner);
 
 				string email = usr.Email;
 				string subject = reminder.Subject;

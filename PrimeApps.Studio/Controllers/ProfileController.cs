@@ -19,14 +19,13 @@ namespace PrimeApps.Studio.Controllers
 		private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository;
-		private IModuleRepository _moduleRepository;
+		private ISettingRepository _settingRepository; 
 		private IConfiguration _configuration;
 		private Warehouse _warehouse;
 		private IModuleHelper _moduleHelper;
         private IPermissionHelper _permissionHelper;
 
-        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
+        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
 		{
 			_relationRepository = relationRepository;
 			_profileRepository = profileRepository;
@@ -156,12 +155,12 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("count"), HttpGet]
-        public async Task<IActionResult> Count([FromUri]TemplateType templateType)
+        public IActionResult Count([FromUri]TemplateType templateType)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var count = await _profileRepository.Count();
+            var count = _profileRepository.Count();
 
             //if (count < 1)
             //	return NotFound(count);

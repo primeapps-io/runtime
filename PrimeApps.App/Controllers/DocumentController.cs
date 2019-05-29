@@ -63,54 +63,54 @@ namespace PrimeApps.App.Controllers
 			base.OnActionExecuting(context);
 		}
 
-		/// <summary>
-		/// Uploads files by the chucks as a stream.
-		/// </summary>
-		/// <param name="fileContents">The file contents.</param>
-		/// <returns>System.String.</returns>
-		[Route("Upload"), HttpPost]
-		public async Task<IActionResult> Upload()
-		{
-			DocumentUploadResult result;
-			var isUploaded = _documentHelper.Upload(Request.Body, out result);
+        /// <summary>
+        /// Uploads files by the chucks as a stream.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <returns>System.String.</returns>
+        [Route("Upload"), HttpPost]
+        public IActionResult Upload()
+        {
+            DocumentUploadResult result;
+            var isUploaded = _documentHelper.Upload(Request.Body, out result);
 
-			if (!isUploaded && result == null)
-			{
-				return NotFound();
-			}
+            if (!isUploaded && result == null)
+            {
+                return NotFound();
+            }
 
-			if (!isUploaded)
-			{
-				return BadRequest();
-			}
+            if (!isUploaded)
+            {
+                return BadRequest();
+            }
 
-			return Ok(result);
-		}
+            return Ok(result);
+        }
 
-		[Route("Upload_Excel"), HttpPost]
-		public async Task<IActionResult> UploadExcel()
-		{
-			DocumentUploadResult result;
-			var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
+        [Route("Upload_Excel"), HttpPost]
+        public IActionResult UploadExcel()
+        {
+            DocumentUploadResult result;
+            var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
 
-			if (!isUploaded && result == null)
-			{
-				return NotFound();
-			}
+            if (!isUploaded && result == null)
+            {
+                return NotFound();
+            }
 
-			if (!isUploaded)
-			{
-				return BadRequest();
-			}
+            if (!isUploaded)
+            {
+                return BadRequest();
+            }
 
-			return Ok(result);
-		}
+            return Ok(result);
+        }
 
-		/// <summary>
-		/// Using at email attachments and on module 
-		/// </summary>
-		/// <returns></returns>
-		[Route("upload_attachment"), HttpPost]
+        /// <summary>
+        /// Using at email attachments and on module 
+        /// </summary>
+        /// <returns></returns>
+        [Route("upload_attachment"), HttpPost]
 		public async Task<IActionResult> UploadAttachment()
 		{
 			//Parse stream and get file properties.
@@ -636,29 +636,29 @@ namespace PrimeApps.App.Controllers
 			return NotFound();
 		}
 
-		[Route("document_search"), HttpPost]
-		public async Task<IActionResult> SearchDocument([FromBody] DocumentFilterRequest filterRequest)
-		{
-			if (filterRequest != null && filterRequest.Filters.Count > 0)
-			{
-				DocumentSearch search = new DocumentSearch();
+        [Route("document_search"), HttpPost]
+        public IActionResult SearchDocument([FromBody] DocumentFilterRequest filterRequest)
+        {
+            if (filterRequest != null && filterRequest.Filters.Count > 0)
+            {
+                DocumentSearch search = new DocumentSearch();
 
-				var searchIndexName = AppUser.TenantGuid + "-" + filterRequest.Module;
+                var searchIndexName = AppUser.TenantGuid + "-" + filterRequest.Module;
 
-				if (filterRequest.Module == null || filterRequest.Top > 50)
-				{
-					return BadRequest();
-				}
+                if (filterRequest.Module == null || filterRequest.Top > 50)
+                {
+                    return BadRequest();
+                }
 
-				var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
+                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
 
-				return Ok(results);
-			}
+                return Ok(results);
+            }
 
-			return BadRequest();
-		}
+            return BadRequest();
+        }
 
-		[Route("find"), HttpPost]
+        [Route("find"), HttpPost]
 		public async Task<ICollection<DocumentResult>> Find([FromBody] DocumentFindRequest request)
 		{
 			var documents = await _documentRepository.GetDocumentsByLimit(request);

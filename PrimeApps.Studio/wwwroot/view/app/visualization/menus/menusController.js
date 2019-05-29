@@ -76,8 +76,8 @@ angular.module('primeapps')
                 {
                     label_tr_singular: 'Pano',
                     label_tr_plural: 'Pano',
-                    label_en_singular: 'Pano',
-                    label_en_plural: 'Pano',
+                    label_en_singular: 'Dashboard',
+                    label_en_plural: 'Dashboard',
                     name: 'dashboard',
                     route: "dashboard",
                     custom: true,

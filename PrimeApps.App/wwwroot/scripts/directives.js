@@ -1133,7 +1133,7 @@ angular.module('primeapps')
                                 if (customScript.lastIndexOf('http', 0) === 0) {
                                     $http.get(customScript)
                                         .then(function (response) {
-                                            eval(response.data);
+                                            eval(response.data + '?v=' + new Date().getTime());
                                         });
                                 }
                                 else {

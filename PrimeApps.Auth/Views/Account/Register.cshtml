@@ -61,12 +61,6 @@
         <div class="error-fullname"></div>
         <div class="form-check">
             <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
-            @if (false) //(!officeSignIn)
-            {
-                <hr/>
-                <button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@Localizer["RegisterWithOffice"]</button>
-            }
-
             <div class="language">
                 @if (multiLanguage)
                 {

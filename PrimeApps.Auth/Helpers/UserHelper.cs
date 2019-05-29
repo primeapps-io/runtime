@@ -244,7 +244,7 @@ namespace PrimeApps.Auth.Helpers
                     var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode};
                     _userRepository.CurrentUser = _currentUser;
 
-                    var result = await _userRepository.GetById(resultTenantUser.Id);
+                    var result = _userRepository.GetById(resultTenantUser.Id);
 
                     result.ProfileId = 1;
                     result.RoleId = 1;

@@ -282,7 +282,7 @@ namespace PrimeApps.App.Helpers
 						var user = new TenantUser();
 						if (process.ApproverType == ProcessApproverType.StaticApprover)
 						{
-							user = await _userRepository.GetById(process.Approvers.First(x => x.Order == 1).UserId);
+							user = _userRepository.GetById(process.Approvers.First(x => x.Order == 1).UserId);
 							if (hasProcessFields)
 							{
 								using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
@@ -999,7 +999,7 @@ namespace PrimeApps.App.Helpers
 						{
 							var nextApproverOrder = request.ProcessStatusOrder;
 							var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
-							user = await _userRepository.GetById(nextApprover.UserId);
+							user = _userRepository.GetById(nextApprover.UserId);
 						}
 						else
 						{
@@ -1251,7 +1251,7 @@ namespace PrimeApps.App.Helpers
 						}
 						else
 						{
-							var user = await _userRepository.GetById(request.CreatedById);
+							var user = _userRepository.GetById(request.CreatedById);
 							request.Status = Model.Enums.ProcessStatus.Approved;
 							request.Active = false;
 							var emailData = new Dictionary<string, string>();
@@ -1418,7 +1418,7 @@ namespace PrimeApps.App.Helpers
 					}
 
 
-					var user = await _userRepository.GetById(request.CreatedById);
+					var user = _userRepository.GetById(request.CreatedById);
 					request.Status = Model.Enums.ProcessStatus.Rejected;
 					request.ProcessStatusOrder = 0;
 					//request.UpdatedById = appUser.LocalId;
@@ -1547,7 +1547,7 @@ namespace PrimeApps.App.Helpers
 					{
 						var nextApproverOrder = request.ProcessStatusOrder;
 						var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
-						user = await _userRepository.GetById(nextApprover.UserId);
+						user = _userRepository.GetById(nextApprover.UserId);
 					}
 					else
 					{

@@ -419,7 +419,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Count()
+        public int Count()
         {
             var count = DbContext.Profiles
                 .Where(x => !x.Deleted).Count();

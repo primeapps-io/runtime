@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace PrimeApps.App.Helpers
 {
-    class ErrorHandler
+    public class ErrorHandler
     {
         /// <summary>
         /// Logs error to sentry.

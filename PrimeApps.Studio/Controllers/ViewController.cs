@@ -99,7 +99,7 @@ namespace PrimeApps.Studio.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var viewEntity = await ViewHelper.CreateEntity(view, _userRepository);
+			var viewEntity = ViewHelper.CreateEntity(view, _userRepository);
 			var result = await _viewRepository.Create(viewEntity);
 
 			if (result < 1)
@@ -145,7 +145,7 @@ namespace PrimeApps.Studio.Controllers
 				}
 			}
 
-			await ViewHelper.UpdateEntity(view, viewEntity, _userRepository);
+			ViewHelper.UpdateEntity(view, viewEntity, _userRepository);
 			await _viewRepository.Update(viewEntity, currentFieldIds, currentFilterIds);
 
 			string name = AppUser.TenantLanguage == "tr" ? viewEntity.LabelTr : viewEntity.LabelEn;

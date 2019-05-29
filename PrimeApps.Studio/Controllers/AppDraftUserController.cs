@@ -30,8 +30,7 @@ namespace PrimeApps.Studio.Controllers
         private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository;
-        private IModuleRepository _moduleRepository;
+        private ISettingRepository _settingRepository; 
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
@@ -41,7 +40,7 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformUserRepository _platformUserRepository;
         private IOrganizationRepository _organizationRepository;
 
-        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository, IOrganizationRepository organizationRepository)
+        public AppDraftUserController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IPlatformUserRepository platformUserRepository, IOrganizationRepository organizationRepository)
         {
             _relationRepository = relationRepository;
             _profileRepository = profileRepository;
@@ -87,7 +86,6 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest(new {message = "User already exist"});
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
-            var result = 0;
             string password = "";
 
             if (!string.IsNullOrEmpty(clientId))
@@ -149,7 +147,7 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Update))
                 return StatusCode(403);
 
-            var user = await _userRepository.GetById(id);
+            var user = _userRepository.GetById(id);
             if (user == null)
                 return BadRequest();
 
@@ -176,7 +174,7 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            var user = await _userRepository.GetById(id);
+            var user = _userRepository.GetById(id);
 
             if (user == null)
                 return BadRequest();

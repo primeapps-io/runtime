@@ -186,54 +186,12 @@ namespace PrimeApps.Studio.Controllers
             return Ok("Fail");
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
-        {
-
-            return Ok();
-        }
-
         [Route("count"), HttpGet]
-        public async Task<IActionResult> Count()
+        public IActionResult Count()
         {
             var value = 100;
 
             return Ok(value);
-        }
-
-        [Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
-        {
-
-            return Ok();
-        }
-
-        [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-
-            return Ok();
-        }
-
-        [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]JObject request)
-        {
-
-            return Ok();
-        }
-
-        [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]JObject request)
-        {
-
-            return Ok();
-        }
-
-        [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete(int id)
-        {
-
-            return Ok();
         }
     }
 }

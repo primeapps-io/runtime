@@ -53,18 +53,18 @@ namespace PrimeApps.Studio.Controllers
 
 			return Ok(count);
 		}
-		[Route("find/{id:int}"), HttpPost]
-		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
-		{
-			var dependencies = await _dependencyRepository.Find(id, paginationModel);
+        [Route("find/{id:int}"), HttpPost]
+        public IActionResult Find(int id, [FromBody]PaginationModel paginationModel)
+        {
+            var dependencies = _dependencyRepository.Find(id, paginationModel);
 
-			if (dependencies == null)
-				return Ok(null);
+            if (dependencies == null)
+                return Ok(null);
 
-			return Ok(dependencies);
-		}
+            return Ok(dependencies);
+        }
 
-		[Route("get_all"), HttpGet]
+        [Route("get_all"), HttpGet]
 		public async Task<ICollection<Dependency>> GetAll()
 		{
 			return await _dependencyRepository.GetAll();

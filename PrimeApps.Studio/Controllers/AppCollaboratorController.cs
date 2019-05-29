@@ -53,7 +53,7 @@ namespace PrimeApps.Studio.Controllers
 
             var result = await _collaboratorRepository.AppCollaboratorAdd(item);
 
-            _giteaHelper.SyncCollaborators(OrganizationId, "create", (int)AppId, item.TeamId, item.UserId);
+            await _giteaHelper.SyncCollaborators(OrganizationId, "create", (int)AppId, item.TeamId, item.UserId);
 
             return Ok(result);
         }
@@ -93,7 +93,7 @@ namespace PrimeApps.Studio.Controllers
             var appCollaborator = await _collaboratorRepository.GetById(id);
             var result = await _collaboratorRepository.Delete(appCollaborator);
             
-            _giteaHelper.SyncCollaborators(OrganizationId, "delete", (int)AppId, appCollaborator.TeamId, appCollaborator.UserId);
+            await _giteaHelper.SyncCollaborators(OrganizationId, "delete", (int)AppId, appCollaborator.TeamId, appCollaborator.UserId);
 
             return Ok(result);
         }

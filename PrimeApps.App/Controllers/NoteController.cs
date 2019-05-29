@@ -159,7 +159,7 @@ namespace PrimeApps.App.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var noteEntity = await NoteHelper.CreateEntity(note, _userRepository);
+			var noteEntity = NoteHelper.CreateEntity(note, _userRepository);
 			var result = await _noteRepository.Create(noteEntity);
 
 			if (result < 1)
@@ -184,7 +184,7 @@ namespace PrimeApps.App.Controllers
 			if (noteEntity == null)
 				return NotFound();
 
-			await NoteHelper.UpdateEntity(note, noteEntity, _userRepository);
+			NoteHelper.UpdateEntity(note, noteEntity, _userRepository);
 			await _noteRepository.Update(noteEntity);
 
 			return Ok(noteEntity);
@@ -209,7 +209,7 @@ namespace PrimeApps.App.Controllers
 		{
 			var noteEntity = await _noteRepository.GetByIdBasic(note.NoteId);
 
-			await NoteHelper.UpdateLikedNote(noteEntity, note.UserId, _userRepository);
+			NoteHelper.UpdateLikedNote(noteEntity, note.UserId, _userRepository);
 			await _noteRepository.Update(noteEntity);
 			return Ok(noteEntity);
 		}

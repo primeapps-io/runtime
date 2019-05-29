@@ -390,7 +390,6 @@ namespace PrimeApps.Studio.Controllers
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
-            var result = 0;
             string password = "";
             if (!string.IsNullOrEmpty(clientId))
             {

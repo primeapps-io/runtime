@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Common.Instance
         public TenantInfo()
         {
         }
-        private string _logoUrl;
+
         /// <summary>
         /// Tenant Name/Title
         /// </summary>
