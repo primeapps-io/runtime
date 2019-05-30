@@ -1540,11 +1540,11 @@ angular.module('primeapps')
 
                         for (var i = 0; i < components.length; i++) {
                             var component = components[i];
-                            if (component.type != 'script')
-                                component.content = component.content + '?v=' + versionScript
-
-                            if (component.content.lastIndexOf('http', 0) === 0)
+                        
+                            if (component.content.lastIndexOf('http', 0) === 0){
+                                component.content = component.content + '?v=' + versionScript;
                                 promises.push($http.get(component.content));
+                            }                             
                         }
 
                         var runScripts = function () {
