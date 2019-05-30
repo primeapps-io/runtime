@@ -118,8 +118,7 @@ angular.module('primeapps')
                             $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Ringing');
                             $rootScope.sipUser.lineInfo.State = 'Ringing';
                             soundPlay('DialSound', 'play');
-                        }
-                        else {
+                        } else {
                             $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.IncomingCall');
                             that.showSipPhone('call');
                             $rootScope.sipUser.lineInfo.State = $filter("translate")("Setup.Phone.IncomingCall");
@@ -179,16 +178,16 @@ angular.module('primeapps')
 
                         $timeout(function () {
 
-                            if (callType === 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
-                                soundPlay('DialSound', 'pause');
-                                soundPlay('BusySound', 'play');
+                                if (callType === 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
+                                    soundPlay('DialSound', 'pause');
+                                    soundPlay('BusySound', 'play');
 
-                                if (callType == 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
-                                    $rootScope.sipUser.lineInfo.PhoneStatus = response.reason_phrase;
-                                    $rootScope.sipUser.lineInfo.State = 'Reject';
+                                    if (callType == 'OUTBOUND') { //IF OUR CALLING NUMBER REJECTS US !
+                                        $rootScope.sipUser.lineInfo.PhoneStatus = response.reason_phrase;
+                                        $rootScope.sipUser.lineInfo.State = 'Reject';
+                                    }
                                 }
                             }
-                        }
                         );
                     }
                 });
@@ -288,8 +287,8 @@ angular.module('primeapps')
 
             function findRecordGoDetail(moduleName, fieldName, searchValue) {
 
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
-                var primaryField = $filter('filter')(module.fields, { primary: true })[0];
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
+                var primaryField = $filter('filter')(module.fields, {primary: true})[0];
 
                 var selectedFields = [];
                 selectedFields.push('id');
@@ -320,8 +319,7 @@ angular.module('primeapps')
 
                             callerName = record[primaryField.name];
                             recordId = record['id'];
-                        }
-                        else {
+                        } else {
                             callerName = $filter('translate')('Common.NewRecord');
                             recordId = 0;
                         }
@@ -425,8 +423,7 @@ angular.module('primeapps')
                                     //ONLY PHONE FIELD ALLOWED FOR SEARCHDATA FOR NOW!
                                     findRecordGoDetail($rootScope.sipUser.RecordDetailModuleName, $rootScope.sipUser.RecordDetailPhoneFieldName, $rootScope.sipUser.lineInfo.TalkingNumber);
                                 });
-                            }
-                            else {
+                            } else {
                                 //IF NEED NEW CALL ALERT FROM SECOND LINE THIRD LINE ETC WHILE TALKING - DO IT HERE FOR NOW WE DONT ACCEPT WAITING CALLERS OR SECOND LINE FEATURE, SENDING BUSY SIGNAL
                                 //SEND BUSY SIGNAL TO NEW CALLER
                                 var options = {
@@ -444,8 +441,7 @@ angular.module('primeapps')
                                 if ($rootScope.sipUser.userAgent.isRegistered()) {
                                     $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Ready');
                                     $rootScope.sipUser.lineInfo.State = 'Ready';
-                                }
-                                else {
+                                } else {
                                     $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Hangup');
                                     $rootScope.sipUser.lineInfo.State = 'Hangup';
                                 }
@@ -465,8 +461,7 @@ angular.module('primeapps')
                 isRegistered: function () {
                     if ($rootScope.sipUser.userAgent.isRegistered()) {
                         $rootScope.sipUser.IsRegistered = true;
-                    }
-                    else {
+                    } else {
                         $rootScope.sipUser.IsRegistered = false;
                     }
                 },
@@ -512,8 +507,7 @@ angular.module('primeapps')
                     if (session.request) {
                         if (!session.request.server_transaction) {
                             return true;
-                        }
-                        else {
+                        } else {
                             return false;
                         }
                     }
@@ -540,7 +534,7 @@ angular.module('primeapps')
                                 container: 'body',
                                 autoClose: false,
                                 show: true,
-                                delay: { show: 500, hide: 100 }
+                                delay: {show: 500, hide: 100}
                             });
                         }
                     } else {
@@ -643,11 +637,11 @@ angular.module('primeapps')
                     if (moduleName === 'stage_history')
                         moduleName = 'opportunities';
 
-                    var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                    var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
                     if (!module) return false;
 
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, {module_id: module.id}, true)[0];
 
                     if (permission && permission[operation]) {
                         if ((operation === 'Modify' || operation === 'Remove') && record && (!record.shared_users_edit || record.shared_users_edit.indexOf($rootScope.user.ID) === -1) && (record.shared_users && record.shared_users.indexOf($rootScope.user.ID) > -1)) {
@@ -696,7 +690,7 @@ angular.module('primeapps')
                     return false;
                 },
                 hasDocumentsPermission: function (operation) {
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, {type: 1})[0];
 
                     if (!permission)
                         return false;
@@ -1510,7 +1504,7 @@ angular.module('primeapps')
                 }
 
                 var byteArray = new Uint8Array(byteNumbers);
-                var blob = new Blob([byteArray], { type: 'application/octet-stream' });
+                var blob = new Blob([byteArray], {type: 'application/octet-stream'});
 
                 /// save it by file save dialog.
                 saveAs(blob, name);
@@ -1526,10 +1520,11 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$filter', '$q', '$http',
-        function ($filter, $q, $http) {
+    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams',
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams) {
             return {
                 run: function (place, type, scope, record, field) {
+                    var ModuleService = $injector.get('ModuleService');
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
 
@@ -1545,7 +1540,8 @@ angular.module('primeapps')
 
                         for (var i = 0; i < components.length; i++) {
                             var component = components[i];
-                            component.content = component.content + '?v=' + versionScript
+                            if (component.type != 'script')
+                                component.content = component.content + '?v=' + versionScript
 
                             if (component.content.lastIndexOf('http', 0) === 0)
                                 promises.push($http.get(component.content));
@@ -1564,14 +1560,13 @@ angular.module('primeapps')
                                     for (var i = 0; i < responses.length; i++) {
                                         var response = responses[i];
 
-                                        var currentComponent = $filter('filter')(scope.module.components, { content: response.config.url }, true)[0];
+                                        var currentComponent = $filter('filter')(scope.module.components, {content: response.config.url}, true)[0];
                                         currentComponent.content = response.data;
                                     }
 
                                     runScripts();
                                 });
-                        }
-                        else {
+                        } else {
                             runScripts();
                         }
                     }
