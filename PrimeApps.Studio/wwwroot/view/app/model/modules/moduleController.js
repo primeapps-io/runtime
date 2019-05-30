@@ -151,5 +151,9 @@ angular.module('primeapps')
 
                         });
                 }
+
+                $scope.moduleListFilter = function(item){
+                    return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
+                };
             }
         ]);
