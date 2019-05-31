@@ -705,7 +705,7 @@ angular.module('primeapps')
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, { name: $scope.currentField.data_type }, true)[0];
                 if ($scope.currentField.dataType.name === 'lookup')
-                    $scope.currentField.lookup_search_type = "starts_with";
+                    $scope.currentField.talep_urunleri = $scope.currentField.lookup_search_type ? $scope.currentField.lookup_search_type : "starts_with";
                 else
                     $scope.currentField.lookup_search_type = "";
 
