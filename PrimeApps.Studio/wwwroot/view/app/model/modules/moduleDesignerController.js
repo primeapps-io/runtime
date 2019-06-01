@@ -241,7 +241,7 @@ angular.module('primeapps')
                         }
                     });
             };
-                       
+
             $scope.initModuleDesginer = function () {
 
                 $scope.module = ModuleService.processModule2($scope.module, $scope.modules);
@@ -264,7 +264,7 @@ angular.module('primeapps')
                         $scope.reloading = false;
                     });
                 };
-                
+
                 var getMultilineTypes = function () {
                     var multilineType1 = {
                         value: 'small',
@@ -392,12 +392,12 @@ angular.module('primeapps')
                 $scope.modalLoading = false;
                 $scope.isModuleSaving = isModuleSaving;
                 $scope.editModal = $scope.editModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/editForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/editForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.icons = ModuleService.getIcons();
                 $scope.showAdvancedOptionsEdit = false;
                 $scope.editModal.$promise.then($scope.editModal.show);
@@ -615,11 +615,18 @@ angular.module('primeapps')
                 $scope.currentColumn = column;
                 $scope.showPermissionWarning = false;
                 $scope.fieldActiveSection = "properties";
+
                 if (!field) {
                     field = $scope.newField();
                 } else {
-                    if (field.data_type === 'lookup')
+                    if (field.data_type === 'lookup') {
                         field.lookupType = $filter('filter')($scope.lookupTypes, { value: field.lookup_type }, true)[0];
+
+                        if (field.lookup_search_type)
+                            field.lookupSearchType = $filter('filter')($scope.lookupSearchTypes, { name: field.lookup_search_type }, true)[0];
+                        // else
+                        //     field.lookupSearchType = $filter('filter')($scope.lookupSearchTypes, { name: "starts_with" }, true)[0];
+                    }
 
                     $scope.currentFieldState = angular.copy(field);
 
@@ -704,25 +711,20 @@ angular.module('primeapps')
                 $scope.currentFieldState = angular.copy(field);
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, { name: $scope.currentField.data_type }, true)[0];
-                if ($scope.currentField.dataType.name === 'lookup')
-                    $scope.currentField.talep_urunleri = $scope.currentField.lookup_search_type ? $scope.currentField.lookup_search_type : "starts_with";
-                else
-                    $scope.currentField.lookup_search_type = "";
 
                 $scope.setMultilineDataType();
                 var url = angular.copy(window.location.hash);
                 $scope.fieldModal = $scope.fieldModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/fieldForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false,
-                        keyboard: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/fieldForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false,
+                    keyboard: false
+                });
                 $scope.fieldModal.$promise.then(function () {
                     $scope.fieldModal.show();
                 });
-
             };
 
             $scope.multiselectEncryptionUsers = function () {
@@ -1002,12 +1004,12 @@ angular.module('primeapps')
                 $scope.currentSectionState = angular.copy(section);
 
                 $scope.sectionModal = $scope.sectionModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/sectionForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/sectionForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.sectionModal.$promise.then($scope.sectionModal.show);
             };
@@ -1032,10 +1034,8 @@ angular.module('primeapps')
             };
 
             $scope.saveField = function (fieldForm) {
-                if (!fieldForm.$valid) {
-
+                if (!fieldForm.$valid)
                     return;
-                }
 
                 if ($scope.currentField.firstDrag === true) {
                     $scope.currentField.firstDrag = false;
@@ -1053,6 +1053,7 @@ angular.module('primeapps')
                 }
 
                 $scope.showAdvancedOptions = false;
+
                 if ($scope.currentField.dataType.name === 'checkbox' && !$scope.currentField.default_value)
                     $scope.currentField.default_value = false;
 
@@ -1092,7 +1093,6 @@ angular.module('primeapps')
                     $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
                     $scope.fieldModal.hide();
                     $scope.moduleChange = new Date();
-
                 }
 
                 if ($scope.currentField.dataType.name === 'lookup' && $scope.currentField.lookup_type !== 'users' && $scope.currentField.default_value)
@@ -1115,7 +1115,16 @@ angular.module('primeapps')
                             moduleField.calendar_date_type = null;
                     }
                 }
+
+                if ($scope.currentField.lookupSearchType) {
+                    $scope.currentField.lookup_search_type = $scope.currentField.lookupSearchType.name;
+                    delete $scope.currentField.lookupSearchType
+                }
+                else
+                    $scope.currentField.lookup_search_type = "starts_with"
+
                 $scope.fieldModal.hide();
+
                 setTimeout(function () {
                     if ($scope.currentField.lookupType) {
                         if ($scope.currentField.show_as_dropdown) {
@@ -1401,12 +1410,12 @@ angular.module('primeapps')
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
                 $scope.locationModal = $scope.frameModal || $modal({
-                        scope: $scope,
-                        controller: 'locationFormModalController',
-                        templateUrl: 'view/app/location/locationFormModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    controller: 'locationFormModalController',
+                    templateUrl: 'view/app/location/locationFormModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.locationModal.$promise.then($scope.locationModal.show);
             };
 
@@ -1447,12 +1456,12 @@ angular.module('primeapps')
 
                 if ($scope.notValidFields.length) {
                     $scope.fieldErrorModal = $scope.fieldErrorModal || $modal({
-                            scope: $scope,
-                            templateUrl: 'view/app/model/modules/warningRequiredFieldDisplay.html',
-                            animation: '',
-                            backdrop: 'static',
-                            show: false
-                        });
+                        scope: $scope,
+                        templateUrl: 'view/app/model/modules/warningRequiredFieldDisplay.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                     $scope.fieldErrorModal.$promise.then($scope.fieldErrorModal.show);
 
@@ -1564,7 +1573,7 @@ angular.module('primeapps')
                         $scope.editModal.hide();
                 }
             }
-            
+
             $scope.reloadLookupType = function () {
                 getLookupTypes(false);
             }

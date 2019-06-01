@@ -336,10 +336,12 @@
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'lookup'">
                                         <label class="col-sm-4">{{'Setup.Modules.SearchType' | translate}}</label>
-                                        <select name="lookup_search_type"
+                                        <select name="lookupSearchType"
                                                 class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.lookup_search_type"
-                                                ng-options="o.name as o.value for o in lookupSearchTypes"></select>
+                                                ng-model="currentField.lookupSearchType"
+                                                ng-options="o as o.value for o in lookupSearchTypes">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
                                     </div>
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'text_multi'">

@@ -10,36 +10,36 @@ using PrimeApps.Studio.Services;
 namespace PrimeApps.Studio.Helpers
 {
     public interface IModuleHelper
-	{
-		Module CreateEntity(ModuleBindingModel moduleModel);
-		ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
-		List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
-		Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
-		void AfterCreate(UserItem appUser, Module module);
-		void AfterUpdate(UserItem appUser, Module module);
-		void AfterDelete(UserItem appUser, Module module);
-		Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity);
-		void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity);
-		Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity);
-		void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity);
-		Section NewSectionEntity(SectionBindingModel sectionModel);
-		Field NewFieldEntity(FieldBindingModel fieldModel);
-		FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel);
-		FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel);
-		Relation NewRelationEntity(RelationBindingModel relationModel);
-		Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
-		Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
-	}
+    {
+        Module CreateEntity(ModuleBindingModel moduleModel);
+        ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
+        List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
+        Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
+        void AfterCreate(UserItem appUser, Module module);
+        void AfterUpdate(UserItem appUser, Module module);
+        void AfterDelete(UserItem appUser, Module module);
+        Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity);
+        void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity);
+        Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity);
+        void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity);
+        Section NewSectionEntity(SectionBindingModel sectionModel);
+        Field NewFieldEntity(FieldBindingModel fieldModel);
+        FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel);
+        FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel);
+        Relation NewRelationEntity(RelationBindingModel relationModel);
+        Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
+        Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
+    }
     public class ModuleHelper : IModuleHelper
     {
-	    private IAuditLogHelper _auditLogHelper;
-	    public IBackgroundTaskQueue Queue { get; }
+        private IAuditLogHelper _auditLogHelper;
+        public IBackgroundTaskQueue Queue { get; }
 
-		public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
-	    {
-		    _auditLogHelper = auditLogHelper;
-		    Queue = queue;
-	    }
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
+        {
+            _auditLogHelper = auditLogHelper;
+            Queue = queue;
+        }
         public Module CreateEntity(ModuleBindingModel moduleModel)
         {
             var moduleEntity = new Module
@@ -621,18 +621,18 @@ namespace PrimeApps.Studio.Helpers
 
         public void AfterCreate(UserItem appUser, Module module)
         {
-	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
-		}
+            //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
+        }
 
         public void AfterUpdate(UserItem appUser, Module module)
         {
-	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
-		}
+            //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
+        }
 
         public void AfterDelete(UserItem appUser, Module module)
         {
-	        //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
-		}
+            //Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
+        }
 
         public Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)
         {
@@ -682,7 +682,7 @@ namespace PrimeApps.Studio.Helpers
 
         }
 
-	    public Section NewSectionEntity(SectionBindingModel sectionModel)
+        public Section NewSectionEntity(SectionBindingModel sectionModel)
         {
             var sectionEntity = new Section
             {
@@ -700,7 +700,7 @@ namespace PrimeApps.Studio.Helpers
             return sectionEntity;
         }
 
-	    public Field NewFieldEntity(FieldBindingModel fieldModel)
+        public Field NewFieldEntity(FieldBindingModel fieldModel)
         {
             var fieldEntity = new Field
             {
@@ -729,6 +729,7 @@ namespace PrimeApps.Studio.Helpers
                 PicklistSortorder = fieldModel.PicklistSortorder,
                 LookupType = fieldModel.LookupType,
                 LookupRelation = fieldModel.LookupRelation,
+                LookupSearchType = fieldModel.LookupSearchType,
                 DecimalPlaces = fieldModel.DecimalPlaces,
                 Rounding = fieldModel.Rounding,
                 CurrencySymbol = fieldModel.CurrencySymbol,
@@ -753,7 +754,7 @@ namespace PrimeApps.Studio.Helpers
             return fieldEntity;
         }
 
-	    public FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
+        public FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
         {
             var fieldValidationEntity = new FieldValidation
             {
@@ -770,7 +771,7 @@ namespace PrimeApps.Studio.Helpers
             return fieldValidationEntity;
         }
 
-	    public FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
+        public FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
         {
             var fieldCombinationEntity = new FieldCombination
             {
@@ -782,7 +783,7 @@ namespace PrimeApps.Studio.Helpers
             return fieldCombinationEntity;
         }
 
-	    public Relation NewRelationEntity(RelationBindingModel relationModel)
+        public Relation NewRelationEntity(RelationBindingModel relationModel)
         {
             var relationEntity = new Relation
             {
@@ -802,7 +803,7 @@ namespace PrimeApps.Studio.Helpers
             return relationEntity;
         }
 
-	    public Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
+        public Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
         {
             var dependencyEntity = new Dependency
             {
@@ -821,7 +822,7 @@ namespace PrimeApps.Studio.Helpers
             return dependencyEntity;
         }
 
-	    public Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
+        public Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
         {
             var calculationEntity = new Calculation
             {
