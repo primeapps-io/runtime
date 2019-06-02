@@ -199,51 +199,54 @@ angular.module('primeapps')
             };
 
             var getLookupTypes = function (refresh) {
-                helper.getPicklists([0], refresh, $rootScope.appModules)
-                    .then(function (picklists) {
-                        $scope.lookupTypes = picklists['900000'];
+                if (!$scope.lookupTypes) {
+                    ModuleService.getModules().then(function (response) {
+                        helper.getPicklists([0], refresh, response.data)
+                            .then(function (picklists) {
+                                $scope.lookupTypes = picklists['900000'];
 
-                        var hasUserLookType = $filter('filter')($scope.lookupTypes, { name: 'users' }, true).length > 0;
+                                var hasUserLookType = $filter('filter')($scope.lookupTypes, { name: 'users' }, true).length > 0;
 
-                        if (!hasUserLookType) {
-                            var userLookType = {};
-                            userLookType.id = 900000;
-                            userLookType.label = {};
-                            userLookType.label.en = defaultLabels.UserLookupFieldEn;
-                            userLookType.label.tr = defaultLabels.UserLookupFieldTr;
-                            userLookType.order = 0;
-                            userLookType.type = 0;
-                            userLookType.value = 'users';
+                                if (!hasUserLookType) {
+                                    var userLookType = {};
+                                    userLookType.id = 900000;
+                                    userLookType.label = {};
+                                    userLookType.label.en = defaultLabels.UserLookupFieldEn;
+                                    userLookType.label.tr = defaultLabels.UserLookupFieldTr;
+                                    userLookType.order = 0;
+                                    userLookType.type = 0;
+                                    userLookType.value = 'users';
 
-                            $scope.lookupTypes.unshift(userLookType);
+                                    $scope.lookupTypes.unshift(userLookType);
 
-                            var profileLookType = {};
-                            profileLookType.id = 900100;
-                            profileLookType.label = {};
-                            profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
-                            profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
-                            profileLookType.order = 0;
-                            profileLookType.type = 0;
-                            profileLookType.value = 'profiles';
+                                    var profileLookType = {};
+                                    profileLookType.id = 900100;
+                                    profileLookType.label = {};
+                                    profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
+                                    profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
+                                    profileLookType.order = 0;
+                                    profileLookType.type = 0;
+                                    profileLookType.value = 'profiles';
 
-                            $scope.lookupTypes.push(profileLookType);
+                                    $scope.lookupTypes.push(profileLookType);
 
-                            var roleLookType = {};
-                            roleLookType.id = 900101;
-                            roleLookType.label = {};
-                            roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
-                            roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
-                            roleLookType.order = 0;
-                            roleLookType.type = 0;
-                            roleLookType.value = 'roles';
+                                    var roleLookType = {};
+                                    roleLookType.id = 900101;
+                                    roleLookType.label = {};
+                                    roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
+                                    roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
+                                    roleLookType.order = 0;
+                                    roleLookType.type = 0;
+                                    roleLookType.value = 'roles';
 
-                            $scope.lookupTypes.push(roleLookType);
-                        }
+                                    $scope.lookupTypes.push(roleLookType);
+                                }
+                            });
                     });
+                }
             };
 
             $scope.initModuleDesginer = function () {
-
                 $scope.module = ModuleService.processModule2($scope.module, $scope.modules);
                 $scope.module = ModuleService.processModule($scope.module);
 
@@ -279,50 +282,6 @@ angular.module('primeapps')
                     $scope.multilineTypes.push(multilineType1);
                     $scope.multilineTypes.push(multilineType2);
                 };
-
-                /*var getLookupTypes = function (refresh) {
-                    helper.getPicklists([0], refresh, $rootScope.appModules)
-                        .then(function (picklists) {
-                            $scope.lookupTypes = picklists['900000'];
-
-                            var hasUserLookType = $filter('filter')($scope.lookupTypes, { name: 'users' }, true).length > 0;
-
-                            if (!hasUserLookType) {
-                                var userLookType = {};
-                                userLookType.id = 900000;
-                                userLookType.label = {};
-                                userLookType.label.en = defaultLabels.UserLookupFieldEn;
-                                userLookType.label.tr = defaultLabels.UserLookupFieldTr;
-                                userLookType.order = 0;
-                                userLookType.type = 0;
-                                userLookType.value = 'users';
-
-                                $scope.lookupTypes.unshift(userLookType);
-
-                                var profileLookType = {};
-                                profileLookType.id = 900100;
-                                profileLookType.label = {};
-                                profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
-                                profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
-                                profileLookType.order = 0;
-                                profileLookType.type = 0;
-                                profileLookType.value = 'profiles';
-
-                                $scope.lookupTypes.push(profileLookType);
-
-                                var roleLookType = {};
-                                roleLookType.id = 900101;
-                                roleLookType.label = {};
-                                roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
-                                roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
-                                roleLookType.order = 0;
-                                roleLookType.type = 0;
-                                roleLookType.value = 'roles';
-
-                                $scope.lookupTypes.push(roleLookType);
-                            }
-                        });
-                };*/
 
                 var getRoundingTypes = function () {
                     var roundingType1 = { value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff') };
@@ -503,7 +462,6 @@ angular.module('primeapps')
 
             }
 
-
             $scope.lookup = function (searchTerm) {
                 if (!$scope.currentLookupField.lookupType) {
                     var deferred = $q.defer();
@@ -624,8 +582,8 @@ angular.module('primeapps')
 
                         if (field.lookup_search_type)
                             field.lookupSearchType = $filter('filter')($scope.lookupSearchTypes, { name: field.lookup_search_type }, true)[0];
-                        // else
-                        //     field.lookupSearchType = $filter('filter')($scope.lookupSearchTypes, { name: "starts_with" }, true)[0];
+                        else
+                            field.lookupSearchType = $filter('filter')($scope.lookupSearchTypes, { name: "starts_with" }, true)[0];
                     }
 
                     $scope.currentFieldState = angular.copy(field);
