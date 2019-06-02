@@ -1129,11 +1129,14 @@ angular.module('primeapps')
                         try {
                             $timeout(function () {
                                 var customScript = attrs['customScripting'];
+                                customScript = helper.replaceDynamicValues(customScript);
 
                                 if (customScript.lastIndexOf('http', 0) === 0) {
+                                    customScript += '?v=' + new Date().getTime();
+
                                     $http.get(customScript)
                                         .then(function (response) {
-                                            eval(response.data + '?v=' + new Date().getTime());
+                                            eval(response.data);
                                         });
                                 }
                                 else {

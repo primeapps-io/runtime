@@ -1,53 +1,11 @@
 ﻿'use strict';
+
 var sectionComponents = {};
 var currentSectionComponentsTemplate = [];
+
 angular.module('primeapps')
-
-    .config(['$stateProvider', '$urlRouterProvider', '$sceDelegateProvider',
-        function ($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
-
-            // $sceDelegateProvider.resourceUrlWhitelist([
-            //     // Allow same origin resource loads.
-            //     'self',
-            //     // Allow loading from our assets domain. **.
-            //     'http://gitea-dev.primeapps.io:3000/**'
-            // ]);
-
-            /*if (window.location.hash.indexOf('#access_token') > -1) {
-             var parseQueryString = function (queryString) {
-             var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
-
-             if (queryString === null) {
-             return data;
-             }
-
-             pairs = queryString.split("&");
-
-             for (var i = 0; i < pairs.length; i++) {
-             pair = pairs[i];
-             separatorIndex = pair.indexOf("=");
-
-             if (separatorIndex === -1) {
-             escapedKey = pair;
-             escapedValue = null;
-             } else {
-             escapedKey = pair.substr(0, separatorIndex);
-             escapedValue = pair.substr(separatorIndex + 1);
-             }
-
-             key = decodeURIComponent(escapedKey);
-             value = decodeURIComponent(escapedValue);
-
-             data[key] = value;
-             }
-
-             return data;
-             };
-
-             var queryString = parseQueryString(window.location.hash.substr(1));
-             window.localStorage['access_token'] = queryString.access_token;
-             }*/
-
+    .config(['$stateProvider', '$urlRouterProvider',
+        function ($stateProvider, $urlRouterProvider, ) {
             if (token) {
                 window.localStorage['access_token'] = token;
             }
@@ -1406,7 +1364,6 @@ angular.module('primeapps')
                         }
                         return;
                     }
-
 
                     var replaceDynamicValues = function (str) {
                         var splitUrls = str.split('{appConfigs.');
