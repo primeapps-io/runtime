@@ -5,7 +5,7 @@ var currentSectionComponentsTemplate = [];
 
 angular.module('primeapps')
     .config(['$stateProvider', '$urlRouterProvider',
-        function ($stateProvider, $urlRouterProvider, ) {
+        function ($stateProvider, $urlRouterProvider) {
             if (token) {
                 window.localStorage['access_token'] = token;
             }
@@ -1364,6 +1364,7 @@ angular.module('primeapps')
                         }
                         return;
                     }
+
 
                     var replaceDynamicValues = function (str) {
                         var splitUrls = str.split('{appConfigs.');
