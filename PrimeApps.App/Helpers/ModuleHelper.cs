@@ -36,7 +36,11 @@ namespace PrimeApps.App.Helpers
         Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
         Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
         Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository);
+        Task<JObject> GetGlobalConfig(IComponentRepository componentRepository);
+        string ReplaceDynamicValues(string value, JObject appConfigs);
+        bool IsTrustedUrl(string url, JObject globalConfig);
     }
+
     public class ModuleHelper : IModuleHelper
     {
         private IAuditLogHelper _auditLogHelper;
@@ -842,7 +846,7 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
         {
             var globalConfig = await GetGlobalConfig(componentRepository);
-            var appConfigs = !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
 
             foreach (var module in modules)
             {
@@ -899,15 +903,19 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-        private async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
+        public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
             var globalConfigEntity = await componentRepository.GetGlobalConfig();
+
+            if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
+                return null;
+
             var globalConfig = JObject.Parse(globalConfigEntity.Content);
 
             return globalConfig;
         }
 
-        private string ReplaceDynamicValues(string value, JObject appConfigs)
+        public string ReplaceDynamicValues(string value, JObject appConfigs)
         {
             if (appConfigs == null)
                 return value;
@@ -926,8 +934,11 @@ namespace PrimeApps.App.Helpers
             return value;
         }
 
-        private bool IsTrustedUrl(string url, JObject globalConfig)
+        public bool IsTrustedUrl(string url, JObject globalConfig)
         {
+            if (globalConfig.IsNullOrEmpty() || globalConfig["trusted_urls"].IsNullOrEmpty())
+                return false;
+
             foreach (var trustedUrl in (JArray)globalConfig["trusted_urls"])
             {
                 if (url.StartsWith((string)trustedUrl["url"]))
