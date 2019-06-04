@@ -150,8 +150,6 @@ angular.module('primeapps')
                     },
                     resolve: {
                         plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
-
-
                             var files = [
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
@@ -171,13 +169,12 @@ angular.module('primeapps')
                                             files.push(item)
                                         });
 
-
                                         currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
                                     }
                                 }
                             }
 
-                            if (googleMapsApiKey) {
+                            if (googleMapsApiKey && googleMapsApiKey !== 'your-google-maps-api-key') {
                                 files.push({
                                     type: 'js',
                                     path: 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places'

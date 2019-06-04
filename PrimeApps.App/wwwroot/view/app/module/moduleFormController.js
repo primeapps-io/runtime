@@ -4,7 +4,6 @@ angular.module('primeapps')
 
     .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components) {
-
             if (!$scope.$parent.$parent.formType) {
                 $scope.type = $stateParams.type;
                 $scope.subtype = $stateParams.stype;
@@ -61,8 +60,12 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
+
+
+
             components.run('BeforeFormLoaded', 'script', $scope);
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
+            
             //allow encrypted fields
             if (!$scope.id) {
                 for (var f = 0; f < $scope.module.fields.length; f++) {
