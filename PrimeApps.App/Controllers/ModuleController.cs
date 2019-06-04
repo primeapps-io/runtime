@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Constants;
@@ -27,12 +28,12 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private ISettingRepository _settingRepository;
         private IMenuRepository _menuRepository;
+        private IComponentRepository _componentRepository;
         private IConfiguration _configuration;
         private Warehouse _warehouse;
-
         private IModuleHelper _moduleHelper;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IComponentRepository componentRepository, IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
@@ -41,7 +42,7 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
             _configuration = configuration;
             _menuRepository = menuRepository;
-
+            _componentRepository = componentRepository;
             _moduleHelper = moduleHelper;
         }
 
@@ -53,6 +54,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_menuRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_componentRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
@@ -82,7 +84,14 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<ICollection<Module>> GetAll()
         {
-            return await _moduleRepository.GetAll();
+            var modules = await _moduleRepository.GetAll();
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+            if (Request.IsLocal() || previewMode == "app")
+                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
+
+            return modules;
         }
 
         [Route("get_all_deleted"), HttpGet]

@@ -1540,9 +1540,10 @@ angular.module('primeapps')
     .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams', 'helper',
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams, helper) {
             return {
-                run: function (place, type, scope) {
+                run: function (place, type, scope, record, field) {//Don't remove record and field. It can be used in components.
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
+                    var ModuleService = $injector.get('ModuleService');//Don't remove. It can be used in components.
 
                     var components = $filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
@@ -1551,39 +1552,10 @@ angular.module('primeapps')
                     components = $filter('orderBy')(components, 'order');
 
                     if (components && components.length > 0) {
-                        var promises = [];
-
                         for (var i = 0; i < components.length; i++) {
                             var component = components[i];
-                            component.content = helper.replaceDynamicValues(component.content);
-
-                            if (component.content.lastIndexOf('http', 0) === 0) {
-                                component.content = component.content + '?v=' + new Date().getTime();
-                                promises.push($http.get(component.content));
-                            }
-                        }
-
-                        var runScripts = function () {
-                            for (var i = 0; i < components.length; i++) {
-                                var component = components[i];
-                                eval(component.content);
-                            }
-                        };
-
-                        if (promises.length > 0) {
-                            $q.all(promises)
-                                .then(function (responses) {
-                                    for (var i = 0; i < responses.length; i++) {
-                                        var response = responses[i];
-
-                                        var currentComponent = $filter('filter')(scope.module.components, { content: response.config.url }, true)[0];
-                                        currentComponent.content = response.data;
-                                    }
-
-                                    runScripts();
-                                });
-                        } else {
-                            runScripts();
+                            console.log('Script running: ' + component.name);
+                            eval(component.content);
                         }
                     }
                 }

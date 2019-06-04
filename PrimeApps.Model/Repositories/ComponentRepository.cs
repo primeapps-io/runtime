@@ -85,5 +85,12 @@ namespace PrimeApps.Model.Repositories
             component.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
+
+        public async Task<Component> GetGlobalConfig()
+        {
+            return await DbContext.Components
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place == ComponentPlace.GlobalConfig)
+                .SingleOrDefaultAsync();
+        }
     }
 }
