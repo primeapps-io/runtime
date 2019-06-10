@@ -219,7 +219,7 @@ namespace PrimeApps.Studio.Storage
         /// <param name="key"></param>
         /// <param name="expires"></param>
         /// <returns></returns>
-        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTPS, bool clearRoot = true)
         {
             if (bucket.EndsWith('/'))
                 bucket = bucket.Remove(bucket.Length - 1, 1);
