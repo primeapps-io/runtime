@@ -142,7 +142,7 @@ angular.module('primeapps')
                     name: 'imgFilter',
                     fn: function (item) {
                         var extension = helper.getFileExtension(item.name);
-                        return true ? (extension === 'jpg' || extension == 'jpeg' || extension == 'png' || extension == 'doc' || extension == 'gif' || extension == 'ico') : false;
+                        return true ? (extension === 'jpg' || extension === 'jpeg' || extension === 'png' || extension === 'doc' || extension === 'gif' || extension === 'ico') : false;
                     }
                 });
 
@@ -176,27 +176,27 @@ angular.module('primeapps')
             };
 
             $scope.logoRemove = function (item) {
-                if (item == 'authFavicon') {
+                if (item === 'authFavicon') {
                     $scope.authFavicon = "";
                     $scope.authTheme.favicon = "";
                 }
-                
-                if (item == 'authLogo') {
+
+                if (item === 'authLogo') {
                     $scope.authLogo = "";
                     $scope.authTheme.logo = "";
-                }  
-                
-                if (item == 'authBanner') {
+                }
+
+                if (item === 'authBanner') {
                     $scope.authBanner = "";
                     $scope.authTheme.banner = "";
                 }
-                
-                if (item == 'appThemeFavicon') {
+
+                if (item === 'appThemeFavicon') {
                     $scope.appThemeFavicon = "";
                     $scope.appTheme.favicon = "";
-                } 
-                
-                if (item == 'appLogo') {
+                }
+
+                if (item === 'appLogo') {
                     $scope.appThemeLogo = "";
                     $scope.appTheme.logo = "";
                 }
@@ -220,10 +220,10 @@ angular.module('primeapps')
             $scope.saveAppTheme = function () {
                 $scope.savingApp = true;
                 var appThemes = {};
-                appThemes.color = $scope.appTheme.color;
-                appThemes.title = $scope.appTheme.title;
-                appThemes.favicon = $scope.appTheme.favicon;
-                appThemes.logo = $scope.appTheme.logo;
+                appThemes.color = $scope.appTheme.color ? $scope.appTheme.color : '';
+                appThemes.title = $scope.appTheme.title ? $scope.appTheme.title : '';
+                appThemes.favicon = $scope.appTheme.favicon ? $scope.appTheme.favicon : '';
+                appThemes.logo = $scope.appTheme.logo ? $scope.appTheme.logo : '';
 
                 BrandingService.updateAppTheme($scope.appId, appThemes)
                     .then(function (response) {
@@ -254,7 +254,7 @@ angular.module('primeapps')
 
 
             $scope.save = function () {
-                if ($scope.acitveTab == 'login')
+                if ($scope.acitveTab === 'login')
                     $scope.saveAuthTheme();
                 else
                     $scope.saveAppTheme();
@@ -265,23 +265,22 @@ angular.module('primeapps')
                 $scope.savingAuth = true;
                 var authThemes = {};
                 var description = {};
-                description.en = $scope.authTheme.descriptionEn;
-                description.tr = $scope.authTheme.descriptionTr;
+                description.en = $scope.authTheme.descriptionEn ? $scope.authTheme.descriptionEn :'';
+                description.tr = $scope.authTheme.descriptionTr?$scope.authTheme.descriptionTr:'';
                 var banner = [
-                    {descriptions: description, image: $scope.authTheme.banner}
+                    {descriptions: description, image: $scope.authTheme.banner ? $scope.authTheme.banner :''}
                 ];
-                authThemes.color = $scope.authTheme.color;
-                authThemes.title = $scope.authTheme.title;
+                authThemes.color = $scope.authTheme.color ? $scope.authTheme.color : '';
+                authThemes.title = $scope.authTheme.title ? $scope.authTheme.title : '';
                 authThemes.banner = banner;
-                authThemes.favicon = $scope.authTheme.favicon;
-                authThemes.logo = $scope.authTheme.logo;
+                authThemes.favicon = $scope.authTheme.favicon ? $scope.authTheme.favicon : '';
+                authThemes.logo = $scope.authTheme.logo ? $scope.authTheme.logo : '';
                 BrandingService.updateAuthTheme($scope.appId, authThemes)
                     .then(function (response) {
                         toastr.success($filter('translate')('Branding is updated successfully.'));
                         $scope.savingAuth = false;
                     });
             };
-
 
             $scope.showEditModal = function (tab, field) {
                 $scope.focusPlace = field;
