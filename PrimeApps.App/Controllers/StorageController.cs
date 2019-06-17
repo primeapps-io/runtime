@@ -207,7 +207,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, uniqueName, stream);
                 }
 
-                var link = _storage.GetShareLink(bucketName, uniqueName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var link = _storage.GetShareLink(bucketName, uniqueName, DateTime.UtcNow.AddYears(100));
 
                 var result = new DocumentUploadResult
                 {
@@ -375,7 +375,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var profilePicture = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
 
                 return Ok(profilePicture);
             }
@@ -419,7 +419,7 @@ namespace PrimeApps.App.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
 
                 //return content type.
                 return Ok(logo);

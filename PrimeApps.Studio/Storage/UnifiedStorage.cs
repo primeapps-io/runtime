@@ -18,7 +18,11 @@ namespace PrimeApps.Studio.Storage
     public class UnifiedStorage : IUnifiedStorage
     {
         private IAmazonS3 _client;
-        public IAmazonS3 Client { get { return _client; } }
+
+        public IAmazonS3 Client
+        {
+            get { return _client; }
+        }
 
         public UnifiedStorage(IAmazonS3 client)
         {
@@ -44,18 +48,18 @@ namespace PrimeApps.Studio.Storage
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
         {
-            {ObjectType.ATTACHMENT, "/attachments/"},
-            {ObjectType.RECORD, "/records/"},
-            {ObjectType.TEMPLATE, "/templates/"},
-            {ObjectType.ANALYTIC, "/analytics/"},
-            {ObjectType.IMPORT, "/imports/"},
-            {ObjectType.NOTE, "/notes/"},
-            {ObjectType.LOGO, "/logos/"},
-            {ObjectType.MAIL, "/mail/"},
-            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
-            {ObjectType.NONE, ""},
-            {ObjectType.APPLOGO, "/app_logo/"},
-            {ObjectType.APPTEMPLATE, "/app_template/"}
+            { ObjectType.ATTACHMENT, "/attachments/" },
+            { ObjectType.RECORD, "/records/" },
+            { ObjectType.TEMPLATE, "/templates/" },
+            { ObjectType.ANALYTIC, "/analytics/" },
+            { ObjectType.IMPORT, "/imports/" },
+            { ObjectType.NOTE, "/notes/" },
+            { ObjectType.LOGO, "/logos/" },
+            { ObjectType.MAIL, "/mail/" },
+            { ObjectType.PROFILEPICTURE, "/profile_pictures/" },
+            { ObjectType.NONE, "" },
+            { ObjectType.APPLOGO, "/app_logo/" },
+            { ObjectType.APPTEMPLATE, "/app_template/" }
         };
 
         /// <summary>
@@ -83,7 +87,6 @@ namespace PrimeApps.Studio.Storage
         /// <returns>Upload id required to upload parts.</returns>
         public async Task<string> InitiateMultipartUpload(string bucket, string key)
         {
-
             bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
             if (!exists)
             {
@@ -202,6 +205,7 @@ namespace PrimeApps.Studio.Storage
                 }
             }
         }
+
         /// <summary>
         /// Deletes a bucket with everything under it.
         /// </summary>
@@ -258,6 +262,7 @@ namespace PrimeApps.Studio.Storage
             };
             return await _client.CopyObjectAsync(request);
         }
+
         /// <summary>
         /// Deletes an object from a bucket.
         /// </summary>
@@ -287,7 +292,7 @@ namespace PrimeApps.Studio.Storage
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
-        
+
         public static string GetPathComponents(string folderName, string componentName)
         {
             return $"components/{folderName}/{componentName}";

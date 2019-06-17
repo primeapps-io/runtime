@@ -50,7 +50,6 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_organizationRepository);
             SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_teamRepository);
-
         }
 
         [Route("me"), HttpGet]
@@ -175,7 +174,7 @@ namespace PrimeApps.Studio.Controllers
                     await _storage.Upload(bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100), Amazon.S3.Protocol.HTTP);
+                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
 
                 //return content type.
                 return Ok(logo);
