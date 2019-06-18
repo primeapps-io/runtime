@@ -855,7 +855,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var component in module.Components)
                 {
-                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig)
+                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || component.Content == null)
                         continue;
 
                     component.Content = ReplaceDynamicValues(component.Content, appConfigs);
