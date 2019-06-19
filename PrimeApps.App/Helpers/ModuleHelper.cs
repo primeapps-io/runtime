@@ -51,6 +51,7 @@ namespace PrimeApps.App.Helpers
             _auditLogHelper = auditLogHelper;
             Queue = queue;
         }
+
         public Module CreateEntity(ModuleBindingModel moduleModel)
         {
             var moduleEntity = new Module
@@ -280,9 +281,7 @@ namespace PrimeApps.App.Helpers
                             permissionEntity.Type = permissionModel.Type;
                         }
                     }
-
                 }
-
             }
 
             if (moduleModel.Fields != null && moduleModel.Fields.Count > 0)
@@ -597,6 +596,7 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
+
             return deletedViewFields;
         }
 
@@ -857,6 +857,12 @@ namespace PrimeApps.App.Helpers
                 {
                     if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
                         continue;
+
+                    if (component.Content.Contains('{') && appConfigs.IsNullOrEmpty())
+                    {
+                        component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
+                        continue;
+                    }
 
                     component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
