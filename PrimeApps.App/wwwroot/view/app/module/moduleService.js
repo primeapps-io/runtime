@@ -2694,13 +2694,24 @@ angular.module('primeapps')
                             }
 
                             if (!record['izin_turu_data']['izin_hakkindan_takvim_gunu_olarak_dusulsun']) {
-                                //Yarım gün tatiller alınan izinden çıkarılıyor
+                                //Yarım gün(hafta içine denk gelen) tatiller alınan izinden çıkarılıyor
                                 for (var i = 0; i < $rootScope.holidaysData.length; i++) {
                                     var holiday = $rootScope.holidaysData[i];
                                     if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
                                         calculatedField -= 0.5;
                                     }
+                                    //Tam gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor
                                     else if (!holiday.half_day && moment(holiday.date).isBusinessDay() && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
+                                        calculatedField -= 1.0;
+                                    }
+                                    /*Yarım gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor Hafta sonu olduğu için her türlü toplamda alınan izinden 1 gün çıkarılıyor
+									 calculatedField kontrolünü yapma sebebimiz, alınan izin sadece Cuma gününü mü kapsıyor ? 
+									 */
+                                    else if (calculatedField > 1 && holiday.half_day && moment(moment(holiday.date).format('YYYY-MM-DD')).day() === 6 && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
+                                        calculatedField -= 1.0;
+                                    }
+                                    //Tam gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor Hafta sonu olduğu için izinden 1 gün çıkarılıyor
+                                    else if (calculatedField > 1 && !holiday.half_day && moment(moment(holiday.date).format('YYYY-MM-DD')).day() === 6 && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
                                         calculatedField -= 1.0;
                                     }
                                 }
