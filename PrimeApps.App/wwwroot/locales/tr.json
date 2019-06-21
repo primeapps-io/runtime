@@ -1026,6 +1026,7 @@
       "FieldName": "Alan İsmi",
       "FieldType": "Alan Tipi",
       "FieldRequired": "Zorunlu Alan",
+      "FieldReadOnly": "Sadece Okunur",
       "LookupType": "İlgili Modül",
       "SearchType": "Arama Tipi",
       "PicklistType": "Seçim Listesi",

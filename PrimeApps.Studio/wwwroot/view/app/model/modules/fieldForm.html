@@ -149,7 +149,7 @@
                                                    ng-model="currentField.default_value"
                                                    ng-change="changeDefaultValue()"
                                                    ng-disabled="currentField.placeholder"
-                                                   ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'url'"/>
+                                                   ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'url'" />
 
                                             <textarea class="form-control ng-animate-disabled"
                                                       ng-model="currentField.default_value"
@@ -162,25 +162,25 @@
                                                    ng-model="currentField.default_value"
                                                    ng-trim="false"
                                                    numeric
-                                                   ng-if="currentField.dataType.name === 'number'"/>
+                                                   ng-if="currentField.dataType.name === 'number'" />
 
                                             <input type="text"
                                                    class="form-control ng-animate-disabled"
                                                    ng-model="currentField.default_value"
                                                    number-decimal
-                                                   ng-if="currentField.dataType.name === 'number_decimal'"/>
+                                                   ng-if="currentField.dataType.name === 'number_decimal'" />
 
                                             <input type="text"
                                                    class="form-control ng-animate-disabled"
                                                    ng-model="currentField.default_value"
                                                    currency-symbol="currencySymbol"
                                                    number-currency
-                                                   ng-if="currentField.dataType.name === 'currency'"/>
+                                                   ng-if="currentField.dataType.name === 'currency'" />
 
                                             <input type="email"
                                                    class="form-control ng-animate-disabled"
                                                    ng-model="currentField.default_value"
-                                                   ng-if="currentField.dataType.name === 'email'"/>
+                                                   ng-if="currentField.dataType.name === 'email'" />
 
                                             <input type="text"
                                                    class="form-control ng-animate-disabled"
@@ -290,7 +290,7 @@
                                                    ng-click="openLocationModal(field.name)"></i>
                                                 <input name="{{field.name}}" ng-model="currentField.default_value"
                                                        type="text"
-                                                       class="form-control"/>
+                                                       class="form-control" />
                                             </div>
 
                                             <tags-input name="userLookup"
@@ -328,7 +328,7 @@
                                                               text-no-results="{{'Common.NoResults' | translate}}"
                                                               use-original-object="true"
                                                               value-changed="fieldValueChange(currentField);"
-                                                              ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value != 'users'"/>
+                                                              ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value != 'users'" />
                                             <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
                                         </div>
                                     </div>
@@ -420,7 +420,7 @@
                                                name="customLabel"
                                                maxlength="1000"
                                                class="form-control ng-animate-disabled col-sm-8"
-                                               ng-model="currentField.custom_label"/>
+                                               ng-model="currentField.custom_label" />
                                     </div>
 
                                     <div class="form-group" ng-if="currentField.dataType.name === 'text_single'"
@@ -685,6 +685,16 @@
                                         {{'Setup.Modules.PermissionWarning' | translate}}
                                     </div>
                                     <div class="form-group"
+                                         ng-show="!currentField.validation.required">
+                                        <label class="col-sm-4 newinput">{{'Setup.Modules.FieldReadOnly'
+                                            | translate}}
+                                            <input type="checkbox"
+                                                   ng-model="currentField.validation.readonly"
+                                                   ng-change="readonlyChanged()">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group"
                                          ng-show="!currentField.validation.readonly && !currentField.systemReadonly">
                                         <label class="col-sm-4 newinput"
                                                ng-class="(currentField.systemRequired && currentField.validation.required) || currentField.primary || currentField.data_type === 'checkbox' || currentField.calendar_date_type ? 'disabled':''">{{'Setup.Modules.FieldRequired'
@@ -768,48 +778,48 @@
                                 <div class="panel table-responsive">
                                     <table class="table">
                                         <thead>
-                                        <tr>
-                                            <th>{{'Setup.Modules.Profile' | translate}}</th>
-                                            <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
-                                            <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
-                                            </th>
-                                            <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
-                                        </tr>
+                                            <tr>
+                                                <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                                <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
+                                                <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
+                                                </th>
+                                                <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
-                                            <td>{{permission.profile_name}}</td>
-                                            <td class="text-center user-not-select ">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="full"/>
-                                                    <span></span>
-                                                </label>
+                                            <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
+                                                <td>{{permission.profile_name}}</td>
+                                                <td class="text-center user-not-select ">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="full" />
+                                                        <span></span>
+                                                    </label>
 
-                                            </td>
-                                            <td class="text-center user-not-select">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="read_only"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}"/>
-                                                    <span></span>
-                                                </label>
-                                            </td>
-                                            <td class="text-center user-not-select">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="none"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}"/>
-                                                    <span></span>
-                                                </label>
+                                                </td>
+                                                <td class="text-center user-not-select">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="read_only"
+                                                               ng-disabled="permission.profile_is_admin"
+                                                               title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
+                                                        <span></span>
+                                                    </label>
+                                                </td>
+                                                <td class="text-center user-not-select">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="none"
+                                                               ng-disabled="permission.profile_is_admin"
+                                                               title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
+                                                        <span></span>
+                                                    </label>
 
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
