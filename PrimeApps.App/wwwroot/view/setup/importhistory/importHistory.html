@@ -1,0 +1,72 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#/app/setup/importhistory">{{'Setup.Nav.Tabs.ImportHistory' | translate}}</a></li>
+        <li ng-if="helper.hasAdminRights()"><a href="#/app/setup/auditlog">{{'Setup.Nav.Tabs.AuditLog' | translate}}</a></li>
+        <!--<li><a href="#/app/setup/recyclebin">{{'Setup.Nav.Tabs.RecycleBin' | translate}}</a></li>-->
+    </ul>
+</div>
+<div class="panel panel-default setup-panel audit-log">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Nav.Tabs.ImportHistory' | translate}}</h5>
+            <div class="subpanel-body">
+                <div class="text-right" ng-show="!showFilter && !searching && (imports.length > 0 || showFilterButton)">
+                    <button type="button" class="btn btn-custom btn-sm" ng-click="showFilter = true"><i class="fa fa-filter"></i> {{'Common.Filter' | translate}}</button>
+                </div>
+                <div ng-show="showFilter" class="filter clearfix">
+                    <div class="form-group pull-left">
+                        <select class="form-control"
+                                ng-model="importHistoryFilter.moduleId"
+                                ng-options="module.id as module['label_' + language + '_plural'] for module in modules">
+                            <option value="">{{'Setup.ImportHistory.SelectModule' | translate}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group pull-left" ng-show="helper.hasAdminRights()">
+                        <select class="form-control"
+                                ng-model="importHistoryFilter.userId"
+                                ng-options="u.id as u.FullName for u in users">
+                            <option value="">{{'Setup.ImportHistory.SelectUser' | translate}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group pull-right">
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="cancel()">{{'Common.Cancel' | translate}}</button>
+                        <button class="btn btn-xs btn-w-xs btn-primary" ladda="searching" ng-click="currentPage = 1; find()"><i class="fa fa-search pull-left"></i> {{'Common.Search' | translate}}</button>
+                    </div>
+                </div>
+                <div ng-show="searching" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                <div class="empty-message" ng-if="!imports.length" ng-show="!searching">{{'Common.EmptyMessage' | translate}}</div>
+                <table class="table" ng-show="imports.length">
+                    <thead>
+                        <tr>
+                            <th>{{'Common.Module' | translate}}</th>
+                            <th>{{'Setup.ImportHistory.ImportedBy' | translate}}</th>
+                            <th>{{'Setup.ImportHistory.TotalCount' | translate}}</th>
+                            <th>{{'Setup.ImportHistory.FileName' | translate}}</th>
+                            <th>{{'Setup.ImportHistory.ImportDate' | translate}}</th>
+                            <th style="min-width: 70px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="importItem in imports">
+                            <td>{{importItem.module['label_' + language + '_plural']}}</td>
+                            <td>{{importItem.created_by.full_name}}</td>
+                            <td>{{importItem.total_count}}</td>
+                            <td><a href="{{importItem.file_url}}" target="_blank">{{importItem.file_name}}</a></td>
+                            <td>{{importItem.created_at | date:'short'}}</td>
+                            <td class="text-right">
+                                <button type="button" class="btn btn-xs btn-custom"  confirm-click action="revert(importItem)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Setup.ImportHistory.Revert' | translate}}">{{'Setup.ImportHistory.Revert' | translate}}</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="paging" style="padding: 15px 0 0 5px;" ng-show="!searching && imports.length >= 30">
+                    <a href ng-click="loadMore()" ng-if="!allImportsLoaded">
+                        <span>{{'Setup.ImportHistory.ShowMore' | translate}}</span>
+                        <i class="fa {{pagingIcon}} ng-animate-disabled" style="font-size: 11px;" ng-if="!allImportsLoaded"></i>
+                    </a>
+                    <span ng-if="allImportsLoaded">{{'Setup.ImportHistory.AllImportsLoaded' | translate}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

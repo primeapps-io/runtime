@@ -1,0 +1,1 @@
+"use strict";angular.module("primeapps").controller("DirectoryDetailController",["$rootScope","$scope","$location",function(o,r,e){r.id=e.search().id,r.showBack=!1}]);

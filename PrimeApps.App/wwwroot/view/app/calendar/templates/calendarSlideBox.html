@@ -1,0 +1,25 @@
+<div class="cal-slide-box" uib-collapse="vm.isCollapsed" mwl-collapse-fallback="vm.isCollapsed">
+    <div class="cal-slide-content cal-event-list">
+        <ul class="unstyled list-unstyled">
+            <li
+                    ng-repeat="event in vm.events | orderBy:'startsAt' track by event.calendarEventId"
+                    class="event-line"
+                    ng-class="event.cssClass"
+                    mwl-draggable="event.draggable === true"
+                    drop-data="{event: event}">
+                <span class="event-bullet" ng-style="{backgroundColor: event.color.primary}" data-title="{{event.module}}" data-trigger="hover" data-placement="right" bs-tooltip></span>
+
+                <a
+                        href="#/app/module/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}"
+                        class="event-item">
+                    <span ng-bind-html="isMonthView ? vm.calendarEventTitle.monthView(event) : vm.calendarEventTitle.yearView(event) | calendarTrustAsHtml"></span>
+                </a>
+
+                <span class="action-buttons">
+                    <a href="#/app/moduleForm/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}" class="action-icon" title="{{'Common.Edit' | translate}}"><i class="flaticon-pencil124"></i></a>
+                    <i class="action-icon flaticon-bin9" confirm-click action="vm.templateScope.delete(event)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}"></i>
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>

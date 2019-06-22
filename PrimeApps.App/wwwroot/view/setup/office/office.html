@@ -1,0 +1,41 @@
+﻿<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/general">{{'Setup.Nav.Tabs.General' | translate}}</a></li>
+        <li><a href="#/app/setup/messaging">{{'Setup.Nav.Tabs.Messaging' | translate}}</a></li>
+        <li><a href="#/app/setup/outlook">{{'Setup.Outlook.OutlookPlugin' | translate}}</a></li>
+        <li ng-show="phoneSettings.sipLicenseCount"><a href="#/app/setup/phone">{{'Setup.Nav.Tabs.Phone' | translate}}</a></li>
+        <li class="active" ng-if="hasAdminRight"><a href="#/app/setup/office">{{'Setup.Nav.Tabs.Office' | translate}}</a></li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div class="panel panel-default setup-panel settings">
+        <div class="panel-body">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.Office.Settings' |translate}}</h5>
+                <div class="subpanel-body">
+                    <form class="form-horizontal" ng-submit="saveDetailViewType()" novalidate>
+                        <div class="form-group text-center">
+                            <img src="/images/office365logo.png" style="max-width: 250px;" />
+                        </div>
+                        <div class="form-group text-center">
+                            <div class="col-sm-12">
+                                <button ng-if="!isConnected" ng-disabled="loading" type="button" ng-click="officeConnection()" class="btn btn-primary btn-w-lg ng-animate-disabled" ladda="officeConnectionOpening"><i class="fa fa-plug pull-left"></i> {{'Setup.Office.Connect' |translate}}</button>
+                                <button ng-if="isConnected" ng-disabled="isConnected" type="button" class="btn btn-success btn-w-lg ng-animate-disabled"><i class="fa fa-check pull-left"></i> {{'Setup.Office.Connected' |translate}}</button>
+                            </div>
+                        </div>
+                        <div class="form-group text-center" ng-show="adInfo.email">
+                            <div class="col-sm-12">
+                                <label>{{'Setup.Office.ConnectedEmail' |translate}} : {{adInfo.email}}</label>
+                            </div>
+                        </div>
+                        <div class="form-group text-center" ng-show="!adInfo.email">
+                            <div class="col-sm-12">
+                                <label>{{'Setup.Office.ConnectionInfo' |translate}}</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

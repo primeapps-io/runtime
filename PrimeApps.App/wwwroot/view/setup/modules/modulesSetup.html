@@ -1,0 +1,54 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#/app/setup/modules">{{'Setup.Nav.Tabs.Modules' | translate}}</a></li>
+        <li><a href="#/app/setup/templates">{{'Setup.Nav.Tabs.Templates' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div class="modules-setup" ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading ">{{'Setup.Modules.Title' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="text-right">
+                        <button class="btn btn-custom btn-sm btn-w-lg " ng-click="moduleLicenseCountLimit()"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewModule' | translate}}</button>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Icon</th>
+                                <th>{{'Setup.Modules.Name' | translate}}</th>
+                                <th>{{'Setup.Modules.Type' | translate}}</th>
+                                <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
+                                <th>{{'Setup.Modules.Sharing' | translate}}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="moduleItem in modulesSetup | filter: moduleListFilter | orderBy:['-system_type','order']">
+                                <td><i class="{{moduleItem.menu_icon}}"></i></td>
+                                <td>
+                                    <a href="#app/setup/module?id={{moduleItem.name}}" ng-if="(user.isDemo && moduleItem.created_by_id==user.id) || !user.isDemo">
+                                        {{moduleItem['label_' + language + '_plural']}}
+                                    </a>
+                                    <span ng-if="user.isDemo && moduleItem.created_by_id!=user.id">
+                                {{moduleItem['label_' + language + '_plural']}}
+                            </span>
+                                </td>
+                                <td>{{'Setup.Modules.Type-' + moduleItem.system_type | translate}}</td>
+                                <td>{{moduleItem.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
+                                <td>{{moduleItem.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) : ('Setup.Modules.SharingPublic' | translate)}}</td>
+                                <td class="text-right">
+                                    <button id="actionButton-{{moduleItem.name}}" ng-disabled="user.isDemo && moduleItem.created_by_id!=user.id" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i class="fa fa-caret-down"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clearfix">
+            </div>
+        </div>
+    </div>
+</div>

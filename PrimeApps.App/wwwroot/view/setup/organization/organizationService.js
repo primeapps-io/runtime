@@ -1,0 +1,1 @@
+"use strict";angular.module("primeapps").factory("OrganizationService",["$http","config",function(t,n){return{editCompany:function(i){return t.post(n.apiUrl+"Instance/Edit",i)}}}]);

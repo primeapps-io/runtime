@@ -1,0 +1,27 @@
+.profiles {
+  .action-column {
+    width: 170px;
+  }
+
+  .profile-name {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .profile-description {
+    max-width: 340px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-not-select {
+    padding-left: 40px;
+  }
+
+  .ui-checkbox {
+    margin: 0 0 10px 30px;
+  }
+}

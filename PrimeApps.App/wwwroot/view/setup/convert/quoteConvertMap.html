@@ -1,0 +1,35 @@
+<div class="panel panel-default setup-panel lead-convert-map">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Conversion.QuoteConversionMapping' | translate}}</h5>
+            <div class="subpanel-body">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-3">{{quoteModule['label_' + language+'_plural']}}</th>
+                            <th class="col-sm-3" ng-show="salesOrderModule != null">{{salesOrderModule['label_' + language+'_plural']}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="leadField in quoteModule.fields | filter:{deleted:'!true',validation:{readonly: '!true'}} | orderBy:'order'">
+                        <td>
+                            {{leadField['label_' + language]}}
+                        </td>
+                        <td ng-show="salesOrderModule != null">
+                            <select class="form-control ng-animate-disabled"
+                                    ng-style="salesOrderModule.selectedFields[leadField.id]?{'background-color':'#e4fbf8'}:null"
+                                    ng-click="lastSelection = salesOrderModule.selectedFields[leadField.id]"
+                                    ng-change="mappingModuleFieldChanged(salesOrderModule,leadField,lastSelection)";
+                                    ng-model="salesOrderModule.selectedFields[leadField.id]"
+                                    ng-options="o as o['label_' + language] for o in salesOrderModule.fields | filter:customFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
+                                <option value="">{{'Common.Select' | translate}}</option>
+                            </select>
+							<span ng-show="salesOrderModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][salesOrderModule.id] == true;" class="fa fa-check" style="color: #00A000">{{'Setup.Conversion.HasBeenRecorded' | translate}}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

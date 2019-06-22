@@ -1,0 +1,70 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <h3 class="popover-title">{{selectedUser.userName}}</h3>
+    <div class="popover-content" style="min-width: 280px;">
+        <form name="editForm" ng-submit="edit()" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-12">{{'Setup.Users.Profile' | translate}}:</label>
+                    <div class="col-sm-12">
+                        <select
+                                class="form-control"
+                                name="profile"
+                                ng-model="editModel.profile"
+                                required
+                                ng-options="o.id as o.name for o in profiles">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-12">{{'Setup.Users.Role' | translate}}:</label>
+                    <div class="col-sm-12">
+                        <ui-select name="role"
+                                   ng-model="editModel.role"
+                                   ng-required="true">
+                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                            <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="isOfficeConnected && userHaveActiveDirectoryEmail" class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-12">{{'Setup.Office.ConnectedEmail' | translate}}:</label>
+                    <div class="col-sm-12">
+                        <input
+                                class="form-control"
+                                name="activeDirectoryEmail"
+                                ng-model="editModel.activeDirectoryEmail"
+                                ng-disabled="true">
+                        </input>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="isOfficeConnected && !userHaveActiveDirectoryEmail" class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-12">{{'Setup.Office.ConnectedEmail' | translate}}:</label>
+                    <div class="col-sm-12">
+                        <select
+                                class="form-control"
+                                name="activeDirectoryEmail"
+                                ng-model="editModel.activeDirectoryEmail"
+                                ng-options="o.email as o.email for o in officeUsers">
+                            <option value="">{{'Setup.Users.ChooseUser' | translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12" style="padding-left: 26px;">
+                    <button type="button" class="btn btn-custom" ng-click="$hide()" ng-disabled="userEditing"> {{'Common.Cancel' | translate}}</button>
+                    <button type="submit" class="btn btn-primary btn-w-lg" ladda="userEditing"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

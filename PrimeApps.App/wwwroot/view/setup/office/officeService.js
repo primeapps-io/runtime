@@ -1,0 +1,1 @@
+"use strict";angular.module("primeapps").factory("OfficeService",["$http","config",function(e,t){return{getByKey:function(r,i,n){return e.get(t.apiUrl+"settings/get_by_key/"+r+"/"+i+(n?"&user_id="+n:""))},create:function(r){return e.post(t.apiUrl+"settings/create",r)},activeDirectoryInfo:function(){return e.get(t.apiUrl+"User/ActiveDirectoryInfo")}}}]);

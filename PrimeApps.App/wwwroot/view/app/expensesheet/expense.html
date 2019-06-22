@@ -1,0 +1,141 @@
+<help-page ng-if="!loading" route="currentPath"></help-page>
+<div class="page calendar">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{'Expenses.Expenses' | translate}} <span ng-show="showFullName">( {{owner.FullName}} )</span></h4>
+            <div ng-show="hasAdminRights" class="btn-group pull-right">
+                <a ng-click="expenseSettingsModal()" style="cursor: pointer"><i class="fa fa-cog fa-2x" aria-hidden="true" style="color:#d6d9de"></i></a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="subpanel" ng-show="!loading">
+                <div class="subpanel-body">
+                    <div class="row calendar-header">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <!--<a href="#/app/crm/expense" ng-show="urlId"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>-->
+                                <div class="col-md-6" ng-show="!urlId">
+                                    <div class="calendar-filter">
+                                        <ui-select ng-model="yearsPicklist.selectYear" style="width: 100%" ng-change="yearListChange()">
+                                            <ui-select-match placeholder="{{'Expenses.Years' | translate}}">{{$select.selected.label_tr}}</ui-select-match>
+                                            <ui-select-choices repeat="item in yearList | filter:{label_tr: $select.search}">
+                                                <div ng-bind-html="item.label_tr | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" ng-if="language === 'tr'" ng-show="!urlId">
+                                    <div class="calendar-filter">
+                                        <ui-select ng-model="$parent.filter.selectMonth" style="width: 100%" ng-change="monthListChange()">
+                                            <ui-select-match placeholder="{{'Expenses.Months' | translate}}">{{$select.selected.label_tr}}</ui-select-match>
+                                            <ui-select-choices repeat="item in monthList | filter:{label_tr: $select.search}">
+                                                <div ng-bind-html="item.label_tr | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" ng-if="language === 'en'">
+                                    <div class="calendar-filter">
+                                        <ui-select ng-model="$parent.filter.selectMonth" style="width: 100%" ng-change="monthListChange()">
+                                            <ui-select-match placeholder="{{'Expenses.Months' | translate}}">{{$select.selected.label_en}}</ui-select-match>
+                                            <ui-select-choices repeat="item in monthList | filter:{label_en: $select.search}">
+                                                <div ng-bind-html="item.label_en | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h4 style="color:#635fb3; font-weight: 700">{{currentMonthSet}} {{currentYear}}</h4>
+                        </div>
+                        <div class="col-md-4 text-right" ng-show="!loadingForm">
+                            <div class="btn-group" ng-show="!loadingForm" style="display: inline-block;">
+                                <!--Onaya gönder butonu geçici kapatıldı.-->
+                                <button style="margin-left: 15px;display: inline-block;" ng-show="automaticApprovelButtonShow && ExpenseItemFreeze && sendApproveShow && hasManuelProcess && !currentExpense.process_id && currentExpense.owner == currentUser.id" ng-click="sendToProcessApproval()" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
+                                <!--<button style="margin-left: 15px" ng-click="expenseApprovedControl();approveProcess()" ng-show="isApprovalRecord && currentExpense.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled pull-left" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>-->
+                                <!--<button style="margin-left: 15px" ng-click="expenseApprovedControl();openRejectApprovalModal()" ng-show="isApprovalRecord && currentExpense.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled pull-right" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>-->
+                                <button style="margin-left: 15px" ng-click="reApproveProcess()" ng-show="currentExpense.process_status == 3 && currentExpense.created_by === currentUser.id" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</button>
+                                <h4 style="display: inline-block; margin-left: 15px">
+                                    <span class="label label-info" ng-if="waitingForApproval && !isApproved && currentExpense.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}</span>
+                                    <span class="label label-danger" ng-if="currentExpense.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
+                                    <span class="label label-success" ng-if="isApproved && currentExpense.process_status == 2">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="loadingForm" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-if="!loadingForm">
+                        <div class="subpanel ng-scope">
+                            <div class="btn-group">
+                                <div class="btn btn-sm btn-custom" style="width: auto; background-color:inherit !important; border-top: none; border-left : none;cursor:default">
+                                    <span style="color:#635fb3; font-weight: bold !important; text-transform: uppercase; float: left" ng-if="ExpenseItemFreeze && ExpenseItemFreezeYear">{{'Expenses.AddExpenseItem' | translate}}</span>
+                                    <span style="color:#635fb3; font-weight: bold !important; text-transform: uppercase; float: left" ng-if="!ExpenseItemFreeze || !ExpenseItemFreezeYear">{{'Expenses.ExpenseItems' | translate}}</span>
+                                </div>
+                                <a ng-if="ExpenseItemFreeze && ExpenseItemFreezeYear" ng-click="openExpenseModal();" style="border-top: none"
+                                   class="btn btn-sm btn-custom">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                            <div class="btn btn-sm btn-custom  pull-right" style="cursor:default;width: 300px; background-color:inherit !important; border-top: none; border-right : none" ng-if="totalAmountShow">
+                                  <span ng-show="spinnerShow" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;" class="page-loading">
+                                  {{'Expenses.TotalAmount' | translate}} :  <i class="fa fa-sm fa-spinner fa-pulse"></i>
+                                   </span>
+                                <span ng-show="!spinnerShow" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                      {{'Expenses.TotalAmount' | translate}} : {{totalAmount}} {{currencySymbol}}
+                                    </span>
+                            </div>
+                            <div class="btn btn-sm btn-custom  pull-right" style="cursor:default;width: 300px; background-color:inherit !important; border-top: none; border-right : none" ng-if="payableTotalAmountShow">
+                                     <span ng-show="spinnerShow" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;" class="page-loading">
+                                   {{'Expenses.PayableTotalAmount' | translate}} :  <i class="fa fa-sm fa-spinner fa-pulse"></i>
+                                   </span>
+                                <span ng-show="!spinnerShow" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                        {{'Expenses.PayableTotalAmount' | translate}} : {{payableTotalAmount}} {{currencySymbol}}
+                                    </span>
+                            </div>
+                            <div class="subpanel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div ng-if="AnyExpenseItemShow"><span>{{'Expenses.AnyExpenseItem' | translate}}</span></div>
+                                        <table style="margin-top: 20px;border:none !important;" class="table" ng-if="expense_items.length > 0">
+                                            <thead>
+                                                <tr ng-if="language === 'tr'">
+                                                    <th ng-repeat="label in labels">{{label.label_tr}}</th>
+                                                    <th></th>
+                                                </tr>
+                                                <tr ng-if="language === 'en'">
+                                                    <th ng-repeat="label in labels">{{label.label_en}}</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in expense_items">
+                                                    <td ng-repeat="label in labels" ng-if="item[label.name]  || item[label.name] === null">
+                                                        <span ng-if="label.primary == true && label.data_type == 'date'"><a ng-click="openExpenseDetailModal(item)" style="color: #337ab7;cursor: pointer;">{{item[label.name] | date:'shortDate'}}</a></span>
+                                                        <span ng-if="label.primary == true && label.data_type != 'date'"><a ng-click="openExpenseDetailModal(item)" style="color: #337ab7;cursor: pointer;">{{item[label.name]}}</a></span>
+                                                        <span ng-if="label.primary == false && label.data_type == 'date'">{{item[label.name] | date:'shortDate'}}</span>
+                                                        <span ng-if="label.primary == false && label.data_type != 'date'">{{item[label.name]}}</span>
+                                                        <span ng-if="label.data_type == 'time'">{{item[label.name] | date:'shortTime'}}</span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span style="display:block; width: 40px"><a href=\"#/app/crm/module/{{event.type}}{{'?id='>{{label}}</a></span>
+                                                        <span class="action-buttons">
+                                    <a ng-click="openExpenseModal(item)" ng-show="ExpenseItemFreeze" class="action-icon" title="{{'Common.Edit' | translate}}"><i class="flaticon-pencil124"></i></a>
+                                    <i class="action-icon flaticon-bin9" ng-show="ExpenseItemFreeze" confirm-click action="delete(item.id)" placement=" left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}"></i>
+                                </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

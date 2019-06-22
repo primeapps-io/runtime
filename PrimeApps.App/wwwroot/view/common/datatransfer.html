@@ -1,0 +1,14 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <div class="popover-content" style="text-align: center;">
+        <a ng-if="user.profile.import_data" href="#/app/import/{{type}}" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)">
+            <i class="fa fa-download"></i> {{'Module.Import' | translate }}
+        </a>
+        <a ng-if="user.profile.export_data" ng-disabled="$parent.$parent.$parent.isEmpty" ng-click="showExportDataModal()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">
+            <i class="fa fa-upload"></i> {{'Module.Export' | translate }}
+        </a>
+        <a ng-if="user.profile.export_data" ng-click="openExcelTemplate()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">
+            <i class="fa fa-upload"></i> {{'Module.ExportExcel' | translate }}
+        </a>
+    </div>
+</div>
