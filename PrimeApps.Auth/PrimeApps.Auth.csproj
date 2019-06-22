@@ -23,11 +23,9 @@
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="primeapps_id4.pfx" />
-    </ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+      </ItemGroup>
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\images\login\404image.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\images\login\banner\primeapps-background.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\images\login\logos\login_primeapps.png" />
+        <EmbeddedResource Include="primeapps_id4.pfx" />
     </ItemGroup>
 </Project>
