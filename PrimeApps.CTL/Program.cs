@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PrimeApps.CLI.Migration;
+using PrimeApps.CTL.Migration;
 using PrimeApps.Model.Context;
 using System;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Helpers;
 
-namespace PrimeApps.CLI
+namespace PrimeApps.CTL
 {
     internal class Program
     {
