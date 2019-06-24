@@ -431,7 +431,8 @@ namespace PrimeApps.Auth.Controllers
         {
             var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
 
-            if (user == null || !user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId)
+            if (user == null) //!user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId
+            //TODO: Make this method available to get token from PrimeApps CLI
                 return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
 
             var httpClient = new HttpClient();

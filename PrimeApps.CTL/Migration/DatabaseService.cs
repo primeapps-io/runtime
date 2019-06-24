@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace PrimeApps.CLI.Migration
+namespace PrimeApps.CTL.Migration
 {
     public class DatabaseService : IDatabaseService
     {
