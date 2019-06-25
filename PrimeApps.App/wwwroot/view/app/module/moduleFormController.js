@@ -59,13 +59,13 @@ angular.module('primeapps')
             if ($scope.parentId)
                 $window.scrollTo(0, 0);
 
-            $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
+            $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
 
 
 
             components.run('BeforeFormLoaded', 'script', $scope);
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
-            
+
             //allow encrypted fields
             if (!$scope.id) {
                 for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -78,7 +78,7 @@ angular.module('primeapps')
 
             $rootScope.activeModuleName = $scope.parentType;
             if (!$scope.module) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;
             }
@@ -93,38 +93,38 @@ angular.module('primeapps')
             }
 
             if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
-                ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'warning'});
+                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;
             }
 
-            $scope.primaryField = $filter('filter')($scope.module.fields, {primary: true})[0];
+            $scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
             $scope.currentUser = ModuleService.processUser($rootScope.user);
             $scope.currentDayMin = helper.getCurrentDateMin().toISOString();
             $scope.currentDayMax = helper.getCurrentDateMax().toISOString();
             $scope.currentHour = helper.floorMinutes(new Date());
-            $scope.relatedToField = $filter('filter')($scope.module.fields, {name: 'related_to'}, true)[0];
+            $scope.relatedToField = $filter('filter')($scope.module.fields, { name: 'related_to' }, true)[0];
             $scope.record = {};
             $scope.customLeaveFields = {};
 
             if (!$scope.id) {
-                $scope.title = $filter('translate')('Module.New', {title: $scope.module['label_' + $rootScope.language + '_singular']});
+                $scope.title = $filter('translate')('Module.New', { title: $scope.module['label_' + $rootScope.language + '_singular'] });
             }
 
             //<--TODO:COMPONENT
             //Sets holidays to business days 
             var setHolidays = function () {
                 if ($scope.module.name === 'leaves' || $scope.module.name === 'izinler') {
-                    var holidaysModule = $filter('filter')($rootScope.modules, {name: 'holidays'}, true)[0];
+                    var holidaysModule = $filter('filter')($rootScope.modules, { name: 'holidays' }, true)[0];
 
                     if (holidaysModule) {
-                        var countryField = $filter('filter')(holidaysModule.fields, {name: 'country'}, true)[0];
+                        var countryField = $filter('filter')(holidaysModule.fields, { name: 'country' }, true)[0];
 
                         helper.getPicklists([countryField.picklist_id])
                             .then(function (picklists) {
                                 var countryPicklist = picklists[countryField.picklist_id];
-                                var countryPicklistItemTr = $filter('filter')(countryPicklist, {value: 'tr'}, true)[0];
-                                var countryPicklistItemEn = $filter('filter')(countryPicklist, {value: 'en'}, true)[0];
+                                var countryPicklistItemTr = $filter('filter')(countryPicklist, { value: 'tr' }, true)[0];
+                                var countryPicklistItemEn = $filter('filter')(countryPicklist, { value: 'en' }, true)[0];
                                 var language = window.localStorage['NG_TRANSLATE_LANG_KEY'] || 'tr';
                                 var request = {};
                                 request.limit = 1000;
@@ -155,14 +155,14 @@ angular.module('primeapps')
                                         }
                                         var workingWeekdays = [1, 2, 3, 4, 5];
 
-                                        var workSaturdays = $filter('filter')($rootScope.moduleSettings, {key: 'work_saturdays'}, true);
+                                        var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
                                         if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
                                             workingWeekdays.push(6);
                                         }
                                         $rootScope.holidaysData = data;
 
                                         moment.locale(language, {
-                                            week: {dow: 1}, // Monday is the first day of the week.
+                                            week: { dow: 1 }, // Monday is the first day of the week.
                                             workingWeekdays: workingWeekdays, // Set working weekdays.
                                             holidays: holidays,
                                             holidayFormat: 'DD-MM-YYYY'
@@ -205,7 +205,7 @@ angular.module('primeapps')
                         $scope.parentModule = $scope.parentType;
                     }
                 } else {
-                    var parentTypeField = $filter('filter')($scope.module.fields, {name: $scope.parentType}, true)[0];
+                    var parentTypeField = $filter('filter')($scope.module.fields, { name: $scope.parentType }, true)[0];
 
                     if (!parentTypeField) {
                         $scope.parentType = null;
@@ -233,9 +233,9 @@ angular.module('primeapps')
                     return true;
 
                 if ($scope.module.dependencies.length > 0) {
-                    var freezeDependencies = $filter('filter')($scope.module.dependencies, {dependency_type: 'freeze'}, true);
+                    var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
                     angular.forEach(freezeDependencies, function (dependency) {
-                        var freezeFields = $filter('filter')($scope.module.fields, {name: dependency.parent_field}, true);
+                        var freezeFields = $filter('filter')($scope.module.fields, { name: dependency.parent_field }, true);
                         angular.forEach(freezeFields, function (field) {
                             angular.forEach(dependency.values_array, function (value) {
                                 if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
@@ -260,7 +260,7 @@ angular.module('primeapps')
 
                     if (currencyValue) {
                         if (!angular.isObject(currencyValue))
-                            $scope.record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], {labelStr: currencyValue}, true)[0];
+                            $scope.record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], { labelStr: currencyValue }, true)[0];
                         else
                             $scope.record['currency'] = currencyValue;
                     }
@@ -271,14 +271,14 @@ angular.module('primeapps')
             //<--TODO:COMPONENT
             var checkBranchSettingsAvailable = function () {
                 if ($rootScope.branchAvailable) {
-                    $scope.branchManager = $filter('filter')($rootScope.users, {RoleId: parseInt($scope.record['branch'])}, true)[0];
+                    $scope.branchManager = $filter('filter')($rootScope.users, { RoleId: parseInt($scope.record['branch']) }, true)[0];
                     $scope.record.Authorities = [];
                     if ($scope.branchManager) {
                         $http.get(config.apiUrl + 'user_custom_shares/get_all_by_shared_user_id/' + $scope.branchManager.Id)
                             .then(function (response) {
                                 $scope.authorities = response.data;
                                 angular.forEach($scope.authorities, function (authority) {
-                                    var user = $filter('filter')($rootScope.users, {Id: authority['user_id']}, true)[0];
+                                    var user = $filter('filter')($rootScope.users, { Id: authority['user_id'] }, true)[0];
                                     $scope.record.Authorities.push({
                                         id: user.Id,
                                         full_name: user.FullName,
@@ -297,7 +297,7 @@ angular.module('primeapps')
             var checkEditPermission = function () {
                 if (!$scope.hasProcessEditPermission) {
                     if ($scope.id && (($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights))) {
-                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'warning'});
+                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                         $state.go('app.dashboard');
                     }
                 }
@@ -308,26 +308,26 @@ angular.module('primeapps')
             ModuleService.getPicklists($scope.module)
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
-                    var ownerField = $filter('filter')($scope.module.fields, {name: 'owner'}, true)[0];
+                    var ownerField = $filter('filter')($scope.module.fields, { name: 'owner' }, true)[0];
 
                     var setFieldDependencies = function () {
                         angular.forEach($scope.module.fields, function (field) {
                             ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
                             if ($scope.module.name != 'activities') {
-                                if (field.default_value && field.data_type == 'picklist') {
-                                    $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], {id: field.default_value})[0]
+                                if ((!$scope.record.id && field.default_value && field.data_type == 'picklist') || (field.default_value && field.data_type == 'picklist' && field.default_value == $scope.record[field.name].id)) {
+                                    $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
                                     $scope.fieldValueChange(field);
                                 }
                             }
                         });
                     };
 
-                    components.run('BeforeFormPicklistLoaded', 'Script', $scope); 
-                    
+                    components.run('BeforeFormPicklistLoaded', 'Script', $scope);
+
                     //<--TODO:COMPONENT
                     if ($scope.module && $scope.module.name === 'izinler') {
-                        var toField = $filter('filter')($scope.module.fields, {name: 'to_entry_type'}, true)[0];
-                        var fromField = $filter('filter')($scope.module.fields, {name: 'from_entry_type'}, true)[0];
+                        var toField = $filter('filter')($scope.module.fields, { name: 'to_entry_type' }, true)[0];
+                        var fromField = $filter('filter')($scope.module.fields, { name: 'from_entry_type' }, true)[0];
                         $scope.customLeaveFields['to_entry_type'] = toField;
                         $scope.customLeaveFields['from_entry_type'] = fromField;
                         if (!$scope.record['to_entry_type'] && !$scope.record['from_entry_type'] && toField) {
@@ -343,7 +343,7 @@ angular.module('primeapps')
 
                         //<--TODO:COMPONENT
                         if (!$rootScope.branchAvailable) {
-                            var userCreateField = $filter('filter')($scope.module.fields, {name: 'kullanici_olustur'}, true)[0];
+                            var userCreateField = $filter('filter')($scope.module.fields, { name: 'kullanici_olustur' }, true)[0];
                             if (userCreateField)
                                 userCreateField.hidden = false;
                         }
@@ -361,11 +361,11 @@ angular.module('primeapps')
                         //<--TODO:COMPONENT
                         if ($scope.subtype) {
                             if ($scope.type == 'activities') {
-                                $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
-                                $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['activity_type'].label[$rootScope.language]});
+                                $scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
                             } else if ($scope.type == 'current_accounts') {
-                                $scope.record['transaction_type'] = $filter('filter')(transactionTypes, {system_code: $scope.subtype}, true)[0];
-                                $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
+                                $scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
                             }
                         }
                         //TODO:COMPONENT --> 
@@ -378,10 +378,10 @@ angular.module('primeapps')
                         //
                         //     $scope.currencyField.validation.readonly = false;
                         // }
-                         //TODO:COMPONENT --> 
+                        //TODO:COMPONENT --> 
 
                         if ($scope.parentId) {
-                            var moduleParent = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
+                            var moduleParent = $filter('filter')($rootScope.modules, { name: $scope.parentModule }, true)[0];
 
                             ModuleService.getRecord($scope.parentModule, $scope.parentId)
                                 .then(function onSuccess(parent) {
@@ -409,7 +409,7 @@ angular.module('primeapps')
 
                                     if (($scope.type === 'activities' || $scope.type === 'mails') && $scope.relatedToField) {
                                         $scope.record['related_to'] = lookupRecord;
-                                        $scope.record['related_module'] = $filter('filter')(picklists['900000'], {value: $scope.parentType}, true)[0];
+                                        $scope.record['related_module'] = $filter('filter')(picklists['900000'], { value: $scope.parentType }, true)[0];
                                     } else {
                                         if ($scope.parentModule === 'accounts' && $scope.type === 'current_accounts') {
                                             $scope.record['customer'] = lookupRecord;
@@ -420,13 +420,13 @@ angular.module('primeapps')
                                         }
 
 
-                                        var relatedDependency = $filter('filter')($scope.module.dependencies, {dependent_field: $scope.parentType}, true)[0];
+                                        var relatedDependency = $filter('filter')($scope.module.dependencies, { dependent_field: $scope.parentType }, true)[0];
 
                                         if (relatedDependency && relatedDependency.deleted != true) {
-                                            var dependencyField = $filter('filter')($scope.module.fields, {name: relatedDependency.field}, true)[0];
-                                            $scope.record[relatedDependency.field] = $filter('filter')($scope.picklistsModule[dependencyField.picklist_id], {id: relatedDependency.values[0]}, true)[0];
+                                            var dependencyField = $filter('filter')($scope.module.fields, { name: relatedDependency.field }, true)[0];
+                                            $scope.record[relatedDependency.field] = $filter('filter')($scope.picklistsModule[dependencyField.picklist_id], { id: relatedDependency.values[0] }, true)[0];
 
-                                            var dependentField = $filter('filter')($scope.module.fields, {name: relatedDependency.dependent_field}, true)[0];
+                                            var dependentField = $filter('filter')($scope.module.fields, { name: relatedDependency.dependent_field }, true)[0];
                                             dependentField.hidden = false;
                                         }
 
@@ -470,7 +470,7 @@ angular.module('primeapps')
                             //<--TODO:COMPONENT
                             //Kullanıcı oluşturulduysa edit sayfasında kullanıcı oluşturma alanları gizleniyor.
                             if ($scope.module.name === 'calisanlar') {
-                                var userCreateField = $filter('filter')($scope.module.fields, {name: 'kullanici_olustur'}, true)[0];
+                                var userCreateField = $filter('filter')($scope.module.fields, { name: 'kullanici_olustur' }, true)[0];
                                 if (userCreateField) {
                                     userCreateField.hidden = true;
                                     record[userCreateField.name] = false;
@@ -495,15 +495,15 @@ angular.module('primeapps')
                                 $state.go('app.dashboard');
                                 return;
                             }
-                            
 
-                            components.run('BeforeFormRecordLoaded', 'Script', $scope,record);
+
+                            components.run('BeforeFormRecordLoaded', 'Script', $scope, record);
                             ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
                             $scope.title = $scope.primaryField.valueFormatted;
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
 
-                           
+
 
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -524,8 +524,8 @@ angular.module('primeapps')
                             }
 
                             if ($scope.relatedToField && record['related_to']) {
-                                var lookupModule = $filter('filter')($rootScope.modules, {id: record[$scope.relatedToField.lookup_relation].id - 900000}, true)[0];
-                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
+                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
                                 ModuleService.getRecord(lookupModule.name, record['related_to'], true)
                                     .then(function onSuccess(relatedRecord) {
@@ -620,14 +620,14 @@ angular.module('primeapps')
                         return $q.defer().promise;
                     }
 
-                    var relationModule = $filter('filter')($rootScope.modules, {name: $scope.record.related_module.value}, true)[0];
+                    var relationModule = $filter('filter')($rootScope.modules, { name: $scope.record.related_module.value }, true)[0];
 
                     if (!relationModule) {
                         $scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
                         return $q.defer().promise;
                     }
 
-                    $scope.currentLookupField.lookupModulePrimaryField = $filter('filter')(relationModule.fields, {primary: true}, true)[0];
+                    $scope.currentLookupField.lookupModulePrimaryField = $filter('filter')(relationModule.fields, { primary: true }, true)[0];
                 }
 
                 if (($scope.currentLookupField.lookupModulePrimaryField.data_type === 'number' || $scope.currentLookupField.lookupModulePrimaryField.data_type === 'number_auto') && isNaN(parseFloat(searchTerm))) {
@@ -635,7 +635,7 @@ angular.module('primeapps')
                     return $q.defer().promise;
                 }
 
- 
+
                 if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
                     var parentModuleName = '';
 
@@ -645,8 +645,8 @@ angular.module('primeapps')
                         parentModuleName = 'suppliers';
 
                     if (parentModuleName) {
-                        var parentModule = $filter('filter')($rootScope.modules, {name: parentModuleName}, true)[0];
-                        var parentCurrencyField = $filter('filter')(parentModule.fields, {name: 'currency'}, true)[0];
+                        var parentModule = $filter('filter')($rootScope.modules, { name: parentModuleName }, true)[0];
+                        var parentCurrencyField = $filter('filter')(parentModule.fields, { name: 'currency' }, true)[0];
 
                         if (parentCurrencyField) {
                             return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['currency']);
@@ -660,10 +660,10 @@ angular.module('primeapps')
 
                 components.run('BeforeLookup', 'Script', $scope);
 
-                if($scope.lookupCurrentData){
+                if ($scope.lookupCurrentData) {
                     return $scope.lookupCurrentData;
                 }
-                
+
                 if ($scope.currentLookupField.lookup_type === 'users')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email'], false, $scope.customFilters);
                 else if ($scope.currentLookupField.lookup_type === 'profiles')
@@ -732,8 +732,8 @@ angular.module('primeapps')
                 //Kullanıcı oluştur checkboxında lisans kontrolü.
                 if ($scope.userLicenseKalan === 0 || $scope.userLicenseKalan < 0) {
                     if (!$rootScope.branchAvailable) {
-                        var userProfile = $filter('filter')($scope.module.fields, {name: 'kullanici_profili'}, true)[0];
-                        var userRole = $filter('filter')($scope.module.fields, {name: 'kullanici_rolu'}, true)[0];
+                        var userProfile = $filter('filter')($scope.module.fields, { name: 'kullanici_profili' }, true)[0];
+                        var userRole = $filter('filter')($scope.module.fields, { name: 'kullanici_rolu' }, true)[0];
                         $scope.record['kullanici_olustur'] = false;
                         $scope.record['kullanici_profili'] = null;
                         $scope.record['kullanici_rolu'] = null;
@@ -762,8 +762,8 @@ angular.module('primeapps')
                             });
 
                             if (!$rootScope.branchAvailable) {
-                                var userProfile = $filter('filter')($scope.module.fields, {name: 'kullanici_profili'}, true)[0];
-                                var userRole = $filter('filter')($scope.module.fields, {name: 'kullanici_rolu'}, true)[0];
+                                var userProfile = $filter('filter')($scope.module.fields, { name: 'kullanici_profili' }, true)[0];
+                                var userRole = $filter('filter')($scope.module.fields, { name: 'kullanici_rolu' }, true)[0];
                                 $scope.record['kullanici_olustur'] = false;
                                 $scope.record['kullanici_profili'] = null;
                                 $scope.record['kullanici_rolu'] = null;
@@ -823,7 +823,7 @@ angular.module('primeapps')
                                                 $rootScope.workgroup = account.instances[0];
 
                                                 if (workgroupId) {
-                                                    var workgroup = $filter('filter')(account.instances, {instanceID: workgroupId}, true)[0];
+                                                    var workgroup = $filter('filter')(account.instances, { instanceID: workgroupId }, true)[0];
 
                                                     if (workgroup)
                                                         $rootScope.workgroup = workgroup;
@@ -859,8 +859,8 @@ angular.module('primeapps')
                                         profileId = $scope.record.profile.id;
                                         createUser(roleId, profileId, record);
                                     }).catch(function (error) {
-                                    $scope.submitting = false;
-                                });
+                                        $scope.submitting = false;
+                                    });
                             } else {
                                 createUser(roleId, profileId, record);
                             }
@@ -930,8 +930,8 @@ angular.module('primeapps')
                 }
 
                 $scope.submitting = true;
-                
-      
+
+
                 if (!$scope.moduleForm.$valid || !validate()) {
                     $scope.submitting = false;
                     return;
@@ -964,7 +964,7 @@ angular.module('primeapps')
 
                 if ($rootScope.branchAvailable && $scope.branchManager) {
                     angular.forEach($scope.record.Authorities, function (authority) {
-                        var checker = $filter('filter')($scope.authorities, {user_id: authority.id}, true)[0];
+                        var checker = $filter('filter')($scope.authorities, { user_id: authority.id }, true)[0];
 
                         if (!checker) {
                             $http.post(config.apiUrl + 'user_custom_shares/create/', {
@@ -975,7 +975,7 @@ angular.module('primeapps')
                     });
 
                     angular.forEach($scope.authorities, function (authority) {
-                        var checker = $filter('filter')($scope.record.Authorities, {id: authority.user_id}, true)[0];
+                        var checker = $filter('filter')($scope.record.Authorities, { id: authority.user_id }, true)[0];
 
                         if (!checker) {
                             $http.delete(config.apiUrl + 'user_custom_shares/delete/' + authority.id)
@@ -1028,13 +1028,13 @@ angular.module('primeapps')
                     });
                     $scope.recordState = null;
                 }
-                 
+
                 record = ModuleService.prepareRecord(record, $scope.module, $scope.recordState);
 
                 var recordCopy = angular.copy($scope.record);
 
                 //gets activity_type_id for saveAndNew
-                $scope.activity_type_id = $filter('filter')(activityTypes, {id: record.activity_type}, true)[0];
+                $scope.activity_type_id = $filter('filter')(activityTypes, { id: record.activity_type }, true)[0];
 
                 if (record.activity_type_system || record.activity_type_system === null)
                     delete record.activity_type_system;
@@ -1049,7 +1049,7 @@ angular.module('primeapps')
 
                     ModuleService.insertRecord($scope.module.name, record)
                         .then(function onSuccess(response) {
-                            var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true);
+                            var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
                             if (moduleProcesses) {
                                 var isProcessInsert = false;
                                 for (var i = 0; i < moduleProcesses.length; i++) {
@@ -1071,7 +1071,7 @@ angular.module('primeapps')
                             error(data.data, data.status);
                         })
                         .finally(function () {
-                            var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true);
+                            var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
                             if (moduleProcesses) {
                                 var isProcessInsert = false;
                                 for (var i = 0; i < moduleProcesses.length; i++) {
@@ -1107,8 +1107,8 @@ angular.module('primeapps')
                     if ($scope.clone) {
                         if ($scope.revise) {
                             record.master_id = record.id;
-                            var quoteStageField = $filter('filter')($scope.module.fields, {name: 'quote_stage'}, true)[0];
-                            record.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], {value: 'delivered'}, true)[0].id;
+                            var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
+                            record.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'delivered' }, true)[0].id;
                         }
 
                         delete record.id;
@@ -1134,8 +1134,8 @@ angular.module('primeapps')
                                         .then(function onSuccess(recordDataMaster) {
                                             var masterRecord = ModuleService.processRecordSingle(recordDataMaster.data, $scope.module, $scope.picklistsModule);
                                             var masterRecordState = angular.copy(masterRecord);
-                                            var quoteStageField = $filter('filter')($scope.module.fields, {name: 'quote_stage'}, true)[0];
-                                            masterRecord.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], {value: 'revised'}, true)[0];
+                                            var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
+                                            masterRecord.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'revised' }, true)[0];
                                             masterRecord = ModuleService.prepareRecord(masterRecord, $scope.module, masterRecordState);
 
                                             ModuleService.updateRecord($scope.module.name, masterRecord)
@@ -1155,7 +1155,7 @@ angular.module('primeapps')
 
                         ModuleService.updateRecord($scope.module.name, record)
                             .then(function onSuccess(response) {
-                                var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true);
+                                var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
                                 if (moduleProcesses) {
                                     var isProcessUpdate = false;
                                     for (var i = 0; i < moduleProcesses.length; i++) {
@@ -1177,7 +1177,7 @@ angular.module('primeapps')
                                 error(data.data, data.status);
                             })
                             .finally(function () {
-                                var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true);
+                                var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
                                 if (moduleProcesses) {
                                     var isProcessUpdate = false;
                                     for (var i = 0; i < moduleProcesses.length; i++) {
@@ -1199,16 +1199,16 @@ angular.module('primeapps')
                 function result(response) {
                     $scope.addedUser = false;
                     $scope.recordId = response.id;
-                    
-                    components.run('BeforeFormSubmitResult', 'Script', $scope,response);
-                   $scope.success = function() {
-                        var params = {type: $scope.type, id: response.id};
+
+                    components.run('BeforeFormSubmitResult', 'Script', $scope, response);
+                    $scope.success = function () {
+                        var params = { type: $scope.type, id: response.id };
                         if ($scope.saveAndNew) {
                             $scope.record = {};
                             $scope.moduleForm.$setPristine();
                             $window.scrollTo(0, 0);
                             ngToast.create({
-                                content: $filter('translate')('Module.SuccessMessage', {title: $scope.module['label_' + $rootScope.language + '_singular']}),
+                                content: $filter('translate')('Module.SuccessMessage', { title: $scope.module['label_' + $rootScope.language + '_singular'] }),
                                 className: 'success'
                             });
 
@@ -1222,7 +1222,7 @@ angular.module('primeapps')
                                 $scope.record.related_to = recordCopy.related_to;
                             }
 
-                            if ($filter('filter')($scope.module.fields, {name: 'owner'}, true)[0]) {
+                            if ($filter('filter')($scope.module.fields, { name: 'owner' }, true)[0]) {
                                 $scope.record.owner = $scope.currentUser;
                                 $scope.$broadcast('angucomplete-alt:changeInput', 'owner', $scope.currentUser);
                             }
@@ -1230,7 +1230,7 @@ angular.module('primeapps')
                             //fills lookup inputs auto
                             angular.forEach($scope.module.fields, function (field) {
                                 if (field.data_type === 'lookup') {
-                                    if (!$filter('filter')($scope.module.dependencies, {child_field: field.name}, true)[0]) {
+                                    if (!$filter('filter')($scope.module.dependencies, { child_field: field.name }, true)[0]) {
                                         $scope.record[field.name] = recordCopy[field.name];
                                         $scope.$broadcast('angucomplete-alt:changeInput', field.name, recordCopy[field.name]);
                                     }
@@ -1309,11 +1309,11 @@ angular.module('primeapps')
 
                             if ($scope.type == 'activities') {
                                 $scope.submitting = false;
-                                $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
-                                $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['activity_type'].label[$rootScope.language]});
+                                $scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
                             } else if ($scope.type == 'current_accounts') {
-                                $scope.record['transaction_type'] = $filter('filter')(transactionTypes, {system_code: $scope.subtype}, true)[0];
-                                $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
+                                $scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
                             }
                         } else {
                             if ($scope.module.name === 'stock_transactions') {
@@ -1563,7 +1563,7 @@ angular.module('primeapps')
                         .then(function (image) {
                             item.image = image;
                             var img = new Image();
-                            resizeService.resizeImage(item.image, {width: 1024}, function (err, resizedImage) {
+                            resizeService.resizeImage(item.image, { width: 1024 }, function (err, resizedImage) {
                                 if (err)
                                     return;
 
@@ -1623,7 +1623,7 @@ angular.module('primeapps')
                         array.push(binary.charCodeAt(i));
                     }
 
-                    return new Blob([new Uint8Array(array)], {type: mimeString});
+                    return new Blob([new Uint8Array(array)], { type: mimeString });
                 };
 
                 function readFile(file) {
@@ -1685,7 +1685,7 @@ angular.module('primeapps')
 
                 if (action.method_type === 'post') {
 
-                    $http.post(action.url, jsonData, {headers: {'Content-Type': 'application/json'}})
+                    $http.post(action.url, jsonData, { headers: { 'Content-Type': 'application/json' } })
                         .then(function () {
                             ngToast.create({
                                 content: $filter('translate')('Module.ActionButtonWebhookSuccess'),
