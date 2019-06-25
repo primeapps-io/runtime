@@ -82,7 +82,7 @@ angular.module('primeapps')
                         if (field.name && field.data_type != 'lookup') {
                             var newField = {};
                             newField.name = field.name;
-                            newField.label = field.label;
+                            newField.label = $rootScope.language === 'tr' ? field.label_tr : field.label_en;
                             newField.labelExt = field.labelExt;
                             newField.order = field.order;
                             newField.lookup_type = field.lookup_type;
