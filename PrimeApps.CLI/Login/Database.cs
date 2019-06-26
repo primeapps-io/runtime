@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-namespace PrimeApps.CLI
+namespace PrimeApps.CLI.Login
 {
-    [Command(Description = "Logs in to PrimeApps Studio account."), HelpOption]
-    public class Login
+    [Command(Name = "app", Description = "Logs in to PRE database."), HelpOption]
+    public class Database
     {
         private static readonly HttpClient client = new HttpClient();
         [Option(Description = "Remain logged in.")]
@@ -24,11 +24,6 @@ namespace PrimeApps.CLI
                 promptColor: ConsoleColor.Red);
 
             client.DefaultRequestHeaders.Accept.Clear();
-            // granttype : password
-            // username : your@localuser.com
-            // password : 123456
-            // clientid : primeapps_studio
-            // clientsecret : secret
 
             IList<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>> {
     { new KeyValuePair<string, string>("granttype", "password") },
@@ -40,14 +35,13 @@ namespace PrimeApps.CLI
 };
             console.WriteLine("Logging in...");
 
-            HttpResponseMessage response = await client.PostAsync("http://localhost:5000/user/token", new FormUrlEncodedContent(nameValueCollection));
+            HttpResponseMessage response = await client.PostAsync("http://studio-dev.primeapps.io", new FormUrlEncodedContent(nameValueCollection));
             string token = await response.Content.ReadAsStringAsync();
 
             JObject parsed = null;
             try
             {
                 parsed = JObject.Parse(token);
-
             }
             catch (JsonReaderException ex)
             {

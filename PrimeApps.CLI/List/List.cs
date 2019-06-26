@@ -1,14 +1,15 @@
 using McMaster.Extensions.CommandLineUtils;
-namespace PrimeApps.CLI
+
+namespace PrimeApps.CLI.List
 {
     /// <summary>
     /// <see cref="HelpOptionAttribute"/> must be declared on each type that supports '--help'.
     /// Compare to the inheritance example, in which <see cref="GitCommandBase"/> delcares it
     /// once so that all subcommand types automatically support '--help'.
     /// </summary>
-    [Command("auth", Description = "Manages authentication"), Subcommand(typeof(Login))]
+    [Command("list", Description = "Lists resources"), Subcommand(typeof(App))]
     [HelpOption]
-    public class Auth
+    public class List
     {
         private int OnExecute(IConsole console)
         {

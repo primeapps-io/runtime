@@ -8,7 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace PrimeApps.CLI
 {
     [Command(Name = "primeapps", Description = "PrimeApps CLI"),
-                 Subcommand(typeof(Auth))]
+                 Subcommand(typeof(Login.Storage)),
+                 Subcommand(typeof(List.List))]
     [HelpOption]
     class PrimeApps
     {
@@ -45,7 +46,7 @@ namespace PrimeApps.CLI
 
         private int OnExecute(CommandLineApplication app)
         {
-            _console.WriteLine("You must specify at a subcommand.");
+            _console.WriteLine("You must specify at least a subcommand.");
             app.ShowHelp();
             return 1;
         }
