@@ -6,9 +6,6 @@
     <DockerTargetOS>Linux</DockerTargetOS>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="copyAzureCdn.ps1" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Aspose.Cells" Version="18.12.0" />
     <PackageReference Include="Aspose.Words" Version="19.1.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
@@ -44,5 +41,8 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
     <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>

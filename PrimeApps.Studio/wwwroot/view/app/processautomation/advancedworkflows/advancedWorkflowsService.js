@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.factory('AdvancedWorkflowsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'operators',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, operators) {
+	.factory('AdvancedWorkflowsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'operators','ModuleService',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, operators,ModuleService) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'bpm/find/', model);
@@ -318,8 +318,8 @@ angular.module('primeapps')
                     var seperatorLookupOrder = 0;
 
                     angular.forEach(moduleFields, function (field) {
-                        if (field.data_type === 'lookup' && field.lookup_type !== 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0]);
+                        if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
+                            var lookupModule = angular.copy($filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -352,13 +352,13 @@ angular.module('primeapps')
                     });
 
                     angular.forEach(moduleFields, function (field) {
-                        if (field.deleted || !ModuleService.hasFieldDisplayPermission(field))
-                            return;
+                        // if (field.deleted || !ModuleService.hasFieldDisplayPermission(field))
+                        //     return;
 
-                        if (field.name && field.data_type !== 'lookup') {
+                        if (field.name && field.data_type != 'lookup') {
                             var newField = {};
                             newField.name = field.name;
-                            newField.label = field.label;
+                            newField.label = $rootScope.language === 'tr' ? field.label_tr : field.label_en;
                             newField.labelExt = field.labelExt;
                             newField.order = field.order;
                             newField.lookup_type = field.lookup_type;

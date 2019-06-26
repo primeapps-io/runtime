@@ -63,18 +63,18 @@ namespace PrimeApps.Studio.Storage
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
         {
-            {ObjectType.ATTACHMENT, "/attachments/"},
-            {ObjectType.RECORD, "/records/"},
-            {ObjectType.TEMPLATE, "/templates/"},
-            {ObjectType.ANALYTIC, "/analytics/"},
-            {ObjectType.IMPORT, "/imports/"},
-            {ObjectType.NOTE, "/notes/"},
-            {ObjectType.LOGO, "/logos/"},
-            {ObjectType.MAIL, "/mail/"},
-            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
-            {ObjectType.NONE, ""},
-            {ObjectType.APPLOGO, "/app_logo/"},
-            {ObjectType.APPTEMPLATE, "/app_template/"}
+            { ObjectType.ATTACHMENT, "/attachments/" },
+            { ObjectType.RECORD, "/records/" },
+            { ObjectType.TEMPLATE, "/templates/" },
+            { ObjectType.ANALYTIC, "/analytics/" },
+            { ObjectType.IMPORT, "/imports/" },
+            { ObjectType.NOTE, "/notes/" },
+            { ObjectType.LOGO, "/logos/" },
+            { ObjectType.MAIL, "/mail/" },
+            { ObjectType.PROFILEPICTURE, "/profile_pictures/" },
+            { ObjectType.NONE, "" },
+            { ObjectType.APPLOGO, "/app_logo/" },
+            { ObjectType.APPTEMPLATE, "/app_template/" }
         };
         const string HttpReferrerPolicy = "{" +
 "  \"Version\":\"2012-10-17\"," +
@@ -277,7 +277,7 @@ namespace PrimeApps.Studio.Storage
         /// <param name="key"></param>
         /// <param name="expires"></param>
         /// <returns></returns>
-        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP, bool clearRoot = true)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTPS, bool clearRoot = true)
         {
             if (bucket.EndsWith('/'))
                 bucket = bucket.Remove(bucket.Length - 1, 1);

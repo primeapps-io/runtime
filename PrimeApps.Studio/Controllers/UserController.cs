@@ -51,7 +51,6 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_organizationRepository);
             SetCurrentUser(_studioUserRepository);
             SetCurrentUser(_teamRepository);
-
         }
 
         [Route("me"), HttpGet]

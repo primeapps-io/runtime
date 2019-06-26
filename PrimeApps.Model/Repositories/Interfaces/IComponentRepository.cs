@@ -16,5 +16,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Create(Component component);
         Task<int> Update(Component component);
         Task<int> Delete(Component component);
+        Task<Component> GetGlobalConfig();
     }
 }

@@ -8,7 +8,7 @@ angular.module('primeapps')
 				$scope.modulesSetup = [];
 
 				angular.forEach($rootScope.modules, function (module) {
-					if (module.order != 0)
+					if (module.order !== 0)
 						$scope.modulesSetup.push(module);
 				});
 
@@ -20,7 +20,7 @@ angular.module('primeapps')
 			getModules();
 
 			$scope.moduleListFilter = function(item){
-				return item.name != 'users' && item.name != 'profiles' && item.name != 'roles';
+				return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
 			};
 
 			$scope.openDropdown = function (moduleItem) {
@@ -38,7 +38,7 @@ angular.module('primeapps')
 					}
 				];
 
-				if (moduleItem.name != 'opportunities' && moduleItem.name != 'activities' && moduleItem.name != 'mails' && moduleItem.name != 'quotes' && moduleItem.name != 'sales_orders' && moduleItem.name != 'purchase_orders') {
+				if (moduleItem.name !== 'opportunities' && moduleItem.name !== 'activities' && moduleItem.name !== 'mails' && moduleItem.name !== 'quotes' && moduleItem.name !== 'sales_orders' && moduleItem.name !== 'purchase_orders') {
 					menuItems.push(
 						{
 							'text': $filter('translate')('Common.Copy'),
@@ -204,7 +204,7 @@ angular.module('primeapps')
 						//Disable another module fields that are linked to the deleted module.
 						for (var moduleKey = $rootScope.modules.length - 1; moduleKey >= 0; moduleKey--) {
 							for (var fieldKey = $rootScope.modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
-								if ($rootScope.modules[moduleKey].fields[fieldKey].lookup_type == deletedModule.name) {
+								if ($rootScope.modules[moduleKey].fields[fieldKey].lookup_type === deletedModule.name) {
 									$rootScope.modules[moduleKey].fields.splice(fieldKey, 1);
 									var cacheKey = $rootScope.modules[moduleKey].name;
 									$cache.remove(cacheKey + "_" + cacheKey)

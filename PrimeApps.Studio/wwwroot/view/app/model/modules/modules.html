@@ -62,7 +62,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
+        <tr ng-repeat="module in modules| filter : moduleListFilter | orderBy:['-system_type','order']"
             ui-sref="studio.app.moduleDesigner({id:module.id})">
             <td class="text-center"><i
                     class="{{module.menu_icon}}"></i></td>

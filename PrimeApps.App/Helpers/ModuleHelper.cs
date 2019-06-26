@@ -1,45 +1,57 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
     public interface IModuleHelper
-	{
-		Module CreateEntity(ModuleBindingModel moduleModel);
-		ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
-		List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
-		Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
-		void AfterCreate(UserItem appUser, Module module);
-		void AfterUpdate(UserItem appUser, Module module);
-		void AfterDelete(UserItem appUser, Module module);
-		Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity);
-		void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity);
-		Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity);
-		void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity);
-		Section NewSectionEntity(SectionBindingModel sectionModel);
-		Field NewFieldEntity(FieldBindingModel fieldModel);
-		FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel);
-		FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel);
-		Relation NewRelationEntity(RelationBindingModel relationModel);
-		Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
-		Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
-	}
+    {
+        Module CreateEntity(ModuleBindingModel moduleModel);
+        ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
+        List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
+        Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
+        void AfterCreate(UserItem appUser, Module module);
+        void AfterUpdate(UserItem appUser, Module module);
+        void AfterDelete(UserItem appUser, Module module);
+        Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity);
+        void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity);
+        Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity);
+        void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity);
+        Section NewSectionEntity(SectionBindingModel sectionModel);
+        Field NewFieldEntity(FieldBindingModel fieldModel);
+        FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel);
+        FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel);
+        Relation NewRelationEntity(RelationBindingModel relationModel);
+        Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
+        Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
+        Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository);
+        Task<JObject> GetGlobalConfig(IComponentRepository componentRepository);
+        string ReplaceDynamicValues(string value, JObject appConfigs);
+        bool IsTrustedUrl(string url, JObject globalConfig);
+    }
+
     public class ModuleHelper : IModuleHelper
     {
-	    private IAuditLogHelper _auditLogHelper;
-	    public IBackgroundTaskQueue Queue { get; }
+        private IAuditLogHelper _auditLogHelper;
+        public IBackgroundTaskQueue Queue { get; }
 
-		public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
-	    {
-		    _auditLogHelper = auditLogHelper;
-		    Queue = queue;
-	    }
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
+        {
+            _auditLogHelper = auditLogHelper;
+            Queue = queue;
+        }
+
         public Module CreateEntity(ModuleBindingModel moduleModel)
         {
             var moduleEntity = new Module
@@ -269,9 +281,7 @@ namespace PrimeApps.App.Helpers
                             permissionEntity.Type = permissionModel.Type;
                         }
                     }
-
                 }
-
             }
 
             if (moduleModel.Fields != null && moduleModel.Fields.Count > 0)
@@ -586,6 +596,7 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
+
             return deletedViewFields;
         }
 
@@ -620,18 +631,18 @@ namespace PrimeApps.App.Helpers
 
         public void AfterCreate(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
-		}
+            Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
+        }
 
         public void AfterUpdate(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
-		}
+            Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
+        }
 
         public void AfterDelete(UserItem appUser, Module module)
         {
-	        Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
-		}
+            Queue.QueueBackgroundWorkItem(token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
+        }
 
         public Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)
         {
@@ -679,7 +690,7 @@ namespace PrimeApps.App.Helpers
             dependencyEntity.ModuleId = moduleEntity.Id;
         }
 
-	    public Section NewSectionEntity(SectionBindingModel sectionModel)
+        public Section NewSectionEntity(SectionBindingModel sectionModel)
         {
             var sectionEntity = new Section
             {
@@ -697,7 +708,7 @@ namespace PrimeApps.App.Helpers
             return sectionEntity;
         }
 
-	    public Field NewFieldEntity(FieldBindingModel fieldModel)
+        public Field NewFieldEntity(FieldBindingModel fieldModel)
         {
             var fieldEntity = new Field
             {
@@ -750,7 +761,7 @@ namespace PrimeApps.App.Helpers
             return fieldEntity;
         }
 
-	    public FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
+        public FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
         {
             var fieldValidationEntity = new FieldValidation
             {
@@ -767,7 +778,7 @@ namespace PrimeApps.App.Helpers
             return fieldValidationEntity;
         }
 
-	    public FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
+        public FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
         {
             var fieldCombinationEntity = new FieldCombination
             {
@@ -779,7 +790,7 @@ namespace PrimeApps.App.Helpers
             return fieldCombinationEntity;
         }
 
-	    public Relation NewRelationEntity(RelationBindingModel relationModel)
+        public Relation NewRelationEntity(RelationBindingModel relationModel)
         {
             var relationEntity = new Relation
             {
@@ -798,7 +809,7 @@ namespace PrimeApps.App.Helpers
             return relationEntity;
         }
 
-	    public Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
+        public Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
         {
             var dependencyEntity = new Dependency
             {
@@ -817,7 +828,7 @@ namespace PrimeApps.App.Helpers
             return dependencyEntity;
         }
 
-	    public Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
+        public Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
         {
             var calculationEntity = new Calculation
             {
@@ -830,6 +841,117 @@ namespace PrimeApps.App.Helpers
             };
 
             return calculationEntity;
+        }
+
+        public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
+        {
+            var globalConfig = await GetGlobalConfig(componentRepository);
+            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+
+            foreach (var module in modules)
+            {
+                if (module.Components == null || module.Components.Count < 0)
+                    continue;
+
+                foreach (var component in module.Components)
+                {
+                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
+                        continue;
+
+                    if (component.Content.Contains('{') && appConfigs.IsNullOrEmpty())
+                    {
+                        component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
+                        continue;
+                    }
+
+                    component.Content = ReplaceDynamicValues(component.Content, appConfigs);
+
+                    if (component.Content.StartsWith("http"))
+                    {
+                        if (!IsTrustedUrl(component.Content, globalConfig))
+                        {
+                            component.Content = "console.error('" + component.Content + " is not a trusted url.');";
+                            continue;
+                        }
+
+                        try
+                        {
+                            using (var httpClient = new HttpClient())
+                            {
+                                httpClient.DefaultRequestHeaders.Accept.Clear();
+                                var response = await httpClient.GetAsync(component.Content);
+                                var content = await response.Content.ReadAsStringAsync();
+
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    component.Content = "console.error('" + component.Content + " response error. Http Status Code: " + response.StatusCode + "');";
+                                    continue;
+                                }
+
+                                if (string.IsNullOrWhiteSpace(content))
+                                {
+                                    component.Content = "console.warn('" + component.Content + " has empty content.');";
+                                    continue;
+                                }
+
+                                component.Content = content;
+                            }
+                        }
+                        catch
+                        {
+                            component.Content = "console.error('" + component.Content + " has connection error. Please check the url.');";
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
+        {
+            var globalConfigEntity = await componentRepository.GetGlobalConfig();
+
+            if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
+                return null;
+
+            var globalConfig = JObject.Parse(globalConfigEntity.Content);
+
+            return globalConfig;
+        }
+
+        public string ReplaceDynamicValues(string value, JObject appConfigs)
+        {
+            if (appConfigs == null)
+                return value;
+
+            var values = value.Split("{appConfigs.");
+
+            if (values.Length > 1)
+            {
+                foreach (var val in values)
+                {
+                    var cfg = val.Split("}")[0];
+                    value = value.Replace("{appConfigs." + cfg + "}", (string)appConfigs[cfg]);
+                }
+            }
+
+            return value;
+        }
+
+        public bool IsTrustedUrl(string url, JObject globalConfig)
+        {
+            if (globalConfig.IsNullOrEmpty() || globalConfig["trusted_urls"].IsNullOrEmpty())
+                return false;
+
+            foreach (var trustedUrl in (JArray)globalConfig["trusted_urls"])
+            {
+                if (url.StartsWith((string)trustedUrl["url"]))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

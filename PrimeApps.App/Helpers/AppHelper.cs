@@ -24,7 +24,7 @@ namespace PrimeApps.App.Helpers
 			return null;
 		}
 
-		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app,int? appId, bool preview = false)
+		public static async Task<ApplicationInfoViewModel> GetApplicationInfo(IConfiguration configuration, HttpRequest request, Model.Entities.Platform.App app, int? appId, bool preview = false)
 		{
 			var language = request.Cookies["_lang"];
 
@@ -39,6 +39,8 @@ namespace PrimeApps.App.Helpers
 				var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 				cdnUrlStatic = cdnUrl + "/" + versionStatic;
 			}
+
+			var defaultTheme = JObject.Parse(app.Setting.AppTheme);
 
 			if (preview)
 			{
@@ -57,6 +59,7 @@ namespace PrimeApps.App.Helpers
 						{
 							ErrorHandler.LogError(new Exception(content), "Status Code: " + response.StatusCode + " app_id: " + appId);
 						}
+
 						var appSettings = JObject.Parse(content);
 						if (appSettings != null && appSettings["app_theme"] != null)
 						{
@@ -72,6 +75,26 @@ namespace PrimeApps.App.Helpers
 				language = app.Setting.Language;
 
 			var theme = JObject.Parse(app.Setting.AppTheme);
+			//Preview mode'ta eğer ilgili app'e ait branding ayarları yoksa defaultta Primeapps
+			if (theme["title"].IsNullOrEmpty())
+			{
+				theme["title"] = defaultTheme["title"];
+			}
+
+			if (theme["logo"].IsNullOrEmpty())
+			{
+				theme["logo"] = defaultTheme["logo"];
+			}
+
+			if (theme["color"].IsNullOrEmpty())
+			{
+				theme["color"] = defaultTheme["color"];
+			}
+
+			if (theme["favicon"].IsNullOrEmpty())
+			{
+				theme["favicon"] = defaultTheme["favicon"];
+			}
 
 			var application = new ApplicationInfoViewModel
 			{

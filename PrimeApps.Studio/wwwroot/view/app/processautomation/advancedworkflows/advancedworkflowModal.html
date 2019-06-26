@@ -4,8 +4,12 @@
             <h4 class="modal-title">{{SelectedNodeItem.name}}</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" class="btn add-button btn-radius btn-gray" ng-disabled="saving" ng-click="cancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="submit" class="btn add-button btn-radius btn-blue" ng-click="saveNodeData(workflowForm);" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li>
+                        <button type="button" class="btn add-button btn-radius btn-gray" ng-disabled="saving" ng-click="cancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                    </li>
+                    <li>
+                        <button type="submit" class="btn add-button btn-radius btn-blue" ng-click="saveNodeData(workflowForm);" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -54,21 +58,25 @@
                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.operation.$invalid}">
                                 <label class="col-sm-12" style="margin-bottom: auto;">{{'Setup.BpmWorkflow.RuleTrigger' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(workflowForm);" ng-required="operationValue"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(workflowForm);" ng-required="operationValue">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></small>
                                     <span></span>
                                 </label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(workflowForm);" ng-required="operationValue" ng-model="workflowStartModel.operation.update"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(workflowForm);" ng-required="operationValue" ng-model="workflowStartModel.operation.update">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
                                     <span></span>
                                 </label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.delete" ng-required="operationValue" ng-change="validateOperations(workflowForm);"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.delete" ng-required="operationValue" ng-change="validateOperations(workflowForm);">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></small>
                                     <span></span>
                                 </label>
                             </div>
                             <div ng-show="workflowStartModel.operation.update" class="form-group">
                                 <label class="checkbox-inline newinput">
-                                    <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.WhenFieldChanged' | translate"></small>
+                                    <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.WhenFieldChanged' | translate"></small>
                                     <span></span>
                                 </label>
                             </div>
@@ -347,7 +355,6 @@
                 </div>
 
 
-
                 <!--Start END-->
                 <!--DataTASK START-->
                 <div ng-if="SelectedNodeItem.item == 'Data Task'">
@@ -622,11 +629,6 @@
                                            class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
                                     </span>
                                 </div>
-
-
-
-
-
 
 
                                 <!--<tags-input name="updateValue"-->
@@ -948,11 +950,30 @@
 
                             <div style="border: 1px solid rgba(0,0,0,0.05);"
                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
+
+
                                 <textarea ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}"
-                                          ui-tinymce="tinymceTemplateEdit"
+                                          mentio-id="'tinyMceTextArea'" mentio mentio-typed-text="typedTerm"
+                                          mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
                                           name="message"
                                           required
-                                          ng-model="workflowModel.send_notification.message" ng-required="true"></textarea>
+                                          ng-model="workflowModel.send_notification.message" ng-required="true"
+                                          mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
+                                <script type="text/ng-template" id="tag-mentions.tpl">
+                                    <ul class="ment-tags">
+                                        <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                            class="list-group-item clearfix"
+                                            ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                            {{tag.label}}
+                                        </li>
+                                    </ul>
+                                </script>
+                                <mentio-menu class="mention-scrollbar" id="hastmenu2"
+                                             mentio-for="'tinyMceTextArea'"
+                                             mentio-trigger-char="'#'" mentio-items="tags"
+                                             mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                             mentio-select="getTagTextRaw(item)"></mentio-menu>
+
                             </div>
 
                         </div>
@@ -1105,7 +1126,7 @@
                                 <table class="filter-table">
                                     <thead>
                                         <tr>
-                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.ParameterName' | translate}} </th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.ParameterName' | translate}}</th>
                                             <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedModule' | translate}}</th>
                                             <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedField' | translate}}</th>
                                             <th style="padding-left:10px !important;"></th>
@@ -1249,3 +1270,4 @@
         </div>
     </div>
 </div>
+

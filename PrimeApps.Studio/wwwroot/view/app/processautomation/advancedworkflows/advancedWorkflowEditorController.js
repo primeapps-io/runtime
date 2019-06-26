@@ -26,6 +26,11 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Advanced Workflows';
             $scope.modules = $rootScope.appModules;
 
+            $scope.addCustomField = function ($event, customField) {
+                /// adds custom fields to the html template.
+                tinymce.activeEditor.execCommand('mceInsertContent', false, "{" + customField.name + "}");
+            };
+
             var activityModule = $filter('filter')($rootScope.appModules, { name: 'activities' }, true)[0];
 
             //BPM element menu loading start
@@ -137,6 +142,14 @@ angular.module('primeapps')
                 if ($scope.currentObj.subject) {
                     $scope.modalLoading = true;
                     var node = angular.copy($scope.currentObj.subject.part.data);
+
+                    if (node.ngModelName == 'send_notification' && $scope.module) {
+                        var moduleName = $scope.module.name;
+                        ModuleService.getModuleByName(moduleName).then(function (response) {
+                            $scope.module = response.data;
+                            $scope.moduleFields = AdvancedWorkflowsService.getFields($scope.module);
+                        });
+                    }
 
                     if (node) {
                         $scope.SelectedNodeItem = node;
@@ -369,7 +382,7 @@ angular.module('primeapps')
             };
 
             $scope.showSettingFormModal = function () {
-                 
+
                 $scope.settingFormModal = $scope.settingFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/processautomation/advancedworkflows/advancedWorkflowSettingModal.html',
@@ -646,23 +659,6 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.searchTags = function (term) {
-                if (!$scope.moduleFields)
-                    $scope.moduleFields = RulesService.getFields($scope.module);
-
-                var tagsList = [];
-                angular.forEach($scope.moduleFields, function (item) {
-                    if (item.name === "seperator")
-                        return;
-                    if (item.label.indexOf(term) >= 0) {
-                        tagsList.push(item);
-                    }
-                });
-
-
-                $scope.tags = tagsList;
-                return tagsList;
-            };
 
             var getFilterValue = function (filter) {
                 var filterValue = '';
@@ -1953,28 +1949,32 @@ angular.module('primeapps')
 
             };
 
-
             //For Editor
             $scope.searchTags = function (term) {
+                if ($scope.module) {
+                    if (!$scope.moduleFields)
+                        $scope.moduleFields = AdvancedWorkflowsService.getFields($scope.module);
 
-                if (!$scope.moduleFields)
-                    $scope.moduleFields = AdvancedWorkflowsService.getFields($scope.module);
+                    var tagsList = [];
+                    angular.forEach($scope.moduleFields, function (item) {
+                        if (item.name) {
+                            if (item.name === "seperator")
+                                return;
 
-                var tagsList = [];
-                angular.forEach($scope.moduleFields, function (item) {
-                    if (item.name === "seperator")
-                        return;
+                            if (item.name.match('seperator'))
+                                item.name = item.label;
 
-                    if (item.name.match('seperator'))
-                        item.name = item.label;
+                            if (item.name && item.name.indexOf(term) >= 0) {
+                                tagsList.push(item);
+                            }
+                        }
 
-                    if (item.name && item.name.indexOf(term) >= 0) {
-                        tagsList.push(item);
-                    }
-                });
+                    });
 
-                $scope.tags = tagsList;
-                return tagsList;
+                    $scope.tags = tagsList;
+                    return tagsList;
+                }
+
             };
 
             var dialog_uid = plupload.guid();
