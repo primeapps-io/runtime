@@ -1568,6 +1568,33 @@ angular.module('primeapps')
                     return deferred.promise;
                 },
 
+                hasFieldDisplayPermission: function (field) {
+                    if (!field.permissions)
+                        return true;
+
+                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
+
+                    var hasFieldSectionDisplayPermission = function (field) {
+                        if (!field.sectionObj || !field.sectionObj.permissions)
+                            return true;
+
+                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
+
+                        if (!permission)
+                            return true;
+
+                        return permission.type !== 'none';
+                    };
+
+                    if (!permission)
+                        return hasFieldSectionDisplayPermission(field);
+
+                    if (permission.type === 'none')
+                        return false;
+
+                    return hasFieldSectionDisplayPermission(field);
+                },
+
                 getFields: function (module) {
                     var fields = {};
                     fields.selectedFields = [];

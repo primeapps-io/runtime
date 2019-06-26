@@ -651,13 +651,13 @@ angular.module('primeapps')
 
                     if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty')) {
                         if (field.data_type === 'picklist')
-                            filter.value = filter.value.label[$rootScope.user.tenant_language];
+                            filter.value = filter.value.label[$rootScope.language];
 
                         if (field.data_type === 'multiselect') {
                             var value = '';
 
                             angular.forEach(filter.value, function (picklistItem) {
-                                value += picklistItem.label[$rootScope.user.tenant_language] + '|';
+                                value += picklistItem.label[$rootScope.language] + '|';
                             });
 
                             filter.value = value.slice(0, -1);
