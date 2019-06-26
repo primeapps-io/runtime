@@ -34,7 +34,7 @@ namespace PrimeApps.CLI
             // Setup DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(config => config.SetMinimumLevel(LogLevel.Error))
-                .AddEntityFrameworkNpgsql()
+                // .AddEntityFrameworkNpgsql()
                 .AddSingleton<IConfiguration>(Configuration)
                 .BuildServiceProvider();
 
