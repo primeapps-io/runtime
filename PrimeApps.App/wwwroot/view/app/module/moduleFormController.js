@@ -1646,6 +1646,7 @@ angular.module('primeapps')
             //webhook request func for action button
             $scope.webhookRequest = function (action) {
                 var jsonData = {};
+                var headersData = [];
                 var params = action.parameters.split(',');
                 $scope.webhookRequesting = {};
 
@@ -1683,9 +1684,56 @@ angular.module('primeapps')
 
                 });
 
+                angular.forEach(headers, function (data) {
+                    var tempHeader = data.split('|');
+                    var type = tempHeader[0];
+                    var moduleName = tempHeader[1];
+                    var key = tempHeader[2];
+                    var value = tempHeader[3];
+
+                    switch (type) {
+                        case 'module':
+                            var fieldName = value;
+                            if (moduleName != $scope.module.name) {
+                                if ($scope.record[moduleName])
+                                    headersData[key] = $scope.record[moduleName][fieldName];
+                                else
+                                    headersData[key] = null;
+                            } else {
+                                if ($scope.record[fieldName])
+                                    headersData[key] = $scope.record[fieldName];
+                                else
+                                    headersData[key] = null;
+                            }
+                            break;
+                        case 'static':
+                            switch (value) {
+                                case '{:app:}':
+                                    headersData[key] = $rootScope.user.app_id;
+                                    break;
+                                case '{:tenant:}':
+                                    headersData[key] = $rootScope.user.tenant_id;
+                                    break;
+                                case '{:user:}':
+                                    headersData[key] = $rootScope.user.id;
+                                    break;
+                                default:
+                                    headersData[key] = null;
+                                    break;
+                            }
+                            break;
+                        case 'custom':
+                            headersData[key] = value;
+                            break;
+                        default:
+                            headersData[key] = null;
+                            break;
+                    }
+                });
+
                 if (action.method_type === 'post') {
 
-                    $http.post(action.url, jsonData, { headers: { 'Content-Type': 'application/json' } })
+                    $http.post(action.url, jsonData, { headers: headersData })
                         .then(function () {
                             ngToast.create({
                                 content: $filter('translate')('Module.ActionButtonWebhookSuccess'),

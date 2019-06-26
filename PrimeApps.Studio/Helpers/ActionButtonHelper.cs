@@ -19,7 +19,8 @@ namespace PrimeApps.Studio.Helpers
                 Url = actionButtonModel.ActionButtonUrl,
                 ModuleId = actionButtonModel.ModuleId,
                 MethodType = actionButtonModel.MethodType,
-                Parameters = actionButtonModel.Parameters
+                Parameters = actionButtonModel.Parameters,
+                Headers=actionButtonModel.Headers
             };
 
             if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
@@ -52,6 +53,7 @@ namespace PrimeApps.Studio.Helpers
             actionButton.ModuleId = actionButtonModel.ModuleId;
             actionButton.MethodType = actionButtonModel.MethodType;
             actionButton.Parameters = actionButtonModel.Parameters;
+            actionButton.Headers = actionButtonModel.Headers;
 
             if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
             {

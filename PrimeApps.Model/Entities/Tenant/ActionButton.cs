@@ -38,6 +38,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("parameters")]
         public string Parameters { get; set; }
 
+        [Column("headers")]
+        public string Headers { get; set; }
+
         [Column("type")]
         public ActionType Type { get; set; }
 

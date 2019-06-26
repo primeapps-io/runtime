@@ -1843,6 +1843,7 @@ angular.module('primeapps')
 
 
                 var jsonData = {};
+                var headersData = [];
                 var params = action.parameters.split(',');
                 $scope.webhookRequesting = {};
 
@@ -1868,6 +1869,56 @@ angular.module('primeapps')
                             jsonData[parameterName] = null;
                     }
 
+                });
+
+                angular.forEach(headers, function (data) {
+                    var newValue = null;
+                    var tempHeader = data.split('|');
+                    var type = tempHeader[0];
+                    var moduleName = tempHeader[1];
+                    var key = tempHeader[2];
+                    var value = tempHeader[3];
+
+                    switch (type) {
+                        case 'module':
+                            var fieldName = value;
+                            if (moduleName != $scope.module.name) {
+                                if ($scope.record[moduleName])
+                                    newValue = $scope.record[moduleName][fieldName];
+                                else
+                                    newValue = $scope.record[moduleName][fieldName];
+                            } else {
+                                if ($scope.record[fieldName])
+                                    newValue = $scope.record[fieldName];
+                                else
+                                    newValue = null;
+                            }
+                            break;
+                        case 'static':
+                            switch (value) {
+                                case '{:app:}':
+                                    newValue = $rootScope.user.app_id;
+                                    break;
+                                case '{:tenant:}':
+                                    newValue = $rootScope.user.tenant_id;
+                                    break;
+                                case '{:user:}':
+                                    newValue = $rootScope.user.id;
+                                    break;
+                                default:
+                                    newValue = null;
+                                    break;
+                            }
+                            break;
+                        case 'custom':
+                            newValue = value;
+                            break;
+                        default:
+                            newValue = null;
+                            break;
+                    }
+
+                    http.setRequestHeader(key, newValue);
                 });
 
                 if (action.method_type === 'post') {

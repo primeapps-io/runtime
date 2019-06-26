@@ -82,12 +82,14 @@ angular.module('primeapps')
                     actionButton.isNew = true;
                     $scope.currentActionButton = actionButton;
                     $scope.hookParameters = [];
+                    $scope.hookHeaders = [];
                     $scope.hookModules = [];
                     var parameter = {};
                     parameter.parameterName = null;
                     parameter.selectedModules = $scope.hookModules;
                     parameter.selectedField = null;
                     $scope.hookParameters.push(parameter);
+                    setWebHookHeaders();
 
                 } else {
                     $scope.currentActionButton = actionButton;
@@ -128,12 +130,12 @@ angular.module('primeapps')
                 ];
 
                 $scope.formModal = $scope.formModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
@@ -185,10 +187,40 @@ angular.module('primeapps')
                     if (hookArray.length > 0) {
                         actionButton.parameters = hookArray.toString();
                     }
+
+                    var hookHeaderArray = [];
+
+                    angular.forEach($scope.hookHeaders, function (header) {
+                        if (!header.key || !header.type || !header.value)
+                            return;
+                        var headerString = header.type + '|' + $scope.currentActionButton.module.name + '|' + header.key;
+
+                        switch (header.type) {
+
+                            case 'module':
+                                headerString += '|' + header.value.name;
+                                break;
+                            case 'custom':
+                            case 'static':
+                            default:
+                                headerString += '|' + header.value;
+                                break;
+                        }
+
+                        hookHeaderArray.push(headerString);
+                    });
+
+                    if (hookHeaderArray.length > 0) {
+                        actionButton.headers = hookHeaderArray.toString();
+                    }
+
                 } else {
                     actionButton.parameters = null;
+                    actionButton.headers = null;
                     actionButton.method_type = null;
                 }
+
+                //TODOOO
 
                 if (!actionButton.id) {
                     ModuleService.createActionButton(actionButton)
@@ -209,13 +241,13 @@ angular.module('primeapps')
 
 
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 } else {
                     ModuleService.updateActionButton(actionButton)
                         .then(function (response) {
@@ -225,13 +257,13 @@ angular.module('primeapps')
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 }
             };
 
@@ -347,6 +379,39 @@ angular.module('primeapps')
                 $scope.hookParameters.splice(index, 1);
             };
 
+            $scope.webHookHeaderAdd = function (addItem) {
+
+                var header = {};
+                header.type = addItem.type;
+                header.key = addItem.key;
+                header.value = addItem.value;
+
+                if (header.type && header.key && header.value) {
+                    $scope.hookHeaders.push(header);
+                }
+
+                var lastHookHeader = $scope.hookHeaders[$scope.hookHeaders.length - 1];
+                lastHookHeader.type = null;
+                lastHookHeader.key = null;
+                lastHookHeader.value = null;
+            };
+
+            $scope.webHookHeaderRemove = function (item) {
+                var index = $scope.hookHeaders.indexOf(item);
+                $scope.hookHeaders.splice(index, 1);
+            };
+
+            var setWebHookHeaders = function () {
+                $scope.hookHeaders = [];
+
+                var header = {};
+                header.type = null;
+                header.key = null;
+                header.value = null;
+
+                $scope.hookHeaders.push(header);
+            };
+
             var conditions = function (actionButton) {
 
                 if (actionButton.action_type === 'Webhook')
@@ -369,7 +434,7 @@ angular.module('primeapps')
 
                 if (actionButton.type === 3) {
                     $scope.hookParameters = [];
-
+                    $scope.hookHeaders = [];
                     $scope.hookModules = [];
 
                     angular.forEach($scope.updatableModules, function (module) {
@@ -382,6 +447,8 @@ angular.module('primeapps')
                     parameter.selectedField = null;
 
                     $scope.hookParameters.push(parameter);
+
+                    setWebHookHeaders();
                 }
 
                 if (actionButton.method_type && actionButton.parameters && actionButton.type === 2) {
@@ -412,6 +479,31 @@ angular.module('primeapps')
                         editParameter.selectedField = $filter('filter')(editParameter.selectedModule.fields, { name: parameter[2] }, true)[0];
 
                         $scope.hookParameters.push(editParameter);
+                    });
+
+                    $scope.hookHeaders = [];
+                    var hookHeaderArray = actionButton.headers.split(',');
+
+                    angular.forEach(hookHeaderArray, function (data) {
+                        var header = data.split('|');
+                        var tempHeader = {};
+
+                        tempHeader.type = header[0];
+                        var moduleName = header[1];
+                        tempHeader.key = header[2];
+                        var value = header[3];
+
+                        if (tempHeader.type === 'module') {
+                            if ($scope.module.name === moduleName) {
+                                var field = $filter('filter')($scope.module.fields, { name: value }, true)[0];
+                                tempHeader.value = field;
+                            }
+                        }
+                        else {
+                            tempHeader.value = value;
+                        }
+
+                        $scope.hookHeaders.push(tempHeader);
                     });
                     // }, 1000);
                 }
