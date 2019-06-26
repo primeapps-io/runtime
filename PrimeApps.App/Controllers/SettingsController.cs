@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
 
             if (setting.UserId.HasValue)
             {
-                var user = await _userRepository.GetById(setting.UserId.Value);
+                var user = _userRepository.GetById(setting.UserId.Value);
 
                 if (user == null)
                     return BadRequest("User not found.");
@@ -120,7 +120,7 @@ namespace PrimeApps.App.Controllers
 
             if (setting.UserId.HasValue)
             {
-                var user = await _userRepository.GetById(setting.UserId.Value);
+                var user = _userRepository.GetById(setting.UserId.Value);
 
                 if (user == null)
                     return BadRequest("User not found.");

@@ -93,7 +93,7 @@ namespace PrimeApps.Studio.Controllers
                 BuildNumber = currentBuildNumber,
                 Version = currentBuildNumber.ToString(),
                 StartTime = DateTime.Now,
-                Status = DeploymentStatus.Running
+                Status = ReleaseStatus.Running
             };
 
             var createResult = await _deploymentFunctionRepository.Create(deploymentObj);

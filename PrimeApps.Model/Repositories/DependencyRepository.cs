@@ -38,32 +38,32 @@ namespace PrimeApps.Model.Repositories
 			return await count.CountAsync();
 		}
 
-		public async Task<ICollection<Dependency>> Find(int id, PaginationModel paginationModel)
-		{
-			var dependencies = GetPaginationGQuery(id, paginationModel)
-				.Skip(paginationModel.Offset * paginationModel.Limit)
-				.Take(paginationModel.Limit).ToList();
+        public ICollection<Dependency> Find(int id, PaginationModel paginationModel)
+        {
+            var dependencies = GetPaginationGQuery(id, paginationModel)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
 
-			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-			{
-				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Module).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
-				if (paginationModel.OrderType == "asc")
-				{
-					dependencies = dependencies.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-				}
-				else
-				{
-					dependencies = dependencies.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-				}
+                if (paginationModel.OrderType == "asc")
+                {
+                    dependencies = dependencies.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    dependencies = dependencies.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
 
-			}
+            }
 
-			return dependencies;
+            return dependencies;
 
-		}
+        }
 
-		public async Task<Dependency> GetById(int id)
+        public async Task<Dependency> GetById(int id)
 		{
 			var dependency = await GetDependencyQuery()
 								.Include(x => x.Module).ThenInclude(module => module.Sections)

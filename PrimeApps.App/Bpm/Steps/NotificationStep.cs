@@ -169,7 +169,7 @@ namespace PrimeApps.App.Bpm.Steps
                                 {
                                     if (recipient["email"].ToString() == "[owner]")
                                     {
-                                        var recipentUser = await _userRepository.GetById((int)record["owner.id"]);
+                                        var recipentUser = _userRepository.GetById((int)record["owner.id"]);
 
                                         if (recipentUser == null)
                                             continue;

@@ -169,7 +169,7 @@ namespace PrimeApps.App.Controllers
 			ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
 			var useCdn = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
-			ViewBag.AppInfo  = await AppHelper.GetApplicationInfo(_configuration, Request, app, preview);
+			ViewBag.AppInfo  = await AppHelper.GetApplicationInfo(_configuration, Request, app, appId, preview);
 		
 			var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 

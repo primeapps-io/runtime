@@ -4,6 +4,9 @@ namespace PrimeApps.Model.Enums
 {
     public enum ComponentPlace
     {
+        /*
+         * Script Places
+         */
         [EnumMember(Value = "")] NotSet = 0,
 
         [EnumMember(Value = "field_change")] FieldChange = 1,
@@ -65,35 +68,39 @@ namespace PrimeApps.Model.Enums
         BeforeFormRecordLoaded = 22,
 
         [EnumMember(Value = "after_form_record_loaded")]
-        AfterFormRecordLoaded = 23,   
-        
+        AfterFormRecordLoaded = 23,
+
         [EnumMember(Value = "before_detail_loaded")]
         BeforeDetailLoaded = 24,
-        
+
         [EnumMember(Value = "after_detail_loaded")]
-        AfterDetailLoaded = 25, 
-        
+        AfterDetailLoaded = 25,
+
         [EnumMember(Value = "before_form_submit")]
-        BeforeFormSubmit = 26,  
-        
+        BeforeFormSubmit = 26,
+
         [EnumMember(Value = "before_form_submit_result")]
-        BeforeFormSubmitResult = 27, 
-  
+        BeforeFormSubmitResult = 27,
+
         [EnumMember(Value = "sub_list_loaded")]
         SubListLoaded = 28,
 
         /*
-         * Global config script
+         * Global Config
          */
-        [EnumMember(Value = "global_config")] GlobalConfig = 100,
+        [EnumMember(Value = "global_config")]
+        GlobalConfig = 100,
 
         /*
-         * Component Place
+         * Component Places
          */
-        [EnumMember(Value = "page")] Page = 1000,
+        [EnumMember(Value = "page")]
+        Page = 1000,
 
-        [EnumMember(Value = "section")] Section = 1001,
+        [EnumMember(Value = "section")]
+        Section = 1001,
 
-        [EnumMember(Value = "navbar")] Navbar = 1002,
+        [EnumMember(Value = "navbar")]
+        Navbar = 1002,
     }
 }

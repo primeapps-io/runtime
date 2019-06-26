@@ -277,11 +277,18 @@
                     <span>Extensions</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem ==='deployments' ?  'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/deployments" data-trigger="hover" data-type="info"
-                   data-title="Deployments" bs-tooltip data-placement="right">
+            <li ng-class="activeMenuItem ==='releases' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/releases" data-trigger="hover" data-type="info"
+                   data-title="Releases" bs-tooltip data-placement="right">
                     <i class="fas fa-rocket"></i>
-                    <span>Deployments</span>
+                    <span>Releases</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='settings' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/settings" data-trigger="hover" data-type="info"
+                   data-title="Settings" bs-tooltip data-placement="right">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
                 </a>
             </li>
         </ul>

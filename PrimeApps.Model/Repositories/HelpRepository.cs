@@ -44,7 +44,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Help).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Help).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

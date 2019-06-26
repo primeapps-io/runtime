@@ -1,95 +1,85 @@
-﻿using PrimeApps.App.Models;
+﻿using Newtonsoft.Json.Linq;
+using PrimeApps.App.Models;
+using PrimeApps.Model.Common.ActionButton;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace PrimeApps.App.Helpers
 {
-    public class ActionButtonHelper
+    public interface IActionButtonHelper
     {
-        public static ActionButton CreateEntity(ActionButtonBindingModel actionButtonModel)
+        Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository);
+    }
+
+    public class ActionButtonHelper : IActionButtonHelper
+    {
+        private IModuleHelper _moduleHelper;
+
+        public ActionButtonHelper(IModuleHelper moduleHelper)
         {
-            var actionbutton = new ActionButton
-            {
-                Name = actionButtonModel.Name,
-                Type = actionButtonModel.Type,
-                Trigger = actionButtonModel.Trigger,
-                CssClass = actionButtonModel.CssClass,
-                Template = actionButtonModel.Template,
-                Url = actionButtonModel.Url,
-                ModuleId = actionButtonModel.ModuleId,
-                MethodType = actionButtonModel.MethodType,
-                Parameters = actionButtonModel.Parameters
-            };
-
-            if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
-            {
-                actionbutton.Permissions = new List<ActionButtonPermission>();
-
-                foreach (var permissionModel in actionButtonModel.Permissions)
-                {
-                    var permissionEntity = new ActionButtonPermission
-                    {
-                        ProfileId = permissionModel.ProfileId,
-                        Type = permissionModel.Type
-                    };
-
-                    actionbutton.Permissions.Add(permissionEntity);
-                }
-            }
-
-            return actionbutton;
+            _moduleHelper = moduleHelper;
         }
 
-        public static void UpdateEntity(ActionButtonBindingModel actionButtonModel, ActionButton actionButton)
+        public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
-            actionButton.Name = actionButtonModel.Name;
-            actionButton.Type = actionButtonModel.Type;
-            actionButton.Trigger = actionButtonModel.Trigger;
-            actionButton.CssClass = actionButtonModel.CssClass;
-            actionButton.Template = actionButtonModel.Template;
-            actionButton.Url = actionButtonModel.Url;
-            actionButton.ModuleId = actionButtonModel.ModuleId;
-            actionButton.MethodType = actionButtonModel.MethodType;
-            actionButton.Parameters = actionButtonModel.Parameters;
+            var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
+            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
 
-            if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
+            foreach (var actionButton in actionButtons)
             {
-                //New Permissions
-                foreach (var permissionModel in actionButtonModel.Permissions)
+                if (actionButton.ActionType != ActionButtonEnum.ActionType.Scripting)
+                    continue;
+
+                actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
+
+                if (actionButton.Template.StartsWith("http"))
                 {
-                    if (!permissionModel.Id.HasValue)
+                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, globalConfig))
                     {
-                        if (actionButton.Permissions == null)
-                            actionButton.Permissions = new List<ActionButtonPermission>();
-
-                        var permissionEntity = new ActionButtonPermission
-                        {
-                            ProfileId = permissionModel.ProfileId,
-                            Type = permissionModel.Type
-                        };
-
-                        actionButton.Permissions.Add(permissionEntity);
+                        actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
+                        continue;
                     }
-                }
 
-                //Existing Permissions
-                if (actionButton.Permissions != null && actionButton.Permissions.Count > 0)
-                {
-                    foreach (var permissionEntity in actionButton.Permissions)
+                    try
                     {
-                        var permissionModel = actionButtonModel.Permissions.FirstOrDefault(x => x.Id == permissionEntity.Id);
+                        using (var httpClient = new HttpClient())
+                        {
+                            httpClient.DefaultRequestHeaders.Accept.Clear();
+                            var response = await httpClient.GetAsync(actionButton.Template);
+                            var content = await response.Content.ReadAsStringAsync();
 
-                        if (permissionModel == null)
-                            continue;
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                actionButton.Template = "console.error('" + actionButton.Template + " response error. Http Status Code: " + response.StatusCode + "');";
+                                continue;
+                            }
 
-                        permissionEntity.Type = permissionModel.Type;
+                            if (string.IsNullOrWhiteSpace(content))
+                            {
+                                actionButton.Template = "console.warn('" + actionButton.Template + " has empty content.');";
+                                continue;
+                            }
+
+                            actionButton.Template = content;
+                        }
+                    }
+                    catch
+                    {
+                        actionButton.Template = "console.error('" + actionButton.Template + " has connection error. Please check the url.');";
+                        continue;
                     }
                 }
             }
+
+            return true;
         }
     }
 }

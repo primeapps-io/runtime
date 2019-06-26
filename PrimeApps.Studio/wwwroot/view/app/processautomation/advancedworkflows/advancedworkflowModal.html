@@ -4,8 +4,12 @@
             <h4 class="modal-title">{{SelectedNodeItem.name}}</h4>
             <div>
                 <ul class="list-unstyled list-inline">
-                    <li><button type="button" class="btn add-button btn-radius btn-gray" ng-disabled="saving" ng-click="cancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button></li>
-                    <li><button type="submit" class="btn add-button btn-radius btn-blue" ng-click="saveNodeData(workflowForm);" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button></li>
+                    <li>
+                        <button type="button" class="btn add-button btn-radius btn-gray" ng-disabled="saving" ng-click="cancel();"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+                    </li>
+                    <li>
+                        <button type="submit" class="btn add-button btn-radius btn-blue" ng-click="saveNodeData(workflowForm);" ladda="saving"><i class="fas fa-save"></i>{{'Common.Save' | translate}}</button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -36,7 +40,7 @@
                                 Manual (Coming soon)
                                 <span></span>
                             </label>
-                        </div> 
+                        </div>
 
                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                             <label class="col-sm-12">{{'Setup.BpmWorkflow.Module' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
@@ -54,21 +58,25 @@
                             <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.operation.$invalid}">
                                 <label class="col-sm-12" style="margin-bottom: auto;">{{'Setup.BpmWorkflow.RuleTrigger' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(workflowForm);" ng-required="operationValue"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.insert" ng-change="validateOperations(workflowForm);" ng-required="operationValue">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.insertLabel' | translate"></small>
                                     <span></span>
                                 </label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(workflowForm);" ng-required="operationValue" ng-model="workflowStartModel.operation.update"><small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-change="operationUpdateChanged(workflowStartModel.operation.update);validateOperations(workflowForm);" ng-required="operationValue" ng-model="workflowStartModel.operation.update">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></small>
                                     <span></span>
                                 </label><br>
                                 <label class="checkbox-inline newinput">
-                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.delete" ng-required="operationValue" ng-change="validateOperations(workflowForm);"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></small>
+                                    <input name="operation" type="checkbox" ng-model="workflowStartModel.operation.delete" ng-required="operationValue" ng-change="validateOperations(workflowForm);">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.RuleTriggers.deleteLabel' | translate"></small>
                                     <span></span>
                                 </label>
                             </div>
                             <div ng-show="workflowStartModel.operation.update" class="form-group">
                                 <label class="checkbox-inline newinput">
-                                    <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox"><small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.WhenFieldChanged' | translate"></small>
+                                    <input ng-change="changeFieldCheckboxChanged(workflowStartModel.changed_field_checkbox)" type="checkbox" ng-model="workflowStartModel.changed_field_checkbox">
+                                    <small style="font-size:100%;" ng-bind-html="'Setup.BpmWorkflow.WhenFieldChanged' | translate"></small>
                                     <span></span>
                                 </label>
                             </div>
@@ -347,7 +355,6 @@
                 </div>
 
 
-
                 <!--Start END-->
                 <!--DataTASK START-->
                 <div ng-if="SelectedNodeItem.item == 'Data Task'">
@@ -614,7 +621,7 @@
                                         {{workflowModel.field_update.value}}
                                     </label>
                                     <span>
-                                        <a href ng-show="workflowModel.field_update.value"
+                                        <a href="#" ng-show="workflowModel.field_update.value"
                                            ng-click="removeFile()">
                                             <i class="fa fa-minus-circle"></i>
                                         </a>
@@ -622,11 +629,6 @@
                                            class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
                                     </span>
                                 </div>
-
-
-
-
-
 
 
                                 <!--<tags-input name="updateValue"-->
@@ -911,7 +913,7 @@
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
                             </div>
-                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'"  ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.bcc.$invalid}">
+                            <div ng-if="workflowModel.send_notification_bccmodule.module.name == 'users'" ng-class="{'has-error': workflowForm.$submitted && workflowModel.send_notification_bccmodule.module && workflowForm.bcc.$invalid}">
                                 <tags-input name="bcc"
                                             class="form-control"
                                             ng-model="workflowModel.send_notification.bcc"
@@ -948,11 +950,30 @@
 
                             <div style="border: 1px solid rgba(0,0,0,0.05);"
                                  ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}">
+
+
                                 <textarea ng-class="{'has-error': workflowForm.$submitted && workflowForm.message.$invalid}"
-                                          ui-tinymce="tinymceTemplateEdit"
+                                          mentio-id="'tinyMceTextArea'" mentio mentio-typed-text="typedTerm"
+                                          mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
                                           name="message"
                                           required
-                                          ng-model="workflowModel.send_notification.message" ng-required="true"></textarea>
+                                          ng-model="workflowModel.send_notification.message" ng-required="true"
+                                          mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
+                                <script type="text/ng-template" id="tag-mentions.tpl">
+                                    <ul class="ment-tags">
+                                        <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                            class="list-group-item clearfix"
+                                            ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                            {{tag.label}}
+                                        </li>
+                                    </ul>
+                                </script>
+                                <mentio-menu class="mention-scrollbar" id="hastmenu2"
+                                             mentio-for="'tinyMceTextArea'"
+                                             mentio-trigger-char="'#'" mentio-items="tags"
+                                             mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
+                                             mentio-select="getTagTextRaw(item)"></mentio-menu>
+
                             </div>
 
                         </div>
@@ -1016,7 +1037,85 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 30px;">
+                        <div class="form-group">
+                            <label class="col-sm-12">
+                                Headers
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-group table-responsive">
+                                <table class="filter-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding-left:10px !important;">Data Type</th>
+                                            <th style="padding-left:10px !important;">Key</th>
+                                            <th style="padding-left:10px !important;">Value</th>
+                                            <th style="padding-left:10px !important;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="header in hookHeaders">
+                                            <td>
+                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderType_'+$index].$invalid}">
+                                                    <select class="form-control"
+                                                            name="hookHeaderType_{{$index}}"
+                                                            tabindex="{{$index}}"
+                                                            ng-model="header.type">
+                                                        <option value="">Select a Type -></option>
+                                                        <option value="static">Predefined</option>
+                                                        <option value="custom">Custom</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderKey_'+$index].$invalid}">
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           name="hookHeaderKey_{{$index}}"
+                                                           ng-required="header.type"
+                                                           ng-disabled="!header.type"
+                                                           ng-model="header.key"
+                                                           maxlength="50" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div ng-if="header.type === 'static'">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderValue_'+$index].$invalid}">
+                                                        <select class="form-control"
+                                                                name="hookHeaderValue_{{$index}}"
+                                                                ng-required="header.type && header.key"
+                                                                ng-disabled="!header.key"
+                                                                ng-model="header.value">
+                                                            <option value="">Select a Value -></option>
+                                                            <option value="{:app:}">App ID</option>
+                                                            <option value="{:tenant:}">Tenant ID</option>
+                                                            <option value="{:user:}">User ID</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div ng-if="!header.type || header.type === 'custom'">
+                                                    <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['hookHeaderCustomValue_'+$index].$invalid}">
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               name="hookHeaderCustomValue_{{$index}}"
+                                                               ng-required="header.type && header.key"
+                                                               ng-disabled="!header.key"
+                                                               ng-model="header.value">
+                                                    </div>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="#" ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
+                                                <a href="#" ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-12">
                                 {{'Setup.BpmWorkflow.WebHookParameters' | translate}}
                             </label>
@@ -1027,10 +1126,10 @@
                                 <table class="filter-table">
                                     <thead>
                                         <tr>
-                                            <th>{{'Setup.Workflow.ParameterName' | translate}} </th>
-                                            <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
-                                            <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
-                                            <th></th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.ParameterName' | translate}}</th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedModule' | translate}}</th>
+                                            <th style="padding-left:10px !important;">{{'Setup.Workflow.SelectedField' | translate}}</th>
+                                            <th style="padding-left:10px !important;"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1065,8 +1164,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
-                                                <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                                <a href="#" ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
+                                                <a href="#" ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1171,3 +1270,4 @@
         </div>
     </div>
 </div>
+

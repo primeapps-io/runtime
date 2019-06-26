@@ -1,53 +1,11 @@
 ﻿'use strict';
+
 var sectionComponents = {};
 var currentSectionComponentsTemplate = [];
+
 angular.module('primeapps')
-
-    .config(['$stateProvider', '$urlRouterProvider', '$sceDelegateProvider',
-        function ($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
-
-            // $sceDelegateProvider.resourceUrlWhitelist([
-            //     // Allow same origin resource loads.
-            //     'self',
-            //     // Allow loading from our assets domain. **.
-            //     'http://gitea-dev.primeapps.io:3000/**'
-            // ]);
-
-            /*if (window.location.hash.indexOf('#access_token') > -1) {
-             var parseQueryString = function (queryString) {
-             var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
-
-             if (queryString === null) {
-             return data;
-             }
-
-             pairs = queryString.split("&");
-
-             for (var i = 0; i < pairs.length; i++) {
-             pair = pairs[i];
-             separatorIndex = pair.indexOf("=");
-
-             if (separatorIndex === -1) {
-             escapedKey = pair;
-             escapedValue = null;
-             } else {
-             escapedKey = pair.substr(0, separatorIndex);
-             escapedValue = pair.substr(separatorIndex + 1);
-             }
-
-             key = decodeURIComponent(escapedKey);
-             value = decodeURIComponent(escapedValue);
-
-             data[key] = value;
-             }
-
-             return data;
-             };
-
-             var queryString = parseQueryString(window.location.hash.substr(1));
-             window.localStorage['access_token'] = queryString.access_token;
-             }*/
-
+    .config(['$stateProvider', '$urlRouterProvider',
+        function ($stateProvider, $urlRouterProvider) {
             if (token) {
                 window.localStorage['access_token'] = token;
             }
@@ -145,38 +103,37 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$rootScope', '$state','$$animateJs', '$ocLazyLoad','$filter', function ($rootScope, $state,$$animateJs, $ocLazyLoad,$filter) {
+                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
 
                             var files = [
                                 cdnUrl + 'view/app/module/moduleDetailController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
-                                cdnUrl + 'view/app/email/bulkEMailController.js',                          
+                                cdnUrl + 'view/app/email/bulkEMailController.js',
                                 cdnUrl + 'view/app/module/moduleAddModalController.js',
                                 cdnUrl + 'view/app/email/singleEmailController.js',
                                 cdnUrl + 'view/app/sms/singleSMSController.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/location/locationFormModalController.js',
-                                cdnUrl + 'view/app/email/templateService.js',                             
+                                cdnUrl + 'view/app/email/templateService.js',
                             ];
 
-                            currentSectionComponentsTemplate = [];
-                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+                            if ($state.params.type) {
+                                currentSectionComponentsTemplate = [];
+                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
 
-                            if (sectionComponents['component' + moduleId]) {
-                                var sectionComponent = sectionComponents['component' + moduleId];
+                                if (sectionComponents['component' + moduleId]) {
+                                    var sectionComponent = sectionComponents['component' + moduleId];
 
-                                for (var i = 0; i < sectionComponent.length; i++) {
-                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                    angular.forEach(sectionFiles, function (item) {
-                                        files.push(item)
-                                    });
+                                    for (var i = 0; i < sectionComponent.length; i++) {
+                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                        angular.forEach(sectionFiles, function (item) {
+                                            files.push(item)
+                                        });
 
-
-                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                    }
                                 }
                             }
-
-
 
                             return $ocLazyLoad.load(files);
                         }]
@@ -193,33 +150,31 @@ angular.module('primeapps')
                     },
                     resolve: {
                         plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
-
-
                             var files = [
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                             ];
 
-                            currentSectionComponentsTemplate = [];
-                            var moduleId = $filter('filter')($rootScope.modules, {name: $state.params.type}, true)[0].id;
+                            if ($state.params.type) {
+                                currentSectionComponentsTemplate = [];
+                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
 
-                            if (sectionComponents['component' + moduleId]) {
-                                var sectionComponent = sectionComponents['component' + moduleId];
+                                if (sectionComponents['component' + moduleId]) {
+                                    var sectionComponent = sectionComponents['component' + moduleId];
 
-                                for (var i = 0; i < sectionComponent.length; i++) {
-                                    var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                    angular.forEach(sectionFiles, function (item) {
-                                        files.push(item)
-                                    });
+                                    for (var i = 0; i < sectionComponent.length; i++) {
+                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                        angular.forEach(sectionFiles, function (item) {
+                                            files.push(item)
+                                        });
 
-
-                                    currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                    }
                                 }
                             }
 
-
-                            if (googleMapsApiKey) {
+                            if (googleMapsApiKey && googleMapsApiKey !== 'your-google-maps-api-key') {
                                 files.push({
                                     type: 'js',
                                     path: 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places'

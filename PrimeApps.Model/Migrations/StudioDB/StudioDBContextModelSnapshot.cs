@@ -169,9 +169,6 @@ namespace PrimeApps.Model.Migrations.StudioDB
                     b.Property<string>("Currency")
                         .HasColumnName("currency");
 
-                    b.Property<bool>("EnableRegistration")
-                        .HasColumnName("enable_registration");
-
                     b.Property<string>("GoogleAnalyticsCode")
                         .HasColumnName("google_analytics_code");
 
@@ -184,6 +181,10 @@ namespace PrimeApps.Model.Migrations.StudioDB
                     b.Property<string>("MailSenderName")
                         .HasColumnName("mail_sender_name");
 
+                    b.Property<string>("Options")
+                        .HasColumnName("options")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("TenantOperationWebhook")
                         .HasColumnName("tenant_operation_webhook");
 
@@ -193,64 +194,6 @@ namespace PrimeApps.Model.Migrations.StudioDB
                     b.HasKey("AppId");
 
                     b.ToTable("app_settings");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Deployment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnName("end_time");
-
-                    b.Property<string>("Settings")
-                        .HasColumnName("settings")
-                        .HasColumnType("jsonb");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnName("start_time");
-
-                    b.Property<int>("Status")
-                        .HasColumnName("status");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnName("version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("EndTime");
-
-                    b.HasIndex("StartTime");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("deployments");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Organization", b =>
@@ -362,6 +305,69 @@ namespace PrimeApps.Model.Migrations.StudioDB
                     b.HasIndex("UserId");
 
                     b.ToTable("organization_users");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Release", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<bool>("Published")
+                        .HasColumnName("published");
+
+                    b.Property<string>("Settings")
+                        .HasColumnName("settings")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("EndTime");
+
+                    b.HasIndex("Published");
+
+                    b.HasIndex("StartTime");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("releases");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Studio.StudioUser", b =>
@@ -598,23 +604,6 @@ namespace PrimeApps.Model.Migrations.StudioDB
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Deployment", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Studio.AppDraft", "AppDraft")
-                        .WithMany("Deployments")
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Studio.StudioUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Studio.StudioUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Organization", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Studio.StudioUser", "CreatedBy")
@@ -652,6 +641,23 @@ namespace PrimeApps.Model.Migrations.StudioDB
                         .WithMany("UserOrganizations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Release", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Studio.AppDraft", "AppDraft")
+                        .WithMany("Deployments")
+                        .HasForeignKey("AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Studio.StudioUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Studio.StudioUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Studio.Team", b =>

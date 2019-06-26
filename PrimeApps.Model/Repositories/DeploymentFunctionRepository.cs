@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Repositories
         public bool AvailableForDeployment(int functionId)
         {
             return DbContext.DeploymentsFunction
-                       .Count(x => x.FunctionId == functionId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+                       .Count(x => x.FunctionId == functionId && x.Status == ReleaseStatus.Running && !x.Deleted) == 0;
         }
        
         public async Task<DeploymentFunction> Get(int id)
@@ -56,7 +56,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(DeploymentFunction).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

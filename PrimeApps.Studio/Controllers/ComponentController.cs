@@ -204,7 +204,7 @@ namespace PrimeApps.Studio.Controllers
             var deployment = new DeploymentComponent()
             {
                 ComponentId = component.Id,
-                Status = DeploymentStatus.Running,
+                Status = ReleaseStatus.Running,
                 Version = currentBuildNumber.ToString(),
                 BuildNumber = currentBuildNumber,
                 StartTime = DateTime.Now

@@ -5,6 +5,12 @@ angular.module('primeapps')
     .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'icons', 'icons2',
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons, icons2) {
             return {
+                createPackage: function (data) {
+                    return $http.post(config.apiUrl + 'release/create', data);
+                },
+                getLastDeployment: function () {
+                    return $http.get(config.apiUrl + 'publish/get_last_deployment');
+                },
                 getAll: function () {
                     var promises = [];
                     var def = $q.defer();
@@ -84,7 +90,8 @@ angular.module('primeapps')
                                     profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
-                            } else {
+                            }
+                            else {
                                 section.permissions.push({
                                     id: sectionPermission.id,
                                     profile_id: profile.id,
@@ -129,7 +136,8 @@ angular.module('primeapps')
                                     var operatorLookup = operators[operatorIdLookup];
                                     field.operators.push(operatorLookup);
                                 }
-                            } else {
+                            }
+                            else {
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
                                 field.operators.push(operators.empty);
@@ -138,16 +146,19 @@ angular.module('primeapps')
                                 if (field.lookup_type === 'users') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                } else if (field.lookup_type === 'profiles') {
+                                }
+                                else if (field.lookup_type === 'profiles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                } else if (field.lookup_type === 'roles') {
+                                }
+                                else if (field.lookup_type === 'roles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                             }
 
-                        } else {
+                        }
+                        else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];
@@ -228,7 +239,8 @@ angular.module('primeapps')
                                 }
 
                                 module.display_dependencies.push(displayDependency);
-                            } else {
+                            }
+                            else {
                                 if (dependency.value_map && !angular.isArray(dependency.value_map)) {
                                     dependency.value_maps = {};
 
@@ -271,6 +283,7 @@ angular.module('primeapps')
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
                     promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
                     promises.push($http.get(config.apiUrl + 'app_collaborator/get_user_profile'));
+                    promises.push($http.get(config.apiUrl + 'publish/get_active_process'));
                     return $q.all(promises)
                         .then(function (response) {
                             $rootScope.appModules = response[0].data;
@@ -278,6 +291,14 @@ angular.module('primeapps')
                             var result = response[2];
                             $rootScope.currentApp = result.data;
                             $rootScope.currentApp.user_profile = response[3].data;
+
+                            var activeProcess = response[4].data;
+
+                            if (activeProcess) {
+                                $rootScope.goLive = {status: true};
+                                $rootScope.openWS(activeProcess.id);
+                            }
+
                             $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 
                             if (!angular.isArray($rootScope.breadcrumblist))

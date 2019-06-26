@@ -404,7 +404,7 @@ namespace PrimeApps.Studio.Controllers
             var deployment = new DeploymentFunction
             {
                 FunctionId = function.Id,
-                Status = DeploymentStatus.Running,
+                Status = ReleaseStatus.Running,
                 Version = currentBuildNumber.ToString(),
                 BuildNumber = currentBuildNumber,
                 StartTime = DateTime.Now

@@ -6,13 +6,13 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-	public interface IRelationRepository : IRepositoryBaseTenant
-	{
-		Task<Relation> GetById(int id);
-		Task<ICollection<Relation>> GetAll();
-		Task<ICollection<Relation>> GetAllDeleted();
-		Task<Relation> GetRelation(int id);
-		Task<int> Count(int id);
-		Task<ICollection<Relation>> Find(int id, PaginationModel paginationModel);
-	}
+    public interface IRelationRepository : IRepositoryBaseTenant
+    {
+        Task<Relation> GetById(int id);
+        Task<ICollection<Relation>> GetAll();
+        Task<ICollection<Relation>> GetAllDeleted();
+        Task<Relation> GetRelation(int id);
+        Task<int> Count(int id);
+        ICollection<Relation> Find(int id, PaginationModel paginationModel);
+    }
 }

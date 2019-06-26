@@ -1044,8 +1044,86 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.deployment', {
-                    url: '/deployments?:publish',
+                .state('studio.app.releases', {
+                    url: '/releases',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/release/release.html',
+                            controller: 'ReleaseController'
+                        }
+                    },
+                    resolve: {
+                        deployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/release/releaseController.js',
+                                cdnUrl + 'view/app/release/releaseService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.releaseDetail', {
+                    url: '/releaseDetail?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/release/releaseDetail.html',
+                            controller: 'ReleaseDetailController'
+                        }
+                    },
+                    resolve: {
+                        deployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/release/releaseDetailController.js',
+                                cdnUrl + 'view/app/release/releaseService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.settings', {
+                    url: '/settings',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/settings/settings.html',
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        deployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }],
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/settings/settingsController.js',
+                                cdnUrl + 'view/app/manage/settings/settingsService.js',
+                                cdnUrl + 'view/organization/appform/appFormService.js',
+                            ]);
+                        }]
+                    }
+                })
+                /*.state('studio.app.publish', {
+                    url: '/publish',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/publish/publish.html',
@@ -1063,39 +1141,13 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/publish/deploymentController.js',
                                 cdnUrl + 'view/app/publish/publishController.js',
-                                cdnUrl + 'view/app/publish/deploymentService.js',
                                 cdnUrl + 'view/app/publish/publishService.js'
                             ]);
                         }]
                     }
-                })
-                .state('studio.app.deploymentDetail', {
-                    url: '/deploymentDetail?:id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/app/publish/deploymentDetail.html',
-                            controller: 'DeploymentDetailController'
-                        }
-                    },
-                    resolve: {
-                        deployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
-                                $state.go('studio.app.overview', {
-                                    orgId: $rootScope.currentOrgId,
-                                    appId: $rootScope.currentAppId
-                                });
-                            }
-                        }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/publish/deploymentDetailController.js',
-                                cdnUrl + 'view/app/publish/deploymentService.js'
-                            ]);
-                        }]
-                    }
-                })
+                })*/
+
                 .state('studio.app.componentsDeployment', {
                     url: '/componentsDeployment',
                     views: {

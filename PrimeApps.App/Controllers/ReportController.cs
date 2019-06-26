@@ -54,8 +54,8 @@ namespace PrimeApps.App.Controllers
             base.OnActionExecuting(context);
 		}
 
-		[Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll()
+        [Route("get_all"), HttpGet]
+        public IActionResult GetAll()
         {
             var report = _reportRepository.GetAllBasic();
 
@@ -118,7 +118,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var reportEntity = await _reportHelper.CreateEntity(report);
+            var reportEntity = _reportHelper.CreateEntity(report);
             var resultReport = await _reportRepository.Create(reportEntity);
 
             if (resultReport < 1)
@@ -187,7 +187,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            await _reportHelper.UpdateEntity(report, reportEntity);
+            _reportHelper.UpdateEntity(report, reportEntity);
             await _reportRepository.Update(reportEntity, currentFieldIds, currentFilterIds, currentAggregationIds);
 
             if (report.ReportType == ReportType.Summary)

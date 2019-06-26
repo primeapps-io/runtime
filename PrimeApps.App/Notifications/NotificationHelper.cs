@@ -325,6 +325,8 @@ namespace PrimeApps.App.Notifications
                     }
                 }
             }
+
+            await Task.FromResult("ok");//Added to allow asynchronous callers
         }
     }
 }

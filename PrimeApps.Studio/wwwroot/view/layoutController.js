@@ -61,16 +61,118 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             return check;
         };
 
-        $scope.publish = function () {
-            $state.go('studio.app.deployment', {
-                publish: true,
+        $scope.type = "package";
+
+        $scope.goLive = function (update) {
+            Swal.fire({
+                title: 'Go Live',
+                type: 'info',
+                html:
+                    'Do you approve the package creation ? </br> </br>' +
+                    '<div class="form-group" ng-controller="LayoutController">' +
+                    '<div class="row">' +
+                    '<div class="col-sm-12" style="padding-left: 0;">' +
+                    '<label class="radio-inline newinput">' +
+                    '<input name="type" type="radio" checked value="package"> Prepare downloadable package <span></span>' +
+                    '</label>' +
+                    '<label class="radio-inline newinput">' +
+                    '<input name="type" type="radio" value="publish"> Automatically publish to PrimeApps cloud <span></span>' +
+                    '</label>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>',
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: '<i class="fa fa-rocket"></i> Go',
+                cancelButtonText: 'Cancel'
+            }).then(function (evt) {
+                if (evt.value) {
+                    if ($scope.type === 'package') {
+                        toastr.success("Package creation started.");
+                    }
+                    else {
+                        toastr.success(update ? 'Update' : 'Publish' + " started.");
+                    }
+
+                    $rootScope.goLive = {status: true};
+
+                    var request = {type: $scope.type};
+                    LayoutService.createPackage(request)
+                        .then(function (response) {
+                            $scope.loading = false;
+                            $rootScope.openWS(response.data);
+                            $state.go('studio.app.releases');
+                        })
+                        .catch(function (response) {
+                            $scope.loading = false;
+                            if (response.status === 409) {
+                                toastr.error(response.data);
+                            }
+                            else {
+                                toastr.error($filter('translate')('Common.Error'));
+                            }
+                        });
+                }
+            });
+
+            $('input[type=radio][name=type]').change(function () {
+                if (this.value === 'publish') {
+                    $scope.type = 'publish';
+                }
+                else {
+                    $scope.type = 'package';
+                }
+            });
+
+            /*$state.go('studio.app.publish', {
                 orgId: $rootScope.currentOrgId,
                 appId: $rootScope.currentAppId
-            });
+            });*/
+        };
+
+        $rootScope.openWS = function (id) {
+            if ($scope.socket && $scope.socket.readyState !== WebSocket.CLOSED)
+                return;
+
+            $scope.socket = new WebSocket('ws://' + location.host + '/log_stream');
+            $scope.socket.onopen = function (e) {
+                $scope.socket.send(JSON.stringify({
+                    'X-App-Id': $rootScope.currentAppId,
+                    'X-Tenant-Id': $rootScope.currentTenantId,
+                    'X-Organization-Id': $rootScope.currentOrgId,
+                    'release_id': id
+                }));
+            };
+            $scope.socket.onclose = function (e) {
+                if ($scope.type === 'package' || ($rootScope.goLive.logs.indexOf('********** Publish End**********') === -1 && $rootScope.goLive.logs.contains('********** Package Created **********'))) {
+                    toastr.success("Your package is ready.");
+
+                    $rootScope.goLive.status = false;
+                    $scope.$apply();
+                }
+                else if ($scope.type === 'publish' || $rootScope.goLive.logs.contains('********** Publish End**********')) {
+                    toastr.success("Publish completed successfully.");
+                    $rootScope.currentApp.status = "published";
+                    $rootScope.goLive.status = false;
+                    $scope.$apply();
+                }
+
+            };
+            $scope.socket.onerror = function (e) {
+                //$scope.publishError = e.data;
+                //$scope.$apply();
+                console.log(e);
+                toastr.error($filter('translate')('Common.Error'));
+                $scope.loading = false;
+            };
+            $scope.socket.onmessage = function (e) {
+                $rootScope.goLive.logs = e.data;
+                $scope.$apply();
+            };
         };
 
         $scope.preview = function () {
-
             //  if (!$scope.appLoading && $scope.appModules.length > 0) {
             $rootScope.previewActivating = true;
 

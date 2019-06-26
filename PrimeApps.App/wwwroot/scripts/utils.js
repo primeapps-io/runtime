@@ -118,8 +118,7 @@ angular.module('primeapps')
                             $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Ringing');
                             $rootScope.sipUser.lineInfo.State = 'Ringing';
                             soundPlay('DialSound', 'play');
-                        }
-                        else {
+                        } else {
                             $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.IncomingCall');
                             that.showSipPhone('call');
                             $rootScope.sipUser.lineInfo.State = $filter("translate")("Setup.Phone.IncomingCall");
@@ -320,8 +319,7 @@ angular.module('primeapps')
 
                             callerName = record[primaryField.name];
                             recordId = record['id'];
-                        }
-                        else {
+                        } else {
                             callerName = $filter('translate')('Common.NewRecord');
                             recordId = 0;
                         }
@@ -425,8 +423,7 @@ angular.module('primeapps')
                                     //ONLY PHONE FIELD ALLOWED FOR SEARCHDATA FOR NOW!
                                     findRecordGoDetail($rootScope.sipUser.RecordDetailModuleName, $rootScope.sipUser.RecordDetailPhoneFieldName, $rootScope.sipUser.lineInfo.TalkingNumber);
                                 });
-                            }
-                            else {
+                            } else {
                                 //IF NEED NEW CALL ALERT FROM SECOND LINE THIRD LINE ETC WHILE TALKING - DO IT HERE FOR NOW WE DONT ACCEPT WAITING CALLERS OR SECOND LINE FEATURE, SENDING BUSY SIGNAL
                                 //SEND BUSY SIGNAL TO NEW CALLER
                                 var options = {
@@ -444,8 +441,7 @@ angular.module('primeapps')
                                 if ($rootScope.sipUser.userAgent.isRegistered()) {
                                     $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Ready');
                                     $rootScope.sipUser.lineInfo.State = 'Ready';
-                                }
-                                else {
+                                } else {
                                     $rootScope.sipUser.lineInfo.PhoneStatus = $filter('translate')('Setup.Phone.Hangup');
                                     $rootScope.sipUser.lineInfo.State = 'Hangup';
                                 }
@@ -465,8 +461,7 @@ angular.module('primeapps')
                 isRegistered: function () {
                     if ($rootScope.sipUser.userAgent.isRegistered()) {
                         $rootScope.sipUser.IsRegistered = true;
-                    }
-                    else {
+                    } else {
                         $rootScope.sipUser.IsRegistered = false;
                     }
                 },
@@ -512,8 +507,7 @@ angular.module('primeapps')
                     if (session.request) {
                         if (!session.request.server_transaction) {
                             return true;
-                        }
-                        else {
+                        } else {
                             return false;
                         }
                     }
@@ -1391,6 +1385,23 @@ angular.module('primeapps')
                     }
 
                     return data;
+                },
+                replaceDynamicValues: function (str) {
+                    var splitUrls = str.split('{appConfigs.');
+
+                    if (splitUrls.length > 1) {
+                        for (var i in splitUrls) {
+                            if (splitUrls.hasOwnProperty(i)) {
+                                if (!splitUrls[i])
+                                    continue;
+
+                                var configObj = splitUrls[i].split('}')[0];
+                                str = str.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+                            }
+                        }
+                    }
+
+                    return str;
                 }
             }
         }])
@@ -1526,12 +1537,13 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$filter', '$q', '$http',
-        function ($filter, $q, $http) {
+    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams', 'helper',
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams, helper) {
             return {
-                run: function (place, type, scope, record, field) {
+                run: function (place, type, scope, record, field) {//Don't remove record and field. It can be used in components.
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
+                    var ModuleService = $injector.get('ModuleService');//Don't remove. It can be used in components.
 
                     var components = $filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
@@ -1540,37 +1552,10 @@ angular.module('primeapps')
                     components = $filter('orderBy')(components, 'order');
 
                     if (components && components.length > 0) {
-                        var promises = [];
-
                         for (var i = 0; i < components.length; i++) {
                             var component = components[i];
-
-                            if (component.content.lastIndexOf('http', 0) === 0)
-                                promises.push($http.get(component.content));
-                        }
-
-                        var runScripts = function () {
-                            for (var i = 0; i < components.length; i++) {
-                                var component = components[i];
-                                eval(component.content);
-                            }
-                        };
-
-                        if (promises.length > 0) {
-                            $q.all(promises)
-                                .then(function (responses) {
-                                    for (var i = 0; i < responses.length; i++) {
-                                        var response = responses[i];
-
-                                        var currentComponent = $filter('filter')(scope.module.components, { content: response.config.url }, true)[0];
-                                        currentComponent.content = response.data;
-                                    }
-
-                                    runScripts();
-                                });
-                        }
-                        else {
-                            runScripts();
+                            console.log('Script running: ' + component.name);
+                            eval(component.content);
                         }
                     }
                 }

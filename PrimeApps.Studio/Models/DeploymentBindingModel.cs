@@ -13,7 +13,7 @@ namespace PrimeApps.Studio.Models
         public int Id { get; set; }
         public int AppId { get; set; }
         [Required]
-        public DeploymentStatus Status { get; set; }
+        public ReleaseStatus Status { get; set; }
         [Required]
         public string Version { get; set; }
         [Required]

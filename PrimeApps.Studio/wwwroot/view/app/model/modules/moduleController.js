@@ -64,7 +64,6 @@ angular.module('primeapps')
                     ModuleService.find(requestModel)
                         .then(function (response) {
                             $scope.modules = response.data;
-                            $rootScope.appModules = $scope.modules;
                             $scope.loading = false;
                         });
 
@@ -151,5 +150,9 @@ angular.module('primeapps')
 
                         });
                 }
+
+                $scope.moduleListFilter = function(item){
+                    return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
+                };
             }
         ]);

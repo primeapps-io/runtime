@@ -106,6 +106,34 @@ namespace PrimeApps.App.Bpm.Steps
                             jsonData["id"] = record["id"];
                             var recordId = record["id"].ToObject<int>();
 
+                            if (!webHook["Headers"].IsNullOrEmpty())
+                            {
+                                var headers = webHook["Headers"];
+                                foreach (var header in headers)
+                                {
+                                    if (!header["key"].IsNullOrEmpty() && !header["value"].IsNullOrEmpty())
+                                    {
+                                        var key = header["key"].ToString();
+                                        var value = header["value"].ToString();
+                                        switch (value)
+                                        {
+                                            case "{:app:}":
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.AppId.ToString());
+                                                break;  
+                                            case "{:tenant:}":
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.TenantId.ToString()); 
+                                                break;
+                                            case "{:user:}":
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.Id.ToString()); 
+                                                break;
+                                            default:
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
+                                                break;
+                                        } 
+                                    }
+                                }
+                            }
+
                             if (!webHook["Parameters"].IsNullOrEmpty())
                             {
                                 var parameters = webHook["Parameters"];
@@ -149,7 +177,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     }
                                 }
                             }
-
+                             
                             var methodType = webHook["methodType"].ToObject<BpmHttpMethod>();
                             switch (methodType)
                             {
@@ -158,7 +186,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     {
                                         //fire and forget
                                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                                         
                                         var dataAsString = JsonConvert.SerializeObject(jsonData);
                                         var contentResetPasswordBindingModel = new StringContent(dataAsString);
                                         await client.PostAsync(webHook["callbackUrl"].Value<string>(), contentResetPasswordBindingModel);

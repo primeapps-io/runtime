@@ -1,6 +1,10 @@
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
@@ -11,6 +15,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -18,40 +23,52 @@ namespace PrimeApps.Studio.Controllers
     public class PublishController : DraftBaseController
     {
         private IBackgroundTaskQueue _queue;
-        private IPublishRepository _publishRepository;
-        private IDeploymentRepository _deploymentRepository;
+        private IReleaseRepository _releaseRepository;
         private IAppDraftRepository _appDraftRepository;
         private IHistoryDatabaseRepository _historyDatabaseRepository;
         private IHistoryStorageRepository _historyStorageRepository;
         private IPermissionHelper _permissionHelper;
-        private IPublishHelper _publishHelper;
+        private IUnifiedStorage _storage;
+        private IReleaseHelper _publishHelper;
 
-        public PublishController(IPublishHelper publishHelper,
-            IPublishRepository publishRepository,
-            IDeploymentRepository deploymentRepository,
+        public PublishController(IReleaseHelper publishHelper,
+            IReleaseRepository releaseRepository,
             IAppDraftRepository appDraftRepository,
             IHistoryDatabaseRepository historyDatabaseRepository,
             IHistoryStorageRepository historyStorageRepository,
             IPermissionHelper permissionHelper,
+            IUnifiedStorage storage,
             IBackgroundTaskQueue queue)
         {
             _publishHelper = publishHelper;
-            _deploymentRepository = deploymentRepository;
-            _publishRepository = publishRepository;
+            _releaseRepository = releaseRepository;
             _historyDatabaseRepository = historyDatabaseRepository;
             _historyStorageRepository = historyStorageRepository;
             _appDraftRepository = appDraftRepository;
             _permissionHelper = permissionHelper;
+            _storage = storage;
             _queue = queue;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_deploymentRepository);
+            SetCurrentUser(_releaseRepository);
             SetCurrentUser(_historyDatabaseRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_historyStorageRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
+        }
+
+        [HttpGet]
+        [Route("get_active_process")]
+        public async Task<IActionResult> GetActiveProcess()
+        {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            var process = await _releaseRepository.GetActiveProcess((int)AppId);
+
+            return Ok(process);
         }
 
         [HttpGet]
@@ -61,64 +78,102 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
                 return StatusCode(403);
 
-            var result = await _publishRepository.GetLastDeployment((int)AppId);
+            var result = await _releaseRepository.GetLastRelease((int)AppId);
 
             return Ok(result);
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create([FromBody]PublishCreateBindingModels model)
+        public async Task<IActionResult> Create([FromBody]JObject model)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
-                return StatusCode(403);
+            
+        }*/
 
-            var deploymentAvailable = _deploymentRepository.AvailableForDeployment((int)AppId);
-
-            if (!deploymentAvailable)
-                return Conflict("Already have a running publish.");
-
-            var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
-
-            var version = await _deploymentRepository.CurrentBuildNumber((int)AppId) + 1;
-
-            var deploymentObj = new Deployment()
+        [HttpGet]
+        [Route("download_package/{id}")]
+        [Obsolete]
+        public async Task DownloadPackage(int id)
+        {
+            try
             {
-                AppId = (int)AppId,
-                Version = version.ToString(),
-                StartTime = DateTime.Now,
-                Status = DeploymentStatus.Running,
-                Settings = new JObject
+                var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+
+                var withouts = new string[] {"releases"};
+                await _storage.CopyBucket($"app{AppId}", bucketName + "/" + id + "/files", withouts);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls | SecurityProtocolType.Tls;
+
+                var stMarged = new System.IO.MemoryStream();
+                //Doc.Save(stMarged);
+
+
+                stMarged.Position = 0;
+                var list = await _storage.GetListObject(bucketName + "/" + id + "/");
+
+                /*using (MemoryStream zipStream = new MemoryStream())
                 {
-                    ["type"] = (int)model.Type,
-                    ["clear_all_records"] = model.ClearAllRecords,
-                    ["enable_registration"] = model.EnableRegistration
-                }.ToString()
-            };
+                    using (ZipArchive zip = new ZipArchive(zipStream))
+                    {
+                        foreach (var item in list.S3Objects)
+                        {
+                            ZipArchiveEntry entry = zip.CreateEntry(item.Key);
+                            using (Stream entryStream = entry.Open())
+                            {
+                                stMarged.CopyTo(entryStream);
+                            }
+                        }
+                    }
+                    zipStream.Position = 0;
+                }*/
 
-            await _deploymentRepository.Create(deploymentObj);
+                var token = new CancellationToken();
 
-            var dbHistory = await _historyDatabaseRepository.GetLast();
-            if (dbHistory != null)
-            {
-                dbHistory.Tag = deploymentObj.Version;
-                await _historyDatabaseRepository.Update(dbHistory);
+                foreach (var objt in list.S3Objects)
+                {
+                    var request1 = new GetObjectRequest {BucketName = objt.BucketName, Key = objt.Key};
+
+                    using (var response = await _storage.Client.GetObjectAsync(request1, token))
+                    {
+                        await response.WriteResponseStreamToFileAsync(_storage.GetDownloadFolderPath() + "\\" + objt.Key, true, token);
+                    }
+                }
             }
-
-            var storageHistory = await _historyStorageRepository.GetLast();
-            if (storageHistory != null)
+            catch (Exception ex)
             {
-                storageHistory.Tag = deploymentObj.Version;
-                await _historyStorageRepository.Update(storageHistory);
             }
-
-            var app = await _appDraftRepository.Get((int)AppId);
-            app.Setting.EnableRegistration = model.EnableRegistration;
-            await _appDraftRepository.Update(app);
-
-            _queue.QueueBackgroundWorkItem(token => _publishHelper.Create((int)AppId, model.ClearAllRecords, dbName, version, deploymentObj.Id));
-
-            return Ok(deploymentObj.Id);
         }
+
+        /*public static void Hloo()
+        {
+            string startPath = @"c:\example\start";
+            string zipPath = @"c:\example\result.zip";
+            string extractPath = @"c:\example\extract";
+
+            ZipFile.CreateFromDirectory(startPath, zipPath, CompressionLevel.Fastest, true);
+
+            ZipFile.ExtractToDirectory(zipPath, extractPath);
+        }
+
+        public void ConvertToZip(string directoryToZip, string zipFileName)
+        {
+            try
+            {
+                //var sourDir = new S3DirectoryInfo(client, bucket, directoryToZip);
+
+                //var destDir = new S3DirectoryInfo(client, bucket, CCUrlHelper.BackupRootFolderPhysicalPath);
+
+                var zipStream = new MemoryStream();
+                using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+                {
+                    zip.CreateEntry(sourDir.FullName);
+                    zip.ExtractToDirectory("C:\\");
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }*/
     }
 }

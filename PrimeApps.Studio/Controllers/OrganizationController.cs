@@ -390,7 +390,6 @@ namespace PrimeApps.Studio.Controllers
                 return Forbid(ApiResponseMessages.PERMISSION);
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
-            var result = 0;
             string password = "";
             if (!string.IsNullOrEmpty(clientId))
             {
@@ -526,7 +525,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Team).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

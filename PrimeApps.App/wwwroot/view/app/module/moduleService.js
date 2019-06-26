@@ -432,7 +432,7 @@ angular.module('primeapps')
                             for (var k = 0; k < currentModule.fields.length; k++) {
                                 var field = currentModule.fields[k];
 
-                                if (currentViewFieldName != field.name || !this.hasFieldDisplayPermission(field))
+                                if (currentViewFieldName !== field.name || !this.hasFieldDisplayPermission(field))
                                     continue;
 
                                 if (picklists == null) {
@@ -470,7 +470,7 @@ angular.module('primeapps')
                                             recordKey = recordKeyParts[2];
                                         }
 
-                                        if (recordKey != field.name)
+                                        if (recordKey !== field.name)
                                             continue;
 
                                         setValue(field, recordProcessedField, record, recordKey, recordValue);
@@ -511,7 +511,7 @@ angular.module('primeapps')
                                         if (!lookupIsNull) {
                                             var keyParts = key.split('.');
 
-                                            if (keyParts[0] != field.name)
+                                            if (keyParts[0] !== field.name)
                                                 continue;
 
                                             lookupRecord[keyParts[1]] = value;
@@ -747,7 +747,7 @@ angular.module('primeapps')
                         for (var i = 0; i < module.fields.length; i++) {
                             var field = module.fields[i];
 
-                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+                            if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
                                 if (!lookupModule)
@@ -767,7 +767,7 @@ angular.module('primeapps')
                         if (module.dependencies && module.dependencies.length > 0) {
                             var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
 
-                            if (dependency && dependency.deleted != true && dependency.dependency_type === 'list_field') {
+                            if (dependency && dependency.deleted !== true && dependency.dependency_type === 'list_field') {
                                 for (var i = 0; i < picklist.length; i++) {
                                     var picklistItem = picklist[i];
                                     picklistItem.hidden = true;
@@ -922,23 +922,23 @@ angular.module('primeapps')
                     var lookupType = field.lookup_type;
                     var that = this;
                     var isDropdownField = field.data_type === 'lookup' && field.show_as_dropdown;
-                    if (field.lookupModulePrimaryField.data_type != 'text_single' && field.lookupModulePrimaryField.data_type != 'picklist' && field.lookupModulePrimaryField.data_type != 'email' &&
-                        field.lookupModulePrimaryField.data_type != 'number' && field.lookupModulePrimaryField.data_type != 'number_auto') {
+                    if (field.lookupModulePrimaryField.data_type !== 'text_single' && field.lookupModulePrimaryField.data_type !== 'picklist' && field.lookupModulePrimaryField.data_type != 'email' &&
+                        field.lookupModulePrimaryField.data_type !== 'number' && field.lookupModulePrimaryField.data_type !== 'number_auto') {
                         deferred.resolve([]);
                         return deferred.promise;
                     }
 
                     if (lookupType === 'relation')
-                        lookupType = record[field.lookup_relation] != undefined ? record[field.lookup_relation].value : null;
+                        lookupType = record[field.lookup_relation] !== undefined ? record[field.lookup_relation].value : null;
 
                     if (!lookupType) {
                         deferred.resolve([]);
                         return deferred.promise;
                     }
 
-                    var hasPermission = lookupType != 'users' && lookupType != 'profiles' && lookupType != 'roles' ? helper.hasPermission(lookupType, operations.read) : true;
+                    var hasPermission = lookupType !== 'users' && lookupType !== 'profiles' && lookupType !== 'roles' ? helper.hasPermission(lookupType, operations.read) : true;
 
-                    if (!hasPermission && !($rootScope.branchAvailable && lookupType == 'branchs')) {
+                    if (!hasPermission && !($rootScope.branchAvailable && lookupType === 'branchs')) {
                         deferred.resolve([]);
                         return deferred.promise;
                     }
@@ -956,14 +956,14 @@ angular.module('primeapps')
                         for (var i = 0; i < additionalFields.length; i++) {
                             var additionalField = additionalFields[i];
 
-                            if (additionalField != field.lookupModulePrimaryField.name && additionalField != 'id')
+                            if (additionalField !== field.lookupModulePrimaryField.name && additionalField !== 'id')
                                 selectedFields.push(additionalField)
                         }
                     }
 
                     var filters = [];
 
-                    if (field.lookupModulePrimaryField.data_type != 'number' && field.lookupModulePrimaryField.data_type != 'number_auto') {
+                    if (field.lookupModulePrimaryField.data_type !== 'number' && field.lookupModulePrimaryField.data_type !== 'number_auto') {
                         if (!exactMatch)
                             switch (field.lookup_search_type) {
                                 case 'contains':
@@ -999,7 +999,7 @@ angular.module('primeapps')
                         findRequest.limit = 1000;
                     }
                     //get only active users to list! if need also inactive users, use utils lookupuser with includeInactiveUsers parameter
-                    if (lookupModule.name == 'users' || ($rootScope.branchAvailable && lookupType == 'branchs')) {
+                    if (lookupModule.name === 'users' || ($rootScope.branchAvailable && lookupType === 'branchs')) {
                         var filterOrderNo = findRequest.filters.length + 1;
                         findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo });
                     }
@@ -1011,7 +1011,7 @@ angular.module('primeapps')
                             var filter = field.filters[z];
                             no++;
                             var filterMatch = filter.value.match(/^\W+(.+)]/i);
-                            if (filterMatch != null && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
+                            if (filterMatch !== null && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles') {
                                 var recordMatch = filterMatch[1].split('.');
                                 var findRecordValue;
 
@@ -1058,7 +1058,7 @@ angular.module('primeapps')
                             if (!additionalFields) {
                                 for (var i = 0; i < response.data.length; i++) {
                                     var recordItem = response.data[i];
-                                    if (lookupType == 'profiles' && recordItem['id'] === 1) {
+                                    if (lookupType === 'profiles' && recordItem['id'] === 1) {
                                         recordItem['name'] = $rootScope.user.tenant_language === 'tr' ? 'Sistem Yöneticisi' : 'Administrator';
                                     }
                                     var lookupRecord = angular.copy(recordItem);
@@ -1097,7 +1097,7 @@ angular.module('primeapps')
                     if (currentRecord) {
                         for (var i = 0; i < module.dependencies.length; i++) {
                             var dependency = module.dependencies[i];
-                            if (dependency.dependency_type == 'display' && !dependency.deleted) {
+                            if (dependency.dependency_type === 'display' && !dependency.deleted) {
                                 if (!angular.equals(record[dependency.parent_field], currentRecord[dependency.parent_field])) {
                                     if (dependency.values_array && dependency.values_array.length > 0) {
                                         var empty = true;
@@ -1140,7 +1140,7 @@ angular.module('primeapps')
                             continue;
                         }
 
-                        if (field.data_type == 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
+                        if (field.data_type === 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
                             newRecord[field.name] = false;
 
                         if (field.deleted) {
@@ -1587,7 +1587,7 @@ angular.module('primeapps')
                                         for (var m = 0; m < childFieldPicklist.length; m++) {
                                             var childFieldPicklistItem = childFieldPicklist[m];
 
-                                            if (childFieldPicklistItem[dependency.field_map_child] != parentFieldValue)
+                                            if (childFieldPicklistItem[dependency.field_map_child] !== parentFieldValue)
                                                 childFieldPicklistItem.hidden = true;
                                         }
                                     }
@@ -1703,7 +1703,7 @@ angular.module('primeapps')
                             for (var k = 0; k < childFieldPicklist.length; k++) {
                                 var childFieldPicklistItem = childFieldPicklist[k];
 
-                                if (childFieldPicklistItem[dependency.field_map_child] != parentFieldValue)
+                                if (childFieldPicklistItem[dependency.field_map_child] !== parentFieldValue)
                                     childFieldPicklistItem.hidden = true;
                             }
                         }
@@ -2078,7 +2078,7 @@ angular.module('primeapps')
                                     endDate.isBetween(moment(record['alinan_izinler'][i].baslangic_tarihi), moment(record['alinan_izinler'][i].bitis_tarihi), null, '(]') ||
                                     (startDate.isSameOrBefore(moment(record['alinan_izinler'][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record['alinan_izinler'][i].bitis_tarihi)))
                                 ) {
-                                    if (record["alinan_izinler"][i].id != record.id) {
+                                    if (record["alinan_izinler"][i].id !== record.id) {
                                         return $filter('translate')('Leave.Validations.AlreadyHave');
                                     }
                                 }
@@ -2090,7 +2090,7 @@ angular.module('primeapps')
                          * Seçilen izin türünün kullanılabilmesi için ilk izin kullanımı hakediş zamanının (seçilen tipe özel) kullanıcının işe giriş tarihinden küçük olması gerekmektedir.
                          * Yıllık izin ve diğer izin türleri için ortak kullanılır.
                          * */
-                        if (izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] != null && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] != 0) {
+                        if (izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] !== null && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] !== 0) {
                             var start_day_month = moment().diff(record["goreve_baslama_tarihi"], "months");
                             var rule_day_month = izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"];
                             if (start_day_month < rule_day_month) {
@@ -2158,7 +2158,7 @@ angular.module('primeapps')
                                 return izin.izin_turu === record['izin_turu'].id && izin['process.process_requests.process_status'] !== null && (!record.id || (record.id && record.id !== izin.id));
                             });
 
-                            if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] != 0) {
+                            if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] !== 0) {
                                 var totalUsed = 0;
                                 if (filteredLeaves && filteredLeaves.length > 0) {
                                     angular.forEach(filteredLeaves, function (izin) {
@@ -2196,7 +2196,7 @@ angular.module('primeapps')
                              * Seçilen izin türü için tek sefer de alabileceği en fazla izin hakkı kontrol ediliyor. Eğer bu alan set li değil veya 0 ise dikkate alınmıyor.
                              * */
 
-                            if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != null && izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != 0) {
+                            if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] !== null && izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] !== 0) {
 
                                 if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
                                     var workHour = record['izin_turu_data']["toplam_calisma_saati"];
@@ -2327,9 +2327,9 @@ angular.module('primeapps')
                                         var isSunday = moment(date).isoWeekday() === 7;
 
                                         if (isSaturday || isSunday || !moment(date).isBusinessDay()) {
-                                            if (operation == 'subtract') {
+                                            if (operation === 'subtract') {
                                                 return calculateDate(moment(date).subtract(1, 'days'), operation);
-                                            } else if (operation == 'add') {
+                                            } else if (operation === 'add') {
                                                 return calculateDate(moment(date).add(1, 'days'), operation);
                                             }
                                         } else
@@ -2354,19 +2354,19 @@ angular.module('primeapps')
                                     var calDateCheck4 = 0;
 
                                     for (var i = 0; i < filteredLeaves.length; i++) {
-                                        if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st1) {
+                                        if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') === st1) {
                                             calDateCheck1 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
                                             check1 = true;
                                         }
-                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st2) {
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') === st2) {
                                             calDateCheck2 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
                                             check2 = true;
                                         }
-                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st3) {
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') === st3) {
                                             calDateCheck3 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
                                             check3 = true;
                                         }
-                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st4) {
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') === st4) {
                                             calDateCheck4 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
                                             check4 = true;
                                         }
@@ -2387,7 +2387,7 @@ angular.module('primeapps')
                             }
 
                             delete record["goreve_baslama_tarihi"];
-                            delete record['calisan_data']
+                            delete record['calisan_data'];
                             delete record["dogum_tarihi"];
                             delete record["izin_turu_data"];
                             delete record['alinan_izinler'];
@@ -2590,11 +2590,11 @@ angular.module('primeapps')
                                 if (record['izin_turu_data'] && !record['izin_turu_data']["saatlik_kullanim_yapilir"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
                                     var checker = calculatedField;
                                     if (fromDate.format("YYYY.MM.DD") !== toDate.format("YYYY.MM.DD")) {
-                                        if (record['from_entry_type'].id != record['to_entry_type'].id) {
+                                        if (record['from_entry_type'].id !== record['to_entry_type'].id) {
                                             var fromIsBusinessDay = moment(moment(record['baslangic_tarihi']).format('YYYY-MM-DD')).isBusinessDay();
                                             var toIsBusinessDay = moment(moment(record['bitis_tarihi']).format('YYYY-MM-DD')).isBusinessDay();
 
-                                            if (fromIsBusinessDay && record['from_entry_type'].system_code == 'entry_type_afternoon') {
+                                            if (fromIsBusinessDay && record['from_entry_type'].system_code === 'entry_type_afternoon') {
                                                 checker = calculatedField - 0.5;
                                             }
 
@@ -2661,19 +2661,19 @@ angular.module('primeapps')
                                     //Alınan izin sadece cuma yı mı kapsıyor diye kontrol ediliyor. Yarım gün kuralları tarih değişikliği yaratmadığı için onlarda 1 gün üzerinden değerlendiriliyor.
                                     if (toDate.diff(fromDate, 'days') <= 3) {
                                         if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] ||
-                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon' && record['to_entry_type'].system_code == 'entry_type_afternoon' && moment(toDate).isBusinessDay()) ||
-                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon' && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
+                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code !== 'entry_type_afternoon' && record['to_entry_type'].system_code === 'entry_type_afternoon' && moment(toDate).isBusinessDay()) ||
+                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code !== 'entry_type_afternoon' && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
                                         ) {
                                             calculatedField += 1;
                                         }
-                                    } else if (calculatedField >= 2 && record['from_entry_type'].system_code != 'entry_type_afternoon') {
+                                    } else if (calculatedField >= 2 && record['from_entry_type'].system_code !== 'entry_type_afternoon') {
                                         //Ağustos 10 Öğleden Sonra - 14 sabah record['from_entry_type'].system_code != 'entry_type_afternoon' kontrolü burda gerekli oluyor.
                                         calculatedField += 1;
                                     } else if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] ||
-                                        (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon')
+                                        (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code !== 'entry_type_afternoon')
                                     ) {
                                         //Cuma gününün tatillerle birleştirilmiş halinde tarihler arasında ki diff 3 den fazla olduğu için extra kontrol ediliyor.
-                                        if (calculatedField == 1 && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
+                                        if (calculatedField === 1 && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
                                             calculatedField += 1;
                                     }
                                 }
@@ -2703,13 +2703,25 @@ angular.module('primeapps')
                             }
 
                             if (!record['izin_turu_data']['izin_hakkindan_takvim_gunu_olarak_dusulsun']) {
-                                //Yarım gün tatiller alınan izinden çıkarılıyor
+                                //Yarım gün(hafta içine denk gelen) tatiller alınan izinden çıkarılıyor
                                 for (var i = 0; i < $rootScope.holidaysData.length; i++) {
                                     var holiday = $rootScope.holidaysData[i];
-                                    if (holiday.half_day && moment(holiday.date).isBusinessDay()
-                                        && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')
-                                    ) {
+                                    if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
                                         calculatedField -= 0.5;
+                                    }
+                                    //Tam gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor
+                                    else if (!holiday.half_day && moment(holiday.date).isBusinessDay() && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
+                                        calculatedField -= 1.0;
+                                    }
+                                    /*Yarım gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor Hafta sonu olduğu için her türlü toplamda alınan izinden 1 gün çıkarılıyor
+									 calculatedField kontrolünü yapma sebebimiz, alınan izin sadece Cuma gününü mü kapsıyor ? 
+									 */
+                                    else if (calculatedField > 1 && holiday.half_day && moment(moment(holiday.date).format('YYYY-MM-DD')).day() === 6 && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
+                                        calculatedField -= 1.0;
+                                    }
+                                    //Tam gün(Cumartesi gününe denk gelen) tatiller alınan izinden çıkarılıyor Hafta sonu olduğu için izinden 1 gün çıkarılıyor
+                                    else if (calculatedField > 1 && !holiday.half_day && moment(moment(holiday.date).format('YYYY-MM-DD')).day() === 6 && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')) {
+                                        calculatedField -= 1.0;
                                     }
                                 }
                             }
@@ -3065,7 +3077,7 @@ angular.module('primeapps')
                                             else {
                                                 var fieldParts = fieldName.split('.');
 
-                                                if (fieldParts[1] != 'process_requests' && fieldParts[1] != 'process_approvers')
+                                                if (fieldParts[1] !== 'process_requests' && fieldParts[1] !== 'process_approvers')
                                                     moduleFields = $filter('filter')($rootScope.modules, { name: fieldParts[1] }, true)[0].fields;
 
                                                 if (fieldParts[1] === 'process_requests' || fieldParts[1] === 'process_approvers') {
@@ -3246,7 +3258,7 @@ angular.module('primeapps')
                                                                             if (!search.operator)
                                                                                 search.operator = $filter('orderBy')(field.operators, 'order')[0];
 
-                                                                            if ((search.operator.name != 'empty' && search.operator.name != 'not_empty') &&
+                                                                            if ((search.operator.name !== 'empty' && search.operator.name !== 'not_empty') &&
                                                                                 (search.value === undefined || search.value === null || search.value === '' || (angular.isArray(search.value) && !search.value.length) || ((field.data_type === 'number' || field.data_type === 'number_decimal' || field.data_type === 'number_auto' || field.data_type === 'currency') && isNaN(search.value)))) {
                                                                                 delete listFilters[fieldName];
                                                                                 delete params.filters[fieldName];
@@ -3285,16 +3297,16 @@ angular.module('primeapps')
                                                                             var lookupModule;
                                                                             var lookupModulePrimaryField;
 
-                                                                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
+                                                                            if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles') {
                                                                                 lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
                                                                                 lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                                                             }
 
-                                                                            if (search.operator.name != 'empty' && search.operator.name != 'not_empty') {
+                                                                            if (search.operator.name !== 'empty' && search.operator.name !== 'not_empty') {
                                                                                 if (field.data_type === 'lookup' && (field.lookup_type === 'users' || field.lookup_type === 'profiles' || field.lookup_type === 'roles'))
                                                                                     search.value = search.value[0].id;
 
-                                                                                if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
+                                                                                if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles') {
                                                                                     fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                                                                                     field = lookupModulePrimaryField;
                                                                                 }
@@ -3326,7 +3338,7 @@ angular.module('primeapps')
                                                                                     search.value = search.value.system_code;
                                                                             }
                                                                             else {
-                                                                                if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
+                                                                                if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles') {
                                                                                     fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                                                                                     var currentFilterLookup = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
 
@@ -3378,7 +3390,7 @@ angular.module('primeapps')
                                                                 else {
                                                                     var fieldView = $filter('filter')(scope.module.fields, { name: viewField.field }, true)[0];
 
-                                                                    if (viewField.field.indexOf('.') < 0 && fieldView.data_type != 'lookup') {
+                                                                    if (viewField.field.indexOf('.') < 0 && fieldView.data_type !== 'lookup') {
                                                                         var fieldNameView = relatedModule.related_module === parentModule ? relatedModule.related_module + '2' : relatedModule.related_module;
                                                                         var fieldManyToMany = fieldNameView + '_id.' + relatedModule.related_module + '.' + viewField.field;
                                                                         selectedFields.push(fieldManyToMany);
@@ -3657,7 +3669,7 @@ angular.module('primeapps')
                         scope.views = views;
 
                         if (!scope.selectedView) {
-                            if (!viewState || parent != scope.module.name)
+                            if (!viewState || parent !== scope.module.name)
                                 scope.view = $filter('filter')(views, { active: true })[0];
                             else if (viewState)
                                 scope.view = $filter('filter')(views, { id: viewState.active_view }, true)[0];

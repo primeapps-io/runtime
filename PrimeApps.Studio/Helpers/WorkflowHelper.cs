@@ -893,7 +893,7 @@ namespace PrimeApps.Studio.Helpers
 									using (var userRepository = new UserRepository(databaseContext, _configuration))
 									{
 										userRepository.CurrentUser = _currentUser;
-										var recipientUser = await userRepository.GetById((int)record["owner.id"]);
+										var recipientUser = userRepository.GetById((int)record["owner.id"]);
 
 										if (recipientUser == null)
 											continue;

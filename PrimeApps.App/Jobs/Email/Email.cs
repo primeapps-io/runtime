@@ -126,6 +126,7 @@ namespace PrimeApps.App.Jobs.Email
 				}
 
 				// transmit it.
+				if (myMessage.To.Count > 0)
 				smtpClient.Send(myMessage);
 
 				// set status to true
@@ -189,10 +190,6 @@ namespace PrimeApps.App.Jobs.Email
 					myMessage.To.Add(to);
 				}
 
-				if (myMessage.To.Count < 1)
-					return true;
-
-
 				if (!string.IsNullOrWhiteSpace(email.CC))
 				{
 					var ccList = email.CC.Split(',');
@@ -213,6 +210,7 @@ namespace PrimeApps.App.Jobs.Email
 				}
 
 				// transmit it.
+				if (myMessage.To.Count > 0)
 				smtpClient.Send(myMessage);
 
 				// set status to true

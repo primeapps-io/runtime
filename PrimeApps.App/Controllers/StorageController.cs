@@ -16,6 +16,8 @@ using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Extensions;
+using PrimeApps.App.Services;
+using PrimeApps.Studio.Helpers;
 using static PrimeApps.Util.Storage.UnifiedStorage;
 using PrimeApps.Util.Storage.Unified;
 
@@ -33,8 +35,11 @@ namespace PrimeApps.App.Controllers
         private IImportRepository _importRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
+        private IBackgroundTaskQueue _queue;
+        private IHttpContextAccessor _context;
+        private IHistoryHelper _historyHelper;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration)
+        public StorageController(IBackgroundTaskQueue queue, IHttpContextAccessor context, IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -45,6 +50,14 @@ namespace PrimeApps.App.Controllers
             _importRepository = importRepository;
             _storage = storage;
             _configuration = configuration;
+            _queue = queue;
+            _context = context;
+            _historyHelper = historyHelper;
+
+            if (PreviewMode == "app")
+            {
+                _storage.FileUploadedEvent += FileUploaded;
+            }
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -91,11 +104,11 @@ namespace PrimeApps.App.Controllers
 
             if (!string.IsNullOrWhiteSpace(container))
             {
-                bucketName = GetPath(type, AppUser.TenantId, null, container);
+                bucketName = GetPath(type, PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId, container);
             }
             else
             {
-                bucketName = GetPath(type, AppUser.TenantId);
+                bucketName = GetPath(type, PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
             }
 
             int chunk = 0,
@@ -103,7 +116,7 @@ namespace PrimeApps.App.Controllers
 
             int.TryParse(chunksStr, out chunks);
             int.TryParse(chunkStr, out chunk);
-            chunk++;// increase it since s3 chunk indexes starting from 1 instead of 0
+            chunk++; // increase it since s3 chunk indexes starting from 1 instead of 0
 
             MultipartResponse response = new MultipartResponse();
             CompleteMultipartUploadResponse uploadResult;
@@ -126,7 +139,7 @@ namespace PrimeApps.App.Controllers
 
                     response.Status = MultipartStatusEnum.Completed;
 
-                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL)// Add here the types where publicURLs are required.
+                    if (objectType == ObjectType.NOTE || objectType == ObjectType.PROFILEPICTURE || objectType == ObjectType.MAIL) // Add here the types where publicURLs are required.
                     {
                         response.PublicURL = _storage.GetLink(bucketName, fileName);
                     }
@@ -146,7 +159,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -185,7 +198,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> RecordFileUpload()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("record", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -228,7 +241,7 @@ namespace PrimeApps.App.Controllers
         [Route("record_file_download")]
         public async Task<FileStreamResult> RecordFileDownload([FromQuery(Name = "fileName")]string fileName)
         {
-            return await _storage.Download(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, fileName);
+            return await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), fileName, fileName);
         }
 
         [HttpPost("upload_template")]
@@ -236,7 +249,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -276,7 +289,7 @@ namespace PrimeApps.App.Controllers
             var doc = await _documentRepository.GetById(fileId);
             if (doc != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
+                return await _storage.Download(UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), doc.UniqueName, doc.Name);
             }
             else
             {
@@ -297,7 +310,7 @@ namespace PrimeApps.App.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", AppUser.TenantId), temp.Content, temp.Name + type);
+                return await _storage.Download(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
             }
             else
             {
@@ -343,7 +356,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadProfilePicture()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("profilepicture", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
             if (parser.Success)
             {
                 //if succesfully parsed, then continue to thread.
@@ -387,7 +400,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("logo", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("logo", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             if (parser.Success)
             {
@@ -437,7 +450,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("import", AppUser.TenantId);
+            StringValues bucketName = UnifiedStorage.GetPath("import", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -468,6 +481,13 @@ namespace PrimeApps.App.Controllers
 
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
+        }
+
+        public async void FileUploaded(string bucket, string key, string fileName)
+        {
+            var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+            var currentUser = UserHelper.GetCurrentUser(_context, _configuration);
+            _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
         }
     }
 }

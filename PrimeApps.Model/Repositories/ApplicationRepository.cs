@@ -2,14 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Repositories.Interfaces;
-using System.Linq;
 
 namespace PrimeApps.Model.Repositories
 {

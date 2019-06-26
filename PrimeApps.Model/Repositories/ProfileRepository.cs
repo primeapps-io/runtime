@@ -419,7 +419,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Count()
+        public int Count()
         {
             var count = DbContext.Profiles
                 .Where(x => !x.Deleted).Count();
@@ -436,7 +436,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Profile).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Profile).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

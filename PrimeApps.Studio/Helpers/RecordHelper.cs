@@ -528,7 +528,6 @@ namespace PrimeApps.Studio.Helpers
 
 		public void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
 		{
-			Queue.QueueBackgroundWorkItem(async token => await _changeLogHelper.CreateLog(appUser, currentRecord, module));
 			Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
 			Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Update(appUser, record, currentRecord, module, warehouse, timeZoneOffset));
 			Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.SendTaskNotification(record, appUser, module));

@@ -73,7 +73,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var templateEntity = await TemplateHelper.CreateEntity(template, _userRepository);
+            var templateEntity = TemplateHelper.CreateEntity(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
@@ -92,7 +92,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                return BadRequest(ModelState);
 
-            var templateEntity = await TemplateHelper.CreateEntityExcel(template, _userRepository);
+            var templateEntity = TemplateHelper.CreateEntityExcel(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
@@ -115,7 +115,7 @@ namespace PrimeApps.App.Controllers
             if (templateEntity == null)
                 return NotFound();
 
-            await TemplateHelper.UpdateEntity(template, templateEntity, _userRepository);
+            TemplateHelper.UpdateEntity(template, templateEntity, _userRepository);
             await _templateRepostory.Update(templateEntity);
 
             if (template.Chunks > 0)

@@ -164,7 +164,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("send_external_email")]
-        public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
+        public IActionResult SendExternalEmail([FromBody]ExternalEmail emailRequest)
         {
             if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {
@@ -179,7 +179,7 @@ namespace PrimeApps.App.Controllers
                     externalEmail.AddRecipient(emailRecipient);
                 }
 
-                externalEmail.AddToQueue( cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName);
+                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }

@@ -111,9 +111,9 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Count(TemplateType templateType)
+        public int Count(TemplateType templateType)
         {
-			var count = DbContext.Templates
+            var count = DbContext.Templates
                .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
             return count;
         }
@@ -128,7 +128,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Template).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

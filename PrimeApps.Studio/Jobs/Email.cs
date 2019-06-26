@@ -125,6 +125,7 @@ namespace PrimeApps.Studio.Jobs.Email
 				}
 
 				// transmit it.
+				if (myMessage.To.Count > 0)
 				smtpClient.Send(myMessage);
 
 				// set status to true

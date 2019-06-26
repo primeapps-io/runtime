@@ -109,7 +109,7 @@ namespace PrimeApps.App.Controllers
             {
                 return BadRequest();
             }
-            if (!await _storage.ObjectExists(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content))
+            if (!await _storage.ObjectExists(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), templateEntity.Content))
             {
                 return NotFound();
             }
@@ -180,7 +180,7 @@ namespace PrimeApps.App.Controllers
             Aspose.Words.Document doc;
 
             // Open a template document.
-            using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content, null))
+            using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), templateEntity.Content, null))
             {
                 doc = new Aspose.Words.Document(template);
             }
@@ -231,7 +231,7 @@ namespace PrimeApps.App.Controllers
             outputStream.Position = 0;
             var mimeType = MimeUtility.GetMimeMapping(fileName);
             string publicFileName = Guid.NewGuid().ToString().Replace("-", "") + "." + format;
-            string publicPath = UnifiedStorage.GetPath("public", AppUser.TenantId);
+            string publicPath = UnifiedStorage.GetPath("public", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
             if (save)
             {
 
@@ -1036,6 +1036,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel")]
+        [Obsolete]
         public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
@@ -1216,6 +1217,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export_excel_view")]
+        [Obsolete]
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
         {
             if (string.IsNullOrWhiteSpace(module))
@@ -1560,9 +1562,10 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel_no_data")]
+        [Obsolete]
         public async Task<FileStreamResult> ExportExcelNoData(string module, int viewId, int templateId, string templateName, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "")
         {
-            if (string.IsNullOrWhiteSpace(module) || templateId == null || templateId == 0)
+            if (string.IsNullOrWhiteSpace(module) || templateId <= 0)
             {
                 throw new HttpRequestException("Module field is required");
             }
@@ -1675,7 +1678,7 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
@@ -1830,9 +1833,10 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel_data")]
+        [Obsolete]
         public async Task<FileStreamResult> ExportExcelData(string module, int viewId, string templateName, int templateId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "")
         {
-            if (string.IsNullOrWhiteSpace(module) || templateId == null || templateId == 0)
+            if (string.IsNullOrWhiteSpace(module) || templateId <= 0)
             {
                 throw new HttpRequestException("Module field is required");
             }
@@ -1945,7 +1949,7 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");

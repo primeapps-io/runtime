@@ -46,6 +46,6 @@ namespace PrimeApps.Model.Entities.Studio
         
         public virtual ICollection<AppCollaborator> Collaborators { get; set; }
 
-        public virtual ICollection<Deployment> Deployments { get; set; }
+        public virtual ICollection<Release> Deployments { get; set; }
     }
 }

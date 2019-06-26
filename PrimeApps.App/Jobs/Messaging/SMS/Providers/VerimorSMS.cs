@@ -93,6 +93,9 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
                     Status = NotificationStatus.InvalidUserNamePassword
                 };
             }
+
+            await Task.FromResult("ok");//Added to allow asynchronous callers
+
             return new SMSResponse()
             {
                 Response = sWebPage,
