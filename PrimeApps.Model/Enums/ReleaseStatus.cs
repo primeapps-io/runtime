@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PrimeApps.Model.Enums
 {
-    public enum DeploymentStatus
+    public enum ReleaseStatus
     {
         [EnumMember(Value = "")]
         NotSet = 0,

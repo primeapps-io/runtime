@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,19 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
+        public async Task<List<HistoryDatabase>> GetDiffs(string min)
+        {
+            var current = await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == min);
+            if (current != null)
+                return await DbContext.HistoryDatabases.Where(x => x.Id > current.Id).ToListAsync();
+            return null;
+        }
+
         public async Task<HistoryDatabase> Get(Guid commandId)
         {
             return await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.CommandId == commandId);
         }
+
         public async Task<HistoryDatabase> GetLast()
         {
             return await DbContext.HistoryDatabases.OrderByDescending(x => x.Id).FirstOrDefaultAsync();

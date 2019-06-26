@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,18 @@ namespace PrimeApps.Model.Repositories
 {
     public class HistoryStorageRepository : RepositoryBaseTenant, IHistoryStorageRepository
     {
-        public HistoryStorageRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public HistoryStorageRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
+
+        public async Task<List<HistoryStorage>> GetDiffs(string min)
+        {
+            var current = await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == min);
+            if (current != null)
+                return await DbContext.HistoryStorages.Where(x => x.Id > current.Id).ToListAsync();
+
+            return null;
+        }
 
         public async Task<HistoryStorage> GetLast()
         {
@@ -28,6 +40,5 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.SaveChangesAsync();
         }
-
     }
 }

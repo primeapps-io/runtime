@@ -427,7 +427,7 @@ namespace PrimeApps.App.Controllers
 
 			if (result.Documents.Count > 0)
 			{
-				var bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+				var bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
 				foreach (var document in result.Documents)
 				{
@@ -751,7 +751,7 @@ namespace PrimeApps.App.Controllers
 
             uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
-            string bucketPath = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+            string bucketPath = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
             {

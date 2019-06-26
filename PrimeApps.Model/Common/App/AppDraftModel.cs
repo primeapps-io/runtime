@@ -42,5 +42,11 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("use_tenant_settings"), DataMember(Name = "use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
+
+        [JsonProperty("clear_all_records"), DataMember(Name = "clear_all_records")]
+        public bool ClearAllRecords { get; set; }
+
+        [JsonProperty("enable_registration"), DataMember(Name = "enable_registration")]
+        public bool EnableRegistration { get; set; }
     }
 }

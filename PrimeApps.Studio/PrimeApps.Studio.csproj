@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspose.Cells" Version="18.12.0" />
@@ -10,7 +11,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.101.13" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
     <PackageReference Include="Devart.Data.PostgreSql" Version="7.13.1366" />
-    <PackageReference Include="dotConnect.Express.for.PostgreSQL" Version="7.12.1357" />
+    <PackageReference Include="dotConnect.Express.for.PostgreSQL.Custom" Version="7.12.1357" />
     <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.5.0" />
@@ -34,5 +35,15 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
     <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Helpers\ReleaseHelper.cs">
+      <DependentUpon>WorkflowHelper.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\view\app\settings\settings.html" />
+    <_ContentIncludedByDefault Remove="wwwroot\view\app\settings\settingsController.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\view\app\settings\settingsService.js" />
   </ItemGroup>
 </Project>

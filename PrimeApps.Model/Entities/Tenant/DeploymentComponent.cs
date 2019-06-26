@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public int ComponentId { get; set; }
 
         [Column("status"), Required]
-        public DeploymentStatus Status { get; set; }
+        public ReleaseStatus Status { get; set; }
 
         [Column("revision"), Required]
         public int Revision { get; set; }

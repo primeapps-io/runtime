@@ -117,10 +117,8 @@ namespace PrimeApps.App.Helpers
                                     var childField = module.Fields.Where(x => x.Name == dependency.ChildField).FirstOrDefault();
                                     var parentField = module.Fields.Where(x => x.Name == dependency.ParentField).FirstOrDefault();
 
-
                                     /*var parentModule = await moduleRepository.GetByNameAsync(parentField.LookupType);
                                     var childModule = await moduleRepository.GetByNameAsync(childField.LookupType);*/
-
 
                                     string parentRecordData;
 

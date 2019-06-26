@@ -25,11 +25,12 @@
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="140.17283.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\StudioDB" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="devart.key" />
+    <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
   </ItemGroup>
 </Project>

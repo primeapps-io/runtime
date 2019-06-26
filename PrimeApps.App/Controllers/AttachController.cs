@@ -109,7 +109,7 @@ namespace PrimeApps.App.Controllers
             {
                 return BadRequest();
             }
-            if (!await _storage.ObjectExists(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content))
+            if (!await _storage.ObjectExists(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), templateEntity.Content))
             {
                 return NotFound();
             }
@@ -180,7 +180,7 @@ namespace PrimeApps.App.Controllers
             Aspose.Words.Document doc;
 
             // Open a template document.
-            using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), templateEntity.Content, null))
+            using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), templateEntity.Content, null))
             {
                 doc = new Aspose.Words.Document(template);
             }
@@ -231,7 +231,7 @@ namespace PrimeApps.App.Controllers
             outputStream.Position = 0;
             var mimeType = MimeUtility.GetMimeMapping(fileName);
             string publicFileName = Guid.NewGuid().ToString().Replace("-", "") + "." + format;
-            string publicPath = UnifiedStorage.GetPath("public", AppUser.TenantId);
+            string publicPath = UnifiedStorage.GetPath("public", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
             if (save)
             {
 
@@ -1678,7 +1678,7 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");
@@ -1949,7 +1949,7 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
-            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", AppUser.TenantId), template.Content, null))
+            using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {
                 Workbook workbook = new Workbook(temp);
                 Worksheet worksheetReportAdd = workbook.Worksheets.Add("Report");

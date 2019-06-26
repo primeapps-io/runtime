@@ -21,7 +21,8 @@ angular.module('primeapps')
                 $scope.revise = $location.search().revise;
                 $scope.paramField = $location.search().field;
                 $scope.paramValue = $location.search().value;
-            } else {
+            }
+            else {
                 var parent = $scope.$parent.$parent;
                 $scope.formType = parent.formType;
                 $scope.type = parent.type;
@@ -192,22 +193,26 @@ angular.module('primeapps')
             if ($scope.parentType) {
                 if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
                     $scope.parentModule = $scope.parentType;
-                } else if ($scope.type === 'current_accounts') {
+                }
+                else if ($scope.type === 'current_accounts') {
                     if ($scope.id) {
                         if ($scope.parentType === 'supplier')
                             $scope.parentModule = 'suppliers';
                         else if ($scope.parentType === 'customer')
                             $scope.parentModule = 'accounts';
-                    } else {
+                    }
+                    else {
                         $scope.parentModule = $scope.parentType;
                     }
-                } else {
+                }
+                else {
                     var parentTypeField = $filter('filter')($scope.module.fields, {name: $scope.parentType}, true)[0];
 
                     if (!parentTypeField) {
                         $scope.parentType = null;
                         $scope.parentId = null;
-                    } else {
+                    }
+                    else {
                         $scope.parentModule = parentTypeField.lookup_type;
                     }
                 }
@@ -319,8 +324,8 @@ angular.module('primeapps')
                         });
                     };
 
-                    components.run('BeforeFormPicklistLoaded', 'Script', $scope); 
-                    
+                    components.run('BeforeFormPicklistLoaded', 'Script', $scope);
+
                     //<--TODO:COMPONENT
                     if ($scope.module && $scope.module.name === 'izinler') {
                         var toField = $filter('filter')($scope.module.fields, {name: 'to_entry_type'}, true)[0];
@@ -360,7 +365,8 @@ angular.module('primeapps')
                             if ($scope.type == 'activities') {
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['activity_type'].label[$rootScope.language]});
-                            } else if ($scope.type == 'current_accounts') {
+                            }
+                            else if ($scope.type == 'current_accounts') {
                                 $scope.record['transaction_type'] = $filter('filter')(transactionTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
                             }
@@ -375,7 +381,7 @@ angular.module('primeapps')
                         //
                         //     $scope.currencyField.validation.readonly = false;
                         // }
-                         //TODO:COMPONENT --> 
+                        //TODO:COMPONENT --> 
 
                         if ($scope.parentId) {
                             var moduleParent = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
@@ -407,15 +413,17 @@ angular.module('primeapps')
                                     if (($scope.type === 'activities' || $scope.type === 'mails') && $scope.relatedToField) {
                                         $scope.record['related_to'] = lookupRecord;
                                         $scope.record['related_module'] = $filter('filter')(picklists['900000'], {value: $scope.parentType}, true)[0];
-                                    } else {
+                                    }
+                                    else {
                                         if ($scope.parentModule === 'accounts' && $scope.type === 'current_accounts') {
                                             $scope.record['customer'] = lookupRecord;
-                                        } else if ($scope.parentModule === 'suppliers' && $scope.type === 'current_accounts') {
+                                        }
+                                        else if ($scope.parentModule === 'suppliers' && $scope.type === 'current_accounts') {
                                             $scope.record['supplier'] = lookupRecord;
-                                        } else {
+                                        }
+                                        else {
                                             $scope.record[$scope.parentType] = lookupRecord;
                                         }
-
 
                                         var relatedDependency = $filter('filter')($scope.module.dependencies, {dependent_field: $scope.parentType}, true)[0];
 
@@ -432,9 +440,9 @@ angular.module('primeapps')
 
                                     //TODO:COMPONENT --> 
 
-
                                 });
-                        } else {
+                        }
+                        else {
                             setFieldDependencies();
                         }
 
@@ -472,7 +480,8 @@ angular.module('primeapps')
                                     userCreateField.hidden = true;
                                     record[userCreateField.name] = false;
                                 }
-                            } else {
+                            }
+                            else {
                                 //Düzenle butonundan Edit Sayfasına gidildiğinde Lisans kontrolü için Lisans bilgileri çekiliyor.
                                 if ($scope.module.name === 'calisanlar') {
                                     ModuleService.getUserLicenseStatus()
@@ -492,15 +501,12 @@ angular.module('primeapps')
                                 $state.go('app.dashboard');
                                 return;
                             }
-                            
 
-                            components.run('BeforeFormRecordLoaded', 'Script', $scope,record);
+                            components.run('BeforeFormRecordLoaded', 'Script', $scope, record);
                             ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
                             $scope.title = $scope.primaryField.valueFormatted;
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
-
-                           
 
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -534,7 +540,6 @@ angular.module('primeapps')
                                         $scope.record = record;
                                         $scope.recordState = angular.copy($scope.record);
 
-
                                         if ($scope.module.name != 'activities')
                                             setFieldDependencies();
 
@@ -559,7 +564,8 @@ angular.module('primeapps')
 
                                         $scope.loading = false;
                                     });
-                            } else {
+                            }
+                            else {
                                 $scope.record = record;
                                 if ($scope.clone) {
                                     $scope.record.owner = $scope.currentUser;
@@ -586,7 +592,6 @@ angular.module('primeapps')
 
                     components.run('AfterFormPicklistLoaded', 'Script', $scope);
                 });
-
 
             $scope.lookup = function (searchTerm) {
                 $scope.searchTerm = searchTerm;
@@ -632,7 +637,6 @@ angular.module('primeapps')
                     return $q.defer().promise;
                 }
 
- 
                 if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
                     var parentModuleName = '';
 
@@ -647,7 +651,8 @@ angular.module('primeapps')
 
                         if (parentCurrencyField) {
                             return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['currency']);
-                        } else {
+                        }
+                        else {
                             return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
                         }
                     }
@@ -657,10 +662,10 @@ angular.module('primeapps')
 
                 components.run('BeforeLookup', 'Script', $scope);
 
-                if($scope.lookupCurrentData){
+                if ($scope.lookupCurrentData) {
                     return $scope.lookupCurrentData;
                 }
-                
+
                 if ($scope.currentLookupField.lookup_type === 'users')
                     return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email'], false, $scope.customFilters);
                 else if ($scope.currentLookupField.lookup_type === 'profiles')
@@ -703,7 +708,11 @@ angular.module('primeapps')
             };
 
             $scope.uploader = new FileUploader({
-                url: 'storage/record_file_upload'
+                url: 'storage/record_file_upload',
+                headers: {
+                    appId: $rootScope.user.app_id,
+                    'X-App-Id': $rootScope.user.app_id
+                }
             });
 
             $scope.entityIdFunc = function () {
@@ -772,7 +781,8 @@ angular.module('primeapps')
 
                             $scope.submitting = false;
                             return;
-                        } else {
+                        }
+                        else {
                             var profileId = $scope.record.kullanici_profili ? $scope.record.kullanici_profili.id : null;
                             var roleId = $scope.record.kullanici_rolu ? $scope.record.kullanici_rolu.id : null;
 
@@ -784,7 +794,6 @@ angular.module('primeapps')
                                 inviteModel.profile = profileId;
                                 inviteModel.role = roleId;
                                 inviteModel.full_name = inviteModel.first_name + " " + inviteModel.last_name;
-
 
                                 if (!inviteModel || !inviteModel.email || !inviteModel.profile || !inviteModel.role || !inviteModel.first_name || !inviteModel.last_name)
                                     return;
@@ -858,7 +867,8 @@ angular.module('primeapps')
                                     }).catch(function (error) {
                                     $scope.submitting = false;
                                 });
-                            } else {
+                            }
+                            else {
                                 createUser(roleId, profileId, record);
                             }
                         }
@@ -904,7 +914,8 @@ angular.module('primeapps')
                                     delete record['kasa'];
                                     delete record['banka'];
                                     isValid = false;
-                                } else if (!record['kasa'] && !record['banka']) {
+                                }
+                                else if (!record['kasa'] && !record['banka']) {
                                     if (!hasShownWarning) {
                                         ngToast.create({
                                             content: $filter('translate')('Common.ChooseBankOrCase'),
@@ -920,15 +931,13 @@ angular.module('primeapps')
                             }
                         }
 
-
                     });
 
                     return isValid;
                 }
 
                 $scope.submitting = true;
-                
-      
+
                 if (!$scope.moduleForm.$valid || !validate()) {
                     $scope.submitting = false;
                     return;
@@ -944,7 +953,8 @@ angular.module('primeapps')
                         $scope.submitting = false;
                         return;
                     }
-                } else {
+                }
+                else {
                     $scope.executeCode = false;
                     components.run('BeforeUpdate', 'Script', $scope, record);
                     if ($scope.executeCode) {
@@ -1025,7 +1035,7 @@ angular.module('primeapps')
                     });
                     $scope.recordState = null;
                 }
-                 
+
                 record = ModuleService.prepareRecord(record, $scope.module, $scope.recordState);
 
                 var recordCopy = angular.copy($scope.record);
@@ -1057,9 +1067,11 @@ angular.module('primeapps')
                                     setTimeout(function () {
                                         result(response.data);
                                     }, 2000)
-                                } else
+                                }
+                                else
                                     result(response.data);
-                            } else
+                            }
+                            else
                                 result(response.data);
 
                             components.run('AfterCreate', 'Script', $scope, record);
@@ -1079,12 +1091,15 @@ angular.module('primeapps')
                                     setTimeout(function () {
                                         $scope.submitting = false;
                                     }, 2000)
-                                } else
+                                }
+                                else
                                     $scope.submitting = false;
-                            } else
+                            }
+                            else
                                 $scope.submitting = false;
                         });
-                } else {
+                }
+                else {
                     //encrypted field
                     for (var f = 0; f < $scope.module.fields.length; f++) {
                         var field = $scope.module.fields[f];
@@ -1125,7 +1140,8 @@ angular.module('primeapps')
                                 if (!record.master_id) {
                                     $scope.submitting = false;
                                     result(response.data);
-                                } else if ($scope.module.name === 'quotes') {
+                                }
+                                else if ($scope.module.name === 'quotes') {
                                     //After record is revised, update the master record's stage
                                     ModuleService.getRecord($scope.module.name, record.master_id)
                                         .then(function onSuccess(recordDataMaster) {
@@ -1148,7 +1164,8 @@ angular.module('primeapps')
                                 error(data, status);
                                 $scope.submitting = false;
                             });
-                    } else {
+                    }
+                    else {
 
                         ModuleService.updateRecord($scope.module.name, record)
                             .then(function onSuccess(response) {
@@ -1163,9 +1180,11 @@ angular.module('primeapps')
                                         setTimeout(function () {
                                             result(response.data);
                                         }, 2000)
-                                    } else
+                                    }
+                                    else
                                         result(response.data);
-                                } else
+                                }
+                                else
                                     result(response.data);
 
                                 components.run('AfterUpdate', 'Script', $scope, record);
@@ -1185,9 +1204,11 @@ angular.module('primeapps')
                                         setTimeout(function () {
                                             $scope.submitting = false;
                                         }, 2000)
-                                    } else
+                                    }
+                                    else
                                         $scope.submitting = false;
-                                } else
+                                }
+                                else
                                     $scope.submitting = false;
                             });
                     }
@@ -1196,9 +1217,9 @@ angular.module('primeapps')
                 function result(response) {
                     $scope.addedUser = false;
                     $scope.recordId = response.id;
-                    
-                    components.run('BeforeFormSubmitResult', 'Script', $scope,response);
-                   $scope.success = function() {
+
+                    components.run('BeforeFormSubmitResult', 'Script', $scope, response);
+                    $scope.success = function () {
                         var params = {type: $scope.type, id: response.id};
                         if ($scope.saveAndNew) {
                             $scope.record = {};
@@ -1236,7 +1257,8 @@ angular.module('primeapps')
                             });
 
                             ModuleService.setDefaultValues($scope.module, $scope.record, $scope.picklistsModule);
-                        } else {
+                        }
+                        else {
                             if ($scope.parentId) {
                                 params.type = $scope.parentModule;
                                 params.id = $scope.parentId;
@@ -1260,7 +1282,8 @@ angular.module('primeapps')
 
                             if ($scope.module.name === 'opportunities')
                                 $cache.remove('opportunity' + $scope.id + '_stage_history');
-                        } else {
+                        }
+                        else {
                             cacheKey = (!$scope.relatedToField ? $scope.parentType : 'related_to') + $scope.parentId + '_' + (!$scope.many ? $scope.module.name : $scope.many);
                             var parentCacheKey = $scope.parentType + '_' + $scope.parentType;
                             $cache.remove(cacheKey);
@@ -1300,7 +1323,6 @@ angular.module('primeapps')
                                     $scope.vatList = [];
                                     $scope.record.grand_total = 0;
 
-
                                 }
                             }
 
@@ -1308,16 +1330,19 @@ angular.module('primeapps')
                                 $scope.submitting = false;
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['activity_type'].label[$rootScope.language]});
-                            } else if ($scope.type == 'current_accounts') {
+                            }
+                            else if ($scope.type == 'current_accounts') {
                                 $scope.record['transaction_type'] = $filter('filter')(transactionTypes, {system_code: $scope.subtype}, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', {title: $scope.record['transaction_type'].label[$rootScope.language]});
                             }
-                        } else {
+                        }
+                        else {
                             if ($scope.module.name === 'stock_transactions') {
                                 setTimeout(function () {
                                     $state.go('app.moduleDetail', params);
                                 }, 500);
-                            } else {
+                            }
+                            else {
                                 if ($scope.module.name === 'calisanlar') {
                                     //Kullanıcı bilgilerinin yer aldığı modalda Detaya Git butonuna basılınca çalışacak fonksiyon.
                                     $scope.goModuleDetail = function () {
@@ -1329,9 +1354,11 @@ angular.module('primeapps')
                                     //gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
                                     if (!$scope.id && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable)) {
                                         $scope.loading = true;
-                                    } else
+                                    }
+                                    else
                                         $state.go('app.moduleDetail', params);
-                                } else
+                                }
+                                else
                                     $state.go('app.moduleDetail', params);
                             }
 
@@ -1425,7 +1452,8 @@ angular.module('primeapps')
                     var top = (screen.height / 2) - (h / 2);
                     window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
-                } else {
+                }
+                else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
                         scope: $scope,
@@ -1490,6 +1518,10 @@ angular.module('primeapps')
 
                 var uploader_basic = $scope.uploaderBasic[field.name] = new FileUploader({
                     url: 'storage/record_file_upload',
+                    headers: {
+                        appId: $rootScope.user.app_id,
+                        'X-App-Id': $rootScope.user.app_id
+                    },
                     queueLimit: 1
                 });
 
@@ -1501,7 +1533,6 @@ angular.module('primeapps')
                     $scope.document[field.name]['Name'] = item.uploader.queue[0].file.name;
                     $scope.document[field.name]['Size'] = item.uploader.queue[0].file.size;
                     $scope.document[field.name]['Type'] = item.uploader.queue[0].file.type;
-
 
                     item.upload();
 
@@ -1552,6 +1583,10 @@ angular.module('primeapps')
                 $scope.image[field.name] = {};
                 var uploader_image = $scope.uploaderImage[field.name] = new FileUploader({
                     url: 'storage/record_file_upload',
+                    headers: {
+                        appId: $rootScope.user.app_id,
+                        'X-App-Id': $rootScope.user.app_id
+                    },
                     queueLimit: 1
                 });
 
@@ -1671,7 +1706,8 @@ angular.module('primeapps')
                         //             jsonData[parameterName] = response.data[fieldName];
                         //         })
                         // }
-                    } else {
+                    }
+                    else {
                         if ($scope.record[fieldName])
                             jsonData[parameterName] = $scope.record[fieldName];
                         else
@@ -1698,7 +1734,8 @@ angular.module('primeapps')
                             $scope.webhookRequesting[action.id] = false;
                         });
 
-                } else if (action.method_type === 'get') {
+                }
+                else if (action.method_type === 'get') {
 
                     var query = "";
 
@@ -1765,7 +1802,6 @@ angular.module('primeapps')
             };
 
             components.run('AfterFormLoaded', 'script', $scope);
-
 
         }
     ]);

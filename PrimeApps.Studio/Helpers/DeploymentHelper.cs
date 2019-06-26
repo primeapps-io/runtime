@@ -102,9 +102,9 @@ namespace PrimeApps.Studio.Helpers
                         var deployment = await _deploymentFunctionRepository.Get(deploymentId);
 
                         if (!response.IsSuccessStatusCode)
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                         else
-                            deployment.Status = DeploymentStatus.Succeed;
+                            deployment.Status = ReleaseStatus.Succeed;
 
                         deployment.EndTime = DateTime.Now;
 
@@ -177,11 +177,11 @@ namespace PrimeApps.Studio.Helpers
                                 component.Content = JsonConvert.SerializeObject(content);
                                 await _componentRepository.Update(component);
 
-                                deployment.Status = DeploymentStatus.Succeed;
+                                deployment.Status = ReleaseStatus.Succeed;
                             }
                             catch (Exception ex)
                             {
-                                deployment.Status = DeploymentStatus.Failed;
+                                deployment.Status = ReleaseStatus.Failed;
                                 ErrorHandler.LogError(ex, "Component deployment error.");
                             }
 
@@ -191,7 +191,7 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else
                         {
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                             deployment.EndTime = DateTime.Now;
                             await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
@@ -232,11 +232,11 @@ namespace PrimeApps.Studio.Helpers
                             try
                             {
                                 code = File.ReadAllText(localPath + "/" + fileName);
-                                deployment.Status = DeploymentStatus.Succeed;
+                                deployment.Status = ReleaseStatus.Succeed;
                             }
                             catch (Exception ex)
                             {
-                                deployment.Status = DeploymentStatus.Failed;
+                                deployment.Status = ReleaseStatus.Failed;
                                 ErrorHandler.LogError(ex, "Script deployment error.");
                             }
 
@@ -253,7 +253,7 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else
                         {
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                             deployment.EndTime = DateTime.Now;
                             await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");

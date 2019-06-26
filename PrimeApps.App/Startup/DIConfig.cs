@@ -12,6 +12,8 @@ using System.Reflection;
 using PrimeApps.App.Bpm.Steps;
 using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 using Amazon.S3;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using PrimeApps.Studio.Helpers;
 
 namespace PrimeApps.App
 {
@@ -50,6 +52,8 @@ namespace PrimeApps.App
                 }
             }
 
+            services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
+
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
@@ -80,7 +84,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-
+            
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();

@@ -24,7 +24,7 @@ angular.module('primeapps')
             if ($rootScope.organizations)
                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
-
+            $rootScope.goLive = {};
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.label};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};
@@ -43,7 +43,6 @@ angular.module('primeapps')
                 status: 0
             };
 
-
             $scope.openEditModal = function (app) {
                 $scope.currentApp = app;
                 $scope.appModel = angular.copy($scope.currentApp);
@@ -61,7 +60,6 @@ angular.module('primeapps')
                 });
 
             };
-
 
             $scope.save = function (newAppForm) {
                 if (!newAppForm.$valid) {
@@ -93,7 +91,6 @@ angular.module('primeapps')
                 .then(function (result) {
                     $scope.apps = result.data;
                     $scope.loading = false;
-                  
 
                 });
         }

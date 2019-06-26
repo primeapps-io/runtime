@@ -525,7 +525,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Team).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {

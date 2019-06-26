@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.App;
@@ -128,6 +129,11 @@ namespace PrimeApps.Studio.Controllers
                     }.ToJsonString(),
                     MailSenderName = "PrimeApps",
                     MailSenderEmail = "app@primeapps.io",
+                    Options = new JObject
+                    {
+                        ["enable_registration"] = true,
+                        ["clear_all_records"] = true
+                    }.ToJsonString()
                 }
             };
 
@@ -137,9 +143,12 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest("An error occurred while creating an app");
 
             app.Collaborators = new List<AppCollaborator>
-                {new AppCollaborator {UserId = AppUser.Id, Profile = ProfileEnum.Manager
-    }
-};
+            {
+                new AppCollaborator
+                {
+                    UserId = AppUser.Id, Profile = ProfileEnum.Manager
+                }
+            };
 
             var resultUpdate = await _appDraftRepository.Update(app);
 
@@ -171,9 +180,15 @@ namespace PrimeApps.Studio.Controllers
             app.Icon = model.Icon;
             app.Color = model.Color;
 
-            var result = await _appDraftRepository.Update(app);
+            var options = JObject.Parse(app.Setting.Options);
+            options["enable_registration"] = model.EnableRegistration;
+            options["clear_all_records"] = model.ClearAllRecords;
 
-            return Ok(result);
+            app.Setting.Options = options.ToJsonString();
+
+            await _appDraftRepository.Update(app);
+
+            return Ok(app);
         }
 
         [Route("delete/{id:int}"), HttpDelete]

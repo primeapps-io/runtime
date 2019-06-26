@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -14,7 +15,8 @@ namespace PrimeApps.Util.Storage
         Task AbortMultipartUpload(string bucket, string key, string uploadId);
         Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId);
         Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket, string destinationKey);
-        Task CopyBucket(string sourceBucket, string destinationBucket);
+        Task<Amazon.S3.Model.ListObjectsResponse> GetListObject(string sourceBucket);
+        Task CopyBucket(string sourceBucket, string destinationBucket, string[] withouts = null);
         Task CreateBucketIfNotExists(string bucket);
         Task DeleteBucket(string bucket);
         Task<DeleteObjectResponse> DeleteObject(string bucket, string key);
@@ -31,5 +33,6 @@ namespace PrimeApps.Util.Storage
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
         Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool CreateBucketIfNotExists = true);
         event FileUploaded FileUploadedEvent;
+        string GetDownloadFolderPath();
     }
 }

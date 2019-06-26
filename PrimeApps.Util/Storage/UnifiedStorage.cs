@@ -28,6 +28,7 @@ namespace PrimeApps.Util.Storage
         {
             get { return _client; }
         }
+
         public enum ObjectType
         {
             MAIL,
@@ -42,7 +43,7 @@ namespace PrimeApps.Util.Storage
             NONE,
             APPLOGO,
             APPTEMPLATE,
-            RELEASE
+            RELEASES
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -59,72 +60,72 @@ namespace PrimeApps.Util.Storage
             {ObjectType.NONE, ""},
             {ObjectType.APPLOGO, "/app_logo/"},
             {ObjectType.APPTEMPLATE, "/app_template/"},
-            {ObjectType.RELEASE, "/release/"}
+            {ObjectType.RELEASES, "/releases/"}
         };
 
 
-
-
         const string HttpReferrerPolicy = "{" +
-"  \"Version\":\"2012-10-17\"," +
-"  \"Id\":\"{bucketName}_http_referrer\"," +
-"  \"Statement\":[" +
-"    {" +
-"      \"Sid\":\"{bucketName}_http_referrer\"," +
-"      \"Effect\":\"Allow\"," +
-"      \"Principal\":\"*\"," +
-"      \"Action\":\"s3:GetObject\"," +
-"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
-"      \"Condition\":{" +
-"        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
-"      }" +
-"    }" +
-"  ]" +
-"}";
+                                          "  \"Version\":\"2012-10-17\"," +
+                                          "  \"Id\":\"{bucketName}_http_referrer\"," +
+                                          "  \"Statement\":[" +
+                                          "    {" +
+                                          "      \"Sid\":\"{bucketName}_http_referrer\"," +
+                                          "      \"Effect\":\"Allow\"," +
+                                          "      \"Principal\":\"*\"," +
+                                          "      \"Action\":\"s3:GetObject\"," +
+                                          "      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+                                          "      \"Condition\":{" +
+                                          "        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+                                          "      }" +
+                                          "    }" +
+                                          "  ]" +
+                                          "}";
 
         const string PublicReadPolicy = "{" +
-"  \"Version\":\"2012-10-17\"," +
-"  \"Id\":\"{bucketName}_public_read\"," +
-"  \"Statement\":[" +
-"    {" +
-"      \"Sid\":\"{bucketName}_public_read\"," +
-"      \"Effect\":\"Allow\"," +
-"      \"Principal\": \"*\"," +
-"      \"Action\":[\"s3:GetObject\"]," +
-"      \"Resource\":[\"arn:aws:s3:::{bucketName}/*\"]" +
-"    }" +
-"  ]" +
-"}";
+                                        "  \"Version\":\"2012-10-17\"," +
+                                        "  \"Id\":\"{bucketName}_public_read\"," +
+                                        "  \"Statement\":[" +
+                                        "    {" +
+                                        "      \"Sid\":\"{bucketName}_public_read\"," +
+                                        "      \"Effect\":\"Allow\"," +
+                                        "      \"Principal\": \"*\"," +
+                                        "      \"Action\":[\"s3:GetObject\"]," +
+                                        "      \"Resource\":[\"arn:aws:s3:::{bucketName}/*\"]" +
+                                        "    }" +
+                                        "  ]" +
+                                        "}";
 
         const string TenantPolicy = "{" +
-"  \"Version\":\"2012-10-17\"," +
-"  \"Id\":\"{bucketName}_policy\"," +
-"  \"Statement\":[" +
-"    {" +
-"      \"Sid\":\"http_referrer\"," +
-"      \"Effect\":\"Allow\"," +
-"      \"Principal\":\"*\"," +
-"      \"Action\":\"s3:GetObject\"," +
-"      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
-"      \"Condition\":{" +
-"        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
-"      }" +
-"    }, " +
-"    {" +
-"      \"Sid\":\"public_read_email\"," +
-"      \"Effect\":\"Allow\"," +
-"      \"Principal\": \"*\"," +
-"      \"Action\":[\"s3:GetObject\"]," +
-"      \"Resource\":[\"arn:aws:s3:::{bucketName}/mail/*\"]" +
-"    }" +
-"  ]" +
-"}";
+                                    "  \"Version\":\"2012-10-17\"," +
+                                    "  \"Id\":\"{bucketName}_policy\"," +
+                                    "  \"Statement\":[" +
+                                    "    {" +
+                                    "      \"Sid\":\"http_referrer\"," +
+                                    "      \"Effect\":\"Allow\"," +
+                                    "      \"Principal\":\"*\"," +
+                                    "      \"Action\":\"s3:GetObject\"," +
+                                    "      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+                                    "      \"Condition\":{" +
+                                    "        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+                                    "      }" +
+                                    "    }, " +
+                                    "    {" +
+                                    "      \"Sid\":\"public_read_email\"," +
+                                    "      \"Effect\":\"Allow\"," +
+                                    "      \"Principal\": \"*\"," +
+                                    "      \"Action\":[\"s3:GetObject\"]," +
+                                    "      \"Resource\":[\"arn:aws:s3:::{bucketName}/mail/*\"]" +
+                                    "    }" +
+                                    "  ]" +
+                                    "}";
+
         public enum PolicyType
         {
             HTTPReferrer,
             PublicRead,
             TenantPolicy
         }
+
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
@@ -175,7 +176,7 @@ namespace PrimeApps.Util.Storage
             catch (AmazonS3Exception e)
             {
                 Console.WriteLine(
-                        "Error encountered ***. Message:'{0}' when writing an object", e.Message);
+                    "Error encountered ***. Message:'{0}' when writing an object", e.Message);
             }
             catch (Exception e)
             {
@@ -199,7 +200,6 @@ namespace PrimeApps.Util.Storage
             {
                 await transUtil.UploadAsync(stream, bucket, key);
             }
-
         }
 
         public async Task Upload(string fileName, string bucket, string key, Stream stream)
@@ -226,6 +226,7 @@ namespace PrimeApps.Util.Storage
         // }
 
         public event FileUploaded FileUploadedEvent;
+
         public delegate void FileUploaded(string bucket, string key, string fileName);
 
         /// <summary>
@@ -488,17 +489,29 @@ namespace PrimeApps.Util.Storage
         }
 
         /// <summary>
+        /// Get buckets object list
+        /// </summary>
+        /// <param name="sourceBucket"></param>
+        public async Task<Amazon.S3.Model.ListObjectsResponse> GetListObject(string sourceBucket)
+        {
+            return await _client.ListObjectsAsync(sourceBucket);
+        }
+
+        /// <summary>
         /// Copies buckets with all objects.
         /// </summary>
         /// <param name="sourceBucket"></param>
         /// <param name="destinationBucket"></param>
         /// <param name="isRecursive"></param>
-        public async Task CopyBucket(string sourceBucket, string destinationBucket)
+        public async Task CopyBucket(string sourceBucket, string destinationBucket, string[] withouts = null)
         {
             await CreateBucketIfNotExists(destinationBucket);
-            var listOfObjects = await _client.ListObjectsAsync(sourceBucket);
+            var listOfObjects = await GetListObject(sourceBucket);
             foreach (var obj in listOfObjects.S3Objects)
             {
+                if (withouts != null && withouts.Contains(obj.Key))
+                    continue;
+
                 await CopyObject(sourceBucket, obj.Key, destinationBucket, obj.Key);
             }
         }
@@ -626,15 +639,21 @@ namespace PrimeApps.Util.Storage
             }
         }
 
-
-        public static string GetPath(string type, int? tenant = null, int? appId = null, string extraPath = "")
+        /// <summary>
+        /// GetPath
+        /// mode: tenant or app
+        /// id: tenant or app id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="mode"></param>
+        /// <param name="id"></param>
+        /// <param name="extraPath"></param>
+        /// <returns></returns>
+        public static string GetPath(string type, string mode, int id, string extraPath = "")
         {
             ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
-            if (appId == null)
-                return $"tenant{tenant}{pathMap[objectType]}{extraPath}";
-            else
-                return $"app{appId}{pathMap[objectType]}{extraPath}";
+            return $"{mode}{id}{pathMap[objectType]}{extraPath}";
         }
 
         public static string GetPathPictures(string type, int userId, string extraPath = "")
@@ -643,6 +662,7 @@ namespace PrimeApps.Util.Storage
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
+
         public static string GetPathComponents(string folderName, string componentName)
         {
             return $"components/{folderName}/{componentName}";
@@ -651,6 +671,30 @@ namespace PrimeApps.Util.Storage
         public static ObjectType GetType(string type)
         {
             return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+        }
+
+        public string GetDownloadFolderPath()
+        {
+            // Not in .NET 2.0
+            // System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var env = "";
+
+            if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
+            {
+                env = System.Environment.GetEnvironmentVariable("HOME");
+                string pathDownload = System.IO.Path.Combine(env, "Downloads");
+                return pathDownload;
+            }
+
+            env = System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+
+            return System.Convert.ToString(
+                Microsoft.Win32.Registry.GetValue(
+                    @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+                    , "{374DE290-123F-4565-9164-39C4925E467B}"
+                    , String.Empty
+                )
+            );
         }
     }
 }

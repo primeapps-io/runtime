@@ -27,11 +27,11 @@ namespace PrimeApps.Studio.Controllers
         private IImportRepository _importRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
-        private IBackgroundTaskQueue _queue;
         private IHistoryHelper _historyHelper;
+        private IBackgroundTaskQueue _queue;
         private IHttpContextAccessor _context;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper,IBackgroundTaskQueue queue,  IHttpContextAccessor context)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -42,11 +42,12 @@ namespace PrimeApps.Studio.Controllers
             _importRepository = importRepository;
             _storage = storage;
             _configuration = configuration;
-            _queue = queue;
             _historyHelper = historyHelper;
+            _queue = queue;
             _context = context;
             _storage.FileUploadedEvent += FileUploaded;
         }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
@@ -87,7 +88,6 @@ namespace PrimeApps.Studio.Controllers
         //    form.TryGetValue("type", out type);
         //    form.TryGetValue("container", out container);
         //    ObjectType objectType = UnifiedStorage.GetType(type);
-
 
         //    if (!string.IsNullOrWhiteSpace(container))
         //    {
@@ -142,13 +142,12 @@ namespace PrimeApps.Studio.Controllers
 
         //    return Json(response);
         //}
-
         [HttpPost("upload_attachment")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment",null, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -184,7 +183,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template",null, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -270,7 +269,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo",null, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             if (parser.Success)
             {
@@ -359,6 +358,5 @@ namespace PrimeApps.Studio.Controllers
             var currentUser = UserHelper.GetCurrentUser(_context);
             _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
         }
-
     }
 }

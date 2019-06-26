@@ -21,9 +21,8 @@ namespace PrimeApps.App.Helpers
         bool UploadExcel(Stream stream, out DocumentUploadResult result);
         Task<string> Save(DocumentUploadResult result, string containerName);
         Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language);
-        string GetMimeType(string name);
-
     }
+
     public class DocumentHelper : IDocumentHelper
     {
         private IConfiguration _configuration;
@@ -34,6 +33,7 @@ namespace PrimeApps.App.Helpers
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
         }
+
         public bool Upload(Stream stream, out DocumentUploadResult result)
         {
             var parser = new HttpMultipartParser(stream, "file");
@@ -51,8 +51,8 @@ namespace PrimeApps.App.Helpers
             }
 
             //declare chunk variables
-            var chunk = 0;//current chunk
-            var chunks = 1;//total chunk count
+            var chunk = 0; //current chunk
+            var chunks = 1; //total chunk count
 
             var uniqueName = string.Empty;
 
@@ -102,8 +102,8 @@ namespace PrimeApps.App.Helpers
             }
 
             //declare chunk variables
-            var chunk = 0;//current chunk
-            var chunks = 1;//total chunk count
+            var chunk = 0; //current chunk
+            var chunks = 1; //total chunk count
 
             var uniqueName = string.Empty;
 
@@ -176,7 +176,7 @@ namespace PrimeApps.App.Helpers
             return 0;
         }
 
-        public string GetMimeType(string name)
+        public static string GetMimeType(string name)
         {
             var type = name.Split('.')[1];
             switch (type)

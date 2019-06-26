@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
@@ -13,42 +13,59 @@ using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class DeploymentRepository : RepositoryBaseStudio, IDeploymentRepository
+    public class ReleaseRepository : RepositoryBaseStudio, IReleaseRepository
     {
-        public DeploymentRepository(StudioDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        public ReleaseRepository(StudioDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
+        }
+
+        public async Task<Release> GetLastRelease(int appId)
+        {
+            return await DbContext.Releases.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
         }
 
         public async Task<int> Count(int appId)
         {
-            return await DbContext.Deployments
+            return await DbContext.Releases
                 .Where(x => !x.Deleted & x.AppId == appId)
                 .CountAsync();
         }
 
-        public async Task<Deployment> Get(int id)
+        public async Task<Release> Get(int id)
         {
-            return await DbContext.Deployments
+            return await DbContext.Releases
                 .Where(x => !x.Deleted && x.Id == id)
                 .FirstOrDefaultAsync();
         }
 
         public async Task<int> CurrentBuildNumber(int appId)
         {
-            return await DbContext.Deployments
+            return await DbContext.Releases
                 .Where(x => x.AppId == appId)
                 .CountAsync();
         }
 
-        public bool AvailableForDeployment(int appId)
+        public async Task<Release> GetActiveProcess(int appId)
         {
-            return DbContext.Deployments
-                       .Count(x => x.AppId == appId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+            var result = await DbContext.Releases
+                .FirstOrDefaultAsync(x => x.AppId == appId && x.Status == ReleaseStatus.Running && !x.Deleted);
+
+            if (result != null)
+                return result;
+
+            result = await DbContext.Releases.LastOrDefaultAsync();
+
+            var settings = JObject.Parse(result.Settings);
+
+            if (settings["type"].ToString() == "publish" && !result.Published)
+                return result;
+
+            return null;
         }
 
-        public async Task<ICollection<Deployment>> Find(int appId, PaginationModel paginationModel)
+        public async Task<ICollection<Release>> Find(int appId, PaginationModel paginationModel)
         {
-            var deployments = DbContext.Deployments
+            var deployments = DbContext.Releases
                 .Include(x => x.AppDraft)
                 .Where(x => !x.Deleted & x.AppId == appId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
@@ -56,7 +73,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Release).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {
@@ -71,20 +88,20 @@ namespace PrimeApps.Model.Repositories
             return await deployments.ToListAsync();
         }
 
-        public async Task<int> Create(Deployment deployment)
+        public async Task<int> Create(Release release)
         {
-            DbContext.Deployments.Add(deployment);
+            DbContext.Releases.Add(release);
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(Deployment deployment)
+        public async Task<int> Update(Release release)
         {
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Delete(Deployment deployment)
+        public async Task<int> Delete(Release release)
         {
-            DbContext.Deployments.Remove(deployment);
+            DbContext.Releases.Remove(release);
             return await DbContext.SaveChangesAsync();
         }
     }

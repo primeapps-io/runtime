@@ -5,14 +5,14 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Entities.Studio
 {
-    [Table("deployments")]
-    public class Deployment : BaseEntity
+    [Table("releases")]
+    public class Release : BaseEntity
     {
         [Column("app_id"), Required, ForeignKey("AppDraft")]
         public int AppId { get; set; }
 
         [Column("status"), Required]
-        public DeploymentStatus Status { get; set; }
+        public ReleaseStatus Status { get; set; }
 
         [Column("version"), Required]
         public string Version { get; set; }
@@ -22,9 +22,12 @@ namespace PrimeApps.Model.Entities.Studio
 
         [Column("end_time")]
         public DateTime EndTime { get; set; }
-        
+
         [Column("settings", TypeName = "jsonb")]
         public string Settings { get; set; }
+
+        [Column("published")]
+        public bool Published { get; set; }
 
         public virtual AppDraft AppDraft { get; set; }
     }

@@ -22,9 +22,8 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
-        public async Task<Deployment> GetLastDeployment(int appId)
+        public async Task<Release> GetLastDeployment(int appId)
         {
-            return await DbContext.Deployments.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
-        }
-    }
+            return await DbContext.Releases.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
+        } }
 }

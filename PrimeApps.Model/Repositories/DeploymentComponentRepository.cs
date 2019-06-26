@@ -44,7 +44,7 @@ namespace PrimeApps.Model.Repositories
         public bool AvailableForDeployment(int componentId)
         {
             return DbContext.DeploymentsComponent
-                .Count(x => x.ComponentId == componentId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+                .Count(x => x.ComponentId == componentId && x.Status == ReleaseStatus.Running && !x.Deleted) == 0;
         }
 
         public async Task<ICollection<DeploymentComponent>> Find(int componentId, PaginationModel paginationModel)
@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(DeploymentComponent).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {
