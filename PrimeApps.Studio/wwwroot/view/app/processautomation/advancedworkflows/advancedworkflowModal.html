@@ -1106,8 +1106,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="#" ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
-                                                <a href="#" ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                                <a href ng-show="hookHeaders.length > 1" ng-click="workflowHeaderRemove(header)"><i class="fa fa-minus-square"></i></a>
+                                                <a href ng-show="$last" ng-click="workflowHeaderAdd(header, workflowForm)"><i class="fa fa-plus-square"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1136,7 +1136,7 @@
                                         <tr ng-repeat="parameter in hookParameters">
                                             <td>
                                                 <div ng-class="{'has-error': workflowForm.$submitted && workflowForm['paremeter_'+$index].$invalid}">
-                                                    <input type="text" name="paremeter_{{$index}}" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
+                                                    <input type="text" name="paremeter_{{$index}}" ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
                                                 </div>
                                             </td>
                                             <td>
@@ -1144,7 +1144,7 @@
                                                     <select class="form-control"
                                                             name="hookModule_{{$index}}"
                                                             tabindex="1"
-                                                            required
+                                                            ng-required="parameter.parameterName"
                                                             ng-model="parameter.selectedModule"
                                                             ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
                                                         <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
@@ -1156,7 +1156,7 @@
                                                     <select class="form-control"
                                                             name="hookField_{{$index}}"
                                                             tabindex="2"
-                                                            required
+                                                            ng-required="parameter.parameterName && parameter.selectedModule"
                                                             ng-model="parameter.selectedField"
                                                             ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
                                                         <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
@@ -1164,8 +1164,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="#" ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
-                                                <a href="#" ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
+                                                <a href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fa fa-minus-square"></i></a>
+                                                <a href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter, workflowForm)"><i class="fa fa-plus-square"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
