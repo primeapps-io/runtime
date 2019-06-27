@@ -181,7 +181,6 @@ namespace PrimeApps.Studio.Controllers
             }
             catch (Exception ex)
             {
-                ErrorHandler.LogError(ex, "Create dump string error.");
                 throw ex;
             }
         }
