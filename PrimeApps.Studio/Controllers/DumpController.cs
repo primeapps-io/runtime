@@ -79,7 +79,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> CollaboratorsAsync([FromBody]JObject model)
+        public async Task<IActionResult> Create([FromBody]JObject model)
         {
             if (string.IsNullOrEmpty(model["app_ids"].ToString()) || !model["app_ids"].HasValues)
                 return BadRequest("app_ids is required.");
@@ -115,6 +115,9 @@ namespace PrimeApps.Studio.Controllers
                         var localFolder = giteaDirectory + repoInfo["name"] + "\\" + "database";
 
                         var dump = GetSqlDump($"app{id}");
+
+                        if (string.IsNullOrEmpty(dump))
+                            return BadRequest("Dump string can not be null.");
 
                         using (var fs = System.IO.File.Create($"{localFolder}\\app{id}.sql"))
                         {
@@ -176,9 +179,10 @@ namespace PrimeApps.Studio.Controllers
 
                 return dump.DumpText;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                ErrorHandler.LogError(ex, "Create dump string error.");
+                throw ex;
             }
         }
     }
