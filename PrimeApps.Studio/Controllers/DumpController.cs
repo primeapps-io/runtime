@@ -10,9 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
+using Sentry.Protocol;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -123,7 +125,7 @@ namespace PrimeApps.Studio.Controllers
                             var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
 
                             var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database=app{id};";
-
+                            ErrorHandler.LogMessage(connString, SentryLevel.Info);
 
                             var connection = new PgSqlConnection(connString);
 
@@ -132,11 +134,11 @@ namespace PrimeApps.Studio.Controllers
                             dumpConnection.Backup();
                             connection.Close();
 
-
                             dump = dumpConnection.DumpText;
                         }
                         catch (Exception ex)
                         {
+                            ErrorHandler.LogMessage(ex.InnerException.Message, SentryLevel.Info);
                             throw ex;
                             return BadRequest(ex);
                         }
