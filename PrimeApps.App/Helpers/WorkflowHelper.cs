@@ -486,7 +486,7 @@ namespace PrimeApps.App.Helpers
                                     {
                                         type = 4;
                                         var firstModuleName = module.Fields.Where(x => x.Name == firstModule).FirstOrDefault().LookupType;
-                                        var secondModuleName = module.Fields.Where(x => x.Name == firstModule).FirstOrDefault().LookupType;
+                                        var secondModuleName = module.Fields.Where(x => x.Name == secondModule).FirstOrDefault().LookupType;
 
                                         fieldUpdateRecords.Add(secondModuleName, (int)record[secondModule + ".id"]);
                                     }
