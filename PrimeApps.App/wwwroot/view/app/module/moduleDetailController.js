@@ -1845,6 +1845,7 @@ angular.module('primeapps')
                 var jsonData = {};
                 var headersData = [];
                 var params = action.parameters.split(',');
+                var headers = action.headers.split(',');
                 $scope.webhookRequesting = {};
 
                 $scope.webhookRequesting[action.id] = true;
@@ -1878,6 +1879,7 @@ angular.module('primeapps')
                     var moduleName = tempHeader[1];
                     var key = tempHeader[2];
                     var value = tempHeader[3];
+                    var newHeader = {};
 
                     switch (type) {
                         case 'module':
@@ -1918,7 +1920,9 @@ angular.module('primeapps')
                             break;
                     }
 
-                    http.setRequestHeader(key, newValue);
+                    newHeader['key'] = key;
+                    newHeader['value'] = newValue;
+                    headersData.push(newHeader);
                 });
 
                 if (action.method_type === 'post') {
@@ -1927,6 +1931,11 @@ angular.module('primeapps')
                         http.setRequestHeader("Authorization", 'Bearer ' + $localStorage.read('access_token'));
                     }
                     http.setRequestHeader("Content-Type", 'application/json');
+
+                    angular.forEach(headersData, function (header) {
+                        http.setRequestHeader(header.key, header.value);
+                    });
+
                     http.send(JSON.stringify(jsonData));
                 }
                 else if (action.method_type === 'get') {
@@ -1950,6 +1959,10 @@ angular.module('primeapps')
                     if (action.url.indexOf(window.location.host) > -1) {
                         http.setRequestHeader("Authorization", 'Bearer ' + $localStorage.read('access_token'));
                     }
+
+                    angular.forEach(headersData, function (header) {
+                        http.setRequestHeader(header.key, header.value);
+                    });
 
                     http.send();
                 }

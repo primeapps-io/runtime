@@ -1648,6 +1648,7 @@ angular.module('primeapps')
                 var jsonData = {};
                 var headersData = [];
                 var params = action.parameters.split(',');
+                var headers = action.headers.split(',');
                 $scope.webhookRequesting = {};
 
                 $scope.webhookRequesting[action.id] = true;
