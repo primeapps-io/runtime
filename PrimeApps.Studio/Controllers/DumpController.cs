@@ -168,7 +168,7 @@ namespace PrimeApps.Studio.Controllers
                         if (!status.IsDirty)
                         {
                             _giteaHelper.DeleteDirectory(localPath);
-                            return BadRequest("Unhandle exception. Repo status is dirty.");
+                            return BadRequest("Unhandled exception. Repo status is dirty.");
                         }
 
                         // Commit to the repository
