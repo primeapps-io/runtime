@@ -10,9 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
+using Sentry.Protocol;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -114,7 +116,32 @@ namespace PrimeApps.Studio.Controllers
 
                         var localFolder = giteaDirectory + repoInfo["name"] + "\\" + "database";
 
-                        var dump = GetSqlDump($"app{id}");
+                        //var dump = GetSqlDump($"app{id}");
+
+                        var connectionString = _configuration.GetConnectionString("StudioDBConnection");
+                        string dump = "";
+                        try
+                        {
+                            var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
+
+                            var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database=app{id};";
+                            ErrorHandler.LogMessage(connString, SentryLevel.Info);
+
+                            var connection = new PgSqlConnection(connString);
+
+                            connection.Open();
+                            var dumpConnection = new PgSqlDump {Connection = connection, Schema = "public", IncludeDrop = false};
+                            dumpConnection.Backup();
+                            connection.Close();
+
+                            dump = dumpConnection.DumpText;
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorHandler.LogMessage(ex.InnerException.Message, SentryLevel.Info);
+                            throw ex;
+                            return BadRequest(ex);
+                        }
 
                         if (string.IsNullOrEmpty(dump))
                             return BadRequest("Dump string can not be null.");
@@ -156,33 +183,6 @@ namespace PrimeApps.Studio.Controllers
             }
 
             return BadRequest("app_ids should not be empty.");
-        }
-
-        public string GetSqlDump(string database)
-        {
-            var connectionString = _configuration.GetConnectionString("StudioDBConnection");
-
-            try
-            {
-                var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
-
-                var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database={database};";
-
-
-                var connection = new PgSqlConnection(connString);
-
-                connection.Open();
-                var dump = new PgSqlDump {Connection = connection, Schema = "public", IncludeDrop = false};
-                dump.Backup();
-                connection.Close();
-
-
-                return dump.DumpText;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
     }
 }
