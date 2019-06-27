@@ -28,7 +28,7 @@ namespace PrimeApps.Model.Helpers
 
     public class ReleaseHelper
     {
-        public static async Task<bool> Create(JObject app, string studioSecret, bool clearAllRecords, bool goLive, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, bool goLive, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
@@ -175,7 +175,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Update(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, bool goLive, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, bool goLive, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);

@@ -27,9 +27,9 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IReleaseHelper
     {
-        Task Create(int appId, bool clearAllRecords, bool autoDistribute, string dbName, int version, int deploymentId);
+        Task All(int appId, bool clearAllRecords, bool autoDistribute, string dbName, int version, int deploymentId);
 
-        Task Update(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, bool goLive, string dbName, int version, int deploymentId);
+        Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, bool goLive, string dbName, int version, int deploymentId);
     }
 
     public class ReleaseHelper : IReleaseHelper
@@ -52,7 +52,7 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
-        public async Task Create(int appId, bool clearAllRecords, bool autoDistribute, string dbName, int version, int deploymentId)
+        public async Task All(int appId, bool clearAllRecords, bool autoDistribute, string dbName, int version, int deploymentId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
 
-                    var result = await Model.Helpers.ReleaseHelper.Create(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, autoDistribute, dbName, version, _configuration, _storage);
+                    var result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, autoDistribute, dbName, version, _configuration, _storage);
 
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
@@ -97,7 +97,7 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public async Task Update(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, bool goLive, string dbName, int version, int deploymentId)
+        public async Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, bool goLive, string dbName, int version, int deploymentId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -127,7 +127,7 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
 
-                    var result = await Model.Helpers.ReleaseHelper.Update(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), goLive, dbName, version, deploymentId, _configuration, _storage);
+                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), goLive, dbName, version, deploymentId, _configuration, _storage);
 
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 

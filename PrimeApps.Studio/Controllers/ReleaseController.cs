@@ -161,32 +161,32 @@ namespace PrimeApps.Studio.Controllers
 
             await _releaseRepository.Create(releaseModel);
 
-            List<HistoryDatabase> historyDatabase = null;
-            List<HistoryStorage> historyStorages = null;
-
-            var dbHistory = await _historyDatabaseRepository.GetLast();
-            if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
-            {
-                dbHistory.Tag = releaseModel.Version;
-                await _historyDatabaseRepository.Update(dbHistory);
-
-                historyDatabase = await _historyDatabaseRepository.GetDiffs(currentBuildNumber.ToString());
-            }
-
-            var storageHistory = await _historyStorageRepository.GetLast();
-            if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
-            {
-                storageHistory.Tag = releaseModel.Version;
-                await _historyStorageRepository.Update(storageHistory);
-
-                historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
-            }
-
             if (app.Status != PublishStatus.Published)
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Create((int)AppId, (bool)appOptions["clear_all_records"], model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
             else
             {
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Update(historyDatabase, historyStorages, (int)AppId, model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
+                List<HistoryDatabase> historyDatabase = null;
+                List<HistoryStorage> historyStorages = null;
+
+                var dbHistory = await _historyDatabaseRepository.GetLast();
+                if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+                {
+                    dbHistory.Tag = releaseModel.Version;
+                    await _historyDatabaseRepository.Update(dbHistory);
+
+                    historyDatabase = await _historyDatabaseRepository.GetDiffs(currentBuildNumber.ToString());
+                }
+
+                var storageHistory = await _historyStorageRepository.GetLast();
+                if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+                {
+                    storageHistory.Tag = releaseModel.Version;
+                    await _historyStorageRepository.Update(storageHistory);
+
+                    historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
+                }
+
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
             }
 
             return Ok(releaseModel.Id);

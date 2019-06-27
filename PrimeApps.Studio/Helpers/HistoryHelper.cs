@@ -65,7 +65,7 @@ namespace PrimeApps.Studio.Helpers
 
                     var history = new HistoryDatabase
                     {
-                        CommandText = sql,
+                        CommandText = sql.Replace(Environment.NewLine, " "),
                         TableName = tableName,
                         ExecutedAt = executedAt,
                         CommandId = commandId,

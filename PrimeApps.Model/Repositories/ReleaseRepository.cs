@@ -53,7 +53,7 @@ namespace PrimeApps.Model.Repositories
             if (result != null)
                 return result;
 
-            result = await DbContext.Releases.LastOrDefaultAsync();
+            result = await DbContext.Releases.LastOrDefaultAsync(x => x.AppId == appId);
 
             var settings = JObject.Parse(result.Settings);
 

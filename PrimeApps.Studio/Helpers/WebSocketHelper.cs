@@ -159,11 +159,11 @@ namespace PrimeApps.Studio.Helpers
 
                                 if (release.Status != ReleaseStatus.Succeed && text.Contains("********** Package Created **********"))
                                 {
-                                    release.Status = ReleaseStatus.Succeed;
-                                    await releaseRepository.Update(release);
-
                                     if (releaseOptions["type"].ToString() != "publish")
                                     {
+                                        release.Status = ReleaseStatus.Succeed;
+                                        await releaseRepository.Update(release);
+
                                         var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, "/" + release.Version + "/");
 
                                         var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
@@ -177,6 +177,9 @@ namespace PrimeApps.Studio.Helpers
                                     /*release.Status = ReleaseStatus.Succeed;
                                     release.Published = true;
                                     await releaseRepository.Update(release);*/
+
+                                    release.Status = ReleaseStatus.Succeed;
+                                    await releaseRepository.Update(release);
 
                                     app.Status = PublishStatus.Published;
                                     await appDraftRepository.Update(app);
